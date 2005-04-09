@@ -655,7 +655,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
                         statusIcon.setImage(null);
                         statusIcon.setNeedsDisplay(true);
                         CDBrowserController.this.toolbar.validateVisibleItems();
-                        secureIcon.setImage(null);
                     }
                 });
             }
@@ -689,7 +688,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                         CDBrowserController.this.toolbar.validateVisibleItems();
                         if(isMounted()) {
                             if(workdir().getSession().isSecure()) {
-                                secureIcon.setImage(NSImage.imageNamed("locked.tiff"));
+                                statusIcon.setImage(NSImage.imageNamed("locked.tiff"));
                             }
                         }
                     }
@@ -1454,12 +1453,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.statusIcon = statusIcon;
     }
 
-    private NSImageView secureIcon; // IBOutlet
-
-    public void setSecureIcon(NSImageView secureIcon) {
-        this.secureIcon = secureIcon;
-    }
-
     private NSTextField statusLabel; // IBOutlet
 
     public void setStatusLabel(NSTextField statusLabel) {
@@ -1616,7 +1609,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
 	public void deleteSheetDidEnd(NSWindow sheet, int returnCode, Object contextInfo) {
-		log.debug("deleteSheetDidEnd");
+        sheet.orderOut(null);
 		switch(returnCode) {
 			case (NSAlertPanel.DefaultReturn):
 				final List files = (List)contextInfo;

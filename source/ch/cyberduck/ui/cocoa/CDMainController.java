@@ -297,26 +297,22 @@ public class CDMainController extends CDController {
 
 		public void update(final Observable o, final Object arg) {
 			log.debug("update:"+o+","+arg);
-			CDMainController.this.invoke(new Runnable() {
-				public void run() {
-					if(o instanceof Rendezvous) {
-						if(arg instanceof Message) {
-							Message msg = (Message)arg;
-							Host host = rendezvous.getService((String)msg.getContent());
-							if(msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
-								Growl.instance().notifyWithImage("Rendezvous", 
-																 (String)msg.getContent(), 
-																 "rendezvous.icns");
-								items.put((String)msg.getContent(),
-								    host);
-							}
-							if(msg.getTitle().equals(Message.RENDEZVOUS_REMOVE)) {
-								items.remove((String)msg.getContent());
-							}
-						}
-					}
-				}
-			});
+            if(o instanceof Rendezvous) {
+                if(arg instanceof Message) {
+                    Message msg = (Message)arg;
+                    Host host = rendezvous.getService((String)msg.getContent());
+                    if(msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
+                        Growl.instance().notifyWithImage("Rendezvous",
+                                (String)msg.getContent(),
+                                "rendezvous.icns");
+                        items.put((String)msg.getContent(),
+                                host);
+                    }
+                    if(msg.getTitle().equals(Message.RENDEZVOUS_REMOVE)) {
+                        items.remove((String)msg.getContent());
+                    }
+                }
+            }
 		}
 
 		public int numberOfItemsInMenu(NSMenu menu) {

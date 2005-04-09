@@ -20,16 +20,15 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSArray;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.SyncQueue;
-import ch.cyberduck.core.Validator;
-import ch.cyberduck.core.ValidatorFactory;
+import ch.cyberduck.core.*;
 
 /**
  * @version $Id$
@@ -201,10 +200,32 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
 	public void syncActionFired(NSButton sender) {
 		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
+		for(Iterator i = this.workList.iterator(); i.hasNext(); ) {
+			Path p = (Path)i.next();
+			if(!p.isSkipped()) {
+				this.validatedList.add(p);
+			}
+		}
 		this.setCanceled(false);
-		this.windowController.endSheet(this.window(), sender.tag());
+		this.endSheet(this.window(), sender.tag());
 	}
 	
+	private NSPopUpButton timezonePopupButton;
+
+	public void setTimezonePopupButton(NSPopUpButton timezonePopupButton) {
+		this.timezonePopupButton = timezonePopupButton;
+		this.timezonePopupButton.setTarget(this);
+		this.timezonePopupButton.setAction(new NSSelector("timezonePopupButtonClicked", new Class[]{NSPopUpButton.class}));
+		this.timezonePopupButton.removeAllItems();
+		this.timezonePopupButton.addItemsWithTitles(new NSArray(TimeZone.getAvailableIDs()));
+		this.timezonePopupButton.setTitle(TimeZone.getDefault().getID());
+	}
+
+	public void timezonePopupButtonClicked(NSPopUpButton sender) {
+		Preferences.instance().setProperty("queue.sync.timezone", sender.titleOfSelectedItem());
+		this.fireDataChanged();
+	}
+
 	// ----------------------------------------------------------
 	// NSTableView.DataSource
 	// ----------------------------------------------------------

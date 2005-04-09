@@ -155,7 +155,7 @@ public abstract class Preferences {
 		defaults.put("ftp.sendSystemCommand", "true");
 		defaults.put("ftp.sendExtendedListCommand", "true");
 
-        defaults.put("ftp.ssl.datachannel", "P"); //C
+        defaults.put("ftp.tls.datachannel", "P"); //C
 
 		defaults.put("connection.pool.max", "5"); // maximumum concurrent connections to the same host
 		defaults.put("connection.pool.force", "false"); // force to close an existing connection if the pool is too small

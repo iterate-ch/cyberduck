@@ -241,6 +241,24 @@ public abstract class CDValidatorController extends CDWindowController implement
 				this.fileTableView.setGridStyleMask(NSTableView.GridNone);
 			}
 		}
+        {
+            NSTableColumn c = new NSTableColumn();
+            c.setIdentifier("INCLUDE");
+            c.headerCell().setStringValue("");
+            c.setMinWidth(20f);
+            c.setWidth(20f);
+            c.setMaxWidth(20f);
+            c.setResizable(true);
+            c.setEditable(false);
+            NSButtonCell cell = new NSButtonCell();
+            cell.setControlSize(NSCell.SmallControlSize);
+            cell.setButtonType(NSButtonCell.SwitchButton);
+            cell.setAllowsMixedState(false);
+            cell.setTarget(this);
+            c.setDataCell(cell);
+            c.dataCell().setAlignment(NSText.CenterTextAlignment);
+            this.fileTableView.addTableColumn(c);
+        }
 		{
 			NSTableColumn c = new NSTableColumn();
 			c.setIdentifier("ICON");
@@ -347,33 +365,39 @@ public abstract class CDValidatorController extends CDWindowController implement
 
 	public void resumeActionFired(NSButton sender) {
 		for(Iterator i = this.workList.iterator(); i.hasNext();) {
-			((Path)i.next()).status.setResume(true);
+            Path p = (Path)i.next();
+            if(!p.isSkipped()) {
+                p.status.setResume(true);
+                this.validatedList.add(p);
+            }
 		}
-		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
 		this.setCanceled(false);
-		this.windowController.endSheet(this.window(), sender.tag());
+		this.endSheet(this.window(), sender.tag());
 	}
 
 	public void overwriteActionFired(NSButton sender) {
-		for(Iterator i = this.workList.iterator(); i.hasNext();) {
-			((Path)i.next()).status.setResume(false);
-		}
-		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
+        for(Iterator i = this.workList.iterator(); i.hasNext();) {
+            Path p = (Path)i.next();
+            if(!p.isSkipped()) {
+                p.status.setResume(false);
+                this.validatedList.add(p);
+            }
+        }
 		this.setCanceled(false);
-        this.windowController.endSheet(this.window(), sender.tag());
+        this.endSheet(this.window(), sender.tag());
 	}
 
 	public void skipActionFired(NSButton sender) {
 		this.workList.clear();
 		this.setCanceled(false);
-        this.windowController.endSheet(this.window(), sender.tag());
+        this.endSheet(this.window(), sender.tag());
 	}
 
 	public void cancelActionFired(NSButton sender) {
 		this.validatedList.clear();
 		this.workList.clear();
 		this.setCanceled(true);
-        this.windowController.endSheet(this.window(), sender.tag());
+        this.endSheet(this.window(), sender.tag());
 	}
 
 	// ----------------------------------------------------------
@@ -383,11 +407,6 @@ public abstract class CDValidatorController extends CDWindowController implement
 	protected void fireDataChanged() {
 		if(this.hasPrompt()) {
             fileTableView.reloadData();
-//			this.invoke(new Runnable() {
-//				public void run() {
-//					fileTableView.reloadData();
-//				}
-//			});
 		}
 	}
 	
@@ -417,6 +436,16 @@ public abstract class CDValidatorController extends CDWindowController implement
 		}
 	}
 
+    public void tableViewSetObjectValueForLocation(NSTableView tableView, Object object, NSTableColumn tableColumn, int row) {
+        if(row < this.numberOfRowsInTableView(tableView)) {
+            String identifier = (String)tableColumn.identifier();
+            if(identifier.equals("INCLUDE")) {
+                Path p = (Path)this.workList.get(row);
+                p.setSkipped(((Integer)object).intValue() == NSCell.OffState);
+            }
+        }
+    }
+
 	private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
 
 	public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
@@ -424,6 +453,11 @@ public abstract class CDValidatorController extends CDWindowController implement
 			String identifier = (String)tableColumn.identifier();
 			Path p = (Path)this.workList.get(row);
 			if(p != null) {
+                if(identifier.equals("INCLUDE")) {
+                    if(p.isSkipped())
+                        return new Integer(NSCell.OffState);
+                    return new Integer(NSCell.OnState);
+                }
 				if(identifier.equals("ICON")) {
 					if(p.attributes.isDirectory()) {
 						return FOLDER_ICON;

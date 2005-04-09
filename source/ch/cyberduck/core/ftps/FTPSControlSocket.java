@@ -35,7 +35,7 @@ import ch.cyberduck.core.Preferences;
 public class FTPSControlSocket extends FTPControlSocket {
 
     protected boolean useDataConnectionSecurity
-            = Preferences.instance().getProperty("ftp.ssl.datachannel").equals("P");
+            = Preferences.instance().getProperty("ftp.tls.datachannel").equals("P");
 
     private X509TrustManager trustManager;
 

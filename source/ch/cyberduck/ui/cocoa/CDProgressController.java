@@ -84,51 +84,65 @@ public class CDProgressController extends CDController implements Observer {
 
 	public void update(final Observable o, final Object arg) {
 		if(arg instanceof Message) {
-			Message msg = (Message)arg;
+			final Message msg = (Message)arg;
 			if(msg.getTitle().equals(Message.PROGRESS)) {
 				statusText = (String)msg.getContent();
-				this.updateProgressfield();
+                this.invoke(new Runnable() {
+                    public void run() {
+                        updateProgressfield();
+                    }
+                });
 			}
 			else if(msg.getTitle().equals(Message.ERROR)) {
-				this.errorText.append("\n"+(String)msg.getContent());
-				this.alertIcon.setHidden(false);
+                this.invoke(new Runnable() {
+                    public void run() {
+                        errorText.append("\n"+(String)msg.getContent());
+                        alertIcon.setHidden(false);
+                    }
+                });
 			}
 			else if(msg.getTitle().equals(Message.QUEUE_START)) {
 				log.debug("------------- QUEUE_START");
-				this.progressBar.setIndeterminate(true);
-				this.progressBar.startAnimation(null);
-				this.progressBar.setNeedsDisplay(true);
-				this.errorText = new StringBuffer();
-				this.alertIcon.setHidden(true);
-				this.progressTimer = new NSTimer(0.5, //seconds
-				    CDProgressController.this, //target
+                this.invoke(new Runnable() {
+                    public void run() {
+                        progressBar.setHidden(false);
+                        progressBar.setIndeterminate(true);
+                        progressBar.startAnimation(null);
+                        progressBar.setNeedsDisplay(true);
+                        errorText = new StringBuffer();
+                        alertIcon.setHidden(true);
+                        progressTimer = new NSTimer(0.5, //seconds
+                                CDProgressController.this, //target
 				    new NSSelector("update", new Class[]{NSTimer.class}),
 				    getQueue(), //userInfo
 				    true); //repeating
-				this.invoke(new Runnable() {
-					public void run() {
 						NSRunLoop.currentRunLoop().addTimerForMode(progressTimer,
 						    NSRunLoop.DefaultRunLoopMode);
 					}
 				});
 			}
-			else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
-				log.debug("------------- QUEUE_STOP");
-				this.progressTimer.invalidate();
-				this.updateProgressfield();
-				this.progressBar.setIndeterminate(true);
-				this.progressBar.stopAnimation(null);
-				if(queue.isComplete() && !queue.isCanceled()) {
-					if(queue instanceof DownloadQueue) {
-						if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
-							boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
-							log.info("Success opening file:"+success);
-						}
-					}
-					if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
-						CDQueueController.instance().removeItem(queue);
-					}
-				}
+            else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
+                log.debug("------------- QUEUE_STOP");
+                this.invoke(new Runnable() {
+                    public void run() {
+                        progressTimer.invalidate();
+                        updateProgressfield();
+                        progressBar.setIndeterminate(true);
+                        progressBar.stopAnimation(null);
+                        progressBar.setHidden(true);
+                        if(queue.isComplete() && !queue.isCanceled()) {
+                            if(queue instanceof DownloadQueue) {
+                                if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
+                                    boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
+                                    log.info("Success opening file:"+success);
+                                }
+                            }
+                            if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
+                                CDQueueController.instance().removeItem(queue);
+                            }
+                        }
+                    }
+                });
 				this.queue.deleteObserver(this);
 				this.queue.getSession().deleteObserver(this);
 			}
