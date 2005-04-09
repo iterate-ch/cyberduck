@@ -78,20 +78,21 @@ public class Local extends File {
 
     public void setProgress(int progress) {
 		if(-1 == progress)
-			this.setIcon(this.getExtension());
+			this.setIconFromExtension(this.getAbsolute(), this.getExtension());
 		else
-			this.setIcon(this.getAbsolute(), "download"+progress+".icns");
+			this.setIconFromFile(this.getAbsolute(), "download"+progress+".icns");
         NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
     }
 
-    public void setIcon(String icon) {
-        this.setIcon(this.getAbsolute(), icon);
-    }
+	/**
+		* @param The file extension to load the appropriate default system icon for
+	 */
+    public native void setIconFromExtension(String path, String icon);
 
 	/**
 	 * @param icon the absolute path to the image file to use as an icon
 	 */
-	public native void setIcon(String path, String icon);
+	public native void setIconFromFile(String path, String icon);
 		
 //	public File getAbsoluteFile() {
 //		return new Local(super.getAbsoluteFile().getAbsolutePath());

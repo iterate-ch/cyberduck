@@ -41,15 +41,18 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
     return converted;
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIcon(JNIEnv *env, jobject this, jstring extension)
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromExtension(JNIEnv *env, jobject this, jstring path, jstring icon)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	id iconFamily = [IconFamily iconFamilyWithThumbnailsOfImage:[NSWorkspace iconForFileType:convertToNSString(env, extension)]];
+	NSImage *image = [[NSWorkspace sharedWorkspace] iconForFileType:convertToNSString(env, icon)];
+	[image setScalesWhenResized:YES];
+	[image setSize:NSMakeSize(128.0, 128.0)];
+	id iconFamily = [IconFamily iconFamilyWithThumbnailsOfImage:image];
 	[iconFamily setAsCustomIconForFile:convertToNSString(env, path)];
 	[pool release];
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIcon(JNIEnv *env, jobject this, jstring path, jstring icon)
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromFile(JNIEnv *env, jobject this, jstring path, jstring icon)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	id iconFamily = [IconFamily iconFamilyWithThumbnailsOfImage:[NSImage imageNamed:convertToNSString(env, icon)]];

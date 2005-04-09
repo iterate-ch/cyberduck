@@ -19,25 +19,28 @@ extern "C" {
 /* Inaccessible static: longDateFormatter */
 /* Inaccessible static: shortDateFormatter */
 /* Inaccessible static: class_00024ch_00024cyberduck_00024core_00024Local */
-
-	
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIcon
-	(JNIEnv *env, jobject this, jstring extension);
+/*
+ * Class:     Local
+ * Method:    setIconFromExtension
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromExtension
+  (JNIEnv *, jobject, jstring, jstring);
 
 /*
  * Class:     Local
- * Method:    setIcon
- * Signature: (Ljava/lang/String;)V
+ * Method:    setIconFromFile
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIcon
-	(JNIEnv *env, jobject this, jstring path, jstring icon);
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromFile
+  (JNIEnv *, jobject, jstring, jstring);
 
 /*
  * Class:     Local
  * Method:    isAlias
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Local_isAlias
+JNIEXPORT jboolean JNICALL Java_Local_isAlias
   (JNIEnv *, jobject, jstring);
 
 /*
@@ -45,7 +48,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Local_isAlias
  * Method:    resolveAlias
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_resolveAlias
+JNIEXPORT jstring JNICALL Java_Local_resolveAlias
   (JNIEnv *, jobject, jstring);
 
 #ifdef __cplusplus
