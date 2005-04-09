@@ -21,16 +21,13 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
-import org.apache.log4j.Logger;
-
 import ch.cyberduck.core.Path;
 
 /**
 * @version $Id$
  */
 public class CDBrowserCell extends NSBrowserCell {
-	private static Logger log = Logger.getLogger(CDBrowserCell.class);
-	
+
 	protected static final NSImage SYMLINK_ICON		= NSImage.imageNamed("symlink.tiff");
     protected static final NSImage FOLDER_ICON		= NSImage.imageNamed("folder16.tiff");
     protected static final NSImage NOT_FOUND_ICON	= NSImage.imageNamed("notfound.tiff");
@@ -104,7 +101,15 @@ public class CDBrowserCell extends NSBrowserCell {
 	}
 	
 	protected static final float HEIGHT = 17f;
-	
+
+//    public void highlightWithFrameInView(boolean highlight, NSRect cellFrame, NSView controlView) {
+//        if(this.icon() != null) {
+//            cellFrame = new NSRect(cellFrame.x(), cellFrame.y(),
+//                                   cellFrame.width()+this.icon().size().width()+4, CDBrowserCell.HEIGHT);
+//        }
+//        super.highlightWithFrameInView(highlight,  cellFrame, controlView);
+//    }
+
 	public void drawWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawWithFrameInView(new NSRect(cellFrame.x(), cellFrame.y(), 
 											 cellFrame.width(), CDBrowserCell.HEIGHT), controlView);
@@ -124,17 +129,17 @@ public class CDBrowserCell extends NSBrowserCell {
 										 cellFrame.width()-2-this.icon().size().width()-2,
 										 CDBrowserCell.HEIGHT);
 			
-			// Depending on the current state, set the color we will highlight with.
-			if (this.isHighlighted()) {
-				// use highlightColorInView instead of [NSColor selectedControlColor] since NSBrowserCell slightly dims all cells except those in the right most column.
-				// The return value from highlightColorInView will return the appropriate one for you. 
-				this.highlightColorWithFrameInView(cellFrame, controlView).set();
-			}
-			else {
-				NSColor.controlBackgroundColor().set();
-			}
-			// Draw the highlight, but only the portion that won't be caught by the call to [super drawInteriorWithFrame:...] below.
-			NSGraphics.fillRectList(new NSRect[]{iconRect});
+//			// Depending on the current state, set the color we will highlight with.
+//			if (this.isHighlighted()) {
+//				// use highlightColorInView instead of [NSColor selectedControlColor] since NSBrowserCell slightly dims all cells except those in the right most column.
+//				// The return value from highlightColorInView will return the appropriate one for you.
+//				this.highlightColorWithFrameInView(cellFrame, controlView).set();
+//			}
+//			else {
+//				NSColor.controlBackgroundColor().set();
+//			}
+//			// Draw the highlight, but only the portion that won't be caught by the call to [super drawInteriorWithFrame:...] below.
+//			NSGraphics.fillRectList(new NSRect[]{iconRect});
 			
 			if(controlView.isFlipped())
 				this.icon().compositeToPoint(new NSPoint(iconRect.x()+2,
@@ -149,9 +154,4 @@ public class CDBrowserCell extends NSBrowserCell {
 		}
 		else super.drawInteriorWithFrameInView(cellFrame, controlView);
 	}
-	
-	public NSSize cellSizeForBounds(NSRect cellFrame) {
-			return new NSSize(this.icon() != null ? cellFrame.width()+this.icon().size().width()+4 : super.cellSizeForBounds(cellFrame).width(), 
-							  HEIGHT);
-	}	
 }

@@ -33,48 +33,37 @@ public class CDBrowserMatrix extends NSMatrix {
 
 	public CDBrowserMatrix() {
 		super();
-        // receive drag events from types
-//        this.registerForDraggedTypes(new NSArray(new Object[]{
-//            "QueuePboardType",
-//            NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
-//            NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as QueuePboardType
-//																   ));
+        this.init();
 	}
 
 	public CDBrowserMatrix(NSRect frameRect) {
 		super(frameRect);
-        // receive drag events from types
-//        this.registerForDraggedTypes(new NSArray(new Object[]{
-//            "QueuePboardType",
-//            NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
-//            NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as QueuePboardType
-//																   ));
+        this.init();
 	}
 	
 	public CDBrowserMatrix(NSRect frameRect, int mode, NSCell cell, int numRows, int numColumns) {
 		super(frameRect, mode, cell, numRows, numColumns);
-        // receive drag events from types
-//        this.registerForDraggedTypes(new NSArray(new Object[]{
-//            "QueuePboardType",
-//            NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
-//            NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as QueuePboardType
-//																   ));
+        this.init();
 	}
 
 	public CDBrowserMatrix(NSRect frameRect, int mode, Class clazz, int numRows, int numColumns) {
 		super(frameRect, mode, clazz, numRows, numColumns);
-        // receive drag events from types
+        this.init();
+	}
+
+    private void init() {
+//         receive drag events from types
 //        this.registerForDraggedTypes(new NSArray(new Object[]{
 //            "QueuePboardType",
 //            NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
 //            NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as QueuePboardType
-//																   ));
-	}
-	
+//        ));
+    }
+
 	public NSSize cellSize() {
 		return new NSSize(super.cellSize().width(), CDBrowserCell.HEIGHT);
 	}
-	
+
 	public NSSize intercellSpacing() {
 		return NSSize.ZeroSize;
 	}
@@ -93,8 +82,7 @@ public class CDBrowserMatrix extends NSMatrix {
 		
 	private int draggingEnteredOrUpdated(NSDraggingInfo info) {
 		this.deselectAllCells();
-		NSEvent event = NSApplication.sharedApplication().currentEvent();
-		NSPoint location = this.convertPointFromView(this.window().mouseLocationOutsideOfEventStream(), 
+		NSPoint location = this.convertPointFromView(this.window().mouseLocationOutsideOfEventStream(),
 													 null);
 		int row = this.rowForPoint(location); int col = this.columnForPoint(location);
 		if(this.cellAtLocation(row, col) != null) {

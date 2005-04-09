@@ -22,8 +22,6 @@ import com.apple.cocoa.application.NSBrowser;
 import com.apple.cocoa.application.NSBrowserCell;
 import com.apple.cocoa.application.NSTableColumn;
 
-import org.apache.log4j.Logger;
-
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 
@@ -31,7 +29,6 @@ import ch.cyberduck.core.PathFactory;
  * @version $Id$
  */
 public class CDBrowserColumnViewModel extends CDTableDataSource {
-    private static Logger log = Logger.getLogger(CDBrowserColumnViewModel.class);
 
     public CDBrowserColumnViewModel(CDBrowserController controller) {
         super(controller);

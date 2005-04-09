@@ -24,7 +24,6 @@ import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.foundation.NSCoder;
 import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRect;
-import com.apple.cocoa.foundation.NSSize;
 
 import org.apache.log4j.Logger;
 
@@ -76,8 +75,8 @@ public class CDOutlineCell extends NSTextFieldCell {
 		}
 	}
 
-	public NSSize cellSizeForBounds(NSRect rect) {
-		return new NSSize(this.icon() != null ? rect.width()+this.icon().size().width()+6 : rect.width()+6, 
-						  super.cellSizeForBounds(rect).height());
-	}
+//	public NSSize cellSizeForBounds(NSRect rect) {
+//		return new NSSize(this.icon() != null ? rect.width()+this.icon().size().width()+6 : rect.width()+6,
+//						  super.cellSizeForBounds(rect).height());
+//	}
 }
