@@ -2,6 +2,13 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
+            ACTIONS = {changePanes = id; orderFrontPrefsPanel = id; }; 
+            CLASS = UKPrefsPanel; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {tabView = NSTabView; }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
             ACTIONS = {
                 defaultPermissionsDownloadChanged = id; 
                 defaultPermissionsUploadChanged = id; 
@@ -58,6 +65,7 @@
                 removeFromQueueCheckbox = NSButton; 
                 scAuthenticationCombobox = NSPopUpButton; 
                 scEncryptionCombobox = NSPopUpButton; 
+                secureDataChannelCheckbox = NSButton; 
                 showHiddenCheckbox = NSButton; 
                 systCheckbox = NSButton; 
                 transfermodeCombobox = NSPopUpButton; 

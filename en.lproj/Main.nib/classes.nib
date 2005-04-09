@@ -4,6 +4,7 @@
             ACTIONS = {
                 addBookmarkButtonClicked = id; 
                 backButtonClicked = id; 
+                browserSwitchClicked = id; 
                 connectButtonClicked = id; 
                 copyURLButtonClicked = id; 
                 createFileButtonClicked = id; 
