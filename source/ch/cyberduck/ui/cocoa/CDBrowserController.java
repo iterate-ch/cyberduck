@@ -1808,9 +1808,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
             NSMenuItem item = (NSMenuItem) sender;
             if(item.state() == NSCell.OnState) {
 				this.filenameFilter = new NullFilter();
+                item.setState(NSCell.OffState);
 			}
 			if(item.state() == NSCell.OffState) {
 				this.filenameFilter = new HiddenFilesFilter();
+                item.setState(NSCell.OnState);
 			}
             if (this.isMounted()) {
 				this.deselectAll();
