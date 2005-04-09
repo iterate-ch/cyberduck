@@ -1388,16 +1388,16 @@ public class CDPreferencesController extends CDWindowController {
 		this.secureDataChannelCheckbox = secureDataChannelCheckbox;
 		this.secureDataChannelCheckbox.setTarget(this);
 		this.secureDataChannelCheckbox.setAction(new NSSelector("secureDataChannelCheckboxClicked", new Class[]{NSButton.class}));
-		this.secureDataChannelCheckbox.setState(Preferences.instance().getBoolean("ftp.ssl.datachannel") ? NSCell.OnState : NSCell.OffState);
+		this.secureDataChannelCheckbox.setState(Preferences.instance().getProperty("ftp.tls.datachannel").equals("P") ? NSCell.OnState : NSCell.OffState);
 	}
 	
 	public void secureDataChannelCheckboxClicked(NSButton sender) {
 		switch(sender.state()) {
 			case NSCell.OnState:
-				Preferences.instance().setProperty("ftp.ssl.datachannel", true);
+				Preferences.instance().setProperty("ftp.tls.datachannel", "P");
 				break;
 			case NSCell.OffState:
-				Preferences.instance().setProperty("ftp.ssl.datachannel", false);
+				Preferences.instance().setProperty("ftp.tls.datachannel", "C");
 				break;
 		}
 	}
