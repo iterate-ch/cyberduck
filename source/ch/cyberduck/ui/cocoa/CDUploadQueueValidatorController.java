@@ -30,36 +30,36 @@ import ch.cyberduck.core.Validator;
 import ch.cyberduck.core.ValidatorFactory;
 
 /**
- * @version $Id$
+* @version $Id$
  */
 public class CDUploadQueueValidatorController extends CDValidatorController {
 	private static Logger log = Logger.getLogger(CDUploadQueueValidatorController.class);
-
+	
 	static {
 		ValidatorFactory.addFactory(UploadQueue.class, new Factory());
 	}
-
+	
 	private static class Factory extends ValidatorFactory {
 		protected Validator create() {
 			return new CDUploadQueueValidatorController(CDQueueController.instance());
 		}
 	}
-
+	
 	private CDUploadQueueValidatorController(CDWindowController windowController) {
 		super(windowController);
 	}
-
+	
 	protected void load() {
 		if(false == NSApplication.loadNibNamed("Validator", this)) {
 			log.fatal("Couldn't load Validator.nib");
 		}
 		this.setEnabled(false);
 	}
-
+	
 	protected boolean isExisting(Path p) {
 		return p.exists();
 	}
-
+	
 	protected boolean validateDirectory(Path p) {
 		if(!p.getRemote().exists()) {
 			//Directory does not exist yet; include so it will be created on the server
@@ -69,7 +69,7 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 		//Directory already exists; do not include as this would throw "file already exists"
 		return false;
 	}
-
+	
 	protected void adjustFilename(Path path) {
 		String parent = path.getParent().getAbsolute();
 		String filename = path.getName();

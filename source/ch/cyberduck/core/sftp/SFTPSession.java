@@ -59,6 +59,10 @@ public class SFTPSession extends Session {
 		super(h);
 	}
 
+    public boolean isSecure() {
+        return true;
+    }
+
 	public synchronized void close() {
 		try {
 			if(this.SFTP != null) {

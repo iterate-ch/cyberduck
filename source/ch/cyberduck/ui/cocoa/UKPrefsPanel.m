@@ -126,7 +126,7 @@
     // Set up toolbar properties: Allow customization, give a default display mode, and remember state in user defaults 
     [toolbar setAllowsUserCustomization: YES];
     [toolbar setAutosavesConfiguration: YES];
-    [toolbar setDisplayMode: NSToolbarDisplayModeIconOnly];
+    [toolbar setDisplayMode: NSToolbarDisplayModeIconAndLabel];
 	
 	// Set up item list based on Tab View:
 	itemCount = [tabView numberOfTabViewItems];

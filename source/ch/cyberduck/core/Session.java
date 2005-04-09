@@ -94,6 +94,11 @@ public abstract class Session extends Observable {
 	public abstract void check() throws IOException;
 	
 	/**
+	 * @return true if the control channel is either tunneled using TLS or SSH
+	 */
+	public abstract boolean isSecure();
+	
+	/**
 	 * Connect to the remote Host
 	 * The protocol specific implementation has to  be coded in the subclasses.
 	 *

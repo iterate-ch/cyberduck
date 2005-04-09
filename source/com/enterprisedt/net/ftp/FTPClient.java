@@ -822,7 +822,10 @@ public class FTPClient {
 	 * @param remoteFile name of remote file
 	 */
 	public void setmodtime(Date modtime, String remoteFile) throws IOException, FTPException {
-		this.site("UTIME "+tsFormat.format(modtime)+" "+remoteFile);
+		FTPReply reply = control.sendCommand("MDTM "+tsFormat.format(modtime)+" "+remoteFile);
+		lastValidReply = control.validateReply(reply, "213");
+		
+//		this.site("UTIME "+tsFormat.format(modtime)+" "+remoteFile);
 	}
 
 

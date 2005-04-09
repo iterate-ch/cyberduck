@@ -88,6 +88,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
         }
         try {
             this.init(keystore = KeyStore.getInstance(KeyStore.getDefaultType()));
+            //todo get apple keychain keystore            
         }
         catch (NoSuchAlgorithmException e) {
             log.error(e.getMessage());
@@ -110,13 +111,6 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
                     "There is a problem with the client certificate. Reason: ", "")
                     + e.getMessage());
             certificateField.setString(cert);
-//            NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Certificate", ""), //title
-//                    NSBundle.localizedString("There is a problem with the client certificate. Reason:", "") + e.getMessage()
-//                    + "\n" + cert,
-//                    NSBundle.localizedString("Continue", ""), //alternate button
-//                    NSBundle.localizedString("Disconnect", ""), // defaultbutton
-//                    null);
-//                    //NSBundle.localizedString("Always", "")); // other button
             this.windowController.beginSheet(this.sheet,
                     this, //delegate
                     new NSSelector
@@ -166,13 +160,6 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
                     "There is a problem with the client certificate. Reason: ", "")
                     + e.getMessage());
             certificateField.setString(cert);
-//            NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Certificate", ""), //title
-//                    NSBundle.localizedString("There is a problem with the client certificate. Reason:", "") + e.getMessage()
-//                    + "\n" + cert,
-//                    NSBundle.localizedString("Continue", ""), //alternate button
-//                    NSBundle.localizedString("Disconnect", ""), // defaultbutton
-//                    null);
-//                    //NSBundle.localizedString("Always", "")); // other button
             this.windowController.beginSheet(sheet,
                     this, //delegate
                     new NSSelector

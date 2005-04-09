@@ -49,6 +49,10 @@ public class FTPSSession extends FTPSession {
     protected FTPSSession(Host h) {
         super(h);
     }
+	
+	public boolean isSecure() {
+		return true; //todo only return true if certificate is correct
+	}
 
     public X509TrustManager getTrustManager() {
         return trustManager;

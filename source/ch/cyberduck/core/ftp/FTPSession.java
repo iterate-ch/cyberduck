@@ -54,6 +54,10 @@ public class FTPSession extends Session {
         super(h);
     }
 
+	public boolean isSecure() {
+		return false;
+	}
+	
     public synchronized void close() {
         try {
             if (this.FTP != null) {

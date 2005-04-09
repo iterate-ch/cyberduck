@@ -1,8 +1,8 @@
 package ch.cyberduck.ui.cocoa;
 
-
 /*
- *  Copyright (c) 2003 Stuart A. Malone. All rights reserved.
+ *  Copyright (c) 2005 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -44,6 +44,12 @@ public class CDBrowserListViewModel extends CDTableDataSource {
         return 0;
     }
 
+	public void tableViewWillDisplayCell(NSTableView tableView, Object cell, NSTableColumn tableColumn, int row) {
+		if(cell instanceof NSTextFieldCell && !this.controller.isConnected()) {
+			((NSTextFieldCell)cell).setTextColor(NSColor.disabledControlTextColor());
+		}
+	}
+	
 	public boolean tableViewShouldEditLocation(NSTableView tableview, NSTableColumn tableColumn, int row) {
 		return false;
 	}

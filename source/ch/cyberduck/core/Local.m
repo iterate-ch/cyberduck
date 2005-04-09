@@ -18,8 +18,44 @@
 #include <stdio.h>
 #include <jni.h>
 #include "Local.h"
-#include <Carbon/Carbon.h>
-#include <CoreServices/CoreServices.h>
+#import <Carbon/Carbon.h>
+#import <CoreServices/CoreServices.h>
+#import <Cocoa/Cocoa.h>
+#import <IconFamily.h>
+
+// Simple utility to convert java strings to NSStrings
+NSString *convertToNSString(JNIEnv *env, jstring javaString)
+{
+    NSString *converted = nil;
+    const jchar *unichars = NULL;
+	
+    if (javaString == NULL) {
+        return nil;	
+    }                   
+    unichars = (*env)->GetStringChars(env, javaString, nil);
+    if ((*env)->ExceptionOccurred(env)) {
+        return @"";
+    }
+    converted = [NSString stringWithCharacters:unichars length:(*env)->GetStringLength(env, javaString)]; // auto-released
+    (*env)->ReleaseStringChars(env, javaString, unichars);
+    return converted;
+}
+
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIcon(JNIEnv *env, jobject this, jstring extension)
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	id iconFamily = [IconFamily iconFamilyWithThumbnailsOfImage:[NSWorkspace iconForFileType:convertToNSString(env, extension)]];
+	[iconFamily setAsCustomIconForFile:convertToNSString(env, path)];
+	[pool release];
+}
+
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIcon(JNIEnv *env, jobject this, jstring path, jstring icon)
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	id iconFamily = [IconFamily iconFamilyWithThumbnailsOfImage:[NSImage imageNamed:convertToNSString(env, icon)]];
+	[iconFamily setAsCustomIconForFile:convertToNSString(env, path)];
+	[pool release];
+}
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Local_isAlias(JNIEnv *env, jclass instance, jstring pathJ) 
 {

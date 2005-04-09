@@ -229,9 +229,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     (String) args.objectForKey("Path"));
             path.setLocal(new Local((String) args.objectForKey("Local")));
             path.attributes.setType(Path.DIRECTORY_TYPE);
-            for (Iterator i = new SyncQueue(path).getChilds().iterator(); i.hasNext();) {
-                ((Path) i.next()).sync();
-            }
+//todo            for (Iterator i = new SyncQueue(path).getChilds().iterator(); i.hasNext();) {
+//                ((Path) i.next()).sync();
+//            }
 			Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
 															 "Growl Notification"),
 									path.getName());
@@ -255,9 +255,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
             if (nameObj != null) {
                 path.setLocal(new Local(path.getLocal().getParent(), (String) nameObj));
             }
-            for (Iterator i = new DownloadQueue(path).getChilds().iterator(); i.hasNext();) {
-                ((Path) i.next()).download();
-            }
+//todo            for (Iterator i = new DownloadQueue(path).getChilds().iterator(); i.hasNext();) {
+//                ((Path) i.next()).download();
+//            }
 			Growl.instance().notify(NSBundle.localizedString("Download complete",
 															 "Growl Notification"),
 									path.getName());
@@ -281,9 +281,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
             if (nameObj != null) {
                 path.setPath(this.workdir().getAbsolute(), (String) nameObj);
             }
-            for (Iterator i = new UploadQueue(path).getChilds().iterator(); i.hasNext();) {
-                ((Path) i.next()).upload();
-            }
+//todo            for (Iterator i = new UploadQueue(path).getChilds().iterator(); i.hasNext();) {
+//                ((Path) i.next()).upload();
+//            }
 			Growl.instance().notify(NSBundle.localizedString("Upload complete",
 															 "Growl Notification"),
 									path.getName());
@@ -649,43 +649,49 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 this.reloadButtonClicked(null);
             }
             else if (msg.getTitle().equals(Message.OPEN)) {
-                this.progressIndicator.startAnimation(this);
-                this.statusIcon.setImage(null);
-                this.statusIcon.setNeedsDisplay(true);
                 this.invoke(new Runnable() {
                     public void run() {
+                        progressIndicator.startAnimation(this);
+                        statusIcon.setImage(null);
+                        statusIcon.setNeedsDisplay(true);
                         CDBrowserController.this.toolbar.validateVisibleItems();
+                        secureIcon.setImage(null);
                     }
                 });
             }
             else if (msg.getTitle().equals(Message.CLOSE)) {
-                this.progressIndicator.stopAnimation(this);
-                this.statusIcon.setImage(null);
-                this.statusIcon.setNeedsDisplay(true);
                 this.invoke(new Runnable() {
                     public void run() {
+                        progressIndicator.stopAnimation(this);
+                        statusIcon.setImage(null);
+                        statusIcon.setNeedsDisplay(true);
                         CDBrowserController.this.toolbar.validateVisibleItems();
                     }
                 });
             }
             else if (msg.getTitle().equals(Message.START)) {
-                this.statusIcon.setImage(null);
-                this.statusIcon.display();
-                this.progressIndicator.startAnimation(this);
                 this.invoke(new Runnable() {
                     public void run() {
+                        statusIcon.setImage(null);
+                        statusIcon.display();
+                        progressIndicator.startAnimation(this);
                         CDBrowserController.this.toolbar.validateVisibleItems();
                     }
                 });
             }
             else if (msg.getTitle().equals(Message.STOP)) {
-                this.progressIndicator.stopAnimation(this);
-                this.statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
-                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                this.statusLabel.display();
                 this.invoke(new Runnable() {
                     public void run() {
+                        progressIndicator.stopAnimation(this);
+                        statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
+                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                        statusLabel.display();
                         CDBrowserController.this.toolbar.validateVisibleItems();
+                        if(isMounted()) {
+                            if(workdir().getSession().isSecure()) {
+                                secureIcon.setImage(NSImage.imageNamed("locked.tiff"));
+                            }
+                        }
                     }
                 });
             }
@@ -1448,6 +1454,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.statusIcon = statusIcon;
     }
 
+    private NSImageView secureIcon; // IBOutlet
+
+    public void setSecureIcon(NSImageView secureIcon) {
+        this.secureIcon = secureIcon;
+    }
+
     private NSTextField statusLabel; // IBOutlet
 
     public void setStatusLabel(NSTextField statusLabel) {
@@ -1465,6 +1477,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
     // ----------------------------------------------------------
     // Selector methods for the toolbar items
     // ----------------------------------------------------------
+
+    public void showTransferQueueClicked(Object sender) {
+        CDQueueController controller = CDQueueController.instance();
+        controller.window().makeKeyAndOrderFront(null);
+    }
 
 	public void reloadButtonClicked(Object sender) {
 		log.debug("reloadButtonClicked");
@@ -1580,20 +1597,20 @@ public class CDBrowserController extends CDWindowController implements Observer 
             }
         }
         if (files.size() > 0) {
-            NSApplication.sharedApplication().beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Delete", "Alert sheet title"), //title
+            this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Delete", "Alert sheet title"), //title
                     alertText.toString(),
                     NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
                     NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
                     null //other button
             ),
-                    this.window(),
-                    files,
+                    this,
                     new NSSelector
                             ("deleteSheetDidEnd",
                                     new Class[]
                                     {
                                         NSWindow.class, int.class, Object.class
-                                    })
+                                    }),
+                    files
             );// end selector
         }
     }
@@ -2272,6 +2289,15 @@ public class CDBrowserController extends CDWindowController implements Observer 
             item.setAction(new NSSelector("toggleBookmarkDrawer", new Class[]{Object.class}));
             return item;
         }
+        if (itemIdentifier.equals("Transfers")) {
+            item.setLabel(NSBundle.localizedString("Transfers", "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString("Transfers", "Toolbar item"));
+            item.setToolTip(NSBundle.localizedString("Show Transfers window", "Toolbar item tooltip"));
+            item.setImage(NSImage.imageNamed("queue.tiff"));
+            item.setTarget(this);
+            item.setAction(new NSSelector("showTransferQueueClicked", new Class[]{Object.class}));
+            return item;
+        }
 		if (itemIdentifier.equals("Tools")) {
             item.setLabel(NSBundle.localizedString("Action", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Action", "Toolbar item"));
@@ -2416,29 +2442,27 @@ public class CDBrowserController extends CDWindowController implements Observer 
         return null;
     }
 
-    public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
-        return new NSArray(new Object[]{
-            "New Connection",
+	public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
+		return new NSArray(new Object[]{
+			"New Connection",
             NSToolbarItem.SeparatorItemIdentifier,
-            "Browser View",
             "Bookmarks",
-            "Quick Connect",
+			"Quick Connect",
 			"Tools",
-            "Refresh",
-            "Get Info",
-            "Edit",
-            "Download",
-            "Upload",
-            NSToolbarItem.FlexibleSpaceItemIdentifier,
-            "Disconnect"
-        });
-    }
+            NSToolbarItem.SeparatorItemIdentifier,
+			"Refresh",
+			"Edit",
+			NSToolbarItem.FlexibleSpaceItemIdentifier,
+			"Disconnect"
+		});
+	}
 
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
         return new NSArray(new Object[]{
             "New Connection",
             "Browser View",
             "Bookmarks",
+            "Transfers",
             "Quick Connect",
 			"Tools",
             "Refresh",

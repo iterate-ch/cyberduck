@@ -19,7 +19,7 @@ package ch.cyberduck.core;
  */
 
 import com.apple.cocoa.foundation.*;
-import com.apple.cocoa.application.NSFileWrapper;
+import com.apple.cocoa.application.NSWorkspace;
 
 import java.io.File;
 import java.util.Calendar;
@@ -36,39 +36,63 @@ import org.apache.log4j.Logger;
 public class Local extends File {
 	private static Logger log = Logger.getLogger(Local.class);
 
-//	private NSFileWrapper wrapper;
-	
-//	static {
-//		try {
-//			NSBundle bundle = NSBundle.mainBundle();
-//			String lib = bundle.resourcePath()+"/Java/"+"libLocal.jnilib";
-//			log.debug("Locating libLocal.jnilib at '"+lib+"'");
-//			System.load(lib);
-//		}
-//		catch(UnsatisfiedLinkError e) {
-//			log.error("Could not load the alias resolving library:"+e.getMessage());
-//		}
-//	}
+	static {
+		try {
+			NSBundle bundle = NSBundle.mainBundle();
+			String lib = bundle.resourcePath()+"/Java/"+"libLocal.jnilib";
+			log.debug("Locating libLocal.jnilib at '"+lib+"'");
+			System.load(lib);
+		}
+		catch(UnsatisfiedLinkError e) {
+			log.error("Could not load the alias resolving library:"+e.getMessage());
+		}
+	}
 	
 	public Local(File parent, String name) {
 		super(NSPathUtilities.stringByExpandingTildeInPath(parent.getAbsolutePath()), name);
-        //this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
 	}
 
 	public Local(String parent, String name) {
 		super(NSPathUtilities.stringByExpandingTildeInPath(parent), name);
-        //this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
 	}
 
 	public Local(String path) {
 		super(NSPathUtilities.stringByExpandingTildeInPath(path));
-        //this.wrapper = new NSFileWrapper(this.getAbsolutePath(), false);
 	}
 
+    /**
+     * @return the extension if any
+     */
+    public String getExtension() {
+        String name = this.getName();
+        int index = name.lastIndexOf(".");
+        if(index != -1) {
+            return name.substring(index+1, name.length());
+        }
+        return null;
+    }
+    
 	public String getAbsolute() {
 		return super.getAbsolutePath();
-	}
-	
+    }
+
+    public void setProgress(int progress) {
+		if(-1 == progress)
+			this.setIcon(this.getExtension());
+		else
+			this.setIcon(this.getAbsolute(), "download"+progress+".icns");
+        NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
+    }
+
+    public void setIcon(String icon) {
+        this.setIcon(this.getAbsolute(), icon);
+    }
+
+	/**
+	 * @param icon the absolute path to the image file to use as an icon
+	 */
+	public native void setIcon(String path, String icon);
+		
 //	public File getAbsoluteFile() {
 //		return new Local(super.getAbsoluteFile().getAbsolutePath());
 //	}
@@ -106,18 +130,14 @@ public class Local extends File {
 	/**
 	 * @return true if the provided path is an alias.
 	 */
-//	private native boolean isAlias(String path);
+	private native boolean isAlias(String path);
 
 	/**
 	 * Resolves an alias path.
 	 *
 	 * @return the same path if the provided path is not an alias.
 	 */
-//	private native String resolveAlias(String aliasPath);
-
-//	public void setProgress(float progress) {
-//		this.wrapper.setIcon(NSImage.imageNamed("download0.icns"));
-//	}
+	private native String resolveAlias(String aliasPath);
 
 	public Permission getPermission() {
 		NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);

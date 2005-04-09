@@ -21,13 +21,13 @@ package ch.cyberduck.core;
 import java.util.List;
 
 /**
- * @version $Id$
+* @version $Id$
  */
 public interface Validator {
-
-	public boolean validate(List childs, boolean resumeRequested);
-
+	
+	public boolean validate(List files, boolean resumeRequested);
+	
 	public List getValidated();
-
+	
 	public boolean isCanceled();
 }

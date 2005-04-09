@@ -1,7 +1,8 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2003 Stuart A. Malone. All rights reserved.
+ *  Copyright (c) 2005 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

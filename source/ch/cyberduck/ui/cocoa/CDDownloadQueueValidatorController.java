@@ -28,43 +28,43 @@ import org.apache.log4j.Logger;
 import ch.cyberduck.core.*;
 
 /**
- * @version $Id$
+* @version $Id$
  */
 public class CDDownloadQueueValidatorController extends CDValidatorController {
 	private static Logger log = Logger.getLogger(CDDownloadQueueValidatorController.class);
-
+	
 	static {
 		ValidatorFactory.addFactory(DownloadQueue.class, new Factory());
 	}
-
+	
 	private static class Factory extends ValidatorFactory {
 		protected Validator create() {
 			return new CDDownloadQueueValidatorController(CDQueueController.instance());
 		}
 	}
-
+	
 	private CDDownloadQueueValidatorController(CDWindowController windowController) {
 		super(windowController);
 	}
-
+	
 	protected void load() {
 		if(false == NSApplication.loadNibNamed("Validator", this)) {
 			log.fatal("Couldn't load Validator.nib");
 		}
 		this.setEnabled(false);
 	}
-
+	
 	public List getResult() {
 		List result = new ArrayList();
 		result.addAll(this.validatedList);
 		result.addAll(this.workList);
 		return result;
 	}
-
+	
 	protected boolean isExisting(Path p) {
 		return p.getLocal().exists();
 	}
-
+	
 	protected boolean validateDirectory(Path path) {
 		if(!path.getLocal().exists()) {
 			//Include the directory as it has to be created before we can download any childs
@@ -72,7 +72,7 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
 		}
 		return false;
 	}
-
+	
 	protected void adjustFilename(Path path) {
 		String parent = path.getLocal().getParent();
 		String filename = path.getLocal().getName();

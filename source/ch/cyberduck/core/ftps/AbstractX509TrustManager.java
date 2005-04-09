@@ -32,8 +32,6 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 
 import org.apache.log4j.Logger;
@@ -66,7 +64,7 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
     private X509TrustManager standardTrustManager = null;
 
     protected void init(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
-        TrustManagerFactory factory = TrustManagerFactory.getInstance("SunX509"); //todo get apple keychain
+        TrustManagerFactory factory = TrustManagerFactory.getInstance("SunX509");
         factory.init(keystore);
         TrustManager[] trustmanagers = factory.getTrustManagers();
         if (trustmanagers.length == 0) {

@@ -20,7 +20,6 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
-import com.apple.cocoa.foundation.NSPathUtilities;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -349,7 +348,29 @@ public abstract class Path {
 				throw new IOException("Resume failed: Skipped "+skipped+" bytes instead of "+this.status.getCurrent());
 			}
 		}
-		this.transfer(i, o);
+        if(log.isDebugEnabled()) {
+            log.debug("transfer("+i.toString()+", "+o.toString());
+        }
+        BufferedInputStream in = new BufferedInputStream(i, Preferences.instance().getInteger("connection.buffer"));
+        BufferedOutputStream out = new BufferedOutputStream(o, Preferences.instance().getInteger("connection.buffer"));
+        int chunksize = Preferences.instance().getInteger("connection.buffer");
+        byte[] chunk = new byte[chunksize];
+        int amount = 0;
+        long current = this.status.getCurrent();
+        boolean complete = false;
+        // read from socket (bytes) & write to file in chunks
+        while(!complete && !status.isCanceled()) {
+            amount = in.read(chunk, 0, chunksize);
+            if(-1 == amount) {
+                complete = true;
+            }
+            else {
+                out.write(chunk, 0, amount);
+                this.status.setCurrent(current += amount);
+                out.flush();
+            }
+        }
+        this.status.setComplete(complete);
 	}
 
 	/**
@@ -361,39 +382,37 @@ public abstract class Path {
 			log.debug("transfer("+i.toString()+", "+o.toString());
 		}
 		this.getSession().log(Message.PROGRESS, "Downloading "+this.getName());
-		this.transfer(i, o);
-		//this.getLocal().getTemp().renameTo(this.getLocal());
-	}
-
-
-	/**
-	 * @param i The stream to read from
-	 * @param o The stream to write to
-	 */
-	private void transfer(java.io.InputStream i, java.io.OutputStream o) throws IOException {
-		if(log.isDebugEnabled()) {
-			log.debug("transfer("+i.toString()+", "+o.toString());
-		}
-		BufferedInputStream in = new BufferedInputStream(i, Preferences.instance().getInteger("connection.buffer"));
-		BufferedOutputStream out = new BufferedOutputStream(o, Preferences.instance().getInteger("connection.buffer"));
-		int chunksize = Preferences.instance().getInteger("connection.buffer");
-		byte[] chunk = new byte[chunksize];
-		int amount = 0;
-		long current = this.status.getCurrent();
-		boolean complete = false;
-		// read from socket (bytes) & write to file in chunks
-		while(!complete && !status.isCanceled()) {
-			amount = in.read(chunk, 0, chunksize);
-			if(-1 == amount) {
-				complete = true;
-			}
-			else {
-				out.write(chunk, 0, amount);
-				this.status.setCurrent(current += amount);
-				out.flush();
-			}
-		}
-		this.status.setComplete(complete);
+        if(log.isDebugEnabled()) {
+            log.debug("transfer("+i.toString()+", "+o.toString());
+        }
+        BufferedInputStream in = new BufferedInputStream(i, Preferences.instance().getInteger("connection.buffer"));
+        BufferedOutputStream out = new BufferedOutputStream(o, Preferences.instance().getInteger("connection.buffer"));
+        int chunksize = Preferences.instance().getInteger("connection.buffer");
+        byte[] chunk = new byte[chunksize];
+        int amount = 0;
+        long current = this.status.getCurrent();
+        boolean complete = false;
+        int step = 0;
+        // read from socket (bytes) & write to file in chunks
+        while(!complete && !status.isCanceled()) {
+            amount = in.read(chunk, 0, chunksize);
+            if(-1 == amount) {
+                complete = true;
+            }
+            else {
+                out.write(chunk, 0, amount);
+                this.status.setCurrent(current += amount);
+                int fraction = (int)(status.getCurrent()*10/this.attributes.getSize());
+                if((fraction > step)) {
+                    this.getLocal().setProgress(++step);
+                }
+                out.flush();
+            }
+        }
+        if(complete) {
+			this.getLocal().setProgress(-1);
+        }
+        this.status.setComplete(complete);
 	}
 
 	public void sync() {
