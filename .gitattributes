@@ -318,6 +318,9 @@ img/download0.tiff -text
 img/download1.icns -text
 img/download1.psd -text
 img/download1.tiff -text
+img/download10.icns -text
+img/download10.psd -text
+img/download10.tiff -text
 img/download2.icns -text
 img/download2.psd -text
 img/download2.tiff -text
@@ -351,12 +354,14 @@ img/eject.tiff -text
 img/folder.tiff -text
 img/folder16.tiff -text
 img/folder32.tiff -text
+img/ftp-tls.tiff -text
 img/ftp.tiff -text
 img/gear.tiff -text
 img/general.tiff -text
 img/history.tiff -text
 img/info.tiff svneol=native#unset
 img/list.tiff -text
+img/locked.tiff -text
 img/login.tiff -text
 img/multipleDocuments.tiff -text
 img/multipleDocuments32.tiff -text
@@ -385,6 +390,7 @@ img/stop16.tiff -text
 img/symlink.tiff -text
 img/sync32.tiff -text
 img/transparent.tiff -text
+img/unlocked.tiff -text
 img/uploadFile.tiff -text
 it.lproj/Bookmark.nib/keyedobjects.nib -text
 it.lproj/Bookmark.strings svneol=native#unset
