@@ -32,12 +32,16 @@ cs.lproj/Bookmark.nib/keyedobjects.nib -text
 cs.lproj/Bookmark.strings svneol=native#unset
 cs.lproj/Browser.nib/keyedobjects.nib -text
 cs.lproj/Browser.strings svneol=native#unset
+cs.lproj/Certificate.nib/keyedobjects.nib -text
+cs.lproj/Certificate.strings svneol=native#unset
 cs.lproj/Connection.nib/keyedobjects.nib -text
 cs.lproj/Connection.strings svneol=native#unset
 cs.lproj/Donate.nib/keyedobjects.nib -text
 cs.lproj/Donate.strings svneol=native#unset
 cs.lproj/Download.nib/keyedobjects.nib -text
 cs.lproj/Download.strings svneol=native#unset
+cs.lproj/Duplicate.nib/keyedobjects.nib -text
+cs.lproj/Duplicate.strings svneol=native#unset
 cs.lproj/File.nib/keyedobjects.nib -text
 cs.lproj/File.strings svneol=native#unset
 cs.lproj/Folder.nib/keyedobjects.nib -text
