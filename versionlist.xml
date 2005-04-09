@@ -13,6 +13,7 @@
 - [Bugfix] Modification date changed when uploading files from the external editor
 - [Bugfix] Browser window could lock up when reconnecting and login was needed 
 - [Feature] Disconnect item in menubar
+- [Bugfix] Bug fixes
 
 2.4
 - [Localize] Swedish Localization
