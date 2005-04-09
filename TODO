@@ -1,15 +1,15 @@
-[DONE] FTP-TLS (AUTH TLS) Implementation
 [????] Server to Server Transfers (FXP)
 [????] NSWorkspace noteFileSystemChangedAtPath when downloading
 [????] SFTP protocol version 4 (support for SSH_FILEXFER_ATTR_OWNERGROUP)
 [????] Group bookmarks (Outline View)
-[????] Adjust icons reflecting progress when downloading files; NSFilewrapper.setIcon()
 [????] Calculate folder sizes
 [????] Manipulating permissions by entering octal value
 [????] SSH Agent Authentication
 [????] Kerberos (GSSAPI) Authentication
 [????] Grouping bookmarks
 -- Scheduled for 2.5
+[DONE] FTP-TLS (AUTH TLS) Implementation
+[DONE] Adjust icons reflecting progress when downloading files
 [DONE] NSSegmentedControl in toolbar view to switch view
 [DONE] Outline View in browser window
 [DONE] Column View in browser window
