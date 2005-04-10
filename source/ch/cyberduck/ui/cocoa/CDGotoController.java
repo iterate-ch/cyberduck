@@ -29,12 +29,14 @@ import ch.cyberduck.core.Path;
 /**
  * @version $Id$
  */
-public class CDGotoController extends CDController {
+public class CDGotoController extends CDWindowController {
 	private static Logger log = Logger.getLogger(CDGotoController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
 
 	public void awakeFromNib() {
+        super.awakeFromNib();
+
 		this.window().setReleasedWhenClosed(true);
 	}
 
@@ -86,7 +88,7 @@ public class CDGotoController extends CDController {
 		}
 	}
 	
-	public Path gotoFolder(Path workdir, String filename) {
+	protected Path gotoFolder(Path workdir, String filename) {
 		Path dir = workdir.copy(workdir.getSession());
 		if(filename.charAt(0) != '/') {
 			dir.setPath(workdir.getAbsolute(), filename);

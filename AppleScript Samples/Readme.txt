@@ -42,3 +42,10 @@ Synchronizes a remote with a local folder mirroring all missing files and replac
 
 You can send any FTP or SFTP URL to Cyberduck as does a third party application when Cyberduck is the default protocol handler e.g. for FTP; see [http://www.rubicode.com/Software/RCDefaultApp/].
 
+- Screenshot Sample.scpt
+
+Will take a screenshot and will upload it together with a thumbnail to a remote site.
+
+- iPhoto Upload Sample.scpt
+
+Allows to upload an entire album to a remte site.

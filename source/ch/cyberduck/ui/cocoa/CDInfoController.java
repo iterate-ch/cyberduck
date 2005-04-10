@@ -33,7 +33,7 @@ import ch.cyberduck.core.Status;
 /**
  * @version $Id$
  */
-public class CDInfoController extends CDController {
+public class CDInfoController extends CDWindowController {
 	private static Logger log = Logger.getLogger(CDInfoController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
@@ -142,6 +142,8 @@ public class CDInfoController extends CDController {
 	private static NSPoint cascadedWindowPoint;
 
 	public void awakeFromNib() {
+        super.awakeFromNib();
+
 		this.window().setReleasedWhenClosed(false);
 		if(null == cascadedWindowPoint) {
 			cascadedWindowPoint = this.window().cascadeTopLeftFromPoint(this.window().frame().origin());
@@ -165,8 +167,8 @@ public class CDInfoController extends CDController {
 
         this.otherr.setTarget(this);
         this.otherr.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
-        this.otherx.setTarget(this);
-        this.otherx.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
+        this.otherw.setTarget(this);
+        this.otherw.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
         this.otherx.setTarget(this);
         this.otherx.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
 	}
