@@ -90,7 +90,7 @@ public class SyncQueue extends Queue {
 					for(int i = 0; i < files.length; i++) {
 						Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
 						if(!child.getName().equals(".DS_Store")) {
-							//this.addLocalChilds(childs, child);
+							this.addLocalChilds(childs, child);
 						}
 					}
 				}
@@ -109,7 +109,7 @@ public class SyncQueue extends Queue {
 					for(Iterator i = p.list(false, new NullFilter()).iterator(); i.hasNext();) {
 						Path child = (Path)i.next();
 						child.setLocal(new Local(p.getLocal(), child.getName()));
-						//this.addRemoteChilds(childs, child);
+						this.addRemoteChilds(childs, child);
 					}
 				}
 			}

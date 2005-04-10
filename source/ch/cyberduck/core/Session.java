@@ -64,11 +64,6 @@ public abstract class Session extends Observable {
 
 	private boolean authenticated;
 
-	protected void finalize() throws Throwable {
-		log.debug("------------- finalize");
-		super.finalize();
-	}
-
 	public Session copy() {
 		return SessionFactory.createSession(this.host);
 	}

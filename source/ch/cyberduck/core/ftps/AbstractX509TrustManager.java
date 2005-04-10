@@ -36,28 +36,6 @@ import java.security.cert.X509Certificate;
 
 import org.apache.log4j.Logger;
 
-/**
- * <p/>
- * CustomCustomEasyX509TrustManager unlike default {@link X509TrustManager} accepts
- * self-signed certificates.
- * </p>
- * <p/>
- * This trust manager SHOULD NOT be used for productive systems
- * due to security reasons, unless it is a concious decision and
- * you are perfectly aware of security implications of accepting
- * self-signed certificates
- * </p>
- *
- * @author <a href="mailto:adrian.sutton@ephox.com">Adrian Sutton</a>
- * @author <a href="mailto:oleg@ural.ru">Oleg Kalnichevski</a>
- *         <p/>
- *         <p/>
- *         DISCLAIMER: HttpClient developers DO NOT actively support this component.
- *         The component is provided as a reference material, which may be inappropriate
- *         for use without additional customization.
- *         </p>
- */
-
 public abstract class AbstractX509TrustManager implements X509TrustManager {
     private static Logger log = Logger.getLogger(AbstractX509TrustManager.class);
 
@@ -85,23 +63,6 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
             }
         }
         this.standardTrustManager.checkServerTrusted(x509Certificates, authType);
-//        if ((x509Certificates != null) && (x509Certificates.length == 1)) {
-//            X509Certificate certificate = x509Certificates[0];
-//            try {
-//                certificate.checkValidity();
-//            }
-//            catch (CertificateExpiredException e) {
-//                log.warn(e.toString());
-//                throw e;
-//            }
-//            catch (CertificateNotYetValidException e) {
-//                log.warn(e.toString());
-//                throw e;
-//            }
-//        }
-//        else {
-//            this.standardTrustManager.checkServerTrusted(x509Certificates, authType);
-//        }
     }
 
     public X509Certificate[] getAcceptedIssuers() {

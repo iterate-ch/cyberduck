@@ -18,15 +18,12 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.InetAddress;
 
 import com.enterprisedt.net.ftp.FTPClient;
-import com.enterprisedt.net.ftp.FTPControlSocket;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPMessageListener;
-
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Preferences;
@@ -38,7 +35,7 @@ public class FTPSClient extends FTPClient {
     private static Logger log = Logger.getLogger(SSLProtocolSocketFactory.class);
 
     public FTPSClient(String remoteHost, int controlPort, int timeout, String encoding,
-                      FTPMessageListener listener, X509TrustManager trustManager) throws IOException, FTPException {
+                      FTPMessageListener listener, AbstractX509TrustManager trustManager) throws IOException, FTPException {
         super(listener);
         this.control = new FTPSControlSocket(InetAddress.getByName(remoteHost),
                 controlPort, timeout, encoding, listener, trustManager);
@@ -70,7 +67,7 @@ public class FTPSClient extends FTPClient {
         lastValidReply = control.validateReply(control.sendCommand("PBSZ 0"), "200");
         try {
             lastValidReply = control.validateReply(control.sendCommand("PROT "
-                    + Preferences.instance().getProperty("ftp.ssl.datachannel")), "200");
+                    + Preferences.instance().getProperty("ftp.tls.datachannel")), "200");
         }
         catch(FTPException e) {
             log.warn("No data channel security: "+e.getMessage());

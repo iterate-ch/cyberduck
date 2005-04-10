@@ -88,7 +88,6 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
         }
         try {
             this.init(keystore = KeyStore.getInstance(KeyStore.getDefaultType()));
-            //todo get apple keychain keystore            
         }
         catch (NoSuchAlgorithmException e) {
             log.error(e.getMessage());
@@ -178,16 +177,17 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 
     public void serverCertificateAlertSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
-        if (returncode == NSAlertPanel.DefaultReturn) {
+        if (returncode == NSAlertPanel.DefaultReturn) { //Allow
             this.allowServerCertificate = true;
         }
-        if (returncode == NSAlertPanel.AlternateReturn) {
+        if (returncode == NSAlertPanel.AlternateReturn) { //Deny
             this.allowServerCertificate = false;
         }
-        if (returncode == NSAlertPanel.OtherReturn) {
+        if (returncode == NSAlertPanel.OtherReturn) { //Allow always
             this.allowServerCertificate = true;
             try {
                 X509Certificate cert = (X509Certificate)contextInfo;
+                //todo save certificate in keychain
                 this.keystore.setCertificateEntry(cert.getSubjectDN().getName(), cert);
             }
             catch(KeyStoreException e) {

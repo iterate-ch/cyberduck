@@ -1859,7 +1859,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
     }
 
-    public void copy(Object sender) {
+    public void cut(Object sender) {
         if (this.getSelectionCount() > 0) {
             Session session = this.workdir().getSession().copy();
             Queue q = new DownloadQueue();
@@ -2106,20 +2106,20 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 }
             }
         }
-        if (item.action().name().equals("copy:")) {
+        if (item.action().name().equals("cut:")) {
             if (this.isMounted() && this.getSelectionCount() > 0) {
                 if (this.getSelectionCount() == 1) {
                     Path p = this.getSelectedPath();
-                    item.setTitle(NSBundle.localizedString("Copy", "Menu item") + " \"" + p.getName() + "\"");
+                    item.setTitle(NSBundle.localizedString("Cut", "Menu item") + " \"" + p.getName() + "\"");
                 }
                 else {
-                    item.setTitle(NSBundle.localizedString("Copy", "Menu item")
+                    item.setTitle(NSBundle.localizedString("Cut", "Menu item")
                             + " " + this.getSelectionCount() + " " +
                             NSBundle.localizedString("files", ""));
 				}
             }
             else
-                item.setTitle(NSBundle.localizedString("Copy", "Menu item"));
+                item.setTitle(NSBundle.localizedString("Cut", "Menu item"));
         }
         if (item.action().name().equals("showHiddenFilesClicked:")) {
             item.setState((this.getFileFilter() instanceof NullFilter) ? NSCell.OnState : NSCell.OffState);

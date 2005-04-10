@@ -50,11 +50,6 @@ public class Host {
 	public static final String KEYFILE = "Private Key File";
 	public static final String FTPCONNECTMODE = "FTP Connect Mode";
 
-	protected void finalize() throws Throwable {
-		log.debug("------------- finalize");
-		super.finalize();
-	}
-
 	public Host(NSDictionary dict) {
 		Object protocolObj = dict.objectForKey(Host.PROTOCOL);
 		if(protocolObj != null) {

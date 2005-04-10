@@ -58,11 +58,11 @@ public class FTPSSession extends FTPSession {
         return trustManager;
     }
 
-    public void setTrustManager(X509TrustManager trustManager) {
+    public void setTrustManager(AbstractX509TrustManager trustManager) {
         this.trustManager = trustManager;
     }
 
-    private X509TrustManager trustManager;
+    private AbstractX509TrustManager trustManager;
 
     public synchronized void connect(String encoding) throws IOException, FTPException {
         this.log(Message.PROGRESS, "Opening FTP connection to " + host.getIp() + "...");

@@ -55,11 +55,6 @@ public class CDProgressController extends CDController implements Observer {
 	private static final NSDictionary TRUNCATE_TAIL_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingTailParagraph},
 	    new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
-	protected void finalize() throws Throwable {
-		log.debug("------------- finalize");
-		super.finalize();
-	}
-
 	private Queue queue;
 
 	public CDProgressController(Queue queue) {
