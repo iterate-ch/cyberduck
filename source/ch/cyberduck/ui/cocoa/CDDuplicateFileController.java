@@ -50,7 +50,8 @@ public class CDDuplicateFileController extends CDFileController {
 	public void awakeFromNib() {
         super.awakeFromNib();
 
-		NSImage icon = CDIconCache.instance().get(this.file.getExtension());
+		NSImage icon = NSWorkspace.sharedWorkspace().iconForFileType(this.file.getExtension());
+        icon.setScalesWhenResized(true);
 		icon.setSize(new NSSize(64f, 64f));
 		this.iconView.setImage(icon);
 		this.filenameField.setStringValue(this.file.getName()+"-Copy");

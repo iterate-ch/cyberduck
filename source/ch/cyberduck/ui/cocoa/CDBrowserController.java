@@ -686,11 +686,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
                                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                         statusLabel.display();
                         CDBrowserController.this.toolbar.validateVisibleItems();
-                        if(isMounted()) {
-                            if(workdir().getSession().isSecure()) {
-                                statusIcon.setImage(NSImage.imageNamed("locked.tiff"));
-                            }
-                        }
+//                        if(isMounted()) {
+//                            if(workdir().getSession().isSecure()) {
+//                                statusIcon.setImage(NSImage.imageNamed("locked.tiff"));
+//                            }
+//                        }
                     }
                 });
             }
