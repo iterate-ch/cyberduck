@@ -151,21 +151,24 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
                 return NSDraggingInfo.DragOperationCopy;
             }
 			if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-				if(row != -1) {
-					if(item.attributes.isDirectory()) {
-						outlineView.setDropRowAndDropOperation(row, NSTableView.DropOn);
-						return NSDraggingInfo.DragOperationCopy;
-					}
-				}
+                if(item.equals(controller.workdir())) {
+                    outlineView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
+                    return NSDraggingInfo.DragOperationCopy;
+                }
+                if(item.attributes.isDirectory()) {
+                    outlineView.setDropRowAndDropOperation(row, NSTableView.DropOn);
+                    return NSDraggingInfo.DragOperationCopy;
+                }
 			}
 			NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
 			if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-				if(row != -1) {
-					Path selected = null != item ? item : controller.workdir();//(Path)this.outlineViewChildOfItem(outlineView, row, item);
-					if(selected.attributes.isDirectory()) {
-						outlineView.setDropRowAndDropOperation(row, NSTableView.DropOn);
-						return NSDraggingInfo.DragOperationMove;
-					}
+                if(item.equals(controller.workdir())) {
+                    outlineView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
+                    return NSDraggingInfo.DragOperationCopy;
+                }
+                if(item.attributes.isDirectory()) {
+                    outlineView.setDropRowAndDropOperation(row, NSTableView.DropOn);
+                    return NSDraggingInfo.DragOperationMove;
 				}
 			}
 		}
@@ -183,18 +186,10 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 			Queue q = new UploadQueue((Observer)controller);
 			Session session = controller.workdir().getSession().copy();
 			for(int i = 0; i < filesList.count(); i++) {
-				log.debug(filesList.objectAtIndex(i));
-				Path p = null;
-				if(row != -1) {
-					p = PathFactory.createPath(session,
-											   item.getAbsolute(),//this.outlineViewChildOfItem(outlineView, row, item).getAbsolute(),
-											   new Local((String)filesList.objectAtIndex(i)));
-				}
-				else {
-					p = PathFactory.createPath(session,
-											   controller.workdir().getAbsolute(),
-											   new Local((String)filesList.objectAtIndex(i)));
-				}
+                log.debug(filesList.objectAtIndex(i));
+                Path p = PathFactory.createPath(session,
+                        item.getAbsolute(),
+                        new Local((String)filesList.objectAtIndex(i)));
 				q.addRoot(p);
 			}
 			if(q.numberOfRoots() > 0) {
@@ -203,27 +198,25 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 			return true;
 		}
 		else if(row != -1 && row < outlineView.numberOfRows()) {
-			NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-			log.debug("availableTypeFromArray:QueuePBoardType: "+pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
-			if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-				outlineView.deselectAll(null);
-				NSArray elements = (NSArray)pboard.propertyListForType("QueuePBoardType");
-				for(int i = 0; i < elements.count(); i++) {
-					NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
-					if(item.attributes.isDirectory()) {
-						Queue q = Queue.createQueue(dict);
-						for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-							Path p = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
-                            p.getParent().invalidate();
-                            p.rename(item.getAbsolute()+"/"+p.getName());
-                            item.invalidate();
-                            outlineView.reloadData();
-                            outlineView.reloadItemAndChildren(p.getParent(), true);
-                            outlineView.reloadItemAndChildren(item, true);
-						}
-					}
-				}
-				return true;
+            NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+            log.debug("availableTypeFromArray:QueuePBoardType: "+pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
+            if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+                outlineView.deselectAll(null);
+                NSArray elements = (NSArray)pboard.propertyListForType("QueuePBoardType");
+                for(int i = 0; i < elements.count(); i++) {
+                    NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
+                    Queue q = Queue.createQueue(dict);
+                    for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
+                        Path p = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
+                        p.getParent().invalidate();
+                        p.rename(item.getAbsolute()+"/"+p.getName());
+                        item.invalidate();
+                        outlineView.reloadData();
+                        outlineView.reloadItemAndChildren(p.getParent(), true);
+                        outlineView.reloadItemAndChildren(item, true);
+                    }
+                }
+                return true;
 			}
 		}
 		return false;
