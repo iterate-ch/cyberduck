@@ -372,7 +372,7 @@ public abstract class CDValidatorController extends CDWindowController implement
             }
 		}
 		this.setCanceled(false);
-		this.endSheet(this.window(), sender.tag());
+		this.windowController.endSheet(this.window(), sender.tag());
 	}
 
 	public void overwriteActionFired(NSButton sender) {
@@ -384,20 +384,20 @@ public abstract class CDValidatorController extends CDWindowController implement
             }
         }
 		this.setCanceled(false);
-        this.endSheet(this.window(), sender.tag());
+        this.windowController.endSheet(this.window(), sender.tag());
 	}
 
 	public void skipActionFired(NSButton sender) {
 		this.workList.clear();
 		this.setCanceled(false);
-        this.endSheet(this.window(), sender.tag());
+        this.windowController.endSheet(this.window(), sender.tag());
 	}
 
 	public void cancelActionFired(NSButton sender) {
 		this.validatedList.clear();
 		this.workList.clear();
 		this.setCanceled(true);
-        this.endSheet(this.window(), sender.tag());
+        this.windowController.endSheet(this.window(), sender.tag());
 	}
 
 	// ----------------------------------------------------------
