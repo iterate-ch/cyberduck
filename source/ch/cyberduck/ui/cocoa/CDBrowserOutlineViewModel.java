@@ -145,20 +145,18 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 	// ----------------------------------------------------------
 	
 	public int outlineViewValidateDrop(NSOutlineView outlineView, NSDraggingInfo info, Path item, int row) {
-		if(null == item) {
-			item = controller.workdir();
-		}
-		if(controller.isMounted()) {
+        if(controller.isMounted()) {
+            if(null == item) {
+                outlineView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
+                return NSDraggingInfo.DragOperationCopy;
+            }
 			if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
 				if(row != -1) {
-					Path selected = item;//(Path)this.outlineViewChildOfItem(outlineView, row, item);
-					if(selected.attributes.isDirectory()) {
+					if(item.attributes.isDirectory()) {
 						outlineView.setDropRowAndDropOperation(row, NSTableView.DropOn);
 						return NSDraggingInfo.DragOperationCopy;
 					}
 				}
-				outlineView.setDropRowAndDropOperation(-1, NSTableView.DropOn);
-				return NSDraggingInfo.DragOperationCopy;
 			}
 			NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
 			if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
