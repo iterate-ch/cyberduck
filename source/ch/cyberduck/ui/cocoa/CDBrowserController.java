@@ -432,20 +432,16 @@ public class CDBrowserController extends CDWindowController implements Observer 
 				break;
 			}
 			case COLUMN_VIEW: {
-				this.invoke(new Runnable() {
-					public void run() {
-						if(isMounted()) {
-							browserColumnView.setPath(workdir().getAbsolute());
-							//browserColumnView.loadColumnZero();
-							browserColumnView.reloadColumn(browserColumnView.lastColumn());
-							browserColumnView.setPath(workdir().getAbsolute());
-							infoLabel.setStringValue(browserListModel.cache(workdir()).size() + " " +
-														  NSBundle.localizedString("files", ""));
-							browserColumnView.validateVisibleColumns();
-						}
-						else infoLabel.setStringValue("");
-					}
-				});
+                if(this.isMounted()) {
+                    this.browserColumnView.setPath(workdir().getAbsolute());
+                    //browserColumnView.loadColumnZero();
+                    this.browserColumnView.reloadColumn(browserColumnView.lastColumn());
+                    this.browserColumnView.setPath(workdir().getAbsolute());
+                    this.infoLabel.setStringValue(browserListModel.cache(workdir()).size() + " " +
+                            NSBundle.localizedString("files", ""));
+                    this.browserColumnView.validateVisibleColumns();
+                }
+                else infoLabel.setStringValue("");
 				break;
 			}
 		}
@@ -649,50 +645,34 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 this.reloadButtonClicked(null);
             }
             else if (msg.getTitle().equals(Message.OPEN)) {
-                this.invoke(new Runnable() {
-                    public void run() {
-                        progressIndicator.startAnimation(this);
-                        statusIcon.setImage(null);
-                        statusIcon.setNeedsDisplay(true);
-                        CDBrowserController.this.toolbar.validateVisibleItems();
-                    }
-                });
+                progressIndicator.startAnimation(this);
+                statusIcon.setImage(null);
+                statusIcon.setNeedsDisplay(true);
+                this.toolbar.validateVisibleItems();
             }
             else if (msg.getTitle().equals(Message.CLOSE)) {
-                this.invoke(new Runnable() {
-                    public void run() {
-                        progressIndicator.stopAnimation(this);
-                        statusIcon.setImage(null);
-                        statusIcon.setNeedsDisplay(true);
-                        CDBrowserController.this.toolbar.validateVisibleItems();
-                    }
-                });
+                progressIndicator.stopAnimation(this);
+                statusIcon.setImage(null);
+                statusIcon.setNeedsDisplay(true);
+                this.toolbar.validateVisibleItems();
             }
             else if (msg.getTitle().equals(Message.START)) {
-                this.invoke(new Runnable() {
-                    public void run() {
-                        statusIcon.setImage(null);
-                        statusIcon.display();
-                        progressIndicator.startAnimation(this);
-                        CDBrowserController.this.toolbar.validateVisibleItems();
-                    }
-                });
+                statusIcon.setImage(null);
+                statusIcon.display();
+                progressIndicator.startAnimation(this);
+                this.toolbar.validateVisibleItems();
             }
             else if (msg.getTitle().equals(Message.STOP)) {
-                this.invoke(new Runnable() {
-                    public void run() {
-                        progressIndicator.stopAnimation(this);
-                        statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
-                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                        statusLabel.display();
-                        CDBrowserController.this.toolbar.validateVisibleItems();
+                progressIndicator.stopAnimation(this);
+                statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
+                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                statusLabel.display();
+                this.toolbar.validateVisibleItems();
 //                        if(isMounted()) {
 //                            if(workdir().getSession().isSecure()) {
 //                                statusIcon.setImage(NSImage.imageNamed("locked.tiff"));
 //                            }
 //                        }
-                    }
-                });
             }
         }
     }
@@ -1347,10 +1327,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.pathPopupItems.add(p);
         this.pathPopupButton.addItem(p.getAbsolute());
         if (p.isRoot()) {
-            this.pathPopupButton.itemAtIndex(this.pathPopupButton.numberOfItems() - 1).setImage(DISK_ICON);
+            this.pathPopupButton.itemAtIndex(
+                    this.pathPopupButton.numberOfItems() - 1).setImage(DISK_ICON);
         }
         else {
-            this.pathPopupButton.itemAtIndex(this.pathPopupButton.numberOfItems() - 1).setImage(FOLDER_ICON);
+            this.pathPopupButton.itemAtIndex(
+                    this.pathPopupButton.numberOfItems() - 1).setImage(FOLDER_ICON);
         }
     }
 
@@ -1830,7 +1812,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
         if (this.isMounted()) {
             connected = this.workdir().getSession().isConnected();
         }
-        log.info("Connected:" + connected);
         return connected;
     }
 
