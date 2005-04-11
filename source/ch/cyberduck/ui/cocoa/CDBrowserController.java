@@ -370,33 +370,30 @@ public class CDBrowserController extends CDWindowController implements Observer 
 	public void update(Observable o, Object arg) {
 		if(arg instanceof Path) {
 			this.workdir = (Path)arg;
-			this.browserModel.setData(this.workdir.getSession().cache().get(this.workdir.getAbsolute()));
-			this.invoke(new Runnable() {
-				public void run() {
-					pathPopupItems.clear();
-					pathPopupButton.removeAllItems();
-					addPathToPopup(workdir);
-					for(Path p = workdir; !p.isRoot();) {
-						p = p.getParent();
-						CDBrowserController.this.addPathToPopup(p);
-                    }
-                    NSTableColumn selectedColumn = browserModel.selectedColumn() != null ?
-                            browserModel.selectedColumn() :
-                            browserTable.tableColumnWithIdentifier("FILENAME");
-                    browserTable.setIndicatorImage(browserModel.isSortedAscending() ?
-                            NSImage.imageNamed("NSAscendingSortIndicator") :
-                            NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
-                    browserModel.sort(selectedColumn, browserModel.isSortedAscending());
-                    browserTable.reloadData();
-                    window().makeFirstResponder(browserTable);
-                    infoLabel.setStringValue(browserModel.numberOfRowsInTableView(browserTable)+" "+
-                            NSBundle.localizedString("files", ""));
-                }
-            });
-		}
-		else if(arg instanceof Message) {
-			final Message msg = (Message)arg;
-			if(msg.getTitle().equals(Message.ERROR)) {
+            this.browserModel.setData(
+                    this.workdir.getSession().cache().get(this.workdir.getAbsolute()));
+            pathPopupItems.clear();
+            pathPopupButton.removeAllItems();
+            addPathToPopup(workdir);
+            for(Path p = workdir; !p.isRoot();) {
+                p = p.getParent();
+                CDBrowserController.this.addPathToPopup(p);
+            }
+            NSTableColumn selectedColumn = browserModel.selectedColumn() != null ?
+                    browserModel.selectedColumn() :
+                    browserTable.tableColumnWithIdentifier("FILENAME");
+            browserTable.setIndicatorImage(browserModel.isSortedAscending() ?
+                    NSImage.imageNamed("NSAscendingSortIndicator") :
+                    NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
+            browserModel.sort(selectedColumn, browserModel.isSortedAscending());
+            browserTable.reloadData();
+            window().makeFirstResponder(browserTable);
+            infoLabel.setStringValue(browserModel.numberOfRowsInTableView(browserTable)+" "+
+                    NSBundle.localizedString("files", ""));
+        }
+        else if(arg instanceof Message) {
+            final Message msg = (Message)arg;
+            if(msg.getTitle().equals(Message.ERROR)) {
                 this.invoke(new Runnable() {
                     public void run() {
                         progressIndicator.stopAnimation(this);
@@ -410,68 +407,52 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
                         (String)msg.getContent(), // message
                         NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-				    null, //alternative button
-				    null //other button
-				));
-			}
-			else if(msg.getTitle().equals(Message.PROGRESS)) {
-				this.statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent(),
-																				 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-				this.statusLabel.display();
-			}
-			else if(msg.getTitle().equals(Message.REFRESH)) {
-				this.reloadButtonClicked(null);
-			}
-			else if(msg.getTitle().equals(Message.OPEN)) {
-                this.invoke(new Runnable() {
-                    public void run() {
-                        progressIndicator.startAnimation(this);
-                        infoLabel.setStringValue("");
-                        statusIcon.setImage(null);
-                        statusIcon.setNeedsDisplay(true);
-                        browserModel.clear();
-                        browserTable.reloadData();
-                        pathPopupItems.clear();
-                        pathPopupButton.removeAllItems();
-                        toolbar.validateVisibleItems();
-                    }
-                });
+                        null, //alternative button
+                        null //other button
+                ));
+            }
+            else if(msg.getTitle().equals(Message.PROGRESS)) {
+                this.statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent(),
+                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                this.statusLabel.display();
+            }
+            else if(msg.getTitle().equals(Message.REFRESH)) {
+                this.reloadButtonClicked(null);
+            }
+            else if(msg.getTitle().equals(Message.OPEN)) {
+                progressIndicator.startAnimation(this);
+                infoLabel.setStringValue("");
+                statusIcon.setImage(null);
+                statusIcon.setNeedsDisplay(true);
+                browserModel.clear();
+                browserTable.reloadData();
+                pathPopupItems.clear();
+                pathPopupButton.removeAllItems();
+                toolbar.validateVisibleItems();
             }
             else if(msg.getTitle().equals(Message.CLOSE)) {
-                this.invoke(new Runnable() {
-                    public void run() {
-                        progressIndicator.stopAnimation(this);
-                        statusIcon.setImage(null);
-                        statusIcon.setNeedsDisplay(true);
-                        toolbar.validateVisibleItems();
-                    }
-                });
+                progressIndicator.stopAnimation(this);
+                statusIcon.setImage(null);
+                statusIcon.setNeedsDisplay(true);
+                toolbar.validateVisibleItems();
             }
             else if(msg.getTitle().equals(Message.START)) {
-                this.invoke(new Runnable() {
-                    public void run() {
-                        statusIcon.setImage(null);
-                        statusIcon.display();
-                        progressIndicator.startAnimation(this);
-                        CDBrowserController.this.toolbar.validateVisibleItems();
-                    }
-                });
+                statusIcon.setImage(null);
+                statusIcon.display();
+                progressIndicator.startAnimation(this);
+                CDBrowserController.this.toolbar.validateVisibleItems();
             }
             else if(msg.getTitle().equals(Message.STOP)) {
-                this.invoke(new Runnable() {
-                    public void run() {
-                        progressIndicator.stopAnimation(this);
-                        statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
-                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                        statusLabel.display();
-                        CDBrowserController.this.toolbar.validateVisibleItems();
-                    }
-                });
+                progressIndicator.stopAnimation(this);
+                statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
+                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                statusLabel.display();
+                CDBrowserController.this.toolbar.validateVisibleItems();
             }
         }
     }
-	
-	// ----------------------------------------------------------
+
+    // ----------------------------------------------------------
 	// Outlets
 	// ----------------------------------------------------------
 

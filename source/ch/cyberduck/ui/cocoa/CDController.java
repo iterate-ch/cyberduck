@@ -1,8 +1,9 @@
 package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.NSRunLoop;
-import com.apple.cocoa.foundation.NSTimer;
 import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSTimer;
+import com.apple.cocoa.foundation.NSObject;
 
 /*
  *  Copyright (c) 2004 David Kocher. All rights reserved.
@@ -25,7 +26,7 @@ import com.apple.cocoa.foundation.NSSelector;
 /**
  * @version $Id$
  */
-public abstract class CDController {
+public abstract class CDController extends NSObject {
 
     private NSRunLoop mainRunLoop;
 
