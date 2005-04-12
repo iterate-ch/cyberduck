@@ -137,7 +137,6 @@ en.lproj/Login.strings svneol=native#unset
 en.lproj/Main.nib/keyedobjects.nib -text
 en.lproj/Main.strings svneol=native#unset
 en.lproj/Preferences.nib/keyedobjects.nib -text
-en.lproj/Preferences.strings svneol=native#unset
 en.lproj/Progress.nib/keyedobjects.nib -text
 en.lproj/Queue.nib/keyedobjects.nib -text
 en.lproj/Queue.strings svneol=native#unset

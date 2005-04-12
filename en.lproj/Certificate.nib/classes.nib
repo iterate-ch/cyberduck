@@ -5,7 +5,12 @@
             ACTIONS = {closeSheet = id; }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDX509TrustManagerController"; 
             LANGUAGE = Java; 
-            OUTLETS = {alertField = NSTextField; certificateField = NSTextView; window = NSWindow; }; 
+            OUTLETS = {
+                alertField = NSTextField; 
+                alwaysButton = NSButton; 
+                certificateField = NSTextView; 
+                window = NSWindow; 
+            }; 
             SUPERCLASS = NSObject; 
         }
     ); 

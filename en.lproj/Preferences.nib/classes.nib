@@ -16,6 +16,7 @@
             CLASS = "ch.cyberduck.ui.cocoa.CDPreferencesController"; 
             LANGUAGE = Java; 
             OUTLETS = {
+                acceptAnyCertificateCheckbox = NSButton; 
                 alternatingRowBackgroundCheckbox = NSButton; 
                 anonymousField = NSTextField; 
                 autoUpdateCheckbox = NSButton; 
@@ -52,6 +53,7 @@
                 editorCombobox = NSPopUpButton; 
                 encodingCombobox = NSPopUpButton; 
                 extensionsField = NSTextField; 
+                failInsecureDataChannelCheckbox = NSButton; 
                 horizontalLinesCheckbox = NSButton; 
                 infoWindowAsInspectorCheckbox = NSButton; 
                 keepAliveCheckbox = NSButton; 
