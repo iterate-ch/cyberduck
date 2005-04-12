@@ -72,6 +72,9 @@ public class FTPSClient extends FTPClient {
         catch(FTPException e) {
             log.warn("No data channel security: "+e.getMessage());
             ((FTPSControlSocket) this.control).setUseDataConnectionSecurity(false);
+            if(Preferences.instance().getBoolean("ftp.tls.datachannel.failOnError")) {
+                throw new IOException("The data channel could not be secured: "+e.getMessage());
+            }
         }
     }
 }

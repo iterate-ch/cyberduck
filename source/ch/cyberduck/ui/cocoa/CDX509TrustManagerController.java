@@ -29,6 +29,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.List;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
@@ -62,6 +64,12 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 
     private NSTextView certificateField;
 
+    public void setAlwaysButton(NSButton alwaysButton) {
+        this.alwaysButton = alwaysButton;
+    }
+
+    private NSButton alwaysButton;
+
     private NSWindow sheet;
 
     public void setWindow(NSWindow window) {
@@ -77,6 +85,8 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 
     private boolean allowServerCertificate = false;
     private boolean allowClientCertificate = false;
+
+    private List acceptedCertificates = new Vector();
 
     private KeyStore keystore = null;
 
@@ -97,9 +107,12 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
         }
     }
 
-    public void checkClientTrusted(X509Certificate[] x509Certificates, String authType) throws CertificateException {
+    public void checkClientTrusted(X509Certificate[] x509Certificates, String authType)
+            throws CertificateException {
         try {
-            super.checkClientTrusted(x509Certificates, authType);
+            if(!this.acceptedCertificates.contains(x509Certificates[0])) {
+                super.checkClientTrusted(x509Certificates, authType);
+            }
             this.allowClientCertificate = true;
         }
         catch (CertificateException e) {
@@ -146,9 +159,12 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
         }
     }
 
-    public void checkServerTrusted(X509Certificate[] x509Certificates, String authType) throws CertificateException {
+    public void checkServerTrusted(X509Certificate[] x509Certificates, String authType)
+            throws CertificateException {
         try {
-            super.checkServerTrusted(x509Certificates, authType);
+            if(!this.acceptedCertificates.contains(x509Certificates[0])) {
+                super.checkServerTrusted(x509Certificates, authType);
+            }
             this.allowServerCertificate = true;
         }
         catch (CertificateException e) {
@@ -179,20 +195,20 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
         sheet.orderOut(null);
         if (returncode == NSAlertPanel.DefaultReturn) { //Allow
             this.allowServerCertificate = true;
+            this.acceptedCertificates.add(contextInfo);
+            if(alwaysButton.state() == NSCell.OnState) {
+                try {
+                    X509Certificate cert = (X509Certificate)contextInfo;
+                    //todo save certificate in keychain
+                    this.keystore.setCertificateEntry(cert.getSubjectDN().getName(), cert);
+                }
+                catch(KeyStoreException e) {
+                    log.error(e.getMessage());
+                }
+            }
         }
         if (returncode == NSAlertPanel.AlternateReturn) { //Deny
             this.allowServerCertificate = false;
-        }
-        if (returncode == NSAlertPanel.OtherReturn) { //Allow always
-            this.allowServerCertificate = true;
-            try {
-                X509Certificate cert = (X509Certificate)contextInfo;
-                //todo save certificate in keychain
-                this.keystore.setCertificateEntry(cert.getSubjectDN().getName(), cert);
-            }
-            catch(KeyStoreException e) {
-                log.error(e.getMessage());
-            }
         }
     }
 

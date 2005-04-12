@@ -63,9 +63,6 @@ public class FTPSControlSocket extends FTPControlSocket {
 
     public void setUseDataConnectionSecurity(boolean b) {
         this.useDataConnectionSecurity = b;
-        if(!this.useDataConnectionSecurity) {
-            //todo show warning messge; callback to trustmanager?
-        }
     }
 
     protected FTPDataSocket createDataSocketActive()
@@ -73,7 +70,8 @@ public class FTPSControlSocket extends FTPControlSocket {
 
         if(useDataConnectionSecurity) {
             // use any available port
-            FTPDataSocket socket = new FTPActiveDataSocket(new SSLProtocolSocketFactory(trustManager).createServerSocket(0));
+            FTPDataSocket socket = new FTPActiveDataSocket(
+                    new SSLProtocolSocketFactory(trustManager).createServerSocket(0));
 
             // get the local address to which the control socket is bound.
             InetAddress localhost = controlSock.getLocalAddress();
@@ -121,7 +119,8 @@ public class FTPSControlSocket extends FTPControlSocket {
             int port = (parts[4]<<8)+parts[5];
 
             // create the socket
-            return new FTPPassiveDataSocket(new SSLProtocolSocketFactory(trustManager).createSocket(ipAddress, port));
+            return new FTPPassiveDataSocket(
+                    new SSLProtocolSocketFactory(trustManager).createSocket(ipAddress, port));
         }
         return super.createDataSocketPASV();
 	}

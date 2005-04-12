@@ -209,6 +209,7 @@ public abstract class CDValidatorController extends CDWindowController implement
 
 	public void setStatusIndicator(NSProgressIndicator statusIndicator) {
 		this.statusIndicator = statusIndicator;
+        this.statusIndicator.setUsesThreadedAnimation(true);
 	}
 
 	protected NSTableView fileTableView; // IBOutlet

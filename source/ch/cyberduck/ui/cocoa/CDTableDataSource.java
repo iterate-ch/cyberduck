@@ -49,14 +49,6 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
         this.controller = controller;
     }
 
-	public boolean selectionShouldChangeInTableView(NSTableView tableView) {
-		return true;
-	}
-	
-	public boolean selectionShouldChangeInOutlineView(NSTableView tableView) {
-		return true;
-	}
-
 	// ----------------------------------------------------------
 	// Sorting
 	// ----------------------------------------------------------
@@ -158,6 +150,16 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 	// TableView/OutlineView Delegate methods
 	// ----------------------------------------------------------
 
+
+    public boolean selectionShouldChangeInTableView(NSTableView tableView) {
+        return true;
+    }
+
+    public boolean selectionShouldChangeInOutlineView(NSTableView tableView) {
+        return true;
+    }
+
+
 	public void outlineViewDidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn) {
 		this.tableViewDidClickTableColumn(tableView, tableColumn);
 	}
@@ -172,7 +174,10 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 			}
 			this.selectedColumn = tableColumn;
 		}
-		tableView.setIndicatorImage(this.sortAscending ? NSImage.imageNamed("NSAscendingSortIndicator") : NSImage.imageNamed("NSDescendingSortIndicator"), tableColumn);
+		tableView.setIndicatorImage(this.sortAscending ?
+                NSImage.imageNamed("NSAscendingSortIndicator") :
+                NSImage.imageNamed("NSDescendingSortIndicator"),
+                tableColumn);
 		this.sort(tableColumn, sortAscending);
 		tableView.reloadData();
 	}

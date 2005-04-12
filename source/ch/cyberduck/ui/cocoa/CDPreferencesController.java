@@ -1368,7 +1368,8 @@ public class CDPreferencesController extends CDWindowController {
 		this.autoUpdateCheckbox = autoUpdateCheckbox;
 		this.autoUpdateCheckbox.setTarget(this);
 		this.autoUpdateCheckbox.setAction(new NSSelector("autoUpdateCheckboxClicked", new Class[]{NSButton.class}));
-		this.autoUpdateCheckbox.setState(Preferences.instance().getBoolean("update.check") ? NSCell.OnState : NSCell.OffState);
+		this.autoUpdateCheckbox.setState(
+                Preferences.instance().getBoolean("update.check") ? NSCell.OnState : NSCell.OffState);
 	}
 
 	public void autoUpdateCheckboxClicked(NSButton sender) {
@@ -1381,16 +1382,38 @@ public class CDPreferencesController extends CDWindowController {
 				break;
 		}
 	}
-	
+
+    private NSButton acceptAnyCertificateCheckbox; //IBOutlet
+
+    public void setAcceptAnyCertificateCheckbox(NSButton acceptAnyCertificateCheckbox) {
+        this.acceptAnyCertificateCheckbox = acceptAnyCertificateCheckbox;
+        this.acceptAnyCertificateCheckbox.setTarget(this);
+        this.acceptAnyCertificateCheckbox.setAction(new NSSelector("acceptAnyCertificateCheckboxClicked", new Class[]{NSButton.class}));
+        this.acceptAnyCertificateCheckbox.setState(
+                Preferences.instance().getBoolean("ftp.tls.acceptAnyCertificate") ? NSCell.OnState : NSCell.OffState);
+    }
+
+    public void acceptAnyCertificateCheckboxClicked(NSButton sender) {
+        switch(sender.state()) {
+            case NSCell.OnState:
+                Preferences.instance().setProperty("ftp.tls.acceptAnyCertificate", true);
+                break;
+            case NSCell.OffState:
+                Preferences.instance().setProperty("ftp.tls.acceptAnyCertificate", false);
+                break;
+        }
+    }
+
 	private NSButton secureDataChannelCheckbox; //IBOutlet
-	
+
 	public void setSecureDataChannelCheckbox(NSButton secureDataChannelCheckbox) {
 		this.secureDataChannelCheckbox = secureDataChannelCheckbox;
 		this.secureDataChannelCheckbox.setTarget(this);
 		this.secureDataChannelCheckbox.setAction(new NSSelector("secureDataChannelCheckboxClicked", new Class[]{NSButton.class}));
-		this.secureDataChannelCheckbox.setState(Preferences.instance().getProperty("ftp.tls.datachannel").equals("P") ? NSCell.OnState : NSCell.OffState);
+		this.secureDataChannelCheckbox.setState(
+                Preferences.instance().getProperty("ftp.tls.datachannel").equals("P") ? NSCell.OnState : NSCell.OffState);
 	}
-	
+
 	public void secureDataChannelCheckboxClicked(NSButton sender) {
 		switch(sender.state()) {
 			case NSCell.OnState:
@@ -1401,4 +1424,25 @@ public class CDPreferencesController extends CDWindowController {
 				break;
 		}
 	}
+
+    private NSButton failInsecureDataChannelCheckbox; //IBOutlet
+
+    public void setFailInsecureDataChannelCheckbox(NSButton failInsecureDataChannelCheckbox) {
+        this.failInsecureDataChannelCheckbox = failInsecureDataChannelCheckbox;
+        this.failInsecureDataChannelCheckbox.setTarget(this);
+        this.failInsecureDataChannelCheckbox.setAction(new NSSelector("failInsecureDataChannelCheckboxClicked", new Class[]{NSButton.class}));
+        this.failInsecureDataChannelCheckbox.setState(
+                Preferences.instance().getBoolean("ftp.tls.datachannel.failOnError") ? NSCell.OffState : NSCell.OnState);
+    }
+
+    public void failInsecureDataChannelCheckboxClicked(NSButton sender) {
+        switch(sender.state()) {
+            case NSCell.OnState:
+                Preferences.instance().setProperty("ftp.tls.datachannel.failOnError", false);
+                break;
+            case NSCell.OffState:
+                Preferences.instance().setProperty("ftp.tls.datachannel.failOnError", true);
+                break;
+        }
+    }
 }
