@@ -73,9 +73,12 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addPasswordToKeychain(JNI
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addCertificateToKeychain(JNIEnv *env, jobject this, jbyteArray jCertificate) 
 {
+	jbyte *certByte = (*env)->GetByteArrayElements(env, jCertificate, NULL);
 	
-	NSData *certData = [NSData dataWithBytes:jCertificate length:sizeof(jCertificate)];
+	NSData *certData = [NSData dataWithBytes:certByte length:(*env)->GetArrayLength(env, jCertificate)];
 	Certificate *certificate = [Certificate certificateWithData:certData type:CSSM_CERT_X_509v3 encoding:CSSM_CERT_ENCODING_BER];
 	
+	(*env)->ReleaseByteArrayElements(env, jCertificate, certByte, 0);
+
 	[[Keychain defaultKeychain] addCertificate:certificate];
 }
