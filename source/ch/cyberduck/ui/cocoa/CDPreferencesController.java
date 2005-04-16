@@ -189,14 +189,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void listCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("ftp.sendExtendedListCommand", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("ftp.sendExtendedListCommand", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("ftp.sendExtendedListCommand", enabled);
 	}
 
 	private NSButton systCheckbox; //IBOutlet
@@ -209,14 +203,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void systCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("ftp.sendSystemCommand", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("ftp.sendSystemCommand", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("ftp.sendSystemCommand", enabled);
 	}
 
 	private NSButton chmodUploadCheckbox; //IBOutlet
@@ -229,25 +217,21 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void chmodUploadCheckboxClicked(NSButton sender) {
-		boolean enabled = false;
-		switch(sender.state()) {
-			case NSCell.OnState:
-				enabled = true;
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
 		Preferences.instance().setProperty("queue.upload.changePermissions", enabled);
 		this.chmodUploadDefaultCheckbox.setEnabled(enabled);
-		this.uownerr.setEnabled(enabled);
-		this.uownerw.setEnabled(enabled);
-		this.uownerx.setEnabled(enabled);
-		this.ugroupr.setEnabled(enabled);
-		this.ugroupw.setEnabled(enabled);
-		this.ugroupx.setEnabled(enabled);
-		this.uotherr.setEnabled(enabled);
-		this.uotherw.setEnabled(enabled);
-		this.uotherx.setEnabled(enabled);
+		boolean chmodUploadDefaultChecked = this.chmodUploadDefaultCheckbox.state() == NSCell.OnState;
+		this.uownerr.setEnabled(enabled && chmodUploadDefaultChecked);
+		this.uownerw.setEnabled(enabled && chmodUploadDefaultChecked);
+		this.uownerx.setEnabled(enabled && chmodUploadDefaultChecked);
+		this.ugroupr.setEnabled(enabled && chmodUploadDefaultChecked);
+		this.ugroupw.setEnabled(enabled && chmodUploadDefaultChecked);
+		this.ugroupx.setEnabled(enabled && chmodUploadDefaultChecked);
+		this.uotherr.setEnabled(enabled && chmodUploadDefaultChecked);
+		this.uotherw.setEnabled(enabled && chmodUploadDefaultChecked);
+		this.uotherx.setEnabled(enabled && chmodUploadDefaultChecked);
 	}
-
+	
 	private NSButton chmodUploadDefaultCheckbox; //IBOutlet
 
 	public void setChmodUploadDefaultCheckbox(NSButton chmodUploadDefaultCheckbox) {
@@ -270,25 +254,19 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void chmodUploadDefaultCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("queue.upload.permissions.useDefault", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("queue.upload.permissions.useDefault", false);
-				break;
-		}
-		this.uownerr.setEnabled(sender.state() == NSCell.OnState);
-		this.uownerw.setEnabled(sender.state() == NSCell.OnState);
-		this.uownerx.setEnabled(sender.state() == NSCell.OnState);
-		this.ugroupr.setEnabled(sender.state() == NSCell.OnState);
-		this.ugroupw.setEnabled(sender.state() == NSCell.OnState);
-		this.ugroupx.setEnabled(sender.state() == NSCell.OnState);
-		this.uotherr.setEnabled(sender.state() == NSCell.OnState);
-		this.uotherw.setEnabled(sender.state() == NSCell.OnState);
-		this.uotherx.setEnabled(sender.state() == NSCell.OnState);
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("queue.upload.permissions.useDefault", enabled);
+		this.uownerr.setEnabled(enabled);
+		this.uownerw.setEnabled(enabled);
+		this.uownerx.setEnabled(enabled);
+		this.ugroupr.setEnabled(enabled);
+		this.ugroupw.setEnabled(enabled);
+		this.ugroupx.setEnabled(enabled);
+		this.uotherr.setEnabled(enabled);
+		this.uotherw.setEnabled(enabled);
+		this.uotherx.setEnabled(enabled);
 	}
-
+	
 	private NSButton chmodDownloadCheckbox; //IBOutlet
 
 	public void setChmodDownloadCheckbox(NSButton chmodDownloadCheckbox) {
@@ -299,25 +277,21 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void chmodDownloadCheckboxClicked(NSButton sender) {
-		boolean enabled = false;
-		switch(sender.state()) {
-			case NSCell.OnState:
-				enabled = true;
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
 		Preferences.instance().setProperty("queue.download.changePermissions", enabled);
 		this.chmodDownloadDefaultCheckbox.setEnabled(enabled);
-		this.downerr.setEnabled(enabled);
-		this.downerw.setEnabled(enabled);
-		this.downerx.setEnabled(enabled);
-		this.dgroupr.setEnabled(enabled);
-		this.dgroupw.setEnabled(enabled);
-		this.dgroupx.setEnabled(enabled);
-		this.dotherr.setEnabled(enabled);
-		this.dotherw.setEnabled(enabled);
-		this.dotherx.setEnabled(enabled);
+		boolean chmodDownloadDefaultChecked = this.chmodDownloadDefaultCheckbox.state() == NSCell.OnState;
+		this.downerr.setEnabled(enabled && chmodDownloadDefaultChecked);
+		this.downerw.setEnabled(enabled && chmodDownloadDefaultChecked);
+		this.downerx.setEnabled(enabled && chmodDownloadDefaultChecked);
+		this.dgroupr.setEnabled(enabled && chmodDownloadDefaultChecked);
+		this.dgroupw.setEnabled(enabled && chmodDownloadDefaultChecked);
+		this.dgroupx.setEnabled(enabled && chmodDownloadDefaultChecked);
+		this.dotherr.setEnabled(enabled && chmodDownloadDefaultChecked);
+		this.dotherw.setEnabled(enabled && chmodDownloadDefaultChecked);
+		this.dotherx.setEnabled(enabled && chmodDownloadDefaultChecked);
 	}
-
+	
 	private NSButton chmodDownloadDefaultCheckbox; //IBOutlet
 
 	public void setChmodDownloadDefaultCheckbox(NSButton chmodDownloadDefaultCheckbox) {
@@ -340,25 +314,19 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void chmodDownloadDefaultCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("queue.download.permissions.useDefault", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("queue.download.permissions.useDefault", false);
-				break;
-		}
-		this.downerr.setEnabled(sender.state() == NSCell.OnState);
-		this.downerw.setEnabled(sender.state() == NSCell.OnState);
-		this.downerx.setEnabled(sender.state() == NSCell.OnState);
-		this.dgroupr.setEnabled(sender.state() == NSCell.OnState);
-		this.dgroupw.setEnabled(sender.state() == NSCell.OnState);
-		this.dgroupx.setEnabled(sender.state() == NSCell.OnState);
-		this.dotherr.setEnabled(sender.state() == NSCell.OnState);
-		this.dotherw.setEnabled(sender.state() == NSCell.OnState);
-		this.dotherx.setEnabled(sender.state() == NSCell.OnState);
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("queue.download.permissions.useDefault", enabled);
+		this.downerr.setEnabled(enabled);
+		this.downerw.setEnabled(enabled);
+		this.downerx.setEnabled(enabled);
+		this.dgroupr.setEnabled(enabled);
+		this.dgroupw.setEnabled(enabled);
+		this.dgroupx.setEnabled(enabled);
+		this.dotherr.setEnabled(enabled);
+		this.dotherw.setEnabled(enabled);
+		this.dotherx.setEnabled(enabled);
 	}
-
+	
 	public NSButton downerr; //IBOutlet
 	public NSButton downerw; //IBOutlet
 	public NSButton downerx; //IBOutlet
@@ -427,14 +395,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void preserveModificationDownloadCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("queue.download.preserveDate", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("queue.download.preserveDate", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("queue.download.preserveDate", enabled);
 	}
 
 	private NSButton preserveModificationUploadCheckbox; //IBOutlet
@@ -447,14 +409,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void preserveModificationUploadCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("queue.upload.preserveDate", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("queue.upload.preserveDate", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("queue.upload.preserveDate", enabled);
 	}
 
 	private NSButton horizontalLinesCheckbox; //IBOutlet
@@ -467,14 +423,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void horizontalLinesCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("browser.horizontalLines", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("browser.horizontalLines", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("browser.horizontalLines", enabled);
 		CDBrowserController.updateBrowserTableAttributes();
 	}
 
@@ -488,14 +438,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void verticalLinesCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("browser.verticalLines", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("browser.verticalLines", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("browser.verticalLines", enabled);
 		CDBrowserController.updateBrowserTableAttributes();
 	}
 
@@ -509,14 +453,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void alternatingRowBackgroundCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("browser.alternatingRows", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("browser.alternatingRows", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("browser.alternatingRows", enabled);
 		CDBrowserController.updateBrowserTableAttributes();
 	}
 
@@ -530,14 +468,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 	
 	public void infoWindowAsInspectorCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("browser.info.isInspector", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("browser.info.isInspector", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("browser.info.isInspector", enabled);
 	}
 	
 	private NSButton columnModificationCheckbox; //IBOutlet
@@ -550,14 +482,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void columnModificationCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("browser.columnModification", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("browser.columnModification", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("browser.columnModification", enabled);
 		CDBrowserController.updateBrowserTableColumns();
 	}
 
@@ -571,14 +497,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void columnOwnerCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("browser.columnOwner", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("browser.columnOwner", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("browser.columnOwner", enabled);
 		CDBrowserController.updateBrowserTableColumns();
 	}
 
@@ -592,14 +512,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void columnPermissionsCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("browser.columnPermissions", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("browser.columnPermissions", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("browser.columnPermissions", enabled);
 		CDBrowserController.updateBrowserTableColumns();
 	}
 
@@ -613,14 +527,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void columnSizeCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("browser.columnSize", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("browser.columnSize", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("browser.columnSize", enabled);
 		CDBrowserController.updateBrowserTableColumns();
 	}
 
@@ -892,14 +800,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void concurrentConnectionForceDisconnectCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("connection.pool.force", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("connection.pool.force", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("connection.pool.force", enabled);
 	}
 
 	private NSTextField bufferField; //IBOutlet
@@ -940,14 +842,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void keepAliveCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("connection.keepalive", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("connection.keepalive", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("connection.keepalive", enabled);
 	}
 
 	private NSTextField keepAliveIntervalField; //IBOutlet
@@ -1047,14 +943,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void keychainCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("connection.login.useKeychain", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("connection.login.useKeychain", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("connection.login.useKeychain", enabled);
 	}
 
 	private NSButton doubleClickCheckbox; //IBOutlet
@@ -1067,14 +957,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void doubleClickCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("browser.doubleclick.edit", "true");
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("browser.doubleclick.edit", "false");
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("browser.doubleclick.edit", enabled);
 	}
 
 	private NSButton showHiddenCheckbox; //IBOutlet
@@ -1087,14 +971,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void showHiddenCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("browser.showHidden", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("browser.showHidden", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("browser.showHidden", enabled);
 	}
 
 	private NSButton newBrowserCheckbox; //IBOutlet
@@ -1107,16 +985,9 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void newBrowserCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("browser.openByDefault", true);
-//				this.defaultHostCombobox.setEnabled(true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("browser.openByDefault", false);
-//				this.defaultHostCombobox.setEnabled(false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("browser.openByDefault", enabled);
+		//				this.defaultHostCombobox.setEnabled(enabled);
 	}
 
 	private NSButton bringQueueToFrontCheckbox; //IBOutlet
@@ -1129,14 +1000,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void bringQueueToFrontCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("queue.orderFrontOnTransfer", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("queue.orderFrontOnTransfer", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("queue.orderFrontOnTransfer", enabled);
 	}
 
 	private NSButton removeFromQueueCheckbox; //IBOutlet
@@ -1149,14 +1014,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void removeFromQueueCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("queue.removeItemWhenComplete", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("queue.removeItemWhenComplete", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("queue.removeItemWhenComplete", enabled);
 	}
 
 	private NSButton processCheckbox; //IBOutlet
@@ -1169,14 +1028,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void processCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("queue.postProcessItemWhenComplete", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("queue.postProcessItemWhenComplete", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("queue.postProcessItemWhenComplete", enabled);
 	}
 
 	private NSPopUpButton duplicateCombobox; //IBOutlet
@@ -1352,14 +1205,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 	
 	public void confirmDisconnectCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("browser.confirmDisconnect", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("browser.confirmDisconnect", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("browser.confirmDisconnect", enabled);
 	}
 	
 	private NSButton autoUpdateCheckbox; //IBOutlet
@@ -1373,14 +1220,8 @@ public class CDPreferencesController extends CDWindowController {
 	}
 
 	public void autoUpdateCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("update.check", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("update.check", false);
-				break;
-		}
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("update.check", enabled);
 	}
 
     private NSButton acceptAnyCertificateCheckbox; //IBOutlet
@@ -1394,14 +1235,8 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     public void acceptAnyCertificateCheckboxClicked(NSButton sender) {
-        switch(sender.state()) {
-            case NSCell.OnState:
-                Preferences.instance().setProperty("ftp.tls.acceptAnyCertificate", true);
-                break;
-            case NSCell.OffState:
-                Preferences.instance().setProperty("ftp.tls.acceptAnyCertificate", false);
-                break;
-        }
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("ftp.tls.acceptAnyCertificate", enabled);
     }
 
 	private NSButton secureDataChannelCheckbox; //IBOutlet
@@ -1436,13 +1271,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     public void failInsecureDataChannelCheckboxClicked(NSButton sender) {
-        switch(sender.state()) {
-            case NSCell.OnState:
-                Preferences.instance().setProperty("ftp.tls.datachannel.failOnError", false);
-                break;
-            case NSCell.OffState:
-                Preferences.instance().setProperty("ftp.tls.datachannel.failOnError", true);
-                break;
-        }
+		boolean enabled = sender.state() == NSCell.OnState;
+		Preferences.instance().setProperty("ftp.tls.datachannel.failOnError", !enabled);
     }
 }

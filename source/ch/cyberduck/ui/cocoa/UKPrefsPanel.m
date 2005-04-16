@@ -124,7 +124,7 @@
 		toolbar = [[[NSToolbar alloc] initWithIdentifier: [NSString stringWithFormat: @"%@.prefspanel.toolbar", autosaveName]] autorelease];
 	
     // Set up toolbar properties: Allow customization, give a default display mode, and remember state in user defaults 
-    [toolbar setAllowsUserCustomization: YES];
+    [toolbar setAllowsUserCustomization: NO];
     [toolbar setAutosavesConfiguration: YES];
     [toolbar setDisplayMode: NSToolbarDisplayModeIconAndLabel];
 	

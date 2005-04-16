@@ -29,12 +29,14 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.ftps.AbstractX509TrustManager;
+import ch.cyberduck.core.Keychain;
 
 /**
  * @version $Id$
@@ -198,11 +200,10 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
             this.acceptedCertificates.add(contextInfo);
             if(alwaysButton.state() == NSCell.OnState) {
                 try {
-                    X509Certificate cert = (X509Certificate)contextInfo;
-                    //todo save certificate in keychain
-                    this.keystore.setCertificateEntry(cert.getSubjectDN().getName(), cert);
+                    X509Certificate cert = (X509Certificate) contextInfo;
+                    Keychain.instance().addCertificateToKeychain(cert.getEncoded());
                 }
-                catch(KeyStoreException e) {
+                catch (CertificateEncodingException e) {
                     log.error(e.getMessage());
                 }
             }
