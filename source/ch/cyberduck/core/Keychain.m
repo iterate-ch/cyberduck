@@ -55,7 +55,6 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getPasswordFromKeychai
 {
 	NSString *password = [[Keychain defaultKeychain] passwordForGenericService:convertToNSString(env, jService) forAccount:convertToNSString(env, jAccount)]; 
 
-	[pool release];
 	return (*env)->NewStringUTF(env, [password UTF8String]);
 }
 
