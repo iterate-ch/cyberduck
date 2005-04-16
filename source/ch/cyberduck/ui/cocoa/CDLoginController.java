@@ -135,18 +135,22 @@ public class CDLoginController extends CDWindowController implements LoginContro
 
 	public void loginSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
-		if(null == userField.objectValue() || userField.objectValue().equals("")) {
+        String user = (String)userField.objectValue();
+        String pass = (String)passField.objectValue();
+		if(null == user || user.equals("")) {
 			log.warn("Value of username textfield is null");
+            user = "";
 		}
-		if(null == passField.objectValue() || passField.objectValue().equals("")) {
+		if(null == pass || pass.equals("")) {
 			log.warn("Value of password textfield is null");
+            pass = "";
 		}
         switch(returncode) {
             case (NSAlertPanel.DefaultReturn):
                 log.info("Updating login credentials...");
                 this.login.setTryAgain(true);
-                this.login.setUsername((String)userField.objectValue());
-                this.login.setPassword((String)passField.objectValue());
+                this.login.setUsername(user);
+                this.login.setPassword(pass);
                 this.login.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
                 break;
             case (NSAlertPanel.AlternateReturn):

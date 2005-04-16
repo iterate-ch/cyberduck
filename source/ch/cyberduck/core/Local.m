@@ -17,8 +17,8 @@
  */
 
 #include <stdio.h>
-#include <jni.h>
-#include "Local.h"
+
+#import <Local.h>
 #import <Carbon/Carbon.h>
 #import <CoreServices/CoreServices.h>
 #import <Cocoa/Cocoa.h>

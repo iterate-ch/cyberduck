@@ -19,10 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.*;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -201,7 +198,9 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
             if(alwaysButton.state() == NSCell.OnState) {
                 try {
                     X509Certificate cert = (X509Certificate) contextInfo;
+                    int pool = NSAutoreleasePool.push();
                     Keychain.instance().addCertificateToKeychain(cert.getEncoded());
+                    NSAutoreleasePool.pop(pool);
                 }
                 catch (CertificateEncodingException e) {
                     log.error(e.getMessage());

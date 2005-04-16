@@ -91,18 +91,20 @@ public abstract class Preferences {
 		defaults.put("bookmarkDrawer.isOpen", "false");
 
 		defaults.put("browser.view", "1");
+		defaults.put("browser.confirmDisconnect", "true");
+		defaults.put("browser.info.isInspector", "true");
+
 		defaults.put("browser.columnSize", "true");
 		defaults.put("browser.columnModification", "true");
 		defaults.put("browser.columnOwner", "false");
 		defaults.put("browser.columnPermissions", "false");
+		
 		defaults.put("browser.alternatingRows", "false");
 		defaults.put("browser.verticalLines", "false");
 		defaults.put("browser.horizontalLines", "true");
-		defaults.put("browser.confirmDisconnect", "true");
 		defaults.put("browser.showHidden", "false");
 		defaults.put("browser.charset.encoding", "ISO-8859-1");
 		defaults.put("browser.doubleclick.edit", "false");
-		defaults.put("browser.info.isInspector", "true");
 
 		defaults.put("editor.name", "SubEthaEdit");
 		defaults.put("editor.bundleIdentifier", "de.codingmonkeys.SubEthaEdit");

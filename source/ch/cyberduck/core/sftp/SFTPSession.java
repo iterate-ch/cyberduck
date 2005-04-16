@@ -28,6 +28,8 @@ import com.sshtools.j2ssh.transport.TransportProtocol;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
 
+import com.apple.cocoa.foundation.NSAutoreleasePool;
+
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
@@ -212,14 +214,15 @@ public class SFTPSession extends Session {
 		// If the private key is passphrase protected then ask for the passphrase
 		String passphrase = null;
 		if(keyFile.isPassphraseProtected()) {
-			passphrase = credentials.getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
+            int pool = NSAutoreleasePool.push();
+			passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
 			if(null == passphrase || passphrase.equals("")) {
 				host.setCredentials(credentials.promptUser("The Private Key is password protected. Enter the passphrase for the key file '"+credentials.getPrivateKeyFile()+"'."));
 				if(host.getCredentials().tryAgain()) {
 					passphrase = credentials.getPassword();
 					if(keyFile.isPassphraseProtected()) {
 						if(credentials.usesKeychain()) {
-							credentials.addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(), passphrase);
+							Keychain.instance().addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(), passphrase);
 						}
 					}
 				}
@@ -227,6 +230,7 @@ public class SFTPSession extends Session {
 					throw new SshException("Login as user "+credentials.getUsername()+" canceled.");
 				}
 			}
+            NSAutoreleasePool.pop(pool);
 		}
 		// Get the key
 		pk.setKey(keyFile.toPrivateKey(passphrase));

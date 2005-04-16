@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSAutoreleasePool;
 
 import org.apache.log4j.Logger;
 
@@ -39,19 +40,6 @@ public class Login {
 	private LoginController controller;
 	private boolean shouldBeAddedToKeychain;
 
-	static {
-		// Ensure native keychain library is loaded
-		try {
-			NSBundle bundle = NSBundle.mainBundle();
-			String lib = bundle.resourcePath()+"/Java/"+"libKeychain.jnilib";
-			log.debug("Locating libKeychain.jnilib at '"+lib+"'");
-			System.load(lib);
-		}
-		catch(UnsatisfiedLinkError e) {
-			log.error("Could not load the Keychain library:"+e.getMessage());
-		}
-	}
-
 	/**
 	 * Use this to define if passwords should be added to the keychain
 	 *
@@ -66,46 +54,38 @@ public class Login {
 		return this.shouldBeAddedToKeychain;
 	}
 
-	/**
-	 * @see #getInternetPasswordFromKeychain
-	 */
-	public native String getInternetPasswordFromKeychain(String protocol, String serviceName, int port, String user);
-
 	public String getInternetPasswordFromKeychain() {
-		return this.getInternetPasswordFromKeychain(this.protocol, this.serviceName, this.port, this.getUsername());
+        int pool = NSAutoreleasePool.push();
+		String password =  Keychain.instance().getInternetPasswordFromKeychain(this.protocol, this.serviceName, this.port, this.getUsername());
+        NSAutoreleasePool.pop(pool);
+        return password;
 	}
-
-	/**
-	 * @see #getPasswordFromKeychain
-	 */
-	public native String getPasswordFromKeychain(String serviceName, String user);
-
-	public String getPasswordFromKeychain() {
-		return this.getPasswordFromKeychain(this.serviceName, this.getUsername());
-	}
-
-	/**
-	 * @see #addPasswordToKeychain
-	 */
-	public native void addPasswordToKeychain(String serviceName, String user, String password);
-
-	public void addPasswordToKeychain() {
-		if(this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
-			this.addPasswordToKeychain(this.serviceName, this.getUsername(), this.getPassword());
-		}
-	}
-
-	/**
-	 * @see #addInternetPasswordToKeychain
-	 */
-	public native void addInternetPasswordToKeychain(String protocol, String serviceName, int port, String user, String password);
-
+	
+	
 	public void addInternetPasswordToKeychain() {
 		if(this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
-			this.addInternetPasswordToKeychain(this.protocol, this.serviceName, this.port, this.getUsername(), this.getPassword());
+            int pool = NSAutoreleasePool.push();
+			Keychain.instance().addInternetPasswordToKeychain(this.protocol, this.serviceName, this.port, this.getUsername(), this.getPassword());
+            NSAutoreleasePool.pop(pool);
 		}
 	}
-
+	
+	
+	public void addPasswordToKeychain() {
+		if(this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
+            int pool = NSAutoreleasePool.push();
+			Keychain.instance().addPasswordToKeychain(this.serviceName, this.getUsername(), this.getPassword());
+            NSAutoreleasePool.pop(pool);
+		}
+	}
+	
+	public String getPasswordFromKeychain() {
+        int pool = NSAutoreleasePool.push();
+		String pass =  Keychain.instance().getPasswordFromKeychain(this.serviceName, this.getUsername());
+        NSAutoreleasePool.pop(pool);
+        return pass;
+	}
+	
 	/**
 	 * @param h The service to use when looking up the password in the keychain
 	 * @param user        Login with this username
@@ -128,7 +108,6 @@ public class Login {
 		this.serviceName = h.getHostname();
 		this.protocol = h.getProtocol();
 		this.port = h.getPort();
-
 		this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
 		this.init(user, pass);
 	}
