@@ -1,7 +1,7 @@
 package org.apache.commons.net.ftp.parser;
 
 /*
- *  Copyright (c) 2004 Malte Tancred. All rights reserved.
+ *  Copyright (c) 2005 Malte Tancred. All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

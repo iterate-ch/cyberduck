@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2004 Whitney Young. All rights reserved.
+ *  Copyright (c) 2005 Whitney Young. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify

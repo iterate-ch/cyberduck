@@ -1,7 +1,7 @@
 package ch.cyberduck.ui;
 
 /*
- *  Copyright (c) 2004 David Kocher. All rights reserved.
+ *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify

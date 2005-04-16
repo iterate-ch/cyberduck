@@ -206,7 +206,7 @@ public class CDBookmarkTableDataSource extends Collection {
 	// Drag methods
 	// ----------------------------------------------------------
 
-	// @see http://www.cocoabuilder.com/archive/message/2004/10/5/118857
+	// @see http://www.cocoabuilder.com/archive/message/2005/10/5/118857
 	public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
 		log.debug("finishedDraggingImage:"+operation);
 		NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes(null, null);

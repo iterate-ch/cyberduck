@@ -1,6 +1,5 @@
 /*
- *  Copyright (c) 2003 Regents of The University of Michigan.
- *  Copyright (c) 2004 David Kocher. All rights reserved.
+ *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -50,14 +49,12 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getInternetPasswordFro
 	return (*env)->NewStringUTF(env, [password UTF8String]);
 }
 
-
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getPasswordFromKeychain(JNIEnv *env, jobject this, jstring jService, jstring jAccount) 
 {
 	NSString *password = [[Keychain defaultKeychain] passwordForGenericService:convertToNSString(env, jService) forAccount:convertToNSString(env, jAccount)]; 
 
 	return (*env)->NewStringUTF(env, [password UTF8String]);
 }
-
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addInternetPasswordToKeychain(JNIEnv *env, jobject this, jstring jProtocol,jstring jService,jint jPort,jstring jUsername, jstring jPassword
 																				  ) 

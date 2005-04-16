@@ -2,7 +2,7 @@
  *
  *  edtFTPj
  * 
- *  Copyright (C) 2000-2004 Enterprise Distributed Technologies Ltd
+ *  Copyright (C) 2000-2005 Enterprise Distributed Technologies Ltd
  *
  *  www.enterprisedt.com
  *
