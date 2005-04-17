@@ -103,9 +103,6 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_hasCertificate (JNIEn
 				if([result isCertificate]) {
 					Certificate *curCertificate = [Certificate certificateWithData:[result data] type:CSSM_CERT_X_509v3 encoding:CSSM_CERT_ENCODING_DER];
 					if([curCertificate isEqualToCertificate:certificate]) {
-						NSLog(@"Found matching certificate!");
-						// jbyteArray jbytes = (*env)->NewByteArray(env, (jsize)sizeof([[curCertificate data] bytes]));
-						// (*env)->SetByteArrayRegion(env, jbytes, 0, (jint)sizeof([[curCertificate data] bytes]), (jbyte*)[[curCertificate data] bytes]);
 						return TRUE;
 					}
 				}
