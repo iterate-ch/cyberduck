@@ -51,7 +51,7 @@ public class FTPSSession extends FTPSession {
     }
 	
 	public boolean isSecure() {
-		return true; //todo only return true if certificate is correct
+        return trustManager.isServerCertificateTrusted();
 	}
 
     public X509TrustManager getTrustManager() {

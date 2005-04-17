@@ -44,10 +44,14 @@ public class CDBrowserListViewModel extends CDTableDataSource {
         return 0;
     }
 
-//    todo
 	public void tableViewWillDisplayCell(NSTableView tableView, Object cell, NSTableColumn tableColumn, int row) {
-		if(cell instanceof NSTextFieldCell && !this.controller.isConnected()) {
-			((NSTextFieldCell)cell).setTextColor(NSColor.disabledControlTextColor());
+		if(cell instanceof NSTextFieldCell) {
+            if(this.controller.isConnected()) {
+                ((NSTextFieldCell)cell).setTextColor(NSColor.controlTextColor());
+            }
+            else {
+                ((NSTextFieldCell)cell).setTextColor(NSColor.disabledControlTextColor());
+            }
 		}
 	}
 	

@@ -86,6 +86,14 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 			((CDOutlineCell)cell).setAttributedStringValue(new NSAttributedString(item.getName(), 
 																		   CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY));
 		}
+        if(cell instanceof NSTextFieldCell) {
+            if(this.controller.isConnected()) {
+                ((NSTextFieldCell)cell).setTextColor(NSColor.controlTextColor());
+            }
+            else {
+                ((NSTextFieldCell)cell).setTextColor(NSColor.disabledControlTextColor());
+            }
+        }
 	}
 	
 	/**

@@ -24,15 +24,14 @@ import com.apple.cocoa.foundation.*;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.*;
-import java.util.List;
-import java.util.Vector;
-import java.io.ByteArrayInputStream;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.ftps.AbstractX509TrustManager;
 import ch.cyberduck.core.Keychain;
+import ch.cyberduck.core.ftps.AbstractX509TrustManager;
 
 /**
  * @version $Id$
@@ -82,13 +81,6 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 
     private CDWindowController windowController;
 
-    private boolean allowServerCertificate = false;
-    private boolean allowClientCertificate = false;
-
-    private List acceptedCertificates = new Vector();
-
-    private KeyStore keystore = null;
-
     public CDX509TrustManagerController(CDWindowController windowController) {
         this.windowController = windowController;
         instances.addObject(this);
@@ -96,7 +88,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
             log.fatal("Couldn't load Certificate.nib");
         }
         try {
-            this.init(keystore = KeyStore.getInstance(KeyStore.getDefaultType()));
+            this.init(KeyStore.getInstance(KeyStore.getDefaultType()));
         }
         catch (NoSuchAlgorithmException e) {
             log.error(e.getMessage());

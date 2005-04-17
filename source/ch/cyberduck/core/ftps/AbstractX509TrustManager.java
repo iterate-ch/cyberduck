@@ -26,6 +26,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.List;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
@@ -33,6 +35,20 @@ import ch.cyberduck.core.Preferences;
 
 public abstract class AbstractX509TrustManager implements X509TrustManager {
     private static Logger log = Logger.getLogger(AbstractX509TrustManager.class);
+
+    protected boolean allowServerCertificate = false;
+
+    public boolean isServerCertificateTrusted() {
+        return allowServerCertificate;
+    }
+
+    public boolean isClientCertificateTrusted() {
+        return allowClientCertificate;
+    }
+
+    protected boolean allowClientCertificate = false;
+
+    protected List acceptedCertificates = new Vector();
 
     private X509TrustManager standardTrustManager = null;
     
