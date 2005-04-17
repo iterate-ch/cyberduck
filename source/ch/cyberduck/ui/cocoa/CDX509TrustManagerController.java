@@ -64,6 +64,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 
     public void setAlwaysButton(NSButton alwaysButton) {
         this.alwaysButton = alwaysButton;
+        this.alwaysButton.setEnabled(false);
     }
 
     private NSButton alwaysButton;

@@ -374,7 +374,7 @@ public class CDBookmarkTableDataSource extends Collection {
 				while(i.hasMoreElements()) {
 					element = i.nextElement();
 					if(element instanceof NSDictionary) {
-						this.add(new Host((NSDictionary)element));
+						super.add(new Host((NSDictionary)element));
 					}
 				}
 			}

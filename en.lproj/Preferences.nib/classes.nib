@@ -33,6 +33,7 @@
                 concurrentConnectionForceDisconnectCheckbox = NSButton; 
                 concurrentConnectionsField = NSTextField; 
                 concurrentConnectionsTimeoutField = NSTextField; 
+                confirmDisconnectCheckbox = NSButton; 
                 connectmodeCombobox = NSPopUpButton; 
                 csAuthenticationCombobox = NSPopUpButton; 
                 csEncryptionCombobox = NSPopUpButton; 
@@ -61,6 +62,8 @@
                 lineEndingCombobox = NSPopUpButton; 
                 listCheckbox = NSButton; 
                 loginField = NSTextField; 
+                preserveModificationDownloadCheckbox = NSButton; 
+                preserveModificationUploadCheckbox = NSButton; 
                 processCheckbox = NSButton; 
                 protocolCombobox = NSPopUpButton; 
                 publickeyCombobox = NSPopUpButton; 

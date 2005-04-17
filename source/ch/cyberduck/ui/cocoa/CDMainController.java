@@ -151,7 +151,7 @@ public class CDMainController extends CDController {
 		    new NSSelector("setDelegate", new Class[]{Object.class});
 		if(setDelegateSelector.implementedByClass(NSMenu.class)) {
 			this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
-			this.historyMenu.setDelegate(this.historyMenuDelegate = new HistoryMenuDelegate());
+//			this.historyMenu.setDelegate(this.historyMenuDelegate = new HistoryMenuDelegate());
 			this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = new RendezvousMenuDelegate(this.rendezvous = Rendezvous.instance()));
 		}
 		this.bookmarkMenu.setSubmenuForItem(historyMenu, this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("History", "")));

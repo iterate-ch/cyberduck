@@ -134,6 +134,9 @@ public class SshKeyPairFactory {
                         " is not supported");
             }
         }
+        catch(NegativeArraySizeException e) {
+            throw new InvalidSshKeyException(e.getMessage());
+        }
         catch (IOException ioe) {
             throw new InvalidSshKeyException(ioe.getMessage());
         }
@@ -160,8 +163,11 @@ public class SshKeyPairFactory {
                         " is not supported");
             }
         }
-        catch (IOException ioe) {
-            throw new InvalidSshKeyException(ioe.getMessage());
+        catch(NegativeArraySizeException e) {
+            throw new InvalidSshKeyException(e.getMessage());
+        }
+        catch (IOException e) {
+            throw new InvalidSshKeyException(e.getMessage());
         }
     }
 }

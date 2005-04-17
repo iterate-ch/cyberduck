@@ -55,7 +55,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class AbstractKnownHostsKeyVerification
     implements HostKeyVerification {
-	private static String defaultHostFile;
 	private static Log log = LogFactory.getLog(HostKeyVerification.class);
 
 	private Map allowedHosts = new HashMap();
@@ -397,9 +396,6 @@ public abstract class AbstractKnownHostsKeyVerification
 		if(!hostFileWriteable) {
 			throw new InvalidHostFileException("Host file is not writeable.");
 		}
-
-		log.info("Saving "+defaultHostFile);
-
 		try {
 			File f = new File(knownhosts);
 			FileOutputStream out = new FileOutputStream(f);

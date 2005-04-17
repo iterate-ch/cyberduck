@@ -91,17 +91,22 @@ JNIEXPORT jbyteArray JNICALL Java_ch_cyberduck_core_Keychain_getCertificateFromK
 	Certificate *certificate = [Certificate certificateWithData:certData type:CSSM_CERT_X_509v3 encoding:CSSM_CERT_ENCODING_DER];
 	
 	(*env)->ReleaseByteArrayElements(env, jCertificate, certByte, 0);
-
-    Identity *curIdentity = nil;
-    NSArray *identities = [[Keychain defaultKeychain] identities];
+	
+	NSObject *item = nil;
+	NSArray *identities = [[Keychain defaultKeychain] identities];
     if (identities) {
         NSEnumerator *enumerator = [identities objectEnumerator];
-        while (curIdentity = (Identity*)[enumerator nextObject]) {
-			NSLog(@"+++++++");
-			if([[[curIdentity certificate] serialNumber] isEqualToData:[certificate serialNumber]]) {
-				return (*env)->NewByteArray(env, (jbyte*)[[[curIdentity certificate] data] bytes]);
+        while (item = [enumerator nextObject]) {
+			NSLog(@"Another item found...");
+			if([item isKindOfClass:[Identity class]]) {
+				NSLog(@"Item kind of identity!");
+				Identity *curIdentity = (Identity*)item;
+				NSLog(@"Certificate version:%i", [[curIdentity certificate] version]);
+				if([[[curIdentity certificate] serialNumber] isEqualToData:[certificate serialNumber]]) {
+					return (*env)->NewByteArray(env, (jbyte*)[[[curIdentity certificate] data] bytes]);
+				}
 			}
-        }
-    }
+		}
+	}
 	return NULL;
 }
