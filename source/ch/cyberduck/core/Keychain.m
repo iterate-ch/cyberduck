@@ -83,7 +83,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addCertificateToKeychain(
 	[[Keychain defaultKeychain] addCertificate:certificate];
 }
 
-JNIEXPORT jbyteArray JNICALL Java_ch_cyberduck_core_Keychain_getCertificateFromKeychain(JNIEnv *env, jobject this, jbyteArray jCertificate) 
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_hasCertificate (JNIEnv * env, jobject this, jbyteArray jCertificate)
 {
 	jbyte *certByte = (*env)->GetByteArrayElements(env, jCertificate, NULL);
 	
@@ -92,21 +92,25 @@ JNIEXPORT jbyteArray JNICALL Java_ch_cyberduck_core_Keychain_getCertificateFromK
 	
 	(*env)->ReleaseByteArrayElements(env, jCertificate, certByte, 0);
 	
-	NSObject *item = nil;
-	NSArray *identities = [[Keychain defaultKeychain] identities];
-    if (identities) {
-        NSEnumerator *enumerator = [identities objectEnumerator];
+	KeychainSearch *search = [KeychainSearch keychainSearchWithKeychains:[NSArray arrayWithObject:[Keychain defaultKeychain]]];
+	NSArray *certificates = [search certificateSearchResults];
+    if (certificates) {
+		NSObject *item = nil;
+        NSEnumerator *enumerator = [certificates objectEnumerator];
         while (item = [enumerator nextObject]) {
-			NSLog(@"Another item found...");
-			if([item isKindOfClass:[Identity class]]) {
-				NSLog(@"Item kind of identity!");
-				Identity *curIdentity = (Identity*)item;
-				NSLog(@"Certificate version:%i", [[curIdentity certificate] version]);
-				if([[[curIdentity certificate] serialNumber] isEqualToData:[certificate serialNumber]]) {
-					return (*env)->NewByteArray(env, (jbyte*)[[[curIdentity certificate] data] bytes]);
+			if([item isKindOfClass:[KeychainItem class]]) {
+				KeychainItem *result = (KeychainItem*)item;
+				if([result isCertificate]) {
+					Certificate *curCertificate = [Certificate certificateWithData:[result data] type:CSSM_CERT_X_509v3 encoding:CSSM_CERT_ENCODING_DER];
+					if([curCertificate isEqualToCertificate:certificate]) {
+						NSLog(@"Found matching certificate!");
+						// jbyteArray jbytes = (*env)->NewByteArray(env, (jsize)sizeof([[curCertificate data] bytes]));
+						// (*env)->SetByteArrayRegion(env, jbytes, 0, (jint)sizeof([[curCertificate data] bytes]), (jbyte*)[[curCertificate data] bytes]);
+						return TRUE;
+					}
 				}
 			}
 		}
 	}
-	return NULL;
+	return FALSE;
 }

@@ -64,7 +64,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 
     public void setAlwaysButton(NSButton alwaysButton) {
         this.alwaysButton = alwaysButton;
-        this.alwaysButton.setEnabled(false);
+        this.alwaysButton.setEnabled(true);
     }
 
     private NSButton alwaysButton;
@@ -116,6 +116,9 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
                 this.allowClientCertificate = true;
             }
             catch (CertificateException e) {
+                if(this.keychainKnowsAbout(x509Certificates[i])) {
+                    return;
+                }
                 String cert = "";
                 if (x509Certificates.length > 0)
                     cert = x509Certificates[0].toString();
@@ -163,9 +166,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
                 this.allowServerCertificate = true;
             }
             catch (CertificateException e) {
-                if(x509Certificates[i].equals(
-                        this.getFromKeychain(x509Certificates[i]))) {
-                    log.info("Certificate accepted because it was found in the keychain.");
+                if(this.keychainKnowsAbout(x509Certificates[i])) {
                     return;
                 }
                 String cert = "";
@@ -210,34 +211,33 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
         this.windowController.endSheet(this.window(), sender.tag());
     }
 
-    public X509Certificate getFromKeychain(X509Certificate certificate) {
+    public boolean keychainKnowsAbout(X509Certificate certificate) {
+		int pool = NSAutoreleasePool.push();
         try {
-            int pool = NSAutoreleasePool.push();
-            byte[] certData = Keychain.instance().getCertificateFromKeychain(certificate.getEncoded());
-            NSAutoreleasePool.pop(pool);
-            if(certData != null) {
-                CertificateFactory factory = CertificateFactory.getInstance("X.509");
-                return (X509Certificate)factory.generateCertificate(new ByteArrayInputStream(certData));
-            }
-			log.info("Certificate not found in Keychain");
+            if(Keychain.instance().hasCertificate(certificate.getEncoded())) {
+				log.info("Certificate not found in Keychain");
+				return true;
+			}
         }
         catch(CertificateException e) {
             log.error("Error getting certificate from the keychain: "+e.getMessage());
         }
-        return null;
+        return false;
     }
 
     private void saveToKeychain(X509Certificate cert) {
             this.acceptedCertificates.add(cert);
         if(alwaysButton.state() == NSCell.OnState) {
+			int pool = NSAutoreleasePool.push();
             try {
-                int pool = NSAutoreleasePool.push();
                 Keychain.instance().addCertificateToKeychain(cert.getEncoded());
-                NSAutoreleasePool.pop(pool);
             }
             catch (CertificateEncodingException e) {
                 log.error(e.getMessage());
             }
+			finally {
+				NSAutoreleasePool.pop(pool);
+			}
         }
     }
 }

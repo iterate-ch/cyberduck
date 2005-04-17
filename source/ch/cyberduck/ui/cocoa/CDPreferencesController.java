@@ -143,9 +143,20 @@ public class CDPreferencesController extends CDWindowController {
 		java.util.Iterator editorIdentifiers = editors.values().iterator();
 		while(editorNames.hasNext()) {
 			String editor = (String)editorNames.next();
+            String identifier = (String)editorIdentifiers.next();
 			this.editorCombobox.addItem(editor);
 			if(absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-				this.editorCombobox.itemWithTitle(editor).setEnabled(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier((String)editorIdentifiers.next()) != null);
+                boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                    identifier) != null;
+				this.editorCombobox.itemWithTitle(editor).setEnabled(enabled);
+                if(enabled) {
+                    NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
+                            NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
+                    );
+                    icon.setScalesWhenResized(true);
+                    icon.setSize(new NSSize(16f, 16f));
+                    this.editorCombobox.itemWithTitle(editor).setImage(icon);
+                }
 			}
 		}
 		this.editorCombobox.setTitle(Preferences.instance().getProperty("editor.name"));

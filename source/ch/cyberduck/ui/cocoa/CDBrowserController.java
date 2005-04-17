@@ -2377,7 +2377,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
             NSSelector absolutePathForAppBundleWithIdentifierSelector =
                     new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
             if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-                String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(Preferences.instance().getProperty("editor.bundleIdentifier"));
+                String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                        Preferences.instance().getProperty("editor.bundleIdentifier"));
                 if (editorPath != null) {
                     item.setImage(NSWorkspace.sharedWorkspace().iconForFile(editorPath));
                 }

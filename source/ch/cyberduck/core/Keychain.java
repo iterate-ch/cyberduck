@@ -62,7 +62,7 @@ public class Keychain {
 
 	public native void addInternetPasswordToKeychain(String protocol, String serviceName, int port, String user, String password);
 
-	public native byte[] getCertificateFromKeychain(byte[] certificate);
+	public native boolean hasCertificate(byte[] certificate);
 
 	public native void addCertificateToKeychain(byte[] certificate);
 }
