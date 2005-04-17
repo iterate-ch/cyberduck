@@ -54,25 +54,15 @@ public class Keychain {
 		}
 	}
 
-	/**
-	 * @see #getInternetPasswordFromKeychain
-	 */
 	public native String getInternetPasswordFromKeychain(String protocol, String serviceName, int port, String user);
 
-	/**
-	 * @see #getPasswordFromKeychain
-	 */
 	public native String getPasswordFromKeychain(String serviceName, String user);
 
-	/**
-	 * @see #addPasswordToKeychain
-	 */
 	public native void addPasswordToKeychain(String serviceName, String user, String password);
 
-	/**
-	 * @see #addInternetPasswordToKeychain
-	 */
 	public native void addInternetPasswordToKeychain(String protocol, String serviceName, int port, String user, String password);
+
+	public native byte[] getCertificateFromKeychain(byte[] certificate);
 
 	public native void addCertificateToKeychain(byte[] certificate);
 }

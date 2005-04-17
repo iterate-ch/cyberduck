@@ -76,9 +76,32 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addCertificateToKeychain(
 	jbyte *certByte = (*env)->GetByteArrayElements(env, jCertificate, NULL);
 	
 	NSData *certData = [NSData dataWithBytes:certByte length:(*env)->GetArrayLength(env, jCertificate)];
-	Certificate *certificate = [Certificate certificateWithData:certData type:CSSM_CERT_X_509v3 encoding:CSSM_CERT_ENCODING_BER];
+	Certificate *certificate = [Certificate certificateWithData:certData type:CSSM_CERT_X_509v3 encoding:CSSM_CERT_ENCODING_DER];
 	
 	(*env)->ReleaseByteArrayElements(env, jCertificate, certByte, 0);
 
 	[[Keychain defaultKeychain] addCertificate:certificate];
+}
+
+JNIEXPORT jbyteArray JNICALL Java_ch_cyberduck_core_Keychain_getCertificateFromKeychain(JNIEnv *env, jobject this, jbyteArray jCertificate) 
+{
+	jbyte *certByte = (*env)->GetByteArrayElements(env, jCertificate, NULL);
+	
+	NSData *certData = [NSData dataWithBytes:certByte length:(*env)->GetArrayLength(env, jCertificate)];
+	Certificate *certificate = [Certificate certificateWithData:certData type:CSSM_CERT_X_509v3 encoding:CSSM_CERT_ENCODING_DER];
+	
+	(*env)->ReleaseByteArrayElements(env, jCertificate, certByte, 0);
+
+    Identity *curIdentity = nil;
+    NSArray *identities = [[Keychain defaultKeychain] identities];
+    if (identities) {
+        NSEnumerator *enumerator = [identities objectEnumerator];
+        while (curIdentity = (Identity*)[enumerator nextObject]) {
+			NSLog(@"+++++++");
+			if([[[curIdentity certificate] serialNumber] isEqualToData:[certificate serialNumber]]) {
+				return (*env)->NewByteArray(env, (jbyte*)[[[curIdentity certificate] data] bytes]);
+			}
+        }
+    }
+	return NULL;
 }

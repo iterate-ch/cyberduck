@@ -44,6 +44,14 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addInternetPasswordToKeyc
 
 /*
  * Class:     ch_cyberduck_core_Keychain
+ * Method:    getCertificateFromKeychain
+ * Signature: ([B)V
+ */
+JNIEXPORT jbyteArray JNICALL Java_ch_cyberduck_core_Keychain_getCertificateFromKeychain
+  (JNIEnv *, jobject, jbyteArray);
+
+/*
+ * Class:     ch_cyberduck_core_Keychain
  * Method:    addCertificateToKeychain
  * Signature: ([B)V
  */
