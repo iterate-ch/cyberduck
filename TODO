@@ -1,5 +1,4 @@
 [????] Server to Server Transfers (FXP)
-[????] NSWorkspace noteFileSystemChangedAtPath when downloading
 [????] SFTP protocol version 4 (support for SSH_FILEXFER_ATTR_OWNERGROUP)
 [????] Group bookmarks (Outline View)
 [????] Calculate folder sizes
@@ -13,7 +12,9 @@
 [DONE] NSSegmentedControl in toolbar view to switch view
 [DONE] Outline View in browser window
 [DONE] Column View in browser window
+[DONE] NSWorkspace noteFileSystemChangedAtPath when downloading
 [????] Drag and drop in browser column view
+[DONE] Drag and drop in outline  column view
 [DONE] Set character encoding per bookmark
 [DONE] History of recently connected hosts in connection dialog
 [DONE] History of recently connected hosts in bookmark menu
@@ -21,6 +22,6 @@
 [DONE] Selecting remote server timezone in synchronization dialog
 [DONE] Set FTP connect mode per bookmark (FTP)
 [DONE] Show folders in working directory (and autocomplete) in 'Go to Folder' dialog
-[DONE] Preferences previously only avilable using the 'defaults' command
+[DONE] Preferences previously only available using the 'defaults' command
 [DONE] Manually exclude files in synchronization dialog
 

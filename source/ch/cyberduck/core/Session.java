@@ -72,7 +72,6 @@ public abstract class Session extends Observable {
 		log.debug("Session("+h+")");
 		this.host = h;
 		this.history = new ArrayList();
-//		this.transcript = TranscriptFactory.getImpl(host.getHostname());
 	}
 
 	public void callObservers(Object arg) {
@@ -105,18 +104,6 @@ public abstract class Session extends Observable {
 		this.connect(this.host.getEncoding());
 	}
 
-//	public void open() {
-//		try {
-//			this.check();
-//		}
-//		catch(IOException e) {
-//			this.log("IO Error: "+e.getMessage(), Message.ERROR);
-//			Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl Notification"),
-//									host.getHostname());
-//			this.close();
-//		}
-//	}
-		
 	/**
 	 * Connect to the remote host and mount the home directory
 	 */
@@ -264,6 +251,10 @@ public abstract class Session extends Observable {
 		}
 		return workdir();
 	}
+
+    public Path[] getHistory() {
+        return (Path[])this.history.toArray(new Path[this.history.size()]);
+    }
 
 	public Cache cache() {
 		return this.cache;

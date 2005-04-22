@@ -30,6 +30,7 @@ import com.apple.cocoa.foundation.NSDictionary;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
@@ -160,7 +161,13 @@ public class SFTPPath extends Path {
 			if(notifyObservers) {
 				session.callObservers(this);
 			}
-			return session.cache().get(this.getAbsolute(), filter);
+            List files = session.cache().get(this.getAbsolute());
+			for(Iterator i = files.iterator(); i.hasNext(); ) {
+				if(!filter.accept((Path)i.next())) {
+					i.remove();
+				}
+			}
+            return files;
 		}
 	}
 

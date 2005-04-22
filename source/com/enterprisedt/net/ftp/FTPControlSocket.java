@@ -33,8 +33,6 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Preferences;
-
 /**
  * Supports client-side FTP operations
  *
@@ -82,10 +80,6 @@ public class FTPControlSocket {
     }
 
 	protected FTPMessageListener listener = null;
-
-	protected FTPControlSocket() {
-		//todo
-	}
 	
 	/**
 	 * Constructor. Performs TCP connection and
@@ -127,7 +121,6 @@ public class FTPControlSocket {
 		this.validateConnection();
 	}
 	
-	//@todo
 	public Socket getSocket() {
 		return this.controlSock;
 	}

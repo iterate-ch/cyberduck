@@ -513,7 +513,7 @@ public abstract class Channel {
 	                    long senderChannelId, long initialWindowSize, long maximumPacketSize,
 	                    ChannelEventListener eventListener) throws IOException {
 		if(eventListener != null) {
-			addEventListener(eventListener);
+			this.addEventListener(eventListener);
 		}
 
 		init(connection, localChannelId, senderChannelId, initialWindowSize,

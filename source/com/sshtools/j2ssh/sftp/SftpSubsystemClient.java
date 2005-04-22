@@ -26,13 +26,6 @@
  */
 package com.sshtools.j2ssh.sftp;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.connection.ChannelState;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
@@ -41,6 +34,14 @@ import com.sshtools.j2ssh.subsystem.SubsystemChannel;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 import com.sshtools.j2ssh.transport.MessageNotAvailableException;
 import com.sshtools.j2ssh.transport.MessageStoreEOFException;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author $author$
@@ -91,7 +92,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 		// We will use our own message store implementation
 		super("sftp", new SftpMessageStore(encoding), encoding);
 		messageStore = (SftpMessageStore)super.messageStore;
-		registerMessages();
+		this.registerMessages();
 	}
 
 	/**
@@ -718,7 +719,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 		log.info("Initializing SFTP protocol version "+
 		    String.valueOf(version));
 
-		if(!startSubsystem()) {
+		if(!this.startSubsystem()) {
 			return false;
 		}
 

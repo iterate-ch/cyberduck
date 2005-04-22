@@ -26,15 +26,6 @@
  */
 package com.sshtools.j2ssh;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.sshtools.j2ssh.authentication.AuthenticationProtocolClient;
 import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
 import com.sshtools.j2ssh.authentication.PublicKeyAuthenticationClient;
@@ -51,6 +42,16 @@ import com.sshtools.j2ssh.transport.TransportProtocolClient;
 import com.sshtools.j2ssh.transport.TransportProtocolState;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 import com.sshtools.j2ssh.util.State;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -1054,8 +1055,9 @@ public class SshClient {
 	 * @throws IOException
 	 * @throws SshException
 	 */
-	public SftpSubsystemClient openSftpChannel(ChannelEventListener eventListener, String encoding) throws IOException {
-		SessionChannelClient session = openSessionChannel(eventListener);
+	public SftpSubsystemClient openSftpChannel(ChannelEventListener eventListener, String encoding)
+            throws IOException {
+		this.openSessionChannel(eventListener);
 		SftpSubsystemClient sftp = new SftpSubsystemClient(encoding);
 
 		if(!openChannel(sftp)) {

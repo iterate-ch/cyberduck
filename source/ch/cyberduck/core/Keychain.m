@@ -101,8 +101,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_hasCertificate (JNIEn
 			if([item isKindOfClass:[KeychainItem class]]) {
 				KeychainItem *result = (KeychainItem*)item;
 				if([result isCertificate]) {
-					Certificate *curCertificate = [Certificate certificateWithData:[result data] type:CSSM_CERT_X_509v3 encoding:CSSM_CERT_ENCODING_DER];
-					if([curCertificate isEqualToCertificate:certificate]) {
+					if([[result certificate] isEqualToCertificate:certificate]) {
 						return TRUE;
 					}
 				}

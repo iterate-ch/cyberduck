@@ -52,8 +52,8 @@ public class Message {
 	private Object content;
 
 	/**
-	 * @param t The title of the mesage
-	 * @param d The description of the mesage
+	 * @param title The title of the mesage
+	 * @param content The description of the mesage
 	 */
 	public Message(String title, Object content) {
 		this.title = title;
@@ -61,7 +61,7 @@ public class Message {
 	}
 
 	/**
-	 * @param d The title of the mesage
+	 * @param title The title of the mesage
 	 */
 	public Message(String title) {
 		this.title = title;

@@ -586,7 +586,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 }
             }
         }
-	}	
+	}
+
 	private void sort() {
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
@@ -615,7 +616,16 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
 	}
 	
-    public void update(Observable o, Object arg) {
+    public void update(final Observable o, final Object arg) {
+        if(!Thread.currentThread().getName().equals("main")
+        && !Thread.currentThread().getName().equals("AWT-AppKit")) {
+            this.invoke(new Runnable() {
+                public void run(){
+                    update(o, arg);
+                }
+            });
+            return;
+        }
         if (arg instanceof Path) {
             this.workdir = (Path) arg;
             this.reloadData();
@@ -628,7 +638,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 this.statusIcon.setNeedsDisplay(true);
                 this.statusLabel.setAttributedStringValue(new NSAttributedString((String) msg.getContent(),
                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                this.statusLabel.display();
+                this.statusLabel.setNeedsDisplay(true);
                 this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
                         (String) msg.getContent(), // message
                         NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
@@ -639,7 +649,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             else if (msg.getTitle().equals(Message.PROGRESS)) {
                 this.statusLabel.setAttributedStringValue(new NSAttributedString((String) msg.getContent(),
                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                this.statusLabel.display();
+                this.statusLabel.setNeedsDisplay(true);
             }
             else if (msg.getTitle().equals(Message.REFRESH)) {
                 this.reloadButtonClicked(null);
@@ -648,26 +658,22 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 progressIndicator.startAnimation(this);
                 statusIcon.setImage(null);
                 statusIcon.setNeedsDisplay(true);
-                this.toolbar.validateVisibleItems();
             }
             else if (msg.getTitle().equals(Message.CLOSE)) {
                 progressIndicator.stopAnimation(this);
                 statusIcon.setImage(null);
                 statusIcon.setNeedsDisplay(true);
-                this.toolbar.validateVisibleItems();
             }
             else if (msg.getTitle().equals(Message.START)) {
                 statusIcon.setImage(null);
-                statusIcon.display();
+                statusIcon.setNeedsDisplay(true);
                 progressIndicator.startAnimation(this);
-                this.toolbar.validateVisibleItems();
             }
             else if (msg.getTitle().equals(Message.STOP)) {
                 progressIndicator.stopAnimation(this);
                 statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                statusLabel.display();
-                this.toolbar.validateVisibleItems();
+                statusLabel.setNeedsDisplay(true);
 //                        if(isMounted()) {
 //                            if(workdir().getSession().isSecure()) {
 //                                statusIcon.setImage(NSImage.imageNamed("locked.tiff"));
@@ -841,7 +847,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		this.browserColumnView.setSendsActionOnArrowKeys(true);
         this.browserColumnView.setMaxVisibleColumns(5);
         this.browserColumnView.setAllowsEmptySelection(true);
-        this.browserColumnView.setAllowsMultipleSelection(false);
+        this.browserColumnView.setAllowsMultipleSelection(true);
 		this.browserColumnView.setAllowsBranchSelection(true);
         this.browserColumnView.setPathSeparator("/");
         this.browserColumnView.setReusesColumns(false);
@@ -915,13 +921,13 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     protected void _updateBrowserTableColumns() {
         log.debug("_updateBrowserTableColumns");
-		{
-			java.util.Enumeration enum = this.browserOutlineView.tableColumns().objectEnumerator();
-			while (enum.hasMoreElements()) {
-				this.browserOutlineView.removeTableColumn((NSTableColumn) enum.nextElement());
-			}
-			this.browserOutlineView.setOutlineTableColumn(null);
-		}
+//		{
+//			java.util.Enumeration enum = this.browserOutlineView.tableColumns().objectEnumerator();
+//			while (enum.hasMoreElements()) {
+//				this.browserOutlineView.removeTableColumn((NSTableColumn) enum.nextElement());
+//			}
+//			this.browserOutlineView.setOutlineTableColumn(null);
+//		}
 		{
 			java.util.Enumeration enum = this.browserListView.tableColumns().objectEnumerator();
 			while (enum.hasMoreElements()) {
@@ -1783,6 +1789,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void disconnectButtonClicked(Object sender) {
 		this.unmount();
+		this.reloadData();
     }
 
     public void showHiddenFilesClicked(Object sender) {
@@ -1798,7 +1805,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			}
             if (this.isMounted()) {
 				this.deselectAll();
-                this.workdir().list(this.encoding, true, this.getFileFilter());
+                this.workdir().list(this.encoding, true, this.filenameFilter);
             }
         }
     }

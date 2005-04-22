@@ -23,10 +23,12 @@ import com.sshtools.j2ssh.SshEventAdapter;
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.authentication.*;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
+import com.sshtools.j2ssh.connection.ChannelEventAdapter;
+import com.sshtools.j2ssh.connection.Channel;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
+import com.sshtools.j2ssh.transport.HostKeyVerification;
 import com.sshtools.j2ssh.transport.TransportProtocol;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
-import com.sshtools.j2ssh.transport.HostKeyVerification;
 
 import com.apple.cocoa.foundation.NSAutoreleasePool;
 
@@ -164,14 +166,22 @@ public class SFTPSession extends Session {
 			this.log(Message.PROGRESS, "SSH connection opened");
 			String id = SSH.getServerId();
 			this.host.setIdentification(id);
-			this.log(Message.TRANSCRIPT, id);
-			log.info(SSH.getAvailableAuthMethods(host.getCredentials().getUsername()));
-			this.login();
-			this.log(Message.PROGRESS, "Starting SFTP subsystem...");
-			this.SFTP = SSH.openSftpChannel(encoding);
-			this.log(Message.PROGRESS, "SFTP subsystem ready");
-		}
-	}
+            this.log(Message.TRANSCRIPT, id);
+            log.info(SSH.getAvailableAuthMethods(host.getCredentials().getUsername()));
+            this.login();
+            this.log(Message.PROGRESS, "Starting SFTP subsystem...");
+            final Transcript transcript = TranscriptFactory.getImpl(this.host.getHostname());
+            this.SFTP = SSH.openSftpChannel(new ChannelEventAdapter() {
+                public void onDataReceived(Channel channel, byte[] data) {
+                    transcript.log(new String(data));
+                }
+                public void onDataSent(Channel channel, byte[] data) {
+                    transcript.log(new String(data));
+                }
+            }, encoding);
+            this.log(Message.PROGRESS, "SFTP subsystem ready");
+        }
+    }
 
 	private int loginUsingKBIAuthentication(final Login credentials) throws IOException {
 		log.info("Trying Keyboard Interactive (PAM) authentication...");

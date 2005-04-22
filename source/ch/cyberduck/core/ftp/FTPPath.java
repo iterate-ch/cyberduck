@@ -24,6 +24,7 @@ import com.apple.cocoa.foundation.NSPathUtilities;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
@@ -147,7 +148,13 @@ public class FTPPath extends Path {
             if (notifyObservers) {
                 session.callObservers(this);
             }
-            return session.cache().get(this.getAbsolute(), filter);
+            List files = session.cache().get(this.getAbsolute());
+			for(Iterator i = files.iterator(); i.hasNext(); ) {
+				if(!filter.accept((Path)i.next())) {
+					i.remove();
+				}
+			}
+            return files;
         }
     }
 

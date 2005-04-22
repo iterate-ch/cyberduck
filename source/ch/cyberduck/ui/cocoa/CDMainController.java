@@ -134,10 +134,10 @@ public class CDMainController extends CDController {
 
 	private NSMenu bookmarkMenu;
 	private NSMenu rendezvousMenu;
-	private NSMenu historyMenu;
+//	private NSMenu historyMenu;
 	private Object bookmarkMenuDelegate;
 	private Object rendezvousMenuDelegate;
-	private Object historyMenuDelegate;
+//	private Object historyMenuDelegate;
 	private Rendezvous rendezvous;
 
 	public void setBookmarkMenu(NSMenu bookmarkMenu) {
@@ -145,8 +145,8 @@ public class CDMainController extends CDController {
 		this.bookmarkMenu = bookmarkMenu;
 		this.rendezvousMenu = new NSMenu();
 		this.rendezvousMenu.setAutoenablesItems(false);
-		this.historyMenu = new NSMenu();
-		this.historyMenu.setAutoenablesItems(false);
+//		this.historyMenu = new NSMenu();
+//		this.historyMenu.setAutoenablesItems(false);
 		NSSelector setDelegateSelector =
 		    new NSSelector("setDelegate", new Class[]{Object.class});
 		if(setDelegateSelector.implementedByClass(NSMenu.class)) {
@@ -154,7 +154,7 @@ public class CDMainController extends CDController {
 //			this.historyMenu.setDelegate(this.historyMenuDelegate = new HistoryMenuDelegate());
 			this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = new RendezvousMenuDelegate(this.rendezvous = Rendezvous.instance()));
 		}
-		this.bookmarkMenu.setSubmenuForItem(historyMenu, this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("History", "")));
+//		this.bookmarkMenu.setSubmenuForItem(historyMenu, this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("History", "")));
 		this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("Rendezvous", "")));
 	}
 
@@ -166,7 +166,7 @@ public class CDMainController extends CDController {
 		}
 
 		public int numberOfItemsInMenu(NSMenu menu) {
-			return CDBookmarkTableDataSource.instance().size()+7; 
+			return CDBookmarkTableDataSource.instance().size()+6;
 			//index 0-3 are static menu items, 4 is sepeartor, 5 is Rendezvous with submenu, 6 is History submenu, 7 is sepearator
 		}
 
@@ -179,16 +179,16 @@ public class CDMainController extends CDController {
 		 * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
 		 */
 		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
+//			if(index == 4) {
+//				item.setEnabled(true);
+//				item.setImage(NSImage.imageNamed("history.tiff"));
+//			}
 			if(index == 4) {
-				item.setEnabled(true);
-				item.setImage(NSImage.imageNamed("history.tiff"));
-			}
-			if(index == 5) {
 				item.setEnabled(true);
 				item.setImage(NSImage.imageNamed("rendezvous16.tiff"));
 			}
-			if(index > 6) {
-				Host h = (Host)CDBookmarkTableDataSource.instance().get(index-7);
+			if(index > 5) {
+				Host h = (Host)CDBookmarkTableDataSource.instance().get(index-6);
 				item.setTitle(h.getNickname());
 				item.setTarget(this);
                 item.setImage(NSImage.imageNamed("document16.tiff"));
@@ -205,87 +205,87 @@ public class CDMainController extends CDController {
 		}
 	}
 
-	private static final File HISTORY_FOLDER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History"));
-
-	private class HistoryMenuDelegate extends NSObject {
-
-        private File[] listFiles() {
-            return HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    if(name.endsWith(".duck"))
-                        return true;
-                    return false;
-                }
-            });
-        }
-
-		public int numberOfItemsInMenu(NSMenu menu) {
-            File[] items = this.listFiles();
-            if(items.length > 0) {
-                return items.length+2;
-            }
-            return 1;
-		}
-
-		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
-            File[] items = this.listFiles();
-			if(items.length == 0) {
-				sender.setTitle(NSBundle.localizedString("No recently connected servers available", ""));
-				sender.setImage(null);
-				sender.setEnabled(false);
-				return !shouldCancel;
-			}
-			if(index == items.length) {
-				sender = new NSMenuItem().separatorItem();
-				sender.setTitle("");
-				sender.setImage(null);
-				sender.setTarget(this);
-				sender.setEnabled(false);
-				sender.setAction(null);
-				return !shouldCancel;
-			}
-			if(index == items.length+1) {
-				sender.setTitle(NSBundle.localizedString("Clear", ""));
-				sender.setImage(null);
-				sender.setTarget(this);
-				sender.setEnabled(true);
-				sender.setAction(new NSSelector("clearHistoryMenuClicked", new Class[]{NSMenuItem.class}));
-				return false;
-			}
-			Host h = CDBookmarkTableDataSource.instance().importBookmark(items[index]);
-			sender.setTitle(h.toString());
-			sender.setTarget(this);
-			sender.setEnabled(true);
-			sender.setImage(NSImage.imageNamed("document16.tiff"));
-			sender.setAction(new NSSelector("historyMenuClicked", new Class[]{NSMenuItem.class}));
-			return !shouldCancel;
-		}
-
-        public void clearHistoryMenuClicked(NSMenuItem sender) {
-            File[] items = HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    if(name.endsWith(".duck"))
-                        return true;
-                    return false;
-                }
-            });
-            for(int i = 0; i < items.length; i++) {
-                items[i].delete();
-            }
-            historyMenu.update();
-        }
-
-		public void historyMenuClicked(NSMenuItem sender) {
-            File[] items = this.listFiles();
-            for(int i = 0; i < items.length; i++) {
-                Host h = CDBookmarkTableDataSource.instance().importBookmark(items[i]);
-                if(h.equals(sender.title())) {
-                    CDBrowserController controller = CDMainController.this.newDocument();
-                    controller.mount(h);
-                }
-            }
-		}
-	}
+//	private static final File HISTORY_FOLDER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History"));
+//
+//	private class HistoryMenuDelegate extends NSObject {
+//
+//        private File[] listFiles() {
+//            return HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
+//                public boolean accept(File dir, String name) {
+//                    if(name.endsWith(".duck"))
+//                        return true;
+//                    return false;
+//                }
+//            });
+//        }
+//
+//		public int numberOfItemsInMenu(NSMenu menu) {
+//            File[] items = this.listFiles();
+//            if(items.length > 0) {
+//                return items.length+2;
+//            }
+//            return 1;
+//		}
+//
+//		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
+//            File[] items = this.listFiles();
+//			if(items.length == 0) {
+//				sender.setTitle(NSBundle.localizedString("No recently connected servers available", ""));
+//				sender.setImage(null);
+//				sender.setEnabled(false);
+//				return !shouldCancel;
+//			}
+//			if(index == items.length) {
+//				sender = new NSMenuItem().separatorItem();
+//				sender.setTitle("");
+//				sender.setImage(null);
+//				sender.setTarget(this);
+//				sender.setEnabled(false);
+//				sender.setAction(null);
+//				return !shouldCancel;
+//			}
+//			if(index == items.length+1) {
+//				sender.setTitle(NSBundle.localizedString("Clear", ""));
+//				sender.setImage(null);
+//				sender.setTarget(this);
+//				sender.setEnabled(true);
+//				sender.setAction(new NSSelector("clearHistoryMenuClicked", new Class[]{NSMenuItem.class}));
+//				return false;
+//			}
+//			Host h = CDBookmarkTableDataSource.instance().importBookmark(items[index]);
+//			sender.setTitle(h.toString());
+//			sender.setTarget(this);
+//			sender.setEnabled(true);
+//			sender.setImage(NSImage.imageNamed("document16.tiff"));
+//			sender.setAction(new NSSelector("historyMenuClicked", new Class[]{NSMenuItem.class}));
+//			return !shouldCancel;
+//		}
+//
+//        public void clearHistoryMenuClicked(NSMenuItem sender) {
+//            File[] items = HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
+//                public boolean accept(File dir, String name) {
+//                    if(name.endsWith(".duck"))
+//                        return true;
+//                    return false;
+//                }
+//            });
+//            for(int i = 0; i < items.length; i++) {
+//                items[i].delete();
+//            }
+//            historyMenu.update();
+//        }
+//
+//		public void historyMenuClicked(NSMenuItem sender) {
+//            File[] items = this.listFiles();
+//            for(int i = 0; i < items.length; i++) {
+//                Host h = CDBookmarkTableDataSource.instance().importBookmark(items[i]);
+//                if(h.equals(sender.title())) {
+//                    CDBrowserController controller = CDMainController.this.newDocument();
+//                    controller.mount(h);
+//                }
+//            }
+//		}
+//	}
 	
 	private class RendezvousMenuDelegate extends NSObject implements Observer {
 		private Map items = new HashMap();

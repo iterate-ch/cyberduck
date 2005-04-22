@@ -143,6 +143,22 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 									 }
 								 });
 			}
+			else if (tableColumn.identifier().equals("PERMISSIONS")) {
+				Collections.sort(this.cache(controller.workdir()),
+								 new Comparator() {
+									 public int compare(Object o1, Object o2) {
+                                         int p1 = Integer.parseInt(((Path) o1).attributes.getPermission().getOctalCode());
+                                         int p2 = Integer.parseInt(((Path) o2).attributes.getPermission().getOctalCode());
+                                         if (p1 > p2) {
+                                             return higher;
+                                         }
+                                         else if (p1 < p2) {
+                                             return lower;
+                                         }
+                                         return 0;
+									 }
+								 });
+			}
 		}
 	}
 	

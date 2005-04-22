@@ -21,6 +21,9 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Message;
@@ -252,8 +255,8 @@ public class CDQueueController extends CDWindowController {
 	}
 
 	private void startItem(final Queue queue, final boolean resumeRequested) {
-		queue.addObserver(new java.util.Observer() {
-			public void update(final java.util.Observable o, final Object arg) {
+		queue.addObserver(new Observer() {
+			public void update(final Observable o, final Object arg) {
 				Message msg = (Message)arg;
 				if(msg.getTitle().equals(Message.QUEUE_START)) {
 					CDQueueController.this.invoke(new Runnable() {

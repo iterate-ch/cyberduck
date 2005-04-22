@@ -83,6 +83,8 @@
 	int				index = 0;
 	NSString*		wndTitle = nil;
 	
+	[[[tabView window] standardWindowButton:NSWindowToolbarButton] setFrame:NSMakeRect(0,0,0,0)];
+
 	// Generate a string containing the window's title so we can display the original window title plus the selected pane:
 	wndTitle = [[tabView window] title];
 	if( [wndTitle length] > 0 )
@@ -180,6 +182,7 @@
 -(void)			setTabView: (NSTabView*)tv
 {
 	tabView = tv;
+	[tabView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
 }
 
 
@@ -274,6 +277,18 @@
 	
 	[tabView selectTabViewItemAtIndex: [sender tag]];
 	[[tabView window] setTitle: [baseWindowName stringByAppendingString: [sender label]]];
+	
+//	NSArray *subviews = [tabView subviews];
+//	NSEnumerator *enumerator = [subviews objectEnumerator];
+//	NSRect windowRect = NSZeroRect;
+//	NSView *subview = nil;
+//	while((subview = [enumerator nextObject]))
+//	{
+//		windowRect = NSUnionRect(windowRect, [subview frame]);
+//	}
+//	windowRect.origin.x = [[tabView window] frame].origin.x;
+//	windowRect.origin.y = [[tabView window] frame].origin.y;
+//	[[tabView window] setFrame:windowRect display:YES animate:YES];
 	
 	key = [NSString stringWithFormat: @"%@.prefspanel.recentpage", autosaveName];
 	[[NSUserDefaults standardUserDefaults] setInteger:[sender tag] forKey:key];

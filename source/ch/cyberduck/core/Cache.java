@@ -19,29 +19,28 @@ package ch.cyberduck.core;
  */
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
 public class Cache extends HashMap {
-	private static Logger log = Logger.getLogger(Cache.class);
 
-	public List get(String path, Filter filter) {
-		List files = new ArrayList((List)super.get(path));
-		if(files != null) {
-			for(Iterator i = files.iterator(); i.hasNext(); ) {
-				if(!filter.accept((Path)i.next())) {
-					i.remove();
-				}
-			}
-		}
-		return files;
-	}
+    public List get(String path) {
+        return (List)super.get(path);
+    }
+
+//	public List get(String path, Filter filter) {
+//		List files = new ArrayList((List)super.get(path));
+//		if(files != null) {
+//			for(Iterator i = files.iterator(); i.hasNext(); ) {
+//				if(!filter.accept((Path)i.next())) {
+//					i.remove();
+//				}
+//			}
+//		}
+//		return files;
+//	}
 
 	public void put(String path, List childs) {
 		super.put(path, childs);

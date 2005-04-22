@@ -26,10 +26,6 @@
  */
 package com.sshtools.j2ssh.subsystem;
 
-import java.io.IOException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.sshtools.j2ssh.connection.Channel;
 import com.sshtools.j2ssh.connection.SshMsgChannelData;
 import com.sshtools.j2ssh.connection.SshMsgChannelExtendedData;
@@ -38,8 +34,10 @@ import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.DynamicBuffer;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 
-import ch.cyberduck.core.Transcript;
-import ch.cyberduck.core.TranscriptFactory;
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public abstract class SubsystemChannel extends Channel {
 	private static Log log = LogFactory.getLog(SubsystemChannel.class);
@@ -49,17 +47,16 @@ public abstract class SubsystemChannel extends Channel {
 	DynamicBuffer buffer = new DynamicBuffer();
 	int nextMessageLength = -1;
 	private String encoding;
-	private Transcript transcript;
 
 	public SubsystemChannel(String name, String encoding) {
 		this(name, new SubsystemMessageStore(encoding), encoding);
 	}
 
-	public SubsystemChannel(String name, SubsystemMessageStore messageStore, String encoding) {
+	public SubsystemChannel(String name, SubsystemMessageStore messageStore,
+                            String encoding) {
 		this.name = name;
 		this.messageStore = messageStore;
 		this.encoding = encoding;
-		this.transcript = TranscriptFactory.getImpl(name); //@nice get proper logger
 	}
 
 	public String getChannelType() {
@@ -67,7 +64,6 @@ public abstract class SubsystemChannel extends Channel {
 	}
 
 	protected void sendMessage(SubsystemMessage msg) throws InvalidMessageException, IOException {
-		transcript.log("> "+msg.getMessageName());
 		if(log.isDebugEnabled()) {
 			log.debug("Sending "+msg.getMessageName()+" subsystem message");
 		}

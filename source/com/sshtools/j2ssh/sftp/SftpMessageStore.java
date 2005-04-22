@@ -26,31 +26,27 @@
  */
 package com.sshtools.j2ssh.sftp;
 
-import java.util.Iterator;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 import com.sshtools.j2ssh.subsystem.SubsystemMessageStore;
 import com.sshtools.j2ssh.util.OpenClosedState;
 
+import java.util.Iterator;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Transcript;
-import ch.cyberduck.core.TranscriptFactory;
 
 class SftpMessageStore extends SubsystemMessageStore {
 	public static Log log = LogFactory.getLog(SftpMessageStore.class);
 
-	private Transcript transcript;
 
 	/**
 	 * Creates a new SftpMessageStore object.
 	 */
 	public SftpMessageStore(String encoding) {
 		super(encoding);
-		this.transcript = TranscriptFactory.getImpl(this.toString()); 
-		//@todo get proper logger
 	}
 
 	/**
@@ -67,14 +63,11 @@ class SftpMessageStore extends SubsystemMessageStore {
 		while(getState().getValue() == OpenClosedState.OPEN) {
 			if(messages.size() > 0) {
 				it = messages.iterator();
-
 				while(it.hasNext()) {
 					msg = (SubsystemMessage)it.next();
-
 					if(msg instanceof MessageRequestId) {
 						if(((MessageRequestId)msg).getId().equals(requestId)) {
 							messages.remove(msg);
-							this.transcript.log("< "+msg.getMessageName());
 							return msg;
 						}
 					}

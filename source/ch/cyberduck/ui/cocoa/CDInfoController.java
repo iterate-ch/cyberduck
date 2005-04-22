@@ -382,31 +382,17 @@ public class CDInfoController extends CDWindowController {
         }
         final Permission permission = this.getPermissionFromSelection();
         permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")+" | "+permission.toString());
-		this.applyButtonClicked(sender);
     }
 
 	public void applyButtonClicked(Object sender) {
 		log.debug("applyButtonClicked");
-		boolean[][] p = new boolean[3][3];
-
-		p[Permission.OWNER][Permission.READ] = (ownerr.state() == NSCell.OnState);
-		p[Permission.OWNER][Permission.WRITE] = (ownerw.state() == NSCell.OnState);
-		p[Permission.OWNER][Permission.EXECUTE] = (ownerx.state() == NSCell.OnState);
-
-		p[Permission.GROUP][Permission.READ] = (groupr.state() == NSCell.OnState);
-		p[Permission.GROUP][Permission.WRITE] = (groupw.state() == NSCell.OnState);
-		p[Permission.GROUP][Permission.EXECUTE] = (groupx.state() == NSCell.OnState);
-
-		p[Permission.OTHER][Permission.READ] = (otherr.state() == NSCell.OnState);
-		p[Permission.OTHER][Permission.WRITE] = (otherw.state() == NSCell.OnState);
-		p[Permission.OTHER][Permission.EXECUTE] = (otherx.state() == NSCell.OnState);
-
 		final Permission permission = this.getPermissionFromSelection();
 		// send the changes to the remote host
 		Path f = null;
 		for(Iterator i = files.iterator(); i.hasNext();) {
 			f = (Path)i.next();
-			f.changePermissions(permission, this.recursiveCheckbox.state() == NSCell.OnState);
+			f.changePermissions(permission,
+                    this.recursiveCheckbox.state() == NSCell.OnState);
 		}
 		// refresh the file listing so that the observers (if any) get notified of the change
 		f.getParent().list(true);

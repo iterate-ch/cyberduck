@@ -205,27 +205,25 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 			}
 			return true;
 		}
-		else if(row != -1 && row < outlineView.numberOfRows()) {
-            NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-            log.debug("availableTypeFromArray:QueuePBoardType: "+pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
-            if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-                outlineView.deselectAll(null);
-                NSArray elements = (NSArray)pboard.propertyListForType("QueuePBoardType");
-                for(int i = 0; i < elements.count(); i++) {
-                    NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
-                    Queue q = Queue.createQueue(dict);
-                    for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                        Path p = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
-                        p.getParent().invalidate();
-                        p.rename(item.getAbsolute()+"/"+p.getName());
-                        item.invalidate();
-                        outlineView.reloadData();
-                        outlineView.reloadItemAndChildren(p.getParent(), true);
-                        outlineView.reloadItemAndChildren(item, true);
-                    }
-                }
-                return true;
+		NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+		log.debug("availableTypeFromArray:QueuePBoardType: "+pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
+		if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+			outlineView.deselectAll(null);
+			NSArray elements = (NSArray)pboard.propertyListForType("QueuePBoardType");
+			for(int i = 0; i < elements.count(); i++) {
+				NSDictionary dict = (NSDictionary)elements.objectAtIndex(i);
+				Queue q = Queue.createQueue(dict);
+				for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
+					Path p = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
+					p.getParent().invalidate();
+					p.rename(item.getAbsolute()+"/"+p.getName());
+					item.invalidate();
+					outlineView.reloadData();
+					outlineView.reloadItemAndChildren(p.getParent(), true);
+					outlineView.reloadItemAndChildren(item, true);
+				}
 			}
+			return true;
 		}
 		return false;
 	}
