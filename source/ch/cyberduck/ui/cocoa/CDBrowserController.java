@@ -332,7 +332,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
             NSWindow window = (NSWindow) windows.objectAtIndex(count);
             CDBrowserController controller = CDBrowserController.controllerForWindow(window);
             if (null != controller) {
-                controller._updateBrowserTableColumns();
+                controller._updateBrowserTableColumns(controller.browserListView);
+                controller._updateBrowserTableColumns(controller.browserOutlineView);
             }
         }
     }
@@ -340,7 +341,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public void awakeFromNib() {
         super.awakeFromNib();
 
-        this._updateBrowserTableColumns();
+        this._updateBrowserTableColumns(this.browserListView);
+        this._updateBrowserTableColumns(this.browserOutlineView);
 
         // Configure window
         this.window().setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
@@ -798,6 +800,20 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
         this.browserOutlineView.setDataSource(this.browserOutlineModel = new CDBrowserOutlineViewModel(this));
         this.browserOutlineView.setDelegate(this.browserOutlineModel);
+
+        {
+            NSTableColumn c = new NSTableColumn();
+            c.headerCell().setStringValue(NSBundle.localizedString("Filename", "A column in the browser"));
+            c.setIdentifier("FILENAME");
+            c.setMinWidth(100f);
+            c.setWidth(250f);
+            c.setMaxWidth(1000f);
+            c.setResizable(true);
+            c.setDataCell(new CDOutlineCell());
+            c.dataCell().setAlignment(NSText.LeftTextAlignment);
+            this.browserOutlineView.addTableColumn(c);
+            this.browserOutlineView.setOutlineTableColumn(c);
+        }
     }
 
     private CDBrowserListViewModel browserListModel;
@@ -833,6 +849,32 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
         this.browserListView.setDataSource(this.browserListModel = new CDBrowserListViewModel(this));
         this.browserListView.setDelegate(this.browserListModel);
+
+        {
+            NSTableColumn c = new NSTableColumn();
+            c.setIdentifier("TYPE");
+            c.headerCell().setStringValue("");
+            c.setMinWidth(20f);
+            c.setWidth(20f);
+            c.setMaxWidth(20f);
+            c.setResizable(true);
+            c.setEditable(false);
+            c.setDataCell(new NSImageCell());
+            c.dataCell().setAlignment(NSText.CenterTextAlignment);
+            this.browserListView.addTableColumn(c);
+        }
+        {
+            NSTableColumn c = new NSTableColumn();
+            c.headerCell().setStringValue(NSBundle.localizedString("Filename", "A column in the browser"));
+            c.setIdentifier("FILENAME");
+            c.setMinWidth(100f);
+            c.setWidth(250f);
+            c.setMaxWidth(1000f);
+            c.setResizable(true);
+            c.setDataCell(new NSTextFieldCell());
+            c.dataCell().setAlignment(NSText.LeftTextAlignment);
+            this.browserListView.addTableColumn(c);
+        }
     }
 
     private CDBrowserColumnViewModel browserColumnModel;
@@ -919,59 +961,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
     }
 
-    protected void _updateBrowserTableColumns() {
+    protected void _updateBrowserTableColumns(NSTableView table) {
         log.debug("_updateBrowserTableColumns");
-//		{
-//			java.util.Enumeration enum = this.browserOutlineView.tableColumns().objectEnumerator();
-//			while (enum.hasMoreElements()) {
-//				this.browserOutlineView.removeTableColumn((NSTableColumn) enum.nextElement());
-//			}
-//			this.browserOutlineView.setOutlineTableColumn(null);
-//		}
-		{
-			java.util.Enumeration enum = this.browserListView.tableColumns().objectEnumerator();
-			while (enum.hasMoreElements()) {
-				this.browserListView.removeTableColumn((NSTableColumn) enum.nextElement());
-			}
-		}
-        {
-            NSTableColumn c = new NSTableColumn();
-            c.setIdentifier("TYPE");
-            c.headerCell().setStringValue("");
-            c.setMinWidth(20f);
-            c.setWidth(20f);
-            c.setMaxWidth(20f);
-            c.setResizable(true);
-            c.setEditable(false);
-            c.setDataCell(new NSImageCell());
-            c.dataCell().setAlignment(NSText.CenterTextAlignment);
-            this.browserListView.addTableColumn(c);
-        }
-        {
-            NSTableColumn c = new NSTableColumn();
-            c.headerCell().setStringValue(NSBundle.localizedString("Filename", "A column in the browser"));
-            c.setIdentifier("FILENAME");
-            c.setMinWidth(100f);
-            c.setWidth(250f);
-            c.setMaxWidth(1000f);
-            c.setResizable(true);
-            c.setDataCell(new CDOutlineCell());
-            c.dataCell().setAlignment(NSText.LeftTextAlignment);
-            this.browserOutlineView.addTableColumn(c);
-            this.browserOutlineView.setOutlineTableColumn(c);
-        }
-        {
-            NSTableColumn c = new NSTableColumn();
-            c.headerCell().setStringValue(NSBundle.localizedString("Filename", "A column in the browser"));
-            c.setIdentifier("FILENAME");
-            c.setMinWidth(100f);
-            c.setWidth(250f);
-            c.setMaxWidth(1000f);
-            c.setResizable(true);
-            c.setDataCell(new NSTextFieldCell());
-            c.dataCell().setAlignment(NSText.LeftTextAlignment);
-            this.browserListView.addTableColumn(c);
-        }
+        table.removeTableColumn(table.tableColumnWithIdentifier("SIZE"));
         if (Preferences.instance().getBoolean("browser.columnSize")) {
             NSTableColumn c = new NSTableColumn();
             c.headerCell().setStringValue(NSBundle.localizedString("Size", "A column in the browser"));
@@ -982,9 +974,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.setResizable(true);
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setAlignment(NSText.RightTextAlignment);
-            this.browserOutlineView.addTableColumn(c);
-            this.browserListView.addTableColumn(c);
+            table.addTableColumn(c);
         }
+        table.removeTableColumn(table.tableColumnWithIdentifier("MODIFIED"));
         if (Preferences.instance().getBoolean("browser.columnModification")) {
             NSTableColumn c = new NSTableColumn();
             c.headerCell().setStringValue(NSBundle.localizedString("Modified", "A column in the browser"));
@@ -997,9 +989,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             c.dataCell().setFormatter(new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString),
                     true));
-            this.browserOutlineView.addTableColumn(c);
-            this.browserListView.addTableColumn(c);
+            table.addTableColumn(c);
         }
+        table.removeTableColumn(table.tableColumnWithIdentifier("OWNER"));
         if (Preferences.instance().getBoolean("browser.columnOwner")) {
             NSTableColumn c = new NSTableColumn();
             c.headerCell().setStringValue(NSBundle.localizedString("Owner", "A column in the browser"));
@@ -1010,9 +1002,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.setResizable(true);
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
-            this.browserOutlineView.addTableColumn(c);
-            this.browserListView.addTableColumn(c);
+            table.addTableColumn(c);
         }
+        table.removeTableColumn(table.tableColumnWithIdentifier("PERMISSIONS"));
         if (Preferences.instance().getBoolean("browser.columnPermissions")) {
             NSTableColumn c = new NSTableColumn();
             c.headerCell().setStringValue(NSBundle.localizedString("Permissions", "A column in the browser"));
@@ -1023,8 +1015,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.setResizable(true);
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
-            this.browserOutlineView.addTableColumn(c);
-            this.browserListView.addTableColumn(c);
+            table.addTableColumn(c);
         }
 		this.sizeToFit();
         this.reloadData();

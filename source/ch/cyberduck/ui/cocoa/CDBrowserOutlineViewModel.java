@@ -118,7 +118,7 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 				return item.getName();
 			}
 			if(identifier.equals("SIZE")) {
-				return new NSAttributedString(Status.getSizeAsString(item.attributes.getSize()), 
+				return new NSAttributedString(Status.getSizeAsString(item.attributes.getSize()),
 											  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 			}
 			if(identifier.equals("MODIFIED")) {
@@ -126,11 +126,11 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 										   NSDate.DateFor1970);
 			}
 			if(identifier.equals("OWNER")) {
-				return new NSAttributedString(item.attributes.getOwner(), 
+				return new NSAttributedString(item.attributes.getOwner(),
 											  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 			}
 			if(identifier.equals("PERMISSIONS")) {
-				return new NSAttributedString(item.attributes.getPermission().toString(), 
+				return new NSAttributedString(item.attributes.getPermission().toString(),
 											  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 			}
 			if(identifier.equals("TOOLTIP")) {
@@ -142,7 +142,7 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 		}
 		return null;
 	}
-	
+
 	/**
 	* The files dragged from the browser to the Finder
 	 */

@@ -94,14 +94,16 @@
 	int to_index = 0;
 	int smallest_difference = -1;
 	int counter;
-	
+
 	NSString *compare = [select_string lowercaseString];
-	for (counter = 0; counter < [[self dataSource] outlineView:self numberOfChildrenOfItem: nil]; counter++) {
+	for (counter = 0; counter < [[self dataSource] outlineView:self numberOfChildrenOfItem:nil]; counter++) {
+	    NSObject *item = [[self dataSource] outlineView:self child:counter ofItem:nil];
 		NSString *object = [[[self dataSource] outlineView:self 
 								 objectValueForTableColumn:[self _typeAheadSelectionColumn] 
-													byItem:nil] lowercaseString];
+													byItem:item] lowercaseString];
 		if (to_index < [object length] && to_index < [compare length] + 1) {
 			if (object && [[object substringToIndex:to_index] isEqualToString:[compare substringToIndex:to_index]])	{
+			    NSLog(@"match!");
 				char one = [compare characterAtIndex:to_index];
 				char two = (to_index == [object length])?' ':[object characterAtIndex:to_index];
 				int difference = abs(one - two);
@@ -125,6 +127,7 @@
 		}
 	}
 	if (row != -1) {
+        NSLog(@"selectRow...");
 		[self selectRow:row byExtendingSelection:NO];
 		[self scrollRowToVisible:row];
 	}	
