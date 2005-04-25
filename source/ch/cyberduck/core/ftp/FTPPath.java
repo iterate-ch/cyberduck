@@ -148,7 +148,7 @@ public class FTPPath extends Path {
             if (notifyObservers) {
                 session.callObservers(this);
             }
-            List files = session.cache().get(this.getAbsolute());
+            List files = new ArrayList(session.cache().get(this.getAbsolute()));
 			for(Iterator i = files.iterator(); i.hasNext(); ) {
 				if(!filter.accept((Path)i.next())) {
 					i.remove();

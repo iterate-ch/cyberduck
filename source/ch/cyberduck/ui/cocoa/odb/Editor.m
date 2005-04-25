@@ -50,13 +50,14 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
 										JNIEnv *env, 
 										jobject this, 
-										jstring path) 
+										jstring path,
+										jstring bundleIdentifier)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	Editor *editor = [[Editor alloc] init: env
 						  withEditorClass: (*env)->NewGlobalRef(env, (*env)->GetObjectClass(env, this)) 
 						 withEditorObject: (*env)->NewGlobalRef(env, this)];
-	[editor odbEdit:nil path:convertToNSString(env, path)];
+	[editor odbEdit:nil path:convertToNSString(env, path) withEditor:convertToNSString(env, bundleIdentifier)];
 	[pool release];
 }
 
@@ -83,10 +84,10 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
 	[super dealloc];
 }
 
-- (IBAction) odbEdit:(id) sender path:(NSString *)path
+- (IBAction) odbEdit:(id) sender path:(NSString *)path withEditor:(NSString *)editor
 {
     
-    [[ODBEditor sharedODBEditor] editFile:path options:nil forClient:self context:nil];
+    [[ODBEditor sharedODBEditor:editor] editFile:path options:nil forClient:self context:nil];
 }
 
 - (void)odbEditor:(ODBEditor *)editor didModifyFile:(NSString *)path newFileLocation:(NSString *)newPath  context:(NSDictionary *)context

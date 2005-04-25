@@ -118,6 +118,7 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 				return item.getName();
 			}
 			if(identifier.equals("SIZE")) {
+                //todo
 				return new NSAttributedString(Status.getSizeAsString(item.attributes.getSize()),
 											  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 			}

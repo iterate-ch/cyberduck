@@ -27,7 +27,7 @@ extern NSString * const ODBEditorCustomPathKey;
 	NSMutableDictionary		*_filesBeingEdited;
 }
 
-+ (id)sharedODBEditor;
++ (id)sharedODBEditor:(NSString *)editorBundleIdentifier;
 
 - (void)setEditorBundleIdentifier:(NSString *)bundleIdentifier;
 - (NSString *)editorBundleIdentifier;

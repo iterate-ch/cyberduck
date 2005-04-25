@@ -44,20 +44,13 @@ NSString * const ODBEditorIsEditingString	= @"ODBEditorIsEditingString";
 
 static ODBEditor	*_sharedODBEditor;
 
-+ (id)sharedODBEditor
++ (id)sharedODBEditor:(NSString *)editorBundleIdentifier
 {
 	if (_sharedODBEditor == nil)
 	{
 		_sharedODBEditor = [[ODBEditor alloc] init];
 	}
-	
-	if (([[ NSUserDefaults standardUserDefaults ] objectForKey: @"editor.bundleIdentifier" ] ) != nil ) {
-		[_sharedODBEditor setEditorBundleIdentifier: [[ NSUserDefaults standardUserDefaults ] objectForKey: @"editor.bundleIdentifier" ]];
-	}
-	else {
-		[_sharedODBEditor setEditorBundleIdentifier: @"de.codingmonkeys.SubEthaEdit"];
-	}
-	
+	[_sharedODBEditor setEditorBundleIdentifier:editorBundleIdentifier];
 	return _sharedODBEditor;
 }
 

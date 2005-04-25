@@ -65,7 +65,7 @@ public class FTPSSession extends FTPSession {
     private AbstractX509TrustManager trustManager;
 
     public synchronized void connect(String encoding) throws IOException, FTPException {
-        this.log(Message.PROGRESS, "Opening FTP connection to " + host.getIp() + "...");
+        this.log(Message.PROGRESS, "Opening FTP-TLS connection to " + host.getIp() + "...");
         this.setConnected();
         this.log(Message.TRANSCRIPT, "=====================================");
         this.log(Message.TRANSCRIPT, new java.util.Date().toString());

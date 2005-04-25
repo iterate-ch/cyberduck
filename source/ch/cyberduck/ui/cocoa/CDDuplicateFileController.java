@@ -69,7 +69,7 @@ public class CDDuplicateFileController extends CDFileController {
 			case (NSAlertPanel.OtherReturn): //Edit
 				Path path = this.duplicate(workdir, filenameField.stringValue());
 				if(path != null) {
-					Editor editor = new Editor();
+                    Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
 					editor.open(path);
 				}
 					break;

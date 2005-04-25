@@ -49,6 +49,7 @@ public class Editor {
 		SUPPORTED_EDITORS.put("mi", "mi");
 		SUPPORTED_EDITORS.put("Smultron", "org.smultron.Smultron");
 		SUPPORTED_EDITORS.put("CotEditor", "com.aynimac.CotEditor");
+        SUPPORTED_EDITORS.put("CSSEdit", "com.macrabbit.cssedit");
 	}
 
 	static {
@@ -66,8 +67,15 @@ public class Editor {
 
 	private static NSMutableArray instances = new NSMutableArray();
 
-	public Editor() {
+    private String bundleIdentifier;
+
+    /**
+     *
+     * @param bundleIdentifier The bundle identifier of the external editor to use
+     */
+	public Editor(String bundleIdentifier) {
 		instances.addObject(this);
+        this.bundleIdentifier = bundleIdentifier;
 	}
 
 	private Path file;
@@ -92,11 +100,11 @@ public class Editor {
 		while(this.file.getLocal().exists());
 		this.file.download();
 		if(this.file.status.isComplete()) {
-			this.edit(this.file.getLocal().getAbsolute());
+			this.edit(this.file.getLocal().getAbsolute(), this.bundleIdentifier);
 		}
 	}
 
-	private native void edit(String path);
+	private native void edit(String path, String bundleIdentifier);
 
 	public void didCloseFile() {
 		log.debug("didCloseFile:"+this.file);
