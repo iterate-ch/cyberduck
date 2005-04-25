@@ -33,7 +33,7 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 /**
  * @version $Id$
  */
-public class CDBrowserController extends CDController implements Observer {
+public class CDBrowserController extends CDWindowController implements Observer {
 	private static Logger log = Logger.getLogger(CDBrowserController.class);
 
 	private static final File HISTORY_FOLDER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History"));
@@ -345,7 +345,8 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 
 	public void awakeFromNib() {
-		log.debug("awakeFromNib");
+        super.awakeFromNib();
+
 		// Configure table views
 		this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
 		this.browserTable.setDelegate(this.browserModel);
@@ -369,109 +370,89 @@ public class CDBrowserController extends CDController implements Observer {
 	public void update(Observable o, Object arg) {
 		if(arg instanceof Path) {
 			this.workdir = (Path)arg;
-			this.browserModel.setData(this.workdir.getSession().cache().get(this.workdir.getAbsolute()));
-			ThreadUtilities.instance().invokeLater(new Runnable() {
-				public void run() {
-					CDBrowserController.this.pathPopupItems.clear();
-					CDBrowserController.this.pathPopupButton.removeAllItems();
-					CDBrowserController.this.addPathToPopup(workdir);
-					for(Path p = workdir; !p.isRoot();) {
-						p = p.getParent();
-						CDBrowserController.this.addPathToPopup(p);
-					}
-				}
-			});
-			NSTableColumn selectedColumn = this.browserModel.selectedColumn() != null ?
-			                               this.browserModel.selectedColumn() :
-			                               this.browserTable.tableColumnWithIdentifier("FILENAME");
-			this.browserTable.setIndicatorImage(this.browserModel.isSortedAscending() ?
-			                                    NSImage.imageNamed("NSAscendingSortIndicator") :
-			                                    NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
-			this.browserModel.sort(selectedColumn, this.browserModel.isSortedAscending());
-			this.browserTable.reloadData();
-			this.window().makeFirstResponder(this.browserTable);
-//			ThreadUtilities.instance().invokeLater(new Runnable() {
-//				public void run() {
-//					CDBrowserController.this.toolbar.validateVisibleItems();
-//				}
-//			});
-			this.infoLabel.setStringValue(this.browserModel.numberOfRowsInTableView(this.browserTable)+" "+
-			    NSBundle.localizedString("files", ""));
-		}
-		else if(arg instanceof Message) {
-			final Message msg = (Message)arg;
-			if(msg.getTitle().equals(Message.ERROR)) {
-				this.progressIndicator.stopAnimation(this);
-				this.statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
-				this.statusIcon.setNeedsDisplay(true);
-				this.statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent(),
-																			  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-				this.statusLabel.display();
-				this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
-				    (String)msg.getContent(), // message
-				    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-				    null, //alternative button
-				    null //other button
-				));
-			}
-			else if(msg.getTitle().equals(Message.PROGRESS)) {
-				this.statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent(),
-																				 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-				this.statusLabel.display();
-			}
-			else if(msg.getTitle().equals(Message.REFRESH)) {
-				this.reloadButtonClicked(null);
-			}
-			else if(msg.getTitle().equals(Message.OPEN)) {
-				this.progressIndicator.startAnimation(this);
-				this.infoLabel.setStringValue("");
-				this.statusIcon.setImage(null);
-				this.statusIcon.setNeedsDisplay(true);
-				this.browserModel.clear();
-				this.browserTable.reloadData();
-				this.pathPopupItems.clear();
-				this.pathPopupButton.removeAllItems();
-				ThreadUtilities.instance().invokeLater(new Runnable() {
-					public void run() {
-						toolbar.validateVisibleItems();
-					}
-				});
-			}
-			else if(msg.getTitle().equals(Message.CLOSE)) {
-				this.progressIndicator.stopAnimation(this);
-				this.statusIcon.setImage(null);
-				this.statusIcon.setNeedsDisplay(true);
-				ThreadUtilities.instance().invokeLater(new Runnable() {
-					public void run() {
-						toolbar.validateVisibleItems();
-					}
-				});
-			}
-			else if(msg.getTitle().equals(Message.START)) {
-				this.statusIcon.setImage(null);
-				this.statusIcon.display();
-				this.progressIndicator.startAnimation(this);
-				ThreadUtilities.instance().invokeLater(new Runnable() {
-					public void run() {
-						CDBrowserController.this.toolbar.validateVisibleItems();
-					}
-				});
-			}
-			else if(msg.getTitle().equals(Message.STOP)) {
-				this.progressIndicator.stopAnimation(this);
-				this.statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
-																				 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-				this.statusLabel.display();
-				ThreadUtilities.instance().invokeLater(new Runnable() {
-					public void run() {
-						CDBrowserController.this.toolbar.validateVisibleItems();
-					}
-				});
-			}
-		}
-	}
-	
-	// ----------------------------------------------------------
+            this.browserModel.setData(
+                    this.workdir.getSession().cache().get(this.workdir.getAbsolute()));
+            pathPopupItems.clear();
+            pathPopupButton.removeAllItems();
+            addPathToPopup(workdir);
+            for(Path p = workdir; !p.isRoot();) {
+                p = p.getParent();
+                CDBrowserController.this.addPathToPopup(p);
+            }
+            NSTableColumn selectedColumn = browserModel.selectedColumn() != null ?
+                    browserModel.selectedColumn() :
+                    browserTable.tableColumnWithIdentifier("FILENAME");
+            browserTable.setIndicatorImage(browserModel.isSortedAscending() ?
+                    NSImage.imageNamed("NSAscendingSortIndicator") :
+                    NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
+            browserModel.sort(selectedColumn, browserModel.isSortedAscending());
+            browserTable.reloadData();
+            window().makeFirstResponder(browserTable);
+            infoLabel.setStringValue(browserModel.numberOfRowsInTableView(browserTable)+" "+
+                    NSBundle.localizedString("files", ""));
+        }
+        else if(arg instanceof Message) {
+            final Message msg = (Message)arg;
+            if(msg.getTitle().equals(Message.ERROR)) {
+                this.invoke(new Runnable() {
+                    public void run() {
+                        progressIndicator.stopAnimation(this);
+                        statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
+                        statusIcon.setNeedsDisplay(true);
+                        statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent(),
+                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                        statusLabel.display();
+                    }
+                });
+                this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                        (String)msg.getContent(), // message
+                        NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+                        null, //alternative button
+                        null //other button
+                ));
+            }
+            else if(msg.getTitle().equals(Message.PROGRESS)) {
+                this.statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent(),
+                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                this.statusLabel.display();
+            }
+            else if(msg.getTitle().equals(Message.REFRESH)) {
+                this.reloadButtonClicked(null);
+            }
+            else if(msg.getTitle().equals(Message.OPEN)) {
+                progressIndicator.startAnimation(this);
+                infoLabel.setStringValue("");
+                statusIcon.setImage(null);
+                statusIcon.setNeedsDisplay(true);
+                browserModel.clear();
+                browserTable.reloadData();
+                pathPopupItems.clear();
+                pathPopupButton.removeAllItems();
+                toolbar.validateVisibleItems();
+            }
+            else if(msg.getTitle().equals(Message.CLOSE)) {
+                progressIndicator.stopAnimation(this);
+                statusIcon.setImage(null);
+                statusIcon.setNeedsDisplay(true);
+                toolbar.validateVisibleItems();
+            }
+            else if(msg.getTitle().equals(Message.START)) {
+                statusIcon.setImage(null);
+                statusIcon.display();
+                progressIndicator.startAnimation(this);
+                CDBrowserController.this.toolbar.validateVisibleItems();
+            }
+            else if(msg.getTitle().equals(Message.STOP)) {
+                progressIndicator.stopAnimation(this);
+                statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
+                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                statusLabel.display();
+                CDBrowserController.this.toolbar.validateVisibleItems();
+            }
+        }
+    }
+
+    // ----------------------------------------------------------
 	// Outlets
 	// ----------------------------------------------------------
 
@@ -771,33 +752,23 @@ public class CDBrowserController extends CDController implements Observer {
 		});
 	}
 
-	public void quickConnectSelectionChanged(Object sender) {
-		log.debug("quickConnectSelectionChanged");
-		try {
-			String input = ((NSControl)sender).stringValue();
-			for(Iterator iter = bookmarkModel.iterator(); iter.hasNext();) {
-				Host h = (Host)iter.next();
-				if(h.getHostname().equals(input)) {
-					this.mount(h);
-					return;
-				}
-			}
-			this.mount(Host.parse(input));
-		}
-		catch(java.net.MalformedURLException e) {
-			NSAlertPanel.beginCriticalAlertSheet("Error", //title
-			    "OK", // defaultbutton
-			    null, //alternative button
-			    null, //other button
-			    this.window(), //docWindow
-			    null, //modalDelegate
-			    null, //didEndSelector
-			    null, // dismiss selector
-			    null, // context
-			    e.getMessage() // message
-			);
-		}
-	}
+    public void quickConnectSelectionChanged(Object sender) {
+        log.debug("quickConnectSelectionChanged");
+        String input = ((NSControl) sender).stringValue();
+        try {
+            for (Iterator iter = bookmarkModel.iterator(); iter.hasNext();) {
+                Host h = (Host) iter.next();
+                if (h.getHostname().equals(input)) {
+                    this.mount(h);
+                    return;
+                }
+            }
+            this.mount(Host.parse(input));
+        }
+        catch (java.net.MalformedURLException e) {
+            this.mount(new Host(input));
+        }
+    }
 
 	private NSPopUpButton actionPopupButton; // IBOutlet
 	
@@ -1225,7 +1196,6 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 
 	public void deleteSheetDidEnd(NSWindow sheet, int returnCode, Object contextInfo) {
-		log.debug("deleteSheetDidEnd");
 		sheet.orderOut(null);
 		switch(returnCode) {
 			case (NSAlertPanel.DefaultReturn):
@@ -1422,7 +1392,9 @@ public class CDBrowserController extends CDController implements Observer {
 	public void connectButtonClicked(Object sender) {
 		log.debug("connectButtonClicked");
 		CDConnectionController controller = new CDConnectionController(this);
-		this.beginSheet(controller.window());
+        this.beginSheet(controller.window(), controller,
+                new NSSelector("connectionSheetDidEnd", new Class[]{NSWindow.class, int.class, Object.class}),
+                null);
 	}
 
 	public void disconnectButtonClicked(Object sender) {
@@ -1588,9 +1560,7 @@ public class CDBrowserController extends CDController implements Observer {
 			    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
 			    null //other button
 			),
-			    this,
-			    selector,
-			    context);
+			    this, selector, context);
 			return false;
 		}
 		return true;
@@ -2000,23 +1970,21 @@ public class CDBrowserController extends CDController implements Observer {
 		return null;
 	}
 
-
-	public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
-		return new NSArray(new Object[]{
-			"New Connection",
-			NSToolbarItem.SeparatorItemIdentifier,
-			"Bookmarks",
-			"Quick Connect",
-			"Refresh",
-			"Get Info",
-			"Edit",
-			"Download",
-			"Upload",
-			NSToolbarItem.FlexibleSpaceItemIdentifier,
-			"Disconnect"
-		});
-	}
-
+    public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
+        return new NSArray(new Object[]{
+            "New Connection",
+            NSToolbarItem.SeparatorItemIdentifier,
+            "Bookmarks",
+            "Quick Connect",
+			"Tools",
+            NSToolbarItem.SeparatorItemIdentifier,
+            "Refresh",
+            "Edit",
+            NSToolbarItem.FlexibleSpaceItemIdentifier,
+            "Disconnect"
+        });
+    }
+    
 	public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
 		return new NSArray(new Object[]{
 			"New Connection",

@@ -49,11 +49,6 @@ public class Host {
 	public static final String PATH = "Path";
 	public static final String KEYFILE = "Private Key File";
 
-	protected void finalize() throws Throwable {
-		log.debug("------------- finalize");
-		super.finalize();
-	}
-
 	public Host(NSDictionary dict) {
 		Object protocolObj = dict.objectForKey(Host.PROTOCOL);
 		if(protocolObj != null) {
@@ -153,9 +148,9 @@ public class Host {
 			throw new MalformedURLException("No hostname given");
 		int begin = 0;
 		int cut = 0;
-//		if(input.indexOf("://", begin) == -1 && input.indexOf('@', begin) == -1) {
-//			throw new MalformedURLException("No protocol or user delimiter");
-//		}
+		if(input.indexOf("://", begin) == -1 && input.indexOf('@', begin) == -1) {
+			throw new MalformedURLException("No protocol or user delimiter");
+		}
 		String protocol = Preferences.instance().getProperty("connection.protocol.default");
 		if(input.indexOf("://", begin) != -1) {
 			cut = input.indexOf("://", begin);
