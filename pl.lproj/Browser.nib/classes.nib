@@ -1,0 +1,50 @@
+{
+    IBClasses = (
+        {CLASS = CDTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
+        {
+            ACTIONS = {
+                deleteFileButtonClicked = id; 
+                downloadAsButtonClicked = id; 
+                downloadButtonClicked = id; 
+                editButtonClicked = id; 
+                fileButtonClicked = id; 
+                folderButtonClicked = id; 
+                infoButtonClicked = id; 
+                reloadButtonClicked = id; 
+                syncButtonClicked = id; 
+                uploadButtonClicked = id; 
+            }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            CLASS = "ch.cyberduck.ui.cocoa.CDBrowserController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {
+                actionPopupButton = NSPopUpButton; 
+                addBookmarkButton = NSButton; 
+                backButton = NSButton; 
+                bookmarkDrawer = NSDrawer; 
+                bookmarkTable = NSTableView; 
+                browserTable = NSTableView; 
+                deleteBookmarkButton = NSButton; 
+                editBookmarkButton = NSButton; 
+                encodingPopup = NSPopUpButton; 
+                infoLabel = NSTextField; 
+                logDrawer = NSDrawer; 
+                logView = NSTextView; 
+                pathPopup = NSPopUpButton; 
+                progressIndicator = NSProgressIndicator; 
+                quickConnectPopup = NSComboBox; 
+                searchField = NSTextField; 
+                statusIcon = NSImageView; 
+                statusLabel = NSTextField; 
+                upButton = NSButton; 
+                window = NSWindow; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}
