@@ -1,12 +1,5 @@
 package ch.cyberduck.core.ftps;
 
-import java.io.IOException;
-
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
-
 /*
  *  Copyright (c) 2004 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -25,9 +18,14 @@ import ch.cyberduck.core.SessionFactory;
  *  dkocher@cyberduck.ch
  */
 
+import java.io.IOException;
+
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
+
 /**
- * Opens a connection to the remote server via ftp protocol
- *
  * @version $Id$
  */
 public class FTPSSession extends Session {

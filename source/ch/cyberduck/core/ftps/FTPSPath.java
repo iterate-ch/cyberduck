@@ -20,16 +20,48 @@ package ch.cyberduck.core.ftps;
 
 import com.apple.cocoa.foundation.NSDictionary;
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.ftp.FTPPath;
+import java.util.List;
+import java.io.IOException;
+
+import ch.cyberduck.core.*;
 
 /**
  * @version $Id$
  */
-public class FTPSPath extends FTPPath {
+public class FTPSPath extends Path {
+    public void reset() {
+    }
+
+    public List list(String encoding, boolean refresh, boolean showHidden, boolean notifyObservers) {
+        return null;
+    }
+
+    public void delete() {
+    }
+
+    public void cwdir() throws IOException {
+        throw new IOException("FTP-TLS not supported in this version. " +
+                "Upgrade to Cyberduck 2.5 or later.");
+    }
+
+    public void mkdir(boolean recursive) {
+    }
+
+    public void rename(String newFilename) {
+    }
+
+    public void changePermissions(Permission perm, boolean recursive) {
+    }
+
+    public Session getSession() {
+        return null;
+    }
+
+    public void download() {
+    }
+
+    public void upload() {
+    }
 
     static {
         PathFactory.addFactory(Session.FTP_TLS, new Factory());
@@ -58,22 +90,22 @@ public class FTPSPath extends FTPPath {
     }
 
     protected FTPSPath(FTPSSession s, String parent, String name) {
-        super(s, parent, name);
+        super(parent, name);
     }
 
     protected FTPSPath(FTPSSession s, String path) {
-        super(s, path);
+        super(path);
     }
 
     protected FTPSPath(FTPSSession s) {
-        super(s);
+        super();
     }
 
     protected FTPSPath(FTPSSession s, String parent, Local file) {
-        super(s, parent, file);
+        super(parent, file);
     }
 
     protected FTPSPath(FTPSSession s, NSDictionary dict) {
-        super(s, dict);
+        super(dict);
     }
 }
