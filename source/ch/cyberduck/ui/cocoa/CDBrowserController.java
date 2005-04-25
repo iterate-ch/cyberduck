@@ -2140,9 +2140,14 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 item.setTitle(NSBundle.localizedString("Cut", "Menu item"));
         }
         if (identifier.equals("editButtonClicked:")) {
-            String bundleIdentifier = (String)Editor.SUPPORTED_EDITORS.get(item.title());
-            return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                bundleIdentifier) != null;
+            if(this.isMounted() && this.getSelectionCount() > 0) {
+                if(this.getSelectedPath().attributes.isFile()) {
+                    String bundleIdentifier = (String)Editor.SUPPORTED_EDITORS.get(item.title());
+                    if(null != bundleIdentifier)
+                        return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                                bundleIdentifier) != null;
+                }
+            }
         }
         if (identifier.equals("showHiddenFilesClicked:")) {
             item.setState((this.getFileFilter() instanceof NullFilter) ? NSCell.OnState : NSCell.OffState);
@@ -2186,14 +2191,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
 		if(identifier.equals("Edit") || identifier.equals("editButtonClicked:")) {
 			if(this.isMounted() && this.getSelectionCount() > 0) {
-				Path p = this.getSelectedPath();
-				String editorPath = null;
-				NSSelector absolutePathForAppBundleWithIdentifierSelector =
-				    new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
-				if(absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-					editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(Preferences.instance().getProperty("editor.bundleIdentifier"));
-				}
-				return p.attributes.isFile() && editorPath != null;
+				if(this.getSelectedPath().attributes.isFile())
+                    return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                            Preferences.instance().getProperty("editor.bundleIdentifier")) != null;
 			}
 			return false;
 		}
