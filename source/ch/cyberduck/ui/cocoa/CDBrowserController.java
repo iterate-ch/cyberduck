@@ -763,6 +763,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
 		this.reloadData();
         this.getFocus();
+        this.quickConnectPopup.setNextKeyView(this.getSelectedBrowserView());
+        this.searchField.setNextKeyView(this.getSelectedBrowserView());
     }
 
     private CDBrowserOutlineViewModel browserOutlineModel;
@@ -1831,7 +1833,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			}
             if (this.isMounted()) {
 				this.deselectAll();
-                //todo
                 this.workdir().list(this.encoding, false, this.filenameFilter);
             }
         }
