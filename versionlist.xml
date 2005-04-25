@@ -10,22 +10,41 @@
         <string>Changelog:
 2.5b1
 - [Feature] FTP using TLS support (using AUTH TLS as in draft-murray-auth-ftp-ssl-16) for the control channel (sending login credentials) and optionally the data channel (file listings and transfers) if the server is capable of.
+- [Feature] Custom icon in Finder showing progress when downloading files
+- [Feature] Browser outline view
+- [Feature] Browser column view
 - [Feature] History of recently connected hosts in connection dialog
 - [Feature] History of recently connected hosts in bookmark menu
 - [Feature] Selecting remote server timezone in synchronization dialog
 - [Feature] Set character encoding per bookmark
-- [Feature] Set FTP connect mode per bookmark (FTP)
+- [Feature] Set connect mode per bookmark (FTP)
 - [Feature] Show folders in working directory (and autocomplete) in 'Go to Folder' dialog
-- [Feature] Preferences previously only avilable using the 'defaults' command
-- [Feature] Manually exclude files in synchronization dialog
+- [Feature] Exclude duplicate files from transfer upon alert
 - [Feature] Apply button in File Info dialog
 - [Feature] Duplicate files on server
+- [Feature] Preferences window with toolbar
+- [Feature] Option to turn off disconnect prompt
+- [Feature] Grey out files in browser view when disconnected
+- [Feature] Edit with non-default editor using the browser context menu
+- [Feature] Link to discussion forum in Help menu
+
+2.4.4
+- [Feature] Added CSSEdit to the list of supported editors (http://macrabbit.com/cssedit/)
+- [Feature] Added CotEditor to the list of supported editors (http://www.aynimac/)
+- [Bugfix] Unexpected null reply received (FTP)
+
+2.4.3
+- [Bugfix] Browser refresh issues
+
+2.4.2
+- [Bugfix] Synchronization
 
 2.4.1
 - [Localize] Hungarian Localization
 - [Bugfix] Modification date changed when uploading files from the external editor
-- [Bugfix] Browser window could lock up when reconnecting and login was needed
+- [Bugfix] Browser window could lock up when reconnecting and login was needed 
 - [Feature] Disconnect item in menubar
+- [Bugfix] Bug fixes
 
 2.4
 - [Localize] Swedish Localization
