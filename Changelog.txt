@@ -6,6 +6,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 
 2.4.4
 - [Localize] Danish Localization
+- [Localize] Polish Localization
 - [Feature] Added CSSEdit to the list of supported editors (http://macrabbit.com/cssedit/)
 - [Feature] Added CotEditor to the list of supported editors (http://www.aynimac/)
 - [Bugfix] Unexpected null reply received (FTP)
