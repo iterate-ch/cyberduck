@@ -546,12 +546,12 @@ public class FTPPath extends Path {
 						try {
 							if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
 								Permission perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
-								session.FTP.site("CHMOD "+perm.getOctalCode()+" "+this.getAbsolute());
+                                session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
 							}
 							else {
 								Permission perm = this.getLocal().getPermission();
 								if(!perm.isUndefined()) {
-									session.FTP.site("CHMOD "+perm.getOctalCode()+" "+this.getAbsolute());
+									session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
 								}
 							}
 						}
