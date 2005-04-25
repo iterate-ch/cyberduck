@@ -73,6 +73,8 @@ cs.lproj/Validator.strings svneol=native#unset
 /cyberduck-document.icns svneol=native#unset
 /cyberduck-document.psd -text
 /cyberduck-document.tif -text
+da.lproj/Certificate.strings svneol=native#unset
+da.lproj/Duplicate.strings svneol=native#unset
 de.lproj/Bookmark.nib/keyedobjects.nib -text
 de.lproj/Bookmark.strings svneol=native#unset
 de.lproj/Browser.nib/keyedobjects.nib -text
