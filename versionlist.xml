@@ -13,6 +13,7 @@
 - [Localize] Polish Localization
 - [Feature] Added CSSEdit to the list of supported editors (http://macrabbit.com/cssedit/)
 - [Feature] Added CotEditor to the list of supported editors (http://www.aynimac/)
+- [Feature] Gray out files in browser view when disconnected
 - [Bugfix] Unexpected null reply received (FTP)
 
 2.4.3

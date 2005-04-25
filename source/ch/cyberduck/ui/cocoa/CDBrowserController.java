@@ -1404,9 +1404,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
 	public void disconnectButtonClicked(Object sender) {
 		this.unmount();
-//		this.unmount(new NSSelector("unmountSheetDidEnd",
-//		    new Class[]{NSWindow.class, int.class, Object.class}), null // end selector
-//		);
+		this.browserTable.reloadData();
 	}
 
 	private boolean showHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
@@ -2032,6 +2030,17 @@ public class CDBrowserController extends CDWindowController implements Observer 
 				
 		public int numberOfRowsInTableView(NSTableView tableView) {
 			return currentData.size();
+		}
+		
+		public void tableViewWillDisplayCell(NSTableView tableView, Object cell, NSTableColumn tableColumn, int row) {
+			if(cell instanceof NSTextFieldCell) {
+				if(isConnected()) {
+					((NSTextFieldCell)cell).setTextColor(NSColor.controlTextColor());
+				}
+				else {
+					((NSTextFieldCell)cell).setTextColor(NSColor.disabledControlTextColor());
+				}
+			}
 		}
 		
 		public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
