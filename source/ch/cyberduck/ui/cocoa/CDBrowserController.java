@@ -367,14 +367,23 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		this.window().setToolbar(toolbar);
 	}
 
-	public void update(Observable o, Object arg) {
+	public void update(final Observable o, final Object arg) {
+        if(!Thread.currentThread().getName().equals("main")
+		   && !Thread.currentThread().getName().equals("AWT-AppKit")) {
+            this.invoke(new Runnable() {
+                public void run(){
+                    update(o, arg);
+                }
+            });
+            return;
+        }
 		if(arg instanceof Path) {
 			this.workdir = (Path)arg;
             this.browserModel.setData(
                     this.workdir.getSession().cache().get(this.workdir.getAbsolute()));
-            pathPopupItems.clear();
-            pathPopupButton.removeAllItems();
-            addPathToPopup(workdir);
+            this.pathPopupItems.clear();
+            this.pathPopupButton.removeAllItems();
+            this.addPathToPopup(workdir);
             for(Path p = workdir; !p.isRoot();) {
                 p = p.getParent();
                 CDBrowserController.this.addPathToPopup(p);
@@ -382,28 +391,24 @@ public class CDBrowserController extends CDWindowController implements Observer 
             NSTableColumn selectedColumn = browserModel.selectedColumn() != null ?
                     browserModel.selectedColumn() :
                     browserTable.tableColumnWithIdentifier("FILENAME");
-            browserTable.setIndicatorImage(browserModel.isSortedAscending() ?
+            this.browserTable.setIndicatorImage(browserModel.isSortedAscending() ?
                     NSImage.imageNamed("NSAscendingSortIndicator") :
                     NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
-            browserModel.sort(selectedColumn, browserModel.isSortedAscending());
-            browserTable.reloadData();
-            window().makeFirstResponder(browserTable);
-            infoLabel.setStringValue(browserModel.numberOfRowsInTableView(browserTable)+" "+
+            this.browserModel.sort(selectedColumn, browserModel.isSortedAscending());
+            this.browserTable.reloadData();
+            this.window().makeFirstResponder(browserTable);
+            this.infoLabel.setStringValue(browserModel.numberOfRowsInTableView(browserTable)+" "+
                     NSBundle.localizedString("files", ""));
         }
         else if(arg instanceof Message) {
             final Message msg = (Message)arg;
             if(msg.getTitle().equals(Message.ERROR)) {
-                this.invoke(new Runnable() {
-                    public void run() {
-                        progressIndicator.stopAnimation(this);
-                        statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
-                        statusIcon.setNeedsDisplay(true);
-                        statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent(),
-                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                        statusLabel.display();
-                    }
-                });
+				this.progressIndicator.stopAnimation(this);
+				this.statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
+				this.statusIcon.setNeedsDisplay(true);
+				this.statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent(),
+																			TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+				this.statusLabel.display();
                 this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
                         (String)msg.getContent(), // message
                         NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
@@ -420,34 +425,34 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 this.reloadButtonClicked(null);
             }
             else if(msg.getTitle().equals(Message.OPEN)) {
-                progressIndicator.startAnimation(this);
-                infoLabel.setStringValue("");
-                statusIcon.setImage(null);
-                statusIcon.setNeedsDisplay(true);
-                browserModel.clear();
-                browserTable.reloadData();
-                pathPopupItems.clear();
-                pathPopupButton.removeAllItems();
-                toolbar.validateVisibleItems();
+                this.progressIndicator.startAnimation(this);
+                this.infoLabel.setStringValue("");
+                this.statusIcon.setImage(null);
+                this.statusIcon.setNeedsDisplay(true);
+                this.browserModel.clear();
+                this.browserTable.reloadData();
+                this.pathPopupItems.clear();
+                this.pathPopupButton.removeAllItems();
+                this.toolbar.validateVisibleItems();
             }
             else if(msg.getTitle().equals(Message.CLOSE)) {
-                progressIndicator.stopAnimation(this);
-                statusIcon.setImage(null);
-                statusIcon.setNeedsDisplay(true);
-                toolbar.validateVisibleItems();
+                this.progressIndicator.stopAnimation(this);
+                this.statusIcon.setImage(null);
+                this.statusIcon.setNeedsDisplay(true);
+                this.toolbar.validateVisibleItems();
             }
             else if(msg.getTitle().equals(Message.START)) {
-                statusIcon.setImage(null);
-                statusIcon.display();
-                progressIndicator.startAnimation(this);
-                CDBrowserController.this.toolbar.validateVisibleItems();
+                this.statusIcon.setImage(null);
+                this.statusIcon.display();
+                this.progressIndicator.startAnimation(this);
+                this.toolbar.validateVisibleItems();
             }
             else if(msg.getTitle().equals(Message.STOP)) {
-                progressIndicator.stopAnimation(this);
-                statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
+                this.progressIndicator.stopAnimation(this);
+                this.statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                statusLabel.display();
-                CDBrowserController.this.toolbar.validateVisibleItems();
+                this.statusLabel.display();
+                this.toolbar.validateVisibleItems();
             }
         }
     }

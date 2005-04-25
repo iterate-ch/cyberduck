@@ -35,6 +35,7 @@ public abstract class Session extends Observable {
 
 	public static final String SFTP = "sftp";
 	public static final String FTP = "ftp";
+    public static final String FTP_TLS = "ftps";
 
 //	private Transcript transcript;
 

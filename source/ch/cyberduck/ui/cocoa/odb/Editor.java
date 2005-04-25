@@ -48,6 +48,8 @@ public class Editor {
 		SUPPORTED_EDITORS.put("Jedit X", "jp.co.artman21.JeditX");
 		SUPPORTED_EDITORS.put("mi", "mi");
 		SUPPORTED_EDITORS.put("Smultron", "org.smultron.Smultron");
+		SUPPORTED_EDITORS.put("CotEditor", "com.aynimac.CotEditor");
+		SUPPORTED_EDITORS.put("CSSEdit", "com.macrabbit.cssedit");
 	}
 
 	static {

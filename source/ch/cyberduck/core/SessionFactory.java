@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- *  Copyright (c) 2004 David Kocher. All rights reserved.
+ *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -22,24 +22,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class SessionFactory {
-
+	
 	private static Map factories = new HashMap();
-
+	
 	protected abstract Session create(Host h);
-
+	
 	public static void addFactory(String protocol, SessionFactory f) {
 		factories.put(protocol, f);
 	}
-
+	
 	public static final Session createSession(Host h) {
 		String id = h.getProtocol();
 		if(!factories.containsKey(id)) {
 			try {
 				// Load dynamically
 				Class.forName("ch.cyberduck.core."+id+"."+id.toUpperCase()+"Session");
-				//				Class.forName("ch.cyberduck.core."+id+"."
-//							  +Preferences.instance().getProperty(id+".implementation")
-//							  +"."+id.toUpperCase()+"Session");
 			}
 			catch(ClassNotFoundException e) {
 				throw new RuntimeException("No class for type: "+id);
