@@ -618,6 +618,8 @@ no.lproj/Update.nib/keyedobjects.nib -text
 no.lproj/Update.strings svneol=native#unset
 no.lproj/Validator.nib/keyedobjects.nib -text
 no.lproj/Validator.strings svneol=native#unset
+pl.lproj/Certificate.strings svneol=native#unset
+pl.lproj/Duplicate.strings svneol=native#unset
 pt.lproj/Bookmark.nib/keyedobjects.nib -text
 pt.lproj/Bookmark.strings svneol=native#unset
 pt.lproj/Browser.nib/keyedobjects.nib -text
