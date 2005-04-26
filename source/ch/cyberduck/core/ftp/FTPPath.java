@@ -460,17 +460,12 @@ public class FTPPath extends Path {
 				lineSeparator = DOS_LINE_SEPARATOR;
 			}
 			session.FTP.setTransferType(FTPTransferType.ASCII);
-//			if(this.status.isResume()) {
-//				this.status.setCurrent(this.getLocal().getSize());
-//			}
 			out = new FromNetASCIIOutputStream(new FileOutputStream(this.getLocal(), false),
-			    //this.status.isResume()),
 			    lineSeparator);
 			if(out == null) {
 				throw new IOException("Unable to buffer data");
 			}
 			in = new FromNetASCIIInputStream(session.FTP.get(this.getAbsolute(), 0),
-			    //			    this.status.isResume() ? this.getLocal().getSize() : 0),
 			    lineSeparator);
 			if(in == null) {
 				throw new IOException("Unable opening data stream");
@@ -565,9 +560,11 @@ public class FTPPath extends Path {
 						}
 						catch(FTPException e) {
 							log.warn(e.getMessage());
-							if(!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
-								this.getLocal().setLastModified(session.FTP.modtime(this.getAbsolute()).getTime());
-							}
+                            if(Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
+                                if(!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
+                                    this.getLocal().setLastModified(session.FTP.modtime(this.getAbsolute()).getTime());
+                                }
+                            }
 						}
 					}
 				}

@@ -393,6 +393,7 @@ public abstract class Path {
 	}
 
 	public void sync() {
+        Preferences.instance().setProperty("queue.upload.preserveDate.fallback", true);
 		if(this.getRemote().exists() && this.getLocal().exists()) {
 			if(this.attributes.isFile()) {
                 log.info("Remote timestamp:"+this.attributes.getTimestampAsCalendar());
@@ -411,6 +412,7 @@ public abstract class Path {
 		else if(this.getLocal().exists()) {
 			this.upload();
 		}
+        Preferences.instance().setProperty("queue.upload.preserveDate.fallback", false);
 	}
 
 	public boolean exists() {
