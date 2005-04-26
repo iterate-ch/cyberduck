@@ -33,21 +33,14 @@ import ch.cyberduck.core.Transcript;
 /**
  * @version $Id$
  */
-public class CDTranscriptImpl implements Transcript {
+public class CDTranscriptImpl extends CDController implements Transcript {
 	private static Logger log = Logger.getLogger(CDTranscriptImpl.class);
 
 	private NSTextView textView;
 
 	public CDTranscriptImpl(NSTextView textView) {
 		this.textView = textView;
-	}
-
-	public void awakeFromNib() {
-		this.textView.setEditable(true);
-		this.textView.setSelectable(true);
-		this.textView.setUsesFontPanel(false);
-		this.textView.setRichText(false);
-		this.textView.layoutManager().setBackgroundLayoutEnabled(false);
+        super.awakeFromNib();
 	}
 
 	private static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)},
@@ -63,7 +56,7 @@ public class CDTranscriptImpl implements Transcript {
 
 	public void log(final String message) {
 		log.info(message);
-		ThreadUtilities.instance().invokeLater(new Runnable() {
+		this.invoke(new Runnable() {
 			public void run() {
 				// textView.layoutManager().setDelegate(CDTranscriptImpl.this);
 				

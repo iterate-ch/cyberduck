@@ -337,7 +337,7 @@ public abstract class Path {
 		if(log.isDebugEnabled()) {
 			log.debug("upload("+o.toString()+", "+i.toString());
 		}
-		this.getSession().log("Uploading "+this.getName(), Message.PROGRESS);
+		this.getSession().log(Message.PROGRESS, "Uploading "+this.getName());
 		if(this.status.isResume()) {
 			long skipped = i.skip(this.status.getCurrent());
 			log.info("Skipping "+skipped+" bytes");
@@ -356,7 +356,7 @@ public abstract class Path {
 		if(log.isDebugEnabled()) {
 			log.debug("transfer("+i.toString()+", "+o.toString());
 		}
-		this.getSession().log("Downloading "+this.getName(), Message.PROGRESS);
+		this.getSession().log(Message.PROGRESS, "Downloading "+this.getName());
 		this.transfer(i, o);
 		//this.getLocal().getTemp().renameTo(this.getLocal());
 	}
@@ -393,6 +393,7 @@ public abstract class Path {
 	}
 
 	public void sync() {
+        Preferences.instance().setProperty("queue.upload.preserveDate.fallback", true);
 		if(this.getRemote().exists() && this.getLocal().exists()) {
 			if(this.attributes.isFile()) {
                 log.info("Remote timestamp:"+this.attributes.getTimestampAsCalendar());
@@ -411,6 +412,7 @@ public abstract class Path {
 		else if(this.getLocal().exists()) {
 			this.upload();
 		}
+        Preferences.instance().setProperty("queue.upload.preserveDate.fallback", false);
 	}
 
 	public boolean exists() {

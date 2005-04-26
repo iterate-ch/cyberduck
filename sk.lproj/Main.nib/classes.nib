@@ -8,6 +8,7 @@
                 copyURLButtonClicked = id; 
                 deleteBookmarkButtonClicked = id; 
                 deleteFileButtonClicked = id; 
+                disconnectButtonClicked = id; 
                 downloadAsButtonClicked = id; 
                 downloadButtonClicked = id; 
                 editBookmarkButtonClicked = id; 

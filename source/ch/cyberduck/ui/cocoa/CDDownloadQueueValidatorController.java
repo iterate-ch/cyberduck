@@ -43,7 +43,7 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
 		}
 	}
 
-	private CDDownloadQueueValidatorController(CDController windowController) {
+	private CDDownloadQueueValidatorController(CDWindowController windowController) {
 		super(windowController);
 	}
 

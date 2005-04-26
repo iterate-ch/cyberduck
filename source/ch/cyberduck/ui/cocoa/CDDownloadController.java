@@ -35,7 +35,7 @@ import ch.cyberduck.core.*;
 /**
  * @version $Id$
  */
-public class CDDownloadController extends CDController {
+public class CDDownloadController extends CDWindowController {
 	private static Logger log = Logger.getLogger(CDDownloadController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
@@ -54,9 +54,11 @@ public class CDDownloadController extends CDController {
 	}
 
 	public void awakeFromNib() {
-		log.debug("awakeFromNib");
+        super.awakeFromNib();
+
 		this.window().setReleasedWhenClosed(true);
 		CDQueueController controller = CDQueueController.instance();
+		controller.window().makeKeyAndOrderFront(null);
 		controller.beginSheet(this.window());
 	}
 
