@@ -20,21 +20,17 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] Duplicate files on server
 - [Feature] Preferences window with toolbar
 - [Feature] Option to turn off disconnect prompt
-- [Feature] Gray out files in browser view when disconnected
 - [Feature] Edit with non-default editor using the browser context menu
-- [Feature] Link to discussion forum in Help menu
 
 2.4.4
+- [Localize] Danish Localization
+- [Localize] Polish Localization
 - [Feature] Added CSSEdit to the list of supported editors (http://macrabbit.com/cssedit/)
-- [Feature] Added CotEditor to the list of supported editors (http://www.aynimac/)
+- [Feature] Added CotEditor to the list of supported editors (http://www.aynimac.com/)
+- [Feature] Gray out files in browser view when disconnected
+- [Bugfix] Unexpected null reply received (FTP)
 
 2.4.3
-- [Bugfix] Browser refresh issues
-
-2.4.2
-- [Bugfix] Synchronization
-
-2.4.1
 - [Localize] Hungarian Localization
 - [Bugfix] Modification date changed when uploading files from the external editor
 - [Bugfix] Browser window could lock up when reconnecting and login was needed 

@@ -5,7 +5,6 @@
 [????] Manipulating permissions by entering octal value
 [????] SSH Agent Authentication
 [????] Kerberos (GSSAPI) Authentication
-[????] Grouping bookmarks
 -- Scheduled for 2.5
 [DONE] FTP-TLS (AUTH TLS) Implementation
 [DONE] Adjust icons reflecting progress when downloading files
