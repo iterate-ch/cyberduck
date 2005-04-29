@@ -422,6 +422,11 @@ public class SFTPPath extends Path {
 						    SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
 						    SftpSubsystemClient.OPEN_TRUNCATE); //File open flag, forces an existing file with the same name to be truncated to zero length when creating a file by specifying OPEN_CREATE.
 					}
+					if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+						f.getAttributes().setTimes(f.getAttributes().getAccessedTime(),
+												   new UnsignedInteger32(this.getLocal().getTimestamp().getTime()/1000));
+						session.SFTP.setAttributes(f, f.getAttributes());
+					}
 					if(this.status.isResume()) {
 						this.status.setCurrent(f.getAttributes().getSize().intValue());
 					}
@@ -448,11 +453,6 @@ public class SFTPPath extends Path {
 						if(!perm.isUndefined()) {
 							session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
 						}
-					}
-					if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-						f.getAttributes().setTimes(f.getAttributes().getAccessedTime(),
-						    new UnsignedInteger32(this.getLocal().getTimestamp().getTime()/1000));
-						session.SFTP.setAttributes(f, f.getAttributes());
 					}
 				}
 				if(this.attributes.isDirectory()) {
