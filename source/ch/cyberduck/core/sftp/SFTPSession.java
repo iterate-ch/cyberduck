@@ -31,6 +31,7 @@ import com.sshtools.j2ssh.transport.TransportProtocol;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
 
 import com.apple.cocoa.foundation.NSAutoreleasePool;
+import com.apple.cocoa.foundation.NSBundle;
 
 import java.io.IOException;
 
@@ -70,13 +71,13 @@ public class SFTPSession extends Session {
 	public synchronized void close() {
 		try {
 			if(this.SFTP != null) {
-				this.log(Message.PROGRESS, "Disconnecting...");
+				this.log(Message.PROGRESS, NSBundle.localizedString("Disconnecting...", ""));
 				this.SFTP.close();
 				this.host.getCredentials().setPassword(null);
 				this.SFTP = null;
 			}
 			if(this.SSH != null) {
-				this.log(Message.PROGRESS, "Closing SSH Session Channel");
+				this.log(Message.PROGRESS, NSBundle.localizedString("Closing SSH Session Channel", ""));
 				this.SSH.disconnect();
 				this.SSH = null;
 			}
@@ -88,7 +89,7 @@ public class SFTPSession extends Session {
 			log.error("IO Error: "+e.getMessage());
 		}
 		finally {
-			this.log(Message.PROGRESS, "Disconnected");
+            this.log(Message.PROGRESS, NSBundle.localizedString("Disconnected", ""));
 			this.setClosed();
 		}
 	}
@@ -119,7 +120,7 @@ public class SFTPSession extends Session {
 	}
 		
 	public synchronized void connect(String encoding) throws IOException {
-		this.log(Message.PROGRESS, "Opening SSH connection to "+host.getIp()+"...");
+		this.log(Message.PROGRESS, NSBundle.localizedString("Opening SSH connection to", "")+" "+host.getIp()+"...");
 		this.setConnected();
 		this.log(Message.TRANSCRIPT, "=====================================");
 		this.log(Message.TRANSCRIPT, new java.util.Date().toString());
@@ -163,13 +164,13 @@ public class SFTPSession extends Session {
 		}
 		SSH.connect(properties, this.getHostKeyVerificationController());
 		if(SSH.isConnected()) {
-			this.log(Message.PROGRESS, "SSH connection opened");
+			this.log(Message.PROGRESS, NSBundle.localizedString("SSH connection opened", ""));
 			String id = SSH.getServerId();
 			this.host.setIdentification(id);
             this.log(Message.TRANSCRIPT, id);
             log.info(SSH.getAvailableAuthMethods(host.getCredentials().getUsername()));
             this.login();
-            this.log(Message.PROGRESS, "Starting SFTP subsystem...");
+            this.log(Message.PROGRESS, NSBundle.localizedString("Starting SFTP subsystem...", ""));
             final Transcript transcript = TranscriptFactory.getImpl(this.host.getHostname());
             this.SFTP = SSH.openSftpChannel(new ChannelEventAdapter() {
                 public void onDataReceived(Channel channel, byte[] data) {
@@ -179,7 +180,7 @@ public class SFTPSession extends Session {
                     transcript.log(new String(data));
                 }
             }, encoding);
-            this.log(Message.PROGRESS, "SFTP subsystem ready");
+            this.log(Message.PROGRESS, NSBundle.localizedString("SFTP subsystem ready", ""));
         }
     }
 
@@ -252,10 +253,10 @@ public class SFTPSession extends Session {
 		log.debug("login");
 		Login credentials = host.getCredentials();
 		if(credentials.check()) {
-			this.log(Message.PROGRESS, "Authenticating as '"+credentials.getUsername()+"'");
+			this.log(Message.PROGRESS, NSBundle.localizedString("Authenticating as", "")+" '"+credentials.getUsername()+"'");
 			if(credentials.usesPublicKeyAuthentication()) {
 				if(AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(credentials)) {
-					this.log(Message.PROGRESS, "Login successful");
+					this.log(Message.PROGRESS, NSBundle.localizedString("Login successful", ""));
 					this.setAuthenticated();
 					return;
 				}
@@ -263,13 +264,13 @@ public class SFTPSession extends Session {
 			else {
 				if(AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(credentials) ||
 				    AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
-					this.log(Message.PROGRESS, "Login successful");
+					this.log(Message.PROGRESS, NSBundle.localizedString("Login successful", ""));
 					credentials.addInternetPasswordToKeychain();
 					this.setAuthenticated();
 					return;
 				}
 			}
-			this.log(Message.PROGRESS, "Login failed");
+			this.log(Message.PROGRESS, NSBundle.localizedString("Login failed", ""));
 			host.setCredentials(credentials.promptUser("Authentication for user "+credentials.getUsername()+" failed."));
 			if(host.getCredentials().tryAgain()) {
 				this.login();
@@ -288,10 +289,10 @@ public class SFTPSession extends Session {
 			return workdir;
 		}
 		catch(SshException e) {
-			this.log(Message.ERROR, "SSH Error: "+e.getMessage());
+			this.log(Message.ERROR, "SSH "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 		}
 		catch(IOException e) {
-			this.log(Message.ERROR, "IO Error: "+e.getMessage());
+			this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 		}
 		return null;
 	}

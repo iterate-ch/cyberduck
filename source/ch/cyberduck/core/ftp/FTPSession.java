@@ -18,6 +18,8 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSBundle;
+
 import java.io.IOException;
 
 import com.enterprisedt.net.ftp.FTPClient;
@@ -61,7 +63,7 @@ public class FTPSession extends Session {
     public synchronized void close() {
         try {
             if (this.FTP != null) {
-                this.log(Message.PROGRESS, "Disconnecting...");
+                this.log(Message.PROGRESS, NSBundle.localizedString("Disconnecting...", ""));
                 this.FTP.quit();
                 this.host.getCredentials().setPassword(null);
                 this.FTP = null;
@@ -74,7 +76,7 @@ public class FTPSession extends Session {
             log.error("IO Error: " + e.getMessage());
         }
         finally {
-            this.log(Message.PROGRESS, "Disconnected");
+            this.log(Message.PROGRESS, NSBundle.localizedString("Disconnected", ""));
             this.setClosed();
         }
     }
@@ -87,15 +89,15 @@ public class FTPSession extends Session {
             this.FTP.interrupt();
         }
         catch (FTPException e) {
-            this.log(Message.ERROR, "FTP Error: " + e.getMessage());
+            this.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
         }
         catch (IOException e) {
-            this.log(Message.ERROR, "IO Error: " + e.getMessage());
+            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
         }
     }
 
     public synchronized void connect(String encoding) throws IOException, FTPException {
-        this.log(Message.PROGRESS, "Opening FTP connection to " + host.getIp() + "...");
+        this.log(Message.PROGRESS, NSBundle.localizedString("Opening FTP connection to", "")+" "+host.getIp()+"...");
         this.setConnected();
         this.log(Message.TRANSCRIPT, "=====================================");
         this.log(Message.TRANSCRIPT, new java.util.Date().toString());
@@ -124,7 +126,7 @@ public class FTPSession extends Session {
             }
         }
         this.FTP.setConnectMode(this.host.getFTPConnectMode());
-        this.log(Message.PROGRESS, "FTP connection opened");
+        this.log(Message.PROGRESS, NSBundle.localizedString("FTP connection opened", ""));
         this.login();
         if (Preferences.instance().getBoolean("ftp.sendSystemCommand")) {
             this.host.setIdentification(this.FTP.system());
@@ -137,14 +139,14 @@ public class FTPSession extends Session {
         Login credentials = host.getCredentials();
         if (credentials.check()) {
             try {
-                this.log(Message.PROGRESS, "Authenticating as " + host.getCredentials().getUsername() + "...");
+                this.log(Message.PROGRESS, NSBundle.localizedString("Authenticating as", "")+" " + host.getCredentials().getUsername() + "...");
                 this.FTP.login(credentials.getUsername(), credentials.getPassword());
                 credentials.addInternetPasswordToKeychain();
                 this.setAuthenticated();
-                this.log(Message.PROGRESS, "Login successful");
+                this.log(Message.PROGRESS, NSBundle.localizedString("Login successful", ""));
             }
             catch (FTPException e) {
-                this.log(Message.PROGRESS, "Login failed");
+                this.log(Message.PROGRESS, NSBundle.localizedString("Login failed", ""));
                 host.setCredentials(credentials.promptUser("Authentication for user " + credentials.getUsername() + " failed. The server response is: " + e.getMessage()));
                 if (host.getCredentials().tryAgain()) {
                     this.login();
@@ -167,10 +169,10 @@ public class FTPSession extends Session {
             return workdir;
         }
         catch (FTPException e) {
-            this.log(Message.ERROR, "FTP Error: " + e.getMessage());
+            this.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
         }
         catch (IOException e) {
-            this.log(Message.ERROR, "IO Error: " + e.getMessage());
+            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
             this.close();
         }
         return null;

@@ -108,7 +108,7 @@ public abstract class Session extends Observable {
 	 * Connect to the remote host and mount the home directory
 	 */
 	public synchronized void mount(String encoding, Filter filter) {
-		this.log(Message.PROGRESS, "Mounting "+host.getHostname()+"...");
+		this.log(Message.PROGRESS, NSBundle.localizedString("Mounting", "")+" "+host.getHostname()+"...");
 		try {
 			this.check();
 			Path home;
@@ -135,7 +135,7 @@ public abstract class Session extends Observable {
 									host.getHostname());
 		}
 		catch(IOException e) {
-			this.log(Message.ERROR, "IO Error: "+e.getMessage());
+            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 			Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl Notification"),
 									host.getHostname());
 			this.close();

@@ -115,9 +115,11 @@ public class Attributes extends Observable {
     }
 
     private static final NSGregorianDateFormatter longDateFormatter
-            = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
+            = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(
+                    NSUserDefaults.TimeDateFormatString), false);
     private static final NSGregorianDateFormatter shortDateFormatter
-            = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString), false);
+            = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(
+                    NSUserDefaults.ShortTimeDateFormatString), false);
 
     /**
      * @return the modification date of this file
@@ -125,7 +127,8 @@ public class Attributes extends Observable {
     public String getTimestampAsString() {
         if (this.getTimestamp() != null) {
             try {
-                return longDateFormatter.stringForObjectValue(new NSGregorianDate((double) this.getTimestamp().getTime() / 1000, NSDate.DateFor1970));
+                return longDateFormatter.stringForObjectValue(
+                        new NSGregorianDate((double) this.getTimestampAsCalendar().getTime().getTime() / 1000, NSDate.DateFor1970));
             }
             catch (NSFormatter.FormattingException e) {
                 e.printStackTrace();
@@ -137,7 +140,8 @@ public class Attributes extends Observable {
     public String getTimestampAsShortString() {
         if (this.getTimestamp() != null) {
             try {
-                return shortDateFormatter.stringForObjectValue(new NSGregorianDate((double) this.getTimestamp().getTime() / 1000, NSDate.DateFor1970));
+                return shortDateFormatter.stringForObjectValue(
+                        new NSGregorianDate((double) this.getTimestampAsCalendar().getTime().getTime() / 1000, NSDate.DateFor1970));
             }
             catch (NSFormatter.FormattingException e) {
                 e.printStackTrace();
