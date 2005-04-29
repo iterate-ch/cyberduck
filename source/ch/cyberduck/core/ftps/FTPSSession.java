@@ -18,6 +18,8 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSBundle;
+
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 
@@ -65,7 +67,7 @@ public class FTPSSession extends FTPSession {
     private AbstractX509TrustManager trustManager;
 
     public synchronized void connect(String encoding) throws IOException, FTPException {
-        this.log(Message.PROGRESS, "Opening FTP-TLS connection to " + host.getIp() + "...");
+        this.log(Message.PROGRESS, NSBundle.localizedString("Opening FTP-TLS connection to", "")+" "+host.getIp()+"...");
         this.setConnected();
         this.log(Message.TRANSCRIPT, "=====================================");
         this.log(Message.TRANSCRIPT, new java.util.Date().toString());
@@ -95,7 +97,7 @@ public class FTPSSession extends FTPSession {
             }
         }
         this.FTP.setConnectMode(this.host.getFTPConnectMode());
-        this.log(Message.PROGRESS, "FTP connection opened");
+        this.log(Message.PROGRESS, NSBundle.localizedString("FTP connection opened", ""));
         ((FTPSClient) this.FTP).auth();
         this.login();
         if (Preferences.instance().getBoolean("ftp.sendSystemCommand")) {

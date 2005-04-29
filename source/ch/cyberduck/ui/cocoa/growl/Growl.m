@@ -76,7 +76,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 #define GROWL_SYNCHRONIZATION_COMPLETE		NSLocalizedString(@"Synchronization complete", @"Growl Notification")
 #define	GROWL_CONNECTION_OPENED				NSLocalizedString(@"Connection opened", @"Growl Notification")
 #define	GROWL_CONNECTION_FAILED				NSLocalizedString(@"Connection failed", @"Growl Notification")
-#define	GROWL_RENDEZVOUS_FOUND_SERVICE		NSLocalizedString(@"Rendezvous", @"Growl Notification")
+#define	GROWL_RENDEZVOUS_FOUND_SERVICE		NSLocalizedString(@"Bonjour", @"Growl Notification")
 
 @implementation Growl
 

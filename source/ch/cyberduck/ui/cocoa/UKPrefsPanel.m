@@ -277,7 +277,8 @@
 	
 	[tabView selectTabViewItemAtIndex: [sender tag]];
 	[[tabView window] setTitle: [baseWindowName stringByAppendingString: [sender label]]];
-	
+
+	NSRect windowRect = [[[tabView selectedTabViewItem] view] frame];
 //	NSArray *subviews = [tabView subviews];
 //	NSEnumerator *enumerator = [subviews objectEnumerator];
 //	NSRect windowRect = NSZeroRect;
@@ -286,14 +287,34 @@
 //	{
 //		windowRect = NSUnionRect(windowRect, [subview frame]);
 //	}
-//	windowRect.origin.x = [[tabView window] frame].origin.x;
-//	windowRect.origin.y = [[tabView window] frame].origin.y;
-//	[[tabView window] setFrame:windowRect display:YES animate:YES];
+	windowRect.origin.x = [[tabView window] frame].origin.x;
+	windowRect.origin.y = [[tabView window] frame].origin.y;
+	windowRect.size.height += [self toolbarHeightForWindow:[tabView window]]; //toolbar height
+	windowRect.size.height += 22; //title bar height
+	[[tabView window] setFrame:windowRect display:YES animate:YES];
 	
 	key = [NSString stringWithFormat: @"%@.prefspanel.recentpage", autosaveName];
 	[[NSUserDefaults standardUserDefaults] setInteger:[sender tag] forKey:key];
 }
 
+-(float)toolbarHeightForWindow:(NSWindow *)window
+{
+    NSToolbar *toolbar;
+    float toolbarHeight = 0.0;
+    NSRect windowFrame;
+    
+    toolbar = [window toolbar];
+    
+    if(toolbar && [toolbar isVisible])
+    {
+        windowFrame = [NSWindow contentRectForFrameRect:[window frame]
+											  styleMask:[window styleMask]];
+        toolbarHeight = NSHeight(windowFrame)
+			- NSHeight([[window contentView] frame]);
+    }
+    
+    return toolbarHeight;
+}
 
 /* -----------------------------------------------------------------------------
 	toolbarDefaultItemIdentifiers:

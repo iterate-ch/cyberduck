@@ -209,7 +209,8 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		this.setCanceled(false);
         this.windowController.endSheet(this.window(), sender.tag());
 	}
-	
+
+    //todo
 	private NSPopUpButton timezonePopupButton;
 
 	public void setTimezonePopupButton(NSPopUpButton timezonePopupButton) {
@@ -222,7 +223,8 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	}
 
 	public void timezonePopupButtonClicked(NSPopUpButton sender) {
-		Preferences.instance().setProperty("queue.sync.timezone", sender.titleOfSelectedItem());
+		Preferences.instance().setProperty("queue.sync.timezone",
+                sender.titleOfSelectedItem());
 		this.fireDataChanged();
 	}
 

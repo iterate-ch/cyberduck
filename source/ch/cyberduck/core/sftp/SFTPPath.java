@@ -26,6 +26,7 @@ import com.sshtools.j2ssh.sftp.SftpFileOutputStream;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 
 import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSBundle;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -106,7 +107,7 @@ public class SFTPPath extends Path {
 			}
 			if(refresh || session.cache().get(this.getAbsolute()) == null) {
 				List files = new ArrayList();
-				session.log(Message.PROGRESS, "Listing "+this.getAbsolute());
+				session.log(Message.PROGRESS, NSBundle.localizedString("Listing", "")+" "+this.getAbsolute());
 				try {
 					session.check();
 					SftpFile workingDirectory = session.SFTP.openDirectory(this.getAbsolute());
@@ -146,14 +147,14 @@ public class SFTPPath extends Path {
 						}
 					}
 					session.cache().put(this.getAbsolute(), files);
-					session.log(Message.STOP, "Idle");
+                    session.log(Message.STOP, NSBundle.localizedString("Idle", ""));
 				}
 				catch(SshException e) {
-					session.log(Message.ERROR, "SSH Error: "+e.getMessage());
+					session.log(Message.ERROR, "SSH "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 					return null;
 				}
 				catch(IOException e) {
-					session.log(Message.ERROR, "IO Error: "+e.getMessage());
+					session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 					session.close();
 					return null;
 				}
@@ -188,17 +189,17 @@ public class SFTPPath extends Path {
 					}
 				}
 				session.check();
-				session.log(Message.PROGRESS, "Make directory "+this.getName());
+				session.log(Message.PROGRESS, NSBundle.localizedString("Make directory", "")+" "+this.getName());
 				session.SFTP.makeDirectory(this.getAbsolute());
 				session.cache().put(this.getAbsolute(), new ArrayList());
 				this.getParent().invalidate();
-				session.log(Message.STOP, "Idle");
+                session.log(Message.STOP, NSBundle.localizedString("Idle", ""));
 			}
 			catch(SshException e) {
-				session.log(Message.ERROR, "SSH Error: "+e.getMessage());
+				session.log(Message.ERROR, "SSH "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log(Message.ERROR, "IO Error: "+e.getMessage());
+				session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 				session.close();
 			}
 		}
@@ -206,20 +207,19 @@ public class SFTPPath extends Path {
 
 	public void rename(String filename) {
 		synchronized(session) {
-			log.debug("rename:"+filename);
 			try {
 				session.check();
 				session.log(Message.PROGRESS, "Renaming "+this.getName()+" to "+filename);
 				session.SFTP.renameFile(this.getAbsolute(), filename);
 				this.setPath(filename);
 				this.getParent().invalidate();
-				session.log(Message.STOP, "Idle");
+                session.log(Message.STOP, NSBundle.localizedString("Idle", ""));
 			}
 			catch(SshException e) {
-				session.log(Message.ERROR, "SSH Error: "+e.getMessage());
+				session.log(Message.ERROR, "SSH "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log(Message.ERROR, "IO Error: "+e.getMessage());
+				session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 				session.close();
 			}
 		}
@@ -231,18 +231,18 @@ public class SFTPPath extends Path {
 				if(this.exists()) {
 					try {
 						session.check();
-						session.log(Message.PROGRESS, "Getting timestamp of "+this.getName());
+						session.log(Message.PROGRESS, NSBundle.localizedString("Getting timestamp of", "")+" "+this.getName());
 						SftpFile f = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
 						this.attributes.setTimestamp(Long.parseLong(f.getAttributes().getModifiedTime().toString())*1000L);
-						session.log(Message.PROGRESS, "Getting size of "+this.getName());
+						session.log(Message.PROGRESS, NSBundle.localizedString("Getting size of", "")+" "+this.getName());
 						this.attributes.setSize(f.getAttributes().getSize().doubleValue());
 						f.close();
 					}
 					catch(SshException e) {
-						session.log(Message.ERROR, "SSH Error: "+e.getMessage());
+						session.log(Message.ERROR, "SSH "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 					}
 					catch(IOException e) {
-						session.log(Message.ERROR, "IO Error: "+e.getMessage());
+						session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 						session.close();
 					}
 				}
@@ -256,7 +256,7 @@ public class SFTPPath extends Path {
 			try {
 				if(this.attributes.isFile()) {
 					session.check();
-					session.log(Message.PROGRESS, "Deleting "+this.getName());
+                    session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "")+" "+this.getName());
 					session.SFTP.removeFile(this.getAbsolute());
 				}
 				else if(this.attributes.isDirectory()) {
@@ -266,24 +266,24 @@ public class SFTPPath extends Path {
 					while(iterator.hasNext()) {
 						file = (Path)iterator.next();
 						if(file.attributes.isFile()) {
-							session.log(Message.PROGRESS, "Deleting "+this.getName());
+                            session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "")+" "+this.getName());
 							session.SFTP.removeFile(file.getAbsolute());
 						}
 						if(file.attributes.isDirectory()) {
 							file.delete();
 						}
 					}
-					session.log(Message.PROGRESS, "Deleting "+this.getName());
+                    session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "")+" "+this.getName());
 					session.SFTP.removeDirectory(this.getAbsolute());
 				}
 				this.getParent().invalidate();
-				session.log(Message.STOP, "Idle");
+                session.log(Message.STOP, NSBundle.localizedString("Idle", ""));
 			}
 			catch(SshException e) {
-				session.log(Message.ERROR, "SSH Error: "+e.getMessage());
+				session.log(Message.ERROR, "SSH "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log(Message.ERROR, "IO Error: "+e.getMessage());
+				session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 				session.close();
 			}
 		}
@@ -312,13 +312,13 @@ public class SFTPPath extends Path {
 					}
 				}
 				this.getParent().invalidate();
-				session.log(Message.STOP, "Idle");
+                session.log(Message.STOP, NSBundle.localizedString("Idle", ""));
 			}
 			catch(SshException e) {
-				session.log(Message.ERROR, "SSH Error: "+e.getMessage());
+				session.log(Message.ERROR, "SSH "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log(Message.ERROR, "IO Error: "+e.getMessage());
+				session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 				session.close();
 			}
 		}
@@ -347,13 +347,13 @@ public class SFTPPath extends Path {
 					}
 				}
 				this.getParent().invalidate();
-				session.log(Message.STOP, "Idle");
+                session.log(Message.STOP, NSBundle.localizedString("Idle", ""));
 			}
 			catch(SshException e) {
-				session.log(Message.ERROR, "SSH Error: "+e.getMessage());
+				session.log(Message.ERROR, "SSH "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log(Message.ERROR, "IO Error: "+e.getMessage());
+				session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 				session.close();
 			}
 		}
@@ -382,13 +382,13 @@ public class SFTPPath extends Path {
 					}
 				}
 				this.getParent().invalidate();
-				session.log(Message.STOP, "Idle");
+				session.log(Message.STOP, NSBundle.localizedString("Idle", ""));
 			}
 			catch(SshException e) {
-				session.log(Message.ERROR, "SSH Error: "+e.getMessage());
+				session.log(Message.ERROR, "SSH "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log(Message.ERROR, "IO Error: "+e.getMessage());
+				session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 				session.close();
 			}
 		}
@@ -444,13 +444,13 @@ public class SFTPPath extends Path {
 				if(this.attributes.isDirectory()) {
 					this.getLocal().mkdirs();
 				}
-				session.log(Message.STOP, "Idle");
+				session.log(Message.STOP, NSBundle.localizedString("Idle", ""));
 			}
 			catch(SshException e) {
 				session.log(Message.ERROR, "SSH Error: ("+this.getName()+") "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log(Message.ERROR, "IO Error: "+e.getMessage());
+				session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 				session.close();
 			}
 			finally {
@@ -496,6 +496,11 @@ public class SFTPPath extends Path {
 						    SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
 						    SftpSubsystemClient.OPEN_TRUNCATE); //File open flag, forces an existing file with the same name to be truncated to zero length when creating a file by specifying OPEN_CREATE.
 					}
+					if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+						f.getAttributes().setTimes(f.getAttributes().getAccessedTime(),
+												   new UnsignedInteger32(this.getLocal().getTimestamp().getTime()/1000));
+						session.SFTP.setAttributes(f, f.getAttributes());
+					}
 					if(this.status.isResume()) {
 						this.status.setCurrent(f.getAttributes().getSize().intValue());
 					}
@@ -523,23 +528,18 @@ public class SFTPPath extends Path {
 							session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
 						}
 					}
-					if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-						f.getAttributes().setTimes(f.getAttributes().getAccessedTime(),
-						    new UnsignedInteger32(this.getLocal().getTimestamp().getTime()/1000));
-						session.SFTP.setAttributes(f, f.getAttributes());
-					}
 				}
 				if(this.attributes.isDirectory()) {
 					this.mkdir();
 				}
 				this.getParent().invalidate();
-				session.log(Message.STOP, "Idle");
+				session.log(Message.STOP, NSBundle.localizedString("Idle", ""));
 			}
 			catch(SshException e) {
 				session.log(Message.ERROR, "SSH Error: ("+this.getName()+") "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log(Message.ERROR, "IO Error: "+e.getMessage());
+				session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 				session.close();
 			}
 			finally {

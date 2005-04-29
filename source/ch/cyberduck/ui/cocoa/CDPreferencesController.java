@@ -54,6 +54,48 @@ public class CDPreferencesController extends CDWindowController {
 		instances.addObject(this);
 	}
 
+    private NSTabView tabView;
+
+    public void setTabView(NSTabView tabView) {
+        this.tabView = tabView;
+    }
+
+    private NSView panelGeneral;
+    private NSView panelInterface;
+    private NSView panelTransfer;
+    private NSView panelFTP;
+    private NSView panelFTPTLS;
+    private NSView panelSFTP;
+    private NSView panelAdvanced;
+
+    public void setPanelAdvanced(NSView panelAdvanced) {
+        this.panelAdvanced = panelAdvanced;
+    }
+
+    public void setPanelSFTP(NSView panelSFTP) {
+        this.panelSFTP = panelSFTP;
+    }
+
+    public void setPanelFTPTLS(NSView panelFTPTLS) {
+        this.panelFTPTLS = panelFTPTLS;
+    }
+
+    public void setPanelFTP(NSView panelFTP) {
+        this.panelFTP = panelFTP;
+    }
+
+    public void setPanelTransfer(NSView panelTransfer) {
+        this.panelTransfer = panelTransfer;
+    }
+
+    public void setPanelInterface(NSView panelInterface) {
+        this.panelInterface = panelInterface;
+    }
+
+    public void setPanelGeneral(NSView panelGeneral) {
+        this.panelGeneral = panelGeneral;
+    }
+
 	public void awakeFromNib() {
         super.awakeFromNib();
 
@@ -96,6 +138,14 @@ public class CDPreferencesController extends CDWindowController {
 			dotherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
 			dotherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
 		}
+
+        tabView.tabViewItemAtIndex(0).setView(panelGeneral);
+        tabView.tabViewItemAtIndex(1).setView(panelInterface);
+        tabView.tabViewItemAtIndex(2).setView(panelTransfer);
+        tabView.tabViewItemAtIndex(3).setView(panelFTP);
+        tabView.tabViewItemAtIndex(4).setView(panelFTPTLS);
+        tabView.tabViewItemAtIndex(5).setView(panelSFTP);
+        tabView.tabViewItemAtIndex(6).setView(panelAdvanced);
 	}
 
 	public void windowWillClose(NSNotification notification) {
@@ -253,15 +303,15 @@ public class CDPreferencesController extends CDWindowController {
 		this.chmodUploadDefaultCheckbox.setEnabled(Preferences.instance().getBoolean("queue.upload.changePermissions"));
 		boolean enabled = Preferences.instance().getBoolean("queue.upload.changePermissions")
 		    && Preferences.instance().getBoolean("queue.upload.permissions.useDefault");
-		this.uownerr.setEnabled(enabled);
-		this.uownerw.setEnabled(enabled);
-		this.uownerx.setEnabled(enabled);
-		this.ugroupr.setEnabled(enabled);
-		this.ugroupw.setEnabled(enabled);
-		this.ugroupx.setEnabled(enabled);
-		this.uotherr.setEnabled(enabled);
-		this.uotherw.setEnabled(enabled);
-		this.uotherx.setEnabled(enabled);
+//		this.uownerr.setEnabled(enabled);
+//		this.uownerw.setEnabled(enabled);
+//		this.uownerx.setEnabled(enabled);
+//		this.ugroupr.setEnabled(enabled);
+//		this.ugroupw.setEnabled(enabled);
+//		this.ugroupx.setEnabled(enabled);
+//		this.uotherr.setEnabled(enabled);
+//		this.uotherw.setEnabled(enabled);
+//		this.uotherx.setEnabled(enabled);
 	}
 
 	public void chmodUploadDefaultCheckboxClicked(NSButton sender) {
@@ -313,15 +363,15 @@ public class CDPreferencesController extends CDWindowController {
 		this.chmodDownloadDefaultCheckbox.setEnabled(Preferences.instance().getBoolean("queue.download.changePermissions"));
 		boolean enabled = Preferences.instance().getBoolean("queue.download.changePermissions")
 		    && Preferences.instance().getBoolean("queue.download.permissions.useDefault");
-		this.downerr.setEnabled(enabled);
-		this.downerw.setEnabled(enabled);
-		this.downerx.setEnabled(enabled);
-		this.dgroupr.setEnabled(enabled);
-		this.dgroupw.setEnabled(enabled);
-		this.dgroupx.setEnabled(enabled);
-		this.dotherr.setEnabled(enabled);
-		this.dotherw.setEnabled(enabled);
-		this.dotherx.setEnabled(enabled);
+//		this.downerr.setEnabled(enabled);
+//		this.downerw.setEnabled(enabled);
+//		this.downerx.setEnabled(enabled);
+//		this.dgroupr.setEnabled(enabled);
+//		this.dgroupw.setEnabled(enabled);
+//		this.dgroupx.setEnabled(enabled);
+//		this.dotherr.setEnabled(enabled);
+//		this.dotherw.setEnabled(enabled);
+//		this.dotherx.setEnabled(enabled);
 	}
 
 	public void chmodDownloadDefaultCheckboxClicked(NSButton sender) {

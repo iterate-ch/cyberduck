@@ -232,8 +232,8 @@ public class CDInfoController extends CDWindowController {
 			for(Iterator i = files.iterator(); i.hasNext();) {
 				size += ((Path)i.next()).attributes.getSize();
 			}
-			this.sizeField.setStringValue(Status.getSizeAsString(size)+" ("+size+" bytes)");
-
+            this.sizeField.setAttributedStringValue(new NSAttributedString(Status.getSizeAsString(size)+" ("+size+" bytes)",
+                                                                      TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 			{
 				ownerr.setAllowsMixedState(true);
 				ownerr.setEnabled(false);

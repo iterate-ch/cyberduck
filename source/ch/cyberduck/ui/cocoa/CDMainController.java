@@ -155,7 +155,7 @@ public class CDMainController extends CDController {
 			this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = new RendezvousMenuDelegate(this.rendezvous = Rendezvous.instance()));
 		}
 //		this.bookmarkMenu.setSubmenuForItem(historyMenu, this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("History", "")));
-		this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("Rendezvous", "")));
+		this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("Bonjour", "")));
 	}
 
 	private class BookmarkMenuDelegate {
@@ -302,7 +302,7 @@ public class CDMainController extends CDController {
                     Message msg = (Message)arg;
                     Host host = rendezvous.getService((String)msg.getContent());
                     if(msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
-                        Growl.instance().notifyWithImage("Rendezvous",
+                        Growl.instance().notifyWithImage("Bonjour",
                                 (String)msg.getContent(),
                                 "rendezvous.icns");
                         items.put((String)msg.getContent(),
@@ -332,7 +332,7 @@ public class CDMainController extends CDController {
 		 */
 		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
 			if(items.size() == 0) {
-				sender.setTitle(NSBundle.localizedString("No Rendezvous services available", ""));
+				sender.setTitle(NSBundle.localizedString("No Bonjour services available", ""));
 				sender.setEnabled(false);
 				return !shouldCancel;
 			}

@@ -106,7 +106,7 @@ public class CDConnectionController extends CDWindowController {
 	public void setRendezvousPopup(NSPopUpButton rendezvousPopup) {
 		this.rendezvousPopup = rendezvousPopup;
 		this.rendezvousPopup.setImage(NSImage.imageNamed("rendezvous16.tiff"));
-		this.rendezvousPopup.setToolTip(NSBundle.localizedString("Rendezvous", ""));
+		this.rendezvousPopup.setToolTip(NSBundle.localizedString("Bonjour", ""));
 		this.rendezvousPopup.setTarget(this);
 		this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionDidChange", new Class[]{Object.class}));
 		this.rendezvous = Rendezvous.instance();
