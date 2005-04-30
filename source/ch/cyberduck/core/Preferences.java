@@ -103,7 +103,7 @@ public abstract class Preferences {
 		defaults.put("browser.verticalLines", "false");
 		defaults.put("browser.horizontalLines", "true");
 		defaults.put("browser.showHidden", "false");
-		defaults.put("browser.charset.encoding", "ISO-8859-1");
+		defaults.put("browser.charset.encoding", "UTF-8");
 		defaults.put("browser.doubleclick.edit", "false");
 
 		defaults.put("editor.name", "SubEthaEdit");

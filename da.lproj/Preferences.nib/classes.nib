@@ -62,6 +62,13 @@
                 lineEndingCombobox = NSPopUpButton; 
                 listCheckbox = NSButton; 
                 loginField = NSTextField; 
+                panelAdvanced = NSView; 
+                panelFTP = NSView; 
+                panelFTPTLS = NSView; 
+                panelGeneral = id; 
+                panelInterface = id; 
+                panelSFTP = NSView; 
+                panelTransfer = NSView; 
                 preserveModificationDownloadCheckbox = NSButton; 
                 preserveModificationUploadCheckbox = NSButton; 
                 processCheckbox = NSButton; 
@@ -73,6 +80,7 @@
                 secureDataChannelCheckbox = NSButton; 
                 showHiddenCheckbox = NSButton; 
                 systCheckbox = NSButton; 
+                tabView = NSTabView; 
                 transfermodeCombobox = NSPopUpButton; 
                 ugroupr = NSButton; 
                 ugroupw = NSButton; 

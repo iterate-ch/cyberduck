@@ -138,12 +138,12 @@ public class FTPPath extends Path {
                 }
                 catch (FTPException e) {
                     session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-                    return null;
+                    return files;
                 }
                 catch (IOException e) {
                     session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
                     session.close();
-                    return null;
+                    return files;
                 }
             }
             if (notifyObservers) {

@@ -103,7 +103,6 @@
 													byItem:item] lowercaseString];
 		if (to_index < [object length] && to_index < [compare length] + 1) {
 			if (object && [[object substringToIndex:to_index] isEqualToString:[compare substringToIndex:to_index]])	{
-			    NSLog(@"match!");
 				char one = [compare characterAtIndex:to_index];
 				char two = (to_index == [object length])?' ':[object characterAtIndex:to_index];
 				int difference = abs(one - two);

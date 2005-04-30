@@ -151,12 +151,12 @@ public class SFTPPath extends Path {
 				}
 				catch(SshException e) {
 					session.log(Message.ERROR, "SSH "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-					return null;
+                    return files;
 				}
 				catch(IOException e) {
 					session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 					session.close();
-					return null;
+                    return files;
 				}
 			}
 			if(notifyObservers) {

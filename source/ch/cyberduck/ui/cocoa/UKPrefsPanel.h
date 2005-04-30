@@ -60,6 +60,8 @@
 -(void)	mapTabsToToolbar;
 -(IBAction)	changePanes: (id)sender;
 
+-(void) resize;
+
 -(float)toolbarHeightForWindow: (NSWindow *)window;
 
 @end

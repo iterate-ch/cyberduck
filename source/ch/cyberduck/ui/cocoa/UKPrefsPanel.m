@@ -2,7 +2,8 @@
 	FILE:		UKPrefsPanel.h
 	
 	AUTHORS:	M. Uli Kusterer (UK), (c) Copyright 2003, all rights reserved.
-	
+				Some changes by David Kocher.
+
 	DIRECTIONS:
 		UKPrefsPanel is ridiculously easy to use: Create a tabless NSTabView,
 		where the name of each tab is the name for the toolbar item, and the
@@ -19,6 +20,8 @@
 
 	
 	REVISIONS:
+		2005-04-30	DK	Added resizing.
+
 		2003-08-13	UK	Added auto-save, fixed bug with empty window titles.
 		2003-07-22  UK  Added Panther stuff, documented.
 		2003-06-30  UK  Created.
@@ -60,6 +63,11 @@
 	[itemsList release];
 	[baseWindowName release];
 	[autosaveName release];
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)aNotification
+{
+	[self resize];
 }
 
 
@@ -277,24 +285,34 @@
 	
 	[tabView selectTabViewItemAtIndex: [sender tag]];
 	[[tabView window] setTitle: [baseWindowName stringByAppendingString: [sender label]]];
+	
+	key = [NSString stringWithFormat: @"%@.prefspanel.recentpage", autosaveName];
+	[[NSUserDefaults standardUserDefaults] setInteger:[sender tag] forKey:key];
+	
+	[self resize];
+}
 
-	NSRect windowRect = [[[tabView selectedTabViewItem] view] frame];
-//	NSArray *subviews = [tabView subviews];
-//	NSEnumerator *enumerator = [subviews objectEnumerator];
-//	NSRect windowRect = NSZeroRect;
-//	NSView *subview = nil;
-//	while((subview = [enumerator nextObject]))
-//	{
-//		windowRect = NSUnionRect(windowRect, [subview frame]);
-//	}
+-(void) resize
+{
+	NSArray *subviews = [[[tabView selectedTabViewItem] view] subviews];
+	NSEnumerator *enumerator = [subviews objectEnumerator];
+	NSRect windowRect = NSZeroRect;
+	NSView *subview = nil;
+	while((subview = [enumerator nextObject]))
+	{
+		windowRect = NSUnionRect(windowRect, [subview frame]);
+	}
 	windowRect.origin.x = [[tabView window] frame].origin.x;
 	windowRect.origin.y = [[tabView window] frame].origin.y;
 	windowRect.size.height += [self toolbarHeightForWindow:[tabView window]]; //toolbar height
 	windowRect.size.height += 22; //title bar height
-	[[tabView window] setFrame:windowRect display:YES animate:YES];
-	
-	key = [NSString stringWithFormat: @"%@.prefspanel.recentpage", autosaveName];
-	[[NSUserDefaults standardUserDefaults] setInteger:[sender tag] forKey:key];
+	windowRect.size.height += 20; //border
+	windowRect.size.width += 35; //border
+
+	NSRect r = NSMakeRect([[tabView window] frame].origin.x - 
+						  (windowRect.size.width - [[tabView window] frame].size.width), [[tabView window] frame].origin.y - 
+						  (windowRect.size.height - [[tabView window] frame].size.height), windowRect.size.width, windowRect.size.height);
+	[[tabView window] setFrame:r display:YES animate:YES];
 }
 
 -(float)toolbarHeightForWindow:(NSWindow *)window
