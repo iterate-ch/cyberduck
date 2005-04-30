@@ -18,10 +18,10 @@
         
 usage() {
 	echo ""
-	echo "    Usage: udpateLocalization.sh --genstrings"
-	echo "    Usage: udpateLocalization.sh [-l <language>] --status"
-	echo "    Usage: udpateLocalization.sh [-l <language>] --init"
-	echo "    Usage: udpateLocalization.sh [-l <language>] [-n <nib>] [--force] --update"
+	echo "    Usage: i18n.sh --extractstrings"
+	echo "    Usage: i18n.sh [-l <language>] --status"
+	echo "    Usage: i18n.sh [-l <language>] --init"
+	echo "    Usage: i18n.sh [-l <language>] [-n <nib>] [--force] --update"
 	echo ""
 	echo "<language> must be Japanese.lproj, French.lproj, Spanish.lproj, ..."
 	echo "<nib> must be Preferences.nib, Main.nib, ..."
@@ -63,10 +63,13 @@ open() {
 	fi;
 }
 
-genstrings() {
+extractstrings() {
     echo "*** Extracting strings from Java source files (genstrings)..."
-    genstrings -j -q -o English.lproj source/ch/cyberduck/ui/cocoa/*.java
-    genstrings -j -q -o English.lproj source/ch/cyberduck/core/*.java
+    genstrings -j -a -q -o English.lproj source/ch/cyberduck/ui/cocoa/*.java
+    genstrings -j -a -q -o English.lproj source/ch/cyberduck/core/*.java
+    genstrings -j -a -q -o English.lproj source/ch/cyberduck/core/ftp/*.java
+    genstrings -j -a -q -o English.lproj source/ch/cyberduck/core/ftps/*.java
+    genstrings -j -a -q -o English.lproj source/ch/cyberduck/core/sftp/*.java
     echo "*** Extracting strings from Obj-C source files (genstrings)..."
     genstrings -a -q -o English.lproj source/ch/cyberduck/ui/cocoa/**/*.m
 }
@@ -197,8 +200,8 @@ while [ "$1" != "" ] # When there are arguments...
 				force=true;
 				shift;
 			;;
-			-g | --genstrings)
-				genstrings;
+			-g | --extractstrings)
+				extractstrings;
 				exit 0;
 				echo "*** DONE. ***";
 			;;
@@ -232,7 +235,7 @@ while [ "$1" != "" ] # When there are arguments...
 				exit 0;
 			;; 
 			*)  
-				echo "Option [$1] not one of  [--genstrings, --status, --update, --open, --init]"; # Error (!)
+				echo "Option [$1] not one of  [--extractstrings, --status, --update, --open, --init]"; # Error (!)
 				exit 1
 			;; # Abort Script Now
 	esac;
