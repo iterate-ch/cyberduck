@@ -6,6 +6,8 @@
             CLASS = "ch.cyberduck.ui.cocoa.CDBookmarkController"; 
             LANGUAGE = Java; 
             OUTLETS = {
+                connectmodePopup = NSPopUpButton; 
+                encodingPopup = NSPopUpButton; 
                 hostField = NSTextField; 
                 nicknameField = NSTextField; 
                 pathField = NSTextField; 
