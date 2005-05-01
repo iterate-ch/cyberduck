@@ -42,7 +42,10 @@ public abstract class CDWindowController extends CDController {
 
 	public void setWindow(NSWindow window) {
 		this.window = window;
-		this.window.setDelegate(this);
+		(NSNotificationCenter.defaultCenter()).addObserver(this,
+														   new NSSelector("windowWillClose", new Class[]{NSNotification.class}),
+														   NSWindow.WindowWillCloseNotification,
+														   this.window);
 	}
 
 	public NSWindow window() {
@@ -54,7 +57,7 @@ public abstract class CDWindowController extends CDController {
 	}
 
 	public abstract void windowWillClose(NSNotification notification);
-
+	
 	public void cascade() {
 		NSArray windows = NSApplication.sharedApplication().windows();
 		int count = windows.count();

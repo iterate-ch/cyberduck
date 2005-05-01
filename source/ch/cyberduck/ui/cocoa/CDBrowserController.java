@@ -2091,7 +2091,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void windowWillClose(NSNotification notification) {
-        log.debug("windowWillClose");
         NSNotificationCenter.defaultCenter().removeObserver(this);
         if (this.isMounted()) {
             this.workdir().getSession().deleteObserver((Observer) this);

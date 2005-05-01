@@ -322,7 +322,6 @@ public class CDInfoController extends CDWindowController {
 	}
 
 	public void windowWillClose(NSNotification notification) {
-		log.debug("windowWillClose");
 		this.filenameField.cell().endEditing(filenameField.currentEditor());
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 	}

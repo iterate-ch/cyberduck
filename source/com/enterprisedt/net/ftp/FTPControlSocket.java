@@ -45,7 +45,7 @@ public class FTPControlSocket {
 	/**
 	 * Standard FTP end of line sequence
 	 */
-	static final String EOL = "\r\n";
+	private static final String EOL = "\r\n";
 
 	/**
 	 * The default and standard control port number for FTP
@@ -65,13 +65,13 @@ public class FTPControlSocket {
 	/**
 	 * The write that writes to the control socket
 	 */
-	protected Writer writer = null;
+    private Writer writer = null;
 
 	/**
 	 * The reader that reads control data from the
 	 * control socket
 	 */
-	protected BufferedReader reader = null;
+    private BufferedReader reader = null;
 
 	private String encoding;
 
@@ -79,7 +79,7 @@ public class FTPControlSocket {
         return this.encoding;
     }
 
-	protected FTPMessageListener listener = null;
+	private FTPMessageListener listener = null;
 	
 	/**
 	 * Constructor. Performs TCP connection and
@@ -129,7 +129,7 @@ public class FTPControlSocket {
 	 * Checks that the standard 220 reply is returned
 	 * following the initiated connection
 	 */
-	protected void validateConnection()
+    private void validateConnection()
 	    throws IOException, FTPException {
 
 		FTPReply reply = readReply();
@@ -266,7 +266,7 @@ public class FTPControlSocket {
 	 * @param value value to convert
 	 * @return the byte value as an unsigned short
 	 */
-	private short toUnsignedShort(byte value) {
+	private static short toUnsignedShort(byte value) {
 		return (value < 0)
 		       ? (short)(value+256)
 		       : (short)value;
@@ -278,7 +278,7 @@ public class FTPControlSocket {
 	 * @param value value to convert
 	 * @return a byte array
 	 */
-	protected byte[] toByteArray(short value) {
+    private static byte[] toByteArray(short value) {
 
 		byte[] bytes = new byte[2];
 		bytes[0] = (byte)(value>> 8);     // bits 1- 8
@@ -456,6 +456,9 @@ public class FTPControlSocket {
 				line = reader.readLine();
 				if(line == null)
 					throw new IOException("Unexpected null reply received");
+
+                if (line.length() == 0)
+                    continue;
 
 				this.log(line, false);
 

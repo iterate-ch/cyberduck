@@ -53,7 +53,7 @@ public class CDPreferencesController extends CDWindowController {
 	private CDPreferencesController() {
 		instances.addObject(this);
 	}
-
+	
     private NSTabView tabView;
 
     public void setTabView(NSTabView tabView) {
@@ -96,11 +96,18 @@ public class CDPreferencesController extends CDWindowController {
         this.panelGeneral = panelGeneral;
     }
 
+	public void windowWillClose(NSNotification notification) {
+		NSNotificationCenter.defaultCenter().removeObserver(this);
+		instances.removeObject(this);
+		instance = null;
+	}
+
 	public void awakeFromNib() {
         super.awakeFromNib();
 
 		this.window().setReleasedWhenClosed(true);
 		this.window().center();
+		
 		this.transfermodeComboboxClicked(this.transfermodeCombobox);
 		{
 			Permission p = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
@@ -146,12 +153,6 @@ public class CDPreferencesController extends CDWindowController {
         tabView.tabViewItemAtIndex(4).setView(panelFTPTLS);
         tabView.tabViewItemAtIndex(5).setView(panelSFTP);
         tabView.tabViewItemAtIndex(6).setView(panelAdvanced);
-	}
-
-	public void windowWillClose(NSNotification notification) {
-		NSNotificationCenter.defaultCenter().removeObserver(this);
-		instances.removeObject(this);
-		instance = null;
 	}
 
 	private static final String CONNECTMODE_ACTIVE = NSBundle.localizedString("Active", "");
