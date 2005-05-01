@@ -114,6 +114,7 @@ de.lproj/Bookmark.nib/keyedobjects.nib -text
 de.lproj/Bookmark.strings svneol=native#unset
 de.lproj/Browser.nib/keyedobjects.nib -text
 de.lproj/Browser.strings svneol=native#unset
+de.lproj/Certificate.nib/keyedobjects.nib -text
 de.lproj/Certificate.strings svneol=native#unset
 de.lproj/Connection.nib/keyedobjects.nib -text
 de.lproj/Connection.strings svneol=native#unset
@@ -191,6 +192,7 @@ es.lproj/Bookmark.nib/keyedobjects.nib -text
 es.lproj/Bookmark.strings svneol=native#unset
 es.lproj/Browser.nib/keyedobjects.nib -text
 es.lproj/Browser.strings svneol=native#unset
+es.lproj/Certificate.nib/keyedobjects.nib -text
 es.lproj/Certificate.strings svneol=native#unset
 es.lproj/Connection.nib/keyedobjects.nib -text
 es.lproj/Connection.strings svneol=native#unset
@@ -229,6 +231,7 @@ fi.lproj/Bookmark.nib/keyedobjects.nib -text
 fi.lproj/Bookmark.strings svneol=native#unset
 fi.lproj/Browser.nib/keyedobjects.nib -text
 fi.lproj/Browser.strings svneol=native#unset
+fi.lproj/Certificate.nib/keyedobjects.nib -text
 fi.lproj/Certificate.strings svneol=native#unset
 fi.lproj/Connection.nib/keyedobjects.nib -text
 fi.lproj/Connection.strings svneol=native#unset
@@ -267,6 +270,7 @@ fr.lproj/Bookmark.nib/keyedobjects.nib -text
 fr.lproj/Bookmark.strings svneol=native#unset
 fr.lproj/Browser.nib/keyedobjects.nib -text
 fr.lproj/Browser.strings svneol=native#unset
+fr.lproj/Certificate.nib/keyedobjects.nib -text
 fr.lproj/Certificate.strings svneol=native#unset
 fr.lproj/Connection.nib/keyedobjects.nib -text
 fr.lproj/Connection.strings svneol=native#unset
@@ -307,6 +311,7 @@ hu.lproj/Bookmark.nib/keyedobjects.nib -text
 hu.lproj/Bookmark.strings svneol=native#unset
 hu.lproj/Browser.nib/keyedobjects.nib -text
 hu.lproj/Browser.strings svneol=native#unset
+hu.lproj/Certificate.nib/keyedobjects.nib -text
 hu.lproj/Certificate.strings svneol=native#unset
 hu.lproj/Connection.nib/keyedobjects.nib -text
 hu.lproj/Connection.strings svneol=native#unset
@@ -452,6 +457,7 @@ it.lproj/Bookmark.nib/keyedobjects.nib -text
 it.lproj/Bookmark.strings svneol=native#unset
 it.lproj/Browser.nib/keyedobjects.nib -text
 it.lproj/Browser.strings svneol=native#unset
+it.lproj/Certificate.nib/keyedobjects.nib -text
 it.lproj/Certificate.strings svneol=native#unset
 it.lproj/Connection.nib/keyedobjects.nib -text
 it.lproj/Connection.strings svneol=native#unset
@@ -490,6 +496,7 @@ ja.lproj/Bookmark.nib/keyedobjects.nib -text
 ja.lproj/Bookmark.strings svneol=native#unset
 ja.lproj/Browser.nib/keyedobjects.nib -text
 ja.lproj/Browser.strings svneol=native#unset
+ja.lproj/Certificate.nib/keyedobjects.nib -text
 ja.lproj/Certificate.strings svneol=native#unset
 ja.lproj/Connection.nib/keyedobjects.nib -text
 ja.lproj/Connection.strings svneol=native#unset
@@ -529,6 +536,7 @@ ko.lproj/Bookmark.nib/keyedobjects.nib -text
 ko.lproj/Bookmark.strings svneol=native#unset
 ko.lproj/Browser.nib/keyedobjects.nib -text
 ko.lproj/Browser.strings svneol=native#unset
+ko.lproj/Certificate.nib/keyedobjects.nib -text
 ko.lproj/Certificate.strings svneol=native#unset
 ko.lproj/Connection.nib/keyedobjects.nib -text
 ko.lproj/Connection.strings svneol=native#unset
@@ -573,6 +581,7 @@ nl.lproj/Bookmark.nib/keyedobjects.nib -text
 nl.lproj/Bookmark.strings svneol=native#unset
 nl.lproj/Browser.nib/keyedobjects.nib -text
 nl.lproj/Browser.strings svneol=native#unset
+nl.lproj/Certificate.nib/keyedobjects.nib -text
 nl.lproj/Certificate.strings svneol=native#unset
 nl.lproj/Connection.nib/keyedobjects.nib -text
 nl.lproj/Connection.strings svneol=native#unset
@@ -611,6 +620,7 @@ no.lproj/Bookmark.nib/keyedobjects.nib -text
 no.lproj/Bookmark.strings svneol=native#unset
 no.lproj/Browser.nib/keyedobjects.nib -text
 no.lproj/Browser.strings svneol=native#unset
+no.lproj/Certificate.nib/keyedobjects.nib -text
 no.lproj/Certificate.strings svneol=native#unset
 no.lproj/Connection.nib/keyedobjects.nib -text
 no.lproj/Connection.strings svneol=native#unset
@@ -690,6 +700,7 @@ pt.lproj/Bookmark.nib/keyedobjects.nib -text
 pt.lproj/Bookmark.strings svneol=native#unset
 pt.lproj/Browser.nib/keyedobjects.nib -text
 pt.lproj/Browser.strings svneol=native#unset
+pt.lproj/Certificate.nib/keyedobjects.nib -text
 pt.lproj/Certificate.strings svneol=native#unset
 pt.lproj/Connection.nib/keyedobjects.nib -text
 pt.lproj/Connection.strings svneol=native#unset
@@ -728,6 +739,7 @@ ru.lproj/Bookmark.nib/keyedobjects.nib -text
 ru.lproj/Bookmark.strings svneol=native#unset
 ru.lproj/Browser.nib/keyedobjects.nib -text
 ru.lproj/Browser.strings svneol=native#unset
+ru.lproj/Certificate.nib/keyedobjects.nib -text
 ru.lproj/Certificate.strings svneol=native#unset
 ru.lproj/Connection.nib/keyedobjects.nib -text
 ru.lproj/Connection.strings svneol=native#unset
@@ -766,6 +778,7 @@ sk.lproj/Bookmark.nib/keyedobjects.nib -text
 sk.lproj/Bookmark.strings svneol=native#unset
 sk.lproj/Browser.nib/keyedobjects.nib -text
 sk.lproj/Browser.strings svneol=native#unset
+sk.lproj/Certificate.nib/keyedobjects.nib -text
 sk.lproj/Certificate.strings svneol=native#unset
 sk.lproj/Connection.nib/keyedobjects.nib -text
 sk.lproj/Connection.strings svneol=native#unset
@@ -808,6 +821,7 @@ sv.lproj/Bookmark.nib/keyedobjects.nib -text
 sv.lproj/Bookmark.strings svneol=native#unset
 sv.lproj/Browser.nib/keyedobjects.nib -text
 sv.lproj/Browser.strings svneol=native#unset
+sv.lproj/Certificate.nib/keyedobjects.nib -text
 sv.lproj/Certificate.strings svneol=native#unset
 sv.lproj/Connection.nib/keyedobjects.nib -text
 sv.lproj/Connection.strings svneol=native#unset
@@ -846,6 +860,7 @@ zh_CN.lproj/Bookmark.nib/keyedobjects.nib -text
 zh_CN.lproj/Bookmark.strings svneol=native#unset
 zh_CN.lproj/Browser.nib/keyedobjects.nib -text
 zh_CN.lproj/Browser.strings svneol=native#unset
+zh_CN.lproj/Certificate.nib/keyedobjects.nib -text
 zh_CN.lproj/Certificate.strings svneol=native#unset
 zh_CN.lproj/Connection.nib/keyedobjects.nib -text
 zh_CN.lproj/Connection.strings svneol=native#unset
@@ -884,6 +899,7 @@ zh_TW.lproj/Bookmark.nib/keyedobjects.nib -text
 zh_TW.lproj/Bookmark.strings svneol=native#unset
 zh_TW.lproj/Browser.nib/keyedobjects.nib -text
 zh_TW.lproj/Browser.strings svneol=native#unset
+zh_TW.lproj/Certificate.nib/keyedobjects.nib -text
 zh_TW.lproj/Certificate.strings svneol=native#unset
 zh_TW.lproj/Connection.nib/keyedobjects.nib -text
 zh_TW.lproj/Connection.strings svneol=native#unset
