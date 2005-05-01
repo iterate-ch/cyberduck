@@ -38,6 +38,7 @@
                 browserTabView = NSTabView; 
                 deleteBookmarkButton = NSButton; 
                 editBookmarkButton = NSButton; 
+                editMenu = NSMenu; 
                 encodingPopup = NSPopUpButton; 
                 infoLabel = NSTextField; 
                 logDrawer = NSDrawer; 
