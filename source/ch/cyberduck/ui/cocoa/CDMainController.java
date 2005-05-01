@@ -368,12 +368,8 @@ public class CDMainController extends CDController {
 		this.checkForUpdate(true);
 	}
 
-	private boolean isStableVersion(String versionNumber) {
-		return versionNumber.indexOf('b') == -1;
-	}
-	
 	public void checkForUpdate(final boolean verbose) {
-		this.invoke(new Runnable() {
+		this.invoke(new Runnable() {			
 			public void run() {
 				// An autorelease pool is used to manage Foundation’s autorelease mechanism for
 				// Objective-C objects. NSAutoreleasePool provides Java applications access to
@@ -422,8 +418,10 @@ public class CDMainController extends CDController {
 						log.info("Latest version:"+latestVersionNumber);
 						String filename = (String)entries.objectForKey("file");
 						String comment = (String)entries.objectForKey("comment");
-						
-						if(currentVersionNumber.equals(latestVersionNumber)) {
+
+                        Version currentVersion = new Version(currentVersionNumber);
+                        Version latestVersion = new Version(latestVersionNumber);
+						if(currentVersion.compareTo(latestVersion) == 0) {
 							if(verbose) {
 								NSAlertPanel.runInformationalAlert(NSBundle.localizedString("No update", "Alert sheet title"), //title
 																   NSBundle.localizedString("No newer version available.", "Alert sheet text")+" Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is up to date.", "Alert sheet text"),
@@ -434,7 +432,7 @@ public class CDMainController extends CDController {
 							}
 						}
 						else {
-							if(! (!verbose && isStableVersion(currentVersionNumber) && !isStableVersion(latestVersionNumber))) {
+                            if(currentVersion.compareTo(latestVersion) < 0) {
 								// Update available, show update dialog
 								if(false == NSApplication.loadNibNamed("Update", CDMainController.this)) {
 									log.fatal("Couldn't load Update.nib");
@@ -446,6 +444,17 @@ public class CDMainController extends CDController {
 								updateSheet.center();
 								updateSheet.makeKeyAndOrderFront(null);
 							}
+                            else {
+                                if(verbose) {
+                                    NSAlertPanel.runInformationalAlert(NSBundle.localizedString("No update", "Alert sheet title"), //title
+                                                                       NSBundle.localizedString("No newer version available.", "Alert sheet text")+" Cyberduck "+currentVersionNumber+" "+NSBundle.localizedString("is up to date.", "Alert sheet text"),
+                                                                       "OK", // defaultbutton
+                                                                       null, //alternative button
+                                                                       null//other button
+                                                                       );
+                                    
+                                }
+                            }
 						}
 					}
 				}
@@ -685,7 +694,7 @@ public class CDMainController extends CDController {
 		//this.threadWorkerTimer.invalidate();
 		//Terminating rendezvous discovery
 		this.rendezvous.quit();
-		//Writing version info
+		//Writing major info
 		this.saveVersionInfo();
 		//Writing usage info
 		Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses")+1);
@@ -818,5 +827,88 @@ public class CDMainController extends CDController {
 
 	public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
 		return false;
+	}
+	
+	private class Version implements Comparable {
+		private int major = 0;
+		private int minor = 0;
+		private int revision = 0;
+		private String suffix = "";
+
+		public Version(String version_string) {
+			this.parse(version_string);
+		}
+		
+		/**
+			* parses major string in the form major[.minor[.subrevision[extension]]]
+		 * into this instance.
+		 */
+		private void parse(String version_string) {
+			major = 0;
+			minor = 0;
+			revision = 0;
+			suffix = "";
+			int pos = 0;
+			int startpos = 0;
+			int endpos = version_string.length();
+			while ( (pos < endpos) && Character.isDigit(version_string.charAt(pos))) {
+				pos++;
+			}
+			major = Integer.parseInt(version_string.substring(startpos,pos));
+			if ((pos < endpos) && version_string.charAt(pos)=='.') {
+				startpos = ++pos;
+				while ( (pos < endpos) && Character.isDigit(version_string.charAt(pos))) {
+					pos++;
+				}
+				minor = Integer.parseInt(version_string.substring(startpos,pos));
+			}
+			if ((pos < endpos) && version_string.charAt(pos)=='.') {
+				startpos = ++pos;
+				while ( (pos < endpos) && Character.isDigit(version_string.charAt(pos))) {
+					pos++;
+				}
+				revision = Integer.parseInt(version_string.substring(startpos,pos));
+			}
+			if (pos < endpos) {
+				suffix = version_string.substring(pos);
+			}
+		}
+		
+		/**
+		 * @return string representation of this major
+		 */
+		public String toString() {
+			StringBuffer sb = new StringBuffer(10);
+			sb.append(major);
+			sb.append('.');
+			sb.append(minor);
+			sb.append('.');
+			sb.append(revision);
+			sb.append(suffix);
+			return sb.toString();
+		}
+		
+		/**
+			* Compares with other major. Does not take extension into account,
+		 * as there is no reliable way to order them.
+		 * @return -1 if this is older major that other,
+		 *         0 if its same major,
+		 *         1 if it's newer major than other
+		 */
+		public int compareTo(Object o) {
+			if (null == o)
+                throw new NullPointerException();
+            if(o  instanceof Version) {
+                Version other = (Version)o;
+                if (this.major < other.major) return -1;
+                if (this.major > other.major) return 1;
+                if (this.minor < other.minor) return -1;
+                if (this.minor > other.minor) return 1;
+                if (this.revision < other.revision) return -1;
+                if (this.revision > other.revision) return 1;
+                return 0;
+            }
+            throw new IllegalArgumentException();
+        }
 	}
 }
