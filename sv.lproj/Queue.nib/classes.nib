@@ -1,6 +1,6 @@
 {
     IBClasses = (
-        {CLASS = CDTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
+        {CLASS = CDListView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {
             ACTIONS = {
                 reloadButtonClicked = id; 
