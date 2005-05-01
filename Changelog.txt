@@ -7,20 +7,25 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 2.5b1
 - [Feature] FTP using TLS support (using AUTH TLS as in draft-murray-auth-ftp-ssl-16) for the control channel (sending login credentials) and optionally the data channel (file listings and transfers) if the server is capable of.
 - [Feature] Store X.509 certificates in Keychain
-- [Feature] Custom icon in Finder showing progress when downloading files
+- [Feature] Custom icon with progressbar in the Finder when downloading files
 - [Feature] Browser outline view
 - [Feature] Browser column view
-- [Feature] History of recently connected hosts in connection dialog
-- [Feature] Selecting remote server timezone in synchronization dialog
+- [Feature] Toolbar button to switch view
+- [Feature] History of recently connected hosts
 - [Feature] Set character encoding per bookmark
 - [Feature] Set connect mode per bookmark (FTP)
 - [Feature] Show folders in working directory (and autocomplete) in 'Go to Folder' dialog
 - [Feature] Exclude duplicate files from transfer upon alert
-- [Feature] Apply button in File Info dialog
+- [Feature] Apply button in file info dialog
 - [Feature] Duplicate files on server
 - [Feature] Preferences window with toolbar
-- [Feature] Option to turn off disconnect prompt
+- [Feature] Option to turn off disconnect prompt in Preferences
+- [Feature] Option to keep connection alive in Preferences
+- [Feature] UTF-8 is now used as default encoding
 - [Feature] Edit with non-default editor using the browser context menu
+
+2.4.5
+- [Bugfix] No permissions set on transferred files when connection is closed unexpectedly (SFTP)
 
 2.4.4
 - [Localize] Danish Localization
