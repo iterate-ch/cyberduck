@@ -114,6 +114,7 @@ de.lproj/Bookmark.nib/keyedobjects.nib -text
 de.lproj/Bookmark.strings svneol=native#unset
 de.lproj/Browser.nib/keyedobjects.nib -text
 de.lproj/Browser.strings svneol=native#unset
+de.lproj/Certificate.strings svneol=native#unset
 de.lproj/Connection.nib/keyedobjects.nib -text
 de.lproj/Connection.strings svneol=native#unset
 de.lproj/Donate.nib/keyedobjects.nib -text
@@ -121,6 +122,7 @@ de.lproj/Donate.strings svneol=native#unset
 de.lproj/Download.nib/keyedobjects.nib -text
 de.lproj/Download.strings svneol=native#unset
 de.lproj/Duplicate.nib/keyedobjects.nib -text
+de.lproj/Duplicate.strings svneol=native#unset
 de.lproj/File.nib/keyedobjects.nib -text
 de.lproj/File.strings svneol=native#unset
 de.lproj/Folder.nib/keyedobjects.nib -text
@@ -189,6 +191,7 @@ es.lproj/Bookmark.nib/keyedobjects.nib -text
 es.lproj/Bookmark.strings svneol=native#unset
 es.lproj/Browser.nib/keyedobjects.nib -text
 es.lproj/Browser.strings svneol=native#unset
+es.lproj/Certificate.strings svneol=native#unset
 es.lproj/Connection.nib/keyedobjects.nib -text
 es.lproj/Connection.strings svneol=native#unset
 es.lproj/Donate.nib/keyedobjects.nib -text
@@ -196,6 +199,7 @@ es.lproj/Donate.strings svneol=native#unset
 es.lproj/Download.nib/keyedobjects.nib -text
 es.lproj/Download.strings svneol=native#unset
 es.lproj/Duplicate.nib/keyedobjects.nib -text
+es.lproj/Duplicate.strings svneol=native#unset
 es.lproj/File.nib/keyedobjects.nib -text
 es.lproj/File.strings svneol=native#unset
 es.lproj/Folder.nib/keyedobjects.nib -text
@@ -225,6 +229,7 @@ fi.lproj/Bookmark.nib/keyedobjects.nib -text
 fi.lproj/Bookmark.strings svneol=native#unset
 fi.lproj/Browser.nib/keyedobjects.nib -text
 fi.lproj/Browser.strings svneol=native#unset
+fi.lproj/Certificate.strings svneol=native#unset
 fi.lproj/Connection.nib/keyedobjects.nib -text
 fi.lproj/Connection.strings svneol=native#unset
 fi.lproj/Donate.nib/keyedobjects.nib -text
@@ -232,6 +237,7 @@ fi.lproj/Donate.strings svneol=native#unset
 fi.lproj/Download.nib/keyedobjects.nib -text
 fi.lproj/Download.strings svneol=native#unset
 fi.lproj/Duplicate.nib/keyedobjects.nib -text
+fi.lproj/Duplicate.strings svneol=native#unset
 fi.lproj/File.nib/keyedobjects.nib -text
 fi.lproj/File.strings svneol=native#unset
 fi.lproj/Folder.nib/keyedobjects.nib -text
@@ -261,6 +267,7 @@ fr.lproj/Bookmark.nib/keyedobjects.nib -text
 fr.lproj/Bookmark.strings svneol=native#unset
 fr.lproj/Browser.nib/keyedobjects.nib -text
 fr.lproj/Browser.strings svneol=native#unset
+fr.lproj/Certificate.strings svneol=native#unset
 fr.lproj/Connection.nib/keyedobjects.nib -text
 fr.lproj/Connection.strings svneol=native#unset
 fr.lproj/Donate.nib/keyedobjects.nib -text
@@ -268,6 +275,7 @@ fr.lproj/Donate.strings svneol=native#unset
 fr.lproj/Download.nib/keyedobjects.nib -text
 fr.lproj/Download.strings svneol=native#unset
 fr.lproj/Duplicate.nib/keyedobjects.nib -text
+fr.lproj/Duplicate.strings svneol=native#unset
 fr.lproj/File.nib/keyedobjects.nib -text
 fr.lproj/File.strings svneol=native#unset
 fr.lproj/Folder.nib/keyedobjects.nib -text
@@ -299,6 +307,7 @@ hu.lproj/Bookmark.nib/keyedobjects.nib -text
 hu.lproj/Bookmark.strings svneol=native#unset
 hu.lproj/Browser.nib/keyedobjects.nib -text
 hu.lproj/Browser.strings svneol=native#unset
+hu.lproj/Certificate.strings svneol=native#unset
 hu.lproj/Connection.nib/keyedobjects.nib -text
 hu.lproj/Connection.strings svneol=native#unset
 hu.lproj/Donate.nib/keyedobjects.nib -text
@@ -306,6 +315,7 @@ hu.lproj/Donate.strings svneol=native#unset
 hu.lproj/Download.nib/keyedobjects.nib -text
 hu.lproj/Download.strings svneol=native#unset
 hu.lproj/Duplicate.nib/keyedobjects.nib -text
+hu.lproj/Duplicate.strings svneol=native#unset
 hu.lproj/File.nib/keyedobjects.nib -text
 hu.lproj/File.strings svneol=native#unset
 hu.lproj/Folder.nib/keyedobjects.nib -text
@@ -442,6 +452,7 @@ it.lproj/Bookmark.nib/keyedobjects.nib -text
 it.lproj/Bookmark.strings svneol=native#unset
 it.lproj/Browser.nib/keyedobjects.nib -text
 it.lproj/Browser.strings svneol=native#unset
+it.lproj/Certificate.strings svneol=native#unset
 it.lproj/Connection.nib/keyedobjects.nib -text
 it.lproj/Connection.strings svneol=native#unset
 it.lproj/Donate.nib/keyedobjects.nib -text
@@ -449,6 +460,7 @@ it.lproj/Donate.strings svneol=native#unset
 it.lproj/Download.nib/keyedobjects.nib -text
 it.lproj/Download.strings svneol=native#unset
 it.lproj/Duplicate.nib/keyedobjects.nib -text
+it.lproj/Duplicate.strings svneol=native#unset
 it.lproj/File.nib/keyedobjects.nib -text
 it.lproj/File.strings svneol=native#unset
 it.lproj/Folder.nib/keyedobjects.nib -text
@@ -478,6 +490,7 @@ ja.lproj/Bookmark.nib/keyedobjects.nib -text
 ja.lproj/Bookmark.strings svneol=native#unset
 ja.lproj/Browser.nib/keyedobjects.nib -text
 ja.lproj/Browser.strings svneol=native#unset
+ja.lproj/Certificate.strings svneol=native#unset
 ja.lproj/Connection.nib/keyedobjects.nib -text
 ja.lproj/Connection.strings svneol=native#unset
 ja.lproj/Donate.nib/keyedobjects.nib -text
@@ -485,6 +498,7 @@ ja.lproj/Donate.strings svneol=native#unset
 ja.lproj/Download.nib/keyedobjects.nib -text
 ja.lproj/Download.strings svneol=native#unset
 ja.lproj/Duplicate.nib/keyedobjects.nib -text
+ja.lproj/Duplicate.strings svneol=native#unset
 ja.lproj/File.nib/keyedobjects.nib -text
 ja.lproj/File.strings svneol=native#unset
 ja.lproj/Folder.nib/keyedobjects.nib -text
@@ -515,6 +529,7 @@ ko.lproj/Bookmark.nib/keyedobjects.nib -text
 ko.lproj/Bookmark.strings svneol=native#unset
 ko.lproj/Browser.nib/keyedobjects.nib -text
 ko.lproj/Browser.strings svneol=native#unset
+ko.lproj/Certificate.strings svneol=native#unset
 ko.lproj/Connection.nib/keyedobjects.nib -text
 ko.lproj/Connection.strings svneol=native#unset
 ko.lproj/Donate.nib/keyedobjects.nib -text
@@ -522,6 +537,7 @@ ko.lproj/Donate.strings svneol=native#unset
 ko.lproj/Download.nib/keyedobjects.nib -text
 ko.lproj/Download.strings svneol=native#unset
 ko.lproj/Duplicate.nib/keyedobjects.nib -text
+ko.lproj/Duplicate.strings svneol=native#unset
 ko.lproj/File.nib/keyedobjects.nib -text
 ko.lproj/File.strings svneol=native#unset
 ko.lproj/Folder.nib/keyedobjects.nib -text
@@ -557,6 +573,7 @@ nl.lproj/Bookmark.nib/keyedobjects.nib -text
 nl.lproj/Bookmark.strings svneol=native#unset
 nl.lproj/Browser.nib/keyedobjects.nib -text
 nl.lproj/Browser.strings svneol=native#unset
+nl.lproj/Certificate.strings svneol=native#unset
 nl.lproj/Connection.nib/keyedobjects.nib -text
 nl.lproj/Connection.strings svneol=native#unset
 nl.lproj/Donate.nib/keyedobjects.nib -text
@@ -564,6 +581,7 @@ nl.lproj/Donate.strings svneol=native#unset
 nl.lproj/Download.nib/keyedobjects.nib -text
 nl.lproj/Download.strings svneol=native#unset
 nl.lproj/Duplicate.nib/keyedobjects.nib -text
+nl.lproj/Duplicate.strings svneol=native#unset
 nl.lproj/File.nib/keyedobjects.nib -text
 nl.lproj/File.strings svneol=native#unset
 nl.lproj/Folder.nib/keyedobjects.nib -text
@@ -593,6 +611,7 @@ no.lproj/Bookmark.nib/keyedobjects.nib -text
 no.lproj/Bookmark.strings svneol=native#unset
 no.lproj/Browser.nib/keyedobjects.nib -text
 no.lproj/Browser.strings svneol=native#unset
+no.lproj/Certificate.strings svneol=native#unset
 no.lproj/Connection.nib/keyedobjects.nib -text
 no.lproj/Connection.strings svneol=native#unset
 no.lproj/Donate.nib/keyedobjects.nib -text
@@ -600,6 +619,7 @@ no.lproj/Donate.strings svneol=native#unset
 no.lproj/Download.nib/keyedobjects.nib -text
 no.lproj/Download.strings svneol=native#unset
 no.lproj/Duplicate.nib/keyedobjects.nib -text
+no.lproj/Duplicate.strings svneol=native#unset
 no.lproj/File.nib/keyedobjects.nib -text
 no.lproj/File.strings svneol=native#unset
 no.lproj/Folder.nib/keyedobjects.nib -text
@@ -670,6 +690,7 @@ pt.lproj/Bookmark.nib/keyedobjects.nib -text
 pt.lproj/Bookmark.strings svneol=native#unset
 pt.lproj/Browser.nib/keyedobjects.nib -text
 pt.lproj/Browser.strings svneol=native#unset
+pt.lproj/Certificate.strings svneol=native#unset
 pt.lproj/Connection.nib/keyedobjects.nib -text
 pt.lproj/Connection.strings svneol=native#unset
 pt.lproj/Donate.nib/keyedobjects.nib -text
@@ -677,6 +698,7 @@ pt.lproj/Donate.strings svneol=native#unset
 pt.lproj/Download.nib/keyedobjects.nib -text
 pt.lproj/Download.strings svneol=native#unset
 pt.lproj/Duplicate.nib/keyedobjects.nib -text
+pt.lproj/Duplicate.strings svneol=native#unset
 pt.lproj/File.nib/keyedobjects.nib -text
 pt.lproj/File.strings svneol=native#unset
 pt.lproj/Folder.nib/keyedobjects.nib -text
@@ -706,6 +728,7 @@ ru.lproj/Bookmark.nib/keyedobjects.nib -text
 ru.lproj/Bookmark.strings svneol=native#unset
 ru.lproj/Browser.nib/keyedobjects.nib -text
 ru.lproj/Browser.strings svneol=native#unset
+ru.lproj/Certificate.strings svneol=native#unset
 ru.lproj/Connection.nib/keyedobjects.nib -text
 ru.lproj/Connection.strings svneol=native#unset
 ru.lproj/Donate.nib/keyedobjects.nib -text
@@ -713,6 +736,7 @@ ru.lproj/Donate.strings svneol=native#unset
 ru.lproj/Download.nib/keyedobjects.nib -text
 ru.lproj/Download.strings svneol=native#unset
 ru.lproj/Duplicate.nib/keyedobjects.nib -text
+ru.lproj/Duplicate.strings svneol=native#unset
 ru.lproj/File.nib/keyedobjects.nib -text
 ru.lproj/File.strings svneol=native#unset
 ru.lproj/Folder.nib/keyedobjects.nib -text
@@ -742,6 +766,7 @@ sk.lproj/Bookmark.nib/keyedobjects.nib -text
 sk.lproj/Bookmark.strings svneol=native#unset
 sk.lproj/Browser.nib/keyedobjects.nib -text
 sk.lproj/Browser.strings svneol=native#unset
+sk.lproj/Certificate.strings svneol=native#unset
 sk.lproj/Connection.nib/keyedobjects.nib -text
 sk.lproj/Connection.strings svneol=native#unset
 sk.lproj/Donate.nib/keyedobjects.nib -text
@@ -749,6 +774,7 @@ sk.lproj/Donate.strings svneol=native#unset
 sk.lproj/Download.nib/keyedobjects.nib -text
 sk.lproj/Download.strings svneol=native#unset
 sk.lproj/Duplicate.nib/keyedobjects.nib -text
+sk.lproj/Duplicate.strings svneol=native#unset
 sk.lproj/File.nib/keyedobjects.nib -text
 sk.lproj/File.strings svneol=native#unset
 sk.lproj/Folder.nib/keyedobjects.nib -text
@@ -782,6 +808,7 @@ sv.lproj/Bookmark.nib/keyedobjects.nib -text
 sv.lproj/Bookmark.strings svneol=native#unset
 sv.lproj/Browser.nib/keyedobjects.nib -text
 sv.lproj/Browser.strings svneol=native#unset
+sv.lproj/Certificate.strings svneol=native#unset
 sv.lproj/Connection.nib/keyedobjects.nib -text
 sv.lproj/Connection.strings svneol=native#unset
 sv.lproj/Donate.nib/keyedobjects.nib -text
@@ -789,6 +816,7 @@ sv.lproj/Donate.strings svneol=native#unset
 sv.lproj/Download.nib/keyedobjects.nib -text
 sv.lproj/Download.strings svneol=native#unset
 sv.lproj/Duplicate.nib/keyedobjects.nib -text
+sv.lproj/Duplicate.strings svneol=native#unset
 sv.lproj/File.nib/keyedobjects.nib -text
 sv.lproj/File.strings svneol=native#unset
 sv.lproj/Folder.nib/keyedobjects.nib -text
@@ -818,6 +846,7 @@ zh_CN.lproj/Bookmark.nib/keyedobjects.nib -text
 zh_CN.lproj/Bookmark.strings svneol=native#unset
 zh_CN.lproj/Browser.nib/keyedobjects.nib -text
 zh_CN.lproj/Browser.strings svneol=native#unset
+zh_CN.lproj/Certificate.strings svneol=native#unset
 zh_CN.lproj/Connection.nib/keyedobjects.nib -text
 zh_CN.lproj/Connection.strings svneol=native#unset
 zh_CN.lproj/Donate.nib/keyedobjects.nib -text
@@ -825,6 +854,7 @@ zh_CN.lproj/Donate.strings svneol=native#unset
 zh_CN.lproj/Download.nib/keyedobjects.nib -text
 zh_CN.lproj/Download.strings svneol=native#unset
 zh_CN.lproj/Duplicate.nib/keyedobjects.nib -text
+zh_CN.lproj/Duplicate.strings svneol=native#unset
 zh_CN.lproj/File.nib/keyedobjects.nib -text
 zh_CN.lproj/File.strings svneol=native#unset
 zh_CN.lproj/Folder.nib/keyedobjects.nib -text
@@ -854,6 +884,7 @@ zh_TW.lproj/Bookmark.nib/keyedobjects.nib -text
 zh_TW.lproj/Bookmark.strings svneol=native#unset
 zh_TW.lproj/Browser.nib/keyedobjects.nib -text
 zh_TW.lproj/Browser.strings svneol=native#unset
+zh_TW.lproj/Certificate.strings svneol=native#unset
 zh_TW.lproj/Connection.nib/keyedobjects.nib -text
 zh_TW.lproj/Connection.strings svneol=native#unset
 zh_TW.lproj/Donate.nib/keyedobjects.nib -text
@@ -861,6 +892,7 @@ zh_TW.lproj/Donate.strings svneol=native#unset
 zh_TW.lproj/Download.nib/keyedobjects.nib -text
 zh_TW.lproj/Download.strings svneol=native#unset
 zh_TW.lproj/Duplicate.nib/keyedobjects.nib -text
+zh_TW.lproj/Duplicate.strings svneol=native#unset
 zh_TW.lproj/File.nib/keyedobjects.nib -text
 zh_TW.lproj/File.strings svneol=native#unset
 zh_TW.lproj/Folder.nib/keyedobjects.nib -text
