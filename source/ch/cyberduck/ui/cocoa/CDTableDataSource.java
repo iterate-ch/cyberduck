@@ -70,7 +70,7 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 			final int higher = ascending ? 1 : -1;
 			final int lower = ascending ? -1 : 1;
 			if (tableColumn.identifier().equals("TYPE")) {
-				Collections.sort(this.cache(controller.workdir()),
+				Collections.sort(controller.workdir().getSession().cache().get(controller.workdir().getAbsolute()),
 								 new Comparator() {
 									 public int compare(Object o1, Object o2) {
 										 Path p1 = (Path) o1;
@@ -89,7 +89,7 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 								 });
 			}
 			else if (tableColumn.identifier().equals("FILENAME")) {
-				Collections.sort(this.cache(controller.workdir()),
+				Collections.sort(controller.workdir().getSession().cache().get(controller.workdir().getAbsolute()),
 								 new Comparator() {
 									 public int compare(Object o1, Object o2) {
 										 Path p1 = (Path) o1;
@@ -102,7 +102,7 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 								 });
 			}
 			else if (tableColumn.identifier().equals("SIZE")) {
-				Collections.sort(this.cache(controller.workdir()),
+				Collections.sort(controller.workdir().getSession().cache().get(controller.workdir().getAbsolute()),
 								 new Comparator() {
 									 public int compare(Object o1, Object o2) {
 										 double p1 = ((Path) o1).attributes.getSize();
@@ -118,7 +118,7 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 								 });
 			}
 			else if (tableColumn.identifier().equals("MODIFIED")) {
-				Collections.sort(this.cache(controller.workdir()),
+				Collections.sort(controller.workdir().getSession().cache().get(controller.workdir().getAbsolute()),
 								 new Comparator() {
 									 public int compare(Object o1, Object o2) {
 										 Path p1 = (Path) o1;
@@ -131,7 +131,7 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 								 });
 			}
 			else if (tableColumn.identifier().equals("OWNER")) {
-				Collections.sort(this.cache(controller.workdir()),
+				Collections.sort(controller.workdir().getSession().cache().get(controller.workdir().getAbsolute()),
 								 new Comparator() {
 									 public int compare(Object o1, Object o2) {
 										 Path p1 = (Path) o1;
@@ -144,7 +144,7 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 								 });
 			}
 			else if (tableColumn.identifier().equals("PERMISSIONS")) {
-				Collections.sort(this.cache(controller.workdir()),
+				Collections.sort(controller.workdir().getSession().cache().get(controller.workdir().getAbsolute()),
 								 new Comparator() {
 									 public int compare(Object o1, Object o2) {
                                          int p1 = Integer.parseInt(((Path) o1).attributes.getPermission().getOctalCode());
