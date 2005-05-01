@@ -8,6 +8,9 @@
             OUTLETS = {
                 anonymousCheckbox = NSButton; 
                 bookmarksPopup = NSPopUpButton; 
+                connectmodePopup = NSPopUpButton; 
+                encodingPopup = NSPopUpButton; 
+                historyPopup = NSPopUpButton; 
                 hostPopup = NSComboBox; 
                 keychainCheckbox = NSButton; 
                 passField = NSSecureTextField; 
