@@ -149,26 +149,66 @@ public class CDPreferencesController extends CDWindowController {
         boolean chmodDownloadDefaultEnabled = Preferences.instance().getBoolean("queue.download.changePermissions")
             && Preferences.instance().getBoolean("queue.download.permissions.useDefault");
         this.downerr.setEnabled(chmodDownloadDefaultEnabled);
+        this.downerr.setTarget(this);
+        this.downerr.setAction(new NSSelector("defaultPermissionsDownloadChanged", new Class[]{NSButton.class}));
         this.downerw.setEnabled(chmodDownloadDefaultEnabled);
+        this.downerw.setTarget(this);
+        this.downerw.setAction(new NSSelector("defaultPermissionsDownloadChanged", new Class[]{NSButton.class}));
         this.downerx.setEnabled(chmodDownloadDefaultEnabled);
+        this.downerx.setTarget(this);
+        this.downerx.setAction(new NSSelector("defaultPermissionsDownloadChanged", new Class[]{NSButton.class}));
+
         this.dgroupr.setEnabled(chmodDownloadDefaultEnabled);
+        this.dgroupr.setTarget(this);
+        this.dgroupr.setAction(new NSSelector("defaultPermissionsDownloadChanged", new Class[]{NSButton.class}));
         this.dgroupw.setEnabled(chmodDownloadDefaultEnabled);
+        this.dgroupw.setTarget(this);
+        this.dgroupw.setAction(new NSSelector("defaultPermissionsDownloadChanged", new Class[]{NSButton.class}));
         this.dgroupx.setEnabled(chmodDownloadDefaultEnabled);
+        this.dgroupx.setTarget(this);
+        this.dgroupx.setAction(new NSSelector("defaultPermissionsDownloadChanged", new Class[]{NSButton.class}));
+
         this.dotherr.setEnabled(chmodDownloadDefaultEnabled);
+        this.dotherr.setTarget(this);
+        this.dotherr.setAction(new NSSelector("defaultPermissionsDownloadChanged", new Class[]{NSButton.class}));
         this.dotherw.setEnabled(chmodDownloadDefaultEnabled);
+        this.dotherw.setTarget(this);
+        this.dotherw.setAction(new NSSelector("defaultPermissionsDownloadChanged", new Class[]{NSButton.class}));
         this.dotherx.setEnabled(chmodDownloadDefaultEnabled);
+        this.dotherx.setTarget(this);
+        this.dotherx.setAction(new NSSelector("defaultPermissionsDownloadChanged", new Class[]{NSButton.class}));
 
         boolean chmodUploadDefaultEnabled = Preferences.instance().getBoolean("queue.upload.changePermissions")
             && Preferences.instance().getBoolean("queue.upload.permissions.useDefault");
         this.uownerr.setEnabled(chmodUploadDefaultEnabled);
+        this.uownerr.setTarget(this);
+        this.uownerr.setAction(new NSSelector("defaultPermissionsUploadChanged", new Class[]{NSButton.class}));
         this.uownerw.setEnabled(chmodUploadDefaultEnabled);
+        this.uownerw.setTarget(this);
+        this.uownerw.setAction(new NSSelector("defaultPermissionsUploadChanged", new Class[]{NSButton.class}));
         this.uownerx.setEnabled(chmodUploadDefaultEnabled);
+        this.uownerx.setTarget(this);
+        this.uownerx.setAction(new NSSelector("defaultPermissionsUploadChanged", new Class[]{NSButton.class}));
+
         this.ugroupr.setEnabled(chmodUploadDefaultEnabled);
+        this.ugroupr.setTarget(this);
+        this.ugroupr.setAction(new NSSelector("defaultPermissionsUploadChanged", new Class[]{NSButton.class}));
         this.ugroupw.setEnabled(chmodUploadDefaultEnabled);
+        this.ugroupw.setTarget(this);
+        this.ugroupw.setAction(new NSSelector("defaultPermissionsUploadChanged", new Class[]{NSButton.class}));
         this.ugroupx.setEnabled(chmodUploadDefaultEnabled);
+        this.ugroupx.setTarget(this);
+        this.ugroupx.setAction(new NSSelector("defaultPermissionsUploadChanged", new Class[]{NSButton.class}));
+
         this.uotherr.setEnabled(chmodUploadDefaultEnabled);
+        this.uotherr.setTarget(this);
+        this.uotherr.setAction(new NSSelector("defaultPermissionsUploadChanged", new Class[]{NSButton.class}));
         this.uotherw.setEnabled(chmodUploadDefaultEnabled);
+        this.uotherw.setTarget(this);
+        this.uotherw.setAction(new NSSelector("defaultPermissionsUploadChanged", new Class[]{NSButton.class}));
         this.uotherx.setEnabled(chmodUploadDefaultEnabled);
+        this.uotherx.setTarget(this);
+        this.uotherx.setAction(new NSSelector("defaultPermissionsUploadChanged", new Class[]{NSButton.class}));
 
         tabView.tabViewItemAtIndex(0).setView(panelGeneral);
         tabView.tabViewItemAtIndex(1).setView(panelInterface);
