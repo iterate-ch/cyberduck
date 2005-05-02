@@ -146,6 +146,30 @@ public class CDPreferencesController extends CDWindowController {
 			dotherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
 		}
 
+        boolean chmodDownloadDefaultEnabled = Preferences.instance().getBoolean("queue.download.changePermissions")
+            && Preferences.instance().getBoolean("queue.download.permissions.useDefault");
+        this.downerr.setEnabled(chmodDownloadDefaultEnabled);
+        this.downerw.setEnabled(chmodDownloadDefaultEnabled);
+        this.downerx.setEnabled(chmodDownloadDefaultEnabled);
+        this.dgroupr.setEnabled(chmodDownloadDefaultEnabled);
+        this.dgroupw.setEnabled(chmodDownloadDefaultEnabled);
+        this.dgroupx.setEnabled(chmodDownloadDefaultEnabled);
+        this.dotherr.setEnabled(chmodDownloadDefaultEnabled);
+        this.dotherw.setEnabled(chmodDownloadDefaultEnabled);
+        this.dotherx.setEnabled(chmodDownloadDefaultEnabled);
+
+        boolean chmodUploadDefaultEnabled = Preferences.instance().getBoolean("queue.upload.changePermissions")
+            && Preferences.instance().getBoolean("queue.upload.permissions.useDefault");
+        this.uownerr.setEnabled(chmodUploadDefaultEnabled);
+        this.uownerw.setEnabled(chmodUploadDefaultEnabled);
+        this.uownerx.setEnabled(chmodUploadDefaultEnabled);
+        this.ugroupr.setEnabled(chmodUploadDefaultEnabled);
+        this.ugroupw.setEnabled(chmodUploadDefaultEnabled);
+        this.ugroupx.setEnabled(chmodUploadDefaultEnabled);
+        this.uotherr.setEnabled(chmodUploadDefaultEnabled);
+        this.uotherw.setEnabled(chmodUploadDefaultEnabled);
+        this.uotherx.setEnabled(chmodUploadDefaultEnabled);
+
         tabView.tabViewItemAtIndex(0).setView(panelGeneral);
         tabView.tabViewItemAtIndex(1).setView(panelInterface);
         tabView.tabViewItemAtIndex(2).setView(panelTransfer);
@@ -302,17 +326,6 @@ public class CDPreferencesController extends CDWindowController {
 		this.chmodUploadDefaultCheckbox.setAction(new NSSelector("chmodUploadDefaultCheckboxClicked", new Class[]{NSButton.class}));
 		this.chmodUploadDefaultCheckbox.setState(Preferences.instance().getBoolean("queue.upload.permissions.useDefault") ? NSCell.OnState : NSCell.OffState);
 		this.chmodUploadDefaultCheckbox.setEnabled(Preferences.instance().getBoolean("queue.upload.changePermissions"));
-		boolean enabled = Preferences.instance().getBoolean("queue.upload.changePermissions")
-		    && Preferences.instance().getBoolean("queue.upload.permissions.useDefault");
-//		this.uownerr.setEnabled(enabled);
-//		this.uownerw.setEnabled(enabled);
-//		this.uownerx.setEnabled(enabled);
-//		this.ugroupr.setEnabled(enabled);
-//		this.ugroupw.setEnabled(enabled);
-//		this.ugroupx.setEnabled(enabled);
-//		this.uotherr.setEnabled(enabled);
-//		this.uotherw.setEnabled(enabled);
-//		this.uotherx.setEnabled(enabled);
 	}
 
 	public void chmodUploadDefaultCheckboxClicked(NSButton sender) {
@@ -362,17 +375,6 @@ public class CDPreferencesController extends CDWindowController {
 		this.chmodDownloadDefaultCheckbox.setAction(new NSSelector("chmodDownloadDefaultCheckboxClicked", new Class[]{NSButton.class}));
 		this.chmodDownloadDefaultCheckbox.setState(Preferences.instance().getBoolean("queue.download.permissions.useDefault") ? NSCell.OnState : NSCell.OffState);
 		this.chmodDownloadDefaultCheckbox.setEnabled(Preferences.instance().getBoolean("queue.download.changePermissions"));
-		boolean enabled = Preferences.instance().getBoolean("queue.download.changePermissions")
-		    && Preferences.instance().getBoolean("queue.download.permissions.useDefault");
-//		this.downerr.setEnabled(enabled);
-//		this.downerw.setEnabled(enabled);
-//		this.downerx.setEnabled(enabled);
-//		this.dgroupr.setEnabled(enabled);
-//		this.dgroupw.setEnabled(enabled);
-//		this.dgroupx.setEnabled(enabled);
-//		this.dotherr.setEnabled(enabled);
-//		this.dotherw.setEnabled(enabled);
-//		this.dotherx.setEnabled(enabled);
 	}
 
 	public void chmodDownloadDefaultCheckboxClicked(NSButton sender) {
@@ -1235,13 +1237,13 @@ public class CDPreferencesController extends CDWindowController {
 		this.protocolCombobox.addItemsWithTitles(new NSArray(new String[]{PROTOCOL_FTP,
                                                                           PROTOCOL_FTP_TLS,
                                                                           PROTOCOL_SFTP}));
-		if(Preferences.instance().getProperty("connection.protocol.default").equals("ftp")) {
+		if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP)) {
 			this.protocolCombobox.setTitle(PROTOCOL_FTP);
 		}
-        if(Preferences.instance().getProperty("connection.protocol.default").equals("ftpS")) {
+        if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP_TLS)) {
             this.protocolCombobox.setTitle(PROTOCOL_FTP_TLS);
         }
-        if(Preferences.instance().getProperty("connection.protocol.default").equals("Sftp")) {
+        if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP)) {
             this.protocolCombobox.setTitle(PROTOCOL_SFTP);
         }
 	}
@@ -1251,7 +1253,11 @@ public class CDPreferencesController extends CDWindowController {
 			Preferences.instance().setProperty("connection.protocol.default", Session.FTP);
 			Preferences.instance().setProperty("connection.port.default", Session.FTP_PORT);
 		}
-		else {
+        if(sender.selectedItem().title().equals(PROTOCOL_FTP_TLS)) {
+            Preferences.instance().setProperty("connection.protocol.default", Session.FTP_TLS);
+            Preferences.instance().setProperty("connection.port.default", Session.FTP_PORT);
+        }
+        if(sender.selectedItem().title().equals(PROTOCOL_SFTP)) {
 			Preferences.instance().setProperty("connection.protocol.default", Session.SFTP);
 			Preferences.instance().setProperty("connection.port.default", Session.SSH_PORT);
 		}
