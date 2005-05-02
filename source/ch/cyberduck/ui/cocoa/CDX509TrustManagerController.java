@@ -114,9 +114,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
                 String cert = "";
                 if (x509Certificates.length > 0)
                     cert = x509Certificates[0].toString();
-                alertField.setStringValue(NSBundle.localizedString(
-                        "There is a problem with the client certificate. Reason: ", "")
-                        + e.getMessage());
+                alertField.setStringValue(e.getMessage());
                 certificateField.setString(cert);
                 this.windowController.beginSheet(this.sheet,
                         this, //delegate
@@ -164,9 +162,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
                 String cert = "";
                 if (x509Certificates.length > 0)
                     cert = x509Certificates[0].toString();
-                alertField.setStringValue(NSBundle.localizedString(
-                        "There is a problem with the client certificate. Reason: ", "")
-                        + e.getMessage());
+                alertField.setStringValue(e.getMessage());
                 certificateField.setString(cert);
                 this.windowController.beginSheet(sheet,
                         this, //delegate

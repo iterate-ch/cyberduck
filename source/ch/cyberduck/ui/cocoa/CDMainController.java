@@ -152,13 +152,16 @@ public class CDMainController extends CDController {
 		if(setDelegateSelector.implementedByClass(NSMenu.class)) {
 			this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
 			this.historyMenu.setDelegate(this.historyMenuDelegate = new HistoryMenuDelegate());
-			this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = new RendezvousMenuDelegate(this.rendezvous = Rendezvous.instance()));
+			this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = new RendezvousMenuDelegate(
+                    this.rendezvous = Rendezvous.instance()));
 		}
         this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("History", "")).setAction(
                 new NSSelector("historyMenuClicked", new Class[]{NSMenuItem.class})
         );
-		this.bookmarkMenu.setSubmenuForItem(historyMenu, this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("History", "")));
-		this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("Bonjour", "")));
+		this.bookmarkMenu.setSubmenuForItem(historyMenu, this.bookmarkMenu.itemWithTitle(
+                NSBundle.localizedString("History", "")));
+		this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle(
+                NSBundle.localizedString("Bonjour", "")));
 	}
 
     public void historyMenuClicked(NSMenuItem sender) {
@@ -311,7 +314,7 @@ public class CDMainController extends CDController {
                     Message msg = (Message)arg;
                     Host host = rendezvous.getService((String)msg.getContent());
                     if(msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
-                        Growl.instance().notifyWithImage("Bonjour",
+                        Growl.instance().notifyWithImage(NSBundle.localizedString("Bonjour"),
                                 (String)msg.getContent(),
                                 "rendezvous.icns");
                         items.put((String)msg.getContent(),
