@@ -43,11 +43,19 @@ public class CDBrowserColumnViewModel extends CDTableDataSource {
 		return 0;
 	}
 		
-	public void browserWillDisplayCell(NSBrowser sender, NSBrowserCell browserCell, int row, int col) {
+	public void browserWillDisplayCell(NSBrowser sender, NSBrowserCell cell, int row, int col) {
 		String absolute = this.pathOfColumn(sender, col);
-		Path path = (Path)this.cache(PathFactory.createPath(controller.workdir().getSession(),
-																 absolute)).get(row);
-		((CDBrowserCell)browserCell).setPath(path);
+		if(cell instanceof CDBrowserCell) {
+			Path path = (Path)this.cache(PathFactory.createPath(controller.workdir().getSession(),
+																absolute)).get(row);
+			((CDBrowserCell)cell).setPath(path);
+            if(this.controller.isConnected()) {
+                //((CDBrowserCell)cell).setTextColor(NSColor.controlTextColor());
+            }
+            else {
+                //((CDBrowserCell)cell).setTextColor(NSColor.disabledControlTextColor());
+            }
+		}
 	}
 	
 	private String pathOfColumn(NSBrowser sender, int column) {

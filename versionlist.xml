@@ -13,7 +13,6 @@
 - [Feature] Store X.509 certificates in Keychain
 - [Feature] Custom icon with progressbar in the Finder when downloading files
 - [Feature] Browser outline view
-- [Feature] Browser column view
 - [Feature] Toolbar button to switch view
 - [Feature] History of recently connected hosts
 - [Feature] Set character encoding per bookmark
@@ -33,6 +32,7 @@
 - [Feature] Edit with non-default editor using the browser context menu
 
 2.4.5
+- [Feature] Added Tag to the list of supported editors (http://www.talacia.com/)
 - [Bugfix] No permissions set on transferred files when connection is closed unexpectedly (SFTP)
 
 2.4.4

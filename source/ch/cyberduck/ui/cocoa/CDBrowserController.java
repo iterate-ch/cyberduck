@@ -739,10 +739,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		
     public void setBrowserSwitchView(NSSegmentedControl browserSwitchView) {
         this.browserSwitchView = browserSwitchView;
-        this.browserSwitchView.setSegmentCount(3); // list, outline, column
+        this.browserSwitchView.setSegmentCount(2); // list, outline, column
 		this.browserSwitchView.setImage(NSImage.imageNamed("list.tiff"), LIST_VIEW);
 		this.browserSwitchView.setImage(NSImage.imageNamed("outline.tiff"), OUTLINE_VIEW);
-		this.browserSwitchView.setImage(NSImage.imageNamed("column.tiff"), COLUMN_VIEW);
+//		this.browserSwitchView.setImage(NSImage.imageNamed("column.tiff"), COLUMN_VIEW);
         this.browserSwitchView.setTarget(this);
         this.browserSwitchView.setAction(new NSSelector("browserSwitchClicked", new Class[]{Object.class}));
         ((NSSegmentedCell) this.browserSwitchView.cell()).setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectOne);
@@ -2278,10 +2278,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
 											   new NSSelector("browserSwitchClicked", new Class[]{Object.class}),
 											   ""));
 			viewSubmenu.itemWithTitle(NSBundle.localizedString("Outline", "Toolbar item")).setTag(1);
-			viewSubmenu.addItem(new NSMenuItem(NSBundle.localizedString("Column", "Toolbar item"),
-											   new NSSelector("browserSwitchClicked", new Class[]{Object.class}),
-											   ""));
-			viewSubmenu.itemWithTitle(NSBundle.localizedString("Column", "Toolbar item")).setTag(2);
+//			viewSubmenu.addItem(new NSMenuItem(NSBundle.localizedString("Column", "Toolbar item"),
+//											   new NSSelector("browserSwitchClicked", new Class[]{Object.class}),
+//											   ""));
+//			viewSubmenu.itemWithTitle(NSBundle.localizedString("Column", "Toolbar item")).setTag(2);
             viewMenu.setSubmenu(viewSubmenu);
             item.setMenuFormRepresentation(viewMenu);
 			item.setMinSize(browserSwitchView.frame().size());

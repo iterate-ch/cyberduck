@@ -74,9 +74,4 @@ public class CDOutlineCell extends NSTextFieldCell {
 			super.drawInteriorWithFrameInView(cellFrame, controlView);
 		}
 	}
-
-//	public NSSize cellSizeForBounds(NSRect rect) {
-//		return new NSSize(this.icon() != null ? rect.width()+this.icon().size().width()+6 : rect.width()+6,
-//						  super.cellSizeForBounds(rect).height());
-//	}
 }

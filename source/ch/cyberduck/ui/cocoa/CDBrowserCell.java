@@ -102,14 +102,6 @@ public class CDBrowserCell extends NSBrowserCell {
 	
 	protected static final float HEIGHT = 17f;
 
-//    public void highlightWithFrameInView(boolean highlight, NSRect cellFrame, NSView controlView) {
-//        if(this.icon() != null) {
-//            cellFrame = new NSRect(cellFrame.x(), cellFrame.y(),
-//                                   cellFrame.width()+this.icon().size().width()+4, CDBrowserCell.HEIGHT);
-//        }
-//        super.highlightWithFrameInView(highlight,  cellFrame, controlView);
-//    }
-
 	public void drawWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawWithFrameInView(new NSRect(cellFrame.x(), cellFrame.y(), 
 											 cellFrame.width(), CDBrowserCell.HEIGHT), controlView);
