@@ -2166,10 +2166,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
             item.setState(this.encoding.equalsIgnoreCase(item.title()) ? NSCell.OnState : NSCell.OffState);
         }
         if (identifier.equals("browserSwitchClicked:")) {
-			if(item.tag() == Preferences.instance().getInteger("browser.view"))
+			if(item.tag() == Preferences.instance().getInteger("browser.view")) {
 				item.setState(NSCell.OnState);
-			else
+            }
+			else {
 				item.setState(NSCell.OffState);
+            }
         }
         return this.validateItem(identifier);
     }
