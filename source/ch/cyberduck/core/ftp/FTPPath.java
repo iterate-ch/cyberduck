@@ -19,6 +19,7 @@ package ch.cyberduck.core.ftp;
  */
 
 import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSPathUtilities;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -119,7 +120,7 @@ public class FTPPath extends Path {
 			}
 			if(refresh || null == files) {
 				files = new ArrayList();
-				session.log("Listing "+this.getAbsolute(), Message.PROGRESS);
+				session.log(Message.PROGRESS, "Listing "+this.getAbsolute());
 				try {
 					session.check();
 					session.FTP.setTransferType(FTPTransferType.ASCII);
@@ -135,14 +136,14 @@ public class FTPPath extends Path {
 						}
 					}
 					session.cache().put(this.getAbsolute(), files);
-					session.log("Idle", Message.STOP);
+					session.log(Message.STOP, "Idle");
 				}
 				catch(FTPException e) {
-					session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+					session.log(Message.ERROR, "FTP Error: "+e.getMessage());
 					return null;
 				}
 				catch(IOException e) {
-					session.log("IO Error: "+e.getMessage(), Message.ERROR);
+					session.log(Message.ERROR, "IO Error: "+e.getMessage());
 					session.close();
 					return null;
 				}
@@ -171,17 +172,17 @@ public class FTPPath extends Path {
 					}
 				}
 				session.check();
-				session.log("Make directory "+this.getName(), Message.PROGRESS);
+				session.log(Message.PROGRESS, "Make directory "+this.getName());
 				session.FTP.mkdir(this.getAbsolute());
 				session.cache().put(this.getAbsolute(), new ArrayList());
 				this.getParent().invalidate();
-				session.log("Idle", Message.STOP);
+				session.log(Message.STOP, "Idle");
 			}
 			catch(FTPException e) {
-				session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "FTP Error: "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "IO Error: "+e.getMessage());
 				session.close();
 			}
 		}
@@ -192,17 +193,17 @@ public class FTPPath extends Path {
 			log.debug("rename:"+filename);
 			try {
 				session.check();
-				session.log("Renaming "+this.getName()+" to "+filename, Message.PROGRESS);
+				session.log(Message.PROGRESS, "Renaming "+this.getName()+" to "+filename);
 				session.FTP.rename(this.getAbsolute(), filename);
 				this.setPath(filename);
 				this.getParent().invalidate();
-				session.log("Idle", Message.STOP);
+				session.log(Message.STOP, "Idle");
 			}
 			catch(FTPException e) {
-				session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "FTP Error: "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "IO Error: "+e.getMessage());
 				session.close();
 			}
 		}
@@ -214,7 +215,7 @@ public class FTPPath extends Path {
 				if(this.exists()) {
 					try {
 						session.check();
-						session.log("Getting timestamp of "+this.getName(), Message.PROGRESS);
+						session.log(Message.PROGRESS, "Getting timestamp of "+this.getName());
 						this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()));
 						if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
 							if(this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
@@ -233,7 +234,7 @@ public class FTPPath extends Path {
 						else {
 							throw new FTPException("Transfer type not set");
 						}
-						session.log("Getting size of "+this.getName(), Message.PROGRESS);
+						session.log(Message.PROGRESS, "Getting size of "+this.getName());
 						this.attributes.setSize(session.FTP.size(this.getAbsolute()));
 					}
 					catch(FTPException e) {
@@ -241,7 +242,7 @@ public class FTPPath extends Path {
 						//ignore
 					}
 					catch(IOException e) {
-						session.log("IO Error: "+e.getMessage(), Message.ERROR);
+						session.log(Message.ERROR, "IO Error: "+e.getMessage());
 						session.close();
 					}
 				}
@@ -256,7 +257,7 @@ public class FTPPath extends Path {
 				if(this.attributes.isFile()) {
 					session.check();
 					session.FTP.chdir(this.getParent().getAbsolute());
-					session.log("Deleting "+this.getName(), Message.PROGRESS);
+					session.log(Message.PROGRESS, "Deleting "+this.getName());
 					session.FTP.delete(this.getName());
 				}
 				else if(this.attributes.isDirectory()) {
@@ -266,7 +267,7 @@ public class FTPPath extends Path {
 					while(iterator.hasNext()) {
 						file = (Path)iterator.next();
 						if(file.attributes.isFile()) {
-							session.log("Deleting "+this.getName(), Message.PROGRESS);
+							session.log(Message.PROGRESS, "Deleting "+this.getName());
 							session.FTP.delete(file.getName());
 						}
 						if(file.attributes.isDirectory()) {
@@ -274,17 +275,17 @@ public class FTPPath extends Path {
 						}
 					}
 					session.FTP.cdup();
-					session.log("Deleting "+this.getName(), Message.PROGRESS);
+					session.log(Message.PROGRESS, "Deleting "+this.getName());
 					session.FTP.rmdir(this.getName());
 				}
 				this.getParent().invalidate();
-				session.log("Idle", Message.STOP);
+				session.log(Message.STOP, "Idle");
 			}
 			catch(FTPException e) {
-				session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "FTP Error: "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "IO Error: "+e.getMessage());
 				session.close();
 			}
 		}
@@ -297,11 +298,11 @@ public class FTPPath extends Path {
 			try {
 				session.check();
 				if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-					session.log("Changing permission to "+perm.getOctalCode()+" on "+this.getName(), Message.PROGRESS);
+					session.log(Message.PROGRESS, "Changing permission to "+perm.getOctalCode()+" on "+this.getName());
 					session.FTP.site(command+" "+perm.getOctalCode()+" "+this.getAbsolute());
 				}
 				else if(this.attributes.isDirectory()) {
-					session.log("Changing permission to "+perm.getOctalCode()+" on "+this.getName(), Message.PROGRESS);
+					session.log(Message.PROGRESS, "Changing permission to "+perm.getOctalCode()+" on "+this.getName());
 					session.FTP.site(command+" "+perm.getOctalCode()+" "+this.getAbsolute());
 					if(recursive) {
 						List files = this.list(false, true, false);
@@ -314,13 +315,13 @@ public class FTPPath extends Path {
 					}
 				}
 				this.getParent().invalidate();
-				session.log("Idle", Message.STOP);
+				session.log(Message.STOP, "Idle");
 			}
 			catch(FTPException e) {
-				session.log("FTP Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "FTP Error: "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "IO Error: "+e.getMessage());
 				session.close();
 			}
 		}
@@ -373,13 +374,13 @@ public class FTPPath extends Path {
 				if(this.attributes.isDirectory()) {
 					this.getLocal().mkdirs();
 				}
-				session.log("Idle", Message.STOP);
+				session.log(Message.STOP, "Idle");
 			}
 			catch(FTPException e) {
-				session.log("FTP Error: ("+this.getName()+") "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "FTP Error: ("+this.getName()+") "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "IO Error: "+e.getMessage());
 				session.close();
 			}
 		}
@@ -424,7 +425,7 @@ public class FTPPath extends Path {
 				}
 				session.FTP.abor();
 			}
-			session.log("Idle", Message.STOP);
+			session.log(Message.STOP, "Idle");
 		}
 		finally {
 			try {
@@ -459,17 +460,12 @@ public class FTPPath extends Path {
 				lineSeparator = DOS_LINE_SEPARATOR;
 			}
 			session.FTP.setTransferType(FTPTransferType.ASCII);
-//			if(this.status.isResume()) {
-//				this.status.setCurrent(this.getLocal().getSize());
-//			}
 			out = new FromNetASCIIOutputStream(new FileOutputStream(this.getLocal(), false),
-			    //this.status.isResume()),
 			    lineSeparator);
 			if(out == null) {
 				throw new IOException("Unable to buffer data");
 			}
 			in = new FromNetASCIIInputStream(session.FTP.get(this.getAbsolute(), 0),
-			    //			    this.status.isResume() ? this.getLocal().getSize() : 0),
 			    lineSeparator);
 			if(in == null) {
 				throw new IOException("Unable opening data stream");
@@ -497,7 +493,7 @@ public class FTPPath extends Path {
 				}
 				session.FTP.abor();
 			}
-			session.log("Idle", Message.STOP);
+			session.log(Message.STOP, "Idle");
 		}
 		finally {
 			try {
@@ -545,12 +541,12 @@ public class FTPPath extends Path {
 						try {
 							if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
 								Permission perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
-								session.FTP.site("CHMOD "+perm.getOctalCode()+" "+this.getAbsolute());
+                                session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
 							}
 							else {
 								Permission perm = this.getLocal().getPermission();
 								if(!perm.isUndefined()) {
-									session.FTP.site("CHMOD "+perm.getOctalCode()+" "+this.getAbsolute());
+									session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
 								}
 							}
 						}
@@ -564,7 +560,11 @@ public class FTPPath extends Path {
 						}
 						catch(FTPException e) {
 							log.warn(e.getMessage());
-							this.getLocal().setLastModified(session.FTP.modtime(this.getAbsolute()).getTime());
+                            if(Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
+                                if(!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
+                                    this.getLocal().setLastModified(session.FTP.modtime(this.getAbsolute()).getTime());
+                                }
+                            }
 						}
 					}
 				}
@@ -572,13 +572,13 @@ public class FTPPath extends Path {
 					this.mkdir();
 				}
 				this.getParent().invalidate();
-				session.log("Idle", Message.STOP);
+				session.log(Message.STOP, "Idle");
 			}
 			catch(FTPException e) {
-				session.log("FTP Error: ("+this.getName()+") "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "FTP Error: ("+this.getName()+") "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "IO Error: "+e.getMessage());
 				session.close();
 			}
 		}
@@ -630,7 +630,7 @@ public class FTPPath extends Path {
 				}
 				session.FTP.abor();
 			}
-			session.log("Idle", Message.STOP);
+			session.log(Message.STOP, "Idle");
 		}
 		finally {
 			try {
@@ -697,7 +697,7 @@ public class FTPPath extends Path {
 				}
 				session.FTP.abor();
 			}
-			session.log("Idle", Message.STOP);
+			session.log(Message.STOP, "Idle");
 		}
 		finally {
 			try {

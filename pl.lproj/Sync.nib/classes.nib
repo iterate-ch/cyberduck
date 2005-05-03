@@ -1,0 +1,24 @@
+{
+    IBClasses = (
+        {CLASS = CDTableView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
+        {
+            CLASS = "ch.cyberduck.ui.cocoa.CDSyncQueueController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {
+                cancelButton = NSButton; 
+                downloadRadioCell = NSCell; 
+                fileTableView = NSTableView; 
+                infoLabel = NSTextField; 
+                localField = NSTextField; 
+                mirrorRadioCell = NSCell; 
+                statusIndicator = NSProgressIndicator; 
+                syncButton = NSButton; 
+                uploadRadioCell = NSCell; 
+                urlField = NSTextField; 
+                window = NSWindow; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}
