@@ -3,16 +3,20 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.4.4</string>
+	<string>2.4.5</string>
 	<key>file</key>
-	<string>Cyberduck-2.4.4.dmg</string>
+	<string>Cyberduck-2.4.5.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.4.5
+- [Feature] Added Tag to the list of supported editors (http://www.talacia.com/)
+- [Bugfix] No permissions set on transferred files when connection closed unexpectedly (SFTP)
+
 2.4.4
 - [Localize] Danish Localization
 - [Localize] Polish Localization
 - [Feature] Added CSSEdit to the list of supported editors (http://macrabbit.com/cssedit/)
-- [Feature] Added CotEditor to the list of supported editors (http://www.aynimac/)
+- [Feature] Added CotEditor to the list of supported editors (http://www.aynimac.com/)
 - [Feature] Gray out files in browser view when disconnected
 - [Bugfix] Unexpected null reply received (FTP)
 

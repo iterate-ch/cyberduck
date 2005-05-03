@@ -4,11 +4,15 @@ http://cyberduck.ch/
 Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
+2.4.5
+- [Feature] Added Tag to the list of supported editors (http://www.talacia.com/)
+- [Bugfix] No permissions set on transferred files when connection closed unexpectedly (SFTP)
+
 2.4.4
 - [Localize] Danish Localization
 - [Localize] Polish Localization
 - [Feature] Added CSSEdit to the list of supported editors (http://macrabbit.com/cssedit/)
-- [Feature] Added CotEditor to the list of supported editors (http://www.aynimac/)
+- [Feature] Added CotEditor to the list of supported editors (http://www.aynimac.com/)
 - [Feature] Gray out files in browser view when disconnected
 - [Bugfix] Unexpected null reply received (FTP)
 
