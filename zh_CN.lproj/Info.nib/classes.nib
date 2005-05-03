@@ -5,6 +5,7 @@
             CLASS = "ch.cyberduck.ui.cocoa.CDInfoController"; 
             LANGUAGE = Java; 
             OUTLETS = {
+                applyButton = NSButton; 
                 filenameField = NSTextField; 
                 groupField = NSTextField; 
                 groupr = NSButton; 

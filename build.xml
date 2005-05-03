@@ -38,23 +38,23 @@
 	<property name="lib" value="${home}/lib"/>
 	<property name="source" value="${home}/source"/>
 	<property name="resources" value="${home}/resources"/>
-	<property name="doc" value="${home}/doc"/>
+    <property name="doc" value="${home}/doc"/>
 
-	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
-	    <classpath refid="build.classpath"/>
-	</taskdef>
+    <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+        <classpath refid="build.classpath"/>
+    </taskdef>
 
     <path id="test.classpath">
         <path refid="build.classpath"/>
         <pathelement location="${build.classes}"/>
         <pathelement location="${build.unittests}"/>
-		<fileset dir="${build}">
-			<include name="*.jar"/>
-			<include name="*.jnilib"/>
-		</fileset>
+        <fileset dir="${build}">
+            <include name="*.jar"/>
+            <include name="*.jnilib"/>
+        </fileset>
     </path>
 
-	<path id="build.classpath">
+    <path id="build.classpath">
 		<pathelement location="/System/Library/Java"/>
 		<fileset dir="${lib}">
 			<include name="*.jar"/>

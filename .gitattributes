@@ -26,6 +26,8 @@ Cyberduck[!!-~]FAQ.rtfd/Pasted[!!-~]Graphic[!!-~]9.tiff -text
 Cyberduck[!!-~]FAQ.rtfd/Pasted[!!-~]Graphic.tiff -text
 Cyberduck[!!-~]FAQ.rtfd/cyberduck-application.icns -text
 /Cyberduck.scriptTerminology -text svneol=unset#application/octet-stream
+build/Growl.framework.zip -text
+build/Keychain.framework.zip -text
 cs.lproj/Bookmark.nib/keyedobjects.nib -text
 cs.lproj/Bookmark.strings svneol=native#unset
 cs.lproj/Browser.nib/keyedobjects.nib -text
@@ -373,9 +375,6 @@ img/connect.tiff svneol=native#unset
 img/deleteFile.tiff -text
 img/disk.tiff svneol=native#unset
 img/document16.tiff -text
-img/download0.icns -text
-img/download0.psd -text
-img/download0.tiff -text
 img/download1.icns -text
 img/download1.psd -text
 img/download1.tiff -text
