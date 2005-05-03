@@ -1875,6 +1875,17 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
     }
 
+    public void copy(Object sender) {
+        if (this.getSelectionCount() > 0) {
+            Path p = this.getSelectedPath();
+            NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
+            pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
+            if (!pboard.setStringForType(p.getAbsolute(), NSPasteboard.StringPboardType)) {
+                log.error("Error writing absolute path of selected item to NSPasteboard.StringPboardType.");
+            }
+        }
+    }
+
     public void cut(Object sender) {
         if (this.getSelectionCount() > 0) {
             Session session = this.workdir().getSession().copy();
@@ -2165,6 +2176,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     private boolean validateItem(String identifier) {
         if (identifier.equals("copy:")) {
+            return this.isMounted() && this.getSelectionCount() > 0;
+        }
+        if (identifier.equals("cut:")) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
         if (identifier.equals("paste:")) {
