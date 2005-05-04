@@ -8,6 +8,12 @@
 [DONE] Selecting remote server timezone in synchronization dialog
 [DONE] Column View in browser window
 [????] Drag and drop in browser column view
+[????] 'Edit' toolbar button with menu to choose a particular editor
+[????] Calculate folder sizes
+[????] Corner view in browser tables to show/hide particular columns
+[????] Change permissions by octal value (text input field)
+[????] Tabbing support through the selection of bookmarks
+[????] Autoscroll transcript (again)
 -- Scheduled for 2.5
 [DONE] FTP-TLS (AUTH TLS) Implementation
 [DONE] Adjust icons reflecting progress when downloading files
