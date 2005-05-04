@@ -570,7 +570,6 @@ ko.lproj/Update.nib/keyedobjects.nib -text
 ko.lproj/Update.strings svneol=native#unset
 ko.lproj/Validator.nib/keyedobjects.nib -text
 ko.lproj/Validator.strings svneol=native#unset
-lib/ext/ant.jar -text
 lib/ext/junit.jar -text
 lib/jmdns.jar -text
 lib/log4j.jar svneol=native#unset
