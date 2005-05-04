@@ -126,7 +126,22 @@
     <option name="HIDE_WARNINGS" value="false" />
   </component>
   <component name="FileEditorManager" split-orientation="vertical" split-proportion="0.5">
-    <first-group />
+    <first-group selected-file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDWindowController.java">
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDMainController.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="736" column="21" selection-start="27924" selection-end="27924" vertical-scroll-proportion="0.33333334">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+      <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDWindowController.java" pinned="false">
+        <provider selected="true" editor-type-id="text-editor">
+          <state line="50" column="20" selection-start="1877" selection-end="1877" vertical-scroll-proportion="0.33333334">
+            <folding />
+          </state>
+        </provider>
+      </entry>
+    </first-group>
     <second-group />
   </component>
   <component name="HierarchyBrowserManager">
@@ -145,6 +160,7 @@
     <expanded_node url="" module="Cyberduck" type="module" />
   </component>
   <component name="ProjectPane">
+    <expanded_node url="file://$PROJECT_DIR$" module="Cyberduck" type="directory" />
     <expanded_node url="" module="Cyberduck" type="module" />
   </component>
   <component name="ProjectView">
@@ -171,27 +187,6 @@
   </component>
   <component name="RunManager">
     <activeType name="Remote" />
-    <configuration selected="false" default="true" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <module name="" />
-    </configuration>
-    <configuration selected="false" default="true" type="JUnit" factoryName="JUnit">
-      <module name="" />
-      <option name="PACKAGE_NAME" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="METHOD_NAME" />
-      <option name="TEST_OBJECT" value="class" />
-      <option name="VM_PARAMETERS" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ADDITIONAL_CLASS_PATH" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="wholeProject" />
-      </option>
-    </configuration>
     <configuration selected="false" default="true" type="Applet" factoryName="Applet">
       <module name="" />
       <option name="MAIN_CLASS_NAME" />
@@ -208,6 +203,27 @@
       <option name="SHMEM_ADDRESS" value="javadebug" />
       <option name="HOST" value="localhost" />
       <option name="PORT" value="5005" />
+    </configuration>
+    <configuration selected="false" default="true" type="JUnit" factoryName="JUnit">
+      <module name="" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ADDITIONAL_CLASS_PATH" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="wholeProject" />
+      </option>
+    </configuration>
+    <configuration selected="false" default="true" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <module name="" />
     </configuration>
     <configuration selected="true" default="false" name="Unnamed" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
@@ -278,15 +294,15 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1245" height="1002" extended-state="6" />
+    <frame x="0" y="22" width="1245" height="1002" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="CVS" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.3299435" order="8" />
       <window_info id="Code Outline" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="3" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.41971382" order="7" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.267335" order="0" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.17710944" order="0" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.41920903" order="1" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.23224728" order="1" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.23166844" order="1" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.30847457" order="8" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="6" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
@@ -379,107 +395,107 @@
     </buildFile>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/sv.lproj/Localizable.strings">
+    <entry file="file://$PROJECT_DIR$/sk.lproj/Localizable.strings">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="259" column="0" selection-start="6203" selection-end="6203" vertical-scroll-proportion="0.15601023">
+        <state line="382" column="0" selection-start="9755" selection-end="9755" vertical-scroll-proportion="0.2857143">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/zh_TW.lproj/Localizable.strings">
+    <entry file="file://$PROJECT_DIR$/Spanish.lproj/Localizable.strings">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="256" column="22" selection-start="5383" selection-end="5383" vertical-scroll-proportion="0.47826087">
+        <state line="382" column="0" selection-start="10191" selection-end="10191" vertical-scroll-proportion="0.2857143">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sv.lproj/Localizable.strings">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="382" column="0" selection-start="9882" selection-end="9882" vertical-scroll-proportion="0.2857143">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Russian.lproj/Localizable.strings">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="382" column="0" selection-start="9932" selection-end="9932" vertical-scroll-proportion="0.2711111">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Portuguese.lproj/Localizable.strings">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="382" column="0" selection-start="10141" selection-end="10141" vertical-scroll-proportion="0.2711111">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/no.lproj/Localizable.strings">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="382" column="0" selection-start="9826" selection-end="9826" vertical-scroll-proportion="0.2711111">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Korean.lproj/Localizable.strings">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="382" column="0" selection-start="8873" selection-end="8873" vertical-scroll-proportion="0.2711111">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/zh_CN.lproj/Localizable.strings">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="235" column="0" selection-start="4912" selection-end="4912" vertical-scroll-proportion="0.15601023">
+        <state line="315" column="0" selection-start="6668" selection-end="6668" vertical-scroll-proportion="0.39130434">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/core/Status.java">
+    <entry file="file://$PROJECT_DIR$/zh_TW.lproj/Localizable.strings">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="62" column="44" selection-start="1915" selection-end="1915" vertical-scroll-proportion="0.17440401">
+        <state line="309" column="0" selection-start="6518" selection-end="6518" vertical-scroll-proportion="0.3043478">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pl.lproj/Localizable.strings">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="219" column="0" selection-start="5305" selection-end="5305" vertical-scroll-proportion="0.1268116">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/English.lproj/Localizable.strings">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="34" selection-start="257" selection-end="257" vertical-scroll-proportion="0.17391305">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBrowserController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2491" column="0" selection-start="108388" selection-end="108388" vertical-scroll-proportion="0.47826087">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/versionlist.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="0" selection-start="725" selection-end="725" vertical-scroll-proportion="0.2173913">
+        <state line="223" column="0" selection-start="5313" selection-end="5356" vertical-scroll-proportion="0.4057971">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Changelog.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="0" selection-start="609" selection-end="609" vertical-scroll-proportion="0.1594203">
+        <state line="15" column="41" selection-start="854" selection-end="854" vertical-scroll-proportion="0.2173913">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDBrowserCell.java">
+    <entry file="file://$PROJECT_DIR$/versionlist.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="13" selection-start="927" selection-end="927" vertical-scroll-proportion="-0.82608694">
+        <state line="13" column="38" selection-start="652" selection-end="652" vertical-scroll-proportion="0.1884058">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Italian.lproj/Browser.strings">
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDWindowController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+        <state line="50" column="20" selection-start="1877" selection-end="1877" vertical-scroll-proportion="0.33333334">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Italian.lproj/Main.strings">
+    <entry file="file://$PROJECT_DIR$/source/ch/cyberduck/ui/cocoa/CDMainController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Italian.lproj/Preferences.strings">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Italian.lproj/Localizable.strings">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="0" selection-start="281" selection-end="281" vertical-scroll-proportion="0.20289855">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///private/tmp/501/TemporaryItems/versionlist.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="10" selection-start="183" selection-end="183" vertical-scroll-proportion="0.04347826">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Info.plist">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="86" column="28" selection-start="2245" selection-end="2245" vertical-scroll-proportion="1.2241993">
+        <state line="736" column="21" selection-start="27924" selection-end="27924" vertical-scroll-proportion="0.33333334">
           <folding />
         </state>
       </provider>
