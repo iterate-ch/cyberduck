@@ -126,7 +126,6 @@
 		}
 	}
 	if (row != -1) {
-        NSLog(@"selectRow...");
 		[self selectRow:row byExtendingSelection:NO];
 		[self scrollRowToVisible:row];
 	}	

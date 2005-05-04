@@ -393,7 +393,7 @@ public abstract class Path {
         int amount = 0;
         long current = this.status.getCurrent();
         boolean complete = false;
-        int step = 0;
+        int step = 0; this.getLocal().setProgress(step);
         // read from socket (bytes) & write to file in chunks
         while(!complete && !status.isCanceled()) {
             amount = in.read(chunk, 0, chunksize);

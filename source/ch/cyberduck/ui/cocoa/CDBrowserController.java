@@ -1500,12 +1500,15 @@ public class CDBrowserController extends CDWindowController implements Observer 
             if (path.attributes.isFile()) {
                 Editor editor = null;
                 if (sender instanceof NSMenuItem) {
-                    editor = new Editor((String)Editor.SUPPORTED_EDITORS.get(((NSMenuItem)sender).title()));
-                }
-                else {
+					Object identifier = Editor.SUPPORTED_EDITORS.get(((NSMenuItem)sender).title());
+					if(identifier != null) {
+						editor = new Editor((String)identifier);
+					}
+				}
+				if(null == editor) {
                     editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
-                }
-                editor.open(path);
+				}
+				editor.open(path);
             }
         }
     }
