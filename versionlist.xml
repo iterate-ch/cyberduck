@@ -11,6 +11,7 @@
 2.4.5
 - [Feature] Added Tag to the list of supported editors (http://www.talacia.com/)
 - [Bugfix] No permissions set on transferred files when connection closed unexpectedly (SFTP)
+- [Bugfix] Resuming uploads might corrupt files (SFTP)
 
 2.4.4
 - [Localize] Danish Localization
