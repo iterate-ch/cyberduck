@@ -401,17 +401,21 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
 	}
 
+    private void reloadPathPopup() {
+        pathPopupItems.clear();
+        pathPopupButton.removeAllItems();
+        if(this.isMounted()) {
+            this.addPathToPopup(workdir);
+            for (Path p = workdir; !p.isRoot();) {
+                p = p.getParent();
+                this.addPathToPopup(p);
+            }
+        }
+    }
+
 	private void reloadData() {
 		log.debug("reloadData");
-		pathPopupItems.clear();
-		pathPopupButton.removeAllItems();
-		if(this.isMounted()) {
-			this.addPathToPopup(workdir);
-			for (Path p = workdir; !p.isRoot();) {
-				p = p.getParent();
-				this.addPathToPopup(p);
-			}
-		}
+        this.reloadPathPopup();
 		this.sort();
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
@@ -815,6 +819,24 @@ public class CDBrowserController extends CDWindowController implements Observer 
             this.browserOutlineView.addTableColumn(c);
             this.browserOutlineView.setOutlineTableColumn(c);
         }
+        NSNotificationCenter.defaultCenter().addObserver(this,
+            new NSSelector("browserOutlineViewDidExpandItem", new Class[]{NSNotification.class}),
+            NSOutlineView.OutlineViewItemDidExpandNotification,
+            this.browserOutlineView);
+        NSNotificationCenter.defaultCenter().addObserver(this,
+            new NSSelector("browserOutlineViewDidCcollapseItem", new Class[]{NSNotification.class}),
+            NSOutlineView.OutlineViewItemDidCollapseNotification,
+            this.browserOutlineView);
+    }
+
+    public void browserOutlineViewDidExpandItem(NSNotification notification) {
+        this.workdir = (Path)notification.userInfo().allValues().lastObject();
+        this.reloadPathPopup();
+    }
+
+    public void browserOutlineViewDidCcollapseItem(NSNotification notification) {
+        this.workdir = ((Path)notification.userInfo().allValues().lastObject()).getParent();
+        this.reloadPathPopup();
     }
 
     private CDBrowserListViewModel browserListModel;
@@ -1535,12 +1557,13 @@ public class CDBrowserController extends CDWindowController implements Observer 
 	
 	public void duplicateFileButtonClicked(Object sender) {
         if (this.getSelectionCount() > 0) {
-			CDFileController controller = new CDDuplicateFileController(this.getSelectedPath());
+            Path selected = this.getSelectedPath();
+			CDFileController controller = new CDDuplicateFileController(selected);
 			this.beginSheet(controller.window(), //sheet
 							controller, //modal delegate
 							new NSSelector("duplicateFileSheetDidEnd",
 										   new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
-							this.workdir()); //contextInfo
+							selected.getParent()); //contextInfo
 		}
 	}
 
