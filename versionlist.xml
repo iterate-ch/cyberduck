@@ -3,11 +3,14 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.5b1</string>
+	<string>2.5b2</string>
 	<key>file</key>
-	<string>Cyberduck-2.5b1.dmg</string>
+	<string>Cyberduck-2.5b2.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.5b2
+- [Feature] Updated localizations
+
 2.5b1
 - [Feature] FTP using TLS support (using AUTH TLS as in draft-murray-auth-ftp-ssl-16) for the control channel (sending login credentials) and optionally the data channel (file listings and transfers) if the server is capable of.
 - [Feature] Store X.509 certificates in Keychain
@@ -34,6 +37,7 @@
 2.4.5
 - [Feature] Added Tag to the list of supported editors (http://www.talacia.com/)
 - [Bugfix] No permissions set on transferred files when connection closed unexpectedly (SFTP)
+- [Bugfix] Resuming uploads might corrupt files (SFTP)
 
 2.4.4
 - [Localize] Danish Localization
