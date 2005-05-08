@@ -79,7 +79,6 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addCertificateToKeychain(
 	Certificate *certificate = [Certificate certificateWithData:certData type:CSSM_CERT_X_509v3 encoding:CSSM_CERT_ENCODING_DER];
 	
 	(*env)->ReleaseByteArrayElements(env, jCertificate, certByte, 0);
-
 	[[Keychain defaultKeychain] addCertificate:certificate];
 }
 
