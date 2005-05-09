@@ -242,7 +242,7 @@ public class Host {
 		    hostname,
 		    port,
 		    path);
-		h.setCredentials(username, null);
+		h.setCredentials(username, password);
 		return h;
 	}
 
