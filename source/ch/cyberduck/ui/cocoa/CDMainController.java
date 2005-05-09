@@ -36,6 +36,7 @@ import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Rendezvous;
 import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.odb.Editor;
 
 public class CDMainController extends CDController {
 	private static Logger log = Logger.getLogger(CDMainController.class);
@@ -131,6 +132,40 @@ public class CDMainController extends CDController {
 			    ""));
 		}
 	}
+
+    private NSMenu editMenu;
+
+    public void setEditMenu(NSMenu editMenu) {
+        this.editMenu = editMenu;
+        NSSelector absolutePathForAppBundleWithIdentifierSelector =
+                new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
+        java.util.Map editors = Editor.SUPPORTED_EDITORS;
+        java.util.Iterator editorNames = editors.keySet().iterator();
+        java.util.Iterator editorIdentifiers = editors.values().iterator();
+        while(editorNames.hasNext()) {
+            String editor = (String)editorNames.next();
+            String identifier = (String)editorIdentifiers.next();
+            if(absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
+                boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                        identifier) != null;
+                if(enabled) {
+                    this.editMenu.addItem(new NSMenuItem(editor,
+                            new NSSelector("editButtonClicked", new Class[]{Object.class}),
+                            ""));
+                    NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
+                            NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
+                    );
+                    icon.setScalesWhenResized(true);
+                    icon.setSize(new NSSize(16f, 16f));
+                    this.editMenu.itemWithTitle(editor).setImage(icon);
+                    if(identifier.equals(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
+                        this.editMenu.itemWithTitle(editor).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
+                        this.editMenu.itemWithTitle(editor).setKeyEquivalent("j");
+                    }
+                }
+            }
+        }
+    }
 
 	private NSMenu bookmarkMenu;
 	private NSMenu rendezvousMenu;

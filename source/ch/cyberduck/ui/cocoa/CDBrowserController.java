@@ -1145,16 +1145,20 @@ public class CDBrowserController extends CDWindowController implements Observer 
             if(absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
                 boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                         identifier) != null;
-                this.editMenu.addItem(new NSMenuItem(editor,
-                        new NSSelector("editButtonClicked", new Class[]{Object.class}),
-                        ""));
                 if(enabled) {
+                    this.editMenu.addItem(new NSMenuItem(editor,
+                            new NSSelector("editButtonClicked", new Class[]{Object.class}),
+                            ""));
                     NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
                             NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
                     );
                     icon.setScalesWhenResized(true);
                     icon.setSize(new NSSize(16f, 16f));
                     this.editMenu.itemWithTitle(editor).setImage(icon);
+                    if(identifier.equals(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
+                        this.editMenu.itemWithTitle(editor).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
+                        this.editMenu.itemWithTitle(editor).setKeyEquivalent("j");
+                    }
                 }
             }
         }
