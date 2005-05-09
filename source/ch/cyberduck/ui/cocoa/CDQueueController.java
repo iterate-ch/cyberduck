@@ -282,6 +282,7 @@ public class CDQueueController extends CDWindowController {
 		});
 		if(Preferences.instance().getBoolean("queue.orderFrontOnTransfer")) {
 			this.window().makeKeyAndOrderFront(null);
+            this.tableViewSelectionChange();
 		}
 		if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
 			((ch.cyberduck.core.sftp.SFTPSession)queue.getSession()).setHostKeyVerificationController(new CDHostKeyController(this));

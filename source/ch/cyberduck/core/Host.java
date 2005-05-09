@@ -181,6 +181,7 @@ public class Host {
 			begin += protocol.length()+3;
 		}
 		String username = null;
+        String password = null;
 		if(protocol.equals(Session.FTP)) {
 			username = Preferences.instance().getProperty("ftp.anonymous.name");
 		}
@@ -194,9 +195,19 @@ public class Host {
 			throw new MalformedURLException("Unknown protocol: "+protocol);
 		}
 		if(input.indexOf('@', begin) != -1) {
-			cut = input.indexOf('@', begin);
-			username = input.substring(begin, cut);
-			begin += username.length()+1;
+            if(input.indexOf(':', begin) != -1) {
+                cut = input.indexOf(':', begin);
+                username = input.substring(begin, cut);
+                begin += username.length()+1;
+                cut = input.indexOf('@', begin);
+                password = input.substring(begin, cut);
+                begin += password.length()+1;
+            }
+            else {
+                cut = input.indexOf('@', begin);
+                username = input.substring(begin, cut);
+                begin += username.length()+1;
+            }
 		}
 		String hostname = input.substring(begin, input.length());
 		String path = null;

@@ -776,7 +776,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void setBrowserOutlineView(NSOutlineView browserOutlineView) {
         this.browserOutlineView = browserOutlineView;
-		this.browserOutlineView.setAutosaveExpandedItems(false);
+		this.browserOutlineView.setAutosaveExpandedItems(true);
         this.browserOutlineView.setTarget(this);
         this.browserOutlineView.setDoubleAction(new NSSelector("browserRowDoubleClicked", new Class[]{Object.class}));
         // receive drag events from types
