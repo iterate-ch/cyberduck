@@ -19,8 +19,8 @@ package org.apache.commons.net.ftp.parser;
 
 import java.io.IOException;
 
-import org.apache.commons.net.ftp.FTPFileEntryParser;
 import com.enterprisedt.net.ftp.FTPException;
+import org.apache.commons.net.ftp.FTPFileEntryParser;
 
 /**
  * This is the default implementation of the
@@ -28,9 +28,6 @@ import com.enterprisedt.net.ftp.FTPException;
  * implementation that will be used by
  * org.apache.commons.net.ftp.FTPClient.listFiles()
  * if no other implementation has been specified.
- *
- * @see org.apache.commons.net.ftp.FTPClient#listFiles
- * @see org.apache.commons.net.ftp.FTPClient#setParserFactory
  */
 public class DefaultFTPFileEntryParserFactory implements FTPFileEntryParserFactory {
 
@@ -53,41 +50,44 @@ public class DefaultFTPFileEntryParserFactory implements FTPFileEntryParserFacto
 		if(null != key) {
 			ukey = key.toUpperCase();
 			if(ukey.indexOf("UNIX") >= 0) {
-				return createUnixFTPEntryParser();
+				return this.createUnixFTPEntryParser();
 			}
 			else if(ukey.indexOf("VMS") >= 0) {
 				throw new FTPException("\""+key+"\" is not currently a supported system. Think about a good motivation for the author of this sofware to write an appropriate parser. See Help > Send Feedback menu.");
 				//return createVMSFTPEntryParser();
 			}
 			else if(ukey.indexOf("NETWARE") >= 0) {
-				return createNetwareFTPEntryParser();
+				return this.createNetwareFTPEntryParser();
 			}
 			else if(ukey.indexOf("WINDOWS") >= 0) {
-				return createNTFTPEntryParser();
+				return this.createNTFTPEntryParser();
 			}
 			else if(ukey.indexOf("OS/2") >= 0) {
-				return createOS2FTPEntryParser();
+				return this.createOS2FTPEntryParser();
 			}
 			else if(ukey.indexOf("OS/400") >= 0) {
-				return createOS400FTPEntryParser();
+				return this.createOS400FTPEntryParser();
 			}
+            else if(ukey.indexOf("MVS") >= 0) {
+                return this.createMVSEntryParser();
+            }
 		}
 		return new UnixFTPEntryParser();
 	}
 
-	public FTPFileEntryParser createUnixFTPEntryParser() {
+	private FTPFileEntryParser createUnixFTPEntryParser() {
 		return new UnixFTPEntryParser();
 	}
 
-	public FTPFileEntryParser createNetwareFTPEntryParser() {
+	private FTPFileEntryParser createNetwareFTPEntryParser() {
 		return new NetwareFTPEntryParser();
 	}
 
-	public FTPFileEntryParser createVMSVersioningFTPEntryParser() {
+	private FTPFileEntryParser createVMSVersioningFTPEntryParser() {
 		return new VMSVersioningFTPEntryParser();
 	}
 
-	public FTPFileEntryParser createNTFTPEntryParser() {
+	private FTPFileEntryParser createNTFTPEntryParser() {
 		return new CompositeFileEntryParser(new FTPFileEntryParser[]
 		{
 			new NTFTPEntryParser(),
@@ -95,16 +95,20 @@ public class DefaultFTPFileEntryParserFactory implements FTPFileEntryParserFacto
 		});
 	}
 
-	public FTPFileEntryParser createOS2FTPEntryParser() {
+	private FTPFileEntryParser createOS2FTPEntryParser() {
 		return new OS2FTPEntryParser();
 	}
 
-	public FTPFileEntryParser createOS400FTPEntryParser() {
+	private FTPFileEntryParser createOS400FTPEntryParser() {
 		return new CompositeFileEntryParser(new FTPFileEntryParser[]
 		{
 			new OS400FTPEntryParser(),
 			new UnixFTPEntryParser()
 		});
 	}
+
+    private FTPFileEntryParser createMVSEntryParser() {
+        return new MVSFTPEntryParser();
+    }
 }
 
