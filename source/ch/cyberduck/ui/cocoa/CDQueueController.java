@@ -149,6 +149,8 @@ public class CDQueueController extends CDWindowController {
 			NSPasteboard.StringPboardType,
 			NSPasteboard.FilesPromisePboardType}));
 		this.queueTable.setRowHeight(50f);
+        NSSelector setResizableMaskSelector
+                = new NSSelector("setResizingMask", new Class[]{int.class});
 		{
 			NSTableColumn c = new NSTableColumn();
 			c.setIdentifier("ICON");
@@ -156,7 +158,12 @@ public class CDQueueController extends CDWindowController {
 			c.setWidth(36f);
 			c.setMaxWidth(36f);
 			c.setEditable(false);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new CDIconCell());
 			this.queueTable.addTableColumn(c);
 		}
@@ -168,7 +175,12 @@ public class CDQueueController extends CDWindowController {
 			c.setWidth(300f);
 			c.setMaxWidth(1000f);
 			c.setEditable(false);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new CDProgressCell());
 			this.queueTable.addTableColumn(c);
 		}

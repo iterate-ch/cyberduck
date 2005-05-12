@@ -280,7 +280,8 @@ public class CDPreferencesController extends CDWindowController {
 	public void editorComboboxClicked(NSPopUpButton sender) {
 		Preferences.instance().setProperty("editor.name", sender.titleOfSelectedItem());
 		Preferences.instance().setProperty("editor.bundleIdentifier", (String)Editor.SUPPORTED_EDITORS.get(sender.titleOfSelectedItem()));
-	}
+        CDBrowserController.validateToolbarItems();
+    }
 
 	private NSPopUpButton encodingCombobox; //IBOutlet
 

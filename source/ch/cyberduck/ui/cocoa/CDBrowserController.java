@@ -312,6 +312,18 @@ public class CDBrowserController extends CDWindowController implements Observer 
         return null;
     }
 
+    public static void validateToolbarItems() {
+        NSArray windows = NSApplication.sharedApplication().windows();
+        int count = windows.count();
+        while (0 != count--) {
+            NSWindow window = (NSWindow) windows.objectAtIndex(count);
+            CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+            if (null != controller) {
+                window.toolbar().validateVisibleItems();
+            }
+        }
+    }
+
     public static void updateBrowserTableAttributes() {
         NSArray windows = NSApplication.sharedApplication().windows();
         int count = windows.count();
@@ -430,7 +442,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			case OUTLINE_VIEW: {
 				this.browserOutlineView.reloadData();
 				if(this.isMounted()) {
-					this.browserOutlineView.reloadItemAndChildren(this.workdir(), true);
+                    for(Iterator i = this.browserOutlineModel.cache(this.workdir()).iterator(); i.hasNext(); ) {
+                        Path p = (Path)i.next();
+                        if(p.isExpanded()) {
+                            this.browserOutlineView.expandItem(p);
+                        }
+                    }
 					this.infoLabel.setStringValue(this.browserOutlineView.numberOfRows() + " " +
 												  NSBundle.localizedString("files", ""));
 				}
@@ -440,7 +457,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			case COLUMN_VIEW: {
                 if(this.isMounted()) {
                     this.browserColumnView.setPath(workdir().getAbsolute());
-                    //browserColumnView.loadColumnZero();
                     this.browserColumnView.reloadColumn(browserColumnView.lastColumn());
                     this.browserColumnView.setPath(workdir().getAbsolute());
                     this.infoLabel.setStringValue(browserListModel.cache(workdir()).size() + " " +
@@ -776,7 +792,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void setBrowserOutlineView(NSOutlineView browserOutlineView) {
         this.browserOutlineView = browserOutlineView;
-		this.browserOutlineView.setAutosaveExpandedItems(true);
         this.browserOutlineView.setTarget(this);
         this.browserOutlineView.setDoubleAction(new NSSelector("browserRowDoubleClicked", new Class[]{Object.class}));
         // receive drag events from types
@@ -788,7 +803,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
         // setting appearance attributes
         this.browserOutlineView.setRowHeight(17f);
-        this.browserOutlineView.setAutoresizesAllColumnsToFit(true);
         this._updateBrowserOutlineTableAttributes();
         // selection properties
         this.browserOutlineView.setAllowsMultipleSelection(true);
@@ -813,31 +827,37 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.setMinWidth(100f);
             c.setWidth(250f);
             c.setMaxWidth(1000f);
-            c.setResizable(true);
+            NSSelector setResizableMaskSelector = new NSSelector("setResizingMask", new Class[]{int.class});
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
             c.setDataCell(new CDOutlineCell());
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             this.browserOutlineView.addTableColumn(c);
             this.browserOutlineView.setOutlineTableColumn(c);
         }
-        NSNotificationCenter.defaultCenter().addObserver(this,
-            new NSSelector("browserOutlineViewDidExpandItem", new Class[]{NSNotification.class}),
-            NSOutlineView.OutlineViewItemDidExpandNotification,
-            this.browserOutlineView);
-        NSNotificationCenter.defaultCenter().addObserver(this,
-            new NSSelector("browserOutlineViewDidCcollapseItem", new Class[]{NSNotification.class}),
-            NSOutlineView.OutlineViewItemDidCollapseNotification,
-            this.browserOutlineView);
+//        NSNotificationCenter.defaultCenter().addObserver(this,
+//            new NSSelector("browserOutlineViewDidExpandItem", new Class[]{NSNotification.class}),
+//            NSOutlineView.OutlineViewItemDidExpandNotification,
+//            this.browserOutlineView);
+//        NSNotificationCenter.defaultCenter().addObserver(this,
+//            new NSSelector("browserOutlineViewDidCcollapseItem", new Class[]{NSNotification.class}),
+//            NSOutlineView.OutlineViewItemDidCollapseNotification,
+//            this.browserOutlineView);
     }
 
-    public void browserOutlineViewDidExpandItem(NSNotification notification) {
-        this.workdir = (Path)notification.userInfo().allValues().lastObject();
-        this.reloadPathPopup();
-    }
-
-    public void browserOutlineViewDidCcollapseItem(NSNotification notification) {
-        this.workdir = ((Path)notification.userInfo().allValues().lastObject()).getParent();
-        this.reloadPathPopup();
-    }
+//    public void browserOutlineViewDidExpandItem(NSNotification notification) {
+//        this.workdir = (Path)notification.userInfo().allValues().lastObject();
+//        this.reloadPathPopup();
+//    }
+//
+//    public void browserOutlineViewDidCcollapseItem(NSNotification notification) {
+//        this.workdir = ((Path)notification.userInfo().allValues().lastObject()).getParent();
+//        this.reloadPathPopup();
+//    }
 
     private CDBrowserListViewModel browserListModel;
     private NSTableView browserListView; // IBOutlet
@@ -855,7 +875,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
         // setting appearance attributes
         this.browserListView.setRowHeight(17f);
-        this.browserListView.setAutoresizesAllColumnsToFit(true);
         this._updateBrowserListTableAttributes();
         // selection properties
         this.browserListView.setAllowsMultipleSelection(true);
@@ -872,7 +891,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
         this.browserListView.setDataSource(this.browserListModel = new CDBrowserListViewModel(this));
         this.browserListView.setDelegate(this.browserListModel);
-
+        NSSelector setResizableMaskSelector
+                = new NSSelector("setResizingMask", new Class[]{int.class});
         {
             NSTableColumn c = new NSTableColumn();
             c.setIdentifier("TYPE");
@@ -880,7 +900,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
-            c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
             c.setEditable(false);
             c.setDataCell(new NSImageCell());
             c.dataCell().setAlignment(NSText.CenterTextAlignment);
@@ -893,7 +918,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.setMinWidth(100f);
             c.setWidth(250f);
             c.setMaxWidth(1000f);
-            c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             this.browserListView.addTableColumn(c);
@@ -987,6 +1017,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
     protected void _updateBrowserTableColumns(NSTableView table) {
         log.debug("_updateBrowserTableColumns");
         table.removeTableColumn(table.tableColumnWithIdentifier("SIZE"));
+        NSSelector setResizableMaskSelector
+                = new NSSelector("setResizingMask", new Class[]{int.class});
         if (Preferences.instance().getBoolean("browser.columnSize")) {
             NSTableColumn c = new NSTableColumn();
             c.headerCell().setStringValue(NSBundle.localizedString("Size", "A column in the browser"));
@@ -994,7 +1026,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.setMinWidth(50f);
             c.setWidth(80f);
             c.setMaxWidth(100f);
-            c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setAlignment(NSText.RightTextAlignment);
             table.addTableColumn(c);
@@ -1007,7 +1044,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.setMinWidth(100f);
             c.setWidth(180f);
             c.setMaxWidth(500f);
-            c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             c.dataCell().setFormatter(new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString),
@@ -1022,7 +1064,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.setMinWidth(100f);
             c.setWidth(80f);
             c.setMaxWidth(500f);
-            c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             table.addTableColumn(c);
@@ -1035,7 +1082,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.setMinWidth(100f);
             c.setWidth(100f);
             c.setMaxWidth(800f);
-            c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             table.addTableColumn(c);
@@ -1060,7 +1112,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
             "HostPBoardType" //moving bookmarks
         }));
         this.bookmarkTable.setRowHeight(45f);
-
+        NSSelector setResizableMaskSelector
+                = new NSSelector("setResizingMask", new Class[]{int.class});
         {
             NSTableColumn c = new NSTableColumn();
             c.setIdentifier("ICON");
@@ -1069,7 +1122,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.setWidth(32f);
             c.setMaxWidth(32f);
             c.setEditable(false);
-            c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
             c.setDataCell(new NSImageCell());
             this.bookmarkTable.addTableColumn(c);
         }
@@ -1081,13 +1139,17 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.setWidth(200f);
             c.setMaxWidth(500f);
             c.setEditable(false);
-            c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
             c.setDataCell(new CDBookmarkCell());
             this.bookmarkTable.addTableColumn(c);
         }
 
         // setting appearance attributes
-        this.bookmarkTable.setAutoresizesAllColumnsToFit(true);
         NSSelector setUsesAlternatingRowBackgroundColorsSelector =
                 new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
         if (setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
@@ -1098,7 +1160,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
         if (setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
             this.bookmarkTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
         }
-        this.bookmarkTable.setAutoresizesAllColumnsToFit(true);
 
         // selection properties
         this.bookmarkTable.setAllowsMultipleSelection(true);
@@ -2183,9 +2244,14 @@ public class CDBrowserController extends CDWindowController implements Observer 
             if(this.isMounted() && this.getSelectionCount() > 0) {
                 if(this.getSelectedPath().attributes.isFile()) {
                     String bundleIdentifier = (String)Editor.SUPPORTED_EDITORS.get(item.title());
-                    if(null != bundleIdentifier)
-                        return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                                bundleIdentifier) != null;
+                    if(null != bundleIdentifier) {
+						NSSelector absolutePathForAppBundleWithIdentifierSelector =
+							new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
+						if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
+							return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+									bundleIdentifier) != null;
+                        }
+					}
                 }
             }
         }
@@ -2236,9 +2302,15 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
 		if(identifier.equals("Edit") || identifier.equals("editButtonClicked:")) {
 			if(this.isMounted() && this.getSelectionCount() > 0) {
-				if(this.getSelectedPath().attributes.isFile())
-                    return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                            Preferences.instance().getProperty("editor.bundleIdentifier")) != null;
+				if(this.getSelectedPath().attributes.isFile()) {
+					NSSelector absolutePathForAppBundleWithIdentifierSelector =
+						new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
+					if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
+                        String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                                Preferences.instance().getProperty("editor.bundleIdentifier"));
+                        return editorPath != null;
+                    }
+                }
 			}
 			return false;
 		}
@@ -2303,7 +2375,22 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.upButton.setEnabled(enabled);
         this.pathPopupButton.setEnabled(enabled);
         this.searchField.setEnabled(enabled);
-        return this.validateItem(item.itemIdentifier());
+        String identifier = item.itemIdentifier();
+        if(identifier.equals("Edit") || identifier.equals("editButtonClicked:")) {
+            NSSelector absolutePathForAppBundleWithIdentifierSelector =
+                    new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
+            if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
+                String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                        Preferences.instance().getProperty("editor.bundleIdentifier"));
+                if (editorPath != null) {
+                    item.setImage(NSWorkspace.sharedWorkspace().iconForFile(editorPath));
+                }
+                else {
+                    item.setImage(NSImage.imageNamed("pencil.tiff"));
+                }
+            }
+        }
+        return this.validateItem(identifier);
     }
 
     public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
@@ -2483,13 +2570,25 @@ public class CDBrowserController extends CDWindowController implements Observer 
             while(editorNames.hasNext()) {
                 String editor = (String)editorNames.next();
                 String identifier = (String)editorIdentifiers.next();
-                boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+				if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
+					boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                         identifier) != null;
-                if(enabled) {
-                    editMenu.addItem(new NSMenuItem(editor,
-                            new NSSelector("editButtonClicked", new Class[]{Object.class}),
-                            ""));
-                }
+					if(enabled) {
+						editMenu.addItem(new NSMenuItem(editor,
+								new NSSelector("editButtonClicked", new Class[]{Object.class}),
+								""));
+						NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
+																				 NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
+																				 );
+						icon.setScalesWhenResized(true);
+						icon.setSize(new NSSize(16f, 16f));
+						this.editMenu.itemWithTitle(editor).setImage(icon);
+						if(identifier.equals(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
+							this.editMenu.itemWithTitle(editor).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
+							this.editMenu.itemWithTitle(editor).setKeyEquivalent("j");
+						}
+					}
+				}
             }
             toolbarMenu.setSubmenu(editMenu);
             item.setMenuFormRepresentation(toolbarMenu);

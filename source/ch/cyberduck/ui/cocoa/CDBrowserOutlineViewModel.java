@@ -42,7 +42,36 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
         super(controller);
     }
 
-	public boolean outlineViewShouldEditTableColumn(NSOutlineView outlineView, 
+    public void outlineViewItemDidExpand(NSNotification notification) {
+        Path p = (Path)notification.userInfo().allValues().lastObject();
+        p.setExpanded(true);
+    }
+
+    public void outlineViewItemDidCollapse(NSNotification notification) {
+        Path p = (Path)notification.userInfo().allValues().lastObject();
+        p.setExpanded(false);
+    }
+
+//    public Object outlineViewItemForPersistentObject(NSOutlineView view, Object o) {
+//        if(controller.isMounted()) {
+//            if(o instanceof NSDictionary) {
+//                NSDictionary dict = (NSDictionary)o;
+//                Path p = PathFactory.createPath(this.controller.workdir().getSession(), dict);
+//                return p;
+//            }
+//        }
+//        return null;
+//    }
+//
+//    public Object outlineViewPersistentObjectForItem(NSOutlineView view, Object o) {
+//        if(o instanceof Path) {
+//            Path p = (Path)o;
+//            return p.getAsDictionary();
+//        }
+//        return null;
+//    }
+
+	public boolean outlineViewShouldEditTableColumn(NSOutlineView outlineView,
 													NSTableColumn tableColumn, Object item) {
 		return false;
 	}
@@ -105,7 +134,10 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 		if(null == item) {
 			item = controller.workdir();
 		}
-		return (Path)this.cache(item).get(index);
+        if (index < this.cache(item).size()) {
+            return (Path)this.cache(item).get(index);
+        }
+        return null;
 	}
 	
 	public Object outlineViewObjectValueForItem(NSOutlineView outlineView, NSTableColumn tableColumn, Path item) {
@@ -118,7 +150,6 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 				return item.getName();
 			}
 			if(identifier.equals("SIZE")) {
-                //todo
 				return new NSAttributedString(Status.getSizeAsString(item.attributes.getSize()),
 											  CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 			}
@@ -322,4 +353,12 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 		}
 		return promisedDragNames;
 	}
+
+    public String outlineViewToolTipForCell(NSOutlineView ov, NSCell cell, NSMutableRect rect, NSTableColumn tc,
+                                            Object item, NSPoint mouseLocation) {
+        if(item instanceof Path) {
+            return ((Path)item).getAbsolute();
+        }
+        return null;
+    }
 }

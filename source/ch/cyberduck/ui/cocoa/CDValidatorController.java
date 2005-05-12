@@ -242,6 +242,8 @@ public abstract class CDValidatorController extends CDWindowController implement
 				this.fileTableView.setGridStyleMask(NSTableView.GridNone);
 			}
 		}
+        NSSelector setResizableMaskSelector
+                = new NSSelector("setResizingMask", new Class[]{int.class});
         {
             NSTableColumn c = new NSTableColumn();
             c.setIdentifier("INCLUDE");
@@ -249,7 +251,12 @@ public abstract class CDValidatorController extends CDWindowController implement
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
-            c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
             c.setEditable(false);
             NSButtonCell cell = new NSButtonCell();
             cell.setControlSize(NSCell.SmallControlSize);
@@ -267,7 +274,12 @@ public abstract class CDValidatorController extends CDWindowController implement
 			c.setMinWidth(20f);
 			c.setWidth(20f);
 			c.setMaxWidth(20f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setEditable(false);
 			c.setDataCell(new NSImageCell());
 			c.dataCell().setAlignment(NSText.CenterTextAlignment);
@@ -280,7 +292,12 @@ public abstract class CDValidatorController extends CDWindowController implement
 			c.setMinWidth(100f);
 			c.setWidth(220f);
 			c.setMaxWidth(500f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setEditable(false);
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
@@ -293,7 +310,12 @@ public abstract class CDValidatorController extends CDWindowController implement
 			c.setMinWidth(100f);
 			c.setWidth(200f);
 			c.setMaxWidth(600f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.fileTableView.addTableColumn(c);
@@ -305,7 +327,12 @@ public abstract class CDValidatorController extends CDWindowController implement
 			c.setMinWidth(100f);
 			c.setWidth(200f);
 			c.setMaxWidth(600f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.fileTableView.addTableColumn(c);

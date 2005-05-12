@@ -25,10 +25,7 @@ import com.apple.cocoa.foundation.NSCoder;
 import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRect;
 
-import org.apache.log4j.Logger;
-
 public class CDOutlineCell extends NSTextFieldCell {
-	private static Logger log = Logger.getLogger(CDOutlineCell.class);
 	
 	public CDOutlineCell() {
 		super();

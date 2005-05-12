@@ -84,10 +84,10 @@ public class Permission {
 		this(DEFAULT_MASK);
 	}
 
-	/**
-	 * @param s the access string to parse the permissions from.
-	 *          Must be something between --------- and rwxrwxrwx
-	 */
+    /**
+     * @param mask the access string to parse the permissions from.
+     *          Must be something between --------- and rwxrwxrwx
+     */
 	public Permission(String mask) {
 		this.mask = mask;
 		this.owner = this.getOwnerPermissions(mask);
@@ -210,7 +210,7 @@ public class Permission {
 	}
 
 	/**
-	 * @param access unix access permitions, i.e. rwxr-xr-x
+	 * @param mask unix access permitions, i.e. rwxr-xr-x
 	 */
 	public void setMask(String mask) {
 		this.mask = mask;

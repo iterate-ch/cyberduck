@@ -308,4 +308,13 @@ public class CDBrowserListViewModel extends CDTableDataSource {
         }
         return promisedDragNames;
     }
+
+    public String tableViewToolTipForCell(NSTableView tableView, NSCell cell, NSMutableRect rect,
+                                                   NSTableColumn tc, int row, NSPoint mouseLocation) {
+        if (row < this.cache(this.controller.workdir()).size()) {
+            Path p = (Path) this.cache(this.controller.workdir()).get(row);   
+            return p.getAbsolute();
+        }
+        return null;
+    }
 }

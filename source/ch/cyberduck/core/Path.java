@@ -457,4 +457,16 @@ public abstract class Path {
 	public String toString() {
 		return this.getAbsolute();
 	}
+
+//    outline view hack
+
+    private boolean expanded = false;
+
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
+    }
+
+    public boolean isExpanded() {
+        return this.expanded;
+    }
 }

@@ -66,7 +66,8 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		this.uploadRadioCell.setAction(new NSSelector("uploadCellClicked", new Class[]{Object.class}));
 		this.downloadRadioCell.setTarget(this);
 		this.downloadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
-
+        NSSelector setResizableMaskSelector
+                = new NSSelector("setResizingMask", new Class[]{int.class});
 		{
 			NSTableColumn c = new NSTableColumn();
 			c.setIdentifier("NEW");
@@ -74,7 +75,12 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 			c.setMinWidth(20f);
 			c.setWidth(20f);
 			c.setMaxWidth(20f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setEditable(false);
 			c.setDataCell(new NSImageCell());
 			c.dataCell().setAlignment(NSText.CenterTextAlignment);
@@ -87,7 +93,12 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 			c.setMinWidth(20f);
 			c.setWidth(20f);
 			c.setMaxWidth(20f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setEditable(false);
 			c.setDataCell(new NSImageCell());
 			c.dataCell().setAlignment(NSText.CenterTextAlignment);
