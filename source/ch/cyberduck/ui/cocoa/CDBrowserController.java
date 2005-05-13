@@ -27,7 +27,6 @@ import java.util.*;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**
@@ -229,12 +228,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     (String) args.objectForKey("Path"));
             path.setLocal(new Local((String) args.objectForKey("Local")));
             path.attributes.setType(Path.DIRECTORY_TYPE);
-            for (Iterator i = new SyncQueue(path).getChilds().iterator(); i.hasNext();) {
-                ((Path) i.next()).sync();
-            }
-			Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
-															 "Growl Notification"),
-									path.getName());
+            Queue q = new SyncQueue(path);
+            q.process(false, false, true);
         }
         return null;
     }
@@ -255,12 +250,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
             if (nameObj != null) {
                 path.setLocal(new Local(path.getLocal().getParent(), (String) nameObj));
             }
-            for (Iterator i = new DownloadQueue(path).getChilds().iterator(); i.hasNext();) {
-                ((Path) i.next()).download();
-            }
-			Growl.instance().notify(NSBundle.localizedString("Download complete",
-															 "Growl Notification"),
-									path.getName());
+            Queue q = new DownloadQueue(path);
+            q.process(false, false, true);
         }
         return null;
     }
@@ -281,12 +272,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
             if (nameObj != null) {
                 path.setPath(this.workdir().getAbsolute(), (String) nameObj);
             }
-            for (Iterator i = new UploadQueue(path).getChilds().iterator(); i.hasNext();) {
-                ((Path) i.next()).upload();
-            }
-			Growl.instance().notify(NSBundle.localizedString("Upload complete",
-															 "Growl Notification"),
-									path.getName());
+            Queue q = new UploadQueue(path);
+            q.process(false, false, true);
         }
         return null;
     }
@@ -1216,10 +1203,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     icon.setScalesWhenResized(true);
                     icon.setSize(new NSSize(16f, 16f));
                     this.editMenu.itemWithTitle(editor).setImage(icon);
-                    if(identifier.equals(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
-                        this.editMenu.itemWithTitle(editor).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-                        this.editMenu.itemWithTitle(editor).setKeyEquivalent("j");
-                    }
                 }
             }
         }
@@ -2241,18 +2224,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 item.setTitle(NSBundle.localizedString("Cut", "Menu item"));
         }
         if (identifier.equals("editButtonClicked:")) {
-            if(this.isMounted() && this.getSelectionCount() > 0) {
-                if(this.getSelectedPath().attributes.isFile()) {
-                    String bundleIdentifier = (String)Editor.SUPPORTED_EDITORS.get(item.title());
-                    if(null != bundleIdentifier) {
-						NSSelector absolutePathForAppBundleWithIdentifierSelector =
-							new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
-						if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-							return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-									bundleIdentifier) != null;
-                        }
-					}
-                }
+            if(item.title().equals(Preferences.instance().getProperty("editor.name"))) {
+                item.setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
+                item.setKeyEquivalent("j");
+            }
+            else {
+                item.setKeyEquivalent("");
             }
         }
         if (identifier.equals("showHiddenFilesClicked:")) {
@@ -2583,10 +2560,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 						icon.setScalesWhenResized(true);
 						icon.setSize(new NSSize(16f, 16f));
 						this.editMenu.itemWithTitle(editor).setImage(icon);
-						if(identifier.equals(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
-							this.editMenu.itemWithTitle(editor).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-							this.editMenu.itemWithTitle(editor).setKeyEquivalent("j");
-						}
 					}
 				}
             }

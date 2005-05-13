@@ -106,6 +106,11 @@ public class CDPreferencesController extends CDWindowController {
         super.awakeFromNib();
 
 		this.window().setReleasedWhenClosed(true);
+        NSSelector setShowsToolbarButtonSelector
+                = new NSSelector("setShowsToolbarButton", new Class[]{boolean.class});
+        if(setShowsToolbarButtonSelector.implementedByClass(NSWindow.class)) {
+            this.window().setShowsToolbarButton(false);
+        }
 		this.window().center();
 		
 		this.transfermodeComboboxClicked(this.transfermodeCombobox);

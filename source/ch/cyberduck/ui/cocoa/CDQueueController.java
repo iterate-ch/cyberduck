@@ -306,7 +306,7 @@ public class CDQueueController extends CDWindowController {
 		queue.getHost().setLoginController(new CDLoginController(this));
 		new Thread("Session") {
 			public void run() {
-				queue.process(resumeRequested, true);
+				queue.process(resumeRequested, true, true);
 			}
 		}.start();
 	}

@@ -45,8 +45,8 @@ public class DownloadQueue extends Queue {
 		return dict;
 	}
 
-	protected void finish() {
-		super.finish();
+	protected void finish(boolean shouldCloseAfterTransfer) {
+		super.finish(shouldCloseAfterTransfer);
 		if(this.isComplete() && !this.isCanceled()) {
 			this.callObservers(new Message(Message.PROGRESS, NSBundle.localizedString("Download complete",
 																					  "Growl Notification")));

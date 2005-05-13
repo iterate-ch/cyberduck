@@ -158,10 +158,6 @@ public class CDMainController extends CDController {
                     icon.setScalesWhenResized(true);
                     icon.setSize(new NSSize(16f, 16f));
                     this.editMenu.itemWithTitle(editor).setImage(icon);
-                    if(identifier.equals(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
-                        this.editMenu.itemWithTitle(editor).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-                        this.editMenu.itemWithTitle(editor).setKeyEquivalent("j");
-                    }
                 }
             }
         }

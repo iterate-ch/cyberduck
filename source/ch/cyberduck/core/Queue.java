@@ -187,7 +187,7 @@ public abstract class Queue extends Observable {
     /**
      * Process the queue. All files will be downloaded/uploaded/synced rerspectively.
      */
-    public void process(boolean resumeRequested, boolean shouldValidate) {
+    public void process(boolean resumeRequested, boolean shouldValidate, boolean shouldCloseAfterTransfer) {
         try {
             if (this.init(resumeRequested, shouldValidate)) {
                 this.reset();
@@ -207,7 +207,7 @@ public abstract class Queue extends Observable {
             this.callObservers(new Message(Message.ERROR, e.getMessage()));
         }
         finally {
-            this.finish();
+            this.finish(shouldCloseAfterTransfer);
         }
     }
 
@@ -266,10 +266,12 @@ public abstract class Queue extends Observable {
         return true;
     }
 
-    protected void finish() {
+    protected void finish(boolean shouldCloseAfterTransfer) {
         this.running = false;
         this.progress.stop();
-        this.getRoot().getSession().close();
+        if(shouldCloseAfterTransfer) {
+            this.getRoot().getSession().close();
+        }
     }
 
     public void cancel() {

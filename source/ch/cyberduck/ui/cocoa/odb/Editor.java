@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.core.UploadQueue;
 
 public class Editor {
 	private static Logger log = Logger.getLogger(Editor.class);
@@ -115,10 +115,7 @@ public class Editor {
 
 	public void didModifyFile() {
 		log.debug("didModifyFile:"+this.file);
-		this.file.upload();
-		Growl.instance().notify(NSBundle.localizedString("Upload complete",
-														 "Growl Notification"),
-								this.file.getName());
-		this.file.getParent().list(true);
+        UploadQueue q = new UploadQueue(this.file);
+        q.process(false, false, false);
 	}
 }
