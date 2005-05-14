@@ -8,10 +8,6 @@
 	<string>437.0</string>
 	<key>IBOldestOS</key>
 	<integer>2</integer>
-	<key>IBOpenObjects</key>
-	<array>
-		<integer>5</integer>
-	</array>
 	<key>IBSystem Version</key>
 	<string>8A428</string>
 </dict>
