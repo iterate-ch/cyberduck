@@ -108,13 +108,11 @@ public class Editor {
 	private native void edit(String path, String bundleIdentifier);
 
 	public void didCloseFile() {
-		log.debug("didCloseFile:"+this.file);
 		this.file.getLocal().delete();
 		instances.removeObject(this);
 	}
 
 	public void didModifyFile() {
-		log.debug("didModifyFile:"+this.file);
         UploadQueue q = new UploadQueue(this.file);
         q.process(false, false, false);
 	}
