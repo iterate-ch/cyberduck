@@ -360,28 +360,28 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.browserSwitchClicked(this.browserSwitchView);
 		this.window().makeFirstResponder(this.quickConnectPopup);
 	}
-	
+
 	private String encoding = Preferences.instance().getProperty("browser.charset.encoding");
-	
+
     protected String encoding() {
         return this.encoding;
     }
-		
+
 	private Filter filenameFilter;
-	
+
 	{
 		if(Preferences.instance().getBoolean("browser.showHidden"))
 			filenameFilter = new NullFilter();
-		else 
+		else
 			filenameFilter = new HiddenFilesFilter();
 	}
-	
+
     protected Filter getFileFilter() {
 		return this.filenameFilter;
     }
-	
+
     private CDInfoController inspector = null;
-	
+
 	private void getFocus() {
 		log.debug("getFocus");
 		switch(this.browserSwitchView.selectedSegment()) {
@@ -455,7 +455,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			}
 		}
     }
-	
+
 	private void selectRow(int row) {
 		log.debug("selectRow:"+row);
 		switch(this.browserSwitchView.selectedSegment()) {
@@ -473,7 +473,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
 		this.getFocus();
 	}
-	
+
 	private Path getSelectedPath() {
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
@@ -488,7 +488,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
 		return null;
 	}
-	
+
 	private List getSelectedPaths() {
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
@@ -520,7 +520,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
 		return null;
 	}
-	
+
 	private int getSelectionCount() {
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
@@ -531,7 +531,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			}
 			case COLUMN_VIEW: {
 				NSArray selectedCells = this.browserColumnView.selectedCells();
-				if(selectedCells != null) 
+				if(selectedCells != null)
 					return selectedCells.count();
 			}
 		}
@@ -553,7 +553,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			}
 		}
 	}
-	
+
 	private void sizeToFit() {
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
@@ -576,7 +576,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			this.browserRowDoubleClicked(sender);
 		}
     }
-		
+
 	public void browserRowDoubleClicked(Object sender) {
         this.searchField.setStringValue("");
         if (this.getSelectionCount() > 0) {
@@ -623,7 +623,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			}
 		}
 	}
-	
+
     public void update(final Observable o, final Object arg) {
         if(!Thread.currentThread().getName().equals("main")
         && !Thread.currentThread().getName().equals("AWT-AppKit")) {
@@ -697,32 +697,32 @@ public class CDBrowserController extends CDWindowController implements Observer 
 	private NSToolbar toolbar;
 
 	private NSTabView browserTabView;
-	
+
     public void setBrowserTabView(NSTabView browserTabView) {
         this.browserTabView = browserTabView;
     }
-	
+
     private NSTextView logView;
-	
+
     public void setLogView(NSTextView logView) {
         this.logView = logView;
     }
-		
+
 //	private NSButton interruptButton;
-//	
+//
 //	public void setInterruptButton(NSButton interruptButton) {
 //		this.interruptButton = interruptButton;
 //		this.interruptButton.setTarget(this);
 //      this.interruptButton.setAction(new NSSelector("interruptButtonClicked", new Class[]{Object.class}));
 //		this.interruptButton.setEnabled(true);
 //	}
-//	
+//
 //	public void interruptButtonClicked(Object sender) {
 //		if(this.isMounted()) {
 //			this.workdir().getSession().interrupt();
 //		}
 //	}
-	
+
 	public NSView getSelectedBrowserView() {
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
@@ -737,13 +737,13 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
 		return null;
 	}
-	
+
     private NSSegmentedControl browserSwitchView;
 
 	private static final int LIST_VIEW = 0;
 	private static final int OUTLINE_VIEW = 1;
 	private static final int COLUMN_VIEW = 2;
-		
+
     public void setBrowserSwitchView(NSSegmentedControl browserSwitchView) {
         this.browserSwitchView = browserSwitchView;
         this.browserSwitchView.setSegmentCount(2); // list, outline, column
@@ -1082,7 +1082,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		this.sizeToFit();
         this.reloadData();
     }
-	
+
     private CDBookmarkTableDataSource bookmarkModel;
     private NSTableView bookmarkTable; // IBOutlet
 
@@ -1209,14 +1209,14 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
 	private NSPopUpButton actionPopupButton;
-	
+
 	public void setActionPopupButton(NSPopUpButton actionPopupButton) {
 		this.actionPopupButton = actionPopupButton;
 		this.actionPopupButton.setPullsDown(true);
 		this.actionPopupButton.setAutoenablesItems(true);
 		this.actionPopupButton.itemAtIndex(0).setImage(NSImage.imageNamed("gear.tiff"));
 	}
-	
+
     private NSComboBox quickConnectPopup; // IBOutlet
 	private NSObject quickConnectPopupDataSource;
 
@@ -2283,18 +2283,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             return bookmarkTable.numberOfSelectedRows() == 1;
         }
 		if(identifier.equals("Edit") || identifier.equals("editButtonClicked:")) {
-			if(this.isMounted() && this.getSelectionCount() > 0) {
-				if(this.getSelectedPath().attributes.isFile()) {
-					NSSelector absolutePathForAppBundleWithIdentifierSelector =
-						new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
-					if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-                        String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                                Preferences.instance().getProperty("editor.bundleIdentifier"));
-                        return editorPath != null;
-                    }
-                }
-			}
-			return false;
+			return this.isMounted() && this.getSelectionCount() > 0;
 		}
         if (identifier.equals("gotoButtonClicked:")) {
             return this.isMounted();
