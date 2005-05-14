@@ -44,12 +44,12 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 
     public void outlineViewItemDidExpand(NSNotification notification) {
         Path p = (Path)notification.userInfo().allValues().lastObject();
-        p.setExpanded(true);
+        p.getSession().cache().setExpanded(p.getAbsolute(), true);
     }
 
     public void outlineViewItemDidCollapse(NSNotification notification) {
         Path p = (Path)notification.userInfo().allValues().lastObject();
-        p.setExpanded(false);
+        p.getSession().cache().setExpanded(p.getAbsolute(), false);
     }
 
 //    public Object outlineViewItemForPersistentObject(NSOutlineView view, Object o) {

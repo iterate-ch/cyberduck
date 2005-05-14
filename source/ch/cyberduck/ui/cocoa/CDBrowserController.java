@@ -431,7 +431,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 				if(this.isMounted()) {
                     for(Iterator i = this.browserOutlineModel.cache(this.workdir()).iterator(); i.hasNext(); ) {
                         Path p = (Path)i.next();
-                        if(p.isExpanded()) {
+                        if(p.getSession().cache().isExpanded(p.getAbsolute())) {
                             this.browserOutlineView.expandItem(p);
                         }
                     }
@@ -1411,6 +1411,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.pathPopupButton.setTarget(this);
         this.pathPopupButton.setAction(new NSSelector("pathPopupSelectionChanged",
                 new Class[]{Object.class}));
+        // receive drag events from types
+//        this.pathPopupButton.registerForDraggedTypes(new NSArray(new Object[]{
+//            NSPasteboard.FilenamesPboardType //accept files dragged from the Finder for uploading
+//        }
+//        ));
     }
 
     public void pathPopupSelectionChanged(Object sender) {

@@ -20,11 +20,14 @@ package ch.cyberduck.core;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @version $Id$
  */
 public class Cache extends HashMap {
+
+    private List expandedItems = new ArrayList();
 
     public List get(String path) {
         return (List)super.get(path);
@@ -45,4 +48,15 @@ public class Cache extends HashMap {
 	public void put(String path, List childs) {
 		super.put(path, childs);
 	}
+
+    public void setExpanded(String path, boolean expanded) {
+        if(expanded)
+            this.expandedItems.add(path);
+        else
+            this.expandedItems.remove(path);
+    }
+
+    public boolean isExpanded(String path) {
+        return this.expandedItems.contains(path);
+    }
 }

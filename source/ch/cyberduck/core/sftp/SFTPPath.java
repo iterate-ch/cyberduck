@@ -104,7 +104,7 @@ public class SFTPPath extends Path {
 			}
 			if(refresh || session.cache().get(this.getAbsolute()) == null) {
 				List files = new ArrayList();
-				session.log(Message.PROGRESS, NSBundle.localizedString("Listing", "")+" "+this.getAbsolute());
+				session.log(Message.PROGRESS, NSBundle.localizedString("Listing directory", "")+" "+this.getAbsolute());
 				try {
 					session.check();
 					SftpFile workingDirectory = session.SFTP.openDirectory(this.getAbsolute());

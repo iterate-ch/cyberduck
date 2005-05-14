@@ -121,7 +121,7 @@ public class FTPPath extends Path {
             }
             if (refresh || session.cache().get(this.getAbsolute()) == null) {
                 List files = new ArrayList();
-                session.log(Message.PROGRESS, NSBundle.localizedString("Listing", "")+" "+this.getAbsolute());
+                session.log(Message.PROGRESS, NSBundle.localizedString("Listing directory", "")+" "+this.getAbsolute());
                 try {
                     session.check();
                     session.FTP.setTransferType(FTPTransferType.ASCII);
@@ -141,7 +141,7 @@ public class FTPPath extends Path {
                     return files;
                 }
                 catch (IOException e) {
-                    session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
+                    session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
                     session.close();
                     return files;
                 }

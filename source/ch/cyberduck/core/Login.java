@@ -56,7 +56,8 @@ public class Login {
 
 	public String getInternetPasswordFromKeychain() {
         int pool = NSAutoreleasePool.push();
-		String password =  Keychain.instance().getInternetPasswordFromKeychain(this.protocol, this.serviceName, this.port, this.getUsername());
+		String password =  Keychain.instance().getInternetPasswordFromKeychain(this.protocol,
+                this.serviceName, this.port, this.getUsername());
         NSAutoreleasePool.pop(pool);
         return password;
 	}
@@ -65,7 +66,8 @@ public class Login {
 	public void addInternetPasswordToKeychain() {
 		if(this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
             int pool = NSAutoreleasePool.push();
-			Keychain.instance().addInternetPasswordToKeychain(this.protocol, this.serviceName, this.port, this.getUsername(), this.getPassword());
+			Keychain.instance().addInternetPasswordToKeychain(this.protocol,
+                    this.serviceName, this.port, this.getUsername(), this.getPassword());
             NSAutoreleasePool.pop(pool);
 		}
 	}
