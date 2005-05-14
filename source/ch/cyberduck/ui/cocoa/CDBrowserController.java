@@ -429,8 +429,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			case OUTLINE_VIEW: {
 				this.browserOutlineView.reloadData();
 				if(this.isMounted()) {
-                    for(Iterator i = this.browserOutlineModel.cache(this.workdir()).iterator(); i.hasNext(); ) {
-                        Path p = (Path)i.next();
+                    for(int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
+                        Path p = (Path)this.browserOutlineView.itemAtRow(i);
                         if(p.getSession().cache().isExpanded(p.getAbsolute())) {
                             this.browserOutlineView.expandItem(p);
                         }
@@ -446,6 +446,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     this.browserColumnView.setPath(workdir().getAbsolute());
                     this.browserColumnView.reloadColumn(browserColumnView.lastColumn());
                     this.browserColumnView.setPath(workdir().getAbsolute());
+                    //todo
                     this.infoLabel.setStringValue(browserListModel.cache(workdir()).size() + " " +
                             NSBundle.localizedString("files", ""));
                     this.browserColumnView.validateVisibleColumns();
