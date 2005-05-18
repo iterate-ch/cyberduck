@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.odb.Editor;
+import ch.cyberduck.ui.cocoa.growl.Growl;
 
 /**
  * @version $Id$
@@ -60,6 +61,13 @@ public class CDBrowserController extends CDWindowController implements Observer 
         if ((index >= 0) && (index < orderedDocs.count())) {
             NSScriptClassDescription desc = (NSScriptClassDescription) NSScriptClassDescription.classDescriptionForClass(NSApplication.class);
             return new NSIndexSpecifier(desc, null, "orderedBrowsers", index);
+        }
+        return null;
+    }
+
+    public String getWorkingDirectory() {
+        if(this.isMounted()) {
+            return this.workdir().getAbsolute();
         }
         return null;
     }
@@ -229,7 +237,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             path.setLocal(new Local((String) args.objectForKey("Local")));
             path.attributes.setType(Path.DIRECTORY_TYPE);
             Queue q = new SyncQueue(path);
-            q.process(false, false, true);
+            q.process(false, true);
         }
         return null;
     }
@@ -251,7 +259,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 path.setLocal(new Local(path.getLocal().getParent(), (String) nameObj));
             }
             Queue q = new DownloadQueue(path);
-            q.process(false, false, true);
+            q.process(false, true);
         }
         return null;
     }
@@ -273,7 +281,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 path.setPath(this.workdir().getAbsolute(), (String) nameObj);
             }
             Queue q = new UploadQueue(path);
-            q.process(false, false, true);
+            q.process(false, true);
         }
         return null;
     }
@@ -363,21 +371,36 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
 	private String encoding = Preferences.instance().getProperty("browser.charset.encoding");
 
-    protected String encoding() {
+    protected String getEncoding() {
         return this.encoding;
     }
 
 	private Filter filenameFilter;
 
 	{
-		if(Preferences.instance().getBoolean("browser.showHidden"))
+		if(Preferences.instance().getBoolean("browser.showHidden")) {
 			filenameFilter = new NullFilter();
-		else
+        }
+		else {
 			filenameFilter = new HiddenFilesFilter();
+        }
 	}
 
     protected Filter getFileFilter() {
 		return this.filenameFilter;
+    }
+
+    public void setShowHiddenFiles(boolean showHidden) {
+        if(showHidden) {
+            filenameFilter = new NullFilter();
+        }
+        else {
+            filenameFilter = new HiddenFilesFilter();
+        }
+    }
+
+    public boolean getShowHiddenFiles() {
+        return filenameFilter instanceof NullFilter;
     }
 
     private CDInfoController inspector = null;
@@ -446,7 +469,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     this.browserColumnView.setPath(workdir().getAbsolute());
                     this.browserColumnView.reloadColumn(browserColumnView.lastColumn());
                     this.browserColumnView.setPath(workdir().getAbsolute());
-                    //todo
                     this.infoLabel.setStringValue(browserListModel.cache(workdir()).size() + " " +
                             NSBundle.localizedString("files", ""));
                     this.browserColumnView.validateVisibleColumns();
@@ -1459,11 +1481,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.encodingPopup.setTitle(Preferences.instance().getProperty("browser.charset.encoding"));
     }
 
-    public void changeEncoding(String encoding)  {
-        this.changeEncoding(encoding, true);
+    public void setEncoding(String encoding)  {
+        this.setEncoding(encoding, true);
     }
 
-    public void changeEncoding(String encoding, boolean force) {
+    public void setEncoding(String encoding, boolean force) {
         this.encoding = encoding;
         log.info("Encoding changed to:" + this.encoding);
         this.encodingPopup.setTitle(this.encoding);
@@ -1477,10 +1499,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void encodingButtonClicked(Object sender) {
         if (sender instanceof NSMenuItem) {
-            this.changeEncoding(((NSMenuItem) sender).title());
+            this.setEncoding(((NSMenuItem) sender).title());
         }
         if (sender instanceof NSPopUpButton) {
-            this.changeEncoding(this.encodingPopup.titleOfSelectedItem());
+            this.setEncoding(this.encodingPopup.titleOfSelectedItem());
         }
     }
 
@@ -2026,7 +2048,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         )) {
             final Session session = SessionFactory.createSession(host);
             this.init(host, session);
-            this.changeEncoding(encoding, false);
+            this.setEncoding(encoding, false);
             if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
                 ((ch.cyberduck.core.sftp.SFTPSession) session).setHostKeyVerificationController(new CDHostKeyController(this));
             }

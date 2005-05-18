@@ -586,7 +586,7 @@ public class CDConnectionController extends CDWindowController {
                 else {
                     throw new IllegalArgumentException("No protocol selected.");
                 }
-                browserController.changeEncoding(encodingPopup.titleOfSelectedItem());
+                browserController.setEncoding(encodingPopup.titleOfSelectedItem());
                 browserController.mount(host);
         }
     }

@@ -46,8 +46,6 @@ public abstract class Queue extends Observable {
     private double current = 0;
     private double speed;
 
-    private Validator validator;
-
     private Timer progress;
 
     private boolean running;
@@ -170,7 +168,7 @@ public abstract class Queue extends Observable {
 
     public List getChilds() {
         List childs = new ArrayList();
-        for (Iterator rootIter = this.getRoots().iterator(); rootIter.hasNext() && !this.isCanceled();) {
+        for (Iterator rootIter = this.getRoots().iterator(); rootIter.hasNext() && !this.isCanceled(); ) {
             this.getChilds(childs, (Path) rootIter.next());
         }
         return childs;
@@ -184,12 +182,15 @@ public abstract class Queue extends Observable {
         return this.jobs;
     }
 
+
     /**
      * Process the queue. All files will be downloaded/uploaded/synced rerspectively.
+     * @param resume The user requested to resume the transfer
+     * @param headless
      */
-    public void process(boolean resumeRequested, boolean shouldValidate, boolean shouldCloseAfterTransfer) {
+    public void process(boolean resume, boolean headless) {
         try {
-            if (this.init(resumeRequested, shouldValidate)) {
+            if (this.init(resume, headless)) {
                 this.reset();
                 for (Iterator iter = this.getJobs().iterator(); iter.hasNext() && !this.isCanceled();) {
                     ((Path) iter.next()).status.reset();
@@ -207,55 +208,57 @@ public abstract class Queue extends Observable {
             this.callObservers(new Message(Message.ERROR, e.getMessage()));
         }
         finally {
-            this.finish(shouldCloseAfterTransfer);
+            this.finish(headless);
         }
     }
 
-    private boolean init(boolean resumeRequested, boolean shouldValidate)
+    private boolean init(boolean resumeRequested, boolean headless)
             throws IOException {
         this.canceled = false;
         this.running = true;
-        this.validator = ValidatorFactory.createValidator(this.getClass());
-        this.progress = new Timer(500,
-                new java.awt.event.ActionListener() {
-                    int i = 0;
-                    double current;
-                    double last;
-                    double[] speeds = new double[8];
-
-                    public void actionPerformed(java.awt.event.ActionEvent e) {
-                        double diff = 0;
-                        current = getCurrent(); // Bytes
-                        if (current <= 0) {
-                            setSpeed(0);
-                        }
-                        else {
-                            speeds[i] = (current - last) * 2; // Bytes per second
-                            i++;
-                            last = current;
-                            if (i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
-                                i = 0;
-                            }
-                            for (int k = 0; k < speeds.length; k++) {
-                                diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
-                            }
-                            setSpeed((diff / speeds.length)); //Bytes per second
-                        }
-
-                    }
-                });
-        this.progress.start();
         this.jobs = null;
+        if(!headless) {
+            this.progress = new Timer(500,
+                    new java.awt.event.ActionListener() {
+                        int i = 0;
+                        double current;
+                        double last;
+                        double[] speeds = new double[8];
+
+                        public void actionPerformed(java.awt.event.ActionEvent e) {
+                            double diff = 0;
+                            current = getCurrent(); // Bytes
+                            if (current <= 0) {
+                                setSpeed(0);
+                            }
+                            else {
+                                speeds[i] = (current - last) * 2; // Bytes per second
+                                i++;
+                                last = current;
+                                if (i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
+                                    i = 0;
+                                }
+                                for (int k = 0; k < speeds.length; k++) {
+                                    diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
+                                }
+                                setSpeed((diff / speeds.length)); //Bytes per second
+                            }
+
+                        }
+                    });
+            this.progress.start();
+        }
         this.callObservers(new Message(Message.QUEUE_START));
 
         this.getSession().check();
 
-        if (shouldValidate) {
+        if (!headless) {
+            Validator validator = ValidatorFactory.createValidator(this.getClass());
             List childs = this.getChilds();
             if (!this.isCanceled()) {
-                if (this.validator.validate(childs, resumeRequested)) {
-                    if (this.validator.getValidated().size() > 0) {
-                        this.jobs = this.validator.getValidated();
+                if (validator.validate(childs, resumeRequested)) {
+                    if (validator.getValidated().size() > 0) {
+                        this.jobs = validator.getValidated();
                         return true;
                     }
                 }
@@ -266,10 +269,10 @@ public abstract class Queue extends Observable {
         return true;
     }
 
-    protected void finish(boolean shouldCloseAfterTransfer) {
+    protected void finish(boolean headless) {
         this.running = false;
-        this.progress.stop();
-        if(shouldCloseAfterTransfer) {
+        if(!headless) {
+            this.progress.stop();
             this.getRoot().getSession().close();
         }
     }
@@ -293,33 +296,27 @@ public abstract class Queue extends Observable {
 
     protected abstract void reset();
 
-    public boolean isInitialized
-            () {
+    public boolean isInitialized() {
         return this.getJobs() != null;
     }
 
-    public int numberOfRoots
-            () {
+    public int numberOfRoots() {
         return this.roots.size();
     }
 
-    public boolean isComplete
-            () {
+    public boolean isComplete() {
         return this.getSize() == this.getCurrent();
     }
 
-    public double getSize
-            () {
+    public double getSize() {
         return this.size; //cached value
     }
 
-    public String getSizeAsString
-            () {
+    public String getSizeAsString() {
         return Status.getSizeAsString(this.getSize());
     }
 
-    public double getCurrent
-            () {
+    public double getCurrent() {
         if (this.isInitialized()) {
             double size = 0;
             for (Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
@@ -330,16 +327,14 @@ public abstract class Queue extends Observable {
         return this.current; //cached value
     }
 
-    public String getCurrentAsString
-            () {
+    public String getCurrentAsString() {
         return Status.getSizeAsString(this.getCurrent());
     }
 
     /**
      * @return double current bytes/second
      */
-    public String getSpeedAsString
-            () {
+    public String getSpeedAsString() {
         if (this.isRunning() && this.isInitialized()) {
             if (this.getSpeed() > -1) {
                 return "(" + Status.getSizeAsString(this.getSpeed()) + "/sec)";
@@ -351,13 +346,11 @@ public abstract class Queue extends Observable {
     /**
      * @return The bytes being processed per second
      */
-    public double getSpeed
-            () {
+    public double getSpeed() {
         return this.speed;
     }
 
-    private void setSpeed
-            (double s) {
+    private void setSpeed(double s) {
         this.speed = s;
     }
 }

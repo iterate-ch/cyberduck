@@ -37,7 +37,7 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 	
     protected List cache(Path path) {
         return path.list(
-                controller.encoding(), //character encoding
+                controller.getEncoding(), //character encoding
                 false, // do not refresh
                 controller.getFileFilter(), //show hidden files
                 false); // do not notify observers (important!)

@@ -114,6 +114,6 @@ public class Editor {
 
 	public void didModifyFile() {
         UploadQueue q = new UploadQueue(this.file);
-        q.process(false, false, false);
+        q.process(false, true);
 	}
 }
