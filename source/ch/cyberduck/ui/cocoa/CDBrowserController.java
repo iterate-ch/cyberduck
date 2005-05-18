@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.odb.Editor;
-import ch.cyberduck.ui.cocoa.growl.Growl;
 
 /**
  * @version $Id$
@@ -829,6 +828,14 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
         this.browserOutlineView.setDataSource(this.browserOutlineModel = new CDBrowserOutlineViewModel(this));
         this.browserOutlineView.setDelegate(this.browserOutlineModel);
+        NSSelector setAutoresizingMaskSelector
+                = new NSSelector("setAutoresizingMask", new Class[]{int.class});
+        if(setAutoresizingMaskSelector.implementedByClass(NSTableView.class)) {
+            this.browserOutlineView.setAutoresizingMask(NSTableView.UniformColumnAutoresizingStyle);
+        }
+        else {
+            this.browserOutlineView.setAutoresizesAllColumnsToFit(true);
+        }
 
         {
             NSTableColumn c = new NSTableColumn();
@@ -849,6 +856,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             this.browserOutlineView.addTableColumn(c);
             this.browserOutlineView.setOutlineTableColumn(c);
         }
+        this.sizeToFit();
 //        NSNotificationCenter.defaultCenter().addObserver(this,
 //            new NSSelector("browserOutlineViewDidExpandItem", new Class[]{NSNotification.class}),
 //            NSOutlineView.OutlineViewItemDidExpandNotification,
@@ -901,6 +909,14 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
         this.browserListView.setDataSource(this.browserListModel = new CDBrowserListViewModel(this));
         this.browserListView.setDelegate(this.browserListModel);
+        NSSelector setAutoresizingMaskSelector
+                = new NSSelector("setAutoresizingMask", new Class[]{int.class});
+        if(setAutoresizingMaskSelector.implementedByClass(NSTableView.class)) {
+            this.browserListView.setAutoresizingMask(NSTableView.UniformColumnAutoresizingStyle);
+        }
+        else {
+            this.browserListView.setAutoresizesAllColumnsToFit(true);
+        }
         NSSelector setResizableMaskSelector
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {
@@ -938,6 +954,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             this.browserListView.addTableColumn(c);
         }
+        this.sizeToFit();
     }
 
     private CDBrowserColumnViewModel browserColumnModel;

@@ -104,6 +104,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 			c.dataCell().setAlignment(NSText.CenterTextAlignment);
 			this.fileTableView.addTableColumn(c);
 		}
+        this.fileTableView.sizeToFit();
 	}
 
 	protected boolean validateFile(Path p, boolean resume) {

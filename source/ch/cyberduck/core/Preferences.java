@@ -91,7 +91,7 @@ public abstract class Preferences {
 		defaults.put("bookmarkDrawer.isOpen", "false");
 
 		defaults.put("browser.view", "1");
-		defaults.put("browser.confirmDisconnect", "true");
+        defaults.put("browser.confirmDisconnect", "true");
 		defaults.put("browser.info.isInspector", "true");
 
 		defaults.put("browser.columnSize", "true");

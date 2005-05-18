@@ -218,8 +218,13 @@ public abstract class CDValidatorController extends CDWindowController implement
 		this.fileTableView = fileTableView;
 		this.fileTableView.setDataSource(this);
 		this.fileTableView.setDelegate(this);
-		this.fileTableView.sizeToFit();
 		this.fileTableView.setRowHeight(17f);
+        // selection properties
+        this.fileTableView.setAllowsMultipleSelection(true);
+        this.fileTableView.setAllowsEmptySelection(true);
+        this.fileTableView.setAllowsColumnResizing(true);
+        this.fileTableView.setAllowsColumnSelection(false);
+        this.fileTableView.setAllowsColumnReordering(true);
 		NSSelector setUsesAlternatingRowBackgroundColorsSelector =
 		    new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
 		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
@@ -241,6 +246,14 @@ public abstract class CDValidatorController extends CDWindowController implement
 				this.fileTableView.setGridStyleMask(NSTableView.GridNone);
 			}
 		}
+        NSSelector setAutoresizingMaskSelector
+                = new NSSelector("setAutoresizingMask", new Class[]{int.class});
+        if(setAutoresizingMaskSelector.implementedByClass(NSTableView.class)) {
+            this.fileTableView.setAutoresizingMask(NSTableView.UniformColumnAutoresizingStyle);
+        }
+        else {
+            this.fileTableView.setAutoresizesAllColumnsToFit(true);
+        }
         NSSelector setResizableMaskSelector
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {
@@ -336,13 +349,7 @@ public abstract class CDValidatorController extends CDWindowController implement
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.fileTableView.addTableColumn(c);
 		}
-		
-		// selection properties
-		this.fileTableView.setAllowsMultipleSelection(true);
-		this.fileTableView.setAllowsEmptySelection(true);
-		this.fileTableView.setAllowsColumnResizing(true);
-		this.fileTableView.setAllowsColumnSelection(false);
-		this.fileTableView.setAllowsColumnReordering(true);
+        this.fileTableView.sizeToFit();
 	}
 
 	protected NSButton skipButton; // IBOutlet
@@ -433,7 +440,7 @@ public abstract class CDValidatorController extends CDWindowController implement
 	
 	protected void fireDataChanged() {
 		if(this.hasPrompt()) {
-            fileTableView.reloadData();
+            this.fileTableView.reloadData();
 		}
 	}
 	

@@ -140,6 +140,14 @@ public class CDQueueController extends CDWindowController {
 		this.queueTable.setDoubleAction(new NSSelector("queueTableRowDoubleClicked", new Class[]{Object.class}));
 		this.queueTable.setDataSource(this.queueModel = CDQueueTableDataSource.instance());
 		this.queueTable.setDelegate(this);
+        NSSelector setAutoresizingMaskSelector
+                = new NSSelector("setAutoresizingMask", new Class[]{int.class});
+        if(setAutoresizingMaskSelector.implementedByClass(NSTableView.class)) {
+            this.queueTable.setAutoresizingMask(NSTableView.UniformColumnAutoresizingStyle);
+        }
+        else {
+            this.queueTable.setAutoresizesAllColumnsToFit(true);
+        }
 		// receive drag events from types
 		// in fact we are not interested in file promises, but because the browser model can only initiate
 		// a drag with tableView.dragPromisedFilesOfTypes(), we listens for those events
