@@ -60,8 +60,8 @@ public class UploadQueue extends Queue {
 		return dict;
 	}
 
-	protected void finish(boolean shouldCloseAfterTransfer) {
-		super.finish(shouldCloseAfterTransfer);
+    protected void finish(boolean headless) {
+		super.finish(headless);
 		if(this.isComplete() && !this.isCanceled()) {
 			this.callObservers(new Message(Message.PROGRESS, NSBundle.localizedString("Upload complete",
 																					  "Growl Notification")));
