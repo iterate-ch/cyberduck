@@ -237,12 +237,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
 											   (String)args.objectForKey("Path"));
 			path.setLocal(new Local((String)args.objectForKey("Local")));
 			path.attributes.setType(Path.DIRECTORY_TYPE);
-			for(Iterator i = new SyncQueue(path).getChilds().iterator(); i.hasNext(); ) {
-				((Path)i.next()).sync();
-			}
-			Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
-															 "Growl Notification"),
-									path.getName());
+            Queue q = new SyncQueue(path);
+            q.process(false, true);
 		}
 		return null;
 	}
@@ -263,12 +259,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			if(nameObj != null) {
 				path.setLocal(new Local(path.getLocal().getParent(), (String)nameObj));
 			}
-			for(Iterator i = new DownloadQueue(path).getChilds().iterator(); i.hasNext(); ) {
-				((Path)i.next()).download();
-			}
-			Growl.instance().notify(NSBundle.localizedString("Download complete",
-															 "Growl Notification"),
-									path.getName());
+            Queue q = new DownloadQueue(path);
+            q.process(false, true);
 		}
 		return null;
 	}
@@ -289,12 +281,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			if(nameObj != null) {
 				path.setPath(this.workdir().getAbsolute(), (String)nameObj);
 			}
-			for(Iterator i = new UploadQueue(path).getChilds().iterator(); i.hasNext(); ) {
-				((Path)i.next()).upload();
-			}
-			Growl.instance().notify(NSBundle.localizedString("Upload complete",
-															 "Growl Notification"),
-									path.getName());
+            Queue q = new UploadQueue(path);
+            q.process(false, true);
 		}
 		return null;
 	}
@@ -485,7 +473,14 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
 		// setting appearance attributes
 		this.browserTable.setRowHeight(17f);
-		this.browserTable.setAutoresizesAllColumnsToFit(true);
+        NSSelector setAutoresizingMaskSelector
+			= new NSSelector("setAutoresizingMask", new Class[]{int.class});
+        if(setAutoresizingMaskSelector.implementedByClass(NSTableView.class)) {
+            this.browserTable.setAutoresizingMask(NSTableView.UniformColumnAutoresizingStyle);
+        }
+        else {
+            this.browserTable.setAutoresizesAllColumnsToFit(true);
+        }
 		this._updateBrowserTableAttributes();
 		// selection properties
 		this.browserTable.setAllowsMultipleSelection(true);
@@ -1409,7 +1404,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
 	private boolean showHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
 	
-	public boolean showHIddenFiles() {
+	public boolean getShowHiddenFiles() {
 		return this.showHiddenFiles;
 	}
 	

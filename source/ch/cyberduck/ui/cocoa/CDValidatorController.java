@@ -217,9 +217,21 @@ public abstract class CDValidatorController extends CDWindowController implement
 		this.fileTableView = fileTableView;
 		this.fileTableView.setDataSource(this);
 		this.fileTableView.setDelegate(this);
-		this.fileTableView.sizeToFit();
 		this.fileTableView.setRowHeight(17f);
-		this.fileTableView.setAutoresizesAllColumnsToFit(true);
+        NSSelector setAutoresizingMaskSelector
+			= new NSSelector("setAutoresizingMask", new Class[]{int.class});
+        if(setAutoresizingMaskSelector.implementedByClass(NSTableView.class)) {
+            this.fileTableView.setAutoresizingMask(NSTableView.UniformColumnAutoresizingStyle);
+        }
+        else {
+            this.fileTableView.setAutoresizesAllColumnsToFit(true);
+        }
+		// selection properties
+		this.fileTableView.setAllowsMultipleSelection(true);
+		this.fileTableView.setAllowsEmptySelection(true);
+		this.fileTableView.setAllowsColumnResizing(true);
+		this.fileTableView.setAllowsColumnSelection(false);
+		this.fileTableView.setAllowsColumnReordering(true);
 		NSSelector setUsesAlternatingRowBackgroundColorsSelector =
 		    new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
 		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
@@ -241,6 +253,8 @@ public abstract class CDValidatorController extends CDWindowController implement
 				this.fileTableView.setGridStyleMask(NSTableView.GridNone);
 			}
 		}
+        NSSelector setResizableMaskSelector
+			= new NSSelector("setResizingMask", new Class[]{int.class});
 		{
 			NSTableColumn c = new NSTableColumn();
 			c.setIdentifier("ICON");
@@ -248,7 +262,12 @@ public abstract class CDValidatorController extends CDWindowController implement
 			c.setMinWidth(20f);
 			c.setWidth(20f);
 			c.setMaxWidth(20f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setEditable(false);
 			c.setDataCell(new NSImageCell());
 			c.dataCell().setAlignment(NSText.CenterTextAlignment);
@@ -261,7 +280,12 @@ public abstract class CDValidatorController extends CDWindowController implement
 			c.setMinWidth(100f);
 			c.setWidth(220f);
 			c.setMaxWidth(500f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setEditable(false);
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
@@ -274,7 +298,12 @@ public abstract class CDValidatorController extends CDWindowController implement
 			c.setMinWidth(100f);
 			c.setWidth(200f);
 			c.setMaxWidth(600f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.fileTableView.addTableColumn(c);
@@ -286,18 +315,17 @@ public abstract class CDValidatorController extends CDWindowController implement
 			c.setMinWidth(100f);
 			c.setWidth(200f);
 			c.setMaxWidth(600f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.fileTableView.addTableColumn(c);
 		}
-		
-		// selection properties
-		this.fileTableView.setAllowsMultipleSelection(true);
-		this.fileTableView.setAllowsEmptySelection(true);
-		this.fileTableView.setAllowsColumnResizing(true);
-		this.fileTableView.setAllowsColumnSelection(false);
-		this.fileTableView.setAllowsColumnReordering(true);
+		this.fileTableView.sizeToFit();
 	}
 
 	protected NSButton skipButton; // IBOutlet

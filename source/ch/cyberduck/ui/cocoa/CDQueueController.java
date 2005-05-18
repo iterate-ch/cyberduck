@@ -144,6 +144,8 @@ public class CDQueueController extends CDWindowController {
 			NSPasteboard.StringPboardType,
 			NSPasteboard.FilesPromisePboardType}));
 		this.queueTable.setRowHeight(50f);
+        NSSelector setResizableMaskSelector
+			= new NSSelector("setResizingMask", new Class[]{int.class});
 		{
 			NSTableColumn c = new NSTableColumn();
 			c.setIdentifier("ICON");
@@ -151,7 +153,12 @@ public class CDQueueController extends CDWindowController {
 			c.setWidth(36f);
 			c.setMaxWidth(36f);
 			c.setEditable(false);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new CDIconCell());
 			this.queueTable.addTableColumn(c);
 		}
@@ -163,10 +170,23 @@ public class CDQueueController extends CDWindowController {
 			c.setWidth(300f);
 			c.setMaxWidth(1000f);
 			c.setEditable(false);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new CDProgressCell());
 			this.queueTable.addTableColumn(c);
 		}
+        NSSelector setAutoresizingMaskSelector
+			= new NSSelector("setAutoresizingMask", new Class[]{int.class});
+        if(setAutoresizingMaskSelector.implementedByClass(NSTableView.class)) {
+            this.queueTable.setAutoresizingMask(NSTableView.UniformColumnAutoresizingStyle);
+        }
+        else {
+            this.queueTable.setAutoresizesAllColumnsToFit(true);
+        }
 		NSSelector setUsesAlternatingRowBackgroundColorsSelector =
 		    new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
 		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
@@ -272,6 +292,7 @@ public class CDQueueController extends CDWindowController {
 		});
 		if(Preferences.instance().getBoolean("queue.orderFrontOnTransfer")) {
 			this.window().makeKeyAndOrderFront(null);
+            this.tableViewSelectionChange();
 		}
 		if(queue.getHost().getProtocol().equals(Session.SFTP)) {
 			queue.getHost().setHostKeyVerificationController(new CDHostKeyController(this));
@@ -279,7 +300,7 @@ public class CDQueueController extends CDWindowController {
 		queue.getHost().setLoginController(new CDLoginController(this));
 		new Thread("Session") {
 			public void run() {
-				queue.process(resumeRequested, true);
+				queue.process(resumeRequested, false);
 			}
 		}.start();
 	}
