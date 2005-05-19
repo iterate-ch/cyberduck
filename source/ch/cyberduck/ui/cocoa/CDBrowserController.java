@@ -543,6 +543,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		while(enum.hasMoreElements()) {
 			this.browserTable.removeTableColumn((NSTableColumn)enum.nextElement());
 		}
+		NSSelector setResizableMaskSelector = new NSSelector("setResizingMask", new Class[]{int.class});
 		// ading table columns
 		if(Preferences.instance().getBoolean("browser.columnIcon")) {
 			NSTableColumn c = new NSTableColumn();
@@ -551,7 +552,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			c.setMinWidth(20f);
 			c.setWidth(20f);
 			c.setMaxWidth(20f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setEditable(false);
 			c.setDataCell(new NSImageCell());
 			c.dataCell().setAlignment(NSText.CenterTextAlignment);
@@ -564,7 +570,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			c.setMinWidth(100f);
 			c.setWidth(250f);
 			c.setMaxWidth(1000f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setEditable(false);
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
@@ -577,7 +588,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			c.setMinWidth(50f);
 			c.setWidth(80f);
 			c.setMaxWidth(100f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.RightTextAlignment);
 			this.browserTable.addTableColumn(c);
@@ -589,7 +605,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			c.setMinWidth(100f);
 			c.setWidth(180f);
 			c.setMaxWidth(500f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			c.dataCell().setFormatter(new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString),
@@ -603,7 +624,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			c.setMinWidth(100f);
 			c.setWidth(80f);
 			c.setMaxWidth(500f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.browserTable.addTableColumn(c);
@@ -615,7 +641,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			c.setMinWidth(100f);
 			c.setWidth(100f);
 			c.setMaxWidth(800f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.browserTable.addTableColumn(c);
@@ -662,6 +693,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 															   )
 												   );
 		this.bookmarkTable.setRowHeight(45f);
+		NSSelector setResizableMaskSelector = new NSSelector("setResizingMask", new Class[]{int.class});
 
 		{
 			NSTableColumn c = new NSTableColumn();
@@ -671,7 +703,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			c.setWidth(32f);
 			c.setMaxWidth(32f);
 			c.setEditable(false);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new NSImageCell());
 			this.bookmarkTable.addTableColumn(c);
 		}
@@ -684,7 +721,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			c.setWidth(200f);
 			c.setMaxWidth(500f);
 			c.setEditable(false);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new CDBookmarkCell());
 			this.bookmarkTable.addTableColumn(c);
 		}
@@ -782,8 +824,15 @@ public class CDBrowserController extends CDWindowController implements Observer 
 	
 	private NSTextField searchField; // IBOutlet
 
-	public void setSearchField(NSTextField searchField) {
-		this.searchField = searchField;
+	public void setSearchField(NSView searchField) {
+//		try {
+//			Class s = Class.forName("com.apple.cocoa.application.NSSearchField");
+//			searchField = new NSSearchField(searchField.frame());
+//		}
+//		catch(ClassNotFoundException e) {
+//			searchField = new NSTextField(searchField.frame());
+//		}
+		this.searchField = (NSTextField)searchField;
 		NSNotificationCenter.defaultCenter().addObserver(this,
 		    new NSSelector("searchFieldTextDidChange", new Class[]{Object.class}),
 		    NSControl.ControlTextDidChangeNotification,
