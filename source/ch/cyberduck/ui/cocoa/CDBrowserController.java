@@ -576,22 +576,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
 	}
 
-	private void sizeToFit() {
-		switch(this.browserSwitchView.selectedSegment()) {
-			case LIST_VIEW: {
-				this.browserListView.sizeToFit();
-				break;
-			}
-			case OUTLINE_VIEW: {
-				this.browserOutlineView.sizeToFit();
-				break;
-			}
-			case COLUMN_VIEW: {
-				break;
-			}
-		}
-	}
-
 	public void browserColumnViewRowClicked(Object sender) {
 		this.browserSelectionDidChange(null);
 		if(!((NSBrowserCell)this.browserColumnView.selectedCell()).isLeaf()) {
@@ -856,7 +840,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             this.browserOutlineView.addTableColumn(c);
             this.browserOutlineView.setOutlineTableColumn(c);
         }
-        this.sizeToFit();
+        this.browserOutlineView.sizeToFit();
 //        NSNotificationCenter.defaultCenter().addObserver(this,
 //            new NSSelector("browserOutlineViewDidExpandItem", new Class[]{NSNotification.class}),
 //            NSOutlineView.OutlineViewItemDidExpandNotification,
@@ -954,7 +938,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             this.browserListView.addTableColumn(c);
         }
-        this.sizeToFit();
+        this.browserListView.sizeToFit();
     }
 
     private CDBrowserColumnViewModel browserColumnModel;
@@ -1119,7 +1103,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             table.addTableColumn(c);
         }
-		this.sizeToFit();
+		table.sizeToFit();
         this.reloadData();
     }
 
