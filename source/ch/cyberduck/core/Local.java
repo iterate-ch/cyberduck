@@ -85,7 +85,7 @@ public class Local extends File {
     }
 
 	/**
-		* @param The file extension to load the appropriate default system icon for
+     * @param icon The file extension to load the appropriate default system icon for
 	 */
     public native void setIconFromExtension(String path, String icon);
 

@@ -33,18 +33,6 @@ public class Cache extends HashMap {
         return (List)super.get(path);
     }
 
-//	public List get(String path, Filter filter) {
-//		List files = new ArrayList((List)super.get(path));
-//		if(files != null) {
-//			for(Iterator i = files.iterator(); i.hasNext(); ) {
-//				if(!filter.accept((Path)i.next())) {
-//					i.remove();
-//				}
-//			}
-//		}
-//		return files;
-//	}
-
 	public void put(String path, List childs) {
 		super.put(path, childs);
 	}

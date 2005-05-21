@@ -81,7 +81,7 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 			if(null == item) {
 				item = controller.workdir();
 			}
-			return this.cache(item).size();
+			return this.childs(item).size();
 		}
 		return 0;
 	}
@@ -134,8 +134,8 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 		if(null == item) {
 			item = controller.workdir();
 		}
-        if (index < this.cache(item).size()) {
-            return (Path)this.cache(item).get(index);
+        if (index < this.childs(item).size()) {
+            return (Path)this.childs(item).get(index);
         }
         return null;
 	}

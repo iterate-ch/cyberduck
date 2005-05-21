@@ -47,8 +47,6 @@ public abstract class Path {
 	public static final int DIRECTORY_TYPE = 2;
 	public static final int SYMBOLIC_LINK_TYPE = 4;
 
-	public static final String HOME = "~";
-
 	/**
 	 * Deep copies the current path with its attributes but without the status information
 	 *

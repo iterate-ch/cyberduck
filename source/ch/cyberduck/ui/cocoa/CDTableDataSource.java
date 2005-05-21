@@ -23,6 +23,7 @@ import com.apple.cocoa.application.*;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Iterator;
 
 import ch.cyberduck.core.Path;
 
@@ -35,7 +36,7 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
     protected static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
     protected static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 	
-    protected List cache(Path path) {
+    protected List childs(Path path) {
         return path.list(
                 controller.getEncoding(), //character encoding
                 false, // do not refresh
@@ -181,6 +182,7 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 	}
 	
 	public void tableViewDidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn) {
+        List selectedRows = controller.getSelectedPaths();
 		if(this.selectedColumn == tableColumn) {
 			this.sortAscending = !this.sortAscending;
 		}
@@ -194,7 +196,11 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
                 NSImage.imageNamed("NSAscendingSortIndicator") :
                 NSImage.imageNamed("NSDescendingSortIndicator"),
                 tableColumn);
+        tableView.deselectAll(null);
 		this.sort(tableColumn, sortAscending);
+        for(Iterator i = selectedRows.iterator(); i.hasNext(); ) {
+            tableView.selectRow(this.childs(controller.workdir()).indexOf(i.next()), true);
+        }
 		tableView.reloadData();
 	}
 		

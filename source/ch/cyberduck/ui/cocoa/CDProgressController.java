@@ -91,7 +91,13 @@ public class CDProgressController extends CDController implements Observer {
 			else if(msg.getTitle().equals(Message.ERROR)) {
                 this.invoke(new Runnable() {
                     public void run() {
-                        errorText.append("\n"+(String)msg.getContent());
+                        int l = errorText.toString().split("\n").length;
+                        if(l == 10) {
+                            errorText.append("\n- (...)");
+                        }
+                        if(l < 10)  {
+                            errorText.append("\n"+(String)msg.getContent());
+                        }
                         alertIcon.setHidden(false);
                     }
                 });
@@ -108,13 +114,13 @@ public class CDProgressController extends CDController implements Observer {
                         alertIcon.setHidden(true);
                         progressTimer = new NSTimer(0.5, //seconds
                                 CDProgressController.this, //target
-				    new NSSelector("update", new Class[]{NSTimer.class}),
-				    getQueue(), //userInfo
-				    true); //repeating
-						NSRunLoop.currentRunLoop().addTimerForMode(progressTimer,
-						    NSRunLoop.DefaultRunLoopMode);
-					}
-				});
+                                new NSSelector("update", new Class[]{NSTimer.class}),
+                                getQueue(), //userInfo
+                                true); //repeating
+                        NSRunLoop.currentRunLoop().addTimerForMode(progressTimer,
+                                NSRunLoop.DefaultRunLoopMode);
+                    }
+                });
 			}
             else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
                 log.debug("------------- QUEUE_STOP");

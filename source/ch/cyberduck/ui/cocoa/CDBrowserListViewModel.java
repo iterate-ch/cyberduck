@@ -40,7 +40,7 @@ public class CDBrowserListViewModel extends CDTableDataSource {
 
     public int numberOfRowsInTableView(NSTableView tableView) {
         if (controller.isMounted())
-            return this.cache(this.controller.workdir()).size();
+            return this.childs(this.controller.workdir()).size();
         return 0;
     }
 
@@ -68,9 +68,9 @@ public class CDBrowserListViewModel extends CDTableDataSource {
 //	}
 															
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-        if (row < this.cache(this.controller.workdir()).size()) {
+        if (row < this.childs(this.controller.workdir()).size()) {
             String identifier = (String) tableColumn.identifier();
-            Path p = (Path) this.cache(this.controller.workdir()).get(row);
+            Path p = (Path) this.childs(this.controller.workdir()).get(row);
             if (identifier.equals("TYPE")) {
                 NSImage icon;
                 if (p.attributes.isSymbolicLink()) {
@@ -131,7 +131,7 @@ public class CDBrowserListViewModel extends CDTableDataSource {
         if (controller.isMounted()) {
             if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
                 if (row != -1 && row < tableView.numberOfRows()) {
-                    Path selected = (Path) this.cache(this.controller.workdir()).get(row);
+                    Path selected = (Path) this.childs(this.controller.workdir()).get(row);
                     if (selected.attributes.isDirectory()) {
                         tableView.setDropRowAndDropOperation(row, NSTableView.DropOn);
                         return NSDraggingInfo.DragOperationCopy;
@@ -143,7 +143,7 @@ public class CDBrowserListViewModel extends CDTableDataSource {
             NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
             if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
                 if (row != -1 && row < tableView.numberOfRows()) {
-                    Path selected = (Path) this.cache(this.controller.workdir()).get(row);
+                    Path selected = (Path) this.childs(this.controller.workdir()).get(row);
                     if (selected.attributes.isDirectory()) {
                         tableView.setDropRowAndDropOperation(row, NSTableView.DropOn);
                         return NSDraggingInfo.DragOperationMove;
@@ -166,7 +166,7 @@ public class CDBrowserListViewModel extends CDTableDataSource {
                 Path p = null;
                 if (row != -1) {
                     p = PathFactory.createPath(session,
-                            ((Path) this.cache(this.controller.workdir()).get(row)).getAbsolute(),
+                            ((Path) this.childs(this.controller.workdir()).get(row)).getAbsolute(),
                             new Local((String) filesList.objectAtIndex(i)));
                 }
                 else {
@@ -189,7 +189,7 @@ public class CDBrowserListViewModel extends CDTableDataSource {
                 NSArray elements = (NSArray) pboard.propertyListForType("QueuePBoardType");// get the data from pasteboard
                 for (int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                    Path selected = (Path) this.cache(this.controller.workdir()).get(row);
+                    Path selected = (Path) this.childs(this.controller.workdir()).get(row);
                     if (selected.attributes.isDirectory()) {
                         Queue q = Queue.createQueue(dict);
                         for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
@@ -228,7 +228,7 @@ public class CDBrowserListViewModel extends CDTableDataSource {
             Queue q = new DownloadQueue();
             Session session = controller.workdir().getSession().copy();
             for (int i = 0; i < rows.count(); i++) {
-                promisedDragPaths[i] = ((Path) this.cache(this.controller.workdir()).get(((Integer) rows.objectAtIndex(i)).intValue())).copy(session);
+                promisedDragPaths[i] = ((Path) this.childs(this.controller.workdir()).get(((Integer) rows.objectAtIndex(i)).intValue())).copy(session);
                 if (promisedDragPaths[i].attributes.isFile()) {
                     if (promisedDragPaths[i].getExtension() != null) {
                         fileTypes.addObject(promisedDragPaths[i].getExtension());
@@ -311,8 +311,8 @@ public class CDBrowserListViewModel extends CDTableDataSource {
 
     public String tableViewToolTipForCell(NSTableView tableView, NSCell cell, NSMutableRect rect,
                                                    NSTableColumn tc, int row, NSPoint mouseLocation) {
-        if (row < this.cache(this.controller.workdir()).size()) {
-            Path p = (Path) this.cache(this.controller.workdir()).get(row);   
+        if (row < this.childs(this.controller.workdir()).size()) {
+            Path p = (Path) this.childs(this.controller.workdir()).get(row);
             return p.getAbsolute();
         }
         return null;

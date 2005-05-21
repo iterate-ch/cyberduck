@@ -35,7 +35,7 @@ public class Host {
 	private String hostname;
 	private String nickname;
 	private String identification;
-	private String defaultpath = Path.HOME;
+	private String defaultpath;
 	private Login login;
 	private String encoding;
 	private com.enterprisedt.net.ftp.FTPConnectMode connectMode;
@@ -249,18 +249,17 @@ public class Host {
 	// ----------------------------------------------------------
 
 	public void setDefaultPath(String defaultpath) {
+        if(null == defaultpath || defaultpath.equals("~"))
+            defaultpath = "";
 		this.defaultpath = defaultpath;
 	}
 
 	public String getDefaultPath() {
-		if(this.defaultpath == null || this.defaultpath.equals("")) {
-			return Path.HOME;
-		}
 		return this.defaultpath;
 	}
 
 	public boolean hasReasonableDefaultPath() {
-		return this.defaultpath != null && !this.defaultpath.equals("") && !this.defaultpath.equals(Path.HOME);
+		return this.defaultpath != null && !this.defaultpath.equals("");
 	}
 
 	protected static String getDefaultProtocol(int port) {

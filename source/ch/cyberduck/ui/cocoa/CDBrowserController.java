@@ -468,7 +468,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     this.browserColumnView.setPath(workdir().getAbsolute());
                     this.browserColumnView.reloadColumn(browserColumnView.lastColumn());
                     this.browserColumnView.setPath(workdir().getAbsolute());
-                    this.infoLabel.setStringValue(browserListModel.cache(workdir()).size() + " " +
+                    this.infoLabel.setStringValue(browserListModel.childs(workdir()).size() + " " +
                             NSBundle.localizedString("files", ""));
                     this.browserColumnView.validateVisibleColumns();
                 }
@@ -478,15 +478,15 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
     }
 
-	private void selectRow(int row) {
+	private void selectRow(int row, boolean expand) {
 		log.debug("selectRow:"+row);
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
-				this.browserListView.selectRow(row, false);
+				this.browserListView.selectRow(row, expand);
 				break;
 			}
 			case OUTLINE_VIEW: {
-				this.browserOutlineView.selectRow(row, false);
+				this.browserOutlineView.selectRow(row, expand);
 				break;
 			}
 			case COLUMN_VIEW: {
@@ -499,7 +499,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 	private Path getSelectedPath() {
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
-				return (Path)this.browserListModel.cache(this.workdir()).get(this.browserListView.selectedRow());
+				return (Path)this.browserListModel.childs(this.workdir()).get(this.browserListView.selectedRow());
 			}
 			case OUTLINE_VIEW: {
 				return (Path)this.browserOutlineView.itemAtRow(this.browserOutlineView.selectedRow());
@@ -511,14 +511,14 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		return null;
 	}
 
-	private List getSelectedPaths() {
+	protected List getSelectedPaths() {
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
 				NSEnumerator enum = this.browserListView.selectedRowEnumerator();
 				List files = new ArrayList();
 				while (enum.hasMoreElements()) {
 					int selected = ((Integer) enum.nextElement()).intValue();
-					files.add(this.browserListModel.cache(this.workdir()).get(selected));
+					files.add(this.browserListModel.childs(this.workdir()).get(selected));
 				}
 				return files;
 			}
@@ -1907,7 +1907,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		this.deselectAll();
         Path previous = this.workdir();
         List listing = this.workdir().getParent().list(this.encoding, false, this.getFileFilter());
-		this.selectRow(listing.indexOf(previous));
+		this.selectRow(listing.indexOf(previous), false);
     }
 
     public void connectButtonClicked(Object sender) {

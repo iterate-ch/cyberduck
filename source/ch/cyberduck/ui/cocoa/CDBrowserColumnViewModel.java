@@ -37,7 +37,7 @@ public class CDBrowserColumnViewModel extends CDTableDataSource {
 	public int browserNumberOfRowsInColumn(NSBrowser sender, int col) {
 		if(controller.isMounted()) {
 			String absolute = this.pathOfColumn(sender, col);
-			return this.cache(PathFactory.createPath(controller.workdir().getSession(),
+			return this.childs(PathFactory.createPath(controller.workdir().getSession(),
 													 absolute)).size();
 		}
 		return 0;
@@ -46,7 +46,7 @@ public class CDBrowserColumnViewModel extends CDTableDataSource {
 	public void browserWillDisplayCell(NSBrowser sender, NSBrowserCell cell, int row, int col) {
 		String absolute = this.pathOfColumn(sender, col);
 		if(cell instanceof CDBrowserCell) {
-			Path path = (Path)this.cache(PathFactory.createPath(controller.workdir().getSession(),
+			Path path = (Path)this.childs(PathFactory.createPath(controller.workdir().getSession(),
 																absolute)).get(row);
 			((CDBrowserCell)cell).setPath(path);
             if(this.controller.isConnected()) {
