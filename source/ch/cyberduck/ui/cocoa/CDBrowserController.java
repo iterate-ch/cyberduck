@@ -812,15 +812,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
         this.browserOutlineView.setDataSource(this.browserOutlineModel = new CDBrowserOutlineViewModel(this));
         this.browserOutlineView.setDelegate(this.browserOutlineModel);
-        NSSelector setAutoresizingMaskSelector
-                = new NSSelector("setAutoresizingMask", new Class[]{int.class});
-        if(setAutoresizingMaskSelector.implementedByClass(NSTableView.class)) {
-            this.browserOutlineView.setAutoresizingMask(NSTableView.UniformColumnAutoresizingStyle);
-        }
-        else {
-            this.browserOutlineView.setAutoresizesAllColumnsToFit(true);
-        }
-
         {
             NSTableColumn c = new NSTableColumn();
             c.headerCell().setStringValue(NSBundle.localizedString("Filename", "A column in the browser"));
@@ -840,26 +831,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             this.browserOutlineView.addTableColumn(c);
             this.browserOutlineView.setOutlineTableColumn(c);
         }
-        this.browserOutlineView.sizeToFit();
-//        NSNotificationCenter.defaultCenter().addObserver(this,
-//            new NSSelector("browserOutlineViewDidExpandItem", new Class[]{NSNotification.class}),
-//            NSOutlineView.OutlineViewItemDidExpandNotification,
-//            this.browserOutlineView);
-//        NSNotificationCenter.defaultCenter().addObserver(this,
-//            new NSSelector("browserOutlineViewDidCcollapseItem", new Class[]{NSNotification.class}),
-//            NSOutlineView.OutlineViewItemDidCollapseNotification,
-//            this.browserOutlineView);
     }
-
-//    public void browserOutlineViewDidExpandItem(NSNotification notification) {
-//        this.workdir = (Path)notification.userInfo().allValues().lastObject();
-//        this.reloadPathPopup();
-//    }
-//
-//    public void browserOutlineViewDidCcollapseItem(NSNotification notification) {
-//        this.workdir = ((Path)notification.userInfo().allValues().lastObject()).getParent();
-//        this.reloadPathPopup();
-//    }
 
     private CDBrowserListViewModel browserListModel;
     private NSTableView browserListView; // IBOutlet
@@ -893,14 +865,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
         this.browserListView.setDataSource(this.browserListModel = new CDBrowserListViewModel(this));
         this.browserListView.setDelegate(this.browserListModel);
-        NSSelector setAutoresizingMaskSelector
-                = new NSSelector("setAutoresizingMask", new Class[]{int.class});
-        if(setAutoresizingMaskSelector.implementedByClass(NSTableView.class)) {
-            this.browserListView.setAutoresizingMask(NSTableView.UniformColumnAutoresizingStyle);
-        }
-        else {
-            this.browserListView.setAutoresizesAllColumnsToFit(true);
-        }
         NSSelector setResizableMaskSelector
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {
@@ -938,7 +902,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             this.browserListView.addTableColumn(c);
         }
-        this.browserListView.sizeToFit();
     }
 
     private CDBrowserColumnViewModel browserColumnModel;
@@ -1103,7 +1066,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             table.addTableColumn(c);
         }
-		table.sizeToFit();
+        table.sizeToFit();
         this.reloadData();
     }
 

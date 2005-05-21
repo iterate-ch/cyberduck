@@ -246,14 +246,6 @@ public abstract class CDValidatorController extends CDWindowController implement
 				this.fileTableView.setGridStyleMask(NSTableView.GridNone);
 			}
 		}
-        NSSelector setAutoresizingMaskSelector
-                = new NSSelector("setAutoresizingMask", new Class[]{int.class});
-        if(setAutoresizingMaskSelector.implementedByClass(NSTableView.class)) {
-            this.fileTableView.setAutoresizingMask(NSTableView.UniformColumnAutoresizingStyle);
-        }
-        else {
-            this.fileTableView.setAutoresizesAllColumnsToFit(true);
-        }
         NSSelector setResizableMaskSelector
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {
