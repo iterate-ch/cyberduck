@@ -137,6 +137,11 @@ public class CDMainController extends CDController {
 
     public void setEditMenu(NSMenu editMenu) {
         this.editMenu = editMenu;
+        NSSelector setDelegateSelector =
+            new NSSelector("setDelegate", new Class[]{Object.class});
+        if(setDelegateSelector.implementedByClass(NSMenu.class)) {
+            this.editMenu.setDelegate(new EditMenuDelegate());
+        }
         NSSelector absolutePathForAppBundleWithIdentifierSelector =
                 new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
         java.util.Map editors = Editor.SUPPORTED_EDITORS;
@@ -149,7 +154,7 @@ public class CDMainController extends CDController {
                 boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                         identifier) != null;
                 if(enabled) {
-                    this.editMenu.addItem(new NSMenuItem(editor,
+                    this.editMenu.addItem(new EditMenuItem(identifier, editor,
                             new NSSelector("editButtonClicked", new Class[]{Object.class}),
                             ""));
                     NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
@@ -163,12 +168,64 @@ public class CDMainController extends CDController {
         }
     }
 
+    private class EditMenuDelegate extends NSObject {
+
+        public int numberOfItemsInMenu(NSMenu menu) {
+            return menu.numberOfItems();
+        }
+
+		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
+            if(item.title().equals(Preferences.instance().getProperty("editor.name"))) {
+                //hack: setting the same on the param item does not seem to work
+                editMenu.itemAtIndex(index).setKeyEquivalent("j");
+                editMenu.itemAtIndex(index).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
+            }
+            else {
+                editMenu.itemAtIndex(index).setKeyEquivalent("");
+            }
+			return true;
+		}
+	}
+
+    private class EditMenuItem extends NSMenuItem {
+
+        private String identifier;
+
+        public EditMenuItem(String identifier, String name, NSSelector selector, String character) {
+            super(name, selector, character);
+            this.identifier = identifier;
+        }
+
+        public String keyEquivalent() {
+            //bug: this is only called once
+            if(this.title().equals(Preferences.instance().getProperty("editor.name"))) {
+                return "j";
+            }
+            else {
+                return "";
+            }
+        }
+
+        public int keyEquivalentModifierMask() {
+            if(this.title().equals(Preferences.instance().getProperty("editor.name"))) {
+                return NSEvent.CommandKeyMask;
+            }
+            return super.keyEquivalentModifierMask();
+        }
+
+        public NSImage image() {
+            NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
+                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
+            );
+            icon.setScalesWhenResized(true);
+            icon.setSize(new NSSize(16f, 16f));
+            return icon;
+        }
+    }
+
 	private NSMenu bookmarkMenu;
 	private NSMenu rendezvousMenu;
 	private NSMenu historyMenu;
-	private Object bookmarkMenuDelegate;
-	private Object rendezvousMenuDelegate;
-	private Object historyMenuDelegate;
 	private Rendezvous rendezvous;
 
 	public void setBookmarkMenu(NSMenu bookmarkMenu) {
@@ -181,9 +238,9 @@ public class CDMainController extends CDController {
 		NSSelector setDelegateSelector =
 		    new NSSelector("setDelegate", new Class[]{Object.class});
 		if(setDelegateSelector.implementedByClass(NSMenu.class)) {
-			this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
-			this.historyMenu.setDelegate(this.historyMenuDelegate = new HistoryMenuDelegate());
-			this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = new RendezvousMenuDelegate(
+			this.bookmarkMenu.setDelegate(new BookmarkMenuDelegate());
+			this.historyMenu.setDelegate(new HistoryMenuDelegate());
+			this.rendezvousMenu.setDelegate(new RendezvousMenuDelegate(
                     this.rendezvous = Rendezvous.instance()));
 		}
         this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("History", "")).setAction(
@@ -199,7 +256,7 @@ public class CDMainController extends CDController {
         NSWorkspace.sharedWorkspace().selectFile(HISTORY_FOLDER.getAbsolutePath(), "");
     }
 
-	private class BookmarkMenuDelegate {
+	private class BookmarkMenuDelegate extends NSObject {
 		private Map items = new HashMap();
 
 		public BookmarkMenuDelegate() {

@@ -1181,7 +1181,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                         identifier) != null;
                 if(enabled) {
-                    this.editMenu.addItem(new NSMenuItem(editor,
+                    this.editMenu.addItem(new EditMenuItem(identifier, editor,
                             new NSSelector("editButtonClicked", new Class[]{Object.class}),
                             ""));
                     NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
@@ -2215,15 +2215,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
             else
                 item.setTitle(NSBundle.localizedString("Cut", "Menu item"));
         }
-        if (identifier.equals("editButtonClicked:")) {
-            if(item.title().equals(Preferences.instance().getProperty("editor.name"))) {
-                item.setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-                item.setKeyEquivalent("j");
-            }
-            else {
-                item.setKeyEquivalent("");
-            }
-        }
         if (identifier.equals("showHiddenFilesClicked:")) {
             item.setState((this.getFileFilter() instanceof NullFilter) ? NSCell.OnState : NSCell.OffState);
         }
@@ -2532,15 +2523,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
 					boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                         identifier) != null;
 					if(enabled) {
-						editMenu.addItem(new NSMenuItem(editor,
+						editMenu.addItem(new EditMenuItem(identifier, editor,
 								new NSSelector("editButtonClicked", new Class[]{Object.class}),
 								""));
-						NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
-																				 NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
-																				 );
-						icon.setScalesWhenResized(true);
-						icon.setSize(new NSSize(16f, 16f));
-						this.editMenu.itemWithTitle(editor).setImage(icon);
 					}
 				}
             }
@@ -2578,6 +2563,41 @@ public class CDBrowserController extends CDWindowController implements Observer 
         // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
         // Returning null will inform the toolbar this kind of item is not supported.
         return null;
+    }
+
+    private class EditMenuItem extends NSMenuItem {
+
+        private String identifier;
+
+        public EditMenuItem(String identifier, String name, NSSelector selector, String character) {
+            super(name, selector, character);
+            this.identifier = identifier;
+        }
+
+        public String keyEquivalent() {
+            if(this.title().equals(Preferences.instance().getProperty("editor.name"))) {
+                return "j";
+            }
+            else {
+                return "";
+            }
+        }
+
+        public int keyEquivalentModifierMask() {
+            if(this.title().equals(Preferences.instance().getProperty("editor.name"))) {
+                return NSEvent.CommandKeyMask;
+            }
+            return super.keyEquivalentModifierMask();
+        }
+
+        public NSImage image() {
+            NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
+                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
+            );
+            icon.setScalesWhenResized(true);
+            icon.setSize(new NSSize(16f, 16f));
+            return icon;
+        }
     }
 
 	public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
