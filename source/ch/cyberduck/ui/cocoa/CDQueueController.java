@@ -294,7 +294,6 @@ public class CDQueueController extends CDWindowController {
 		});
 		if(Preferences.instance().getBoolean("queue.orderFrontOnTransfer")) {
 			this.window().makeKeyAndOrderFront(null);
-            this.tableViewSelectionChange();
 		}
 		if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
 			((ch.cyberduck.core.sftp.SFTPSession)queue.getSession()).setHostKeyVerificationController(new CDHostKeyController(this));
@@ -322,6 +321,7 @@ public class CDQueueController extends CDWindowController {
 		this.toolbar.setDelegate(this);
 		this.toolbar.setAllowsUserCustomization(true);
 		this.toolbar.setAutosavesConfiguration(true);
+        this.window().setDelegate(this);
 		this.window().setReleasedWhenClosed(false);
 		this.window().setToolbar(toolbar);
 	}
