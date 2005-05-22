@@ -137,11 +137,6 @@ public class CDMainController extends CDController {
 
     public void setEditMenu(NSMenu editMenu) {
         this.editMenu = editMenu;
-        NSSelector setDelegateSelector =
-            new NSSelector("setDelegate", new Class[]{Object.class});
-        if(setDelegateSelector.implementedByClass(NSMenu.class)) {
-            this.editMenu.setDelegate(new EditMenuDelegate());
-        }
         NSSelector absolutePathForAppBundleWithIdentifierSelector =
                 new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
         java.util.Map editors = Editor.SUPPORTED_EDITORS;
@@ -167,25 +162,6 @@ public class CDMainController extends CDController {
             }
         }
     }
-
-    private class EditMenuDelegate extends NSObject {
-
-        public int numberOfItemsInMenu(NSMenu menu) {
-            return menu.numberOfItems();
-        }
-
-		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
-            if(item.title().equals(Preferences.instance().getProperty("editor.name"))) {
-                //hack: setting the same on the param item does not seem to work
-                editMenu.itemAtIndex(index).setKeyEquivalent("j");
-                editMenu.itemAtIndex(index).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-            }
-            else {
-                editMenu.itemAtIndex(index).setKeyEquivalent("");
-            }
-			return true;
-		}
-	}
 
     private class EditMenuItem extends NSMenuItem {
 

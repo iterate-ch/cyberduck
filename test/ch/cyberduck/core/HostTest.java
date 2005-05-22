@@ -127,7 +127,6 @@ public class HostTest extends TestCase {
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNull(h.getCredentials().getPassword());
-                assertTrue(h.getDefaultPath().equals(Path.HOME));
             }
         }
         catch(MalformedURLException e) {

@@ -1184,12 +1184,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     this.editMenu.addItem(new EditMenuItem(identifier, editor,
                             new NSSelector("editButtonClicked", new Class[]{Object.class}),
                             ""));
-                    NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
-                            NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
-                    );
-                    icon.setScalesWhenResized(true);
-                    icon.setSize(new NSSize(16f, 16f));
-                    this.editMenu.itemWithTitle(editor).setImage(icon);
                 }
             }
         }
