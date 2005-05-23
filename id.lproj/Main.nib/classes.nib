@@ -1,0 +1,57 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {
+                addBookmarkButtonClicked = id; 
+                backButtonClicked = id; 
+                browserSwitchClicked = id; 
+                connectButtonClicked = id; 
+                copyURLButtonClicked = id; 
+                createFileButtonClicked = id; 
+                createFolderButtonClicked = id; 
+                deleteBookmarkButtonClicked = id; 
+                deleteFileButtonClicked = id; 
+                disconnectButtonClicked = id; 
+                downloadAsButtonClicked = id; 
+                downloadButtonClicked = id; 
+                duplicateFileButtonClicked = id; 
+                editBookmarkButtonClicked = id; 
+                editButtonClicked = id; 
+                gotoButtonClicked = id; 
+                infoButtonClicked = id; 
+                insideButtonClicked = id; 
+                reloadButtonClicked = id; 
+                showHiddenFilesClicked = id; 
+                showTransferQueueClicked = id; 
+                syncButtonClicked = id; 
+                toggleBookmarkDrawer = id; 
+                toggleLogDrawer = id; 
+                upButtonClicked = id; 
+                uploadButtonClicked = id; 
+            }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {
+                donateMenuClicked = id; 
+                faqMenuClicked = id; 
+                feedbackMenuClicked = id; 
+                forumMenuClicked = id; 
+                helpMenuClicked = id; 
+                licenseMenuClicked = id; 
+                newBrowserMenuClicked = id; 
+                newDownloadMenuClicked = id; 
+                preferencesMenuClicked = id; 
+                updateMenuClicked = id; 
+                websiteMenuClicked = id; 
+            }; 
+            CLASS = "ch.cyberduck.ui.cocoa.CDMainController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {bookmarkMenu = NSMenu; editMenu = NSMenu; encodingMenu = NSMenu; }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}

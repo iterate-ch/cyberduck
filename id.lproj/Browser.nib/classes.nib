@@ -1,0 +1,59 @@
+{
+    IBClasses = (
+        {CLASS = CDColumnView; LANGUAGE = ObjC; SUPERCLASS = NSBrowser; }, 
+        {CLASS = CDListView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
+        {CLASS = CDOutlineView; LANGUAGE = ObjC; SUPERCLASS = NSOutlineView; }, 
+        {
+            ACTIONS = {
+                createFileButtonClicked = id; 
+                createFolderButtonClicked = id; 
+                deleteFileButtonClicked = id; 
+                downloadAsButtonClicked = id; 
+                downloadButtonClicked = id; 
+                duplicateFileButtonClicked = id; 
+                editButtonClicked = id; 
+                infoButtonClicked = id; 
+                reloadButtonClicked = id; 
+                syncButtonClicked = id; 
+                uploadButtonClicked = id; 
+            }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = NSSegmentedControl; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
+        {
+            CLASS = "ch.cyberduck.ui.cocoa.CDBrowserController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {
+                actionPopupButton = NSPopUpButton; 
+                addBookmarkButton = NSButton; 
+                backButton = NSButton; 
+                bookmarkDrawer = NSDrawer; 
+                bookmarkTable = NSTableView; 
+                browserColumnView = NSBrowser; 
+                browserListView = NSTableView; 
+                browserOutlineView = NSOutlineView; 
+                browserSwitchView = NSSegmentedControl; 
+                browserTabView = NSTabView; 
+                deleteBookmarkButton = NSButton; 
+                editBookmarkButton = NSButton; 
+                editMenu = NSMenu; 
+                encodingPopup = NSPopUpButton; 
+                infoLabel = NSTextField; 
+                logDrawer = NSDrawer; 
+                logView = NSTextView; 
+                pathPopup = NSPopUpButton; 
+                progressIndicator = NSProgressIndicator; 
+                quickConnectPopup = NSComboBox; 
+                searchField = NSTextField; 
+                statusIcon = NSImageView; 
+                statusLabel = NSTextField; 
+                upButton = NSButton; 
+                window = NSWindow; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}
