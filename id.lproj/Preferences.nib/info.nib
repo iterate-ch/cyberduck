@@ -9,15 +9,15 @@
 		<key>1032</key>
 		<string>359 453 527 429 0 0 1280 1002 </string>
 		<key>1033</key>
-		<string>231 395 527 203 0 0 1024 746 </string>
+		<string>359 566 527 203 0 0 1280 1002 </string>
 		<key>1034</key>
-		<string>231 302 527 389 0 0 1024 746 </string>
+		<string>359 473 527 389 0 0 1280 1002 </string>
 		<key>1035</key>
-		<string>359 452 527 431 0 0 1280 1002 </string>
+		<string>235 415 681 431 0 0 1280 1002 </string>
 		<key>848</key>
 		<string>359 503 527 330 0 0 1280 1002 </string>
 		<key>874</key>
-		<string>251 284 527 425 0 0 1024 746 </string>
+		<string>359 455 527 425 0 0 1280 1002 </string>
 		<key>906</key>
 		<string>359 397 527 542 0 0 1280 1002 </string>
 	</dict>
@@ -25,6 +25,10 @@
 	<string>437.0</string>
 	<key>IBOldestOS</key>
 	<integer>2</integer>
+	<key>IBOpenObjects</key>
+	<array>
+		<integer>1035</integer>
+	</array>
 	<key>IBSystem Version</key>
 	<string>8B15</string>
 </dict>
