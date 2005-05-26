@@ -149,7 +149,7 @@ public class CDMainController extends CDController {
                 boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                         identifier) != null;
                 if(enabled) {
-                    this.editMenu.addItem(new EditMenuItem(identifier, editor,
+                    this.editMenu.addItem(new NSMenuItem(editor,
                             new NSSelector("editButtonClicked", new Class[]{Object.class}),
                             ""));
                     NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
@@ -167,9 +167,21 @@ public class CDMainController extends CDController {
 
         private String identifier;
 
-        public EditMenuItem(String identifier, String name, NSSelector selector, String character) {
+        public EditMenuItem() {
+            super();
+        }
+
+        public EditMenuItem(String name, NSSelector selector, String character) {
             super(name, selector, character);
-            this.identifier = identifier;
+            this.identifier = (String)Editor.SUPPORTED_EDITORS.get(name);
+        }
+
+        protected EditMenuItem(NSCoder decoder, long token) {
+            super(decoder, token);
+        }
+
+        protected void encodeWithCoder(NSCoder encoder) {
+            super.encodeWithCoder(encoder);
         }
 
         public String keyEquivalent() {
@@ -205,7 +217,6 @@ public class CDMainController extends CDController {
 	private Rendezvous rendezvous;
 
 	public void setBookmarkMenu(NSMenu bookmarkMenu) {
-		log.debug("setBookmarkMenu");
 		this.bookmarkMenu = bookmarkMenu;
 		this.rendezvousMenu = new NSMenu();
 		this.rendezvousMenu.setAutoenablesItems(false);
@@ -234,10 +245,6 @@ public class CDMainController extends CDController {
 
 	private class BookmarkMenuDelegate extends NSObject {
 		private Map items = new HashMap();
-
-		public BookmarkMenuDelegate() {
-			super();
-		}
 
 		public int numberOfItemsInMenu(NSMenu menu) {
 			return CDBookmarkTableDataSource.instance().size()+7;

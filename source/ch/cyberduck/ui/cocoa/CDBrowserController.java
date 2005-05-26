@@ -1181,7 +1181,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                         identifier) != null;
                 if(enabled) {
-                    this.editMenu.addItem(new EditMenuItem(identifier, editor,
+                    this.editMenu.addItem(new NSMenuItem(editor,
                             new NSSelector("editButtonClicked", new Class[]{Object.class}),
                             ""));
                 }
@@ -2517,7 +2517,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 					boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                         identifier) != null;
 					if(enabled) {
-						editMenu.addItem(new EditMenuItem(identifier, editor,
+						editMenu.addItem(new NSMenuItem(editor,
 								new NSSelector("editButtonClicked", new Class[]{Object.class}),
 								""));
 					}
@@ -2563,9 +2563,21 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
         private String identifier;
 
-        public EditMenuItem(String identifier, String name, NSSelector selector, String character) {
+        public EditMenuItem() {
+            super();
+        }
+
+        public EditMenuItem(String name, NSSelector selector, String character) {
             super(name, selector, character);
-            this.identifier = identifier;
+            this.identifier = (String)Editor.SUPPORTED_EDITORS.get(name);
+        }
+
+        protected EditMenuItem(NSCoder decoder, long token) {
+            super(decoder, token);
+        }
+
+        protected void encodeWithCoder(NSCoder encoder) {
+            super.encodeWithCoder(encoder);
         }
 
         public String keyEquivalent() {
