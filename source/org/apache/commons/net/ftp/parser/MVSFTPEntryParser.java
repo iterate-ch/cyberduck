@@ -1,104 +1,106 @@
-/*
- * Copyright 2005 The Apache Software Foundation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.apache.commons.net.ftp.parser;
+
+/*
+* Copyright 2004 The Apache Software Foundation
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+import java.util.Calendar;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 
 /**
- * Implementation of FTPFileEntryParser and FTPFileListParser for IBM MVS Systems.
- *
- * @author <a href="jnadler@srcginc.com">Jeff Nadler</a>
- * @author <a href="wnoto@openfinance.com">William Noto</a>
- * @version $Id$
- * @see org.apache.commons.net.ftp.FTPFileEntryParser FTPFileEntryParser (for usage instructions)
+ * Example MVS directory listing
+ * <p/>
+ * Volume Unit    Referred Ext Used Recfm Lrecl BlkSz Dsorg Dsname
+ * 0CM142 3390   2001/02/21  3    8  FB     132 27984  PO  DUMP.T12.A9883
+ * 0CM161 3390   2001/03/07  1    1  FB      80 27920  PS  DUMP.T12.A9932
+ * 0CM666 3390   2001/03/07  1    2  FB      80  4080  PO  QUNA.ISPPLIB
+ * 0CM674 3390   2001/03/08  1   15  FB      80 27920  PO  DERKI.MUSX.LOAD
+ * 0CM625 3390   2001/03/09  1    3  VB     255 27998  PO  SWANP.PNAL.PANEL
+ * 0CM495 3390   2001/03/12  1   12  FB     133 27930  PO  DIK.MAN.C
  */
-public class MVSFTPEntryParser extends RegexFTPFileEntryParserImpl
-{  
-    /**
-     * This is the regular expression used by this parser.
-     */
-	private static final String REGEX = "(.*)\\s+([^\\s]+)\\s*";
-	
-    /**
-     * Although this parser is now ignoring dates, someone may someday
-     * figure out a way to accomodate this and this appears to be the 
-     * format used.  For now, it won't be used.
-     * SMC 2005/04/08
-     */
-    static final String DEFAULT_DATE_FORMAT 
-		= "yyyy/MM/dd"; // 2001/11/09
+public class MVSFTPEntryParser extends RegexFTPFileEntryParserImpl {
 
-        
- 	// This is not at all the tightest possible regexp for MVS LIST
-	// output, but I'm not a mainframe guru so I have little idea what the
-	// range of valid values are.  I just needed to get the filename (Dsname);
-	// note that no other FTPFile fields can be filled in with the results of
-	// a LIST on MVS.  The 'Referred' date seems to be 'last accessed date'
-	// and not 'last modified date' so I didn't bother parsing it.
-	//
-	// Of course it works perfectly as-is and it distinguishes header lines from
-	// file results so that's the important thing.  
-	//
-	// This parser should be used when SYST returns:
-	// 'MVS is the operating system of this server. FTP Server is running on z/OS.'
-	//
-	// Also note that there is no concept of directories in MVS, just datasets,
-	// which have names composed of four dot separated names of up to 8 chars.
-	// As a result, FTPFile.FILE_TYPE is always used. -JN 6/2004 jnadler<at>srcginc<dotcom>
+    private static final String DSORG =
+            "(PO|PS|VSAM)";
 
-	// Sample LIST results from MVS:
-	//
-	//Volume Unit    Referred Ext Used Recfm Lrecl BlkSz Dsorg Dsname
-	//FPFS42 3390   2004/06/23  1    1  FB     128  6144  PS  INCOMING.RPTBM023.D061704
-	//FPFS41 3390   2004/06/23  1    1  FB     128  6144  PS  INCOMING.RPTBM056.D061704
-	//FPFS25 3390   2004/06/23  1    1  FB     128  6144  PS  INCOMING.WTM204.D061704
+    private static final String RECFM =
+            "(VB|FB|FBS|U|VBS)";
 
-    /**
-     * The sole constructor for a MVSFTPEntryParser object.
-     *
-     * @exception IllegalArgumentException
-     * Thrown if the regular expression is unparseable.  Should not be seen
-     * under normal conditions.  It it is seen, this is a sign that
-     * <code>REGEX</code> is  not a valid regular expression.
-     */
-    public MVSFTPEntryParser()
-    {
+    private static final String REGEX =
+            "([A-Z0-9]{6})\\s+"                 // Volume
+            + "([0-9]{4})\\s+"                   // Unit
+            + "([0-9]{4})/([0-9]{2})/([0-9]{2})\\s+"   // year/month/day
+            + "([0-9]{1,3})\\s+"                 // Extends
+            + "([0-9]{1,3})\\s+"                 // Used
+            + RECFM + "\\s+"                       // Record Format
+            + "([0-9]{1,4})\\s+"                 // Logical Record Length
+            + "([0-9]{1,5})\\s+"                 // Block Size
+            + DSORG + "\\s+"                       // Dataset Organisation
+            + "((([A-Z0-9#.]{1,8})[.]?){2,6})+"; // Dataset Name
+
+    public MVSFTPEntryParser() {
         super(REGEX);
     }
 
-    /**
-     * Parses a line of an MVS FTP server file listing and converts it into a
-     * usable format in the form of an <code> FTPFile </code> instance.  If the
-     * file listing line doesn't describe a file, <code> null </code> is
-     * returned, otherwise a <code> FTPFile </code> instance representing the
-     * files in the directory is returned.
-     * <p>
-     * @param entry A line of text from the file listing
-     * @return An FTPFile instance corresponding to the supplied entry
-     */
-    public Path parseFTPEntry(Path parent, String entry)
-    {       
-        if (matches(entry))
-        {
-            Path f = PathFactory.createPath(parent.getSession());
-            String dataSetName = group(2);
-            f.attributes.setType(Path.FILE_TYPE);
-			f.setPath(parent.getAbsolute(), dataSetName);
-			return f;
+    public Path parseFTPEntry(Path parent, String entry) {
+        Path f = PathFactory.createPath(parent.getSession());
+
+        if (matches(entry)) {
+            //String volume  = group(1);
+            //String unit    = group(2);
+            String year = group(3);
+            String month = group(4);
+            String day = group(5);
+            //String ext     = group(6);
+            //String used    = group(7);
+            //String recfm   = group(8);
+            //String lrecl   = group(9);
+            //String blksize = group(10);
+            String dsorg = group(11);
+            String dsname = group(12);
+
+            if (dsname == null || dsname.equals("")) {
+                return null;
+            }
+
+            f.attributes.setSize(0);
+
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+
+            try {
+                cal.set(Calendar.YEAR, Integer.parseInt(year, 10));
+                cal.set(Calendar.MONTH, Integer.parseInt(month, 10) - 1);
+                cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day, 10));
+
+                f.attributes.setTimestamp(cal.getTime());
+            }
+            catch (NumberFormatException e) {
+                // do nothing, date will be uninitialized
+            }
+
+            f.setPath(dsname);
+            f.attributes.setType(((dsorg.equals("PS")) ?
+                    Path.FILE_TYPE :
+                    Path.DIRECTORY_TYPE));
+
+            return f;
         }
         return null;
     }

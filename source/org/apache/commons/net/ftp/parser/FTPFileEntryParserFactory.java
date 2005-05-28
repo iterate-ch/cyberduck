@@ -32,8 +32,6 @@ public interface FTPFileEntryParserFactory {
 	 * @param key A string that somehow identifies an
 	 *            FTPFileEntryParser to be created.
 	 * @return the FTPFileEntryParser created.
-	 * @throws ParserInitializationException Thrown on any exception in instantiation
-	 * @see org.apache.commons.net.ftp.parser.ParserInitializationException
 	 */
 	public FTPFileEntryParser createFileEntryParser(String key) throws IOException;
 	;

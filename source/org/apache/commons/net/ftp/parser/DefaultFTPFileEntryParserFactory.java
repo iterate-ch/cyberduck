@@ -53,7 +53,7 @@ public class DefaultFTPFileEntryParserFactory implements FTPFileEntryParserFacto
 				return this.createUnixFTPEntryParser();
 			}
 			else if(ukey.indexOf("VMS") >= 0) {
-				throw new FTPException("\""+key+"\" is not currently a supported system. Think about a good motivation for the author of this sofware to write an appropriate parser. See Help > Send Feedback menu.");
+				throw new FTPException("\""+key+"\" is not currently a supported system.");
 				//return createVMSFTPEntryParser();
 			}
 			else if(ukey.indexOf("NETWARE") >= 0) {
