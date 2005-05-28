@@ -14,8 +14,8 @@
 [????] Tabbing support through the selection of bookmarks
 [????] Autoscroll transcript (again)
 [????] Better sorting in browser
-[????] Right click in the browser should change the selection first
-[????] Error messages can get too long for alert sheet
+[DONE] Right click in the browser should change the selection first
+[DONE] Error messages can get too long for alert sheet
 [????] Drag to the path popup in the browser window to upload files
 [????] Attach menu to back button (navigation history)
 [????] SSH verbose logging
