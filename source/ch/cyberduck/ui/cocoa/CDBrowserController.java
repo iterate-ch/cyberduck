@@ -2357,6 +2357,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
         return this.validateItem(identifier);
     }
 
+    private NSObject toolbarEditMenuDelegate;
+
     public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
         NSToolbarItem item = new NSToolbarItem(itemIdentifier);
         if (itemIdentifier.equals("Browser View")) {
@@ -2531,7 +2533,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             NSSelector setDelegateSelector =
                     new NSSelector("setDelegate", new Class[]{Object.class});
             if(setDelegateSelector.implementedByClass(NSMenu.class)) {
-                editMenu.setDelegate(new EditMenuDelegate());
+                editMenu.setDelegate(this.toolbarEditMenuDelegate = new EditMenuDelegate());
             }
             toolbarMenu.setSubmenu(editMenu);
             item.setMenuFormRepresentation(toolbarMenu);

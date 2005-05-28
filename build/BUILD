@@ -13,13 +13,16 @@ Prerequisites:
 You need to install the Java Developer Tools from http://connect.apple.com (Free online membership). A complain is reported to Apple that these headers are not included in the standard installation.
 
 - Jakarta Ant
-	You need the ant executable in /sw/bin/ant.
+	You need the ant executable (or a symlink to) in /sw/bin/ant.
 
 - xcodebuild and make
 	Included with the developer tools. 
 
-- growl
+- Growl.framework
 	You need to have the Growl.framework in <CYBERDUCK_HOME>/build
+
+- Keychain.framework
+	You need to have the Keychain.framework in <CYBERDUCK_HOME>/build
 
 ----------
 Compiling:

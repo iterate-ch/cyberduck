@@ -179,8 +179,11 @@ public class CDMainController extends CDController {
 	}
 
 	private NSMenu bookmarkMenu;
+    private NSObject bookmarkMenuDelegate;
 	private NSMenu rendezvousMenu;
+    private NSObject rendezvousMenuDelegate;
 	private NSMenu historyMenu;
+    private NSObject historyMenuDelegate;
 	private Rendezvous rendezvous;
 
 	public void setBookmarkMenu(NSMenu bookmarkMenu) {
@@ -192,9 +195,9 @@ public class CDMainController extends CDController {
 		NSSelector setDelegateSelector =
 		    new NSSelector("setDelegate", new Class[]{Object.class});
 		if(setDelegateSelector.implementedByClass(NSMenu.class)) {
-			this.bookmarkMenu.setDelegate(new BookmarkMenuDelegate());
-			this.historyMenu.setDelegate(new HistoryMenuDelegate());
-			this.rendezvousMenu.setDelegate(new RendezvousMenuDelegate(
+			this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
+			this.historyMenu.setDelegate(this.historyMenuDelegate = new HistoryMenuDelegate());
+			this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = new RendezvousMenuDelegate(
                     this.rendezvous = Rendezvous.instance()));
 		}
         this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("History", "")).setAction(
