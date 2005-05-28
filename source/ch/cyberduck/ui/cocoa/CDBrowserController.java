@@ -1166,28 +1166,49 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     private NSMenu editMenu;
+    private NSObject editMenuDelegate;
 
     public void setEditMenu(NSMenu editMenu) {
         this.editMenu = editMenu;
-        NSSelector absolutePathForAppBundleWithIdentifierSelector =
-                new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
-        java.util.Map editors = Editor.SUPPORTED_EDITORS;
-        java.util.Iterator editorNames = editors.keySet().iterator();
-        java.util.Iterator editorIdentifiers = editors.values().iterator();
-        while(editorNames.hasNext()) {
-            String editor = (String)editorNames.next();
-            String identifier = (String)editorIdentifiers.next();
-            if(absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-                boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                        identifier) != null;
-                if(enabled) {
-                    this.editMenu.addItem(new NSMenuItem(editor,
-                            new NSSelector("editButtonClicked", new Class[]{Object.class}),
-                            ""));
-                }
-            }
+        this.editMenu.setAutoenablesItems(true);
+        NSSelector setDelegateSelector =
+                new NSSelector("setDelegate", new Class[]{Object.class});
+        if(setDelegateSelector.implementedByClass(NSMenu.class)) {
+            this.editMenu.setDelegate(this.editMenuDelegate = new EditMenuDelegate());
         }
     }
+
+    protected class EditMenuDelegate extends NSObject {
+
+		public int numberOfItemsInMenu(NSMenu menu) {
+            return Editor.INSTALLED_EDITORS.size();
+		}
+
+		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
+            String identifier = (String)Editor.INSTALLED_EDITORS.values().toArray(new String[]{})[index];
+            String editor = (String)Editor.INSTALLED_EDITORS.keySet().toArray(new String[]{})[index];
+            item.setTitle(editor);
+            if(editor.equals(Preferences.instance().getProperty("editor.name"))) {
+                item.setKeyEquivalent("j");
+                item.setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
+            }
+            else {
+                item.setKeyEquivalent("");
+            }
+            NSSelector absolutePathForAppBundleWithIdentifierSelector =
+                    new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
+            if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
+                NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
+                        NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
+                );
+                icon.setScalesWhenResized(true);
+                icon.setSize(new NSSize(16f, 16f));
+                item.setImage(icon);
+            }
+            item.setAction(new NSSelector("editButtonClicked", new Class[]{Object.class}));
+            return !shouldCancel;
+		}
+	}
 
 	private NSPopUpButton actionPopupButton;
 
@@ -2319,7 +2340,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.pathPopupButton.setEnabled(enabled);
         this.searchField.setEnabled(enabled);
         String identifier = item.itemIdentifier();
-        if(identifier.equals("Edit") || identifier.equals("editButtonClicked:")) {
+        if(identifier.equals("Edit")) {
             NSSelector absolutePathForAppBundleWithIdentifierSelector =
                     new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
             if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
@@ -2502,26 +2523,15 @@ public class CDBrowserController extends CDWindowController implements Observer 
             }
             item.setTarget(this);
             item.setAction(new NSSelector("editButtonClicked", new Class[]{Object.class}));
-
             NSMenuItem toolbarMenu = new NSMenuItem(NSBundle.localizedString("Edit", "Toolbar item"),
                     new NSSelector("editButtonClicked", new Class[]{Object.class}),
                     "");
-            java.util.Map editors = Editor.SUPPORTED_EDITORS;
-            java.util.Iterator editorNames = editors.keySet().iterator();
-            java.util.Iterator editorIdentifiers = editors.values().iterator();
             NSMenu editMenu = new NSMenu();
-            while(editorNames.hasNext()) {
-                String editor = (String)editorNames.next();
-                String identifier = (String)editorIdentifiers.next();
-				if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-					boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                        identifier) != null;
-					if(enabled) {
-						editMenu.addItem(new NSMenuItem(editor,
-								new NSSelector("editButtonClicked", new Class[]{Object.class}),
-								""));
-					}
-				}
+            editMenu.setAutoenablesItems(true);
+            NSSelector setDelegateSelector =
+                    new NSSelector("setDelegate", new Class[]{Object.class});
+            if(setDelegateSelector.implementedByClass(NSMenu.class)) {
+                editMenu.setDelegate(new EditMenuDelegate());
             }
             toolbarMenu.setSubmenu(editMenu);
             item.setMenuFormRepresentation(toolbarMenu);
@@ -2559,7 +2569,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         return null;
     }
 
-    private class EditMenuItem extends NSMenuItem {
+    protected class EditMenuItem extends NSMenuItem {
 
         private String identifier;
 
@@ -2597,12 +2607,17 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
 
         public NSImage image() {
-            NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
-                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
-            );
-            icon.setScalesWhenResized(true);
-            icon.setSize(new NSSize(16f, 16f));
-            return icon;
+            NSSelector absolutePathForAppBundleWithIdentifierSelector =
+                    new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
+            if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
+                NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
+                        NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
+                );
+                icon.setScalesWhenResized(true);
+                icon.setSize(new NSSize(16f, 16f));
+                return icon;
+            }
+            return super.image();
         }
     }
 
