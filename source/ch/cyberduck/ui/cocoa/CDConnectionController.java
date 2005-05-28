@@ -493,17 +493,15 @@ public class CDConnectionController extends CDWindowController {
 	private void bookmarkSelectionDidChange(Host selectedItem) {
         if(selectedItem.getProtocol().equals(Session.FTP)) {
             this.protocolPopup.selectItemWithTitle(Session.FTP_STRING);
-            this.portField.setIntValue(Session.FTP_PORT);
         }
         if(selectedItem.getProtocol().equals(Session.FTP_TLS)) {
             this.protocolPopup.selectItemWithTitle(Session.FTP_TLS_STRING);
-            this.portField.setIntValue(Session.FTP_PORT);
         }
         if(selectedItem.getProtocol().equals(Session.SFTP)) {
             this.protocolPopup.selectItemWithTitle(Session.SFTP_STRING);
-            this.portField.setIntValue(Session.SSH_PORT);
         }
 		this.hostPopup.setStringValue(selectedItem.getHostname());
+        this.portField.setIntValue(selectedItem.getPort());
 		this.pathField.setStringValue(selectedItem.getDefaultPath());
 		this.usernameField.setStringValue(selectedItem.getCredentials().getUsername());
 		this.connectmodePopup.setEnabled(selectedItem.getProtocol().equals(Session.FTP));

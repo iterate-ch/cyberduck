@@ -134,82 +134,49 @@ public class CDMainController extends CDController {
 	}
 
     private NSMenu editMenu;
+    private NSObject editMenuDelegate;
 
     public void setEditMenu(NSMenu editMenu) {
         this.editMenu = editMenu;
-        NSSelector absolutePathForAppBundleWithIdentifierSelector =
-                new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
-        java.util.Map editors = Editor.SUPPORTED_EDITORS;
-        java.util.Iterator editorNames = editors.keySet().iterator();
-        java.util.Iterator editorIdentifiers = editors.values().iterator();
-        while(editorNames.hasNext()) {
-            String editor = (String)editorNames.next();
-            String identifier = (String)editorIdentifiers.next();
-            if(absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-                boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                        identifier) != null;
-                if(enabled) {
-                    this.editMenu.addItem(new NSMenuItem(editor,
-                            new NSSelector("editButtonClicked", new Class[]{Object.class}),
-                            ""));
-                    NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
-                            NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
-                    );
-                    icon.setScalesWhenResized(true);
-                    icon.setSize(new NSSize(16f, 16f));
-                    this.editMenu.itemWithTitle(editor).setImage(icon);
-                }
-            }
+        this.editMenu.setAutoenablesItems(true);
+        NSSelector setDelegateSelector =
+                new NSSelector("setDelegate", new Class[]{Object.class});
+        if(setDelegateSelector.implementedByClass(NSMenu.class)) {
+            this.editMenu.setDelegate(this.editMenuDelegate = new EditMenuDelegate());
         }
     }
 
-    private class EditMenuItem extends NSMenuItem {
+    protected class EditMenuDelegate extends NSObject {
 
-        private String identifier;
+		public int numberOfItemsInMenu(NSMenu menu) {
+            return Editor.INSTALLED_EDITORS.size();
+		}
 
-        public EditMenuItem() {
-            super();
-        }
-
-        public EditMenuItem(String name, NSSelector selector, String character) {
-            super(name, selector, character);
-            this.identifier = (String)Editor.SUPPORTED_EDITORS.get(name);
-        }
-
-        protected EditMenuItem(NSCoder decoder, long token) {
-            super(decoder, token);
-        }
-
-        protected void encodeWithCoder(NSCoder encoder) {
-            super.encodeWithCoder(encoder);
-        }
-
-        public String keyEquivalent() {
-            //bug: this is only called once
-            if(this.title().equals(Preferences.instance().getProperty("editor.name"))) {
-                return "j";
+		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
+            String identifier = (String)Editor.INSTALLED_EDITORS.values().toArray(new String[]{})[index];
+            String editor = (String)Editor.INSTALLED_EDITORS.keySet().toArray(new String[]{})[index];
+            item.setTitle(editor);
+            if(editor.equals(Preferences.instance().getProperty("editor.name"))) {
+                item.setKeyEquivalent("j");
+                item.setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
             }
             else {
-                return "";
+                item.setKeyEquivalent("");
             }
-        }
-
-        public int keyEquivalentModifierMask() {
-            if(this.title().equals(Preferences.instance().getProperty("editor.name"))) {
-                return NSEvent.CommandKeyMask;
+            NSSelector absolutePathForAppBundleWithIdentifierSelector =
+                    new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
+            if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
+                NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
+                        NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
+                );
+                icon.setScalesWhenResized(true);
+                icon.setSize(new NSSize(16f, 16f));
+                item.setImage(icon);
             }
-            return super.keyEquivalentModifierMask();
-        }
-
-        public NSImage image() {
-            NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
-                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
-            );
-            icon.setScalesWhenResized(true);
-            icon.setSize(new NSSize(16f, 16f));
-            return icon;
-        }
-    }
+            item.setAction(new NSSelector("editButtonClicked", new Class[]{Object.class}));
+            return !shouldCancel;
+		}
+	}
 
 	private NSMenu bookmarkMenu;
 	private NSMenu rendezvousMenu;
