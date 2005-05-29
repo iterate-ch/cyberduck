@@ -35,8 +35,10 @@ import ch.cyberduck.core.*;
 public class CDBookmarkTableDataSource extends Collection {
 	private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 
-	private static final File BOOKMARKS_FILE_USER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Favorites.plist"));
-	private static final File BOOKMARKS_FILE_SYSTEM = new File("/Library/Application Support/Cyberduck/Favorites.plist");
+	private static final File BOOKMARKS_FILE_USER
+            = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Favorites.plist"));
+	private static final File BOOKMARKS_FILE_SYSTEM
+            = new File("/Library/Application Support/Cyberduck/Favorites.plist");
 
 	private static final File BOOKMARKS_FILE;
 
@@ -109,27 +111,30 @@ public class CDBookmarkTableDataSource extends Collection {
 	// Drop methods
 	// ----------------------------------------------------------
 
-	public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
-		log.debug("tableViewValidateDrop:row:"+row+",operation:"+operation);
+	public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int index, int operation) {
+        log.debug("tableViewValidateDrop:"+index);
 		if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-			tableView.setDropRowAndDropOperation(row, NSTableView.DropOn);
 			NSArray filesList = (NSArray)info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
 			for(int i = 0; i < filesList.count(); i++) {
 				String file = (String)filesList.objectAtIndex(i);
-				// we do accept only bookmark files
 				if(file.indexOf(".duck") != -1) {
-					//tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
-					break;
+                    //allow file drags if bookmark file even if list is empty
+                    return NSDraggingInfo.DragOperationCopy;
 				}
 			}
-			return NSDraggingInfo.DragOperationCopy;
+            if(index > -1 && index < tableView.numberOfRows()) {
+                //only allow other files if there is at least one bookmark
+                tableView.setDropRowAndDropOperation(index, NSTableView.DropOn);
+                return NSDraggingInfo.DragOperationCopy;
+            }
 		}
 		if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilesPromisePboardType)) != null) {
 			NSPasteboard pboard = NSPasteboard.pasteboardWithName("HostPBoard");
 			if(this.hostPboardChangeCount < pboard.changeCount()) {
 				if(pboard.availableTypeFromArray(new NSArray("HostPBoardType")) != null) {
-					//tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
-					return NSDraggingInfo.DragOperationMove;
+                    if(index > -1 && index < tableView.numberOfRows()) {
+                        return NSDraggingInfo.DragOperationMove;
+                    }
 				}
 			}
 		}
@@ -145,60 +150,61 @@ public class CDBookmarkTableDataSource extends Collection {
 	 *              incorporate the data from the dragging pasteboard at this time.
 	 */
 	public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int index, int operation) {
-		log.debug("tableViewAcceptDrop:row:"+index+",operation:"+operation);
-		int row = index;
-		if(row < 0) {
-			row = 0;
-		}
-		if(row < tableView.numberOfRows()) {
-			if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-				NSArray filesList = (NSArray)info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
-				Queue q = new UploadQueue();
-				Host h = (Host)this.get(row);
-				Session session = SessionFactory.createSession(h);
-				for(int i = 0; i < filesList.count(); i++) {
-					String filename = (String)filesList.objectAtIndex(i);
-					if(filename.endsWith(".duck")) {
-						// Adding a previously exported bookmark file from the Finder
-						this.add(row, this.importBookmark(new java.io.File(filename)));
-						tableView.reloadData();
-						tableView.selectRow(row, false);
-					}
-					else {
-						// Drop of a file from the finder > upload to the remote host this bookmark points to
-						q.addRoot(PathFactory.createPath(session, h.getDefaultPath(), new Local(filename)));
-					}
-				}
-				// if anything has been added to the queue then process the queue
-				if(q.numberOfRoots() > 0) {
-					CDQueueController.instance().startItem(q);
-				}
-				return true;
-			}
-			if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilesPromisePboardType)) != null) {
-				// we are only interested in our private pasteboard with a description of the host encoded in as a xml.
-				NSPasteboard pboard = NSPasteboard.pasteboardWithName("HostPBoard");
-				if(this.hostPboardChangeCount < pboard.changeCount()) {
-					log.debug("availableTypeFromArray:HostPBoardType: "+pboard.availableTypeFromArray(new NSArray("HostPBoardType")));
-					if(pboard.availableTypeFromArray(new NSArray("HostPBoardType")) != null) {
-						Object o = pboard.propertyListForType("HostPBoardType");// get the data from paste board
-						log.debug("tableViewAcceptDrop:"+o);
-						if(o != null) {
-							NSArray elements = (NSArray)o;
-							for(int i = 0; i < elements.count(); i++) {
-								Host h = new Host((NSDictionary)elements.objectAtIndex(i));
-								this.remove(this.indexOf(h));
-								this.add(row, h);
-								tableView.reloadData();
-								tableView.selectRow(row, false);
-							}
-							this.hostPboardChangeCount++;
-							return true;
-						}
-					}
-				}
-			}
-		}
+        log.debug("tableViewAcceptDrop:"+index);
+        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+            NSArray filesList = (NSArray)info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
+            Queue q = new UploadQueue();
+            for(int i = 0; i < filesList.count(); i++) {
+                String filename = (String)filesList.objectAtIndex(i);
+                if(filename.endsWith(".duck")) {
+                    // Adding a previously exported bookmark file from the Finder
+                    if(index < 0) {
+                        index = 0;
+                    }
+                    if(index > tableView.numberOfRows()) {
+                        index = tableView.numberOfRows();
+                    }
+                    this.add(index, this.importBookmark(new java.io.File(filename)));
+                    tableView.reloadData();
+                    tableView.selectRow(index, false);
+                }
+                else {
+                    //the bookmark this file has been dropped onto
+                    Host h = (Host)this.get(index);
+                    Session session = SessionFactory.createSession(h);
+                    // Drop of a file from the finder > upload to the remote host this bookmark points to
+                    q.addRoot(PathFactory.createPath(session, h.getDefaultPath(), new Local(filename)));
+                }
+            }
+            // if anything has been added to the queue then process the queue
+            if(q.numberOfRoots() > 0) {
+                CDQueueController.instance().startItem(q);
+            }
+            return true;
+        }
+        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilesPromisePboardType)) != null) {
+            // we are only interested in our private pasteboard with a description of the host encoded in as a xml.
+            NSPasteboard pboard = NSPasteboard.pasteboardWithName("HostPBoard");
+            if(this.hostPboardChangeCount < pboard.changeCount()) {
+                log.debug("availableTypeFromArray:HostPBoardType: "+pboard.availableTypeFromArray(new NSArray("HostPBoardType")));
+                if(pboard.availableTypeFromArray(new NSArray("HostPBoardType")) != null) {
+                    Object o = pboard.propertyListForType("HostPBoardType");// get the data from paste board
+                    log.debug("tableViewAcceptDrop:"+o);
+                    if(o != null) {
+                        NSArray elements = (NSArray)o;
+                        for(int i = 0; i < elements.count(); i++) {
+                            Host h = new Host((NSDictionary)elements.objectAtIndex(i));
+                            this.remove(this.indexOf(h));
+                            this.add(index, h);
+                            tableView.reloadData();
+                            tableView.selectRow(index, false);
+                        }
+                        this.hostPboardChangeCount++;
+                        return true;
+                    }
+                }
+            }
+        }
 		return false;
 	}
 	
