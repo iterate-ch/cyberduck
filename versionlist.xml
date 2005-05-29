@@ -9,7 +9,11 @@
 	<key>comment</key>
         <string>Changelog:
 2.5b2
-- [Feature] Updated localizations
+- [Localize] Indonesian Localization
+- [Bugfix] Resorting browser view will not change selection
+- [Bugfix] Remember state of expanded items in outline view
+- [Feature] Updated to Growl 0.7
+- [Feature] Edit menu shows all available editors
 
 2.5b1
 - [Feature] FTP using TLS support (using AUTH TLS as in draft-murray-auth-ftp-ssl-16) for the control channel (sending login credentials) and optionally the data channel (file listings and transfers) if the server is capable of.
