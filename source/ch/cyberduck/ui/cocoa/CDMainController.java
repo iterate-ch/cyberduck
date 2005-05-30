@@ -149,10 +149,18 @@ public class CDMainController extends CDController {
     protected class EditMenuDelegate extends NSObject {
 
 		public int numberOfItemsInMenu(NSMenu menu) {
-            return Editor.INSTALLED_EDITORS.size();
+            int n = Editor.INSTALLED_EDITORS.size();
+            if(0 == n) {
+                return 1;
+            }
+            return n;
 		}
 
 		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
+            if(Editor.INSTALLED_EDITORS.size() == 0) {
+                item.setTitle(NSBundle.localizedString("No external editor available"));
+                return false;
+            }
             String identifier = (String)Editor.INSTALLED_EDITORS.values().toArray(new String[]{})[index];
             String editor = (String)Editor.INSTALLED_EDITORS.keySet().toArray(new String[]{})[index];
             item.setTitle(editor);
@@ -166,12 +174,17 @@ public class CDMainController extends CDController {
             NSSelector absolutePathForAppBundleWithIdentifierSelector =
                     new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
             if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-                NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
-                        NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
-                );
-                icon.setScalesWhenResized(true);
-                icon.setSize(new NSSize(16f, 16f));
-                item.setImage(icon);
+                String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                        identifier);
+                if(path != null) {
+                    NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
+                    icon.setScalesWhenResized(true);
+                    icon.setSize(new NSSize(16f, 16f));
+                    item.setImage(icon);
+                }
+                else {
+                    item.setImage(NSImage.imageNamed("pencil.tiff"));
+                }
             }
             item.setAction(new NSSelector("editButtonClicked", new Class[]{Object.class}));
             return !shouldCancel;
