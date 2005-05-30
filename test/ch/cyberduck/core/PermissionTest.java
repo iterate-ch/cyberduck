@@ -20,6 +20,9 @@ import junit.framework.TestCase;
  *  dkocher@cyberduck.ch
  */
 
+/**
+ * @version $Id$
+ */
 public class PermissionTest extends TestCase {
 
     public PermissionTest(String name) {
