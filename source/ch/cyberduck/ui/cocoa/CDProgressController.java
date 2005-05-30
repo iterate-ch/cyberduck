@@ -159,7 +159,6 @@ public class CDProgressController extends CDController implements Observer {
 		if(queue.isInitialized()) {
 			if(queue.getSize() != -1) {
 				this.progressBar.setIndeterminate(false);
-				double progressValue = queue.getCurrent()/queue.getSize();
 				this.progressBar.setMinValue(0);
 				this.progressBar.setMaxValue(queue.getSize());
 				this.progressBar.setDoubleValue(queue.getCurrent());

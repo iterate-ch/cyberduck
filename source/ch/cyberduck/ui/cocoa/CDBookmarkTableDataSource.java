@@ -154,6 +154,7 @@ public class CDBookmarkTableDataSource extends Collection {
         if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
             NSArray filesList = (NSArray)info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
             Queue q = new UploadQueue();
+            Session session = null;
             for(int i = 0; i < filesList.count(); i++) {
                 String filename = (String)filesList.objectAtIndex(i);
                 if(filename.endsWith(".duck")) {
@@ -171,7 +172,9 @@ public class CDBookmarkTableDataSource extends Collection {
                 else {
                     //the bookmark this file has been dropped onto
                     Host h = (Host)this.get(index);
-                    Session session = SessionFactory.createSession(h);
+                    if(null == session) {
+                        session = SessionFactory.createSession(h);
+                    }
                     // Drop of a file from the finder > upload to the remote host this bookmark points to
                     q.addRoot(PathFactory.createPath(session, h.getDefaultPath(), new Local(filename)));
                 }
