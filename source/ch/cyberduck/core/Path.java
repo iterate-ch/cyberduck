@@ -266,6 +266,9 @@ public abstract class Path {
 	 * @return the path relative to its parent directory
 	 */
 	public String getName() {
+        if(this.isRoot()) {
+            return "/";
+        }
 		String abs = this.getAbsolute();
 		int index = abs.lastIndexOf('/');
 		return (index > 0) ? abs.substring(index+1) : abs.substring(1);
@@ -438,6 +441,9 @@ public abstract class Path {
 	}
 
 	public boolean exists() {
+        if(this.isRoot()) {
+            return true;
+        }
 		List listing = this.getParent().list(Preferences.instance().getProperty("browser.charset.encoding"),
 										 false, new NullFilter(), false);
 		if(null == listing)
