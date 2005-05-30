@@ -27,7 +27,6 @@ import java.util.*;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**
@@ -235,8 +234,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			NSDictionary args = command.evaluatedArguments();
 			final Path path = PathFactory.createPath(this.workdir().getSession(),
 											   (String)args.objectForKey("Path"));
-			path.setLocal(new Local((String)args.objectForKey("Local")));
 			path.attributes.setType(Path.DIRECTORY_TYPE);
+            Object localObj = args.objectForKey("Local");
+            if (localObj != null) {
+                path.setLocal(new Local((String) localObj, path.getName()));
+            }
             Queue q = new SyncQueue(path);
             q.process(false, true);
 		}
@@ -1546,7 +1548,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
 	}
 
-	private Path workdir() {
+    protected Path workdir() {
 		return this.workdir;
 	}
 	

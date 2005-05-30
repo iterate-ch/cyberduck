@@ -120,20 +120,13 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		return false;
 	}
 
-	protected boolean validateDirectory(Path p) {
-		if(p.getRemote().exists() && p.getLocal().exists()) {
-			//Do not include as it exists both locally and on the server
-			return false;
-		}
-		else {
-			//List the directory in the validation window that the user sees it will get created
-			if(!p.getRemote().exists()) {
-				p.getSession().cache().put(p.getAbsolute(), new ArrayList());
-			}
-			this.prompt(p);
-			return false;
-		}
-	}
+    protected boolean validateDirectory(Path p) {
+        if(!(p.getRemote().exists() && p.getLocal().exists())) {
+            //List the directory in the validation window that the user sees it will get created
+            this.prompt(p);
+        }
+        return false;
+    }
 
 	protected boolean isExisting(Path p) {
 		return p.getRemote().exists() || p.getLocal().exists();

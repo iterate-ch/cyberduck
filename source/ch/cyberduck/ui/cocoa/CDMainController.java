@@ -244,7 +244,7 @@ public class CDMainController extends CDController {
 			if(items.size() == 0) {
 				sender.setTitle(NSBundle.localizedString("No Rendezvous services available", ""));
 				sender.setEnabled(false);
-				return true;
+				return !shouldCancel;
 			}
 			else {
 				Host h = (Host)items.values().toArray()[index];
@@ -252,7 +252,7 @@ public class CDMainController extends CDController {
 				sender.setTarget(this);
 				sender.setEnabled(true);
 				sender.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
-				return true;
+				return !shouldCancel;
 			}
 		}
 		

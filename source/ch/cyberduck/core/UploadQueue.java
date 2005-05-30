@@ -24,6 +24,7 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 import java.io.File;
 import java.util.List;
 import java.util.Observer;
+import java.util.ArrayList;
 
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
@@ -83,6 +84,10 @@ public class UploadQueue extends Queue {
 			if(p.getLocal().exists()) {// && p.getLocal().canRead()) {
 				childs.add(p);
 				if(p.attributes.isDirectory()) {
+                    if(!p.getRemote().exists()) {
+                        //hack
+                        p.getSession().cache().put(p.getAbsolute(), new ArrayList());
+                    }
 					p.attributes.setSize(0);
 					File[] files = p.getLocal().listFiles();
 					for(int i = 0; i < files.length; i++) {

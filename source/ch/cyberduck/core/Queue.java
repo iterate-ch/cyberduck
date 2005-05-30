@@ -293,33 +293,27 @@ public abstract class Queue extends Observable {
 
     protected abstract void reset();
 
-    public boolean isInitialized
-            () {
+    public boolean isInitialized() {
         return this.getJobs() != null;
     }
 
-    public int numberOfRoots
-            () {
+    public int numberOfRoots() {
         return this.roots.size();
     }
 
-    public boolean isComplete
-            () {
+    public boolean isComplete() {
         return this.getSize() == this.getCurrent();
     }
 
-    public double getSize
-            () {
+    public double getSize() {
         return this.size; //cached value
     }
 
-    public String getSizeAsString
-            () {
+    public String getSizeAsString() {
         return Status.getSizeAsString(this.getSize());
     }
 
-    public double getCurrent
-            () {
+    public double getCurrent() {
         if (this.isInitialized()) {
             double size = 0;
             for (Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
@@ -330,16 +324,14 @@ public abstract class Queue extends Observable {
         return this.current; //cached value
     }
 
-    public String getCurrentAsString
-            () {
+    public String getCurrentAsString() {
         return Status.getSizeAsString(this.getCurrent());
     }
 
     /**
      * @return double current bytes/second
      */
-    public String getSpeedAsString
-            () {
+    public String getSpeedAsString() {
         if (this.isRunning() && this.isInitialized()) {
             if (this.getSpeed() > -1) {
                 return "(" + Status.getSizeAsString(this.getSpeed()) + "/sec)";
@@ -351,13 +343,11 @@ public abstract class Queue extends Observable {
     /**
      * @return The bytes being processed per second
      */
-    public double getSpeed
-            () {
+    public double getSpeed() {
         return this.speed;
     }
 
-    private void setSpeed
-            (double s) {
+    private void setSpeed(double s) {
         this.speed = s;
     }
 }

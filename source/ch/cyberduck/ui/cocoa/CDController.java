@@ -1,9 +1,9 @@
 package ch.cyberduck.ui.cocoa;
 
+import com.apple.cocoa.foundation.NSObject;
 import com.apple.cocoa.foundation.NSRunLoop;
 import com.apple.cocoa.foundation.NSSelector;
 import com.apple.cocoa.foundation.NSTimer;
-import com.apple.cocoa.foundation.NSObject;
 
 /*
  *  Copyright (c) 2004 David Kocher. All rights reserved.
@@ -42,9 +42,9 @@ public abstract class CDController extends NSObject {
                 NSRunLoop.DefaultRunLoopMode);
     }
 
-    public void post (NSTimer timer) {
+    public void post(NSTimer timer) {
         Object info = timer.userInfo();
         if (info instanceof Runnable)
-            ((Runnable)info).run();
+            ((Runnable) info).run();
     }
 }

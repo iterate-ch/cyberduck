@@ -91,8 +91,14 @@ public class CDProgressController extends CDController implements Observer {
 			else if (msg.getTitle().equals(Message.ERROR)) {
 				this.invoke(new Runnable() {
 					public void run() {
-						errorText.append("\n" + (String) msg.getContent());
-						alertIcon.setHidden(false);
+                        int l = errorText.toString().split("\n").length;
+                        if(l == 10) {
+                            errorText.append("\n- (...)");
+                        }
+                        if(l < 10)  {
+                            errorText.append("\n"+(String)msg.getContent());
+                        }
+                        alertIcon.setHidden(false);
 					}
 				});
 			}

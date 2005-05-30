@@ -449,16 +449,18 @@ public class SFTPPath extends Path {
                     if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                         FileAttributes attrs = new FileAttributes();
                         attrs.setTimes(f.getAttributes().getAccessedTime(),
-									   new UnsignedInteger32(this.getLocal().getTimestamp().getTime()/1000));
+                                new UnsignedInteger32(this.getLocal().getTimestamp().getTime()/1000));
                         session.SFTP.setAttributes(f, attrs);
                     }
-				}
-				if(this.attributes.isDirectory()) {
-					this.mkdir();
-				}
-				this.getParent().invalidate();
-				session.log(Message.STOP, "Idle");
-			}
+                }
+                if(this.attributes.isDirectory()) {
+                    if(!this.isRoot()) {
+                        this.mkdir();
+                    }
+                }
+                this.getParent().invalidate();
+                session.log(Message.STOP, "Idle");
+            }
 			catch(SshException e) {
 				session.log(Message.ERROR, "SSH Error: ("+this.getName()+") "+e.getMessage());
 			}

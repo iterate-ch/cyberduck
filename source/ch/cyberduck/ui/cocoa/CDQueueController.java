@@ -179,14 +179,6 @@ public class CDQueueController extends CDWindowController {
 			c.setDataCell(new CDProgressCell());
 			this.queueTable.addTableColumn(c);
 		}
-        NSSelector setAutoresizingMaskSelector
-			= new NSSelector("setAutoresizingMask", new Class[]{int.class});
-        if(setAutoresizingMaskSelector.implementedByClass(NSTableView.class)) {
-            this.queueTable.setAutoresizingMask(NSTableView.UniformColumnAutoresizingStyle);
-        }
-        else {
-            this.queueTable.setAutoresizesAllColumnsToFit(true);
-        }
 		NSSelector setUsesAlternatingRowBackgroundColorsSelector =
 		    new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
 		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
@@ -292,7 +284,6 @@ public class CDQueueController extends CDWindowController {
 		});
 		if(Preferences.instance().getBoolean("queue.orderFrontOnTransfer")) {
 			this.window().makeKeyAndOrderFront(null);
-            this.tableViewSelectionChange();
 		}
 		if(queue.getHost().getProtocol().equals(Session.SFTP)) {
 			queue.getHost().setHostKeyVerificationController(new CDHostKeyController(this));
@@ -316,6 +307,7 @@ public class CDQueueController extends CDWindowController {
 		this.toolbar.setDelegate(this);
 		this.toolbar.setAllowsUserCustomization(true);
 		this.toolbar.setAutosavesConfiguration(true);
+        this.window().setDelegate(this);
 		this.window().setReleasedWhenClosed(false);
 		this.window().setToolbar(toolbar);
 	}

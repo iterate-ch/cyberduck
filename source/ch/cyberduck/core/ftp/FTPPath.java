@@ -568,9 +568,11 @@ public class FTPPath extends Path {
 						}
 					}
 				}
-				if(this.attributes.isDirectory()) {
-					this.mkdir();
-				}
+                if(this.attributes.isDirectory()) {
+                    if(!this.isRoot()) {
+                        this.mkdir();
+                    }
+                }
 				this.getParent().invalidate();
 				session.log(Message.STOP, "Idle");
 			}

@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observer;
+import java.util.ArrayList;
 
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
@@ -61,6 +62,11 @@ public class SyncQueue extends Queue {
 		return dict;
 	}
 
+    public String getName() {
+        return NSBundle.localizedString("Synchronize", "")+" "+this.getRoot().getAbsolute()+" "
+                +NSBundle.localizedString("with", "")+" "+this.getRoot().getLocal().getName();
+    }
+
     protected void finish(boolean headless) {
 		super.finish(headless);
 		if(this.isComplete() && !this.isCanceled()) {
@@ -86,6 +92,10 @@ public class SyncQueue extends Queue {
 					childs.add(p);
 				}
 				if(p.attributes.isDirectory()) {
+                    if(!p.getRemote().exists()) {
+                        //hack
+                        p.getSession().cache().put(p.getAbsolute(), new ArrayList());
+                    }
 					File[] files = p.getLocal().listFiles();
 					for(int i = 0; i < files.length; i++) {
 						Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
