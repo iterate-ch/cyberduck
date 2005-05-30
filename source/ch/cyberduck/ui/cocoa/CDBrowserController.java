@@ -2386,8 +2386,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
         return this.validateItem(identifier);
     }
 
-    private NSObject toolbarEditMenuDelegate;
-
     public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
         NSToolbarItem item = new NSToolbarItem(itemIdentifier);
         if (itemIdentifier.equals("Browser View")) {
@@ -2559,10 +2557,19 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     "");
             NSMenu editMenu = new NSMenu();
             editMenu.setAutoenablesItems(true);
-            NSSelector setDelegateSelector =
-                    new NSSelector("setDelegate", new Class[]{Object.class});
-            if(setDelegateSelector.implementedByClass(NSMenu.class)) {
-                editMenu.setDelegate(this.toolbarEditMenuDelegate = new EditMenuDelegate());
+            java.util.Map editors = Editor.SUPPORTED_EDITORS;
+            java.util.Iterator editorNames = editors.keySet().iterator();
+            java.util.Iterator editorIdentifiers = editors.values().iterator();
+            while(editorNames.hasNext()) {
+                String editor = (String)editorNames.next();
+                String identifier = (String)editorIdentifiers.next();
+                boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                        identifier) != null;
+                if(enabled) {
+                    editMenu.addItem(new NSMenuItem(editor,
+                            new NSSelector("editButtonClicked", new Class[]{Object.class}),
+                            ""));
+                }
             }
             toolbarMenu.setSubmenu(editMenu);
             item.setMenuFormRepresentation(toolbarMenu);
