@@ -23,18 +23,16 @@ import com.apple.cocoa.foundation.*;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.AbstractValidator;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Status;
+import ch.cyberduck.core.*;
 
 /**
  * @version $Id$
  */
-public abstract class CDValidatorController extends AbstractValidator {
+public abstract class CDValidatorController extends CDWindowController implements Validator {
 	private static Logger log = Logger.getLogger(CDValidatorController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
@@ -46,23 +44,46 @@ public abstract class CDValidatorController extends AbstractValidator {
 	}
 	
 	protected static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
-																								new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+			new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 	
-	protected CDController windowController;
+	protected CDWindowController windowController;
 
-	public CDValidatorController(CDController windowController) {
+	public CDValidatorController(CDWindowController windowController) {
 		this.windowController = windowController;
 		this.load();
 		instances.addObject(this);
 	}
 
+    protected abstract void load();
+
 	public void awakeFromNib() {
+        super.awakeFromNib();
+
 		this.window().setReleasedWhenClosed(true);
 		(NSNotificationCenter.defaultCenter()).addObserver(this,
 		    new NSSelector("tableViewSelectionDidChange", new Class[]{NSNotification.class}),
 		    NSTableView.TableViewSelectionDidChangeNotification,
 		    this.fileTableView);
 	}
+
+    protected List validatedList = new ArrayList();
+    protected List workList = new ArrayList();
+    protected List promptList = new ArrayList();
+
+    /**
+     * The user canceled this request, no further validation should be taken
+     */
+    private boolean canceled = false;
+
+    public boolean isCanceled() {
+        return this.canceled;
+    }
+
+    protected void setCanceled(boolean c) {
+        this.canceled = c;
+    }
+
+    protected abstract boolean isExisting(Path p);
 
 	public boolean validate(List files, boolean resumeRequested) {
 		for(Iterator iter = files.iterator(); iter.hasNext() && !this.isCanceled();) {
@@ -76,14 +97,74 @@ public abstract class CDValidatorController extends AbstractValidator {
 		if(this.hasPrompt() && !this.isCanceled()) {
 			this.statusIndicator.stopAnimation(null);
 			this.setEnabled(true);
-			this.fileTableView.sizeToFit();
+            this.fireDataChanged();
 			this.infoLabel.setStringValue(this.workList.size()+" "+NSBundle.localizedString("files", ""));
 			this.windowController.waitForSheetEnd();
 		}
 		return !this.isCanceled();
 	}
 
-	protected abstract void load();
+    protected boolean validate(Path p, boolean resumeRequested) {
+        if(p.attributes.isFile()) {
+            p.reset();
+            if(Preferences.instance().getBoolean("queue.transformer.useTransformer")) {
+                p.setPath(p.getParent().getAbsolute(), NameTransformer.instance().transform(p.getName()));
+            }
+            return this.validateFile(p, resumeRequested);
+        }
+        if(p.attributes.isDirectory()) {
+            return this.validateDirectory(p);
+        }
+        throw new IllegalArgumentException(p.getName()+" is neither file nor directory");
+    }
+
+
+    protected abstract boolean validateDirectory(Path path);
+
+    protected boolean validateFile(Path path, boolean resumeRequested) {
+        if(resumeRequested) { // resume existing files independant of settings in preferences
+            path.status.setResume(this.isExisting(path));
+            return true;
+        }
+        // When overwriting file anyway we don't have to check if the file already exists
+        if(Preferences.instance().getProperty("queue.fileExists").equals("overwrite")) {
+            log.info("Apply validation rule to overwrite file "+path.getName());
+            path.status.setResume(false);
+            return true;
+        }
+        if(this.isExisting(path)) {
+            if(Preferences.instance().getProperty("queue.fileExists").equals("resume")) {
+                log.debug("Apply validation rule to resume:"+path.getName());
+                path.status.setResume(true);
+                return true;
+            }
+            if(Preferences.instance().getProperty("queue.fileExists").equals("similar")) {
+                log.debug("Apply validation rule to apply similar name:"+path.getName());
+                path.status.setResume(false);
+                this.adjustFilename(path);
+                log.info("Changed local name to "+path.getName());
+                return true;
+            }
+            if(Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
+                log.debug("Apply validation rule to ask:"+path.getName());
+                this.prompt(path);
+                return false;
+            }
+            throw new IllegalArgumentException("No rules set to validate transfers");
+        }
+        else {
+            path.status.setResume(false);
+            return true;
+        }
+    }
+
+    public List getValidated() {
+        return this.validatedList;
+    }
+
+    protected void adjustFilename(Path path) {
+        //        
+    }
 
 	protected boolean hasPrompt = false;
 
@@ -95,7 +176,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 		if(!this.hasPrompt()) {
             this.windowController.beginSheet(this.window());
             this.statusIndicator.startAnimation(null);
-			this.windowController.waitForSheetDisplay(this.window());
 			this.hasPrompt = true;
 		}
 		this.promptList.add(p);
@@ -103,10 +183,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.fireDataChanged();
 	}
 
-	protected void adjustFilename(Path path) {
-		//
-	}
-	
 	// ----------------------------------------------------------
 	// Outlets
 	// ----------------------------------------------------------
@@ -141,9 +217,21 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.fileTableView = fileTableView;
 		this.fileTableView.setDataSource(this);
 		this.fileTableView.setDelegate(this);
-		this.fileTableView.sizeToFit();
 		this.fileTableView.setRowHeight(17f);
-		this.fileTableView.setAutoresizesAllColumnsToFit(true);
+        NSSelector setAutoresizingMaskSelector
+			= new NSSelector("setAutoresizingMask", new Class[]{int.class});
+        if(setAutoresizingMaskSelector.implementedByClass(NSTableView.class)) {
+            this.fileTableView.setAutoresizingMask(NSTableView.UniformColumnAutoresizingStyle);
+        }
+        else {
+            this.fileTableView.setAutoresizesAllColumnsToFit(true);
+        }
+		// selection properties
+		this.fileTableView.setAllowsMultipleSelection(true);
+		this.fileTableView.setAllowsEmptySelection(true);
+		this.fileTableView.setAllowsColumnResizing(true);
+		this.fileTableView.setAllowsColumnSelection(false);
+		this.fileTableView.setAllowsColumnReordering(true);
 		NSSelector setUsesAlternatingRowBackgroundColorsSelector =
 		    new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
 		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
@@ -165,6 +253,8 @@ public abstract class CDValidatorController extends AbstractValidator {
 				this.fileTableView.setGridStyleMask(NSTableView.GridNone);
 			}
 		}
+        NSSelector setResizableMaskSelector
+			= new NSSelector("setResizingMask", new Class[]{int.class});
 		{
 			NSTableColumn c = new NSTableColumn();
 			c.setIdentifier("ICON");
@@ -172,7 +262,12 @@ public abstract class CDValidatorController extends AbstractValidator {
 			c.setMinWidth(20f);
 			c.setWidth(20f);
 			c.setMaxWidth(20f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setEditable(false);
 			c.setDataCell(new NSImageCell());
 			c.dataCell().setAlignment(NSText.CenterTextAlignment);
@@ -185,7 +280,12 @@ public abstract class CDValidatorController extends AbstractValidator {
 			c.setMinWidth(100f);
 			c.setWidth(220f);
 			c.setMaxWidth(500f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setEditable(false);
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
@@ -198,7 +298,12 @@ public abstract class CDValidatorController extends AbstractValidator {
 			c.setMinWidth(100f);
 			c.setWidth(200f);
 			c.setMaxWidth(600f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.fileTableView.addTableColumn(c);
@@ -210,18 +315,17 @@ public abstract class CDValidatorController extends AbstractValidator {
 			c.setMinWidth(100f);
 			c.setWidth(200f);
 			c.setMaxWidth(600f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.fileTableView.addTableColumn(c);
 		}
-		
-		// selection properties
-		this.fileTableView.setAllowsMultipleSelection(true);
-		this.fileTableView.setAllowsEmptySelection(true);
-		this.fileTableView.setAllowsColumnResizing(true);
-		this.fileTableView.setAllowsColumnSelection(false);
-		this.fileTableView.setAllowsColumnReordering(true);
+		this.fileTableView.sizeToFit();
 	}
 
 	protected NSButton skipButton; // IBOutlet
@@ -259,17 +363,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 		this.cancelButton.setAction(new NSSelector("cancelActionFired", new Class[]{Object.class}));
 	}
 
-	private NSPanel window; // IBOutlet
-
-	public void setWindow(NSPanel window) {
-		this.window = window;
-		this.window.setDelegate(this);
-	}
-
-	public NSPanel window() {
-		return this.window;
-	}
-
 	protected void setEnabled(boolean enabled) {
 		this.overwriteButton.setEnabled(enabled);
 		this.resumeButton.setEnabled(enabled);
@@ -286,7 +379,7 @@ public abstract class CDValidatorController extends AbstractValidator {
 		}
 		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
 		this.setCanceled(false);
-		this.windowController.endSheet();
+		this.windowController.endSheet(this.window(), sender.tag());
 	}
 
 	public void overwriteActionFired(NSButton sender) {
@@ -295,20 +388,20 @@ public abstract class CDValidatorController extends AbstractValidator {
 		}
 		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
 		this.setCanceled(false);
-		this.windowController.endSheet();
+        this.windowController.endSheet(this.window(), sender.tag());
 	}
 
 	public void skipActionFired(NSButton sender) {
 		this.workList.clear();
 		this.setCanceled(false);
-		this.windowController.endSheet();
+        this.windowController.endSheet(this.window(), sender.tag());
 	}
 
 	public void cancelActionFired(NSButton sender) {
 		this.validatedList.clear();
 		this.workList.clear();
 		this.setCanceled(true);
-		this.windowController.endSheet();
+        this.windowController.endSheet(this.window(), sender.tag());
 	}
 
 	// ----------------------------------------------------------
@@ -317,46 +410,14 @@ public abstract class CDValidatorController extends AbstractValidator {
 	
 	protected void fireDataChanged() {
 		if(this.hasPrompt()) {
-			ThreadUtilities.instance().invokeLater(new Runnable() {
-				public void run() {
-					CDValidatorController.this.fileTableView.reloadData();
-				}
-			});
+            fileTableView.reloadData();
+//			this.invoke(new Runnable() {
+//				public void run() {
+//					fileTableView.reloadData();
+//				}
+//			});
 		}
 	}
-	
-/*
-	private static final NSColor LIGHT_GREEN_COLOR = NSColor.colorWithCalibratedRGB(0.0f, 1.0f, 0.0f, 0.5f);
-	private static final NSColor LIGHT_RED_COLOR = NSColor.colorWithCalibratedRGB(1.0f, 0.0f, 0.0f, 0.5f);
-	
-	public void tableViewWillDisplayCell(NSTableView tableView, Object cell, NSTableColumn tableColumn, int row) {
-		String identifier = (String)tableColumn.identifier();
-		if(identifier.equals("REMOTE")) {
-			Path p = (Path)this.workList.get(row);
-			if(p.getRemote().exists() && p.getLocal().exists()) {
-				((NSTextFieldCell)cell).setDrawsBackground(true);
-				if(p.getLocal().getTimestampAsCalendar().before(p.getRemote().attributes.getTimestampAsCalendar())) {
-					((NSTextFieldCell)cell).setBackgroundColor(LIGHT_GREEN_COLOR);
-				}
-				else {
-					((NSTextFieldCell)cell).setBackgroundColor(LIGHT_RED_COLOR);
-				}
-			}
-		}
-		if(identifier.equals("LOCAL")) {
-			Path p = (Path)this.workList.get(row);
-			if(p.getRemote().exists() && p.getLocal().exists()) {
-				((NSTextFieldCell)cell).setDrawsBackground(true);
-				if(p.getLocal().getTimestampAsCalendar().after(p.getRemote().attributes.getTimestampAsCalendar())) {
-					((NSTextFieldCell)cell).setBackgroundColor(LIGHT_GREEN_COLOR);
-				}
-				else {
-					((NSTextFieldCell)cell).setBackgroundColor(LIGHT_RED_COLOR);
-				}
-			}
-		}
-	}
-*/
 	
 	public void tableViewSelectionDidChange(NSNotification notification) {
 		if(this.fileTableView.selectedRow() != -1) {
@@ -437,7 +498,6 @@ public abstract class CDValidatorController extends AbstractValidator {
 				}
 			}
 		}
-		log.warn("tableViewObjectValueForLocation:return null");
 		return null;
 	}
 

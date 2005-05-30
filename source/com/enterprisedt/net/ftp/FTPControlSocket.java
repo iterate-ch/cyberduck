@@ -459,6 +459,9 @@ public class FTPControlSocket {
 				if(line == null)
 					throw new IOException("Unexpected null reply received");
 
+                if (line.length() == 0)
+                    continue;
+                
 				log(line, false);
 
 				if(line.length() > 3 &&

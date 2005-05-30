@@ -64,7 +64,7 @@
 						<key>ReadOnly</key>
 						<string>No</string>
 						<key>Type</key>
-						<string>NSBoolean</string>
+						<string>NSNumber&lt;Bool&gt;</string>
 					</dict>
 				</dict>
 				<key>SupportedCommands</key>
@@ -133,7 +133,7 @@
 						<key>Optional</key>
 						<string>Yes</string>
 						<key>Type</key>
-						<string>Protocols</string>
+						<string>NSNumber&lt;Protocols&gt;</string>
 					</dict>
 					<key>Port</key>
 					<dict>
@@ -441,6 +441,8 @@
 				<dict>
 					<key>ftp </key>
 					<string>ftp </string>
+					<key>ftps</key>
+					<string>ftps</string>
 					<key>sftp</key>
 					<string>sftp</string>
 				</dict>

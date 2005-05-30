@@ -47,7 +47,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		}
 	}
 
-	private CDSyncQueueValidatorController(CDController windowController) {
+	private CDSyncQueueValidatorController(CDWindowController windowController) {
 		super(windowController);
 	}
 
@@ -67,7 +67,8 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		this.uploadRadioCell.setAction(new NSSelector("uploadCellClicked", new Class[]{Object.class}));
 		this.downloadRadioCell.setTarget(this);
 		this.downloadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
-
+        NSSelector setResizableMaskSelector
+			= new NSSelector("setResizingMask", new Class[]{int.class});
 		{
 			NSTableColumn c = new NSTableColumn();
 			c.setIdentifier("NEW");
@@ -75,7 +76,12 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 			c.setMinWidth(20f);
 			c.setWidth(20f);
 			c.setMaxWidth(20f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setEditable(false);
 			c.setDataCell(new NSImageCell());
 			c.dataCell().setAlignment(NSText.CenterTextAlignment);
@@ -88,12 +94,18 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 			c.setMinWidth(20f);
 			c.setWidth(20f);
 			c.setMaxWidth(20f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setEditable(false);
 			c.setDataCell(new NSImageCell());
 			c.dataCell().setAlignment(NSText.CenterTextAlignment);
 			this.fileTableView.addTableColumn(c);
 		}
+		this.fileTableView.sizeToFit();
 	}
 
 	protected boolean validateFile(Path p, boolean resume) {
@@ -108,20 +120,13 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 		return false;
 	}
 
-	protected boolean validateDirectory(Path p) {
-		if(p.getRemote().exists() && p.getLocal().exists()) {
-			//Do not include as it exists both locally and on the server
-			return false;
-		}
-		else {
-			//List the directory in the validation window that the user sees it will get created
-			if(!p.getRemote().exists()) {
-				p.getSession().cache().put(p.getAbsolute(), new ArrayList());
-			}
-			this.prompt(p);
-			return false;
-		}
-	}
+    protected boolean validateDirectory(Path p) {
+        if(!(p.getRemote().exists() && p.getLocal().exists())) {
+            //List the directory in the validation window that the user sees it will get created
+            this.prompt(p);
+        }
+        return false;
+    }
 
 	protected boolean isExisting(Path p) {
 		return p.getRemote().exists() || p.getLocal().exists();
@@ -202,7 +207,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	public void syncActionFired(NSButton sender) {
 		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
 		this.setCanceled(false);
-		this.windowController.endSheet();
+		this.windowController.endSheet(this.window(), sender.tag());
 	}
 	
 	// ----------------------------------------------------------

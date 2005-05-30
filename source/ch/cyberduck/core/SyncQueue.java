@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observer;
+import java.util.ArrayList;
 
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
@@ -61,9 +62,14 @@ public class SyncQueue extends Queue {
 		return dict;
 	}
 
-	protected void finish() {
-		super.finish();
-		if(this.isComplete()) {
+    public String getName() {
+        return NSBundle.localizedString("Synchronize", "")+" "+this.getRoot().getAbsolute()+" "
+                +NSBundle.localizedString("with", "")+" "+this.getRoot().getLocal().getName();
+    }
+
+    protected void finish(boolean headless) {
+		super.finish(headless);
+		if(this.isComplete() && !this.isCanceled()) {
 			this.callObservers(new Message(Message.PROGRESS, NSBundle.localizedString("Synchronization complete",
 																					  "Growl Notification")));
 			this.callObservers(new Message(Message.QUEUE_STOP));
@@ -80,16 +86,22 @@ public class SyncQueue extends Queue {
 	}
 
 	private void addLocalChilds(List childs, Path p) {
-		if(p.getLocal().exists()) {// && p.getLocal().canRead()) {
-			if(!childs.contains(p)) {
-				childs.add(p);
-			}
-			if(p.attributes.isDirectory()) {
-				File[] files = p.getLocal().listFiles();
-				for(int i = 0; i < files.length; i++) {
-					Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
-					if(!child.getName().equals(".DS_Store")) {
-						this.addLocalChilds(childs, child);
+		if(!this.isCanceled()) {
+			if(p.getLocal().exists()) {// && p.getLocal().canRead()) {
+				if(!childs.contains(p)) {
+					childs.add(p);
+				}
+				if(p.attributes.isDirectory()) {
+                    if(!p.getRemote().exists()) {
+                        //hack
+                        p.getSession().cache().put(p.getAbsolute(), new ArrayList());
+                    }
+					File[] files = p.getLocal().listFiles();
+					for(int i = 0; i < files.length; i++) {
+						Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
+						if(!child.getName().equals(".DS_Store")) {
+							this.addLocalChilds(childs, child);
+						}
 					}
 				}
 			}
@@ -97,16 +109,18 @@ public class SyncQueue extends Queue {
 	}
 
 	private void addRemoteChilds(List childs, Path p) {
-		if(p.getRemote().exists()) {
-			if(!childs.contains(p)) {
-				childs.add(p);
-			}
-			if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
-				p.attributes.setSize(0);
-				for(Iterator i = p.list(false, true).iterator(); i.hasNext();) {
-					Path child = (Path)i.next();
-					child.setLocal(new Local(p.getLocal(), child.getName()));
-					this.addRemoteChilds(childs, child);
+		if(!this.isCanceled()) {
+			if(p.getRemote().exists()) {
+				if(!childs.contains(p)) {
+					childs.add(p);
+				}
+				if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
+					p.attributes.setSize(0);
+					for(Iterator i = p.list(false, true).iterator(); i.hasNext();) {
+						Path child = (Path)i.next();
+						child.setLocal(new Local(p.getLocal(), child.getName()));
+						this.addRemoteChilds(childs, child);
+					}
 				}
 			}
 		}

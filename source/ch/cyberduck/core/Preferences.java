@@ -20,8 +20,6 @@ package ch.cyberduck.core;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
-
 /**
  * Holding all application preferences. Default values get overwritten when loading
  * the <code>PREFERENCES_FILE</code>.
@@ -30,7 +28,6 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public abstract class Preferences {
-	private static Logger log = Logger.getLogger(Preferences.class);
 
 	private static Preferences current = null;
 	private HashMap defaults;
@@ -121,7 +118,8 @@ public abstract class Preferences {
 		defaults.put("queue.upload.permissions.useDefault", "false");
 		defaults.put("queue.upload.permissions.default", "rw-r--r--");
 		defaults.put("queue.upload.preserveDate", "true");
-		
+        defaults.put("queue.upload.preserveDate.fallback", "false");
+
 		defaults.put("queue.download.changePermissions", "false");
 		defaults.put("queue.download.permissions.useDefault", "false");
 		defaults.put("queue.download.permissions.default", "rw-r--r--");
@@ -171,8 +169,8 @@ public abstract class Preferences {
 
 		defaults.put("ssh.CSEncryption", "blowfish-cbc"); //client -> server encryption cipher
 		defaults.put("ssh.SCEncryption", "blowfish-cbc"); //server -> client encryption cipher
-		defaults.put("ssh.CSAuthentication", "hmac_md5"); //client -> server message authentication
-		defaults.put("ssh.SCAuthentication", "hmac_md5"); //server -> client message authentication
+		defaults.put("ssh.CSAuthentication", "hmac-md5"); //client -> server message authentication
+		defaults.put("ssh.SCAuthentication", "hmac-md5"); //server -> client message authentication
 		defaults.put("ssh.publickey", "ssh-rsa");
 		defaults.put("ssh.compression", "none"); //zlib
 	}

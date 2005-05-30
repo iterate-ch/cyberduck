@@ -37,7 +37,7 @@ public class Host {
 	private String hostname;
 	private String nickname;
 	private String identification;
-	private String defaultpath = Path.HOME;
+    private String defaultpath;
 	private HostKeyVerification hostKeyVerification;
 	private Login login;
 
@@ -48,11 +48,6 @@ public class Host {
 	public static final String USERNAME = "Username";
 	public static final String PATH = "Path";
 	public static final String KEYFILE = "Private Key File";
-
-	protected void finalize() throws Throwable {
-		log.debug("------------- finalize");
-		super.finalize();
-	}
 
 	public Host(NSDictionary dict) {
 		Object protocolObj = dict.objectForKey(Host.PROTOCOL);
@@ -146,89 +141,99 @@ public class Host {
 		this.setDefaultPath(defaultpath);
 		this.setCredentials(null, null);
 		log.debug(this.toString());
-	}
+    }
 
-	public static Host parse(String input) throws MalformedURLException {
-		if(null == input || input.length() == 0)
-			throw new MalformedURLException("No hostname given");
-		int begin = 0;
-		int cut = 0;
-//		if(input.indexOf("://", begin) == -1 && input.indexOf('@', begin) == -1) {
-//			throw new MalformedURLException("No protocol or user delimiter");
-//		}
-		String protocol = Preferences.instance().getProperty("connection.protocol.default");
-		if(input.indexOf("://", begin) != -1) {
-			cut = input.indexOf("://", begin);
-			protocol = input.substring(begin, cut);
-			begin += protocol.length()+3;
-		}
-		String username = null;
-		if(protocol.equals(Session.FTP)) {
-			username = Preferences.instance().getProperty("ftp.anonymous.name");
-		}
-		else if(protocol.equals(Session.SFTP)) {
-			username = Preferences.instance().getProperty("connection.login.name");
-		}
-		else {
-			throw new MalformedURLException("Unknown protocol: "+protocol);
-		}
-		if(input.indexOf('@', begin) != -1) {
-			cut = input.indexOf('@', begin);
-			username = input.substring(begin, cut);
-			begin += username.length()+1;
-		}
-		String hostname = input.substring(begin, input.length());
-		String path = null;
-		int port = getDefaultPort(protocol);
-		if(input.indexOf(':', begin) != -1) {
-			cut = input.indexOf(':', begin);
-			hostname = input.substring(begin, cut);
-			begin += hostname.length()+1;
-			try {
-				String portString;
-				if(input.indexOf('/', begin) != -1) {
-					portString = input.substring(begin, input.indexOf('/', begin));
-					begin += portString.length()+1;
-					path = input.substring(begin, input.length());
-				}
-				else {
-					portString = input.substring(begin, input.length());
-				}
-				port = Integer.parseInt(portString);
-			}
-			catch(NumberFormatException e) {
-				throw new MalformedURLException("Invalid port number given");
-			}
-		}
-		else if(input.indexOf('/', begin) != -1) {
-			cut = input.indexOf('/', begin);
-			hostname = input.substring(begin, cut);
-			begin += hostname.length();
-			path = input.substring(begin, input.length());
-		}
-		Host h = new Host(protocol,
-		    hostname,
-		    port,
-		    path);
-		h.setCredentials(username, null);
-		return h;
-	}
+    public static Host parse(String input) throws MalformedURLException {
+        if(null == input || input.length() == 0)
+            throw new MalformedURLException("No hostname given");
+        int begin = 0;
+        int cut = 0;
+        if(input.indexOf("://", begin) == -1 && input.indexOf('@', begin) == -1) {
+            throw new MalformedURLException("No protocol or user delimiter");
+        }
+        String protocol = Preferences.instance().getProperty("connection.protocol.default");
+        if(input.indexOf("://", begin) != -1) {
+            cut = input.indexOf("://", begin);
+            protocol = input.substring(begin, cut);
+            begin += protocol.length()+3;
+        }
+        String username = null;
+        String password = null;
+        if(protocol.equals(Session.FTP)) {
+            username = Preferences.instance().getProperty("ftp.anonymous.name");
+        }
+        else if(protocol.equals(Session.SFTP)) {
+            username = Preferences.instance().getProperty("connection.login.name");
+        }
+        else {
+            throw new MalformedURLException("Unknown protocol: "+protocol);
+        }
+        if(input.indexOf('@', begin) != -1) {
+            if(input.indexOf(':', begin) != -1) {
+                cut = input.indexOf(':', begin);
+                username = input.substring(begin, cut);
+                begin += username.length()+1;
+                cut = input.indexOf('@', begin);
+                password = input.substring(begin, cut);
+                begin += password.length()+1;
+            }
+            else {
+                cut = input.indexOf('@', begin);
+                username = input.substring(begin, cut);
+                begin += username.length()+1;
+            }
+        }
+        String hostname = input.substring(begin, input.length());
+        String path = null;
+        int port = getDefaultPort(protocol);
+        if(input.indexOf(':', begin) != -1) {
+            cut = input.indexOf(':', begin);
+            hostname = input.substring(begin, cut);
+            begin += hostname.length()+1;
+            try {
+                String portString;
+                if(input.indexOf('/', begin) != -1) {
+                    portString = input.substring(begin, input.indexOf('/', begin));
+                    begin += portString.length()+1;
+                    path = input.substring(begin, input.length());
+                }
+                else {
+                    portString = input.substring(begin, input.length());
+                }
+                port = Integer.parseInt(portString);
+            }
+            catch(NumberFormatException e) {
+                throw new MalformedURLException("Invalid port number given");
+            }
+        }
+        else if(input.indexOf('/', begin) != -1) {
+            cut = input.indexOf('/', begin);
+            hostname = input.substring(begin, cut);
+            begin += hostname.length();
+            path = input.substring(begin, input.length());
+        }
+        Host h = new Host(protocol,
+                hostname,
+                port,
+                path);
+		h.setCredentials(username, password);
+        return h;
+    }
 
 	// ----------------------------------------------------------
 
 	public void setDefaultPath(String defaultpath) {
+        if(null == defaultpath || defaultpath.equals("~"))
+            defaultpath = "";
 		this.defaultpath = defaultpath;
 	}
 
 	public String getDefaultPath() {
-		if(this.defaultpath == null || this.defaultpath.equals("")) {
-			return Path.HOME;
-		}
 		return this.defaultpath;
 	}
 
 	public boolean hasReasonableDefaultPath() {
-		return this.defaultpath != null && !this.defaultpath.equals("") && !this.defaultpath.equals(Path.HOME);
+        return this.defaultpath != null && !this.defaultpath.equals("");
 	}
 
 	protected static String getDefaultProtocol(int port) {
@@ -304,7 +309,9 @@ public class Host {
 	}
 
 	public String getNickname() {
-		return this.nickname != null ? this.nickname : this.getHostname()+" ("+this.getProtocol().toUpperCase()+")";
+		if(this.nickname != null)
+            return this.nickname;
+        return this.getHostname()+" ("+this.getProtocol().toUpperCase()+")";
 	}
 
 	public void setNickname(String nickname) {
@@ -323,7 +330,9 @@ public class Host {
 	 * @param port The port number to connect to or -1 to use the default port for this protocol
 	 */
 	public void setPort(int port) {
-		this.port = port != -1 ? port : getDefaultPort(this.getProtocol());
+	    this.port = port;
+        if(-1 == port)
+            port = Host.getDefaultPort(this.getProtocol());
 	}
 
 	public int getPort() {

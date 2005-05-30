@@ -23,6 +23,8 @@ import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Path;
@@ -31,7 +33,7 @@ import ch.cyberduck.core.PathFactory;
 /**
  * @version $Id$
  */
-public class CDFolderController extends CDController {
+public class CDFolderController extends CDWindowController {
 	private static Logger log = Logger.getLogger(CDFolderController.class);
 
 	private static NSMutableArray instances = new NSMutableArray();
@@ -50,6 +52,8 @@ public class CDFolderController extends CDController {
 	}
 
 	public void awakeFromNib() {
+        super.awakeFromNib();
+
 		this.window().setReleasedWhenClosed(true);
 	}
 
@@ -98,9 +102,11 @@ public class CDFolderController extends CDController {
 	}
 	
 	public Path create(Path workdir, String filename) {
-		Path child = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
-		child.mkdir(false);
-		workdir.list(true);
-		return child;
+		Path folder = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
+		folder.mkdir(false);
+		List l = workdir.list(true, filename.charAt(0) == '.');
+		if(l.contains(folder))
+			return (Path)l.get(l.indexOf(folder));
+		return null;
 	}
 }

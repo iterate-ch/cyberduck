@@ -28,7 +28,7 @@ import ch.cyberduck.core.*;
 /**
  * @version $Id$
  */
-public class CDQueueController extends CDController {
+public class CDQueueController extends CDWindowController {
 	private static Logger log = Logger.getLogger(CDQueueController.class);
 
 	private static CDQueueController instance;
@@ -144,6 +144,8 @@ public class CDQueueController extends CDController {
 			NSPasteboard.StringPboardType,
 			NSPasteboard.FilesPromisePboardType}));
 		this.queueTable.setRowHeight(50f);
+        NSSelector setResizableMaskSelector
+			= new NSSelector("setResizingMask", new Class[]{int.class});
 		{
 			NSTableColumn c = new NSTableColumn();
 			c.setIdentifier("ICON");
@@ -151,7 +153,12 @@ public class CDQueueController extends CDController {
 			c.setWidth(36f);
 			c.setMaxWidth(36f);
 			c.setEditable(false);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new CDIconCell());
 			this.queueTable.addTableColumn(c);
 		}
@@ -163,7 +170,12 @@ public class CDQueueController extends CDController {
 			c.setWidth(300f);
 			c.setMaxWidth(1000f);
 			c.setEditable(false);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new CDProgressCell());
 			this.queueTable.addTableColumn(c);
 		}
@@ -254,17 +266,16 @@ public class CDQueueController extends CDController {
 			public void update(final java.util.Observable o, final Object arg) {
 				Message msg = (Message)arg;
 				if(msg.getTitle().equals(Message.QUEUE_START)) {
-					ThreadUtilities.instance().invokeLater(new Runnable() {
+                    invoke(new Runnable() {
 						public void run() {
 							toolbar.validateVisibleItems();
 						}
 					});
 				}
 				if(msg.getTitle().equals(Message.QUEUE_STOP)) {
-					ThreadUtilities.instance().invokeLater(new Runnable() {
+                    invoke(new Runnable() {
 						public void run() {
 							toolbar.validateVisibleItems();
-							reloadQueueTable();
 						}
 					});
 					o.deleteObserver(this);
@@ -280,7 +291,7 @@ public class CDQueueController extends CDController {
 		queue.getHost().setLoginController(new CDLoginController(this));
 		new Thread("Session") {
 			public void run() {
-				queue.process(resumeRequested, true);
+				queue.process(resumeRequested, false);
 			}
 		}.start();
 	}
@@ -290,10 +301,13 @@ public class CDQueueController extends CDController {
 	}
 
 	public void awakeFromNib() {
+        super.awakeFromNib();
+
 		this.toolbar = new NSToolbar("Queue Toolbar");
 		this.toolbar.setDelegate(this);
 		this.toolbar.setAllowsUserCustomization(true);
 		this.toolbar.setAutosavesConfiguration(true);
+        this.window().setDelegate(this);
 		this.window().setReleasedWhenClosed(false);
 		this.window().setToolbar(toolbar);
 	}

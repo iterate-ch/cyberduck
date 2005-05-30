@@ -45,9 +45,9 @@ public class DownloadQueue extends Queue {
 		return dict;
 	}
 
-	protected void finish() {
-		super.finish();
-		if(this.isComplete()) {
+    protected void finish(boolean headless) {
+		super.finish(headless);
+		if(this.isComplete() && !this.isCanceled()) {
 			this.callObservers(new Message(Message.PROGRESS, NSBundle.localizedString("Download complete",
 																					  "Growl Notification")));
 			this.callObservers(new Message(Message.QUEUE_STOP));
@@ -61,13 +61,15 @@ public class DownloadQueue extends Queue {
 	}
 	
 	protected List getChilds(List childs, Path p) {
-		childs.add(p);
-		if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
-			p.attributes.setSize(0);
-			for(Iterator i = p.list(false, true).iterator(); i.hasNext();) {
-				Path child = (Path)i.next();
-				child.setLocal(new Local(p.getLocal(), child.getName()));
-				this.getChilds(childs, child);
+		if(!this.isCanceled()) {
+			childs.add(p);
+			if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
+				p.attributes.setSize(0);
+				for(Iterator i = p.list(false, true).iterator(); i.hasNext();) {
+					Path child = (Path)i.next();
+					child.setLocal(new Local(p.getLocal(), child.getName()));
+					this.getChilds(childs, child);
+				}
 			}
 		}
 		return childs;

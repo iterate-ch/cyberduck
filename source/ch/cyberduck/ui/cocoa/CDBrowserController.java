@@ -27,13 +27,12 @@ import java.util.*;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**
  * @version $Id$
  */
-public class CDBrowserController extends CDController implements Observer {
+public class CDBrowserController extends CDWindowController implements Observer {
 	private static Logger log = Logger.getLogger(CDBrowserController.class);
 
 	private static final File HISTORY_FOLDER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History"));
@@ -235,14 +234,13 @@ public class CDBrowserController extends CDController implements Observer {
 			NSDictionary args = command.evaluatedArguments();
 			final Path path = PathFactory.createPath(this.workdir().getSession(),
 											   (String)args.objectForKey("Path"));
-			path.setLocal(new Local((String)args.objectForKey("Local")));
 			path.attributes.setType(Path.DIRECTORY_TYPE);
-			for(Iterator i = new SyncQueue(path).getChilds().iterator(); i.hasNext(); ) {
-				((Path)i.next()).sync();
-			}
-			Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
-															 "Growl Notification"),
-									path.getName());
+            Object localObj = args.objectForKey("Local");
+            if (localObj != null) {
+                path.setLocal(new Local((String) localObj, path.getName()));
+            }
+            Queue q = new SyncQueue(path);
+            q.process(false, true);
 		}
 		return null;
 	}
@@ -263,12 +261,8 @@ public class CDBrowserController extends CDController implements Observer {
 			if(nameObj != null) {
 				path.setLocal(new Local(path.getLocal().getParent(), (String)nameObj));
 			}
-			for(Iterator i = new DownloadQueue(path).getChilds().iterator(); i.hasNext(); ) {
-				((Path)i.next()).download();
-			}
-			Growl.instance().notify(NSBundle.localizedString("Download complete",
-															 "Growl Notification"),
-									path.getName());
+            Queue q = new DownloadQueue(path);
+            q.process(false, true);
 		}
 		return null;
 	}
@@ -289,12 +283,8 @@ public class CDBrowserController extends CDController implements Observer {
 			if(nameObj != null) {
 				path.setPath(this.workdir().getAbsolute(), (String)nameObj);
 			}
-			for(Iterator i = new UploadQueue(path).getChilds().iterator(); i.hasNext(); ) {
-				((Path)i.next()).upload();
-			}
-			Growl.instance().notify(NSBundle.localizedString("Upload complete",
-															 "Growl Notification"),
-									path.getName());
+            Queue q = new UploadQueue(path);
+            q.process(false, true);
 		}
 		return null;
 	}
@@ -345,7 +335,8 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 
 	public void awakeFromNib() {
-		log.debug("awakeFromNib");
+        super.awakeFromNib();
+
 		// Configure table views
 		this.browserTable.setDataSource(this.browserModel = new CDBrowserTableDataSource());
 		this.browserTable.setDelegate(this.browserModel);
@@ -366,112 +357,97 @@ public class CDBrowserController extends CDController implements Observer {
 		this.window().setToolbar(toolbar);
 	}
 
-	public void update(Observable o, Object arg) {
+	public void update(final Observable o, final Object arg) {
+        if(!Thread.currentThread().getName().equals("main")
+		   && !Thread.currentThread().getName().equals("AWT-AppKit")) {
+            this.invoke(new Runnable() {
+                public void run(){
+                    update(o, arg);
+                }
+            });
+            return;
+        }
 		if(arg instanceof Path) {
 			this.workdir = (Path)arg;
-			this.browserModel.setData(this.workdir.getSession().cache().get(this.workdir.getAbsolute()));
-			ThreadUtilities.instance().invokeLater(new Runnable() {
-				public void run() {
-					CDBrowserController.this.pathPopupItems.clear();
-					CDBrowserController.this.pathPopupButton.removeAllItems();
-					CDBrowserController.this.addPathToPopup(workdir);
-					for(Path p = workdir; !p.isRoot();) {
-						p = p.getParent();
-						CDBrowserController.this.addPathToPopup(p);
-					}
-				}
-			});
-			NSTableColumn selectedColumn = this.browserModel.selectedColumn() != null ?
-			                               this.browserModel.selectedColumn() :
-			                               this.browserTable.tableColumnWithIdentifier("FILENAME");
-			this.browserTable.setIndicatorImage(this.browserModel.isSortedAscending() ?
-			                                    NSImage.imageNamed("NSAscendingSortIndicator") :
-			                                    NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
-			this.browserModel.sort(selectedColumn, this.browserModel.isSortedAscending());
-			this.browserTable.reloadData();
-			this.window().makeFirstResponder(this.browserTable);
-//			ThreadUtilities.instance().invokeLater(new Runnable() {
-//				public void run() {
-//					CDBrowserController.this.toolbar.validateVisibleItems();
-//				}
-//			});
-			this.infoLabel.setStringValue(this.browserModel.numberOfRowsInTableView(this.browserTable)+" "+
-			    NSBundle.localizedString("files", ""));
-		}
-		else if(arg instanceof Message) {
-			final Message msg = (Message)arg;
-			if(msg.getTitle().equals(Message.ERROR)) {
+            this.browserModel.setData(
+                    this.workdir.getSession().cache().get(this.workdir.getAbsolute()));
+            this.pathPopupItems.clear();
+            this.pathPopupButton.removeAllItems();
+            this.addPathToPopup(workdir);
+            for(Path p = workdir; !p.isRoot();) {
+                p = p.getParent();
+                CDBrowserController.this.addPathToPopup(p);
+            }
+            NSTableColumn selectedColumn = browserModel.selectedColumn() != null ?
+                    browserModel.selectedColumn() :
+                    browserTable.tableColumnWithIdentifier("FILENAME");
+            this.browserTable.setIndicatorImage(browserModel.isSortedAscending() ?
+                    NSImage.imageNamed("NSAscendingSortIndicator") :
+                    NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
+            this.browserModel.sort(selectedColumn, browserModel.isSortedAscending());
+            this.browserTable.reloadData();
+            this.window().makeFirstResponder(browserTable);
+            this.infoLabel.setStringValue(browserModel.numberOfRowsInTableView(browserTable)+" "+
+                    NSBundle.localizedString("files", ""));
+        }
+        else if(arg instanceof Message) {
+            final Message msg = (Message)arg;
+            if(msg.getTitle().equals(Message.ERROR)) {
 				this.progressIndicator.stopAnimation(this);
 				this.statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
 				this.statusIcon.setNeedsDisplay(true);
 				this.statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent(),
-																			  TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+																			TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 				this.statusLabel.display();
-				this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
-				    (String)msg.getContent(), // message
-				    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-				    null, //alternative button
-				    null //other button
-				));
-			}
-			else if(msg.getTitle().equals(Message.PROGRESS)) {
-				this.statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent(),
-																				 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-				this.statusLabel.display();
-			}
-			else if(msg.getTitle().equals(Message.REFRESH)) {
-				this.reloadButtonClicked(null);
-			}
-			else if(msg.getTitle().equals(Message.OPEN)) {
-				this.progressIndicator.startAnimation(this);
-				this.infoLabel.setStringValue("");
-				this.statusIcon.setImage(null);
-				this.statusIcon.setNeedsDisplay(true);
-				this.browserModel.clear();
-				this.browserTable.reloadData();
-				this.pathPopupItems.clear();
-				this.pathPopupButton.removeAllItems();
-				ThreadUtilities.instance().invokeLater(new Runnable() {
-					public void run() {
-						toolbar.validateVisibleItems();
-					}
-				});
-			}
-			else if(msg.getTitle().equals(Message.CLOSE)) {
-				this.progressIndicator.stopAnimation(this);
-				this.statusIcon.setImage(null);
-				this.statusIcon.setNeedsDisplay(true);
-				ThreadUtilities.instance().invokeLater(new Runnable() {
-					public void run() {
-						toolbar.validateVisibleItems();
-					}
-				});
-			}
-			else if(msg.getTitle().equals(Message.START)) {
-				this.statusIcon.setImage(null);
-				this.statusIcon.display();
-				this.progressIndicator.startAnimation(this);
-				ThreadUtilities.instance().invokeLater(new Runnable() {
-					public void run() {
-						CDBrowserController.this.toolbar.validateVisibleItems();
-					}
-				});
-			}
-			else if(msg.getTitle().equals(Message.STOP)) {
-				this.progressIndicator.stopAnimation(this);
-				this.statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
-																				 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-				this.statusLabel.display();
-				ThreadUtilities.instance().invokeLater(new Runnable() {
-					public void run() {
-						CDBrowserController.this.toolbar.validateVisibleItems();
-					}
-				});
-			}
-		}
-	}
-	
-	// ----------------------------------------------------------
+                this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                        (String)msg.getContent(), // message
+                        NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+                        null, //alternative button
+                        null //other button
+                ));
+            }
+            else if(msg.getTitle().equals(Message.PROGRESS)) {
+                this.statusLabel.setAttributedStringValue(new NSAttributedString((String)msg.getContent(),
+                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                this.statusLabel.display();
+            }
+            else if(msg.getTitle().equals(Message.REFRESH)) {
+                this.reloadButtonClicked(null);
+            }
+            else if(msg.getTitle().equals(Message.OPEN)) {
+                this.progressIndicator.startAnimation(this);
+                this.infoLabel.setStringValue("");
+                this.statusIcon.setImage(null);
+                this.statusIcon.setNeedsDisplay(true);
+                this.browserModel.clear();
+                this.browserTable.reloadData();
+                this.pathPopupItems.clear();
+                this.pathPopupButton.removeAllItems();
+                this.toolbar.validateVisibleItems();
+            }
+            else if(msg.getTitle().equals(Message.CLOSE)) {
+                this.progressIndicator.stopAnimation(this);
+                this.statusIcon.setImage(null);
+                this.statusIcon.setNeedsDisplay(true);
+                this.toolbar.validateVisibleItems();
+            }
+            else if(msg.getTitle().equals(Message.START)) {
+                this.statusIcon.setImage(null);
+                this.statusIcon.display();
+                this.progressIndicator.startAnimation(this);
+                this.toolbar.validateVisibleItems();
+            }
+            else if(msg.getTitle().equals(Message.STOP)) {
+                this.progressIndicator.stopAnimation(this);
+                this.statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
+                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                this.statusLabel.display();
+                this.toolbar.validateVisibleItems();
+            }
+        }
+    }
+
+    // ----------------------------------------------------------
 	// Outlets
 	// ----------------------------------------------------------
 
@@ -499,7 +475,14 @@ public class CDBrowserController extends CDController implements Observer {
 
 		// setting appearance attributes
 		this.browserTable.setRowHeight(17f);
-		this.browserTable.setAutoresizesAllColumnsToFit(true);
+        NSSelector setAutoresizingMaskSelector
+			= new NSSelector("setAutoresizingMask", new Class[]{int.class});
+        if(setAutoresizingMaskSelector.implementedByClass(NSTableView.class)) {
+            this.browserTable.setAutoresizingMask(NSTableView.UniformColumnAutoresizingStyle);
+        }
+        else {
+            this.browserTable.setAutoresizesAllColumnsToFit(true);
+        }
 		this._updateBrowserTableAttributes();
 		// selection properties
 		this.browserTable.setAllowsMultipleSelection(true);
@@ -562,6 +545,7 @@ public class CDBrowserController extends CDController implements Observer {
 		while(enum.hasMoreElements()) {
 			this.browserTable.removeTableColumn((NSTableColumn)enum.nextElement());
 		}
+		NSSelector setResizableMaskSelector = new NSSelector("setResizingMask", new Class[]{int.class});
 		// ading table columns
 		if(Preferences.instance().getBoolean("browser.columnIcon")) {
 			NSTableColumn c = new NSTableColumn();
@@ -570,7 +554,12 @@ public class CDBrowserController extends CDController implements Observer {
 			c.setMinWidth(20f);
 			c.setWidth(20f);
 			c.setMaxWidth(20f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setEditable(false);
 			c.setDataCell(new NSImageCell());
 			c.dataCell().setAlignment(NSText.CenterTextAlignment);
@@ -583,7 +572,12 @@ public class CDBrowserController extends CDController implements Observer {
 			c.setMinWidth(100f);
 			c.setWidth(250f);
 			c.setMaxWidth(1000f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setEditable(false);
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
@@ -596,7 +590,12 @@ public class CDBrowserController extends CDController implements Observer {
 			c.setMinWidth(50f);
 			c.setWidth(80f);
 			c.setMaxWidth(100f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.RightTextAlignment);
 			this.browserTable.addTableColumn(c);
@@ -608,7 +607,12 @@ public class CDBrowserController extends CDController implements Observer {
 			c.setMinWidth(100f);
 			c.setWidth(180f);
 			c.setMaxWidth(500f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			c.dataCell().setFormatter(new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString),
@@ -622,7 +626,12 @@ public class CDBrowserController extends CDController implements Observer {
 			c.setMinWidth(100f);
 			c.setWidth(80f);
 			c.setMaxWidth(500f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.browserTable.addTableColumn(c);
@@ -634,7 +643,12 @@ public class CDBrowserController extends CDController implements Observer {
 			c.setMinWidth(100f);
 			c.setWidth(100f);
 			c.setMaxWidth(800f);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new NSTextFieldCell());
 			c.dataCell().setAlignment(NSText.LeftTextAlignment);
 			this.browserTable.addTableColumn(c);
@@ -681,6 +695,7 @@ public class CDBrowserController extends CDController implements Observer {
 															   )
 												   );
 		this.bookmarkTable.setRowHeight(45f);
+		NSSelector setResizableMaskSelector = new NSSelector("setResizingMask", new Class[]{int.class});
 
 		{
 			NSTableColumn c = new NSTableColumn();
@@ -690,7 +705,12 @@ public class CDBrowserController extends CDController implements Observer {
 			c.setWidth(32f);
 			c.setMaxWidth(32f);
 			c.setEditable(false);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new NSImageCell());
 			this.bookmarkTable.addTableColumn(c);
 		}
@@ -703,7 +723,12 @@ public class CDBrowserController extends CDController implements Observer {
 			c.setWidth(200f);
 			c.setMaxWidth(500f);
 			c.setEditable(false);
-			c.setResizable(true);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
 			c.setDataCell(new CDBookmarkCell());
 			this.bookmarkTable.addTableColumn(c);
 		}
@@ -771,33 +796,23 @@ public class CDBrowserController extends CDController implements Observer {
 		});
 	}
 
-	public void quickConnectSelectionChanged(Object sender) {
-		log.debug("quickConnectSelectionChanged");
-		try {
-			String input = ((NSControl)sender).stringValue();
-			for(Iterator iter = bookmarkModel.iterator(); iter.hasNext();) {
-				Host h = (Host)iter.next();
-				if(h.getHostname().equals(input)) {
-					this.mount(h);
-					return;
-				}
-			}
-			this.mount(Host.parse(input));
-		}
-		catch(java.net.MalformedURLException e) {
-			NSAlertPanel.beginCriticalAlertSheet("Error", //title
-			    "OK", // defaultbutton
-			    null, //alternative button
-			    null, //other button
-			    this.window(), //docWindow
-			    null, //modalDelegate
-			    null, //didEndSelector
-			    null, // dismiss selector
-			    null, // context
-			    e.getMessage() // message
-			);
-		}
-	}
+    public void quickConnectSelectionChanged(Object sender) {
+        log.debug("quickConnectSelectionChanged");
+        String input = ((NSControl) sender).stringValue();
+        try {
+            for (Iterator iter = bookmarkModel.iterator(); iter.hasNext();) {
+                Host h = (Host) iter.next();
+                if (h.getHostname().equals(input)) {
+                    this.mount(h);
+                    return;
+                }
+            }
+            this.mount(Host.parse(input));
+        }
+        catch (java.net.MalformedURLException e) {
+            this.mount(new Host(input));
+        }
+    }
 
 	private NSPopUpButton actionPopupButton; // IBOutlet
 	
@@ -811,8 +826,15 @@ public class CDBrowserController extends CDController implements Observer {
 	
 	private NSTextField searchField; // IBOutlet
 
-	public void setSearchField(NSTextField searchField) {
-		this.searchField = searchField;
+	public void setSearchField(NSView searchField) {
+//		try {
+//			Class s = Class.forName("com.apple.cocoa.application.NSSearchField");
+//			searchField = new NSSearchField(searchField.frame());
+//		}
+//		catch(ClassNotFoundException e) {
+//			searchField = new NSTextField(searchField.frame());
+//		}
+		this.searchField = (NSTextField)searchField;
 		NSNotificationCenter.defaultCenter().addObserver(this,
 		    new NSSelector("searchFieldTextDidChange", new Class[]{Object.class}),
 		    NSControl.ControlTextDidChangeNotification,
@@ -1225,7 +1247,6 @@ public class CDBrowserController extends CDController implements Observer {
 	}
 
 	public void deleteSheetDidEnd(NSWindow sheet, int returnCode, Object contextInfo) {
-		log.debug("deleteSheetDidEnd");
 		sheet.orderOut(null);
 		switch(returnCode) {
 			case (NSAlertPanel.DefaultReturn):
@@ -1422,19 +1443,19 @@ public class CDBrowserController extends CDController implements Observer {
 	public void connectButtonClicked(Object sender) {
 		log.debug("connectButtonClicked");
 		CDConnectionController controller = new CDConnectionController(this);
-		this.beginSheet(controller.window());
+        this.beginSheet(controller.window(), controller,
+                new NSSelector("connectionSheetDidEnd", new Class[]{NSWindow.class, int.class, Object.class}),
+                null);
 	}
 
 	public void disconnectButtonClicked(Object sender) {
 		this.unmount();
-//		this.unmount(new NSSelector("unmountSheetDidEnd",
-//		    new Class[]{NSWindow.class, int.class, Object.class}), null // end selector
-//		);
+		this.browserTable.reloadData();
 	}
 
 	private boolean showHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
 	
-	public boolean showHIddenFiles() {
+	public boolean getShowHiddenFiles() {
 		return this.showHiddenFiles;
 	}
 	
@@ -1527,7 +1548,7 @@ public class CDBrowserController extends CDController implements Observer {
 		}
 	}
 
-	private Path workdir() {
+    protected Path workdir() {
 		return this.workdir;
 	}
 	
@@ -1588,9 +1609,7 @@ public class CDBrowserController extends CDController implements Observer {
 			    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
 			    null //other button
 			),
-			    this,
-			    selector,
-			    context);
+			    this, selector, context);
 			return false;
 		}
 		return true;
@@ -2000,23 +2019,21 @@ public class CDBrowserController extends CDController implements Observer {
 		return null;
 	}
 
-
-	public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
-		return new NSArray(new Object[]{
-			"New Connection",
-			NSToolbarItem.SeparatorItemIdentifier,
-			"Bookmarks",
-			"Quick Connect",
-			"Refresh",
-			"Get Info",
-			"Edit",
-			"Download",
-			"Upload",
-			NSToolbarItem.FlexibleSpaceItemIdentifier,
-			"Disconnect"
-		});
-	}
-
+    public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
+        return new NSArray(new Object[]{
+            "New Connection",
+            NSToolbarItem.SeparatorItemIdentifier,
+            "Bookmarks",
+            "Quick Connect",
+			"Tools",
+            NSToolbarItem.SeparatorItemIdentifier,
+            "Refresh",
+            "Edit",
+            NSToolbarItem.FlexibleSpaceItemIdentifier,
+            "Disconnect"
+        });
+    }
+    
 	public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
 		return new NSArray(new Object[]{
 			"New Connection",
@@ -2059,6 +2076,17 @@ public class CDBrowserController extends CDController implements Observer {
 				
 		public int numberOfRowsInTableView(NSTableView tableView) {
 			return currentData.size();
+		}
+		
+		public void tableViewWillDisplayCell(NSTableView tableView, Object cell, NSTableColumn tableColumn, int row) {
+			if(cell instanceof NSTextFieldCell) {
+				if(isConnected()) {
+					((NSTextFieldCell)cell).setTextColor(NSColor.controlTextColor());
+				}
+				else {
+					((NSTextFieldCell)cell).setTextColor(NSColor.disabledControlTextColor());
+				}
+			}
 		}
 		
 		public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
@@ -2191,6 +2219,7 @@ public class CDBrowserController extends CDController implements Observer {
 								PathFactory.createPath(parent.getSession(), p.getAbsolute()).rename(parent.getAbsolute()+"/"+p.getName());
 							}
 							workdir().list(encoding, true, showHiddenFiles);
+							pboard.setPropertyListForType(null, "QueuePBoardType");
 							return true;
 						}
 					}

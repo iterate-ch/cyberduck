@@ -20,10 +20,7 @@ package ch.cyberduck.core.sftp;
 
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
-import com.sshtools.j2ssh.sftp.SftpFile;
-import com.sshtools.j2ssh.sftp.SftpFileInputStream;
-import com.sshtools.j2ssh.sftp.SftpFileOutputStream;
-import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
+import com.sshtools.j2ssh.sftp.*;
 
 import com.apple.cocoa.foundation.NSDictionary;
 
@@ -106,7 +103,7 @@ public class SFTPPath extends Path {
 			}
 			if(refresh || null == files) {
 				files = new ArrayList();
-				session.log("Listing "+this.getAbsolute(), Message.PROGRESS);
+				session.log(Message.PROGRESS, "Listing "+this.getAbsolute());
 				try {
 					session.check();
 					SftpFile workingDirectory = session.SFTP.openDirectory(this.getAbsolute());
@@ -148,14 +145,14 @@ public class SFTPPath extends Path {
 						}
 					}
 					session.cache().put(this.getAbsolute(), files);
-					session.log("Idle", Message.STOP);
+					session.log(Message.STOP, "Idle");
 				}
 				catch(SshException e) {
-					session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+					session.log(Message.ERROR, "SSH Error: "+e.getMessage());
 					return null;
 				}
 				catch(IOException e) {
-					session.log("IO Error: "+e.getMessage(), Message.ERROR);
+					session.log(Message.ERROR, "IO Error: "+e.getMessage());
 					session.close();
 					return null;
 				}
@@ -184,17 +181,17 @@ public class SFTPPath extends Path {
 					}
 				}
 				session.check();
-				session.log("Make directory "+this.getName(), Message.PROGRESS);
+				session.log(Message.PROGRESS, "Make directory "+this.getName());
 				session.SFTP.makeDirectory(this.getAbsolute());
 				session.cache().put(this.getAbsolute(), new ArrayList());
 				this.getParent().invalidate();
-				session.log("Idle", Message.STOP);
+				session.log(Message.STOP, "Idle");
 			}
 			catch(SshException e) {
-				session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "SSH Error: "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "IO Error: "+e.getMessage());
 				session.close();
 			}
 		}
@@ -205,17 +202,17 @@ public class SFTPPath extends Path {
 			log.debug("rename:"+filename);
 			try {
 				session.check();
-				session.log("Renaming "+this.getName()+" to "+filename, Message.PROGRESS);
+				session.log(Message.PROGRESS, "Renaming "+this.getName()+" to "+filename);
 				session.SFTP.renameFile(this.getAbsolute(), filename);
 				this.setPath(filename);
 				this.getParent().invalidate();
-				session.log("Idle", Message.STOP);
+				session.log(Message.STOP, "Idle");
 			}
 			catch(SshException e) {
-				session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "SSH Error: "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "IO Error: "+e.getMessage());
 				session.close();
 			}
 		}
@@ -227,18 +224,18 @@ public class SFTPPath extends Path {
 				if(this.exists()) {
 					try {
 						session.check();
-						session.log("Getting timestamp of "+this.getName(), Message.PROGRESS);
+						session.log(Message.PROGRESS, "Getting timestamp of "+this.getName());
 						SftpFile f = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
 						this.attributes.setTimestamp(Long.parseLong(f.getAttributes().getModifiedTime().toString())*1000L);
-						session.log("Getting size of "+this.getName(), Message.PROGRESS);
+						session.log(Message.PROGRESS, "Getting size of "+this.getName());
 						this.attributes.setSize(f.getAttributes().getSize().doubleValue());
 						f.close();
 					}
 					catch(SshException e) {
-						session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+						session.log(Message.ERROR, "SSH Error: "+e.getMessage());
 					}
 					catch(IOException e) {
-						session.log("IO Error: "+e.getMessage(), Message.ERROR);
+						session.log(Message.ERROR, "IO Error: "+e.getMessage());
 						session.close();
 					}
 				}
@@ -252,7 +249,7 @@ public class SFTPPath extends Path {
 			try {
 				if(this.attributes.isFile()) {
 					session.check();
-					session.log("Deleting "+this.getName(), Message.PROGRESS);
+					session.log(Message.PROGRESS, "Deleting "+this.getName());
 					session.SFTP.removeFile(this.getAbsolute());
 				}
 				else if(this.attributes.isDirectory()) {
@@ -262,24 +259,24 @@ public class SFTPPath extends Path {
 					while(iterator.hasNext()) {
 						file = (Path)iterator.next();
 						if(file.attributes.isFile()) {
-							session.log("Deleting "+this.getName(), Message.PROGRESS);
+							session.log(Message.PROGRESS, "Deleting "+this.getName());
 							session.SFTP.removeFile(file.getAbsolute());
 						}
 						if(file.attributes.isDirectory()) {
 							file.delete();
 						}
 					}
-					session.log("Deleting "+this.getName(), Message.PROGRESS);
+					session.log(Message.PROGRESS, "Deleting "+this.getName());
 					session.SFTP.removeDirectory(this.getAbsolute());
 				}
 				this.getParent().invalidate();
-				session.log("Idle", Message.STOP);
+				session.log(Message.STOP, "Idle");
 			}
 			catch(SshException e) {
-				session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "SSH Error: "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "IO Error: "+e.getMessage());
 				session.close();
 			}
 		}
@@ -291,11 +288,11 @@ public class SFTPPath extends Path {
 			try {
 				session.check();
 				if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-					session.log("Changing permission to "+perm.getOctalCode()+" on "+this.getName(), Message.PROGRESS);
+					session.log(Message.PROGRESS, "Changing permission to "+perm.getOctalCode()+" on "+this.getName());
 					session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
 				}
 				else if(this.attributes.isDirectory()) {
-					session.log("Changing permission to "+perm.getOctalCode()+" on "+this.getName(), Message.PROGRESS);
+					session.log(Message.PROGRESS, "Changing permission to "+perm.getOctalCode()+" on "+this.getName());
 					session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
 					if(recursive) {
 						List files = this.list(false, true, false);
@@ -308,13 +305,13 @@ public class SFTPPath extends Path {
 					}
 				}
 				this.getParent().invalidate();
-				session.log("Idle", Message.STOP);
+				session.log(Message.STOP, "Idle");
 			}
 			catch(SshException e) {
-				session.log("SSH Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "SSH Error: "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "IO Error: "+e.getMessage());
 				session.close();
 			}
 		}
@@ -370,13 +367,13 @@ public class SFTPPath extends Path {
 				if(this.attributes.isDirectory()) {
 					this.getLocal().mkdirs();
 				}
-				session.log("Idle", Message.STOP);
+				session.log(Message.STOP, "Idle");
 			}
 			catch(SshException e) {
-				session.log("SSH Error: ("+this.getName()+") "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "SSH Error: ("+this.getName()+") "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "IO Error: "+e.getMessage());
 				session.close();
 			}
 			finally {
@@ -422,6 +419,18 @@ public class SFTPPath extends Path {
 						    SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
 						    SftpSubsystemClient.OPEN_TRUNCATE); //File open flag, forces an existing file with the same name to be truncated to zero length when creating a file by specifying OPEN_CREATE.
 					}
+					if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+						Permission perm = null;
+						if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+							perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
+						}
+						else {
+							perm = this.getLocal().getPermission();
+						}
+						if(!perm.isUndefined()) {
+							session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
+						}
+					}
 					if(this.status.isResume()) {
 						this.status.setCurrent(f.getAttributes().getSize().intValue());
 					}
@@ -437,35 +446,26 @@ public class SFTPPath extends Path {
 						}
 					}
 					this.upload(out, in);
-					if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-						Permission perm = null;
-						if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-							perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
-						}
-						else {
-							perm = this.getLocal().getPermission();
-						}
-						if(!perm.isUndefined()) {
-							session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
-						}
-					}
-					if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-						f.getAttributes().setTimes(f.getAttributes().getAccessedTime(),
-						    new UnsignedInteger32(this.getLocal().getTimestamp().getTime()/1000));
-						session.SFTP.setAttributes(f, f.getAttributes());
-					}
-				}
-				if(this.attributes.isDirectory()) {
-					this.mkdir();
-				}
-				this.getParent().invalidate();
-				session.log("Idle", Message.STOP);
-			}
+                    if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                        FileAttributes attrs = new FileAttributes();
+                        attrs.setTimes(f.getAttributes().getAccessedTime(),
+                                new UnsignedInteger32(this.getLocal().getTimestamp().getTime()/1000));
+                        session.SFTP.setAttributes(f, attrs);
+                    }
+                }
+                if(this.attributes.isDirectory()) {
+                    if(!this.isRoot()) {
+                        this.mkdir();
+                    }
+                }
+                this.getParent().invalidate();
+                session.log(Message.STOP, "Idle");
+            }
 			catch(SshException e) {
-				session.log("SSH Error: ("+this.getName()+") "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "SSH Error: ("+this.getName()+") "+e.getMessage());
 			}
 			catch(IOException e) {
-				session.log("IO Error: "+e.getMessage(), Message.ERROR);
+				session.log(Message.ERROR, "IO Error: "+e.getMessage());
 				session.close();
 			}
 			finally {

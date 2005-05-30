@@ -841,14 +841,41 @@ public class FTPClient {
 		    new ParsePosition(0));
 	}
 
+    private boolean setChmodSupported = true;
+	
+    public void setPermissions(String octal, String remoteFile) throws IOException, FTPException {
+        if(setChmodSupported) {
+            try {
+                this.site("CHMOD "+octal+" "+remoteFile);
+            }
+            catch(FTPException e) {
+                this.setChmodSupported = false;
+                throw e;
+            }
+        }
+        throw new FTPException("Change of permissions not supported");
+    }
 
+    private boolean setModtimeSupported = true;
+	
 	/**
-	 * SET modification time for a remote file
-	 *
-	 * @param remoteFile name of remote file
-	 */
-	public void setmodtime(Date modtime, String remoteFile) throws IOException, FTPException {
-		this.site("UTIME "+tsFormat.format(modtime)+" "+remoteFile);
+		* SET modification time for a remote file
+		*
+		* @param remoteFile name of remote file
+		*/
+    public void setmodtime(Date modtime, String remoteFile) throws IOException, FTPException {
+        if(setModtimeSupported) {
+            try {
+                //		FTPReply reply = control.sendCommand("MDTM "+tsFormat.format(modtime)+" "+remoteFile);
+                //		lastValidReply = control.validateReply(reply, "213");
+                this.site("UTIME "+tsFormat.format(modtime)+" "+remoteFile);
+            }
+            catch(FTPException e) {
+                this.setModtimeSupported = false;
+                throw e;
+            }
+        }
+		throw new FTPException("Change of modification date not supported");
 	}
 
 

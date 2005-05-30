@@ -20,8 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.NSApplication;
 
-import java.util.ArrayList;
-
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Path;
@@ -45,7 +43,7 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 		}
 	}
 
-	private CDUploadQueueValidatorController(CDController windowController) {
+	private CDUploadQueueValidatorController(CDWindowController windowController) {
 		super(windowController);
 	}
 
@@ -63,7 +61,6 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 	protected boolean validateDirectory(Path p) {
 		if(!p.getRemote().exists()) {
 			//Directory does not exist yet; include so it will be created on the server
-			p.getSession().cache().put(p.getAbsolute(), new ArrayList());
 			return true;
 		}
 		//Directory already exists; do not include as this would throw "file already exists"

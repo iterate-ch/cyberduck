@@ -159,6 +159,7 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 							tableView.selectRow(row, false);
 						}
 						this.queuePboardChangeCount++;
+						pboard.setPropertyListForType(null, "QueuePBoardType");
 						return true;
 					}
 				}
@@ -230,7 +231,8 @@ public class CDQueueTableDataSource extends CDTableDataSource {
 				while(i.hasMoreElements()) {
 					element = i.nextElement();
 					if(element instanceof NSDictionary) {
-						this.add(Queue.createQueue((NSDictionary)element));
+                        super.add(new CDProgressController(
+														   Queue.createQueue((NSDictionary)element)));
 					}
 				}
 			}

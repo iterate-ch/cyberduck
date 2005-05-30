@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2004 David Kocher. All rights reserved.
+ *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.NSGraphics;
 import com.apple.cocoa.application.NSView;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSCoder;
+import com.apple.cocoa.foundation.NSRect;
 
 import ch.cyberduck.core.Host;
 
@@ -28,6 +30,7 @@ import ch.cyberduck.core.Host;
  * @version $Id$
  */
 public class CDBookmarkCell extends CDTableCell {
+
 	private Host bookmark;
 
 	public CDBookmarkCell() {
@@ -49,14 +52,12 @@ public class CDBookmarkCell extends CDTableCell {
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawInteriorWithFrameInView(cellFrame, controlView);
 		if(bookmark != null) {
-			NSPoint cellPoint = cellFrame.origin();
-			NSSize cellSize = cellFrame.size();
 			NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getNickname(), boldFont),
-			    new NSRect(cellPoint.x(), cellPoint.y()+1, cellSize.width()-5, cellSize.height()));
+			    new NSRect(cellFrame.origin().x(), cellFrame.origin().y()+1, cellFrame.size().width()-5, cellFrame.size().height()));
 			NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getCredentials().getUsername(), tinyFont),
-			    new NSRect(cellPoint.x(), cellPoint.y()+14, cellSize.width()-5, cellSize.height()));
-			NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getHostname()+"/"+bookmark.getDefaultPath(), tinyFont),
-			    new NSRect(cellPoint.x(), cellPoint.y()+27, cellSize.width()-5, cellSize.height()));
+			    new NSRect(cellFrame.origin().x(), cellFrame.origin().y()+14, cellFrame.size().width()-5, cellFrame.size().height()));
+			NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getProtocol()+"://"+bookmark.getHostname()+bookmark.getDefaultPath(), tinyFont),
+			    new NSRect(cellFrame.origin().x(), cellFrame.origin().y()+27, cellFrame.size().width()-5, cellFrame.size().height()));
 		}
 	}
 }

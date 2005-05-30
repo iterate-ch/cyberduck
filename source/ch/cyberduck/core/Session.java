@@ -35,6 +35,7 @@ public abstract class Session extends Observable {
 
 	public static final String SFTP = "sftp";
 	public static final String FTP = "ftp";
+    public static final String FTP_TLS = "ftps";
 
 //	private Transcript transcript;
 
@@ -60,11 +61,6 @@ public abstract class Session extends Observable {
 	private boolean connected;
 
 	private boolean authenticated;
-
-	protected void finalize() throws Throwable {
-		log.debug("------------- finalize");
-		super.finalize();
-	}
 
 	public Session copy() {
 		return SessionFactory.createSession(this.host);
@@ -98,7 +94,7 @@ public abstract class Session extends Observable {
 	 * Connect to the remote host and mount the home directory
 	 */
 	public synchronized void mount(String encoding, boolean showHiddenFiles) {
-		this.log("Mounting "+host.getHostname()+"...", Message.PROGRESS);
+		this.log(Message.PROGRESS, "Mounting "+host.getHostname()+"...");
 		try {
 			this.check();
 			Path home;
@@ -125,7 +121,7 @@ public abstract class Session extends Observable {
 									host.getHostname());
 		}
 		catch(IOException e) {
-			this.log("IO Error: "+e.getMessage(), Message.ERROR);
+			this.log(Message.ERROR, "IO Error: "+e.getMessage());
 			Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl Notification"),
 									host.getHostname());
 			this.close();
@@ -252,9 +248,8 @@ public abstract class Session extends Observable {
 		return this.cache;
 	}
 
-	public void log(String message, String title) {
+	public void log(String title, String message) {
 		if(title.equals(Message.TRANSCRIPT)) {
-//			this.transcript.log(message);
 			TranscriptFactory.getImpl(host.getHostname()).log(message);
 		}
 		else {

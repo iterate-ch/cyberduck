@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.UploadQueue;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 public class Editor {
@@ -46,6 +47,11 @@ public class Editor {
 		SUPPORTED_EDITORS.put("Tex-Edit Plus", "com.transtex.texeditplus");
 //		SUPPORTED_EDITORS.put("Saskatoon", "net.sf.saskatoon");
 		SUPPORTED_EDITORS.put("Jedit X", "jp.co.artman21.JeditX");
+		SUPPORTED_EDITORS.put("mi", "mi");
+		SUPPORTED_EDITORS.put("Smultron", "org.smultron.Smultron");
+		SUPPORTED_EDITORS.put("CotEditor", "com.aynimac.CotEditor");
+		SUPPORTED_EDITORS.put("CSSEdit", "com.macrabbit.cssedit");
+		SUPPORTED_EDITORS.put("Tag", "com.talacia.Tag");
 	}
 
 	static {
@@ -96,17 +102,12 @@ public class Editor {
 	private native void edit(String path);
 
 	public void didCloseFile() {
-		log.debug("didCloseFile:"+this.file);
 		this.file.getLocal().delete();
 		instances.removeObject(this);
 	}
 
 	public void didModifyFile() {
-		log.debug("didModifyFile:"+this.file);
-		this.file.upload();
-		Growl.instance().notify(NSBundle.localizedString("Upload complete",
-														 "Growl Notification"),
-								this.file.getName());
-		this.file.getParent().list(true);
+        UploadQueue q = new UploadQueue(this.file);
+        q.process(false, true);
 	}
 }
