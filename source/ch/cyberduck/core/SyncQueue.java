@@ -61,6 +61,11 @@ public class SyncQueue extends Queue {
 		return dict;
 	}
 
+    public String getName() {
+        return NSBundle.localizedString("Synchronize", "")+" "+this.getRoot().getAbsolute()+" "
+                +NSBundle.localizedString("with", "")+" "+this.getRoot().getLocal().getName();
+    }
+
     protected void finish(boolean headless) {
 		super.finish(headless);
 		if(this.isComplete() && !this.isCanceled()) {

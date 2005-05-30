@@ -9,6 +9,16 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>*</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Document</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>duck</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
@@ -16,7 +26,7 @@
 			<key>CFBundleTypeName</key>
 			<string>Cyberduck Bookmark</string>
 			<key>CFBundleTypeRole</key>
-			<string>None</string>
+			<string>Editor</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
@@ -56,8 +66,6 @@
 	<dict>
 		<key>JVMVersion</key>
 		<string>1.4+</string>
-		<key>VMOptions</key>
-		<string>-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005</string>
 	</dict>
 	<key>NSAppleScriptEnabled</key>
 	<string>YES</string>
@@ -70,6 +78,7 @@
 		<string>cocoa.jar</string>
 		<string>ftp.jar</string>
 		<string>logging.jar</string>
+		<string>http.jar</string>
 		<string>jmdns.jar</string>
 		<string>log4j.jar</string>
 		<string>oro.jar</string>

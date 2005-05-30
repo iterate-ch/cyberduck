@@ -528,7 +528,9 @@ public class SFTPPath extends Path {
                     }
 				}
 				if(this.attributes.isDirectory()) {
-					this.mkdir();
+                    if(!this.isRoot()) {
+                        this.mkdir();
+                    }
 				}
 				this.getParent().invalidate();
 				session.log(Message.STOP, NSBundle.localizedString("Idle", ""));

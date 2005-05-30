@@ -21,8 +21,6 @@ package ch.cyberduck.ui.cocoa.odb;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.application.NSWorkspace;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,21 +53,21 @@ public class Editor {
         SUPPORTED_EDITORS.put("CSSEdit", "com.macrabbit.cssedit");
 		SUPPORTED_EDITORS.put("Tag", "com.talacia.Tag");
 
-        NSSelector absolutePathForAppBundleWithIdentifierSelector =
-                new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
-        java.util.Iterator editorNames = SUPPORTED_EDITORS.keySet().iterator();
-        java.util.Iterator editorIdentifiers = SUPPORTED_EDITORS.values().iterator();
-        while(editorNames.hasNext()) {
-            String editor = (String)editorNames.next();
-            String identifier = (String)editorIdentifiers.next();
-            if(absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-                boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                        identifier) != null;
-                if(enabled) {
-                    INSTALLED_EDITORS.put(editor, identifier);
-                }
-            }
-        }
+//        NSSelector absolutePathForAppBundleWithIdentifierSelector =
+//                new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
+//        java.util.Iterator editorNames = SUPPORTED_EDITORS.keySet().iterator();
+//        java.util.Iterator editorIdentifiers = SUPPORTED_EDITORS.values().iterator();
+//        while(editorNames.hasNext()) {
+//            String editor = (String)editorNames.next();
+//            String identifier = (String)editorIdentifiers.next();
+//            if(absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
+//                boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+//                        identifier) != null;
+//                if(enabled) {
+//                    INSTALLED_EDITORS.put(editor, identifier);
+//                }
+//            }
+//        }
     }
 
 	static {
