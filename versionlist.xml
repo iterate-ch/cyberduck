@@ -39,6 +39,15 @@
 - [Feature] UTF-8 is now used as the default character encoding
 - [Feature] Edit with non-default editor using the browser context menu
 
+2.4.6
+- [Bugfix] Right-click a file in the browser will first select before it displays the contextual menu
+- [Bugfix] Transfer success notification when remote editing file even when transfer fails (Growl)
+- [Bugfix] Resolved incompatibility with SSH-1 keys in ~/.ssh/known_hosts (SFTP)
+- [Bugfix] Applescript compatiblity issues with 10.4
+- [Bugfix] Browser column width compatiblity issues with 10.4
+- [Bugfix] Could not drag bookmark file to drawer when empty
+- [Bugfix] Ignored custom port when selecting bookmark in connection dialog
+
 2.4.5
 - [Feature] Added Tag to the list of supported editors (http://www.talacia.com/)
 - [Bugfix] No permissions set on transferred files when connection closed unexpectedly (SFTP)
