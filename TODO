@@ -8,14 +8,11 @@
 [DONE] Selecting remote server timezone in synchronization dialog
 [DONE] Column View in browser window
 [????] Drag and drop in browser column view
-[????] 'Edit' toolbar button with menu to choose a particular editor
 [????] Corner view in browser tables to show/hide particular columns
 [????] Change permissions by octal value (text input field)
 [????] Tabbing support through the selection of bookmarks
 [????] Autoscroll transcript (again)
 [????] Better sorting in browser
-[DONE] Right click in the browser should change the selection first
-[DONE] Error messages can get too long for alert sheet
 [????] Drag to the path popup in the browser window to upload files
 [????] Attach menu to back button (navigation history)
 [????] SSH verbose logging
@@ -34,4 +31,6 @@
 [DONE] Show folders in working directory (and autocomplete) in 'Go to Folder' dialog
 [DONE] Preferences previously only available using the 'defaults' command
 [DONE] Manually exclude files in synchronization dialog
-
+[DONE] 'Edit' toolbar button with menu to choose a particular editor
+[DONE] Right click in the browser should change the selection first
+[DONE] Error messages can get too long for alert sheet
