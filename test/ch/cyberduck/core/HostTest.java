@@ -22,6 +22,9 @@ import junit.framework.TestCase;
 
 import java.net.MalformedURLException;
 
+/**
+ * @version $Id$
+ */
 public class HostTest extends TestCase {
 
     public HostTest(String name) {

@@ -20,6 +20,9 @@ package ch.cyberduck.core;
 
 import junit.framework.TestCase;
 
+/**
+ * @version $Id$
+ */
 public class LoginTest extends TestCase {
 	
 	static {
