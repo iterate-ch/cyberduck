@@ -853,10 +853,6 @@ sk.lproj/Update.nib/keyedobjects.nib -text
 sk.lproj/Update.strings svneol=native#unset
 sk.lproj/Validator.nib/keyedobjects.nib -text
 sk.lproj/Validator.strings svneol=native#unset
-source/ch/cyberduck/Attic/connection/.DS_Store svneol=native#unset
-source/ch/cyberduck/Attic/connection/ftp/.DS_Store svneol=native#unset
-source/ch/cyberduck/Attic/connection/http/.DS_Store svneol=native#unset
-source/ch/cyberduck/Attic/connection/sftp/.DS_Store svneol=native#unset
 sv.lproj/Bookmark.nib/keyedobjects.nib -text
 sv.lproj/Bookmark.strings svneol=native#unset
 sv.lproj/Browser.nib/keyedobjects.nib -text
