@@ -218,14 +218,6 @@ public abstract class CDValidatorController extends CDWindowController implement
 		this.fileTableView.setDataSource(this);
 		this.fileTableView.setDelegate(this);
 		this.fileTableView.setRowHeight(17f);
-        NSSelector setAutoresizingMaskSelector
-			= new NSSelector("setAutoresizingMask", new Class[]{int.class});
-        if(setAutoresizingMaskSelector.implementedByClass(NSTableView.class)) {
-            this.fileTableView.setAutoresizingMask(NSTableView.UniformColumnAutoresizingStyle);
-        }
-        else {
-            this.fileTableView.setAutoresizesAllColumnsToFit(true);
-        }
 		// selection properties
 		this.fileTableView.setAllowsMultipleSelection(true);
 		this.fileTableView.setAllowsEmptySelection(true);

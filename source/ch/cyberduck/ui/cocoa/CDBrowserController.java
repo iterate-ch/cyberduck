@@ -475,15 +475,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
 		// setting appearance attributes
 		this.browserTable.setRowHeight(17f);
-        NSSelector setAutoresizingMaskSelector
-			= new NSSelector("setAutoresizingMask", new Class[]{int.class});
-        if(setAutoresizingMaskSelector.implementedByClass(NSTableView.class)) {
-            this.browserTable.setAutoresizingMask(NSTableView.UniformColumnAutoresizingStyle);
-        }
-        else {
-            this.browserTable.setAutoresizesAllColumnsToFit(true);
-        }
-		this._updateBrowserTableAttributes();
+ 		this._updateBrowserTableAttributes();
 		// selection properties
 		this.browserTable.setAllowsMultipleSelection(true);
 		this.browserTable.setAllowsEmptySelection(true);
