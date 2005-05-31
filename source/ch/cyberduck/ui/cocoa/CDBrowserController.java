@@ -726,7 +726,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
 
 		// setting appearance attributes
-		this.bookmarkTable.setAutoresizesAllColumnsToFit(true);
 		NSSelector setUsesAlternatingRowBackgroundColorsSelector =
 		    new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
 		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
@@ -737,7 +736,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		if(setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
 			this.bookmarkTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
 		}
-		this.bookmarkTable.setAutoresizesAllColumnsToFit(true);
 
 		// selection properties
 		this.bookmarkTable.setAllowsMultipleSelection(true);
