@@ -164,7 +164,7 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
 		}
 
 		private void createAndSetSpecifiedPermission() {
-			Permission newPermission = createSpecifiedPermission();
+			Permission newPermission = this.createSpecifiedPermission();
 			if(newPermission != null) {
 				path.attributes.setPermission(newPermission);
 			}

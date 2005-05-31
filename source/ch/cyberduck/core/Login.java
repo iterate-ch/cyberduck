@@ -123,7 +123,7 @@ public class Login {
 			this.user = Preferences.instance().getProperty("ftp.anonymous.name");
 		}
 		else {
-			if(u.indexOf(':') != -1) { //catch username/pass from java.net.URL.getUserInfo()
+			if(u.indexOf(':') != -1) {
 				this.user = u.substring(0, u.indexOf(':'));
 				this.pass = u.substring(u.indexOf(':')+1, u.length());
 			}
@@ -135,9 +135,6 @@ public class Login {
 			if(this.isAnonymousLogin()) {
 				this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
 			}
-            else {
-                this.pass = null;
-            }
 		}
 		else {
 			this.pass = p;
