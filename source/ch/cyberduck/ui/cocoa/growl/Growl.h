@@ -63,7 +63,7 @@ extern "C" {
 static id instance;
 
 @interface Growl : NSObject<GrowlApplicationBridgeDelegate> {
-	BOOL registered;
+
 }
 
 + (id)defaultInstance;

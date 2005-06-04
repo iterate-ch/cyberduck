@@ -111,28 +111,24 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 
 - (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImage:(NSImage *) image
 {
-	if(registered) {
-		[GrowlApplicationBridge notifyWithTitle:title
-									description:description
-							   notificationName:title
-									   iconData:[image TIFFRepresentation]
-									   priority:0
-									   isSticky:NO
-								   clickContext:nil];
-	}
+	[GrowlApplicationBridge notifyWithTitle:title
+								description:description
+						   notificationName:title
+								   iconData:[image TIFFRepresentation]
+								   priority:0
+								   isSticky:NO
+							   clickContext:nil];
 }
 
 - (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description
 {
-	if(registered) {
-		[GrowlApplicationBridge notifyWithTitle:title
-									description:description
-							   notificationName:title
-									   iconData:nil
-									   priority:0
-									   isSticky:NO
-								   clickContext:nil];
-	}
+	[GrowlApplicationBridge notifyWithTitle:title
+								description:description
+						   notificationName:title
+								   iconData:nil
+								   priority:0
+								   isSticky:NO
+							   clickContext:nil];
 }
 
 #pragma mark Growl Delegate methods
@@ -141,8 +137,8 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 	return @"Cyberduck";
 }
 
-- (NSDictionary *)registrationDictionaryForGrowl {
-
+- (NSDictionary *)registrationDictionaryForGrowl 
+{
 	NSArray *allNotifications = [NSArray arrayWithObjects:
 		GROWL_DOWNLOAD_COMPLETE,
 		GROWL_UPLOAD_COMPLETE,
@@ -166,10 +162,6 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 		nil];
 	
 	return registrationDict;
-}
-
-- (void)growlIsReady {
-	registered = YES;
 }
 
 @end
