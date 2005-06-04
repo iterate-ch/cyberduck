@@ -608,23 +608,27 @@ public class CDBrowserController extends CDWindowController implements Observer 
 	private void sort() {
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
-				NSTableColumn selectedColumn = this.browserListModel.selectedColumn() != null ?
-				this.browserListModel.selectedColumn() :
-				this.browserListView.tableColumnWithIdentifier("FILENAME");
+				NSTableColumn selectedColumn = this.browserListModel.selectedColumn();
+                if(null == selectedColumn) {
+                    selectedColumn = this.browserListView.tableColumnWithIdentifier("FILENAME");
+                }
 				this.browserListView.setIndicatorImage(this.browserListModel.isSortedAscending() ?
 														  NSImage.imageNamed("NSAscendingSortIndicator") :
 														  NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
 				this.browserListModel.sort(selectedColumn, this.browserListModel.isSortedAscending());
+//                this.browserListView.setHighlightedTableColumn(selectedColumn);
 				break;
 			}
 			case OUTLINE_VIEW: {
-				NSTableColumn selectedColumn = this.browserOutlineModel.selectedColumn() != null ?
-				this.browserOutlineModel.selectedColumn() :
-				this.browserOutlineView.tableColumnWithIdentifier("FILENAME");
+				NSTableColumn selectedColumn = this.browserOutlineModel.selectedColumn();
+                if(null == selectedColumn) {
+                    selectedColumn = this.browserOutlineView.tableColumnWithIdentifier("FILENAME");
+                }
 				this.browserOutlineView.setIndicatorImage(this.browserOutlineModel.isSortedAscending() ?
 														  NSImage.imageNamed("NSAscendingSortIndicator") :
 														  NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
 				this.browserOutlineModel.sort(selectedColumn, this.browserOutlineModel.isSortedAscending());
+//                this.browserOutlineView.setHighlightedTableColumn(selectedColumn);
 				break;
 			}
 			case COLUMN_VIEW: {

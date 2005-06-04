@@ -22,9 +22,9 @@ import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observer;
-import java.util.ArrayList;
 
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
@@ -115,4 +115,5 @@ public class UploadQueue extends Queue {
 	protected void process(Path p) {
 		p.upload();
 	}
+
 }

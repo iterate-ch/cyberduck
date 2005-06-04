@@ -66,9 +66,9 @@ public abstract class CDValidatorController extends CDWindowController implement
 		    this.fileTableView);
 	}
 
-    protected List validatedList = new ArrayList();
-    protected List workList = new ArrayList();
-    protected List promptList = new ArrayList();
+    protected List validatedList;
+    protected List workList;
+    protected List promptList;
 
     /**
      * The user canceled this request, no further validation should be taken
@@ -84,6 +84,12 @@ public abstract class CDValidatorController extends CDWindowController implement
     }
 
     protected abstract boolean isExisting(Path p);
+
+    {
+        this.validatedList = new ArrayList();
+        this.workList = new ArrayList();
+        this.promptList = new ArrayList();
+    }
 
 	public boolean validate(List files, boolean resumeRequested) {
 		for(Iterator iter = files.iterator(); iter.hasNext() && !this.isCanceled();) {

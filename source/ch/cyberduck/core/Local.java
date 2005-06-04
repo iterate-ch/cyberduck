@@ -18,8 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
 import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.foundation.*;
 
 import java.io.File;
 import java.util.Calendar;

@@ -54,6 +54,7 @@ public class Editor {
 		SUPPORTED_EDITORS.put("CotEditor", "com.aynimac.CotEditor");
         SUPPORTED_EDITORS.put("CSSEdit", "com.macrabbit.cssedit");
 		SUPPORTED_EDITORS.put("Tag", "com.talacia.Tag");
+
         NSSelector absolutePathForAppBundleWithIdentifierSelector =
                 new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
         java.util.Iterator editorNames = SUPPORTED_EDITORS.keySet().iterator();
@@ -112,13 +113,14 @@ public class Editor {
 			if(index != -1) {
 				proposal = filename.substring(0, index)+"-"+no+filename.substring(index);
 			}
-			else {
-				proposal = filename+"-"+no;
-			}
-		}
-		while(this.file.getLocal().exists());
-		this.file.download();
-		if(this.file.status.isComplete()) {
+            else {
+                proposal = filename + "-" + no;
+            }
+        }
+        while (this.file.getLocal().exists());
+
+        this.file.download();
+        if (this.file.status.isComplete()) {
 			this.edit(this.file.getLocal().getAbsolute(), this.bundleIdentifier);
 		}
 	}

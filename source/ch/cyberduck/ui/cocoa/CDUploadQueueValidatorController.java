@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.foundation.NSNotification;
 
 import org.apache.log4j.Logger;
 
@@ -26,11 +27,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UploadQueue;
 import ch.cyberduck.core.Validator;
 import ch.cyberduck.core.ValidatorFactory;
+import ch.cyberduck.ui.cocoa.filesystem.CDKQueueChangeListener;
+import ch.cyberduck.ui.cocoa.filesystem.CDKQueueNotificationCenter;
 
 /**
 * @version $Id$
  */
 public class CDUploadQueueValidatorController extends CDValidatorController {
+
 	private static Logger log = Logger.getLogger(CDUploadQueueValidatorController.class);
 	
 	static {
@@ -57,7 +61,24 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 	protected boolean isExisting(Path p) {
 		return p.exists();
 	}
-	
+
+    protected boolean validateFile(final Path p, boolean resumeRequested) {
+        CDKQueueNotificationCenter.instance().addPath(p.getLocal(), new CDKQueueChangeListener() {
+            public void fileSystemQueueFileWritten(NSNotification notification) {
+                prompt(p);
+            }
+
+            public void fileSystemQueueFileRenamed(NSNotification notification) {
+
+            }
+
+            public void fileSystemQueueFileDeleted(NSNotification notification) {
+
+            }
+        });
+        return super.validateFile(p, resumeRequested);
+    }
+
 	protected boolean validateDirectory(Path p) {
 		if(!p.getRemote().exists()) {
             //Directory does not exist yet; include so it will be created on the server
