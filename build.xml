@@ -63,10 +63,9 @@
 
 	<!-- mac os x properties-->
 	<property name="app.name" value="Cyberduck"/>
-	<property name="app.bundle" value="${build}/${app.name}.app"/>
+	<property name="app.bundle" value="${build}/Release/${app.name}.app"/>
 	<property name="app.contents" value="${app.bundle}/Contents"/>
 	<property name="app.resources" value="${app.contents}/Resources"/>
-	<property name="app.classes" value="${home}/${build}/intermediates/${app.name}.build/JavaClasses"/>
 	<property name="app.java" value="${app.resources}/Java"/>
 
 	<target name="init" depends="manifest">

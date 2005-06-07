@@ -1,17 +1,15 @@
 BUILD_DIR=build
-DEFAULT_BUILDSTYLE=Deployment
-#DEFAULT_BUILDSTYLE=Development
-APPLICATIONS_DIR=/Applications
+DEFAULT_BUILDSTYLE=Release
 
 BUILDSTYLE=$(DEFAULT_BUILDSTYLE)
 
 CP=ditto --rsrc
 
 default:
-	xcodebuild -target build -buildstyle $(BUILDSTYLE)
+	xcodebuild -target build -configuration $(BUILDSTYLE)
 
 release:
-	xcodebuild -target release -buildstyle $(BUILDSTYLE)
+	xcodebuild -target release -configuration $(BUILDSTYLE)
 
 clean:
 	ant clean
