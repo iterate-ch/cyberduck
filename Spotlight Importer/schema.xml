@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema version="1.0" 
+	xmlns="http://www.apple.com/metadata"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.apple.com/metadata file:///System/Library/Frameworks/CoreServices.framework/Frameworks/Metadata.framework/Resources/MetadataSchema.xsd">
+    <attributes>
+        <attribute name="ch_sudo_cyberduck_hostname" multivalued="false" type="CFString"/>
+    </attributes>
+    <types>
+        <type name="ch.sudo.cyberduck.duck">
+            <note>
+				The keys that this metadata importer handles.
+            </note>
+            <allattrs>
+				ch_sudo_cyberduck_hostname
+            </allattrs>
+            <displayattrs>
+				ch_sudo_cyberduck_hostname
+            </displayattrs>
+        </type>
+    </types>
+</schema>
+
