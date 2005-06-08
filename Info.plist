@@ -2,20 +2,38 @@
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!--
+	If your application does not already define a UTI, you may want to declare it
+	here, so that your documents are recognized by systems which do not have your
+	application installed.
+	To export this declaration, fill in the fields with your application's 
+	information, and uncomment the block of XML.
+	-->
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>ch.sudo.cyberduck.bookmark</string>
+			<key>UTTypeDescription</key>
+			<string>Cyberduck Bookmark</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+				<string>public.content</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>duck</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>*</string>
-			</array>
-			<key>CFBundleTypeName</key>
-			<string>Document</string>
-			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
-		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
@@ -26,7 +44,7 @@
 			<key>CFBundleTypeName</key>
 			<string>Cyberduck Bookmark</string>
 			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
+			<string>None</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
@@ -78,7 +96,6 @@
 		<string>cocoa.jar</string>
 		<string>ftp.jar</string>
 		<string>logging.jar</string>
-		<string>http.jar</string>
 		<string>jmdns.jar</string>
 		<string>log4j.jar</string>
 		<string>oro.jar</string>
