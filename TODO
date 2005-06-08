@@ -17,6 +17,7 @@
 [????] Attach menu to back button (navigation history)
 [????] SSH verbose logging
 -- Scheduled for 2.5
+[DONE] Spotlight Indexer Plugin
 [DONE] FTP-TLS (AUTH TLS) Implementation
 [DONE] Adjust icons reflecting progress when downloading files
 [DONE] NSSegmentedControl in toolbar view to switch view
