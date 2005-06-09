@@ -60,10 +60,10 @@
 
 -(void)	dealloc
 {
-	[super dealloc];
 	[itemsList release];
 	[baseWindowName release];
 	[autosaveName release];
+	[super dealloc];
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
