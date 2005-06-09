@@ -111,24 +111,24 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_Growl_notifyWithImage(
 
 - (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImage:(NSImage *) image
 {
-		[GrowlApplicationBridge notifyWithTitle:title
-									description:description
-							   notificationName:title
-									   iconData:[image TIFFRepresentation]
-									   priority:0
-									   isSticky:NO
-								   clickContext:nil];
+	[GrowlApplicationBridge notifyWithTitle:title
+								description:description
+						   notificationName:title
+								   iconData:[image TIFFRepresentation]
+								   priority:0
+								   isSticky:NO
+							   clickContext:nil];
 }
 
 - (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description
 {
-		[GrowlApplicationBridge notifyWithTitle:title
-									description:description
-							   notificationName:title
-									   iconData:nil
-									   priority:0
-									   isSticky:NO
-								   clickContext:nil];
+	[GrowlApplicationBridge notifyWithTitle:title
+								description:description
+						   notificationName:title
+								   iconData:nil
+								   priority:0
+								   isSticky:NO
+							   clickContext:nil];
 }
 
 #pragma mark Growl Delegate methods

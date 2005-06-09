@@ -1,150 +1,150 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
 <dictionary>
-  <suite name="Cyberduck Suite" code="CYCK" description="AppleScript commands and classes specific to Cyberduck">
-    <enumeration name="Protocols" code="PrCl">
-      <enumerator name="SFTP" code="sftp" description="Connect to server using SSH Secure File Transfer">
-        <cocoa name="sftp"/>
-      </enumerator>
-      <enumerator name="FTP" code="ftp " description="Connect to server using FTP File Transfer">
-        <cocoa name="ftp "/>
-      </enumerator>
-      <enumerator code="ftps">
-        <cocoa name="ftps"/>
-      </enumerator>
-    </enumeration>
-    <class name="application" plural="applications" code="capp" inherits="application" description="Cyberduck's top level scripting object.">
-      <cocoa class="NSApplication"/>
-      <element type="browser">
-        <cocoa key="orderedBrowsers"/>
-      </element>
-    </class>
-    <class name="browser" plural="browsers" code="docu" inherits="document" description="A Browser">
-      <cocoa class="ch.cyberduck.ui.cocoa.CDBrowserController"/>
-      <property type="text" name="working folder" code="work" access="r" description="The current working folder.">
-        <cocoa key="WorkingDirectory"/>
-      </property>
-      <property type="text" name="encoding" code="enco" description="The character set to decode filenames.">
-        <cocoa key="Encoding"/>
-      </property>
-      <property type="boolean" name="show hidden" code="hidd" description="Show hidden files.">
-        <cocoa key="ShowHiddenFiles"/>
-      </property>
-    </class>
-    <command name="edit" code="CYCKEdFi" description="Edit file.">
-      <cocoa name="EditFile"/>
-      <parameter type="text" name="file" code="PaTh" description="The filename.">
-        <cocoa key="Path"/>
-      </parameter>
-    </command>
-    <command name="delete" code="coredelo" description="Delete file.">
-      <cocoa name="DeleteFile"/>
-      <parameter type="text" name="file" code="PaTh" description="The filename.">
-        <cocoa key="Path"/>
-      </parameter>
-    </command>
-    <command name="upload" code="CYCKUpAd" description="Upload file.">
-      <cocoa name="Upload"/>
-      <parameter type="text" name="as" code="NaMe" optional="yes" description="The name to save the file as.">
-        <cocoa key="Name"/>
-      </parameter>
-      <parameter type="text" name="to" code="ReTe" optional="yes" description="The upload folder.">
-        <cocoa key="Remote"/>
-      </parameter>
-      <parameter type="text" name="file" code="PaTh" description="The filename.">
-        <cocoa key="Path"/>
-      </parameter>
-    </command>
-    <command name="change folder" code="CYCKGoTo" description="Go to Folder.">
-      <cocoa name="Goto"/>
-      <parameter type="text" name="to" code="PaTh" description="The filename.">
-        <cocoa key="Path"/>
-      </parameter>
-    </command>
-    <command name="browse" code="CYCKDirL" description="List folder content.">
-      <cocoa name="List"/>
-      <parameter type="text" name="folder" code="PaTh" description="The folder.">
-        <cocoa key="Path"/>
-      </parameter>
-      <result>
-        <type type="item" list="yes"/>
-      </result>
-    </command>
-    <command name="disconnect" code="CYCKDiCt" description="Disconnect from server.">
-      <cocoa name="Disconnect"/>
-    </command>
-    <command name="touch" code="CYCKFiLe" description="Create a new file.">
-      <cocoa name="CreateFile"/>
-      <parameter type="text" name="file" code="PaTh" description="The filename.">
-        <cocoa key="Path"/>
-      </parameter>
-    </command>
-    <command name="open URL" code="WWW!OURL" description="Open a URL">
-      <cocoa name="OpenURL" class="ch.cyberduck.ui.cocoa.CDApplescriptabilityController"/>
-    </command>
-    <command name="exists" code="coredoex" description="If the given file exists.">
-      <cocoa name="Exists"/>
-      <parameter type="text" name="file" code="PaTh" description="The filename.">
-        <cocoa key="Path"/>
-      </parameter>
-      <result type="boolean"/>
-    </command>
-    <command name="refresh" code="CYCKReSh" description="Refresh folder listing.">
-      <cocoa name="Refresh"/>
-    </command>
-    <command name="make new" code="corecrel" description="Open new browser window.">
-      <cocoa name="Create" class="ch.cyberduck.ui.cocoa.CDApplescriptabilityController"/>
-    </command>
-    <command name="open URL" code="GURLGURL" description="Open a URL">
-      <cocoa name="GetURL" class="ch.cyberduck.ui.cocoa.CDApplescriptabilityController"/>
-    </command>
-    <command name="create" code="CYCKFoLd" description="Create a new folder.">
-      <cocoa name="CreateFolder"/>
-      <parameter type="text" name="folder" code="PaTh" description="The folder.">
-        <cocoa key="Path"/>
-      </parameter>
-    </command>
-    <command name="download" code="CYCKDoAd" description="Download file.">
-      <cocoa name="Download"/>
-      <parameter type="text" name="as" code="NaMe" optional="yes" description="The name to save the file as.">
-        <cocoa key="Name"/>
-      </parameter>
-      <parameter type="text" name="file" code="PaTh" description="The filename.">
-        <cocoa key="Path"/>
-      </parameter>
-      <parameter type="text" name="to" code="LoAl" optional="yes" description="The download folder.">
-        <cocoa key="Local"/>
-      </parameter>
-    </command>
-    <command name="sync" code="CYCKSyNc" description="Sync folder.">
-      <cocoa name="Sync"/>
-      <parameter type="text" name="folder" code="PaTh" description="The remote folder.">
-        <cocoa key="Path"/>
-      </parameter>
-      <parameter type="text" name="with local folder" code="LoAl" description="The local folder.">
-        <cocoa key="Local"/>
-      </parameter>
-    </command>
-    <command name="connect" code="CYCKCoCt" description="Connect to a specified server.">
-      <cocoa name="Connect"/>
-      <parameter type="text" name="with port" code="PoRt" optional="yes" description="The port to use when connecting.">
-        <cocoa key="Port"/>
-      </parameter>
-      <parameter type="text" name="to" code="HoSt" description="The host to connect to.">
-        <cocoa key="Host"/>
-      </parameter>
-      <parameter type="text" name="with password" code="PaRd" optional="yes" description="The password to use when connecting.">
-        <cocoa key="Password"/>
-      </parameter>
-      <parameter type="text" name="as user" code="UsMe" optional="yes" description="The username to use when connecting.">
-        <cocoa key="Username"/>
-      </parameter>
-      <parameter type="Protocols" name="with protocol" code="PrCl" optional="yes" description="The protocol to use (FTP or SFTP).">
-        <cocoa key="Protocol"/>
-      </parameter>
-      <parameter type="text" name="with initial folder" code="PaTh" optional="yes" description="The initial path to change to after connection is made.">
-        <cocoa key="InitialPath"/>
-      </parameter>
-    </command>
-  </suite>
+    <suite name="Cyberduck Suite" code="CYCK" description="AppleScript commands and classes specific to Cyberduck">
+        <enumeration name="Protocols" code="PrCl">
+            <enumerator name="SFTP" code="sftp" description="Connect to server using SFTP">
+                <cocoa name="sftp"/>
+            </enumerator>
+            <enumerator name="FTP" code="ftp " description="Connect to server using FTP">
+                <cocoa name="ftp "/>
+            </enumerator>
+            <enumerator name="FTP-TLS" code="ftps" description="Connect to server using FTP-TLS">
+                <cocoa name="ftps"/>
+            </enumerator>
+        </enumeration>
+        <class name="application" plural="applications" code="capp" inherits="application" description="Cyberduck's top level scripting object.">
+            <cocoa class="NSApplication"/>
+            <element type="browser">
+                <cocoa key="orderedBrowsers"/>
+            </element>
+        </class>
+        <class name="browser" plural="browsers" code="docu" inherits="document" description="A Browser">
+            <cocoa class="ch.cyberduck.ui.cocoa.CDBrowserController"/>
+            <property type="text" name="working folder" code="work" access="r" description="The current working folder.">
+                <cocoa key="WorkingDirectory"/>
+            </property>
+            <property type="text" name="encoding" code="enco" description="The character set to decode filenames.">
+                <cocoa key="Encoding"/>
+            </property>
+            <property type="boolean" name="show hidden" code="hidd" description="Show hidden files.">
+                <cocoa key="ShowHiddenFiles"/>
+            </property>
+        </class>
+        <command name="edit" code="CYCKEdFi" description="Edit file.">
+            <cocoa name="EditFile"/>
+            <parameter type="text" name="file" code="PaTh" description="The filename.">
+                <cocoa key="Path"/>
+            </parameter>
+        </command>
+        <command name="delete" code="coredelo" description="Delete file.">
+            <cocoa name="DeleteFile"/>
+            <parameter type="text" name="file" code="PaTh" description="The filename.">
+                <cocoa key="Path"/>
+            </parameter>
+        </command>
+        <command name="upload" code="CYCKUpAd" description="Upload file.">
+            <cocoa name="Upload"/>
+            <parameter type="text" name="as" code="NaMe" optional="yes" description="The name to save the file as.">
+                <cocoa key="Name"/>
+            </parameter>
+            <parameter type="text" name="to" code="ReTe" optional="yes" description="The upload folder.">
+                <cocoa key="Remote"/>
+            </parameter>
+            <parameter type="text" name="file" code="PaTh" description="The filename.">
+                <cocoa key="Path"/>
+            </parameter>
+        </command>
+        <command name="change folder" code="CYCKGoTo" description="Go to Folder.">
+            <cocoa name="Goto"/>
+            <parameter type="text" name="to" code="PaTh" description="The filename.">
+                <cocoa key="Path"/>
+            </parameter>
+        </command>
+        <command name="browse" code="CYCKDirL" description="List folder content.">
+            <cocoa name="List"/>
+            <parameter type="text" name="folder" code="PaTh" description="The folder.">
+                <cocoa key="Path"/>
+            </parameter>
+            <result>
+                <type type="item" list="yes"/>
+            </result>
+        </command>
+        <command name="disconnect" code="CYCKDiCt" description="Disconnect from server.">
+            <cocoa name="Disconnect"/>
+        </command>
+        <command name="touch" code="CYCKFiLe" description="Create a new file.">
+            <cocoa name="CreateFile"/>
+            <parameter type="text" name="file" code="PaTh" description="The filename.">
+                <cocoa key="Path"/>
+            </parameter>
+        </command>
+        <command name="open URL" code="WWW!OURL" description="Open a URL">
+            <cocoa name="OpenURL" class="ch.cyberduck.ui.cocoa.CDApplescriptabilityController"/>
+        </command>
+        <command name="exists" code="coredoex" description="If the given file exists.">
+            <cocoa name="Exists"/>
+            <parameter type="text" name="file" code="PaTh" description="The filename.">
+                <cocoa key="Path"/>
+            </parameter>
+            <result type="boolean"/>
+        </command>
+        <command name="refresh" code="CYCKReSh" description="Refresh folder listing.">
+            <cocoa name="Refresh"/>
+        </command>
+        <command name="make new" code="corecrel" description="Open new browser window.">
+            <cocoa name="Create" class="ch.cyberduck.ui.cocoa.CDApplescriptabilityController"/>
+        </command>
+        <command name="open URL" code="GURLGURL" description="Open a URL">
+            <cocoa name="GetURL" class="ch.cyberduck.ui.cocoa.CDApplescriptabilityController"/>
+        </command>
+        <command name="create" code="CYCKFoLd" description="Create a new folder.">
+            <cocoa name="CreateFolder"/>
+            <parameter type="text" name="folder" code="PaTh" description="The folder.">
+                <cocoa key="Path"/>
+            </parameter>
+        </command>
+        <command name="download" code="CYCKDoAd" description="Download file.">
+            <cocoa name="Download"/>
+            <parameter type="text" name="as" code="NaMe" optional="yes" description="The name to save the file as.">
+                <cocoa key="Name"/>
+            </parameter>
+            <parameter type="text" name="file" code="PaTh" description="The filename.">
+                <cocoa key="Path"/>
+            </parameter>
+            <parameter type="text" name="to" code="LoAl" optional="yes" description="The download folder.">
+                <cocoa key="Local"/>
+            </parameter>
+        </command>
+        <command name="sync" code="CYCKSyNc" description="Sync folder.">
+            <cocoa name="Sync"/>
+            <parameter type="text" name="folder" code="PaTh" description="The remote folder.">
+                <cocoa key="Path"/>
+            </parameter>
+            <parameter type="text" name="with local folder" code="LoAl" description="The local folder.">
+                <cocoa key="Local"/>
+            </parameter>
+        </command>
+        <command name="connect" code="CYCKCoCt" description="Connect to a specified server.">
+            <cocoa name="Connect"/>
+            <parameter type="text" name="with port" code="PoRt" optional="yes" description="The port to use when connecting.">
+                <cocoa key="Port"/>
+            </parameter>
+            <parameter type="text" name="to" code="HoSt" description="The host to connect to.">
+                <cocoa key="Host"/>
+            </parameter>
+            <parameter type="text" name="with password" code="PaRd" optional="yes" description="The password to use when connecting.">
+                <cocoa key="Password"/>
+            </parameter>
+            <parameter type="text" name="as user" code="UsMe" optional="yes" description="The username to use when connecting.">
+                <cocoa key="Username"/>
+            </parameter>
+            <parameter type="Protocols" name="with protocol" code="PrCl" optional="yes" description="The protocol to use (FTP or SFTP).">
+                <cocoa key="Protocol"/>
+            </parameter>
+            <parameter type="text" name="with initial folder" code="PaTh" optional="yes" description="The initial path to change to after connection is made.">
+                <cocoa key="InitialPath"/>
+            </parameter>
+        </command>
+    </suite>
 </dictionary>

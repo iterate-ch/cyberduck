@@ -76,8 +76,8 @@ public class Editor {
 		// Ensure native odb library is loaded
 		try {
 			NSBundle bundle = NSBundle.mainBundle();
-			String lib = bundle.resourcePath()+"/Java/"+"libODBEdit.jnilib";
-			log.debug("Locating libODBEdit.jnilib at '"+lib+"'");
+			String lib = bundle.resourcePath()+"/Java/"+"libODBEdit.dylib";
+			log.info("Locating libODBEdit.dylib at '"+lib+"'");
 			System.load(lib);
 		}
 		catch(UnsatisfiedLinkError e) {

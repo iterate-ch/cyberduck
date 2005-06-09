@@ -28,8 +28,8 @@ public class Growl {
 	static {
 		try {
 			NSBundle bundle = NSBundle.mainBundle();
-			String lib = bundle.resourcePath()+"/Java/"+"libGrowl.jnilib";
-			log.debug("Locating libGrowl.jnilib at '"+lib+"'");
+			String lib = bundle.resourcePath()+"/Java/"+"libGrowl.dylib";
+			log.info("Locating libGrowl.dylib at '"+lib+"'");
 			System.load(lib);
 		}
 		catch(UnsatisfiedLinkError e) {

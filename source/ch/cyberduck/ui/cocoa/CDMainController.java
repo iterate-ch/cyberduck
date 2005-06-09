@@ -369,10 +369,10 @@ public class CDMainController extends CDController {
                     Host host = rendezvous.getService((String)msg.getContent());
                     if(msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
                         Growl.instance().notifyWithImage(NSBundle.localizedString("Bonjour"),
-                                (String)msg.getContent(),
-                                "rendezvous.icns");
+														 (String)msg.getContent(),
+														 "rendezvous.icns");
                         items.put((String)msg.getContent(),
-                                host);
+								  host);
                     }
                     if(msg.getTitle().equals(Message.RENDEZVOUS_REMOVE)) {
                         items.remove((String)msg.getContent());
@@ -673,6 +673,7 @@ public class CDMainController extends CDController {
 
 	public void applicationDidFinishLaunching(NSNotification notification) {
 		Growl.instance().register();
+		log.info("Running Java "+System.getProperty("java.version"));
 		log.info("Available localizations:"+NSBundle.mainBundle().localizations());
 		if(Preferences.instance().getBoolean("queue.openByDefault")) {
 			this.showTransferQueueClicked(null);

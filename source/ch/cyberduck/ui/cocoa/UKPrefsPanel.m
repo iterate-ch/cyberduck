@@ -60,6 +60,7 @@
 
 -(void)	dealloc
 {
+	[super dealloc];
 	[itemsList release];
 	[baseWindowName release];
 	[autosaveName release];
