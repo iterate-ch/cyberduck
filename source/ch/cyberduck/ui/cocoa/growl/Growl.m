@@ -27,7 +27,7 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
     if (javaString == NULL) {
         return nil;	
     }                   
-    unichars = (*env)->GetStringChars(env, javaString, nil);
+    unichars = (*env)->GetStringChars(env, javaString, NULL);
     if ((*env)->ExceptionOccurred(env)) {
         return @"";
     }

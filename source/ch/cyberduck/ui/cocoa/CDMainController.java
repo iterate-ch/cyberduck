@@ -435,19 +435,11 @@ public class CDMainController extends CDController {
 	}
 
 	public void checkForUpdate(final boolean verbose) {
-		this.invoke(new Runnable() {
+		new Thread() {
 			public void run() {
-				// An autorelease pool is used to manage Foundation’s autorelease mechanism for
-				// Objective-C objects. NSAutoreleasePool provides Java applications access to
-				// autorelease pools. Typically it is not necessary for Java applications to
-				// use NSAutoreleasePools since Java manages garbage collection. However, some
-				// situations require an autorelease pool; for instance, if you start off a thread
-				// that calls Cocoa, there won’t be a top-level pool.
-				int mypool = NSAutoreleasePool.push();
 				try {
 					String currentVersionNumber = (String)NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
 					log.info("Current version:"+currentVersionNumber);
-					
 					NSData data = new NSData(new java.net.URL(Preferences.instance().getProperty("website.update.xml")));
 					if(null == data) {
 						if(verbose) {
@@ -527,11 +519,8 @@ public class CDMainController extends CDController {
 				catch(Exception e) {
 					log.error(e.getMessage());
 				}
-				finally {
-					NSAutoreleasePool.pop(mypool);
-				}
 			}
-		});
+		}.start();
 	}
 	
 	public void websiteMenuClicked(Object sender) {

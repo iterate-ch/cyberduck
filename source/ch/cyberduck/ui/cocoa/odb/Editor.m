@@ -28,7 +28,7 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
     if (javaString == NULL) {
         return nil;	
     }                   
-    unichars = (*env)->GetStringChars(env, javaString, nil);
+    unichars = (*env)->GetStringChars(env, javaString, NULL);
     if ((*env)->ExceptionOccurred(env)) {
         return @"";
     }
@@ -42,7 +42,7 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
 	if(nsString == nil) {
 		return NULL;
 	}
-	const char *unichars = [nsString UTF8String];
+	const char *unichars = [nsString characters];
 	
 	return (*env)->NewStringUTF(env, unichars);
 }

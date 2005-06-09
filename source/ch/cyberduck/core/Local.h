@@ -35,22 +35,6 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromExtension
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromFile
   (JNIEnv *, jobject, jstring, jstring);
 
-/*
- * Class:     ch_cyberduck_core_Local
- * Method:    isAlias
- * Signature: (Ljava/lang/String;)Z
- */
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Local_isAlias
-  (JNIEnv *, jobject, jstring);
-
-/*
- * Class:     ch_cyberduck_core_Local
- * Method:    resolveAlias
- * Signature: (Ljava/lang/String;)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_resolveAlias
-  (JNIEnv *, jobject, jstring);
-
 #ifdef __cplusplus
 }
 #endif

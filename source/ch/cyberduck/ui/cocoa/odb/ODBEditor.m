@@ -252,7 +252,6 @@ static ODBEditor	*_sharedODBEditor;
 		id client = [[dictionary objectForKey: ODBEditorNonRetainedClient] nonretainedObjectValue];
 		void *context = [[dictionary objectForKey: ODBEditorClientContext] pointerValue];
 		[client odbEditor: self didClosefile: fileName context: context];
-		NSLog(@"Remove \"%@\" from files being edited", fileName);
 		[_filesBeingEdited removeObjectForKey: fileName];
 	}
 	else

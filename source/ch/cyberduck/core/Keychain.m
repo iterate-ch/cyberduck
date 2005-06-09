@@ -29,7 +29,7 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
     if (javaString == NULL) {
         return nil;	
     }                   
-    unichars = (*env)->GetStringChars(env, javaString, nil);
+    unichars = (*env)->GetStringChars(env, javaString, NULL);
     if ((*env)->ExceptionOccurred(env)) {
         return @"";
     }
@@ -46,14 +46,14 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getInternetPasswordFro
 	
 	NSString *password = [[Keychain defaultKeychain] passwordForInternetServer:convertToNSString(env, jService) forAccount:convertToNSString(env, jAccount) port:(UInt16)jPort path:@"" inSecurityDomain:@"" protocol:protocol auth:kSecAuthenticationTypeDefault];
 
-	return (*env)->NewStringUTF(env, [password UTF8String]);
+	return (*env)->NewStringUTF(env, [password characters]);
 }
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getPasswordFromKeychain(JNIEnv *env, jobject this, jstring jService, jstring jAccount) 
 {
 	NSString *password = [[Keychain defaultKeychain] passwordForGenericService:convertToNSString(env, jService) forAccount:convertToNSString(env, jAccount)]; 
 
-	return (*env)->NewStringUTF(env, [password UTF8String]);
+	return (*env)->NewStringUTF(env, [password characters]);
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addInternetPasswordToKeychain(JNIEnv *env, jobject this, jstring jProtocol,jstring jService,jint jPort,jstring jUsername, jstring jPassword

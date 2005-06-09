@@ -31,11 +31,12 @@ public class Proxy {
 	static {
 		try {
 			NSBundle bundle = NSBundle.mainBundle();
-			String lib = bundle.resourcePath()+"/Java/"+"libProxy.jnilib";
+			String lib = bundle.resourcePath()+"/Java/"+"libProxy.dylib";
+			log.info("Locating libProxy.dylib at '"+lib+"'");
 			System.load(lib);
 		}
 		catch(UnsatisfiedLinkError e) {
-			log.error("Could not load the proxy library:"+e.getMessage());
+			log.error("Could not load the libProxy.dylib library:"+e.getMessage());
 		}
 	}
 

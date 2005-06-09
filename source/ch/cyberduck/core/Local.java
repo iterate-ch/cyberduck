@@ -39,8 +39,8 @@ public class Local extends File {
 	static {
 		try {
 			NSBundle bundle = NSBundle.mainBundle();
-			String lib = bundle.resourcePath()+"/Java/"+"libLocal.jnilib";
-			log.debug("Locating libLocal.jnilib at '"+lib+"'");
+			String lib = bundle.resourcePath()+"/Java/"+"libLocal.dylib";
+			log.info("Locating libLocal.dylib at '"+lib+"'");
 			System.load(lib);
 		}
 		catch(UnsatisfiedLinkError e) {
@@ -131,14 +131,14 @@ public class Local extends File {
 	/**
 	 * @return true if the provided path is an alias.
 	 */
-	private native boolean isAlias(String path);
+//	private native boolean isAlias(String path);
 
 	/**
 	 * Resolves an alias path.
 	 *
 	 * @return the same path if the provided path is not an alias.
 	 */
-	private native String resolveAlias(String aliasPath);
+//	private native String resolveAlias(String aliasPath);
 
 	public Permission getPermission() {
 		NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
