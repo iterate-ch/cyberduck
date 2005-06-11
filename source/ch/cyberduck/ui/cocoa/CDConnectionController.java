@@ -403,35 +403,35 @@ public class CDConnectionController extends CDWindowController {
 		this.window().setReleasedWhenClosed(true);
 		
 		// Notify the updateURLLabel() method if the user types.
-		//ControlTextDidChangeNotification
-		NSNotificationCenter.defaultCenter().addObserver(this,
-														 new NSSelector("updateURLLabel", new Class[]{Object.class}),
-														 NSControl.ControlTextDidChangeNotification,
-														 hostPopup);
-		NSNotificationCenter.defaultCenter().addObserver(this,
-														 new NSSelector("hostFieldTextDidChange", new Class[]{Object.class}),
-														 NSControl.ControlTextDidChangeNotification,
-														 hostPopup);
-		NSNotificationCenter.defaultCenter().addObserver(this,
-														 new NSSelector("updateURLLabel", new Class[]{Object.class}),
-														 NSControl.ControlTextDidChangeNotification,
-														 pathField);
-		NSNotificationCenter.defaultCenter().addObserver(this,
-														 new NSSelector("updateURLLabel", new Class[]{Object.class}),
-														 NSControl.ControlTextDidChangeNotification,
-														 portField);
-		NSNotificationCenter.defaultCenter().addObserver(this,
-														 new NSSelector("updateURLLabel", new Class[]{Object.class}),
-														 NSControl.ControlTextDidChangeNotification,
-														 usernameField);
-		NSNotificationCenter.defaultCenter().addObserver(this,
-														 new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
-														 NSControl.ControlTextDidEndEditingNotification,
-														 hostPopup);
-		NSNotificationCenter.defaultCenter().addObserver(this,
-														 new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
-														 NSControl.ControlTextDidEndEditingNotification,
-														 usernameField);
+        //ControlTextDidChangeNotification
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("updateURLLabel", new Class[]{Object.class}),
+                NSControl.ControlTextDidChangeNotification,
+                hostPopup);
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("hostFieldTextDidChange", new Class[]{Object.class}),
+                NSControl.ControlTextDidChangeNotification,
+                hostPopup);
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("updateURLLabel", new Class[]{Object.class}),
+                NSControl.ControlTextDidChangeNotification,
+                pathField);
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("updateURLLabel", new Class[]{Object.class}),
+                NSControl.ControlTextDidChangeNotification,
+                portField);
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("updateURLLabel", new Class[]{Object.class}),
+                NSControl.ControlTextDidChangeNotification,
+                usernameField);
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
+                NSControl.ControlTextDidEndEditingNotification,
+                hostPopup);
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
+                NSControl.ControlTextDidEndEditingNotification,
+                usernameField);
 
         this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
         if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP)) {
