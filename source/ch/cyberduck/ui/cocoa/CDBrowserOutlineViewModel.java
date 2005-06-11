@@ -23,6 +23,7 @@ import com.apple.cocoa.foundation.*;
 
 import java.util.Iterator;
 import java.util.Observer;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -81,7 +82,10 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 			if(null == item) {
 				item = controller.workdir();
 			}
-			return this.childs(item).size();
+			List childs = this.childs(item);
+            if(childs != null) {
+                return childs.size();
+            }
 		}
 		return 0;
 	}
