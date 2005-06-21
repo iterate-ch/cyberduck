@@ -50,16 +50,15 @@ public class CDMainController extends CDController {
 
 	public void awakeFromNib() {
         super.awakeFromNib();
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("applicationShouldSleep", new Class[]{Object.class}),
+                NSWorkspace.WorkspaceWillSleepNotification,
+                null);
 
-		NSNotificationCenter.defaultCenter().addObserver(this,
-														 new NSSelector("applicationShouldSleep", new Class[]{Object.class}),
-														 NSWorkspace.WorkspaceWillSleepNotification,
-														 null);
-		
-		NSNotificationCenter.defaultCenter().addObserver(this,
-														 new NSSelector("applicationShouldWake", new Class[]{Object.class}),
-														 NSWorkspace.WorkspaceDidWakeNotification,
-														 null);
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("applicationShouldWake", new Class[]{Object.class}),
+                NSWorkspace.WorkspaceDidWakeNotification,
+                null);
 	}
 
 	// ----------------------------------------------------------

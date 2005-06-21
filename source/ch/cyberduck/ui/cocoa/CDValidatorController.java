@@ -511,7 +511,8 @@ public abstract class CDValidatorController extends CDWindowController implement
 				if(identifier.equals("REMOTE")) {
 					if(p.getRemote().exists()) {
 						if(p.attributes.isFile()) {
-							return new NSAttributedString(Status.getSizeAsString(p.attributes.getSize())+", "+p.attributes.getTimestampAsShortString(),
+							return new NSAttributedString(Status.getSizeAsString(p.attributes.getSize())+", "
+                                    +p.attributes.getTimestampAsShortString(),
 							    CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 						}
 						if(p.attributes.isDirectory()) {
@@ -524,7 +525,8 @@ public abstract class CDValidatorController extends CDWindowController implement
 				if(identifier.equals("LOCAL")) {
 					if(p.getLocal().exists()) {
 						if(p.attributes.isFile()) {
-							return new NSAttributedString(Status.getSizeAsString(p.getLocal().getSize())+", "+p.getLocal().getTimestampAsShortString(),
+							return new NSAttributedString(Status.getSizeAsString(p.getLocal().getSize())+", "
+                                    +p.getLocal().getTimestampAsShortString(),
 							    CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
 						}
 						if(p.attributes.isDirectory()) {
