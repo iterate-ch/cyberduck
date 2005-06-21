@@ -130,9 +130,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		8D57630D048677EA00EA77CD /* Cyberduck Spotlight Importer */ = {
+		8D57630D048677EA00EA77CD /* Spotlight Importer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 47C421D0085658DB00FDBB79 /* Build configuration list for PBXNativeTarget "Cyberduck Spotlight Importer" */;
+			buildConfigurationList = 47C421D0085658DB00FDBB79 /* Build configuration list for PBXNativeTarget "Spotlight Importer" */;
 			buildPhases = (
 				8D57630E048677EA00EA77CD /* Headers */,
 				8D57630F048677EA00EA77CD /* Resources */,
@@ -171,7 +171,7 @@
 			};
 			dependencies = (
 			);
-			name = "Cyberduck Spotlight Importer";
+			name = "Spotlight Importer";
 			productInstallPath = /Library/Spotlight;
 			productName = "Cyberduck Spotlight Importer";
 			productReference = 8D576316048677EA00EA77CD /* Cyberduck Spotlight Importer.mdimporter */;
@@ -193,7 +193,7 @@
 			mainGroup = 089C166AFE841209C02AAC07 /* Cyberduck Spotlight Importer */;
 			projectDirPath = "";
 			targets = (
-				8D57630D048677EA00EA77CD /* Cyberduck Spotlight Importer */,
+				8D57630D048677EA00EA77CD /* Spotlight Importer */,
 			);
 		};
 /* End PBXProject section */
@@ -357,25 +357,43 @@
 		47C421D5085658DB00FDBB79 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Development;
 		};
 		47C421D6085658DB00FDBB79 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Deployment;
 		};
 		47C421D7085658DB00FDBB79 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Default;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		47C421D0085658DB00FDBB79 /* Build configuration list for PBXNativeTarget "Cyberduck Spotlight Importer" */ = {
+		47C421D0085658DB00FDBB79 /* Build configuration list for PBXNativeTarget "Spotlight Importer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47C421D1085658DB00FDBB79 /* Development */,
