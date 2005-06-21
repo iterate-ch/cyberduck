@@ -318,6 +318,7 @@ public class CDMainController extends CDController {
 //				sender.setAction(new NSSelector("clearHistoryMenuClicked", new Class[]{NSMenuItem.class}));
 //				return false;
 //			}
+            //todo optimize
 			Host h = CDBookmarkTableDataSource.instance().importBookmark(items[index]);
 			sender.setTitle(h.toString());
 			sender.setTarget(this);

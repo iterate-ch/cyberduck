@@ -296,15 +296,15 @@ public class CDInfoController extends CDWindowController {
 				if(file.attributes.isDirectory()) {
 					fileIcon = NSImage.imageNamed("folder32.tiff");
 				}
-			}
-			this.iconImageView.setImage(fileIcon);
-			(NSNotificationCenter.defaultCenter()).addObserver(this,
-															   new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
-															   NSControl.ControlTextDidEndEditingNotification,
-															   filenameField);
-			
-		}
-	}
+            }
+            this.iconImageView.setImage(fileIcon);
+            (NSNotificationCenter.defaultCenter()).addObserver(this,
+                    new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
+                    NSControl.ControlTextDidEndEditingNotification,
+                    filenameField);
+            
+        }
+    }
 
 	private void update(NSButton checkbox, boolean condition) {
 		// Sets the cell's state to value, which can be NSCell.OnState, NSCell.OffState, or NSCell.MixedState.

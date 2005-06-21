@@ -215,7 +215,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
         this.windowController.endSheet(this.window(), sender.tag());
 	}
 
-    //todo
+    //todo - add timezone support
 	private NSPopUpButton timezonePopupButton;
 
 	public void setTimezonePopupButton(NSPopUpButton timezonePopupButton) {
@@ -230,7 +230,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	public void timezonePopupButtonClicked(NSPopUpButton sender) {
 		Preferences.instance().setProperty("queue.sync.timezone",
                 sender.titleOfSelectedItem());
-		this.fireDataChanged();
+		super.fireDataChanged();
 	}
 
 	// ----------------------------------------------------------

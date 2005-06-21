@@ -128,7 +128,8 @@ public class Attributes extends Observable {
         if (this.getTimestamp() != null) {
             try {
                 return longDateFormatter.stringForObjectValue(
-                        new NSGregorianDate((double) this.getTimestampAsCalendar().getTime().getTime() / 1000, NSDate.DateFor1970));
+                        new NSGregorianDate((double) this.getTimestampAsCalendar().getTime().getTime() / 1000,
+                                NSDate.DateFor1970));
             }
             catch (NSFormatter.FormattingException e) {
                 e.printStackTrace();
@@ -141,7 +142,8 @@ public class Attributes extends Observable {
         if (this.getTimestamp() != null) {
             try {
                 return shortDateFormatter.stringForObjectValue(
-                        new NSGregorianDate((double) this.getTimestampAsCalendar().getTime().getTime() / 1000, NSDate.DateFor1970));
+                        new NSGregorianDate((double) this.getTimestampAsCalendar().getTime().getTime() / 1000,
+                                NSDate.DateFor1970));
             }
             catch (NSFormatter.FormattingException e) {
                 e.printStackTrace();

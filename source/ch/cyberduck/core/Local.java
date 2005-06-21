@@ -75,7 +75,7 @@ public class Local extends File {
 	public String getAbsolute() {
 		return super.getAbsolutePath();
     }
-
+	
     public void setProgress(int progress) {
 		if(-1 == progress)
 			this.setIconFromExtension(this.getAbsolute(), this.getExtension());
@@ -153,7 +153,7 @@ public class Local extends File {
 	}
 
 	public Calendar getTimestampAsCalendar() {
-		Calendar c = Calendar.getInstance(TimeZone.getTimeZone(Preferences.instance().getProperty("queue.sync.timezone")));
+		Calendar c = Calendar.getInstance(TimeZone.getDefault());
 		c.setTime(this.getTimestamp());
 		if(Preferences.instance().getBoolean("queue.sync.ignore.millisecond"))
 			c.clear(Calendar.MILLISECOND);

@@ -27,6 +27,7 @@ import java.util.*;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.Queue;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**
@@ -1287,7 +1288,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("searchFieldTextDidChange", new Class[]{Object.class}),
                 NSControl.ControlTextDidChangeNotification,
-                searchField);
+                this.searchField);
     }
 
     public void searchFieldTextDidChange(NSNotification notification) {
@@ -1725,24 +1726,20 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
     }
 
-	public void deleteSheetDidEnd(NSWindow sheet, int returnCode, Object contextInfo) {
+	public void deleteSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
-		switch(returnCode) {
-			case (NSAlertPanel.DefaultReturn):
-				final List files = (List)contextInfo;
-				if(files.size() > 0) {
-					this.deselectAll();
-					Iterator i = files.iterator();
-					Path p = null;
-					while(i.hasNext()) {
-						p = (Path)i.next();
-						p.delete();
-					}
-					p.getParent().list(encoding, true, this.getFileFilter());
+		if (returncode == NSAlertPanel.DefaultReturn) {
+			final List files = (List)contextInfo;
+			if(files.size() > 0) {
+				this.deselectAll();
+				Iterator i = files.iterator();
+				Path p = null;
+				while(i.hasNext()) {
+					p = (Path)i.next();
+					p.delete();
 				}
-				break;
-			case (NSAlertPanel.AlternateReturn):
-				break;
+				p.getParent().list(encoding, true, this.getFileFilter());
+			}
 		}
 	}
 
@@ -1773,20 +1770,16 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
     }
 
-    public void saveAsPanelDidEnd(NSSavePanel sheet, int returnCode, Object contextInfo) {
-        switch (returnCode) {
-            case (NSAlertPanel.DefaultReturn):
-                String filename = null;
-                if ((filename = sheet.filename()) != null) {
-                    Path path = (Path) contextInfo;
-                    path.setLocal(new Local(filename));
-                    Queue q = new DownloadQueue();
-                    q.addRoot(path);
-                    CDQueueController.instance().startItem(q);
-                }
-                break;
-            case (NSAlertPanel.AlternateReturn):
-                break;
+    public void saveAsPanelDidEnd(NSSavePanel sheet, int returncode, Object contextInfo) {
+        if (returncode == NSAlertPanel.DefaultReturn) {
+			String filename = null;
+			if ((filename = sheet.filename()) != null) {
+				Path path = (Path) contextInfo;
+				path.setLocal(new Local(filename));
+				Queue q = new DownloadQueue();
+				q.addRoot(path);
+				CDQueueController.instance().startItem(q);
+			}
         }
     }
 
@@ -1824,19 +1817,15 @@ public class CDBrowserController extends CDWindowController implements Observer 
         );
     }
 
-    public void syncPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
-        switch (returnCode) {
-            case (NSAlertPanel.DefaultReturn):
-                Path selection = (Path) contextInfo;
-                if (sheet.filenames().count() > 0) {
-                    selection.setLocal(new Local((String) sheet.filenames().lastObject()));
-                    Queue q = new SyncQueue((Observer) this);
-                    q.addRoot(selection);
-                    CDQueueController.instance().startItem(q);
-                }
-                break;
-            case (NSAlertPanel.AlternateReturn):
-                break;
+    public void syncPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
+        if (returncode == NSAlertPanel.DefaultReturn) {
+			Path selection = (Path) contextInfo;
+			if (sheet.filenames().count() > 0) {
+				selection.setLocal(new Local((String) sheet.filenames().lastObject()));
+				Queue q = new SyncQueue((Observer) this);
+				q.addRoot(selection);
+				CDQueueController.instance().startItem(q);
+			}
         }
     }
 
@@ -1849,6 +1838,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
         CDQueueController.instance().startItem(q);
     }
+	
+	private String lastSelectedUploadDirectory = null;
 
     public void uploadButtonClicked(Object sender) {
         log.debug("uploadButtonClicked");
@@ -1859,7 +1850,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
         panel.setAllowsMultipleSelection(true);
         panel.setPrompt(NSBundle.localizedString("Upload", ""));
         panel.setTitle(NSBundle.localizedString("Upload", ""));
-        panel.beginSheetForDirectory(null,
+        panel.beginSheetForDirectory(
+				this.lastSelectedUploadDirectory, //trying to be smart
                 null,
                 null,
                 this.window(),
@@ -1868,24 +1860,21 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 null);
     }
 
-    public void uploadPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
-        switch (returnCode) {
-            case (NSAlertPanel.DefaultReturn):
-                Path workdir = this.workdir();
-                // selected files on the local filesystem
-                NSArray selected = sheet.filenames();
-                java.util.Enumeration enum = selected.objectEnumerator();
-                Queue q = new UploadQueue((Observer) this);
-                Session session = workdir.getSession().copy();
-                while (enum.hasMoreElements()) {
-                    q.addRoot(PathFactory.createPath(session,
-                            workdir.getAbsolute(),
-                            new Local((String) enum.nextElement())));
-                }
-                CDQueueController.instance().startItem(q);
-                break;
-            case (NSAlertPanel.AlternateReturn):
-                break;
+    public void uploadPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
+        if (returncode == NSAlertPanel.DefaultReturn) {
+			Path workdir = this.workdir();
+			// selected files on the local filesystem
+			NSArray selected = sheet.filenames();
+			java.util.Enumeration enum = selected.objectEnumerator();
+			Queue q = new UploadQueue((Observer) this);
+			Session session = workdir.getSession().copy();
+			while (enum.hasMoreElements()) {
+				q.addRoot(PathFactory.createPath(session,
+												 workdir.getAbsolute(),
+												 new Local((String) enum.nextElement())));
+			}
+			this.lastSelectedUploadDirectory = q.getRoot().getLocal().getParentFile().getAbsolutePath();
+			CDQueueController.instance().startItem(q);
         }
     }
 
@@ -1908,10 +1897,14 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		this.selectRow(listing.indexOf(previous), false);
     }
 
+    private CDWindowController connectionController;
+
     public void connectButtonClicked(Object sender) {
         log.debug("connectButtonClicked");
-        CDConnectionController controller = new CDConnectionController(this);
-        this.beginSheet(controller.window(), controller,
+        if(null == connectionController) {
+            connectionController = new CDConnectionController(this);
+        }
+        this.beginSheet(connectionController.window(), connectionController,
                 new NSSelector("connectionSheetDidEnd", new Class[]{NSWindow.class, int.class, Object.class}),
                 null);
     }
@@ -1967,10 +1960,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
                         Path p = (Path) iter.next();
                         PathFactory.createPath(workdir.getSession(), p.getAbsolute()).rename(workdir.getAbsolute() + "/" + p.getName());
                         p.getParent().invalidate();
-                        workdir.list(this.encoding, true, this.getFileFilter());
                     }
                 }
                 pboard.setPropertyListForType(null, "QueuePBoardType");
+				workdir.list(this.encoding, true, this.getFileFilter());
                 this.reloadData();
             }
         }
