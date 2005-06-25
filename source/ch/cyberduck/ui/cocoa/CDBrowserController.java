@@ -515,31 +515,46 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		return null;
 	}
 
+    private int getClickedRow() {
+        switch(this.browserSwitchView.selectedSegment()) {
+            case LIST_VIEW: {
+                return this.browserListView.clickedRow();
+            }
+            case OUTLINE_VIEW: {
+                return this.browserOutlineView.clickedRow();
+            }
+            case COLUMN_VIEW: {
+
+            }
+        }
+        return -1;
+    }
+
 	protected List getSelectedPaths() {
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
-				NSEnumerator enum = this.browserListView.selectedRowEnumerator();
+				NSEnumerator iterator = this.browserListView.selectedRowEnumerator();
 				List files = new ArrayList();
-				while (enum.hasMoreElements()) {
-					int selected = ((Integer) enum.nextElement()).intValue();
+				while (iterator.hasMoreElements()) {
+					int selected = ((Integer) iterator.nextElement()).intValue();
 					files.add(this.browserListModel.childs(this.workdir()).get(selected));
 				}
 				return files;
 			}
 			case OUTLINE_VIEW: {
-				NSEnumerator enum = this.browserOutlineView.selectedRowEnumerator();
+				NSEnumerator iterator = this.browserOutlineView.selectedRowEnumerator();
 				List files = new ArrayList();
-				while (enum.hasMoreElements()) {
-					int selected = ((Integer) enum.nextElement()).intValue();
+				while (iterator.hasMoreElements()) {
+					int selected = ((Integer) iterator.nextElement()).intValue();
 					files.add(this.browserOutlineView.itemAtRow(selected));
 				}
 				return files;
 			}
 			case COLUMN_VIEW: {
-				java.util.Enumeration enum = this.browserColumnView.selectedCells().objectEnumerator();
+				java.util.Enumeration iterator = this.browserColumnView.selectedCells().objectEnumerator();
 				List files = new ArrayList();
-				while (enum.hasMoreElements()) {
-					files.add(((CDBrowserCell)enum.nextElement()).getPath());
+				while (iterator.hasMoreElements()) {
+					files.add(((CDBrowserCell)iterator.nextElement()).getPath());
 				}
 				return files;
 			}
@@ -587,20 +602,22 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
     }
 
-	public void browserRowDoubleClicked(Object sender) {
-        this.searchField.setStringValue("");
-        if (this.getSelectionCount() > 0) {
-            Path p = this.getSelectedPath(); //last row selected
-            if (p.attributes.isDirectory()) {
-                this.deselectAll();
-                p.list(this.encoding, false, this.getFileFilter());
-            }
-            if (p.attributes.isFile() || this.getSelectionCount() > 1) {
-                if (Preferences.instance().getBoolean("browser.doubleclick.edit")) {
-                    this.editButtonClicked(null);
+    public void browserRowDoubleClicked(Object sender) {
+        if(this.getClickedRow() != -1) { // make sure double click was not in table header
+            this.searchField.setStringValue("");
+            if (this.getSelectionCount() > 0) {
+                Path p = this.getSelectedPath(); //last row selected
+                if (p.attributes.isDirectory()) {
+                    this.deselectAll();
+                    p.list(this.encoding, false, this.getFileFilter());
                 }
-                else {
-                    this.downloadButtonClicked(null);
+                if (p.attributes.isFile() || this.getSelectionCount() > 1) {
+                    if (Preferences.instance().getBoolean("browser.doubleclick.edit")) {
+                        this.editButtonClicked(null);
+                    }
+                    else {
+                        this.downloadButtonClicked(null);
+                    }
                 }
             }
         }
@@ -906,6 +923,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             else {
                 c.setResizable(true);
             }
+            c.setEditable(false); //todo make filename column editable
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             this.browserListView.addTableColumn(c);
@@ -1378,10 +1396,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void deleteBookmarkButtonClicked(Object sender) {
         this.bookmarkDrawer.open();
-        NSEnumerator enum = bookmarkTable.selectedRowEnumerator();
+        NSEnumerator iterator = bookmarkTable.selectedRowEnumerator();
         int j = 0;
-        while (enum.hasMoreElements()) {
-            int i = ((Integer) enum.nextElement()).intValue();
+        while (iterator.hasMoreElements()) {
+            int i = ((Integer) iterator.nextElement()).intValue();
             Host host = (Host) this.bookmarkModel.get(i - j);
             switch (NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark", ""),
                     NSBundle.localizedString("Do you want to delete the selected bookmark?", "")
@@ -1865,13 +1883,13 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			Path workdir = this.workdir();
 			// selected files on the local filesystem
 			NSArray selected = sheet.filenames();
-			java.util.Enumeration enum = selected.objectEnumerator();
+			java.util.Enumeration iterator = selected.objectEnumerator();
 			Queue q = new UploadQueue((Observer) this);
 			Session session = workdir.getSession().copy();
-			while (enum.hasMoreElements()) {
+			while (iterator.hasMoreElements()) {
 				q.addRoot(PathFactory.createPath(session,
 												 workdir.getAbsolute(),
-												 new Local((String) enum.nextElement())));
+												 new Local((String) iterator.nextElement())));
 			}
 			this.lastSelectedUploadDirectory = q.getRoot().getLocal().getParentFile().getAbsolutePath();
 			CDQueueController.instance().startItem(q);
@@ -1969,6 +1987,16 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
     }
 
+	public void copyURLButtonClicked(Object sender) {
+        log.debug("copyURLButtonClicked");
+        Host h = this.workdir().getSession().getHost();
+        NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
+        pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
+        if (!pboard.setStringForType(h.getURL() + this.workdir().getAbsolute(), NSPasteboard.StringPboardType)) {
+            log.error("Error writing URL to NSPasteboard.StringPboardType.");
+        }
+    }
+		
     public void copy(Object sender) {
         if (this.getSelectionCount() > 0) {
             Path p = this.getSelectedPath();
@@ -2000,16 +2028,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
             if (!pboard.setStringForType(p.getAbsolute(), NSPasteboard.StringPboardType)) {
                 log.error("Error writing absolute path of selected item to NSPasteboard.StringPboardType.");
             }
-        }
-    }
-
-    public void copyURLButtonClicked(Object sender) {
-        log.debug("copyURLButtonClicked");
-        Host h = this.workdir().getSession().getHost();
-        NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
-        pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
-        if (!pboard.setStringForType(h.getURL() + this.workdir().getAbsolute(), NSPasteboard.StringPboardType)) {
-            log.error("Error writing URL to NSPasteboard.StringPboardType.");
         }
     }
 
