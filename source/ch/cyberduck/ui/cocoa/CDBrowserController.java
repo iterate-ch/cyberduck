@@ -604,22 +604,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void browserRowDoubleClicked(Object sender) {
         if(this.getClickedRow() != -1) { // make sure double click was not in table header
-            this.searchField.setStringValue("");
-            if (this.getSelectionCount() > 0) {
-                Path p = this.getSelectedPath(); //last row selected
-                if (p.attributes.isDirectory()) {
-                    this.deselectAll();
-                    p.list(this.encoding, false, this.getFileFilter());
-                }
-                if (p.attributes.isFile() || this.getSelectionCount() > 1) {
-                    if (Preferences.instance().getBoolean("browser.doubleclick.edit")) {
-                        this.editButtonClicked(null);
-                    }
-                    else {
-                        this.downloadButtonClicked(null);
-                    }
-                }
-            }
+            this.insideButtonClicked(sender);
         }
 	}
 
@@ -1898,7 +1883,22 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void insideButtonClicked(Object sender) {
         log.debug("insideButtonClicked");
-		this.browserRowDoubleClicked(null);
+        this.searchField.setStringValue("");
+        if (this.getSelectionCount() > 0) {
+            Path p = this.getSelectedPath(); //last row selected
+            if (p.attributes.isDirectory()) {
+                this.deselectAll();
+                p.list(this.encoding, false, this.getFileFilter());
+            }
+            if (p.attributes.isFile() || this.getSelectionCount() > 1) {
+                if (Preferences.instance().getBoolean("browser.doubleclick.edit")) {
+                    this.editButtonClicked(null);
+                }
+                else {
+                    this.downloadButtonClicked(null);
+                }
+            }
+        }
 	}
 
     public void backButtonClicked(Object sender) {
