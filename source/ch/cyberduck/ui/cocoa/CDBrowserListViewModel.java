@@ -63,17 +63,17 @@ public class CDBrowserListViewModel extends CDTableDataSource {
 		return false;
 	}
 	
-	public void tableViewSetObjectValueForLocation(NSTableView tableview, String value, NSTableColumn tableColumn, int row) {
-        if (row < this.childs(this.controller.workdir()).size()) {
-			String identifier = (String) tableColumn.identifier();
-            if (identifier.equals("FILENAME")) {
-                Path p = (Path) this.childs(this.controller.workdir()).get(row);
-                if(!p.getName().equals(value)) {
-                    p.rename(value);
-                }
-            }
-		}
-	}
+//	public void tableViewSetObjectValueForLocation(NSTableView tableview, String value, NSTableColumn tableColumn, int row) {
+//        if (row < this.childs(this.controller.workdir()).size()) {
+//			String identifier = (String) tableColumn.identifier();
+//            if (identifier.equals("FILENAME")) {
+//                Path p = (Path) this.childs(this.controller.workdir()).get(row);
+//                if(!p.getName().equals(value)) {
+//                    p.rename(value);
+//                }
+//            }
+//		}
+//	}
 															
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
         if (row < this.childs(this.controller.workdir()).size()) {

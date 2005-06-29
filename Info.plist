@@ -2,13 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!--
-	If your application does not already define a UTI, you may want to declare it
-	here, so that your documents are recognized by systems which do not have your
-	application installed.
-	To export this declaration, fill in the fields with your application's 
-	information, and uncomment the block of XML.
-	-->
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>
@@ -84,8 +77,6 @@
 	<dict>
 		<key>JVMVersion</key>
 		<string>1.4+</string>
-		<key>VMOptions</key>
-		<string>-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005</string>
 	</dict>
 	<key>NSAppleScriptEnabled</key>
 	<string>YES</string>
