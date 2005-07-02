@@ -22,6 +22,37 @@
 #define	CDIOException					@"CDIOException"
 #define CDAccountException				@"CDAccountException"
 
+// Simple utility to convert java strings to NSStrings
+NSString *convertToNSString(JNIEnv *env, jstring javaString)
+{
+    NSString *converted = nil;
+    const jchar *unichars = NULL;
+	
+    if (javaString == NULL) {
+        return nil;	
+    }                   
+    unichars = (*env)->GetStringChars(env, javaString, NULL);
+    if ((*env)->ExceptionOccurred(env)) {
+        return @"";
+    }
+    converted = [NSString stringWithCharacters:unichars length:(*env)->GetStringLength(env, javaString)]; // auto-released
+    (*env)->ReleaseStringChars(env, javaString, unichars);
+    return converted;
+}
+
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_downloadBookmarksFromDotMacActionNative(JNIEnv *env, jobject this, jstring file) 
+{
+	CDDotMacController *c = [[CDDotMacController alloc] init];
+	[c downloadBookmarksFromDotMacAction:convertToNSString(env, file)];
+	[c release];
+}
+
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookmarksToDotMacActionNative(JNIEnv *env, jobject this) {
+	CDDotMacController *c = [[CDDotMacController alloc] init];
+	[c uploadBookmarksToDotMacAction:nil];
+	[c release];
+}
+
 @implementation CDDotMacController
 
 - (void)dealloc
@@ -41,7 +72,6 @@
 								  userInfo:nil];
 		[e raise];
 	}
-	[account setDelegate:self];
 	return account;
 }
 
@@ -51,6 +81,7 @@
 {
 	syncPreferences = NO;
 	syncBookmarks = YES;
+	tmpBookmarkFile = sender;
 	int returncode = NSRunAlertPanel(NSLocalizedString(@"Replace Bookmarks", @""),
 									 NSLocalizedString(@"Are you sure you want to download bookmarks from your iDisk and replace your current local bookmarks?", @""),
 									 NSLocalizedString(@"Download", @""),
@@ -138,7 +169,6 @@
 								  userInfo:nil];
 		[e raise];
 	}
-	[session setDelegate:self];
 	
 	if (![session fileExistsAtPath:remoteFile]) {
 		e = [NSException exceptionWithName:CDFileNotFoundException
@@ -153,8 +183,43 @@
 								  userInfo:nil];
 		[e raise];
 	}
+	NSData *data = [transaction result];
+	if (syncPreferences) {
+		NSString *localPath = [[[NSHomeDirectory() stringByAppendingPathComponent:@"Library"]
+        stringByAppendingPathComponent:@"Preferences"] stringByAppendingPathComponent:@"ch.sudo.cyberduck.plist"];
+		if (!data || ![data writeToFile:localPath atomically:YES]) {
+			[[NSException exceptionWithName:CDIOException
+									 reason:nil
+								   userInfo:nil] raise];
+		}
+		
+		NSDictionary *defaultsDictionary = [NSDictionary dictionaryWithContentsOfFile:localPath];
+		if (defaultsDictionary)
+		{
+			[[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
+		}
+		else
+		{
+			e = [NSException exceptionWithName:CDIOException
+										reason:nil
+									  userInfo:nil];
+			[e raise];
+		}
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+	if(syncBookmarks) {
+		
+		//		NSString *localPath = [[[[NSHomeDirectory() stringByAppendingPathComponent:@"Library"] stringByAppendingPathComponent:@"Application Support"] stringByAppendingPathComponent:@"Cyberduck"] stringByAppendingPathComponent:@"Favorites.plist"];
+		NSString *localPath = tmpBookmarkFile;
+		if (!data || ![data writeToFile:localPath atomically:YES]) {
+			[[NSException exceptionWithName:CDIOException
+									 reason:nil
+								   userInfo:nil] raise];
+		}
+		[localPath release];
+	}
 }
-
+	
 #pragma mark Upload
 
 - (IBAction)uploadBookmarksToDotMacAction:(id)sender
@@ -253,7 +318,6 @@
 								  userInfo:nil];
 		[e raise];
 	}
-	[session setDelegate:self];
 	
 	BOOL isDirectory;
 	if (![session fileExistsAtPath:@"/Documents/Cyberduck" isDirectory:&isDirectory] || !isDirectory) {
@@ -274,64 +338,6 @@
 								  userInfo:nil];
 		[e raise];
 	}
-}
-
-#pragma mark DMTransaction Delegate Methods
-
-- (void)transactionSuccessful:(DMTransaction *)theTransaction
-{
-	if (syncPreferences) {
-		NSData *data = [theTransaction result];
-		
-		NSString *localPath = [[[NSHomeDirectory() stringByAppendingPathComponent:@"Library"]
-        stringByAppendingPathComponent:@"Preferences"] stringByAppendingPathComponent:@"ch.sudo.cyberduck.plist"];
-		if (!data || ![data writeToFile:localPath atomically:YES]) {
-			[[NSException exceptionWithName:CDIOException
-									 reason:nil
-								   userInfo:nil] raise];
-		}
-		
-		NSDictionary *defaultsDictionary = [NSDictionary dictionaryWithContentsOfFile:localPath];
-		if (defaultsDictionary)
-		{
-			[[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
-		}
-		else
-		{
-			e = [NSException exceptionWithName:CDIOException
-										reason:nil
-									  userInfo:nil];
-			[e raise];
-		}
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
-	if (syncBookmarks) {
-		NSData *data = [theTransaction result];
-		
-		NSString *localPath = [[[[NSHomeDirectory() stringByAppendingPathComponent:@"Library"]
-        stringByAppendingPathComponent:@"Application Support"] stringByAppendingPathComponent:@"Cyberduck"] stringByAppendingPathComponent:@"Favorites.plist"];
-		if (!data || ![data writeToFile:localPath atomically:YES]) {
-			[[NSException exceptionWithName:CDIOException
-									 reason:nil
-								   userInfo:nil] raise];
-		}
-	}
-}
-
-- (void)transactionHadError:(DMTransaction *)theTransaction
-{
-	e = [NSException exceptionWithName:CDIOException
-								reason:nil
-							  userInfo:nil];
-	[e raise];
-}
-
-- (void)transactionAborted:(DMTransaction *)theTransaction
-{
-	e = [NSException exceptionWithName:CDIOException
-								reason:nil
-							  userInfo:nil];
-	[e raise];
 }
 
 @end
