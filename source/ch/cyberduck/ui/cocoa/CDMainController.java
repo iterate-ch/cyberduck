@@ -28,8 +28,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Message;
@@ -39,13 +37,14 @@ import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 public class CDMainController extends CDController {
-	private static Logger log = Logger.getLogger(CDMainController.class);
+	private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(CDMainController.class);
 
 	private static final File VERSION_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Version.plist"));
 
     static {
         BasicConfigurator.configure();
-        Logger.getRootLogger().setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
+        org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.toLevel(Preferences.instance().getProperty("logging")));
+//        java.util.logging.Logger.getLogger("javax.jmdns").setLevel(java.util.logging.Level.parse(Preferences.instance().getProperty("logging")));
     }
 
 	public void awakeFromNib() {
@@ -242,15 +241,22 @@ public class CDMainController extends CDController {
 		 * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
 		 */
 		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
-			if(index == 4) {
+            if(index == 3) {
+                item.setEnabled(true);
+                NSImage icon = NSImage.imageNamed("idisk.tiff");
+                icon.setScalesWhenResized(true);
+                icon.setSize(new NSSize(16f, 16f));
+                item.setImage(icon);
+            }
+			if(index == 5) {
 				item.setEnabled(true);
 				item.setImage(NSImage.imageNamed("history.tiff"));
 			}
-			if(index == 5) {
+			if(index == 6) {
 				item.setEnabled(true);
 				item.setImage(NSImage.imageNamed("rendezvous16.tiff"));
 			}
-			if(index > 6) {
+			if(index > 7) {
 				Host h = (Host)CDBookmarkTableDataSource.instance().get(index-7);
 				item.setTitle(h.getNickname());
 				item.setTarget(this);
@@ -768,7 +774,7 @@ public class CDMainController extends CDController {
 			java.util.Enumeration enumerator = browsers.objectEnumerator();
 			while (enumerator.hasMoreElements()) {
 				CDBrowserController controller = (CDBrowserController)enumerator.nextElement(); 
-				if(!controller.isMounted()) {
+				if(!controller.hasSession()) {
 					controller.window().makeKeyAndOrderFront(null);
 					return controller;
 				}

@@ -136,11 +136,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
             if (pathObj != null) {
                 String folder = (String) args.objectForKey("Path");
                 if (folder.charAt(0) == '/') {
-                    path = PathFactory.createPath(this.workdir().getSession(),
+                    path = PathFactory.createPath(this.session,
                             folder);
                 }
                 else {
-                    path = PathFactory.createPath(this.workdir().getSession(),
+                    path = PathFactory.createPath(this.session,
                             this.workdir().getAbsolute(),
                             folder);
                 }
@@ -176,7 +176,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         log.debug("handleExistsScriptCommand:" + command);
         if (this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
-            Path path = PathFactory.createPath(this.workdir().getSession(),
+            Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"));
             return new Integer(path.exists() ? 1 : 0);
@@ -198,7 +198,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         log.debug("handleEditScriptCommand:" + command);
         if (this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
-            Path path = PathFactory.createPath(this.workdir().getSession(),
+            Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"));
             Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
@@ -211,7 +211,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         log.debug("handleDeleteScriptCommand:" + command);
         if (this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
-            Path path = PathFactory.createPath(this.workdir().getSession(),
+            Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"));
             path.delete();
@@ -232,7 +232,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         log.debug("handleSyncScriptCommand:" + command);
         if (this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
-            final Path path = PathFactory.createPath(this.workdir().getSession(),
+            final Path path = PathFactory.createPath(this.session,
                     (String) args.objectForKey("Path"));
             path.attributes.setType(Path.DIRECTORY_TYPE);
             Object localObj = args.objectForKey("Local");
@@ -249,7 +249,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         log.debug("handleDownloadScriptCommand:" + command);
         if (this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
-            final Path path = PathFactory.createPath(this.workdir().getSession(),
+            final Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"));
             path.attributes.setType(Path.FILE_TYPE);
@@ -271,7 +271,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         log.debug("handleUploadScriptCommand:" + command);
         if (this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
-            final Path path = PathFactory.createPath(this.workdir().getSession(),
+            final Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     new Local((String) args.objectForKey("Path")));
             path.attributes.setType(Path.FILE_TYPE);
@@ -697,11 +697,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 progressIndicator.stopAnimation(this);
                 statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-//                        if(isMounted()) {
-//                            if(workdir().getSession().isSecure()) {
-//                                statusIcon.setImage(NSImage.imageNamed("locked.tiff"));
-//                            }
-//                        }
+                this.statusLabel.display();
             }
         }
     }
@@ -735,7 +731,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 //
 //	public void interruptButtonClicked(Object sender) {
 //		if(this.isMounted()) {
-//			this.workdir().getSession().interrupt();
+//			this.session.interrupt();
 //		}
 //	}
 
@@ -1351,7 +1347,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.bookmarkDrawer.open();
         Host item;
         if (this.isMounted()) {
-            item = this.workdir().getSession().getHost().copy();
+            item = this.session.getHost().copy();
             item.setDefaultPath(this.workdir().getAbsolute());
         }
         else {
@@ -1494,7 +1490,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.encodingPopup.setTitle(this.encoding);
         if(force) {
             if (this.isMounted()) {
-                this.workdir().getSession().close();
+                this.session.close();
                 this.reloadButtonClicked(null);
             }
         }
@@ -1747,7 +1743,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 	}
 
     public void downloadAsButtonClicked(Object sender) {
-        Session session = this.workdir().getSession().copy();
+        Session session = this.session.copy();
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext(); ) {
             Path path = ((Path)i.next()).copy(session);
             NSSavePanel panel = NSSavePanel.savePanel();
@@ -1791,10 +1787,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
         Path selection;
         if(this.getSelectionCount() == 1 &&
                 this.getSelectedPath().attributes.isDirectory()) {
-            selection = (this.getSelectedPath().copy(this.workdir().getSession().copy()));
+            selection = (this.getSelectedPath().copy(this.session.copy()));
         }
         else {
-            selection = this.workdir().copy(this.workdir().getSession().copy());
+            selection = this.workdir().copy(this.session.copy());
         }
         NSOpenPanel panel = NSOpenPanel.openPanel();
         panel.setCanChooseDirectories(selection.attributes.isDirectory());
@@ -1834,7 +1830,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void downloadButtonClicked(Object sender) {
         Queue q = new DownloadQueue();
-        Session session = this.workdir().getSession().copy();
+        Session session = this.session.copy();
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext(); ) {
             Path path = ((Path)i.next()).copy(session);
             q.addRoot(path);
@@ -1904,7 +1900,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public void backButtonClicked(Object sender) {
         log.debug("backButtonClicked");
 		this.deselectAll();
-        this.workdir().getSession().getPreviousPath().list(this.encoding, false, this.getFileFilter());
+        this.session.getPreviousPath().list(this.encoding, false, this.getFileFilter());
     }
 
     public void upButtonClicked(Object sender) {
@@ -1950,14 +1946,30 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
     }
 
+    /**
+     *
+     * @return true if a connection is being opened or is already initialized
+     */
+    public boolean hasSession() {
+        return this.session != null;
+    }
+
+    /**
+     *
+     * @return true if the remote file system has been mounted
+     */
     public boolean isMounted() {
         return this.workdir() != null;
     }
 
+    /**
+     *
+     * @return true if mounted and the connection to the server is alive
+     */
     public boolean isConnected() {
         boolean connected = false;
-        if (this.isMounted()) {
-            connected = this.workdir().getSession().isConnected();
+        if (this.hasSession()) {
+            connected = this.session.isConnected();
         }
         return connected;
     }
@@ -1989,7 +2001,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
 	public void copyURLButtonClicked(Object sender) {
         log.debug("copyURLButtonClicked");
-        Host h = this.workdir().getSession().getHost();
+        Host h = this.session.getHost();
         NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
         pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
         if (!pboard.setStringForType(h.getURL() + this.workdir().getAbsolute(), NSPasteboard.StringPboardType)) {
@@ -2010,7 +2022,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void cut(Object sender) {
         if (this.getSelectionCount() > 0) {
-            Session session = this.workdir().getSession().copy();
+            Session session = this.session.copy();
             Queue q = new DownloadQueue();
 			for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext(); ) {
 				Path path = (Path)i.next();
@@ -2047,6 +2059,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.getFocus();
     }
 
+    private Session session;
+
     public Session mount(Host host) {
         return this.mount(host, this.encoding);
     }
@@ -2056,7 +2070,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
         if (this.unmount(new NSSelector("mountSheetDidEnd",
                 new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
         )) {
-            final Session session = SessionFactory.createSession(host);
+            if(this.hasSession()) {
+                session.deleteObserver((Observer) this);
+                TranscriptFactory.removeImpl(session.getHost().getHostname());
+            }
+            session = SessionFactory.createSession(host);
             this.init(host, session);
             this.setEncoding(encoding, false);
             if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
@@ -2086,10 +2104,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void unmount() {
-        if (this.isMounted()) {
-            this.workdir().getSession().close();
-            TranscriptFactory.removeImpl(this.workdir().getSession().getHost().getHostname());
-			//this.workdir = null;
+        if (this.hasSession()) {
+            this.session.close();
         }
     }
 
@@ -2100,7 +2116,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         log.debug("unmount");
         if (this.isConnected()) {
             if (Preferences.instance().getBoolean("browser.confirmDisconnect")) {
-                this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + this.workdir().getSession().getHost().getHostname(), //title
+                this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + this.session.getHost().getHostname(), //title
                         NSBundle.localizedString("The connection will be closed.", "Alert sheet text"), // message
                         NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
                         NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
@@ -2112,6 +2128,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 return false;
             }
             this.unmount();
+        }
+        else {
+            if(this.hasSession()) {
+                this.unmount();
+            }
         }
         return true;
     }
@@ -2141,7 +2162,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public NSData dataRepresentationOfType(String type) {
         if (this.isMounted()) {
             if (type.equals("Cyberduck Bookmark")) {
-                Host bookmark = this.workdir().getSession().getHost();
+                Host bookmark = this.session.getHost();
                 NSMutableData collection = new NSMutableData();
                 String[] errorString = new String[]{null};
                 collection.appendData(NSPropertyListSerialization.dataFromPropertyList(bookmark.getAsDictionary(),
@@ -2215,8 +2236,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void windowWillClose(NSNotification notification) {
         NSNotificationCenter.defaultCenter().removeObserver(this);
-        if (this.isMounted()) {
-            this.workdir().getSession().deleteObserver((Observer) this);
+        if (this.hasSession()) {
+            this.session.deleteObserver((Observer) this);
         }
         instances.removeObject(this);
     }
@@ -2368,7 +2389,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             return this.isMounted();
         }
         if (identifier.equals("Disconnect") || identifier.equals("disconnectButtonClicked:")) {
-            return this.isMounted() && this.workdir().getSession().isConnected();
+            return this.isMounted() && this.isConnected();
         }
         return true; // by default everything is enabled
     }

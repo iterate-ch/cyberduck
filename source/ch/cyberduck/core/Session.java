@@ -203,7 +203,7 @@ public abstract class Session extends Observable {
 		log.debug("setClosed");
 		this.connected = false;
 		this.callObservers(new Message(Message.CLOSE, "Session closed."));
-		if(Preferences.instance().getBoolean("connection.keepalive")) {
+		if(Preferences.instance().getBoolean("connection.keepalive") && this.keepAliveTimer != null) {
 			this.keepAliveTimer.cancel();
 		}
 //		this.cache().clear();
