@@ -34,6 +34,12 @@
             SUPERCLASS = NSObject; 
         }, 
         {
+            ACTIONS = {downloadBookmarksFromDotMacAction = id; uploadBookmarksToDotMacAction = id; }; 
+            CLASS = "ch.cyberduck.ui.cocoa.CDDotMacController"; 
+            LANGUAGE = Java; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
             ACTIONS = {
                 donateMenuClicked = id; 
                 faqMenuClicked = id; 
