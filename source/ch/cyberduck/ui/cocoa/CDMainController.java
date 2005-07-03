@@ -228,8 +228,9 @@ public class CDMainController extends CDController {
 		private Map items = new HashMap();
 
 		public int numberOfItemsInMenu(NSMenu menu) {
-			return CDBookmarkTableDataSource.instance().size()+7;
-			//index 0-3 are static menu items, 4 is sepeartor, 5 is Rendezvous with submenu, 6 is History submenu, 7 is sepearator
+			return CDBookmarkTableDataSource.instance().size()+8;
+			//index 0-2 are static menu items, 3 is sepeartor, 4 is iDisk with submenu, 5 is Rendezvous with submenu,
+            // 6 is History with submenu, 7 is sepearator
 		}
 
 		/**
@@ -241,7 +242,7 @@ public class CDMainController extends CDController {
 		 * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
 		 */
 		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
-            if(index == 3) {
+            if(index == 4) {
                 item.setEnabled(true);
                 NSImage icon = NSImage.imageNamed("idisk.tiff");
                 icon.setScalesWhenResized(true);
@@ -257,7 +258,7 @@ public class CDMainController extends CDController {
 				item.setImage(NSImage.imageNamed("rendezvous16.tiff"));
 			}
 			if(index > 7) {
-				Host h = (Host)CDBookmarkTableDataSource.instance().get(index-7);
+				Host h = (Host)CDBookmarkTableDataSource.instance().get(index-8);
 				item.setTitle(h.getNickname());
 				item.setTarget(this);
                 item.setImage(NSImage.imageNamed("document16.tiff"));
