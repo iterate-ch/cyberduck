@@ -108,6 +108,8 @@ public abstract class Preferences {
 
 		defaults.put("editor.name", "SubEthaEdit");
 		defaults.put("editor.bundleIdentifier", "de.codingmonkeys.SubEthaEdit");
+        defaults.put("editor.disabledFiles", "pdf doc ps exe bin jpeg jpg gif tif tiff png psd hqx sea zip sit tar gz tgz avi " +
+                "mpg mpeg mp3 mov qt ram aiff aif wav wma");
 
 		defaults.put("favorites.save", "true");
 

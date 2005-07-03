@@ -69,8 +69,8 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
 	    +"(\\d+)?\\s"
 	    +MONTHS+"\\s+"
 	    +"((?:[0-9])|(?:[0-2][0-9])|(?:3[0-1]))\\s+"
-	    +"((\\d{4})|((?:[01]?\\d)|(?:2[0123])):([012345]\\d))\\s+"
-	    +"(\\S+)(\\s*.*)";
+	    +"((\\d{4})|((?:[01]?\\d)|(?:2[0123])):([012345]\\d))\\s"
+	    +"(\\s*\\S+)(\\s*.*)";
 
 	/**
 	 * The sole constructor for a UnixFTPEntryParser object.
