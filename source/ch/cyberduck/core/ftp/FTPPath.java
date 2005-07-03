@@ -199,6 +199,7 @@ public class FTPPath extends Path {
                 session.check();
                 session.log(Message.PROGRESS, "Renaming " + this.getName() + " to " + filename);
                 session.FTP.rename(this.getAbsolute(), filename);
+                this.getParent().invalidate();
                 this.setPath(filename);
                 this.getParent().invalidate();
                 session.log(Message.STOP, NSBundle.localizedString("Idle", ""));
