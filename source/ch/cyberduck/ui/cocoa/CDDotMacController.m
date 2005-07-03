@@ -91,11 +91,6 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookm
 	if (returncode == NSAlertDefaultReturn) {
 		NS_DURING
 			[self downloadFromDotMac:@"/Documents/Cyberduck/Favorites.plist" usingAccount:[self getUserAccount]];
-			NSRunInformationalAlertPanel(NSLocalizedString(@"Download successful", @""), 
-										 NSLocalizedString(@"Successfully downloaded bookmarks from the iDisk", @""), 
-										 NSLocalizedString(@"OK", @""),
-										 nil, 
-										 nil);
 		NS_HANDLER
 			if ([[e name] isEqualToString:CDFileNotFoundException])
 				NSRunAlertPanel(NSLocalizedString(@"Could not find a file on your iDisk", @""),
@@ -338,6 +333,29 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookm
 								  userInfo:nil];
 		[e raise];
 	}
+}
+
+#pragma mark DMTransaction Delegate Methods
+
+- (void)transactionSuccessful:(DMTransaction *)theTransaction
+{
+
+}
+
+- (void)transactionHadError:(DMTransaction *)theTransaction
+{
+	e = [NSException exceptionWithName:CDIOException
+								reason:nil
+							  userInfo:nil];
+	[e raise];
+}
+
+- (void)transactionAborted:(DMTransaction *)theTransaction
+{
+	e = [NSException exceptionWithName:CDIOException
+								reason:nil
+							  userInfo:nil];
+	[e raise];
 }
 
 @end
