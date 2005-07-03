@@ -1077,6 +1077,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.reloadData();
     }
 
+    public void reloadBookmarks() {
+        this.bookmarkTable.reloadData();
+        this.bookmarkTable.selectRow(this.bookmarkModel.size()-1, false);
+    }
+
     private CDBookmarkTableDataSource bookmarkModel;
     private NSTableView bookmarkTable; // IBOutlet
 
@@ -1384,7 +1389,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             Host host = (Host) this.bookmarkModel.get(i - j);
             switch (NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark", ""),
                     NSBundle.localizedString("Do you want to delete the selected bookmark?", "")
-                    + " [" + host.getNickname() + "]",
+                    + " (" + host.getNickname() + ")",
                     NSBundle.localizedString("Delete", ""),
                     NSBundle.localizedString("Cancel", ""),
                     null)) {

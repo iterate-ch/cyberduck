@@ -79,45 +79,43 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookm
 
 - (IBAction)downloadBookmarksFromDotMacAction:(id)sender
 {
-	syncPreferences = NO;
-	syncBookmarks = YES;
 	tmpBookmarkFile = sender;
-	int returncode = NSRunAlertPanel(NSLocalizedString(@"Replace Bookmarks", @""),
-									 NSLocalizedString(@"Are you sure you want to download bookmarks from your iDisk and replace your current local bookmarks?", @""),
-									 NSLocalizedString(@"Download", @""),
-									 NSLocalizedString(@"Cancel", @""),
-									 nil);
 	
-	if (returncode == NSAlertDefaultReturn) {
-		NS_DURING
-			[self downloadFromDotMac:@"/Documents/Cyberduck/Favorites.plist" usingAccount:[self getUserAccount]];
-		NS_HANDLER
-			if ([[e name] isEqualToString:CDFileNotFoundException])
-				NSRunAlertPanel(NSLocalizedString(@"Could not find a file on your iDisk", @""),
-								NSLocalizedString(@"Please make sure that you have a file called Favorites.plist in the folder /Documents/Cyberduck/ on your iDisk.", @""),
-								NSLocalizedString(@"OK", @""),
-								nil,
-								nil);
-			if ([[e name] isEqualToString:CDIOException])
-				NSRunAlertPanel(NSLocalizedString(@"Connection Error", @""),
-								NSLocalizedString(@"Could not connect properly to your iDisk. Please make sure that your .Mac settings are correct.", @""),
-								NSLocalizedString(@"OK", @""),
-								nil,
-								nil);
-			if ([[e name] isEqualToString:CDAccountException])
-				NSRunAlertPanel(NSLocalizedString(@"Invalid Account", @""),
-								NSLocalizedString(@"Could not login properly to your iDisk. Please make sure that your .Mac settings are correct.", @""),
-								NSLocalizedString(@"OK", @""),
-								nil,
-								nil);
-			NS_ENDHANDLER
-	}
+	NS_DURING
+		NSData *data = [self downloadFromDotMac:@"/Documents/Cyberduck/Favorites.plist" usingAccount:[self getUserAccount]];
+		if(data) {
+			//		NSString *localPath = [[[[NSHomeDirectory() stringByAppendingPathComponent:@"Library"] stringByAppendingPathComponent:@"Application Support"] stringByAppendingPathComponent:@"Cyberduck"] stringByAppendingPathComponent:@"Favorites.plist"];
+			NSString *localPath = tmpBookmarkFile;
+			if (!data || ![data writeToFile:localPath atomically:YES]) {
+				[[NSException exceptionWithName:CDIOException
+										 reason:nil
+									   userInfo:nil] raise];
+			}
+		}			
+	NS_HANDLER
+		if ([[e name] isEqualToString:CDFileNotFoundException])
+			NSRunAlertPanel(NSLocalizedString(@"Could not find a file on your iDisk", @""),
+							NSLocalizedString(@"Please make sure that you have a file called Favorites.plist in the folder /Documents/Cyberduck/ on your iDisk.", @""),
+							NSLocalizedString(@"OK", @""),
+							nil,
+							nil);
+		if ([[e name] isEqualToString:CDIOException])
+			NSRunAlertPanel(NSLocalizedString(@"Connection Error", @""),
+							NSLocalizedString(@"Could not connect properly to your iDisk. Please make sure that your .Mac settings are correct.", @""),
+							NSLocalizedString(@"OK", @""),
+							nil,
+							nil);
+		if ([[e name] isEqualToString:CDAccountException])
+			NSRunAlertPanel(NSLocalizedString(@"Invalid Account", @""),
+							NSLocalizedString(@"Could not login properly to your iDisk. Please make sure that your .Mac settings are correct.", @""),
+							NSLocalizedString(@"OK", @""),
+							nil,
+							nil);
+		NS_ENDHANDLER
 }
 
 - (IBAction)downloadPreferencesFromDotMacAction:(id)sender
 {
-	syncPreferences = YES;
-	syncBookmarks = NO;
 	int returncode = NSRunAlertPanel(NSLocalizedString(@"Replace Preferences", @""),
 									 NSLocalizedString(@"Are you sure you want to download the preferences from your iDisk and replace your current settings?", @""),
 									 NSLocalizedString(@"Download", @""),
@@ -126,12 +124,35 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookm
 	
 	if (returncode == NSAlertDefaultReturn) {
 		NS_DURING
-			[self downloadFromDotMac:@"/Documents/Cyberduck/ch.sudo.cyberduck.plist" usingAccount:[self getUserAccount]];
-			NSRunInformationalAlertPanel(NSLocalizedString(@"Preferences udpated", @""), 
-										 NSLocalizedString(@"Successfully downloaded preferences from the iDisk", @""), 
-										 NSLocalizedString(@"OK", @""),
-										 nil, 
-										 nil);
+			NSData *data = [self downloadFromDotMac:@"/Documents/Cyberduck/ch.sudo.cyberduck.plist" usingAccount:[self getUserAccount]];
+			if(data) {
+				NSString *localPath = [[[NSHomeDirectory() stringByAppendingPathComponent:@"Library"] stringByAppendingPathComponent:@"Preferences"] stringByAppendingPathComponent:@"ch.sudo.cyberduck.plist"];
+				if (!data || ![data writeToFile:localPath atomically:YES]) {
+					[[NSException exceptionWithName:CDIOException
+											 reason:nil
+										   userInfo:nil] raise];
+				}
+				
+				NSDictionary *defaultsDictionary = [NSDictionary dictionaryWithContentsOfFile:localPath];
+				if (defaultsDictionary)
+				{
+					[[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
+				}
+				else
+				{
+					e = [NSException exceptionWithName:CDIOException
+												reason:nil
+											  userInfo:nil];
+					[e raise];
+				}
+				[[NSUserDefaults standardUserDefaults] synchronize];
+
+				NSRunInformationalAlertPanel(NSLocalizedString(@"Preferences udpated", @""), 
+											 NSLocalizedString(@"Successfully downloaded preferences from the iDisk", @""), 
+											 NSLocalizedString(@"OK", @""),
+											 nil, 
+											 nil);
+			}				
 		NS_HANDLER
 			if ([[e name] isEqualToString:CDFileNotFoundException])
 				NSRunAlertPanel(NSLocalizedString(@"Could not find a file on your iDisk", @""),
@@ -155,7 +176,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookm
 	}
 }
 
-- (void)downloadFromDotMac:(NSString *)remoteFile usingAccount:(DMMemberAccount*)account
+- (NSData*)downloadFromDotMac:(NSString *)remoteFile usingAccount:(DMMemberAccount*)account
 {
 	DMiDiskSession *session = [DMiDiskSession iDiskSessionWithAccount:account];
 	if (!session) {
@@ -178,49 +199,22 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookm
 								  userInfo:nil];
 		[e raise];
 	}
-	NSData *data = [transaction result];
-	if (syncPreferences) {
-		NSString *localPath = [[[NSHomeDirectory() stringByAppendingPathComponent:@"Library"]
-        stringByAppendingPathComponent:@"Preferences"] stringByAppendingPathComponent:@"ch.sudo.cyberduck.plist"];
-		if (!data || ![data writeToFile:localPath atomically:YES]) {
-			[[NSException exceptionWithName:CDIOException
-									 reason:nil
-								   userInfo:nil] raise];
-		}
-		
-		NSDictionary *defaultsDictionary = [NSDictionary dictionaryWithContentsOfFile:localPath];
-		if (defaultsDictionary)
-		{
-			[[NSUserDefaults standardUserDefaults] registerDefaults:defaultsDictionary];
-		}
-		else
-		{
-			e = [NSException exceptionWithName:CDIOException
-										reason:nil
-									  userInfo:nil];
-			[e raise];
-		}
-		[[NSUserDefaults standardUserDefaults] synchronize];
+	long size = [transaction contentLength];
+	while(![transaction isFinished]) {
+		//block; update progress with
+		//[transaction bytesTransferred];
 	}
-	if(syncBookmarks) {
-		
-		//		NSString *localPath = [[[[NSHomeDirectory() stringByAppendingPathComponent:@"Library"] stringByAppendingPathComponent:@"Application Support"] stringByAppendingPathComponent:@"Cyberduck"] stringByAppendingPathComponent:@"Favorites.plist"];
-		NSString *localPath = tmpBookmarkFile;
-		if (!data || ![data writeToFile:localPath atomically:YES]) {
-			[[NSException exceptionWithName:CDIOException
-									 reason:nil
-								   userInfo:nil] raise];
-		}
-		[localPath release];
+	if([transaction isSuccessful]) {
+		NSData *data = [transaction result];
+		return data;
 	}
+	return nil;
 }
 	
 #pragma mark Upload
 
 - (IBAction)uploadBookmarksToDotMacAction:(id)sender
 {
-	syncPreferences = NO;
-	syncBookmarks = NO;
 	int returncode = NSRunAlertPanel(NSLocalizedString(@"Replace Bookmarks", @""),
 									 NSLocalizedString(@"Are you sure you want to replace any existing bookmarks on your iDisk?", @""),
 									 NSLocalizedString(@"Upload", @""),
@@ -259,8 +253,6 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookm
 
 - (IBAction)uploadPreferencesToDotMacAction:(id)sender
 {
-	syncPreferences = NO;
-	syncBookmarks = NO;
 	int returncode = NSRunAlertPanel(NSLocalizedString(@"Replace Preferences", @""),
 									 NSLocalizedString(@"Are you sure you want to replace the existing file on your iDisk if it exists?", @""),
 									 NSLocalizedString(@"Upload", @""),

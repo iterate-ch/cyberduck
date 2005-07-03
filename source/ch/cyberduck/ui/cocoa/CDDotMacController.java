@@ -95,7 +95,7 @@ public class CDDotMacController {
             if(host instanceof Host) {
                 if(!CDBookmarkTableDataSource.instance().contains(host)) {
                     int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Import Bookmark", ""),
-                        NSBundle.localizedString("Add the bookmark", "")+" ["+((Host)host).toString()+"] "
+                        NSBundle.localizedString("Add the bookmark", "")+" ("+((Host)host).getNickname()+") "
                             +NSBundle.localizedString("to your list of bookmarks?", ""),
                         NSBundle.localizedString("Add", ""), //default
                         NSBundle.localizedString("Skip", ""), //alternate

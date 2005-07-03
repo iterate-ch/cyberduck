@@ -51,8 +51,6 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookm
 
 @interface CDDotMacController : NSObject {
 	@private
-	BOOL syncPreferences;
-	BOOL syncBookmarks;
 	NSString *tmpBookmarkFile;
 	NSException *e;
 }
@@ -65,7 +63,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookm
 - (IBAction)downloadPreferencesFromDotMacAction:(id)sender;
 - (IBAction)uploadPreferencesToDotMacAction:(id)sender;
 
-- (void)downloadFromDotMac:(NSString *)remoteFile usingAccount:(DMMemberAccount*)account;
+- (NSData*)downloadFromDotMac:(NSString *)remoteFile usingAccount:(DMMemberAccount*)account;
 - (void)uploadToDotMac:(NSString *)localFile usingAccount:(DMMemberAccount*)account;
 
 @end
