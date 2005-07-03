@@ -8,6 +8,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] Spotlight Importer for bookmarks
 - [Feature] Synchronize bookmarks with .Mac
 - [Bugfix] New connection dialog remembers field values
+- [Bugfix] Correctly parsing filenames beginning with whitespace (FTP)
 - [Bugfix] Various improvements
 
 2.5b2
