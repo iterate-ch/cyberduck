@@ -2344,7 +2344,16 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
 		if(identifier.equals("Edit") || identifier.equals("editButtonClicked:")) {
             if(this.isMounted() && this.getSelectionCount() > 0) {
-                return this.getSelectedPath().attributes.isFile();
+                Path selected = this.getSelectedPath();
+                if(selected.attributes.isFile()) {
+                    if(null == selected.getExtension()) {
+                        return true;
+                    }
+                    if (Preferences.instance().getProperty("editor.disabledFiles").indexOf(selected.getExtension()) != -1) {
+                        return false;
+                    }
+                    return true;
+                }
             }
             return false;
 		}

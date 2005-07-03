@@ -544,4 +544,12 @@ public abstract class CDValidatorController extends CDWindowController implement
 	public int numberOfRowsInTableView(NSTableView tableView) {
 		return this.workList.size();
 	}
+
+    public String tableViewToolTipForCell(NSTableView tableView, NSCell cell, NSMutableRect rect,
+                                                   NSTableColumn tc, int row, NSPoint mouseLocation) {
+        if(row < numberOfRowsInTableView(tableView)) {
+            return this.workList.get(row).toString();
+        }
+        return null;
+    }
 }

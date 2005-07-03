@@ -355,4 +355,8 @@ public abstract class Queue extends Observable {
     private void setSpeed(double s) {
         this.speed = s;
     }
+
+    public String toString() {
+        return this.getName();
+    }
 }
