@@ -43,7 +43,6 @@ public abstract class CDFileController extends CDWindowController {
 
 	public void awakeFromNib() {
         super.awakeFromNib();
-
 		this.window().setReleasedWhenClosed(true);
 	}
 

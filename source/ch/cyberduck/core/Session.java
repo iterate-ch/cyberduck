@@ -168,7 +168,9 @@ public abstract class Session extends Observable {
 	public abstract void noop() throws IOException;
 
 	public abstract void interrupt();
-	
+
+    public abstract void sendCommand(String command);
+
 	/**
 	 * @return boolean True if the session has not yet been closed.
 	 */
@@ -261,11 +263,6 @@ public abstract class Session extends Observable {
 	}
 
 	public void log(String title, String message) {
-		if(title.equals(Message.TRANSCRIPT)) {
-			TranscriptFactory.getImpl(host.getHostname()).log(message);
-		}
-		else {
-			this.callObservers(new Message(title, message));
-		}
+        this.callObservers(new Message(title, message));
 	}
 }

@@ -106,8 +106,7 @@ public class CDGotoController extends CDWindowController {
 		this.endSheet(this.window(), ((NSButton)sender).tag());
 	}
 
-	public void gotoSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-        log.debug("gotoSheetDidEnd");
+    public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
 		switch(returncode) {
 			case (NSAlertPanel.DefaultReturn):

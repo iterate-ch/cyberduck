@@ -219,10 +219,10 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 		return NSDraggingInfo.DragOperationNone;
 	}
 	
-	public boolean outlineViewAcceptDrop(NSOutlineView outlineView, NSDraggingInfo info, Path item, int row) {
+	public boolean outlineViewAcceptDrop(NSOutlineView outlineView, NSDraggingInfo info, Path destination, int row) {
 		log.debug("tableViewAcceptDrop:row:"+row);
-		if(null == item) {
-			item = controller.workdir();
+		if(null == destination) {
+			destination = controller.workdir();
 		}
 		NSPasteboard infoPboard = info.draggingPasteboard();
 		if(infoPboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
@@ -232,7 +232,7 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 			for(int i = 0; i < filesList.count(); i++) {
                 log.debug(filesList.objectAtIndex(i));
                 Path p = PathFactory.createPath(session,
-                        item.getAbsolute(),
+                        destination.getAbsolute(),
                         new Local((String)filesList.objectAtIndex(i)));
 				q.addRoot(p);
 			}
@@ -251,13 +251,14 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 				Queue q = Queue.createQueue(dict);
 				for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
 					Path p = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
-					p.getParent().invalidate();
-					p.rename(item.getAbsolute()+"/"+p.getName());
-					item.invalidate();
-					outlineView.reloadData();
-					outlineView.reloadItemAndChildren(p.getParent(), true);
-					outlineView.reloadItemAndChildren(item, true);
+                    Path tmp = p.copy(p.getSession());
+					p.rename(destination.getAbsolute()+"/"+p.getName());
+                    outlineView.reloadData();
+                    outlineView.reloadItemAndChildren(tmp.getParent(), true);
 				}
+                destination.invalidate();
+                outlineView.reloadData();
+                outlineView.reloadItemAndChildren(destination, true);
 			}
 			return true;
 		}

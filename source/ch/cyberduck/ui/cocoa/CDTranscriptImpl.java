@@ -26,14 +26,17 @@ import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSRange;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Transcript;
+import ch.cyberduck.core.Message;
 
 /**
  * @version $Id$
  */
-public class CDTranscriptImpl extends CDController implements Transcript {
+public class CDTranscriptImpl extends CDController implements Observer {
 	private static Logger log = Logger.getLogger(CDTranscriptImpl.class);
 
 	private NSTextView textView;
@@ -42,15 +45,6 @@ public class CDTranscriptImpl extends CDController implements Transcript {
 		this.textView = textView;
         super.awakeFromNib();
 	}
-
-//	public void awakeFromNib() {
-//        super.awakeFromNib();
-//		this.textView.setEditable(true);
-//		this.textView.setSelectable(true);
-//		this.textView.setUsesFontPanel(false);
-//		this.textView.setRichText(false);
-//		this.textView.layoutManager().setBackgroundLayoutEnabled(false);
-//	}
 
 	private static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)},
 	    new Object[]{NSAttributedString.FontAttributeName});
@@ -63,19 +57,24 @@ public class CDTranscriptImpl extends CDController implements Transcript {
 		}
 	}
 
-	public void log(final String message) {
-		log.info(message);
-		this.invoke(new Runnable() {
-			public void run() {
-				// textView.layoutManager().setDelegate(CDTranscriptImpl.this);
-				
-				// Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
-				// formatting attributes of the first character of the text it replaces, or of the character immediately
-				// before aRange if the range's length is 0. If the range's location is 0, the formatting
-				// attributes of the first character in the receiver are used.
-				textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0),
-				    new NSAttributedString(message+"\n", FIXED_WITH_FONT_ATTRIBUTES));
-			}
-		});
+    public void update(final Observable o, final Object arg) {
+        if (arg instanceof Message) {
+            final Message msg = (Message) arg;
+            if (msg.getTitle().equals(Message.TRANSCRIPT)) {
+                log.info(msg.getContent());
+                this.invoke(new Runnable() {
+                    public void run() {
+                        // textView.layoutManager().setDelegate(CDTranscriptImpl.this);
+
+                        // Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
+                        // formatting attributes of the first character of the text it replaces, or of the character immediately
+                        // before aRange if the range's length is 0. If the range's location is 0, the formatting
+                        // attributes of the first character in the receiver are used.
+                        textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0),
+                                new NSAttributedString(msg.getContent()+"\n", FIXED_WITH_FONT_ATTRIBUTES));
+                    }
+                });
+            }
+        }
 	}
 }

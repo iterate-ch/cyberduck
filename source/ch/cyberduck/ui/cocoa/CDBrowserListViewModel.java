@@ -201,9 +201,10 @@ public class CDBrowserListViewModel extends CDTableDataSource {
                     if (selected.attributes.isDirectory()) {
                         Queue q = Queue.createQueue(dict);
                         for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                            Path p = (Path) iter.next();
-							PathFactory.createPath(selected.getSession(), p.getAbsolute()).rename(selected.getAbsolute()+"/"+p.getName());
+                            Path p = PathFactory.createPath(selected.getSession(), ((Path) iter.next()).getAbsolute());
+							p.rename(selected.getAbsolute()+"/"+p.getName());
                         }
+                        this.controller.workdir().list(this.controller.getEncoding(), true, this.controller.getFileFilter());
                     }
                 }
 				return true;

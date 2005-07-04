@@ -90,8 +90,7 @@ public class CDFolderController extends CDWindowController {
 		this.endSheet(this.window(), sender.tag());
 	}
 
-	public void newFolderSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-		log.debug("newFolderSheetDidEnd");
+    public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
 		switch(returncode) {
 			case (NSAlertPanel.DefaultReturn):

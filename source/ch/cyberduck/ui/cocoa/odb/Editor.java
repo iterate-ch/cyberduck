@@ -73,7 +73,6 @@ public class Editor {
     }
 
 	static {
-		// Ensure native odb library is loaded
 		try {
 			NSBundle bundle = NSBundle.mainBundle();
 			String lib = bundle.resourcePath()+"/Java/"+"libODBEdit.dylib";

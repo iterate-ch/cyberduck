@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import ch.cyberduck.core.Host;
 
 public class CDDotMacController {
-
     private static Logger log = Logger.getLogger(CDDotMacController.class);
 
     static {

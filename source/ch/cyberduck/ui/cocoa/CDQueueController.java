@@ -430,9 +430,9 @@ public class CDQueueController extends CDWindowController {
 	}
 
 	public void stopButtonClicked(Object sender) {
-		NSEnumerator enum = queueTable.selectedRowEnumerator();
-		while(enum.hasMoreElements()) {
-			Queue queue = (Queue)this.queueModel.get(((Integer)enum.nextElement()).intValue());
+		NSEnumerator iterator = queueTable.selectedRowEnumerator();
+		while(iterator.hasMoreElements()) {
+			Queue queue = (Queue)this.queueModel.get(((Integer)iterator.nextElement()).intValue());
 			if(queue.isRunning()) {
 				queue.cancel();
 			}
@@ -449,9 +449,9 @@ public class CDQueueController extends CDWindowController {
 	}
 
 	public void resumeButtonClicked(Object sender) {
-		NSEnumerator enum = queueTable.selectedRowEnumerator();
-		while(enum.hasMoreElements()) {
-			int i = ((Integer)enum.nextElement()).intValue();
+		NSEnumerator iterator = queueTable.selectedRowEnumerator();
+		while(iterator.hasMoreElements()) {
+			int i = ((Integer)iterator.nextElement()).intValue();
 			this.queueModel.getController(i).init();
 			Queue queue = (Queue)this.queueModel.get(i);
 			if(!queue.isRunning()) {
@@ -461,9 +461,9 @@ public class CDQueueController extends CDWindowController {
 	}
 
 	public void reloadButtonClicked(Object sender) {
-		NSEnumerator enum = queueTable.selectedRowEnumerator();
-		while(enum.hasMoreElements()) {
-			int i = ((Integer)enum.nextElement()).intValue();
+		NSEnumerator iterator = queueTable.selectedRowEnumerator();
+		while(iterator.hasMoreElements()) {
+			int i = ((Integer)iterator.nextElement()).intValue();
 			this.queueModel.getController(i).init();
 			Queue queue = (Queue)this.queueModel.get(i);
 			if(!queue.isRunning()) {
@@ -537,10 +537,10 @@ public class CDQueueController extends CDWindowController {
 	}
 
 	public void deleteButtonClicked(Object sender) {
-		NSEnumerator enum = queueTable.selectedRowEnumerator();
+		NSEnumerator iterator = queueTable.selectedRowEnumerator();
 		int j = 0;
-		while(enum.hasMoreElements()) {
-			int i = ((Integer)enum.nextElement()).intValue();
+		while(iterator.hasMoreElements()) {
+			int i = ((Integer)iterator.nextElement()).intValue();
 			Queue q = (Queue)this.queueModel.get(i-j);
 			if(!q.isRunning()) {
 				this.queueModel.remove(i-j);
@@ -608,9 +608,9 @@ public class CDQueueController extends CDWindowController {
 			if(this.queueTable.numberOfSelectedRows() < 1) {
 				return false;
 			}
-			NSEnumerator enum = queueTable.selectedRowEnumerator();
-			while(enum.hasMoreElements()) {
-				Queue queue = (Queue)this.queueModel.get(((Integer)enum.nextElement()).intValue());
+			NSEnumerator iterator = queueTable.selectedRowEnumerator();
+			while(iterator.hasMoreElements()) {
+				Queue queue = (Queue)this.queueModel.get(((Integer)iterator.nextElement()).intValue());
 				if(!queue.isRunning()) {
 					return false;
 				}
@@ -644,9 +644,9 @@ public class CDQueueController extends CDWindowController {
 			if(this.queueTable.numberOfSelectedRows() < 1) {
 				return false;
 			}
-			NSEnumerator enum = queueTable.selectedRowEnumerator();
-			while(enum.hasMoreElements()) {
-				Queue queue = (Queue)this.queueModel.get(((Integer)enum.nextElement()).intValue());
+			NSEnumerator iterator = queueTable.selectedRowEnumerator();
+			while(iterator.hasMoreElements()) {
+				Queue queue = (Queue)this.queueModel.get(((Integer)iterator.nextElement()).intValue());
 				if(queue.isRunning()) {
 					return false;
 				}

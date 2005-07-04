@@ -356,22 +356,13 @@ public class FTPClient {
 	 * Issue arbitrary ftp commands to the FTP server.
 	 *
 	 * @param command    ftp command to be sent to server
-	 * @param validCodes valid return codes for this command
 	 * @return the text returned by the FTP server
 	 */
-	public String quote(String command, String[] validCodes) throws IOException, FTPException {
+	public String quote(String command) throws IOException, FTPException {
 		this.checkConnection(true);
 
 		FTPReply reply = control.sendCommand(command);
-
-		// allow for no validation to be supplied
-		if(validCodes != null && validCodes.length > 0) {
-			lastValidReply = control.validateReply(reply, validCodes);
-			return lastValidReply.getReplyText();
-		}
-		else {
-			throw new FTPException("Valid reply code must be supplied");
-		}
+        return reply.getReplyText();
 	}
 
 

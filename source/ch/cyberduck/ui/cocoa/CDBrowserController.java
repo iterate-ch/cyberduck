@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**
@@ -1589,7 +1590,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
 	public void reloadButtonClicked(Object sender) {
-		log.debug("reloadButtonClicked");
 		if (this.isMounted()) {
 			this.deselectAll();
 			this.workdir().list(this.encoding, true, this.getFileFilter());
@@ -1620,7 +1620,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         CDGotoController controller = new CDGotoController(this.workdir());
         this.beginSheet(controller.window(), //sheet
                 controller, //modal delegate
-                new NSSelector("gotoSheetDidEnd",
+                new NSSelector("sheetDidEnd",
                         new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
                 this.workdir()); //contextInfo
     }
@@ -1630,7 +1630,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         CDFileController controller = new CDCreateFileController();
         this.beginSheet(controller.window(), //sheet
                 controller, //modal delegate
-                new NSSelector("createFileSheetDidEnd",
+                new NSSelector("sheetDidEnd",
                         new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
                 this.workdir()); //contextInfo
     }
@@ -1641,18 +1641,28 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			CDFileController controller = new CDDuplicateFileController(selected);
 			this.beginSheet(controller.window(), //sheet
 							controller, //modal delegate
-							new NSSelector("duplicateFileSheetDidEnd",
+							new NSSelector("sheetDidEnd",
 										   new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
 							selected.getParent()); //contextInfo
 		}
 	}
+
+    public void sendCustomCommandClicked(Object sender) {
+        CDCommandController controller = new CDCommandController(this.session);
+        this.beginSheet(controller.window(), //sheet
+                controller, //modal delegate
+                new NSSelector("sheetDidEnd",
+                        new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
+                null); //contextInfo
+    }
+
 
     public void createFolderButtonClicked(Object sender) {
         log.debug("createFolderButtonClicked");
         CDFolderController controller = new CDFolderController();
         this.beginSheet(controller.window(), //sheet
                 controller, //modal delegate
-                new NSSelector("newFolderSheetDidEnd",
+                new NSSelector("sheetDidEnd",
                         new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
                 this.workdir()); //contextInfo
     }
@@ -2052,10 +2062,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
         return this.workdir;
     }
 
+    private Observer transcript;
+
     private void init(Host host, Session session) {
 		this.workdir = null;
 		this.reloadData();
-        TranscriptFactory.addImpl(host.getHostname(), new CDTranscriptImpl(this.logView));
+        session.addObserver(transcript = new CDTranscriptImpl(this.logView));
         this.window().setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername() + "@" + host.getHostname());
         File bookmark = new File(HISTORY_FOLDER + "/" + host.getHostname() + ".duck");
         CDBookmarkTableDataSource.instance().exportBookmark(host, bookmark);
@@ -2077,7 +2089,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         )) {
             if(this.hasSession()) {
                 session.deleteObserver((Observer) this);
-                TranscriptFactory.removeImpl(session.getHost().getHostname());
+                session.deleteObserver(this.transcript);
             }
             session = SessionFactory.createSession(host);
             this.init(host, session);
@@ -2357,6 +2369,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
             }
             return false;
 		}
+        if(identifier.equals("sendCustomCommandClicked:")) {
+            return this.isMounted() && (this.session instanceof FTPSession);
+        }
         if (identifier.equals("gotoButtonClicked:")) {
             return this.isMounted();
         }

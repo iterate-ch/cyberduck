@@ -77,10 +77,12 @@ public class Local extends File {
     }
 	
     public void setProgress(int progress) {
-		if(-1 == progress)
+		if(-1 == progress) {
 			this.setIconFromExtension(this.getAbsolute(), this.getExtension());
-		else
+        }
+		else {
 			this.setIconFromFile(this.getAbsolute(), "download"+progress+".icns");
+        }
         NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
     }
 
@@ -93,52 +95,6 @@ public class Local extends File {
 	 * @param icon the absolute path to the image file to use as an icon
 	 */
 	public native void setIconFromFile(String path, String icon);
-		
-//	public File getAbsoluteFile() {
-//		return new Local(super.getAbsoluteFile().getAbsolutePath());
-//	}
-	
-//	public File getCanonicalFile() throws IOException {
-//		return new Local(super.getCanonicalFile().getAbsolutePath());
-//	}
-	
-//	public File getParentFile() {
-//		return new Local(super.getParent());
-//	}
-	
-//	public boolean isFile() {
-//		if(this.isAlias()) {
-//			return this.resolveAlias().isFile();
-//		}
-//		return super.isFile();
-//	}
-	
-//	public boolean isDirectory() {
-//		if(this.isAlias()) {
-//			return this.resolveAlias().isDirectory();
-//		}
-//		return super.isDirectory();
-//	}
-	
-//	public boolean isAlias() {
-//		return this.isAlias(this.getAbsolute());
-//	}
-
-//	public Local resolveAlias() {
-//		return new Local(this.resolveAlias(this.getAbsolute()));
-//	}
-	
-	/**
-	 * @return true if the provided path is an alias.
-	 */
-//	private native boolean isAlias(String path);
-
-	/**
-	 * Resolves an alias path.
-	 *
-	 * @return the same path if the provided path is not an alias.
-	 */
-//	private native String resolveAlias(String aliasPath);
 
 	public Permission getPermission() {
 		NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
@@ -198,7 +154,7 @@ public class Local extends File {
 
 	public long getSize() {
 		if(this.isDirectory())
-			return 0l;
+			return 0;
 		return super.length();
 	}
 

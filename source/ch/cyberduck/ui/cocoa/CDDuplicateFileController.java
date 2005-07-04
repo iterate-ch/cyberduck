@@ -58,8 +58,7 @@ public class CDDuplicateFileController extends CDFileController {
 		this.window().setReleasedWhenClosed(true);
 	}
 	
-	public void duplicateFileSheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-		log.debug("duplicateFileSheetDidEnd");
+    public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
 		Path workdir = (Path)contextInfo;
 		switch(returncode) {

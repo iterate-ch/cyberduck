@@ -108,7 +108,11 @@ public class SFTPSession extends Session {
 			this.log(Message.ERROR, "IO Error: "+e.getMessage());
 		}
 	}
-	
+
+    public synchronized void sendCommand(String command) {
+
+    }
+
 	private HostKeyVerification hostKeyVerification;
 
 	public void setHostKeyVerificationController(HostKeyVerification h) {
@@ -171,13 +175,12 @@ public class SFTPSession extends Session {
             log.info(SSH.getAvailableAuthMethods(host.getCredentials().getUsername()));
             this.login();
             this.log(Message.PROGRESS, NSBundle.localizedString("Starting SFTP subsystem...", ""));
-            final Transcript transcript = TranscriptFactory.getImpl(this.host.getHostname());
             this.SFTP = SSH.openSftpChannel(new ChannelEventAdapter() {
                 public void onDataReceived(Channel channel, byte[] data) {
-                    transcript.log(new String(data));
+                    log(Message.TRANSCRIPT, new String(data));
                 }
                 public void onDataSent(Channel channel, byte[] data) {
-                    transcript.log(new String(data));
+                    log(Message.TRANSCRIPT, new String(data));
                 }
             }, encoding);
             this.log(Message.PROGRESS, NSBundle.localizedString("SFTP subsystem ready", ""));

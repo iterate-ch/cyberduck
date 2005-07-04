@@ -48,15 +48,27 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromExtension(JNIEnv 
 	NSImage *image = [[NSWorkspace sharedWorkspace] iconForFileType:convertToNSString(env, icon)];
 	[image setScalesWhenResized:YES];
 	[image setSize:NSMakeSize(128.0, 128.0)];
-	id iconFamily = [IconFamily iconFamilyWithThumbnailsOfImage:image];
-	[iconFamily setAsCustomIconForFile:convertToNSString(env, path)];
+	NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
+	if([workspace respondsToSelector:@selector(setIcon:forFile:options:)]) {
+		[workspace setIcon:image forFile:convertToNSString(env, path) options:NSExcludeQuickDrawElementsIconCreationOption];
+	}
+	else {
+		id iconFamily = [IconFamily iconFamilyWithThumbnailsOfImage:image];
+		[iconFamily setAsCustomIconForFile:convertToNSString(env, path)];
+	}
 	[pool release];
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromFile(JNIEnv *env, jobject this, jstring path, jstring icon)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	id iconFamily = [IconFamily iconFamilyWithThumbnailsOfImage:[NSImage imageNamed:convertToNSString(env, icon)]];
-	[iconFamily setAsCustomIconForFile:convertToNSString(env, path)];
+	NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
+	if([workspace respondsToSelector:@selector(setIcon:forFile:options:)]) {
+		[workspace setIcon:[NSImage imageNamed:convertToNSString(env, icon)] forFile:convertToNSString(env, path) options:NSExcludeQuickDrawElementsIconCreationOption];
+	}
+	else {
+		id iconFamily = [IconFamily iconFamilyWithThumbnailsOfImage:[NSImage imageNamed:convertToNSString(env, icon)]];
+		[iconFamily setAsCustomIconForFile:convertToNSString(env, path)];
+	}
 	[pool release];
 }
