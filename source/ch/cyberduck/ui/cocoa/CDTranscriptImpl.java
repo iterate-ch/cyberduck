@@ -43,6 +43,7 @@ public class CDTranscriptImpl extends CDController implements Observer {
 
 	public CDTranscriptImpl(NSTextView textView) {
 		this.textView = textView;
+        this.textView.layoutManager().setDelegate(CDTranscriptImpl.this);
         super.awakeFromNib();
 	}
 
@@ -64,8 +65,6 @@ public class CDTranscriptImpl extends CDController implements Observer {
                 log.info(msg.getContent());
                 this.invoke(new Runnable() {
                     public void run() {
-                        // textView.layoutManager().setDelegate(CDTranscriptImpl.this);
-
                         // Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
                         // formatting attributes of the first character of the text it replaces, or of the character immediately
                         // before aRange if the range's length is 0. If the range's location is 0, the formatting

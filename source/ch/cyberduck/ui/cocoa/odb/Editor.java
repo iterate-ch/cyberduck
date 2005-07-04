@@ -33,6 +33,9 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UploadQueue;
 
+/**
+ * @version $Id$
+ */
 public class Editor {
 	private static Logger log = Logger.getLogger(Editor.class);
 
