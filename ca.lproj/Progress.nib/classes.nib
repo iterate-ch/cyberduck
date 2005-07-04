@@ -1,0 +1,29 @@
+{
+    IBClasses = (
+        {
+            CLASS = CDProgressController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                alertIcon = NSButton; 
+                filenameField = NSTextField; 
+                progressBar = NSProgressIndicator; 
+                progressField = NSTextField; 
+                progressSubview = NSView; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {
+                reloadButtonClicked = id; 
+                removeButtonClicked = id; 
+                resumeButtonClicked = id; 
+                revealButtonClicked = id; 
+                stopButtonClicked = id; 
+            }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}

@@ -1,0 +1,25 @@
+{
+    IBClasses = (
+        {CLASS = CDListView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
+        {CLASS = CDOutlineView; LANGUAGE = ObjC; SUPERCLASS = NSOutlineView; }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            CLASS = "ch.sudo.cyberduck.ui.cocoa.CDValidatorController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {
+                cancelButton = NSButton; 
+                fileTableView = NSTableView; 
+                infoLabel = NSTextField; 
+                localField = NSTextField; 
+                overwriteButton = NSButton; 
+                resumeButton = NSButton; 
+                skipButton = NSButton; 
+                statusIndicator = NSProgressIndicator; 
+                urlField = NSTextField; 
+                window = NSWindow; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}
