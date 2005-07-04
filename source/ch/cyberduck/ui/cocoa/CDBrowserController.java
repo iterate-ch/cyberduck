@@ -2370,7 +2370,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             return false;
 		}
         if(identifier.equals("sendCustomCommandClicked:")) {
-            return this.isMounted() && (this.session instanceof FTPSession);
+            return (this.session instanceof FTPSession) && this.isConnected();
         }
         if (identifier.equals("gotoButtonClicked:")) {
             return this.isMounted();
