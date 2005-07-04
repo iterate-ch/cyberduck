@@ -184,6 +184,19 @@ public class FTPSession extends Session {
         }
     }
 
+    public synchronized void sendCommand(String command) {
+        try {
+            this.FTP.quote(command);
+        }
+        catch (FTPException e) {
+            this.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+        }
+        catch (IOException e) {
+            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
+            this.close();
+        }
+    }
+
     public synchronized void check() throws IOException {
         this.log(Message.START, "Working");
         if (null == this.FTP) {
