@@ -21,6 +21,7 @@
                 infoButtonClicked = id; 
                 insideButtonClicked = id; 
                 reloadButtonClicked = id; 
+                sendCustomCommandClicked = id; 
                 showHiddenFilesClicked = id; 
                 showTransferQueueClicked = id; 
                 syncButtonClicked = id; 
