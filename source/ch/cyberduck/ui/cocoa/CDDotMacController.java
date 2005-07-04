@@ -23,8 +23,6 @@ import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.*;
 
-import java.io.File;
-
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Host;
@@ -48,36 +46,16 @@ public class CDDotMacController {
         }
     }
 
-    private native void downloadBookmarksFromDotMacActionNative(String destination);
+    public native void downloadBookmarks(String destination);
 
-    private native void uploadBookmarksToDotMacActionNative();
+    public native void uploadBookmarks();
 
-    public void downloadBookmarksFromDotMacAction(Object sender) {
-        File tmp = new File(NSPathUtilities.temporaryDirectory(),
-                "Favorites.plist");
-        this.downloadBookmarksFromDotMacActionNative(tmp.getAbsolutePath());
-        this.loadBookmarks(tmp);
-        NSAlertPanel.runInformationalAlert(NSBundle.localizedString("Bookmarks Imported", ""),
-                NSBundle.localizedString("Imported", "") + " " + this.noAdded + " " + NSBundle.localizedString("of", "") + " "
-                + (this.noSkipped + this.noAdded) + " " + NSBundle.localizedString("bookmarks.", "")
-                + NSBundle.localizedString("Omitted", "")+" "+this.noSkipped+" "
-                +NSBundle.localizedString("bookmarks because they already exist.", ""),
-                NSBundle.localizedString("OK", ""), //default
-                null,
-                null);
-        tmp.delete();
-    }
-
-    public void uploadBookmarksToDotMacAction(Object sender) {
-        this.uploadBookmarksToDotMacActionNative();
-    }
-
-    private int noSkipped = 0;
-    private int noAdded = 0;
+    protected int noSkipped = 0;
+    protected int noAdded = 0;
 
     private boolean canceled = false;
 
-    private void loadBookmarks(java.io.File f) {
+    public void loadBookmarks(java.io.File f) {
         if (f.exists()) {
             log.info("Found Bookmarks file: " + f.toString());
             NSData plistData = new NSData(f);

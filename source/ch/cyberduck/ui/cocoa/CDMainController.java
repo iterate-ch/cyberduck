@@ -602,6 +602,28 @@ public class CDMainController extends CDController {
 		controller.window().makeKeyAndOrderFront(null);
 	}
 
+    public void downloadBookmarksFromDotMacClicked(Object sender) {
+        CDDotMacController controller = new CDDotMacController();
+        File tmp = new File(NSPathUtilities.temporaryDirectory(),
+                "Favorites.plist");
+        controller.downloadBookmarks(tmp.getAbsolutePath());
+        controller.loadBookmarks(tmp);
+        NSAlertPanel.runInformationalAlert(NSBundle.localizedString("Bookmarks Imported", ""),
+                NSBundle.localizedString("Imported", "") + " " + controller.noAdded + " " + NSBundle.localizedString("of", "") + " "
+                + (controller.noSkipped + controller.noAdded) + " " + NSBundle.localizedString("bookmarks.", "") + " "
+                + NSBundle.localizedString("Omitted", "")+" "+controller.noSkipped+" "
+                + NSBundle.localizedString("bookmarks because they already exist.", ""),
+                NSBundle.localizedString("OK", ""), //default
+                null,
+                null);
+        tmp.delete();
+    }
+
+    public void uploadBookmarksToDotMacClicked(Object sender) {
+        CDDotMacController controller = new CDDotMacController();
+        controller.uploadBookmarks();
+    }
+
 	// ----------------------------------------------------------
 	// Application delegate methods
 	// ----------------------------------------------------------

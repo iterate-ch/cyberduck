@@ -40,14 +40,14 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
     return converted;
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_downloadBookmarksFromDotMacActionNative(JNIEnv *env, jobject this, jstring file) 
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_downloadBookmarks(JNIEnv *env, jobject this, jstring file)
 {
 	CDDotMacController *c = [[CDDotMacController alloc] init];
 	[c downloadBookmarksFromDotMacAction:convertToNSString(env, file)];
 	[c release];
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookmarksToDotMacActionNative(JNIEnv *env, jobject this) {
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookmarks(JNIEnv *env, jobject this) {
 	CDDotMacController *c = [[CDDotMacController alloc] init];
 	[c uploadBookmarksToDotMacAction:nil];
 	[c release];
@@ -199,7 +199,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookm
 								  userInfo:nil];
 		[e raise];
 	}
-	long size = [transaction contentLength];
+    //long size = [transaction contentLength];
 	while(![transaction isFinished]) {
 		//block; update progress with
 		//[transaction bytesTransferred];
