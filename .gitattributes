@@ -36,6 +36,8 @@ cs.lproj/Browser.nib/keyedobjects.nib -text
 cs.lproj/Browser.strings svneol=native#unset
 cs.lproj/Certificate.nib/keyedobjects.nib -text
 cs.lproj/Certificate.strings svneol=native#unset
+cs.lproj/Command.nib/keyedobjects.nib -text
+cs.lproj/Command.strings svneol=native#unset
 cs.lproj/Connection.nib/keyedobjects.nib -text
 cs.lproj/Connection.strings svneol=native#unset
 cs.lproj/Donate.nib/keyedobjects.nib -text
@@ -81,6 +83,8 @@ da.lproj/Browser.nib/keyedobjects.nib -text
 da.lproj/Browser.strings svneol=native#unset
 da.lproj/Certificate.nib/keyedobjects.nib -text
 da.lproj/Certificate.strings svneol=native#unset
+da.lproj/Command.nib/keyedobjects.nib -text
+da.lproj/Command.strings svneol=native#unset
 da.lproj/Connection.nib/keyedobjects.nib -text
 da.lproj/Connection.strings svneol=native#unset
 da.lproj/Donate.nib/keyedobjects.nib -text
@@ -120,6 +124,8 @@ de.lproj/Browser.nib/keyedobjects.nib -text
 de.lproj/Browser.strings svneol=native#unset
 de.lproj/Certificate.nib/keyedobjects.nib -text
 de.lproj/Certificate.strings svneol=native#unset
+de.lproj/Command.nib/keyedobjects.nib -text
+de.lproj/Command.strings svneol=native#unset
 de.lproj/Connection.nib/keyedobjects.nib -text
 de.lproj/Connection.strings svneol=native#unset
 de.lproj/Donate.nib/keyedobjects.nib -text
@@ -159,6 +165,7 @@ en.lproj/Browser.nib/keyedobjects.nib -text
 en.lproj/Browser.strings svneol=native#unset
 en.lproj/Certificate.nib/keyedobjects.nib -text
 en.lproj/Certificate.strings svneol=native#unset
+en.lproj/Command.strings svneol=native#unset
 en.lproj/Connection.nib/keyedobjects.nib -text
 en.lproj/Connection.strings svneol=native#unset
 en.lproj/Donate.nib/keyedobjects.nib -text
@@ -198,6 +205,8 @@ es.lproj/Browser.nib/keyedobjects.nib -text
 es.lproj/Browser.strings svneol=native#unset
 es.lproj/Certificate.nib/keyedobjects.nib -text
 es.lproj/Certificate.strings svneol=native#unset
+es.lproj/Command.nib/keyedobjects.nib -text
+es.lproj/Command.strings svneol=native#unset
 es.lproj/Connection.nib/keyedobjects.nib -text
 es.lproj/Connection.strings svneol=native#unset
 es.lproj/Donate.nib/keyedobjects.nib -text
@@ -237,6 +246,8 @@ fi.lproj/Browser.nib/keyedobjects.nib -text
 fi.lproj/Browser.strings svneol=native#unset
 fi.lproj/Certificate.nib/keyedobjects.nib -text
 fi.lproj/Certificate.strings svneol=native#unset
+fi.lproj/Command.nib/keyedobjects.nib -text
+fi.lproj/Command.strings svneol=native#unset
 fi.lproj/Connection.nib/keyedobjects.nib -text
 fi.lproj/Connection.strings svneol=native#unset
 fi.lproj/Donate.nib/keyedobjects.nib -text
@@ -276,6 +287,8 @@ fr.lproj/Browser.nib/keyedobjects.nib -text
 fr.lproj/Browser.strings svneol=native#unset
 fr.lproj/Certificate.nib/keyedobjects.nib -text
 fr.lproj/Certificate.strings svneol=native#unset
+fr.lproj/Command.nib/keyedobjects.nib -text
+fr.lproj/Command.strings svneol=native#unset
 fr.lproj/Connection.nib/keyedobjects.nib -text
 fr.lproj/Connection.strings svneol=native#unset
 fr.lproj/Donate.nib/keyedobjects.nib -text
@@ -317,6 +330,8 @@ hu.lproj/Browser.nib/keyedobjects.nib -text
 hu.lproj/Browser.strings svneol=native#unset
 hu.lproj/Certificate.nib/keyedobjects.nib -text
 hu.lproj/Certificate.strings svneol=native#unset
+hu.lproj/Command.nib/keyedobjects.nib -text
+hu.lproj/Command.strings svneol=native#unset
 hu.lproj/Connection.nib/keyedobjects.nib -text
 hu.lproj/Connection.strings svneol=native#unset
 hu.lproj/Donate.nib/keyedobjects.nib -text
@@ -502,6 +517,8 @@ it.lproj/Browser.nib/keyedobjects.nib -text
 it.lproj/Browser.strings svneol=native#unset
 it.lproj/Certificate.nib/keyedobjects.nib -text
 it.lproj/Certificate.strings svneol=native#unset
+it.lproj/Command.nib/keyedobjects.nib -text
+it.lproj/Command.strings svneol=native#unset
 it.lproj/Connection.nib/keyedobjects.nib -text
 it.lproj/Connection.strings svneol=native#unset
 it.lproj/Donate.nib/keyedobjects.nib -text
@@ -541,6 +558,8 @@ ja.lproj/Browser.nib/keyedobjects.nib -text
 ja.lproj/Browser.strings svneol=native#unset
 ja.lproj/Certificate.nib/keyedobjects.nib -text
 ja.lproj/Certificate.strings svneol=native#unset
+ja.lproj/Command.nib/keyedobjects.nib -text
+ja.lproj/Command.strings svneol=native#unset
 ja.lproj/Connection.nib/keyedobjects.nib -text
 ja.lproj/Connection.strings svneol=native#unset
 ja.lproj/Donate.nib/keyedobjects.nib -text
@@ -581,6 +600,8 @@ ko.lproj/Browser.nib/keyedobjects.nib -text
 ko.lproj/Browser.strings svneol=native#unset
 ko.lproj/Certificate.nib/keyedobjects.nib -text
 ko.lproj/Certificate.strings svneol=native#unset
+ko.lproj/Command.nib/keyedobjects.nib -text
+ko.lproj/Command.strings svneol=native#unset
 ko.lproj/Connection.nib/keyedobjects.nib -text
 ko.lproj/Connection.strings svneol=native#unset
 ko.lproj/Donate.nib/keyedobjects.nib -text
@@ -625,6 +646,8 @@ nl.lproj/Browser.nib/keyedobjects.nib -text
 nl.lproj/Browser.strings svneol=native#unset
 nl.lproj/Certificate.nib/keyedobjects.nib -text
 nl.lproj/Certificate.strings svneol=native#unset
+nl.lproj/Command.nib/keyedobjects.nib -text
+nl.lproj/Command.strings svneol=native#unset
 nl.lproj/Connection.nib/keyedobjects.nib -text
 nl.lproj/Connection.strings svneol=native#unset
 nl.lproj/Donate.nib/keyedobjects.nib -text
@@ -664,6 +687,8 @@ no.lproj/Browser.nib/keyedobjects.nib -text
 no.lproj/Browser.strings svneol=native#unset
 no.lproj/Certificate.nib/keyedobjects.nib -text
 no.lproj/Certificate.strings svneol=native#unset
+no.lproj/Command.nib/keyedobjects.nib -text
+no.lproj/Command.strings svneol=native#unset
 no.lproj/Connection.nib/keyedobjects.nib -text
 no.lproj/Connection.strings svneol=native#unset
 no.lproj/Donate.nib/keyedobjects.nib -text
@@ -704,6 +729,8 @@ pl.lproj/Browser.nib/keyedobjects.nib -text
 pl.lproj/Browser.strings svneol=native#unset
 pl.lproj/Certificate.nib/keyedobjects.nib -text
 pl.lproj/Certificate.strings svneol=native#unset
+pl.lproj/Command.nib/keyedobjects.nib -text
+pl.lproj/Command.strings svneol=native#unset
 pl.lproj/Connection.nib/keyedobjects.nib -text
 pl.lproj/Connection.strings svneol=native#unset
 pl.lproj/Donate.nib/keyedobjects.nib -text
@@ -744,6 +771,8 @@ pt.lproj/Browser.nib/keyedobjects.nib -text
 pt.lproj/Browser.strings svneol=native#unset
 pt.lproj/Certificate.nib/keyedobjects.nib -text
 pt.lproj/Certificate.strings svneol=native#unset
+pt.lproj/Command.nib/keyedobjects.nib -text
+pt.lproj/Command.strings svneol=native#unset
 pt.lproj/Connection.nib/keyedobjects.nib -text
 pt.lproj/Connection.strings svneol=native#unset
 pt.lproj/Donate.nib/keyedobjects.nib -text
@@ -783,6 +812,8 @@ ru.lproj/Browser.nib/keyedobjects.nib -text
 ru.lproj/Browser.strings svneol=native#unset
 ru.lproj/Certificate.nib/keyedobjects.nib -text
 ru.lproj/Certificate.strings svneol=native#unset
+ru.lproj/Command.nib/keyedobjects.nib -text
+ru.lproj/Command.strings svneol=native#unset
 ru.lproj/Connection.nib/keyedobjects.nib -text
 ru.lproj/Connection.strings svneol=native#unset
 ru.lproj/Donate.nib/keyedobjects.nib -text
@@ -822,6 +853,8 @@ sk.lproj/Browser.nib/keyedobjects.nib -text
 sk.lproj/Browser.strings svneol=native#unset
 sk.lproj/Certificate.nib/keyedobjects.nib -text
 sk.lproj/Certificate.strings svneol=native#unset
+sk.lproj/Command.nib/keyedobjects.nib -text
+sk.lproj/Command.strings svneol=native#unset
 sk.lproj/Connection.nib/keyedobjects.nib -text
 sk.lproj/Connection.strings svneol=native#unset
 sk.lproj/Donate.nib/keyedobjects.nib -text
@@ -865,6 +898,8 @@ sv.lproj/Browser.nib/keyedobjects.nib -text
 sv.lproj/Browser.strings svneol=native#unset
 sv.lproj/Certificate.nib/keyedobjects.nib -text
 sv.lproj/Certificate.strings svneol=native#unset
+sv.lproj/Command.nib/keyedobjects.nib -text
+sv.lproj/Command.strings svneol=native#unset
 sv.lproj/Connection.nib/keyedobjects.nib -text
 sv.lproj/Connection.strings svneol=native#unset
 sv.lproj/Donate.nib/keyedobjects.nib -text
@@ -904,6 +939,8 @@ zh_CN.lproj/Browser.nib/keyedobjects.nib -text
 zh_CN.lproj/Browser.strings svneol=native#unset
 zh_CN.lproj/Certificate.nib/keyedobjects.nib -text
 zh_CN.lproj/Certificate.strings svneol=native#unset
+zh_CN.lproj/Command.nib/keyedobjects.nib -text
+zh_CN.lproj/Command.strings svneol=native#unset
 zh_CN.lproj/Connection.nib/keyedobjects.nib -text
 zh_CN.lproj/Connection.strings svneol=native#unset
 zh_CN.lproj/Donate.nib/keyedobjects.nib -text
@@ -943,6 +980,8 @@ zh_TW.lproj/Browser.nib/keyedobjects.nib -text
 zh_TW.lproj/Browser.strings svneol=native#unset
 zh_TW.lproj/Certificate.nib/keyedobjects.nib -text
 zh_TW.lproj/Certificate.strings svneol=native#unset
+zh_TW.lproj/Command.nib/keyedobjects.nib -text
+zh_TW.lproj/Command.strings svneol=native#unset
 zh_TW.lproj/Connection.nib/keyedobjects.nib -text
 zh_TW.lproj/Connection.strings svneol=native#unset
 zh_TW.lproj/Donate.nib/keyedobjects.nib -text

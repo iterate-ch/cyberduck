@@ -1,0 +1,13 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {closeButtonClicked = id; sendButtonClicked = id; }; 
+            CLASS = "ch.cyberduck.ui.cocoa.CDCommandController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {inputField = NSTextField; responseField = id; window = NSWindow; }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}
