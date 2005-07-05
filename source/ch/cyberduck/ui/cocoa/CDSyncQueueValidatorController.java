@@ -205,7 +205,6 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	}
 
 	public void syncActionFired(NSButton sender) {
-		this.validatedList.addAll(this.workList); //Include the files that have been manually validated
 		for(Iterator i = this.workList.iterator(); i.hasNext(); ) {
 			Path p = (Path)i.next();
 			if(!p.isSkipped()) {
