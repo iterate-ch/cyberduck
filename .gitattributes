@@ -52,6 +52,7 @@ ca.lproj/Folder.nib/keyedobjects.nib -text
 ca.lproj/Folder.strings svneol=native#unset
 ca.lproj/Goto.nib/keyedobjects.nib -text
 ca.lproj/Goto.strings svneol=native#unset
+ca.lproj/Growl.strings svneol=native#unset
 ca.lproj/Info.nib/keyedobjects.nib -text
 ca.lproj/Info.strings svneol=native#unset
 ca.lproj/InfoPlist.strings svneol=native#unset
@@ -64,6 +65,7 @@ ca.lproj/Preferences.strings svneol=native#unset
 ca.lproj/Progress.nib/keyedobjects.nib -text
 ca.lproj/Queue.nib/keyedobjects.nib -text
 ca.lproj/Queue.strings svneol=native#unset
+ca.lproj/Status.strings svneol=native#unset
 ca.lproj/Sync.nib/keyedobjects.nib -text
 ca.lproj/Sync.strings svneol=native#unset
 ca.lproj/Update.nib/keyedobjects.nib -text
@@ -92,6 +94,7 @@ cs.lproj/Folder.nib/keyedobjects.nib -text
 cs.lproj/Folder.strings svneol=native#unset
 cs.lproj/Goto.nib/keyedobjects.nib -text
 cs.lproj/Goto.strings svneol=native#unset
+cs.lproj/Growl.strings svneol=native#unset
 cs.lproj/Info.nib/keyedobjects.nib -text
 cs.lproj/Info.strings svneol=native#unset
 cs.lproj/InfoPlist.strings svneol=native#unset
@@ -104,6 +107,7 @@ cs.lproj/Preferences.strings svneol=native#unset
 cs.lproj/Progress.nib/keyedobjects.nib -text
 cs.lproj/Queue.nib/keyedobjects.nib -text
 cs.lproj/Queue.strings svneol=native#unset
+cs.lproj/Status.strings svneol=native#unset
 cs.lproj/Sync.nib/keyedobjects.nib -text
 cs.lproj/Sync.strings svneol=native#unset
 cs.lproj/Update.nib/keyedobjects.nib -text
@@ -138,6 +142,7 @@ da.lproj/Folder.nib/keyedobjects.nib -text
 da.lproj/Folder.strings svneol=native#unset
 da.lproj/Goto.nib/keyedobjects.nib -text
 da.lproj/Goto.strings svneol=native#unset
+da.lproj/Growl.strings svneol=native#unset
 da.lproj/Info.nib/keyedobjects.nib -text
 da.lproj/Info.strings svneol=native#unset
 da.lproj/InfoPlist.strings svneol=native#unset
@@ -150,6 +155,7 @@ da.lproj/Preferences.strings svneol=native#unset
 da.lproj/Progress.nib/keyedobjects.nib -text
 da.lproj/Queue.nib/keyedobjects.nib -text
 da.lproj/Queue.strings svneol=native#unset
+da.lproj/Status.strings svneol=native#unset
 da.lproj/Sync.nib/keyedobjects.nib -text
 da.lproj/Sync.strings svneol=native#unset
 da.lproj/Update.nib/keyedobjects.nib -text
@@ -178,6 +184,7 @@ de.lproj/Folder.nib/keyedobjects.nib -text
 de.lproj/Folder.strings svneol=native#unset
 de.lproj/Goto.nib/keyedobjects.nib -text
 de.lproj/Goto.strings svneol=native#unset
+de.lproj/Growl.strings svneol=native#unset
 de.lproj/Info.nib/keyedobjects.nib -text
 de.lproj/Info.strings svneol=native#unset
 de.lproj/InfoPlist.strings -text
@@ -191,6 +198,7 @@ de.lproj/Preferences.strings svneol=native#unset
 de.lproj/Progress.nib/keyedobjects.nib -text
 de.lproj/Queue.nib/keyedobjects.nib -text
 de.lproj/Queue.strings svneol=native#unset
+de.lproj/Status.strings svneol=native#unset
 de.lproj/Sync.nib/keyedobjects.nib -text
 de.lproj/Sync.strings svneol=native#unset
 de.lproj/Update.nib/keyedobjects.nib -text
@@ -218,6 +226,7 @@ en.lproj/Folder.nib/keyedobjects.nib -text
 en.lproj/Folder.strings svneol=native#unset
 en.lproj/Goto.nib/keyedobjects.nib -text
 en.lproj/Goto.strings svneol=native#unset
+en.lproj/Growl.strings svneol=native#unset
 en.lproj/Info.nib/keyedobjects.nib -text
 en.lproj/Info.strings svneol=native#unset
 en.lproj/InfoPlist.strings -text
@@ -231,6 +240,7 @@ en.lproj/Preferences.strings svneol=native#unset
 en.lproj/Progress.nib/keyedobjects.nib -text
 en.lproj/Queue.nib/keyedobjects.nib -text
 en.lproj/Queue.strings svneol=native#unset
+en.lproj/Status.strings svneol=native#unset
 en.lproj/Sync.nib/keyedobjects.nib -text
 en.lproj/Sync.strings svneol=native#unset
 en.lproj/Update.nib/keyedobjects.nib -text
@@ -259,6 +269,7 @@ es.lproj/Folder.nib/keyedobjects.nib -text
 es.lproj/Folder.strings svneol=native#unset
 es.lproj/Goto.nib/keyedobjects.nib -text
 es.lproj/Goto.strings svneol=native#unset
+es.lproj/Growl.strings svneol=native#unset
 es.lproj/Info.nib/keyedobjects.nib -text
 es.lproj/Info.strings svneol=native#unset
 es.lproj/InfoPlist.strings svneol=native#unset
@@ -271,6 +282,7 @@ es.lproj/Preferences.strings svneol=native#unset
 es.lproj/Progress.nib/keyedobjects.nib -text
 es.lproj/Queue.nib/keyedobjects.nib -text
 es.lproj/Queue.strings svneol=native#unset
+es.lproj/Status.strings svneol=native#unset
 es.lproj/Sync.nib/keyedobjects.nib -text
 es.lproj/Sync.strings svneol=native#unset
 es.lproj/Update.nib/keyedobjects.nib -text
@@ -299,6 +311,7 @@ fi.lproj/Folder.nib/keyedobjects.nib -text
 fi.lproj/Folder.strings svneol=native#unset
 fi.lproj/Goto.nib/keyedobjects.nib -text
 fi.lproj/Goto.strings svneol=native#unset
+fi.lproj/Growl.strings svneol=native#unset
 fi.lproj/Info.nib/keyedobjects.nib -text
 fi.lproj/Info.strings svneol=native#unset
 fi.lproj/InfoPlist.strings svneol=native#unset
@@ -311,6 +324,7 @@ fi.lproj/Preferences.strings svneol=native#unset
 fi.lproj/Progress.nib/keyedobjects.nib -text
 fi.lproj/Queue.nib/keyedobjects.nib -text
 fi.lproj/Queue.strings svneol=native#unset
+fi.lproj/Status.strings svneol=native#unset
 fi.lproj/Sync.nib/keyedobjects.nib -text
 fi.lproj/Sync.strings svneol=native#unset
 fi.lproj/Update.nib/keyedobjects.nib -text
@@ -339,6 +353,7 @@ fr.lproj/Folder.nib/keyedobjects.nib -text
 fr.lproj/Folder.strings svneol=native#unset
 fr.lproj/Goto.nib/keyedobjects.nib -text
 fr.lproj/Goto.strings svneol=native#unset
+fr.lproj/Growl.strings svneol=native#unset
 fr.lproj/Info.nib/keyedobjects.nib -text
 fr.lproj/Info.strings svneol=native#unset
 fr.lproj/InfoPlist.strings svneol=native#unset
@@ -351,6 +366,7 @@ fr.lproj/Preferences.strings svneol=native#unset
 fr.lproj/Progress.nib/keyedobjects.nib -text
 fr.lproj/Queue.nib/keyedobjects.nib -text
 fr.lproj/Queue.strings svneol=native#unset
+fr.lproj/Status.strings svneol=native#unset
 fr.lproj/Sync.nib/keyedobjects.nib -text
 fr.lproj/Sync.strings svneol=native#unset
 fr.lproj/Update.nib/keyedobjects.nib -text
@@ -381,6 +397,7 @@ hu.lproj/Folder.nib/keyedobjects.nib -text
 hu.lproj/Folder.strings svneol=native#unset
 hu.lproj/Goto.nib/keyedobjects.nib -text
 hu.lproj/Goto.strings svneol=native#unset
+hu.lproj/Growl.strings svneol=native#unset
 hu.lproj/Info.nib/keyedobjects.nib -text
 hu.lproj/Info.strings svneol=native#unset
 hu.lproj/InfoPlist.strings svneol=native#unset
@@ -393,6 +410,7 @@ hu.lproj/Preferences.strings svneol=native#unset
 hu.lproj/Progress.nib/keyedobjects.nib -text
 hu.lproj/Queue.nib/keyedobjects.nib -text
 hu.lproj/Queue.strings svneol=native#unset
+hu.lproj/Status.strings svneol=native#unset
 hu.lproj/Sync.nib/keyedobjects.nib -text
 hu.lproj/Sync.strings svneol=native#unset
 hu.lproj/Update.nib/keyedobjects.nib -text
@@ -421,6 +439,7 @@ id.lproj/Folder.nib/keyedobjects.nib -text
 id.lproj/Folder.strings svneol=native#unset
 id.lproj/Goto.nib/keyedobjects.nib -text
 id.lproj/Goto.strings svneol=native#unset
+id.lproj/Growl.strings svneol=native#unset
 id.lproj/Info.nib/keyedobjects.nib -text
 id.lproj/Info.strings svneol=native#unset
 id.lproj/InfoPlist.strings svneol=native#unset
@@ -433,6 +452,7 @@ id.lproj/Preferences.strings svneol=native#unset
 id.lproj/Progress.nib/keyedobjects.nib -text
 id.lproj/Queue.nib/keyedobjects.nib -text
 id.lproj/Queue.strings svneol=native#unset
+id.lproj/Status.strings svneol=native#unset
 id.lproj/Sync.nib/keyedobjects.nib -text
 id.lproj/Sync.strings svneol=native#unset
 id.lproj/Update.nib/keyedobjects.nib -text
@@ -566,6 +586,7 @@ it.lproj/Folder.nib/keyedobjects.nib -text
 it.lproj/Folder.strings svneol=native#unset
 it.lproj/Goto.nib/keyedobjects.nib -text
 it.lproj/Goto.strings svneol=native#unset
+it.lproj/Growl.strings svneol=native#unset
 it.lproj/Info.nib/keyedobjects.nib -text
 it.lproj/Info.strings svneol=native#unset
 it.lproj/InfoPlist.strings svneol=native#unset
@@ -578,6 +599,7 @@ it.lproj/Preferences.strings svneol=native#unset
 it.lproj/Progress.nib/keyedobjects.nib -text
 it.lproj/Queue.nib/keyedobjects.nib -text
 it.lproj/Queue.strings svneol=native#unset
+it.lproj/Status.strings svneol=native#unset
 it.lproj/Sync.nib/keyedobjects.nib -text
 it.lproj/Sync.strings svneol=native#unset
 it.lproj/Update.nib/keyedobjects.nib -text
@@ -606,6 +628,7 @@ ja.lproj/Folder.nib/keyedobjects.nib -text
 ja.lproj/Folder.strings svneol=native#unset
 ja.lproj/Goto.nib/keyedobjects.nib -text
 ja.lproj/Goto.strings svneol=native#unset
+ja.lproj/Growl.strings svneol=native#unset
 ja.lproj/Info.nib/keyedobjects.nib -text
 ja.lproj/Info.strings svneol=native#unset
 ja.lproj/InfoPlist.strings svneol=native#unset
@@ -620,6 +643,7 @@ ja.lproj/Preferences.strings svneol=native#unset
 ja.lproj/Progress.nib/keyedobjects.nib -text
 ja.lproj/Queue.nib/keyedobjects.nib -text
 ja.lproj/Queue.strings svneol=native#unset
+ja.lproj/Status.strings svneol=native#unset
 ja.lproj/Sync.nib/keyedobjects.nib -text
 ja.lproj/Sync.strings svneol=native#unset
 ja.lproj/Update.nib/keyedobjects.nib -text
@@ -648,6 +672,7 @@ ko.lproj/Folder.nib/keyedobjects.nib -text
 ko.lproj/Folder.strings svneol=native#unset
 ko.lproj/Goto.nib/keyedobjects.nib -text
 ko.lproj/Goto.strings svneol=native#unset
+ko.lproj/Growl.strings svneol=native#unset
 ko.lproj/Info.nib/keyedobjects.nib -text
 ko.lproj/Info.strings svneol=native#unset
 ko.lproj/InfoPlist.strings svneol=native#unset
@@ -660,6 +685,7 @@ ko.lproj/Preferences.strings svneol=native#unset
 ko.lproj/Progress.nib/keyedobjects.nib -text
 ko.lproj/Queue.nib/keyedobjects.nib -text
 ko.lproj/Queue.strings svneol=native#unset
+ko.lproj/Status.strings svneol=native#unset
 ko.lproj/Sync.nib/keyedobjects.nib -text
 ko.lproj/Sync.strings svneol=native#unset
 ko.lproj/Update.nib/keyedobjects.nib -text
@@ -693,6 +719,7 @@ nl.lproj/Folder.nib/keyedobjects.nib -text
 nl.lproj/Folder.strings svneol=native#unset
 nl.lproj/Goto.nib/keyedobjects.nib -text
 nl.lproj/Goto.strings svneol=native#unset
+nl.lproj/Growl.strings svneol=native#unset
 nl.lproj/Info.nib/keyedobjects.nib -text
 nl.lproj/Info.strings svneol=native#unset
 nl.lproj/InfoPlist.strings -text svneol=unset#application/octet-stream
@@ -706,6 +733,7 @@ nl.lproj/Preferences.strings svneol=native#unset
 nl.lproj/Progress.nib/keyedobjects.nib -text
 nl.lproj/Queue.nib/keyedobjects.nib -text
 nl.lproj/Queue.strings svneol=native#unset
+nl.lproj/Status.strings svneol=native#unset
 nl.lproj/Sync.nib/keyedobjects.nib -text
 nl.lproj/Sync.strings svneol=native#unset
 nl.lproj/Update.nib/keyedobjects.nib -text
@@ -734,6 +762,7 @@ no.lproj/Folder.nib/keyedobjects.nib -text
 no.lproj/Folder.strings svneol=native#unset
 no.lproj/Goto.nib/keyedobjects.nib -text
 no.lproj/Goto.strings svneol=native#unset
+no.lproj/Growl.strings svneol=native#unset
 no.lproj/Info.nib/keyedobjects.nib -text
 no.lproj/Info.strings svneol=native#unset
 no.lproj/InfoPlist.strings svneol=native#unset
@@ -747,6 +776,7 @@ no.lproj/Progress.nib/keyedobjects.nib -text
 no.lproj/Queue.nib/classes.nib -text svneol=unset#application/octet-stream
 no.lproj/Queue.nib/keyedobjects.nib -text
 no.lproj/Queue.strings svneol=native#unset
+no.lproj/Status.strings svneol=native#unset
 no.lproj/Sync.nib/keyedobjects.nib -text
 no.lproj/Sync.strings svneol=native#unset
 no.lproj/Update.nib/keyedobjects.nib -text
@@ -775,6 +805,7 @@ pl.lproj/Folder.nib/keyedobjects.nib -text
 pl.lproj/Folder.strings svneol=native#unset
 pl.lproj/Goto.nib/keyedobjects.nib -text
 pl.lproj/Goto.strings svneol=native#unset
+pl.lproj/Growl.strings svneol=native#unset
 pl.lproj/Info.nib/keyedobjects.nib -text
 pl.lproj/Info.strings svneol=native#unset
 pl.lproj/InfoPlist.strings svneol=native#unset
@@ -788,6 +819,7 @@ pl.lproj/Preferences.strings svneol=native#unset
 pl.lproj/Progress.nib/keyedobjects.nib -text
 pl.lproj/Queue.nib/keyedobjects.nib -text
 pl.lproj/Queue.strings svneol=native#unset
+pl.lproj/Status.strings svneol=native#unset
 pl.lproj/Sync.nib/keyedobjects.nib -text
 pl.lproj/Sync.strings svneol=native#unset
 pl.lproj/Update.nib/keyedobjects.nib -text
@@ -816,6 +848,7 @@ pt.lproj/Folder.nib/keyedobjects.nib -text
 pt.lproj/Folder.strings svneol=native#unset
 pt.lproj/Goto.nib/keyedobjects.nib -text
 pt.lproj/Goto.strings svneol=native#unset
+pt.lproj/Growl.strings svneol=native#unset
 pt.lproj/Info.nib/keyedobjects.nib -text
 pt.lproj/Info.strings svneol=native#unset
 pt.lproj/InfoPlist.strings svneol=native#unset
@@ -828,6 +861,7 @@ pt.lproj/Preferences.strings svneol=native#unset
 pt.lproj/Progress.nib/keyedobjects.nib -text
 pt.lproj/Queue.nib/keyedobjects.nib -text
 pt.lproj/Queue.strings svneol=native#unset
+pt.lproj/Status.strings svneol=native#unset
 pt.lproj/Sync.nib/keyedobjects.nib -text
 pt.lproj/Sync.strings svneol=native#unset
 pt.lproj/Update.nib/keyedobjects.nib -text
@@ -856,6 +890,7 @@ ru.lproj/Folder.nib/keyedobjects.nib -text
 ru.lproj/Folder.strings svneol=native#unset
 ru.lproj/Goto.nib/keyedobjects.nib -text
 ru.lproj/Goto.strings svneol=native#unset
+ru.lproj/Growl.strings svneol=native#unset
 ru.lproj/Info.nib/keyedobjects.nib -text
 ru.lproj/Info.strings svneol=native#unset
 ru.lproj/InfoPlist.strings svneol=native#unset
@@ -868,6 +903,7 @@ ru.lproj/Preferences.strings svneol=native#unset
 ru.lproj/Progress.nib/keyedobjects.nib -text
 ru.lproj/Queue.nib/keyedobjects.nib -text
 ru.lproj/Queue.strings svneol=native#unset
+ru.lproj/Status.strings svneol=native#unset
 ru.lproj/Sync.nib/keyedobjects.nib -text
 ru.lproj/Sync.strings svneol=native#unset
 ru.lproj/Update.nib/keyedobjects.nib -text
@@ -896,6 +932,7 @@ sk.lproj/Folder.nib/keyedobjects.nib -text
 sk.lproj/Folder.strings svneol=native#unset
 sk.lproj/Goto.nib/keyedobjects.nib -text
 sk.lproj/Goto.strings svneol=native#unset
+sk.lproj/Growl.strings svneol=native#unset
 sk.lproj/Info.nib/keyedobjects.nib -text
 sk.lproj/Info.strings svneol=native#unset
 sk.lproj/InfoPlist.strings svneol=native#unset
@@ -908,6 +945,7 @@ sk.lproj/Preferences.strings svneol=native#unset
 sk.lproj/Progress.nib/keyedobjects.nib -text
 sk.lproj/Queue.nib/keyedobjects.nib -text
 sk.lproj/Queue.strings svneol=native#unset
+sk.lproj/Status.strings svneol=native#unset
 sk.lproj/Sync.nib/keyedobjects.nib -text
 sk.lproj/Sync.strings svneol=native#unset
 sk.lproj/Update.nib/keyedobjects.nib -text
@@ -940,6 +978,7 @@ sv.lproj/Folder.nib/keyedobjects.nib -text
 sv.lproj/Folder.strings svneol=native#unset
 sv.lproj/Goto.nib/keyedobjects.nib -text
 sv.lproj/Goto.strings svneol=native#unset
+sv.lproj/Growl.strings svneol=native#unset
 sv.lproj/Info.nib/keyedobjects.nib -text
 sv.lproj/Info.strings svneol=native#unset
 sv.lproj/InfoPlist.strings svneol=native#unset
@@ -952,6 +991,7 @@ sv.lproj/Preferences.strings svneol=native#unset
 sv.lproj/Progress.nib/keyedobjects.nib -text
 sv.lproj/Queue.nib/keyedobjects.nib -text
 sv.lproj/Queue.strings svneol=native#unset
+sv.lproj/Status.strings svneol=native#unset
 sv.lproj/Sync.nib/keyedobjects.nib -text
 sv.lproj/Sync.strings svneol=native#unset
 sv.lproj/Update.nib/keyedobjects.nib -text
@@ -980,6 +1020,7 @@ zh_CN.lproj/Folder.nib/keyedobjects.nib -text
 zh_CN.lproj/Folder.strings svneol=native#unset
 zh_CN.lproj/Goto.nib/keyedobjects.nib -text
 zh_CN.lproj/Goto.strings svneol=native#unset
+zh_CN.lproj/Growl.strings svneol=native#unset
 zh_CN.lproj/Info.nib/keyedobjects.nib -text
 zh_CN.lproj/Info.strings svneol=native#unset
 zh_CN.lproj/InfoPlist.strings svneol=native#unset
@@ -993,6 +1034,7 @@ zh_CN.lproj/Preferences.strings svneol=native#unset
 zh_CN.lproj/Progress.nib/keyedobjects.nib -text
 zh_CN.lproj/Queue.nib/keyedobjects.nib -text
 zh_CN.lproj/Queue.strings svneol=native#unset
+zh_CN.lproj/Status.strings svneol=native#unset
 zh_CN.lproj/Sync.nib/keyedobjects.nib -text
 zh_CN.lproj/Sync.strings svneol=native#unset
 zh_CN.lproj/Update.nib/keyedobjects.nib -text
@@ -1021,6 +1063,7 @@ zh_TW.lproj/Folder.nib/keyedobjects.nib -text
 zh_TW.lproj/Folder.strings svneol=native#unset
 zh_TW.lproj/Goto.nib/keyedobjects.nib -text
 zh_TW.lproj/Goto.strings svneol=native#unset
+zh_TW.lproj/Growl.strings svneol=native#unset
 zh_TW.lproj/Info.nib/keyedobjects.nib -text
 zh_TW.lproj/Info.strings svneol=native#unset
 zh_TW.lproj/InfoPlist.strings svneol=native#unset
@@ -1034,6 +1077,7 @@ zh_TW.lproj/Preferences.strings svneol=native#unset
 zh_TW.lproj/Progress.nib/keyedobjects.nib -text
 zh_TW.lproj/Queue.nib/keyedobjects.nib -text
 zh_TW.lproj/Queue.strings svneol=native#unset
+zh_TW.lproj/Status.strings svneol=native#unset
 zh_TW.lproj/Sync.nib/keyedobjects.nib -text
 zh_TW.lproj/Sync.strings svneol=native#unset
 zh_TW.lproj/Update.nib/keyedobjects.nib -text
