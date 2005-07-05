@@ -128,6 +128,9 @@ public abstract class CDWindowController extends CDController {
     public void beginSheet(final NSWindow sheet, final Object delegate, final NSSelector endSelector, final Object contextInfo) {
         log.debug("beginSheet:"+sheet);
         synchronized(this) {
+            if(!this.window().isKeyWindow()) {
+                this.window.makeKeyAndOrderFront(null);
+            }
             this.waitForSheetEnd();
             NSApplication app = NSApplication.sharedApplication();
             app.beginSheet(sheet, //window
