@@ -46,7 +46,7 @@
                 pathPopup = NSPopUpButton; 
                 progressIndicator = NSProgressIndicator; 
                 quickConnectPopup = NSComboBox; 
-                searchField = NSTextField; 
+                searchField = NSView; 
                 statusIcon = NSImageView; 
                 statusLabel = NSTextField; 
                 upButton = NSButton; 
