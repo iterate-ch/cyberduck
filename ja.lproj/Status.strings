@@ -25,23 +25,17 @@
 /* No comment provided by engineer. */
 "Getting timestamp of" = "タイムスタンプ取得中：";
 
-/* No background thread is running */
+/* No activity */
 "Idle" = "待機中";
+
+/* No comment provided by engineer. */
+"Listing directory" = "リスト中";
 
 /* No comment provided by engineer. */
 "Login failed" = "ログイン失敗";
 
 /* No comment provided by engineer. */
 "Login successful" = "ログイン成功";
-
-/* No comment provided by engineer. */
-"Opening FTP connection to" = "FTP 接続確立中：";
-
-?/* No comment provided by engineer. */
-"Opening FTP-TLS connection to" = "FTP-TLS 接続確立中：";
-
-/* No comment provided by engineer. */
-"Listing directory" = "リスト中";
 
 /* No comment provided by engineer. */
 "Make directory" = "ディレクトリを作成";
@@ -51,6 +45,12 @@
 
 /* No comment provided by engineer. */
 "Mounting" = "マウント中";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "FTP 接続確立中：";
+
+/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "FTP-TLS 接続確立中：";
 
 /* No comment provided by engineer. */
 "Opening SSH connection to" = "SSH 接続確立中：";

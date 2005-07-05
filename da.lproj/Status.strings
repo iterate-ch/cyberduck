@@ -25,23 +25,17 @@
 /* No comment provided by engineer. */
 "Getting timestamp of" = "Henter tidsstempel af";
 
-/* No background thread is running */
+/* No activity */
 "Idle" = "Ledig";
+
+/* No comment provided by engineer. */
+"Listing directory" = "Lister bibliotek";
 
 /* No comment provided by engineer. */
 "Login failed" = "Login mislykkedes";
 
 /* No comment provided by engineer. */
 "Login successful" = "Login successfuldt";
-
-/* No comment provided by engineer. */
-"Opening FTP connection to" = "Åbner FTP forbindelse til";
-
-﻿/* No comment provided by engineer. */
-"Opening FTP-TLS connection to" = "Åbner FTP-TLS forbindelse til";
-
-/* No comment provided by engineer. */
-"Listing" = "Lister";
 
 /* No comment provided by engineer. */
 "Make directory" = "Lav bibliotek";
@@ -51,6 +45,12 @@
 
 /* No comment provided by engineer. */
 "Mounting" = "Åbner";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "Åbner FTP forbindelse til";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "Åbner FTP-TLS forbindelse til";
 
 /* No comment provided by engineer. */
 "Opening SSH connection to" = "Åbner SSH forbindelse til";

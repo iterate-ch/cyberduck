@@ -25,23 +25,17 @@
 /* No comment provided by engineer. */
 "Getting timestamp of" = "正在获取下列文件时间信息";
 
-/* No background thread is running */
+/* No activity */
 "Idle" = "闲置";
+
+/* No comment provided by engineer. */
+"Listing directory" = "列表中";
 
 /* No comment provided by engineer. */
 "Login failed" = "登陆失败";
 
 /* No comment provided by engineer. */
 "Login successful" = "登陆成功";
-
-/* No comment provided by engineer. */
-"Opening FTP connection to" = "正在开启 FTP 连接到";
-
-﻿/* No comment provided by engineer. */
-"Opening FTP-TLS connection to" = "正在开启 FTP-TLS 连接到";
-
-/* No comment provided by engineer. */
-"Listing" = "列表中";
 
 /* No comment provided by engineer. */
 "Make directory" = "建立目录";
@@ -51,6 +45,12 @@
 
 /* No comment provided by engineer. */
 "Mounting" = "虚拟中";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "正在开启 FTP 连接到";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "正在开启 FTP-TLS 连接到";
 
 /* No comment provided by engineer. */
 "Opening SSH connection to" = "正在开启 SSH 连接到";

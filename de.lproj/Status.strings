@@ -25,8 +25,11 @@
 /* No comment provided by engineer. */
 "Getting timestamp of" = "Finde Änderungsdatum von";
 
-/* No background thread is running */
+/* No activity */
 "Idle" = "Keine Aktivität";
+
+/* No comment provided by engineer. */
+"Listing directory" = "Verzeichnis laden";
 
 /* No comment provided by engineer. */
 "Login failed" = "Login fehlgeschlagen";
@@ -35,16 +38,7 @@
 "Login successful" = "Login erfolgreich";
 
 /* No comment provided by engineer. */
-"Opening FTP connection to" = "FTP Verbindung öffnen zu";
-
-﻿/* No comment provided by engineer. */
-"Opening FTP-TLS connection to" = "FTP-TLS Verbindung öffnen zu";
-
-/* No comment provided by engineer. */
-"Listing directory" = "Verzeichnis laden";
-
-/* No comment provided by engineer. */
-"Make directory" = "Verzeichnis anlegen"
+"Make directory" = "Verzeichnis anlegen";
 
 /* No comment provided by engineer. */
 "Maximum allowed connections exceeded. Waiting..." = "Maximale Anzahl von Verbindungen überschritten. Warten...";
@@ -53,7 +47,13 @@
 "Mounting" = "Mounten";
 
 /* No comment provided by engineer. */
-"Opening SSH connection to" = "SSH Verbindung öffen zu";
+"Opening FTP connection to" = "FTP Verbindung öffnen zu";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "FTP-TLS Verbindung öffnen zu";
+
+/* No comment provided by engineer. */
+"Opening SSH connection to" = "SSH Verbindung öffnen zu";
 
 /* No comment provided by engineer. */
 "SFTP subsystem ready" = "SFTP Subsystem bereit";

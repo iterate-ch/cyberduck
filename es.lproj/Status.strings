@@ -25,23 +25,17 @@
 /* No comment provided by engineer. */
 "Getting timestamp of" = "Getting timestamp of";
 
-/* No background thread is running */
+/* No activity */
 "Idle" = "Inactivo";
+
+/* No comment provided by engineer. */
+"Listing directory" = "Escribiendo el listado";
 
 /* No comment provided by engineer. */
 "Login failed" = "Falló la autentificación";
 
 /* No comment provided by engineer. */
 "Login successful" = "Autentificación correcta";
-
-/* No comment provided by engineer. */
-"Opening FTP connection to" = "Abriendo conexión FTP con";
-
-﻿/* No comment provided by engineer. */
-"Opening FTP-TLS connection to" = "Abriendo conexión FTP-TLS con";
-
-/* No comment provided by engineer. */
-"Listing" = "Escribiendo el listado";
 
 /* No comment provided by engineer. */
 "Make directory" = "Crear directoria";
@@ -51,6 +45,12 @@
 
 /* No comment provided by engineer. */
 "Mounting" = "Montando";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "Abriendo conexión FTP con";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "Abriendo conexión FTP-TLS con";
 
 /* No comment provided by engineer. */
 "Opening SSH connection to" = "Abriendo conexión SSH con";

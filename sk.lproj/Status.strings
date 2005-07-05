@@ -25,23 +25,17 @@
 /* No comment provided by engineer. */
 "Getting timestamp of" = "Získava sa časový údaj";
 
-/* No background thread is running */
+/* No activity */
 "Idle" = "Nečinný";
+
+/* No comment provided by engineer. */
+"Listing directory" = "Tvorí sa zoznam";
 
 /* No comment provided by engineer. */
 "Login failed" = "Prihlásenie zlyhalo";
 
 /* No comment provided by engineer. */
 "Login successful" = "Prihlásenie úspešné";
-
-/* No comment provided by engineer. */
-"Opening FTP connection to" = "Nadväzuje sa FTP spojenie s";
-
-﻿/* No comment provided by engineer. */
-"Opening FTP-TLS connection to" = "Nadväzuje sa FTP-TLS spojenie s";
-
-/* No comment provided by engineer. */
-"Listing directory" = "Tvorí sa zoznam";
 
 /* No comment provided by engineer. */
 "Make directory" = "Vytvára sa adresár";
@@ -51,6 +45,12 @@
 
 /* No comment provided by engineer. */
 "Mounting" = "Pripravuje sa";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "Nadväzuje sa FTP spojenie s";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "Nadväzuje sa FTP-TLS spojenie s";
 
 /* No comment provided by engineer. */
 "Opening SSH connection to" = "Nadväzuje sa SSH spojenie s";

@@ -25,23 +25,17 @@
 /* No comment provided by engineer. */
 "Getting timestamp of" = "Getting timestamp of";
 
-/* No background thread is running */
+/* No activity */
 "Idle" = "Nuda";
+
+/* No comment provided by engineer. */
+"Listing directory" = "Listing directory";
 
 /* No comment provided by engineer. */
 "Login failed" = "Login failed";
 
 /* No comment provided by engineer. */
 "Login successful" = "Login successful";
-
-/* No comment provided by engineer. */
-"Opening FTP connection to" = "Opening FTP connection to";
-
-﻿/* No comment provided by engineer. */
-"Opening FTP-TLS connection to" = "Opening FTP-TLS connection to";
-
-/* No comment provided by engineer. */
-"Listing directory" = "Listing directory";
 
 /* No comment provided by engineer. */
 "Make directory" = "Make directory";
@@ -51,6 +45,12 @@
 
 /* No comment provided by engineer. */
 "Mounting" = "Mounting";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "Opening FTP connection to";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "Opening FTP-TLS connection to";
 
 /* No comment provided by engineer. */
 "Opening SSH connection to" = "Opening SSH connection to";

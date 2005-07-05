@@ -25,23 +25,17 @@
 /* No comment provided by engineer. */
 "Getting timestamp of" = "Определяю дату изменения";
 
-/* No background thread is running */
+/* No activity */
 "Idle" = "Все готово";
+
+/* No comment provided by engineer. */
+"Listing directory" = "Получение списка файлов";
 
 /* No comment provided by engineer. */
 "Login failed" = "Сбой входа";
 
 /* No comment provided by engineer. */
 "Login successful" = "Вход осуществлен";
-
-/* No comment provided by engineer. */
-"Opening FTP connection to" = "Установка FTP соединения с";
-
-/* No comment provided by engineer. */
-"Opening FTP-TLS connection to" = "Установка FTP-TLS соединения с";
-
-/* No comment provided by engineer. */
-"Listing directory" = "Получение списка файлов";
 
 /* No comment provided by engineer. */
 "Make directory" = "Создать директорию";
@@ -51,6 +45,12 @@
 
 /* No comment provided by engineer. */
 "Mounting" = "Подключение к";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "Установка FTP соединения с";
+
+/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "Установка FTP-TLS соединения с";
 
 /* No comment provided by engineer. */
 "Opening SSH connection to" = "Установка SSH-соединения с";

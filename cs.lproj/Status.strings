@@ -25,7 +25,7 @@
 /* No comment provided by engineer. */
 "Getting timestamp of" = "Zjišťování času";
 
-/* No background thread is running */
+/* No activity */
 "Idle" = "Nečinný";
 
 /* No comment provided by engineer. */
@@ -33,12 +33,6 @@
 
 /* No comment provided by engineer. */
 "Login successful" = "Přihlašování úspěšně dokončeno";
-
-/* No comment provided by engineer. */
-"Opening FTP connection to" = "Otevírání FTP spojení s";
-
-﻿/* No comment provided by engineer. */
-"Opening FTP-TLS connection to" = "Otevírání FTP-TLS spojení s";
 
 /* No comment provided by engineer. */
 "Listing directory" = "Výpis";
@@ -51,6 +45,12 @@
 
 /* No comment provided by engineer. */
 "Mounting" = "Připojování";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "Otevírání FTP spojení s";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "Otevírání FTP-TLS spojení s";
 
 /* No comment provided by engineer. */
 "Opening SSH connection to" = "Otevírání SSH spojení s";

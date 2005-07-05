@@ -25,23 +25,17 @@
 /* No comment provided by engineer. */
 "Getting timestamp of" = "Haen aikaleimaa";
 
-/* No background thread is running */
+/* No activity */
 "Idle" = "Jouten";
+
+/* No comment provided by engineer. */
+"Listing directory" = "Listaan";
 
 /* No comment provided by engineer. */
 "Login failed" = "Sisäänkirjautuminen epäonnistui";
 
 /* No comment provided by engineer. */
 "Login successful" = "Sisäänkirjautuminen onnistui";
-
-/* No comment provided by engineer. */
-"Opening FTP connection to" = "Avaan FTP-yhteyden palvelimelle";
-
-﻿/* No comment provided by engineer. */
-"Opening FTP-TLS connection to" = "Avaan FTP-TLS-yhteyden palvelimelle";
-
-/* No comment provided by engineer. */
-"Listing directory" = "Listaan";
 
 /* No comment provided by engineer. */
 "Make directory" = "Luo hakemisto";
@@ -51,6 +45,12 @@
 
 /* No comment provided by engineer. */
 "Mounting" = "Kytken";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "Avaan FTP-yhteyden palvelimelle";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "Avaan FTP-TLS-yhteyden palvelimelle";
 
 /* No comment provided by engineer. */
 "Opening SSH connection to" = "Avaan SSH-yhteyden palvelimelle";

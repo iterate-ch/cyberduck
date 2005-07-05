@@ -25,23 +25,17 @@
 /* No comment provided by engineer. */
 "Getting timestamp of" = "Mengambil timestamp dari";
 
-/* No background thread is running */
+/* No activity */
 "Idle" = "Idle";
+
+/* No comment provided by engineer. */
+"Listing directory" = "Daftar direktori";
 
 /* No comment provided by engineer. */
 "Login failed" = "Login gagal";
 
 /* No comment provided by engineer. */
 "Login successful" = "Login berhasil";
-
-/* No comment provided by engineer. */
-"Opening FTP connection to" = "Membuka koneksi FTP ke";
-
-﻿/* No comment provided by engineer. */
-"Opening FTP-TLS connection to" = "Membuka koneksi FTP-TLS connection ke";
-
-/* No comment provided by engineer. */
-"Listing directory" = "Daftar direktori";
 
 /* No comment provided by engineer. */
 "Make directory" = "Membuat direktori";
@@ -51,6 +45,12 @@
 
 /* No comment provided by engineer. */
 "Mounting" = "Mounting";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "Membuka koneksi FTP ke";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "Membuka koneksi FTP-TLS connection ke";
 
 /* No comment provided by engineer. */
 "Opening SSH connection to" = "Membuka koneksi SSH ke";
