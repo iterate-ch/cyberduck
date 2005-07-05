@@ -65,10 +65,10 @@ public class UploadQueue extends Queue {
 		super.finish(headless);
 		if(this.isComplete() && !this.isCanceled()) {
 			this.callObservers(new Message(Message.PROGRESS, NSBundle.localizedString("Upload complete",
-																					  "Growl Notification")));
+																					  "Growl", "Growl Notification")));
 			this.callObservers(new Message(Message.QUEUE_STOP));
 			Growl.instance().notify(NSBundle.localizedString("Upload complete",
-															 "Growl Notification"),
+															 "Growl", "Growl Notification"),
 									this.getName());
 			if(callback != null) {
 				callback.update(null, new Message(Message.REFRESH));

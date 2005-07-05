@@ -108,7 +108,7 @@ public abstract class Session extends Observable {
 	 * Connect to the remote host and mount the home directory
 	 */
 	public synchronized void mount(String encoding, Filter filter) {
-		this.log(Message.PROGRESS, NSBundle.localizedString("Mounting", "")+" "+host.getHostname()+"...");
+		this.log(Message.PROGRESS, NSBundle.localizedString("Mounting", "Status", "")+" "+host.getHostname()+"...");
 		try {
 			this.check();
 			Path home;
@@ -131,12 +131,12 @@ public abstract class Session extends Observable {
 				home = workdir();
 				home.list(encoding, true, filter);
 			}
-			Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl Notification"),
+			Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl", "Growl Notification"),
 									host.getHostname());
 		}
 		catch(IOException e) {
-            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-			Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl Notification"),
+            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": "+e.getMessage());
+			Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
 									host.getHostname());
 			this.close();
 		}
@@ -187,7 +187,7 @@ public abstract class Session extends Observable {
 	public synchronized void setConnected() throws IOException {
 		log.debug("setConnected");
 		SessionPool.instance().add(this, Preferences.instance().getBoolean("connection.pool.force"));
-		this.callObservers(new Message(Message.OPEN, "Session opened."));
+		this.callObservers(new Message(Message.OPEN, null));
 		this.connected = true;
 	}
 
@@ -204,7 +204,7 @@ public abstract class Session extends Observable {
 	public synchronized void setClosed() {
 		log.debug("setClosed");
 		this.connected = false;
-		this.callObservers(new Message(Message.CLOSE, "Session closed."));
+		this.callObservers(new Message(Message.CLOSE, null));
 		if(Preferences.instance().getBoolean("connection.keepalive") && this.keepAliveTimer != null) {
 			this.keepAliveTimer.cancel();
 		}

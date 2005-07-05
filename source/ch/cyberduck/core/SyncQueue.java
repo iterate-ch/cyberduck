@@ -71,10 +71,10 @@ public class SyncQueue extends Queue {
 		super.finish(headless);
 		if(this.isComplete() && !this.isCanceled()) {
 			this.callObservers(new Message(Message.PROGRESS, NSBundle.localizedString("Synchronization complete",
-																					  "Growl Notification")));
+																					  "Growl", "Growl Notification")));
 			this.callObservers(new Message(Message.QUEUE_STOP));
 			Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
-															 "Growl Notification"),
+															 "Growl", "Growl Notification"),
 									this.getName());
 			if(callback != null) {
 				callback.update(null, new Message(Message.REFRESH));

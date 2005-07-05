@@ -80,7 +80,8 @@ public class SessionPool extends Hashtable {
 						((Session)connections.get(connections.size()-1)).close();
 					}
 					else {
-						session.log(Message.PROGRESS, NSBundle.localizedString("Maximum allowed connections exceeded. Waiting...", ""));
+						session.log(Message.PROGRESS, NSBundle.localizedString("Maximum allowed connections exceeded. Waiting...",
+                                "Status", ""));
 						this.wait(Preferences.instance().getInteger("connection.pool.timeout")*1000);
 					}
 				}

@@ -49,10 +49,10 @@ public class DownloadQueue extends Queue {
 		super.finish(headless);
 		if(this.isComplete() && !this.isCanceled()) {
 			this.callObservers(new Message(Message.PROGRESS, NSBundle.localizedString("Download complete",
-																					  "Growl Notification")));
+																					  "Growl", "Growl Notification")));
 			this.callObservers(new Message(Message.QUEUE_STOP));
 			Growl.instance().notify(NSBundle.localizedString("Download complete",
-															 "Growl Notification"),
+															 "Growl", "Growl Notification"),
 									this.getName());
 		}
 		else {

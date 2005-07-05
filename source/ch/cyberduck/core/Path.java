@@ -342,7 +342,7 @@ public abstract class Path {
 		if(log.isDebugEnabled()) {
 			log.debug("upload("+o.toString()+", "+i.toString());
 		}
-		this.getSession().log(Message.PROGRESS, NSBundle.localizedString("Uploading", "")+" "+this.getName());
+		this.getSession().log(Message.PROGRESS, NSBundle.localizedString("Uploading", "Status", "")+" "+this.getName());
 		if(this.status.isResume()) {
 			long skipped = i.skip(this.status.getCurrent());
 			log.info("Skipping "+skipped+" bytes");
@@ -383,7 +383,7 @@ public abstract class Path {
 		if(log.isDebugEnabled()) {
 			log.debug("transfer("+i.toString()+", "+o.toString());
 		}
-		this.getSession().log(Message.PROGRESS, NSBundle.localizedString("Downloading", "")+" "+this.getName());
+		this.getSession().log(Message.PROGRESS, NSBundle.localizedString("Downloading", "Status", "")+" "+this.getName());
         if(log.isDebugEnabled()) {
             log.debug("transfer("+i.toString()+", "+o.toString());
         }

@@ -216,8 +216,7 @@ public class CDMainController extends CDController {
         );
 		this.bookmarkMenu.setSubmenuForItem(historyMenu, this.bookmarkMenu.itemWithTitle(
                 NSBundle.localizedString("History", "")));
-		this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle(
-                NSBundle.localizedString("Bonjour", "")));
+		this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle("Bonjour"));
 	}
 
     public void historyMenuClicked(NSMenuItem sender) {
@@ -349,9 +348,7 @@ public class CDMainController extends CDController {
                     Message msg = (Message)arg;
                     Host host = rendezvous.getService((String)msg.getContent());
                     if(msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
-                        Growl.instance().notifyWithImage(NSBundle.localizedString("Bonjour"),
-														 (String)msg.getContent(),
-														 "rendezvous.icns");
+                        Growl.instance().notifyWithImage("Bonjour", (String)msg.getContent(), "rendezvous.icns");
                         items.put((String)msg.getContent(),
 								  host);
                     }
@@ -419,6 +416,7 @@ public class CDMainController extends CDController {
 		new Thread() {
 			public void run() {
 				try {
+                    int pool = NSAutoreleasePool.push();
 					String currentVersionNumber = (String)NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
 					log.info("Current version:"+currentVersionNumber);
 					NSData data = new NSData(new java.net.URL(Preferences.instance().getProperty("website.update.xml")));
@@ -496,6 +494,7 @@ public class CDMainController extends CDController {
                             }
 						}
 					}
+                    NSAutoreleasePool.pop(pool);
 				}
 				catch(Exception e) {
 					log.error(e.getMessage());

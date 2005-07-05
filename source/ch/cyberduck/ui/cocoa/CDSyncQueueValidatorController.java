@@ -109,6 +109,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
 	protected boolean validateFile(Path p, boolean resume) {
 		if(p.getRemote().exists() && p.getLocal().exists()) {
+            //todo:bug equals returns false because of different timezone!
 			if(!(p.getRemote().attributes.getTimestampAsCalendar().equals(p.getLocal().getTimestampAsCalendar()))) {
 				this.prompt(p);
 			}

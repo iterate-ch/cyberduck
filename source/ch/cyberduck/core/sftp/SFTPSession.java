@@ -71,13 +71,13 @@ public class SFTPSession extends Session {
 	public synchronized void close() {
 		try {
 			if(this.SFTP != null) {
-				this.log(Message.PROGRESS, NSBundle.localizedString("Disconnecting...", ""));
+				this.log(Message.PROGRESS, NSBundle.localizedString("Disconnecting...", "Status", ""));
 				this.SFTP.close();
 				this.host.getCredentials().setPassword(null);
 				this.SFTP = null;
 			}
 			if(this.SSH != null) {
-				this.log(Message.PROGRESS, NSBundle.localizedString("Closing SSH Session Channel", ""));
+				this.log(Message.PROGRESS, NSBundle.localizedString("Closing SSH Session Channel", "Status", ""));
 				this.SSH.disconnect();
 				this.SSH = null;
 			}
@@ -89,7 +89,7 @@ public class SFTPSession extends Session {
 			log.error("IO Error: "+e.getMessage());
 		}
 		finally {
-            this.log(Message.PROGRESS, NSBundle.localizedString("Disconnected", ""));
+            this.log(Message.PROGRESS, NSBundle.localizedString("Disconnected", "Status", ""));
 			this.setClosed();
 		}
 	}
@@ -105,7 +105,7 @@ public class SFTPSession extends Session {
 			log.error("SSH Error: "+e.getMessage());
 		}
 		catch(IOException e) {
-			this.log(Message.ERROR, "IO Error: "+e.getMessage());
+            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": "+e.getMessage());
 		}
 	}
 
@@ -124,7 +124,7 @@ public class SFTPSession extends Session {
 	}
 		
 	public synchronized void connect(String encoding) throws IOException {
-		this.log(Message.PROGRESS, NSBundle.localizedString("Opening SSH connection to", "")+" "+host.getIp()+"...");
+		this.log(Message.PROGRESS, NSBundle.localizedString("Opening SSH connection to", "Status", "")+" "+host.getIp()+"...");
 		this.setConnected();
 		this.log(Message.TRANSCRIPT, "=====================================");
 		this.log(Message.TRANSCRIPT, new java.util.Date().toString());
@@ -168,13 +168,13 @@ public class SFTPSession extends Session {
 		}
 		SSH.connect(properties, this.getHostKeyVerificationController());
 		if(SSH.isConnected()) {
-			this.log(Message.PROGRESS, NSBundle.localizedString("SSH connection opened", ""));
+			this.log(Message.PROGRESS, NSBundle.localizedString("SSH connection opened", "Status", ""));
 			String id = SSH.getServerId();
 			this.host.setIdentification(id);
             this.log(Message.TRANSCRIPT, id);
             log.info(SSH.getAvailableAuthMethods(host.getCredentials().getUsername()));
             this.login();
-            this.log(Message.PROGRESS, NSBundle.localizedString("Starting SFTP subsystem...", ""));
+            this.log(Message.PROGRESS, NSBundle.localizedString("Starting SFTP subsystem...", "Status", ""));
             this.SFTP = SSH.openSftpChannel(new ChannelEventAdapter() {
                 public void onDataReceived(Channel channel, byte[] data) {
                     log(Message.TRANSCRIPT, new String(data));
@@ -183,7 +183,7 @@ public class SFTPSession extends Session {
                     log(Message.TRANSCRIPT, new String(data));
                 }
             }, encoding);
-            this.log(Message.PROGRESS, NSBundle.localizedString("SFTP subsystem ready", ""));
+            this.log(Message.PROGRESS, NSBundle.localizedString("SFTP subsystem ready", "Status", ""));
         }
     }
 
@@ -256,10 +256,10 @@ public class SFTPSession extends Session {
 		log.debug("login");
 		Login credentials = host.getCredentials();
 		if(credentials.check()) {
-			this.log(Message.PROGRESS, NSBundle.localizedString("Authenticating as", "")+" '"+credentials.getUsername()+"'");
+			this.log(Message.PROGRESS, NSBundle.localizedString("Authenticating as", "Status", "")+" '"+credentials.getUsername()+"'");
 			if(credentials.usesPublicKeyAuthentication()) {
 				if(AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(credentials)) {
-					this.log(Message.PROGRESS, NSBundle.localizedString("Login successful", ""));
+					this.log(Message.PROGRESS, NSBundle.localizedString("Login successful", "Status", ""));
 					this.setAuthenticated();
 					return;
 				}
@@ -267,22 +267,22 @@ public class SFTPSession extends Session {
 			else {
 				if(AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(credentials) ||
 				    AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
-					this.log(Message.PROGRESS, NSBundle.localizedString("Login successful", ""));
+					this.log(Message.PROGRESS, NSBundle.localizedString("Login successful", "Status", ""));
 					credentials.addInternetPasswordToKeychain();
 					this.setAuthenticated();
 					return;
 				}
 			}
-			this.log(Message.PROGRESS, NSBundle.localizedString("Login failed", ""));
-			host.setCredentials(credentials.promptUser("Authentication for user "+credentials.getUsername()+" failed."));
+			this.log(Message.PROGRESS, NSBundle.localizedString("Login failed", "Status", ""));
+			host.setCredentials(credentials.promptUser("Authentication for user "+credentials.getUsername()+" failed.")); //todo localize
 			if(host.getCredentials().tryAgain()) {
 				this.login();
 			}
 			else {
-				throw new SshException("Login as user "+credentials.getUsername()+" canceled.");
+				throw new SshException("Login as user "+credentials.getUsername()+" canceled."); //todo localize
 			}
 		}
-		throw new IOException("Login as user "+host.getCredentials().getUsername()+" failed.");
+		throw new IOException("Login as user "+host.getCredentials().getUsername()+" failed."); //todo localize
 	}
 
 	public synchronized Path workdir() {

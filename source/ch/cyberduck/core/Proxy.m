@@ -23,7 +23,7 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
 	if(nsString == nil) {
 		return NULL;
 	}
-	const char *unichars = [nsString characters];
+	const char *unichars = [nsString UTF8String];
 	
 	return (*env)->NewStringUTF(env, unichars);
 }

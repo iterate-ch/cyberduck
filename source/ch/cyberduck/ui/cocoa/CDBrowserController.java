@@ -696,7 +696,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             }
             else if (msg.getTitle().equals(Message.STOP)) {
                 progressIndicator.stopAnimation(this);
-                statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
+                statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "Status", ""),
                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                 this.statusLabel.display();
             }
@@ -905,7 +905,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             else {
                 c.setResizable(true);
             }
-            c.setEditable(false); //todo make filename column editable
+            c.setEditable(false);
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             this.browserListView.addTableColumn(c);
@@ -1570,7 +1570,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void setStatusLabel(NSTextField statusLabel) {
         this.statusLabel = statusLabel;
-        this.statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "No background thread is running"),
+        this.statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "Status", ""),
                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
     }
 
