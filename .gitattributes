@@ -410,7 +410,6 @@ hu.lproj/Preferences.strings svneol=native#unset
 hu.lproj/Progress.nib/keyedobjects.nib -text
 hu.lproj/Queue.nib/keyedobjects.nib -text
 hu.lproj/Queue.strings svneol=native#unset
-hu.lproj/Status.strings svneol=native#unset
 hu.lproj/Sync.nib/keyedobjects.nib -text
 hu.lproj/Sync.strings svneol=native#unset
 hu.lproj/Update.nib/keyedobjects.nib -text
