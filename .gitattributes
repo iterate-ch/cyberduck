@@ -456,7 +456,6 @@ ja.lproj/Info.nib/keyedobjects.nib -text
 ja.lproj/Info.strings svneol=native#unset
 ja.lproj/InfoPlist.strings svneol=native#unset
 ja.lproj/License.txt svneol=native#unset
-ja.lproj/Localizable.strings svneol=native#unset
 ja.lproj/Login.nib/keyedobjects.nib -text
 ja.lproj/Login.strings svneol=native#unset
 ja.lproj/Main.nib/keyedobjects.nib -text
@@ -779,7 +778,6 @@ zh_CN.lproj/Goto.strings svneol=native#unset
 zh_CN.lproj/Info.nib/keyedobjects.nib -text
 zh_CN.lproj/Info.strings svneol=native#unset
 zh_CN.lproj/InfoPlist.strings svneol=native#unset
-zh_CN.lproj/Localizable.strings svneol=native#unset
 zh_CN.lproj/Login.nib/keyedobjects.nib -text
 zh_CN.lproj/Login.strings svneol=native#unset
 zh_CN.lproj/Main.nib/keyedobjects.nib -text
@@ -814,7 +812,6 @@ zh_TW.lproj/Goto.strings svneol=native#unset
 zh_TW.lproj/Info.nib/keyedobjects.nib -text
 zh_TW.lproj/Info.strings svneol=native#unset
 zh_TW.lproj/InfoPlist.strings svneol=native#unset
-zh_TW.lproj/Localizable.strings svneol=native#unset
 zh_TW.lproj/Login.nib/keyedobjects.nib -text
 zh_TW.lproj/Login.strings svneol=native#unset
 zh_TW.lproj/Main.nib/keyedobjects.nib -text
