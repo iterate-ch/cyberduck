@@ -1,0 +1,71 @@
+/* No comment provided by engineer. */
+"Authenticating as" = "認証中：";
+
+/* No comment provided by engineer. */
+"Closing SSH Session Channel" = "SSH セッションチャンネルを接続解除中";
+
+/* No comment provided by engineer. */
+"Deleting" = "削除中";
+
+/* No comment provided by engineer. */
+"Disconnected" = "接続解除";
+
+/* No comment provided by engineer. */
+"Disconnecting..." = "接続解除中…";
+
+/* No comment provided by engineer. */
+"Downloading" = "ダウンロード中";
+
+/* No comment provided by engineer. */
+"FTP connection opened" = "FTP 接続確立";
+
+/* No comment provided by engineer. */
+"Getting size of" = "サイズ取得中：";
+
+/* No comment provided by engineer. */
+"Getting timestamp of" = "タイムスタンプ取得中：";
+
+/* No background thread is running */
+"Idle" = "待機中";
+
+/* No comment provided by engineer. */
+"Login failed" = "ログイン失敗";
+
+/* No comment provided by engineer. */
+"Login successful" = "ログイン成功";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "FTP 接続確立中：";
+
+?/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "FTP-TLS 接続確立中：";
+
+/* No comment provided by engineer. */
+"Listing directory" = "リスト中";
+
+/* No comment provided by engineer. */
+"Make directory" = "ディレクトリを作成";
+
+/* No comment provided by engineer. */
+"Maximum allowed connections exceeded. Waiting..." = "最大同時接続数を超えました。待機中…";
+
+/* No comment provided by engineer. */
+"Mounting" = "マウント中";
+
+/* No comment provided by engineer. */
+"Opening SSH connection to" = "SSH 接続確立中：";
+
+/* No comment provided by engineer. */
+"SFTP subsystem ready" = "SFTP サブシステム稼働";
+
+/* No comment provided by engineer. */
+"SSH connection opened" = "SSH 接続確立";
+
+/* No comment provided by engineer. */
+"Starting SFTP subsystem..." = "SFTP サブシステム開始中…";
+
+/* No comment provided by engineer. */
+"Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences." = "同時接続数が多すぎます。環境設定で同時接続の最大数を変更するとよいでしょう。";
+
+/* No comment provided by engineer. */
+"Uploading" = "アップロード中";

@@ -1,0 +1,71 @@
+/* No comment provided by engineer. */
+"Authenticating as" = "Login sebagai";
+
+/* No comment provided by engineer. */
+"Closing SSH Session Channel" = "Menutup SSH Session Channel";
+
+/* No comment provided by engineer. */
+"Deleting" = "Menghapus";
+
+/* No comment provided by engineer. */
+"Disconnected" = "Koneksi telah ditutup";
+
+/* No comment provided by engineer. */
+"Disconnecting..." = "Menutup koneksi...";
+
+/* No comment provided by engineer. */
+"Downloading" = "Proses mendownload";
+
+/* No comment provided by engineer. */
+"FTP connection opened" = "Koneksi FTP telah dibuka";
+
+/* No comment provided by engineer. */
+"Getting size of" = "Mengambil ukuran dari";
+
+/* No comment provided by engineer. */
+"Getting timestamp of" = "Mengambil timestamp dari";
+
+/* No background thread is running */
+"Idle" = "Idle";
+
+/* No comment provided by engineer. */
+"Login failed" = "Login gagal";
+
+/* No comment provided by engineer. */
+"Login successful" = "Login berhasil";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "Membuka koneksi FTP ke";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "Membuka koneksi FTP-TLS connection ke";
+
+/* No comment provided by engineer. */
+"Listing directory" = "Daftar direktori";
+
+/* No comment provided by engineer. */
+"Make directory" = "Membuat direktori";
+
+/* No comment provided by engineer. */
+"Maximum allowed connections exceeded. Waiting..." = "Maksimum koneksi yang diperbolehkan telah terlampaui. Menunggu...";
+
+/* No comment provided by engineer. */
+"Mounting" = "Mounting";
+
+/* No comment provided by engineer. */
+"Opening SSH connection to" = "Membuka koneksi SSH ke";
+
+/* No comment provided by engineer. */
+"SFTP subsystem ready" = "SFTP siap";
+
+/* No comment provided by engineer. */
+"SSH connection opened" = "Koneksi SSH telah dibuka";
+
+/* No comment provided by engineer. */
+"Starting SFTP subsystem..." = "Memulai SFTP subsystem...";
+
+/* No comment provided by engineer. */
+"Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences." = "Terlalu banyak koneksi yang berjalan secara bersamaan. Anda mungkin ingin untuk merubah berapa koneksi yang berjalan secara bersamaan pada bagian Preferences.";
+
+/* No comment provided by engineer. */
+"Uploading" = "Mengupload";

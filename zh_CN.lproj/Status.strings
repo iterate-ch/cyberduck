@@ -1,0 +1,72 @@
+/* No comment provided by engineer. */
+"Authenticating as" = "正在验证身份";
+
+/* No comment provided by engineer. */
+"Closing SSH Session Channel" = "正在关闭 SSH 频道";
+
+/* No comment provided by engineer. */
+"Deleting" = "删除中";
+
+/* No comment provided by engineer. */
+"Disconnected" = "连接断开";
+
+/* No comment provided by engineer. */
+"Disconnecting..." = "断开连接中...";
+
+/* No comment provided by engineer. */
+"Downloading" = "下载中";
+
+/* No comment provided by engineer. */
+"FTP connection opened" = "FTP 连接开启";
+
+/* No comment provided by engineer. */
+"Getting size of" = "正在获取下列文件大小信息";
+
+/* No comment provided by engineer. */
+"Getting timestamp of" = "正在获取下列文件时间信息";
+
+/* No background thread is running */
+"Idle" = "闲置";
+
+/* No comment provided by engineer. */
+"Login failed" = "登陆失败";
+
+/* No comment provided by engineer. */
+"Login successful" = "登陆成功";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "正在开启 FTP 连接到";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "正在开启 FTP-TLS 连接到";
+
+/* No comment provided by engineer. */
+"Listing" = "列表中";
+
+/* No comment provided by engineer. */
+"Make directory" = "建立目录";
+
+/* No comment provided by engineer. */
+"Maximum allowed connections exceeded. Waiting..." = "达到最大连接数. 等待中...";
+
+/* No comment provided by engineer. */
+"Mounting" = "虚拟中";
+
+/* No comment provided by engineer. */
+"Opening SSH connection to" = "正在开启 SSH 连接到";
+
+/* No comment provided by engineer. */
+"SFTP subsystem ready" = "SFTP subsystem 已开启";
+
+/* No comment provided by engineer. */
+"SSH connection opened" = "SSH 连接已开启";
+
+/* No comment provided by engineer. */
+"Starting SFTP subsystem..." = "正在启动 SFTP subsystem...";
+
+/* No comment provided by engineer. */
+"Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences." = "开启了太多线程. 您可以在预置中来调节这个选项中的数目.";
+
+/* No comment provided by engineer. */
+"Uploading" = "上传中";
+

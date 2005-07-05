@@ -1,0 +1,72 @@
+/* No comment provided by engineer. */
+"Authenticating as" = "Autentificando como";
+
+/* No comment provided by engineer. */
+"Closing SSH Session Channel" = "Cerrando canal de sesión SSH";
+
+/* No comment provided by engineer. */
+"Deleting" = "Borrando";
+
+/* No comment provided by engineer. */
+"Disconnected" = "Desconectado";
+
+/* No comment provided by engineer. */
+"Disconnecting..." = "Desconectando...";
+
+/* No comment provided by engineer. */
+"Downloading" = "Bajando";
+
+/* No comment provided by engineer. */
+"FTP connection opened" = "Conexión FTP abierta";
+
+/* No comment provided by engineer. */
+"Getting size of" = "Buscando el tamaño de";
+
+/* No comment provided by engineer. */
+"Getting timestamp of" = "Getting timestamp of";
+
+/* No background thread is running */
+"Idle" = "Inactivo";
+
+/* No comment provided by engineer. */
+"Login failed" = "Falló la autentificación";
+
+/* No comment provided by engineer. */
+"Login successful" = "Autentificación correcta";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "Abriendo conexión FTP con";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "Abriendo conexión FTP-TLS con";
+
+/* No comment provided by engineer. */
+"Listing" = "Escribiendo el listado";
+
+/* No comment provided by engineer. */
+"Make directory" = "Crear directoria";
+
+/* No comment provided by engineer. */
+"Maximum allowed connections exceeded. Waiting..." = "Se ha superado el número máximo de conexiones. Esperando...";
+
+/* No comment provided by engineer. */
+"Mounting" = "Montando";
+
+/* No comment provided by engineer. */
+"Opening SSH connection to" = "Abriendo conexión SSH con";
+
+/* No comment provided by engineer. */
+"SFTP subsystem ready" = "Subsistema SFTP preparado";
+
+/* No comment provided by engineer. */
+"SSH connection opened" = "Conexión SSH abierta";
+
+/* No comment provided by engineer. */
+"Starting SFTP subsystem..." = "EMpezando subsistema SFTP...";
+
+/* No comment provided by engineer. */
+"Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences." = "Demasaiadas conexiones simultáneas. Tal vez debería ajustar el número máximo de conexiones simultáneas en las Preferencias.";
+
+/* No comment provided by engineer. */
+"Uploading" = "Subiendo";
+

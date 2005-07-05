@@ -1,0 +1,71 @@
+/* No comment provided by engineer. */
+"Authenticating as" = "Ověření totožnosti jako";
+
+/* No comment provided by engineer. */
+"Closing SSH Session Channel" = "Uzavírání kanálu spojení SSH";
+
+/* No comment provided by engineer. */
+"Deleting" = "Odstraňování";
+
+/* No comment provided by engineer. */
+"Disconnected" = "Odpojeno";
+
+/* No comment provided by engineer. */
+"Disconnecting..." = "Odpojování...";
+
+/* No comment provided by engineer. */
+"Downloading" = "Kopírování (download)";
+
+/* No comment provided by engineer. */
+"FTP connection opened" = "FTP spojení otevřeno";
+
+/* No comment provided by engineer. */
+"Getting size of" = "Zjišťování velikosti";
+
+/* No comment provided by engineer. */
+"Getting timestamp of" = "Zjišťování času";
+
+/* No background thread is running */
+"Idle" = "Nečinný";
+
+/* No comment provided by engineer. */
+"Login failed" = "Přihlašování selhalo";
+
+/* No comment provided by engineer. */
+"Login successful" = "Přihlašování úspěšně dokončeno";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "Otevírání FTP spojení s";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "Otevírání FTP-TLS spojení s";
+
+/* No comment provided by engineer. */
+"Listing directory" = "Výpis";
+
+/* No comment provided by engineer. */
+"Make directory" = "Vytvořit složku";
+
+/* No comment provided by engineer. */
+"Maximum allowed connections exceeded. Waiting..." = "Bylo dosaženo maxima povolených spojení. Čekejte…";
+
+/* No comment provided by engineer. */
+"Mounting" = "Připojování";
+
+/* No comment provided by engineer. */
+"Opening SSH connection to" = "Otevírání SSH spojení s";
+
+/* No comment provided by engineer. */
+"SFTP subsystem ready" = "SFTP subsystém připraven";
+
+/* No comment provided by engineer. */
+"SSH connection opened" = "SSH spojení otevřeno";
+
+/* No comment provided by engineer. */
+"Starting SFTP subsystem..." = "Spouštění SFTP subsystému…";
+
+/* No comment provided by engineer. */
+"Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences." = "Příliš mnoho spočasně povolených spojení. V předvolbách můžete počet maximálně povolených spojení zvětšit.";
+
+/* No comment provided by engineer. */
+"Uploading" = "Kopírování (upload)";

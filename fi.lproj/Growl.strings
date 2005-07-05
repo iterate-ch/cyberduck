@@ -1,0 +1,15 @@
+/* Growl Notification */
+"Connection failed" = "Yhteydenotto epäonnistui";
+
+/* Growl Notification */
+"Connection opened" = "Yhteys avattu";
+
+/* Growl Notification */
+"Download complete" = "Tuonti valmis";
+
+/* Growl Notification */
+"Synchronization complete" = "Synkronointi valmis";
+
+/* Growl Notification */
+"Upload complete" = "Vienti valmis";
+

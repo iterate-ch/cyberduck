@@ -1,0 +1,72 @@
+/* No comment provided by engineer. */
+"Authenticating as" = "Autentikoi tunnuksella";
+
+/* No comment provided by engineer. */
+"Closing SSH Session Channel" = "Suljen SSH-yhteyskavanan";
+
+/* No comment provided by engineer. */
+"Deleting" = "Poistan";
+
+/* No comment provided by engineer. */
+"Disconnected" = "Yhteys katkaistu";
+
+/* No comment provided by engineer. */
+"Disconnecting..." = "Katkaisen yhteyttä...";
+
+/* No comment provided by engineer. */
+"Downloading" = "Tuon";
+
+/* No comment provided by engineer. */
+"FTP connection opened" = "FTP-yhteys avattu";
+
+/* No comment provided by engineer. */
+"Getting size of" = "Haen kokoa";
+
+/* No comment provided by engineer. */
+"Getting timestamp of" = "Haen aikaleimaa";
+
+/* No background thread is running */
+"Idle" = "Jouten";
+
+/* No comment provided by engineer. */
+"Login failed" = "Sisäänkirjautuminen epäonnistui";
+
+/* No comment provided by engineer. */
+"Login successful" = "Sisäänkirjautuminen onnistui";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "Avaan FTP-yhteyden palvelimelle";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "Avaan FTP-TLS-yhteyden palvelimelle";
+
+/* No comment provided by engineer. */
+"Listing directory" = "Listaan";
+
+/* No comment provided by engineer. */
+"Make directory" = "Luo hakemisto";
+
+/* No comment provided by engineer. */
+"Maximum allowed connections exceeded. Waiting..." = "Maksimi yhteysmäärä ylitetty. Odotan...";
+
+/* No comment provided by engineer. */
+"Mounting" = "Kytken";
+
+/* No comment provided by engineer. */
+"Opening SSH connection to" = "Avaan SSH-yhteyden palvelimelle";
+
+/* No comment provided by engineer. */
+"SFTP subsystem ready" = "SFTP-alijärjestelmä valmis";
+
+/* No comment provided by engineer. */
+"SSH connection opened" = "SSH-yhteys avattu";
+
+/* No comment provided by engineer. */
+"Starting SFTP subsystem..." = "Käynnistän SFTP-alijärjestelmää...";
+
+/* No comment provided by engineer. */
+"Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences." = "Liian monta yhtäaikaista yhteyttä. Voit määrittää yhtäaikaisten yhteyksien lukumäärän asetuksista.";
+
+/* No comment provided by engineer. */
+"Uploading" = "Vien";
+

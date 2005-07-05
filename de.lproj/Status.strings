@@ -1,0 +1,71 @@
+/* No comment provided by engineer. */
+"Authenticating as" = "Authentifizieren als";
+
+/* No comment provided by engineer. */
+"Closing SSH Session Channel" = "SSH Kanal schliessen";
+
+/* No comment provided by engineer. */
+"Deleting" = "Lösche";
+
+/* No comment provided by engineer. */
+"Disconnected" = "Getrennt ";
+
+/* No comment provided by engineer. */
+"Disconnecting..." = "Trennen...";
+
+/* No comment provided by engineer. */
+"Downloading" = "Herunterladen";
+
+/* No comment provided by engineer. */
+"FTP connection opened" = "FTP Verbindung geöffnet";
+
+/* No comment provided by engineer. */
+"Getting size of" = "Finde Grösse von";
+
+/* No comment provided by engineer. */
+"Getting timestamp of" = "Finde Änderungsdatum von";
+
+/* No background thread is running */
+"Idle" = "Keine Aktivität";
+
+/* No comment provided by engineer. */
+"Login failed" = "Login fehlgeschlagen";
+
+/* No comment provided by engineer. */
+"Login successful" = "Login erfolgreich";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "FTP Verbindung öffnen zu";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "FTP-TLS Verbindung öffnen zu";
+
+/* No comment provided by engineer. */
+"Listing directory" = "Verzeichnis laden";
+
+/* No comment provided by engineer. */
+"Make directory" = "Verzeichnis anlegen"
+
+/* No comment provided by engineer. */
+"Maximum allowed connections exceeded. Waiting..." = "Maximale Anzahl von Verbindungen überschritten. Warten...";
+
+/* No comment provided by engineer. */
+"Mounting" = "Mounten";
+
+/* No comment provided by engineer. */
+"Opening SSH connection to" = "SSH Verbindung öffen zu";
+
+/* No comment provided by engineer. */
+"SFTP subsystem ready" = "SFTP Subsystem bereit";
+
+/* No comment provided by engineer. */
+"SSH connection opened" = "SSH Verbindung geöffnet";
+
+/* No comment provided by engineer. */
+"Starting SFTP subsystem..." = "Starte SFTP Subsystem";
+
+/* No comment provided by engineer. */
+"Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences." = "Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences.";
+
+/* No comment provided by engineer. */
+"Uploading" = "Hinaufladen";

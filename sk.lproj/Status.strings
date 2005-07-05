@@ -1,0 +1,71 @@
+/* No comment provided by engineer. */
+"Authenticating as" = "Prihlasovanie ako";
+
+/* No comment provided by engineer. */
+"Closing SSH Session Channel" = "Uzatváranie SSH kanála spojenia";
+
+/* No comment provided by engineer. */
+"Deleting" = "Odstraňuje sa";
+
+/* No comment provided by engineer. */
+"Disconnected" = "Odpojený";
+
+/* No comment provided by engineer. */
+"Disconnecting..." = "Odpájanie...";
+
+/* No comment provided by engineer. */
+"Downloading" = "Sťahuje sa";
+
+/* No comment provided by engineer. */
+"FTP connection opened" = "FTP spojenie nadviazané";
+
+/* No comment provided by engineer. */
+"Getting size of" = "Získava sa veľkosť";
+
+/* No comment provided by engineer. */
+"Getting timestamp of" = "Získava sa časový údaj";
+
+/* No background thread is running */
+"Idle" = "Nečinný";
+
+/* No comment provided by engineer. */
+"Login failed" = "Prihlásenie zlyhalo";
+
+/* No comment provided by engineer. */
+"Login successful" = "Prihlásenie úspešné";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "Nadväzuje sa FTP spojenie s";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "Nadväzuje sa FTP-TLS spojenie s";
+
+/* No comment provided by engineer. */
+"Listing directory" = "Tvorí sa zoznam";
+
+/* No comment provided by engineer. */
+"Make directory" = "Vytvára sa adresár";
+
+/* No comment provided by engineer. */
+"Maximum allowed connections exceeded. Waiting..." = "Prekročený maximálny počet spojení. Čaká sa...";
+
+/* No comment provided by engineer. */
+"Mounting" = "Pripravuje sa";
+
+/* No comment provided by engineer. */
+"Opening SSH connection to" = "Nadväzuje sa SSH spojenie s";
+
+/* No comment provided by engineer. */
+"SFTP subsystem ready" = "SFTP podsystém pripravený";
+
+/* No comment provided by engineer. */
+"SSH connection opened" = "SSH spojenie nadviazané";
+
+/* No comment provided by engineer. */
+"Starting SFTP subsystem..." = "Štartuje sa SFTP podsystém...";
+
+/* No comment provided by engineer. */
+"Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences." = "Priveľa súčasných spojení. Počet prípustných súbežných spojení možno nastaviť v predvoľbách.";
+
+/* No comment provided by engineer. */
+"Uploading" = "Odosiela sa";

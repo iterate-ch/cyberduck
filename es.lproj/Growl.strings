@@ -1,0 +1,15 @@
+/* Growl Notification */
+"Connection failed" = "Falló la conexión";
+
+/* Growl Notification */
+"Connection opened" = "Se ha establecido la conexión";
+
+/* Growl Notification */
+"Download complete" = "Bajada completada";
+
+/* Growl Notification */
+"Synchronization complete" = "Sincronización completada";
+
+/* Growl Notification */
+"Upload complete" = "Subida completada";
+

@@ -1,0 +1,14 @@
+/* Growl Notification */
+"Connection failed" = "連線失敗";
+
+/* Growl Notification */
+"Connection opened" = "連線已開啟";
+
+/* Growl Notification */
+"Download complete" = "下載完畢";
+
+/* Growl Notification */
+"Synchronization complete" = "同步完畢";
+
+/* Growl Notification */
+"Upload complete" = "上傳完畢";

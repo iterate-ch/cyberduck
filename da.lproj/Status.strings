@@ -1,0 +1,71 @@
+/* No comment provided by engineer. */
+"Authenticating as" = "Godkend som";
+
+/* No comment provided by engineer. */
+"Closing SSH Session Channel" = "Lukker SSH Session Kanal";
+
+/* No comment provided by engineer. */
+"Deleting" = "Sletter";
+
+/* No comment provided by engineer. */
+"Disconnected" = "Afbrudt";
+
+/* No comment provided by engineer. */
+"Disconnecting..." = "Afbryder...";
+
+/* No comment provided by engineer. */
+"Downloading" = "Downloader";
+
+/* No comment provided by engineer. */
+"FTP connection opened" = "FTP forbindelse åbnet";
+
+/* No comment provided by engineer. */
+"Getting size of" = "Henter størrelse af";
+
+/* No comment provided by engineer. */
+"Getting timestamp of" = "Henter tidsstempel af";
+
+/* No background thread is running */
+"Idle" = "Ledig";
+
+/* No comment provided by engineer. */
+"Login failed" = "Login mislykkedes";
+
+/* No comment provided by engineer. */
+"Login successful" = "Login successfuldt";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "Åbner FTP forbindelse til";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "Åbner FTP-TLS forbindelse til";
+
+/* No comment provided by engineer. */
+"Listing" = "Lister";
+
+/* No comment provided by engineer. */
+"Make directory" = "Lav bibliotek";
+
+/* No comment provided by engineer. */
+"Maximum allowed connections exceeded. Waiting..." = "Det maksimale antal tilladte forbindelser er  overskredet. Venter...";
+
+/* No comment provided by engineer. */
+"Mounting" = "Åbner";
+
+/* No comment provided by engineer. */
+"Opening SSH connection to" = "Åbner SSH forbindelse til";
+
+/* No comment provided by engineer. */
+"SFTP subsystem ready" = "SFTP undersystem klar";
+
+/* No comment provided by engineer. */
+"SSH connection opened" = "SSH forbindelse åbnet";
+
+/* No comment provided by engineer. */
+"Starting SFTP subsystem..." = "Starter SFTP undersystem...";
+
+/* No comment provided by engineer. */
+"Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences." = "For mange samtidige forbindelser. Du skal måske justere antallet af samtidige forbindelser i System indstillinger.";
+
+/* No comment provided by engineer. */
+"Uploading" = "Uploader";

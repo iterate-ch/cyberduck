@@ -1,0 +1,71 @@
+/* No comment provided by engineer. */
+"Authenticating as" = "Регистрироваться как";
+
+/* No comment provided by engineer. */
+"Closing SSH Session Channel" = "Закрываю SSH-сессию";
+
+/* No comment provided by engineer. */
+"Deleting" = "Удаление";
+
+/* No comment provided by engineer. */
+"Disconnected" = "Отключен";
+
+/* No comment provided by engineer. */
+"Disconnecting..." = "Отключение...";
+
+/* No comment provided by engineer. */
+"Downloading" = "Скачивание";
+
+/* No comment provided by engineer. */
+"FTP connection opened" = "FTP-соединение установлено";
+
+/* No comment provided by engineer. */
+"Getting size of" = "Определяю размер";
+
+/* No comment provided by engineer. */
+"Getting timestamp of" = "Определяю дату изменения";
+
+/* No background thread is running */
+"Idle" = "Все готово";
+
+/* No comment provided by engineer. */
+"Login failed" = "Сбой входа";
+
+/* No comment provided by engineer. */
+"Login successful" = "Вход осуществлен";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "Установка FTP соединения с";
+
+/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "Установка FTP-TLS соединения с";
+
+/* No comment provided by engineer. */
+"Listing directory" = "Получение списка файлов";
+
+/* No comment provided by engineer. */
+"Make directory" = "Создать директорию";
+
+/* No comment provided by engineer. */
+"Maximum allowed connections exceeded. Waiting..." = "Превышено максимально количество подключений. Ожидание...";
+
+/* No comment provided by engineer. */
+"Mounting" = "Подключение к";
+
+/* No comment provided by engineer. */
+"Opening SSH connection to" = "Установка SSH-соединения с";
+
+/* No comment provided by engineer. */
+"SFTP subsystem ready" = "Подсистема SFTP готова";
+
+/* No comment provided by engineer. */
+"SSH connection opened" = "SSH-соединение установлено";
+
+/* No comment provided by engineer. */
+"Starting SFTP subsystem..." = "Запуск подсистемы SFTP...";
+
+/* No comment provided by engineer. */
+"Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences." = "Слишком много одновременных подключений. Вы можете увеличить максимальное количество одновременных подключений в панели настроек.";
+
+/* No comment provided by engineer. */
+"Uploading" = "Закачивание";

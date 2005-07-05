@@ -1,0 +1,71 @@
+/* No comment provided by engineer. */
+"Authenticating as" = "S'està autenticant com a";
+
+/* No comment provided by engineer. */
+"Closing SSH Session Channel" = "S'està tancant el canal de sessió SSH";
+
+/* No comment provided by engineer. */
+"Deleting" = "S'esta suprimint";
+
+/* No comment provided by engineer. */
+"Disconnected" = "Desconnectat";
+
+/* No comment provided by engineer. */
+"Disconnecting..." = "S'està desconnectant...";
+
+/* No comment provided by engineer. */
+"Downloading" = "S'està descarregant";
+
+/* No comment provided by engineer. */
+"FTP connection opened" = "Connexió FTP oberta";
+
+/* No comment provided by engineer. */
+"Getting size of" = "S'està obtenint la mida de";
+
+/* No comment provided by engineer. */
+"Getting timestamp of" = "S'està obtenint la marca horària de";
+
+/* No background thread is running */
+"Idle" = "Inactiu";
+
+/* No comment provided by engineer. */
+"Login failed" = "Entrada fallida";
+
+/* No comment provided by engineer. */
+"Login successful" = "Entrada satisfactòria";
+
+/* No comment provided by engineer. */
+"Opening FTP connection to" = "S'està obrint la connexió FTP a";
+
+﻿/* No comment provided by engineer. */
+"Opening FTP-TLS connection to" = "S'està obrint la connexió FTP-TLS a";
+
+/* No comment provided by engineer. */
+"Listing directory" = "S'està llistant el directori";
+
+/* No comment provided by engineer. */
+"Make directory" = "Crea un directori";
+
+/* No comment provided by engineer. */
+"Maximum allowed connections exceeded. Waiting..." = "S'ha excedit el nombre màxim de connexions permeses. En espera...";
+
+/* No comment provided by engineer. */
+"Mounting" = "S'està montant";
+
+/* No comment provided by engineer. */
+"Opening SSH connection to" = "S'està obrint la connexió SSH a";
+
+/* No comment provided by engineer. */
+"SFTP subsystem ready" = "El subsistema SFTP està llest";
+
+/* No comment provided by engineer. */
+"SSH connection opened" = "Connexió SSH oberta";
+
+/* No comment provided by engineer. */
+"Starting SFTP subsystem..." = "S'esta iniciant el subsistema SFTP...";
+
+/* No comment provided by engineer. */
+"Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences." = "Hi ha massa connexions simultànies. Potser voleu canviar el nombre de connexions màximes permeses en les preferències.";
+
+/* No comment provided by engineer. */
+"Uploading" = "S'està pujant";
