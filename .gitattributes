@@ -935,6 +935,7 @@ sk.lproj/Growl.strings svneol=native#unset
 sk.lproj/Info.nib/keyedobjects.nib -text
 sk.lproj/Info.strings svneol=native#unset
 sk.lproj/InfoPlist.strings svneol=native#unset
+sk.lproj/Localizable.strings svneol=native#unset
 sk.lproj/Login.nib/keyedobjects.nib -text
 sk.lproj/Login.strings svneol=native#unset
 sk.lproj/Main.nib/keyedobjects.nib -text
