@@ -203,6 +203,9 @@
 "No Bonjour services available" = "無可用的 Bonjour ";
 
 /* No comment provided by engineer. */
+"No external editor available" = "No external editor available";
+
+/* No comment provided by engineer. */
 "No recently connected servers available" = "無最近連線的伺服器";
 
 /* Alert sheet title */

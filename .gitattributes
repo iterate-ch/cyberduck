@@ -456,7 +456,6 @@ ja.lproj/Info.nib/keyedobjects.nib -text
 ja.lproj/Info.strings svneol=native#unset
 ja.lproj/InfoPlist.strings svneol=native#unset
 ja.lproj/License.txt svneol=native#unset
-ja.lproj/Localizable.strings svneol=native#unset
 ja.lproj/Login.nib/keyedobjects.nib -text
 ja.lproj/Login.strings svneol=native#unset
 ja.lproj/Main.nib/keyedobjects.nib -text

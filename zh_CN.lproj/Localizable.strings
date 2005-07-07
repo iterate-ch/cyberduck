@@ -199,6 +199,9 @@
 /* No comment provided by engineer. */
 "No Bonjour services available" = "没有可用的 Bonjour";
 
+/* No comment provided by engineer. */
+"No external editor available" = "No external editor available";
+
 /* Alert sheet title */
 "No update" = "没有更新";
 
