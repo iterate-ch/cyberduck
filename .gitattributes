@@ -53,6 +53,7 @@ ca.lproj/Folder.strings svneol=native#unset
 ca.lproj/Goto.nib/keyedobjects.nib -text
 ca.lproj/Goto.strings svneol=native#unset
 ca.lproj/Growl.strings svneol=native#unset
+ca.lproj/IDisk.strings svneol=native#unset
 ca.lproj/Info.nib/keyedobjects.nib -text
 ca.lproj/Info.strings svneol=native#unset
 ca.lproj/InfoPlist.strings svneol=native#unset
@@ -95,6 +96,7 @@ cs.lproj/Folder.strings svneol=native#unset
 cs.lproj/Goto.nib/keyedobjects.nib -text
 cs.lproj/Goto.strings svneol=native#unset
 cs.lproj/Growl.strings svneol=native#unset
+cs.lproj/IDisk.strings svneol=native#unset
 cs.lproj/Info.nib/keyedobjects.nib -text
 cs.lproj/Info.strings svneol=native#unset
 cs.lproj/InfoPlist.strings svneol=native#unset
@@ -143,6 +145,7 @@ da.lproj/Folder.strings svneol=native#unset
 da.lproj/Goto.nib/keyedobjects.nib -text
 da.lproj/Goto.strings svneol=native#unset
 da.lproj/Growl.strings svneol=native#unset
+da.lproj/IDisk.strings svneol=native#unset
 da.lproj/Info.nib/keyedobjects.nib -text
 da.lproj/Info.strings svneol=native#unset
 da.lproj/InfoPlist.strings svneol=native#unset
@@ -185,6 +188,7 @@ de.lproj/Folder.strings svneol=native#unset
 de.lproj/Goto.nib/keyedobjects.nib -text
 de.lproj/Goto.strings svneol=native#unset
 de.lproj/Growl.strings svneol=native#unset
+de.lproj/IDisk.strings svneol=native#unset
 de.lproj/Info.nib/keyedobjects.nib -text
 de.lproj/Info.strings svneol=native#unset
 de.lproj/InfoPlist.strings -text
@@ -271,6 +275,7 @@ es.lproj/Folder.strings svneol=native#unset
 es.lproj/Goto.nib/keyedobjects.nib -text
 es.lproj/Goto.strings svneol=native#unset
 es.lproj/Growl.strings svneol=native#unset
+es.lproj/IDisk.strings svneol=native#unset
 es.lproj/Info.nib/keyedobjects.nib -text
 es.lproj/Info.strings svneol=native#unset
 es.lproj/InfoPlist.strings svneol=native#unset
@@ -313,6 +318,7 @@ fi.lproj/Folder.strings svneol=native#unset
 fi.lproj/Goto.nib/keyedobjects.nib -text
 fi.lproj/Goto.strings svneol=native#unset
 fi.lproj/Growl.strings svneol=native#unset
+fi.lproj/IDisk.strings svneol=native#unset
 fi.lproj/Info.nib/keyedobjects.nib -text
 fi.lproj/Info.strings svneol=native#unset
 fi.lproj/InfoPlist.strings svneol=native#unset
@@ -355,6 +361,7 @@ fr.lproj/Folder.strings svneol=native#unset
 fr.lproj/Goto.nib/keyedobjects.nib -text
 fr.lproj/Goto.strings svneol=native#unset
 fr.lproj/Growl.strings svneol=native#unset
+fr.lproj/IDisk.strings svneol=native#unset
 fr.lproj/Info.nib/keyedobjects.nib -text
 fr.lproj/Info.strings svneol=native#unset
 fr.lproj/InfoPlist.strings svneol=native#unset
@@ -399,6 +406,7 @@ hu.lproj/Folder.strings svneol=native#unset
 hu.lproj/Goto.nib/keyedobjects.nib -text
 hu.lproj/Goto.strings svneol=native#unset
 hu.lproj/Growl.strings svneol=native#unset
+hu.lproj/IDisk.strings svneol=native#unset
 hu.lproj/Info.nib/keyedobjects.nib -text
 hu.lproj/Info.strings svneol=native#unset
 hu.lproj/InfoPlist.strings svneol=native#unset
@@ -440,6 +448,7 @@ id.lproj/Folder.strings svneol=native#unset
 id.lproj/Goto.nib/keyedobjects.nib -text
 id.lproj/Goto.strings svneol=native#unset
 id.lproj/Growl.strings svneol=native#unset
+id.lproj/IDisk.strings svneol=native#unset
 id.lproj/Info.nib/keyedobjects.nib -text
 id.lproj/Info.strings svneol=native#unset
 id.lproj/InfoPlist.strings svneol=native#unset
@@ -587,6 +596,7 @@ it.lproj/Folder.strings svneol=native#unset
 it.lproj/Goto.nib/keyedobjects.nib -text
 it.lproj/Goto.strings svneol=native#unset
 it.lproj/Growl.strings svneol=native#unset
+it.lproj/IDisk.strings svneol=native#unset
 it.lproj/Info.nib/keyedobjects.nib -text
 it.lproj/Info.strings svneol=native#unset
 it.lproj/InfoPlist.strings svneol=native#unset
@@ -630,6 +640,7 @@ ja.lproj/Folder.strings svneol=native#unset
 ja.lproj/Goto.nib/keyedobjects.nib -text
 ja.lproj/Goto.strings svneol=native#unset
 ja.lproj/Growl.strings svneol=native#unset
+ja.lproj/IDisk.strings svneol=native#unset
 ja.lproj/Info.nib/keyedobjects.nib -text
 ja.lproj/Info.strings svneol=native#unset
 ja.lproj/InfoPlist.strings svneol=native#unset
@@ -674,6 +685,7 @@ ko.lproj/Folder.strings svneol=native#unset
 ko.lproj/Goto.nib/keyedobjects.nib -text
 ko.lproj/Goto.strings svneol=native#unset
 ko.lproj/Growl.strings svneol=native#unset
+ko.lproj/IDisk.strings svneol=native#unset
 ko.lproj/Info.nib/keyedobjects.nib -text
 ko.lproj/Info.strings svneol=native#unset
 ko.lproj/InfoPlist.strings svneol=native#unset
@@ -721,6 +733,7 @@ nl.lproj/Folder.strings svneol=native#unset
 nl.lproj/Goto.nib/keyedobjects.nib -text
 nl.lproj/Goto.strings svneol=native#unset
 nl.lproj/Growl.strings svneol=native#unset
+nl.lproj/IDisk.strings svneol=native#unset
 nl.lproj/Info.nib/keyedobjects.nib -text
 nl.lproj/Info.strings svneol=native#unset
 nl.lproj/InfoPlist.strings -text svneol=unset#application/octet-stream
@@ -764,6 +777,7 @@ no.lproj/Folder.strings svneol=native#unset
 no.lproj/Goto.nib/keyedobjects.nib -text
 no.lproj/Goto.strings svneol=native#unset
 no.lproj/Growl.strings svneol=native#unset
+no.lproj/IDisk.strings svneol=native#unset
 no.lproj/Info.nib/keyedobjects.nib -text
 no.lproj/Info.strings svneol=native#unset
 no.lproj/InfoPlist.strings svneol=native#unset
@@ -807,6 +821,7 @@ pl.lproj/Folder.strings svneol=native#unset
 pl.lproj/Goto.nib/keyedobjects.nib -text
 pl.lproj/Goto.strings svneol=native#unset
 pl.lproj/Growl.strings svneol=native#unset
+pl.lproj/IDisk.strings svneol=native#unset
 pl.lproj/Info.nib/keyedobjects.nib -text
 pl.lproj/Info.strings svneol=native#unset
 pl.lproj/InfoPlist.strings svneol=native#unset
@@ -850,6 +865,7 @@ pt.lproj/Folder.strings svneol=native#unset
 pt.lproj/Goto.nib/keyedobjects.nib -text
 pt.lproj/Goto.strings svneol=native#unset
 pt.lproj/Growl.strings svneol=native#unset
+pt.lproj/IDisk.strings svneol=native#unset
 pt.lproj/Info.nib/keyedobjects.nib -text
 pt.lproj/Info.strings svneol=native#unset
 pt.lproj/InfoPlist.strings svneol=native#unset
@@ -892,6 +908,7 @@ ru.lproj/Folder.strings svneol=native#unset
 ru.lproj/Goto.nib/keyedobjects.nib -text
 ru.lproj/Goto.strings svneol=native#unset
 ru.lproj/Growl.strings svneol=native#unset
+ru.lproj/IDisk.strings svneol=native#unset
 ru.lproj/Info.nib/keyedobjects.nib -text
 ru.lproj/Info.strings svneol=native#unset
 ru.lproj/InfoPlist.strings svneol=native#unset
@@ -981,6 +998,7 @@ sv.lproj/Folder.strings svneol=native#unset
 sv.lproj/Goto.nib/keyedobjects.nib -text
 sv.lproj/Goto.strings svneol=native#unset
 sv.lproj/Growl.strings svneol=native#unset
+sv.lproj/IDisk.strings svneol=native#unset
 sv.lproj/Info.nib/keyedobjects.nib -text
 sv.lproj/Info.strings svneol=native#unset
 sv.lproj/InfoPlist.strings svneol=native#unset
@@ -1023,6 +1041,7 @@ zh_CN.lproj/Folder.strings svneol=native#unset
 zh_CN.lproj/Goto.nib/keyedobjects.nib -text
 zh_CN.lproj/Goto.strings svneol=native#unset
 zh_CN.lproj/Growl.strings svneol=native#unset
+zh_CN.lproj/IDisk.strings svneol=native#unset
 zh_CN.lproj/Info.nib/keyedobjects.nib -text
 zh_CN.lproj/Info.strings svneol=native#unset
 zh_CN.lproj/InfoPlist.strings svneol=native#unset
@@ -1066,6 +1085,7 @@ zh_TW.lproj/Folder.strings svneol=native#unset
 zh_TW.lproj/Goto.nib/keyedobjects.nib -text
 zh_TW.lproj/Goto.strings svneol=native#unset
 zh_TW.lproj/Growl.strings svneol=native#unset
+zh_TW.lproj/IDisk.strings svneol=native#unset
 zh_TW.lproj/Info.nib/keyedobjects.nib -text
 zh_TW.lproj/Info.strings svneol=native#unset
 zh_TW.lproj/InfoPlist.strings svneol=native#unset
