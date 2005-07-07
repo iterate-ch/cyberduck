@@ -2017,9 +2017,17 @@ public class CDBrowserController extends CDWindowController implements Observer 
 	public void copyURLButtonClicked(Object sender) {
         log.debug("copyURLButtonClicked");
         Host h = this.session.getHost();
+		StringBuffer url = new StringBuffer(h.getURL());
+        if (this.getSelectionCount() > 0) {
+            Path p = this.getSelectedPath();
+			url.append(p.getAbsolute());
+		}
+		else {
+			url.append(this.workdir().getAbsolute());
+		}
         NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
         pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
-        if (!pboard.setStringForType(h.getURL() + this.workdir().getAbsolute(), NSPasteboard.StringPboardType)) {
+        if (!pboard.setStringForType(url.toString(), NSPasteboard.StringPboardType)) {
             log.error("Error writing URL to NSPasteboard.StringPboardType.");
         }
     }
