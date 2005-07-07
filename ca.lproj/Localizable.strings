@@ -2,7 +2,7 @@
 "Action" = "Acció";
 
 /* No comment provided by engineer. */
-"Active" = "Activa";
+"Active" = "Actiu";
 
 /* No comment provided by engineer. */
 "Allow" = "Permet";
@@ -336,7 +336,7 @@
 "Try to resume transfer" = "Prova de reprendre la transferència";
 
 /* No comment provided by engineer. */
-"Unix Line Endings (LF)" = "Finals de línia Unix (LF)";
+"Unix Line Endings (LF)" = "Acabament de línia Unix (LF)";
 
 /* No comment provided by engineer. */
 "Unknown" = "Desconegut";
@@ -360,7 +360,7 @@
 "View" = "Visualitza";
 
 /* No comment provided by engineer. */
-"Windows Line Endings (CRLF)" = "Finals de línia Windows (CRLF)";
+"Windows Line Endings (CRLF)" = "Acabament de línia Windows (CRLF)";
 
 /* Synchronize <file> with <file> */
 "with" = "amb";
