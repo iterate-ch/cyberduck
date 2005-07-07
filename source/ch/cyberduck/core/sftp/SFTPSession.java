@@ -105,7 +105,7 @@ public class SFTPSession extends Session {
 			log.error("SSH Error: "+e.getMessage());
 		}
 		catch(IOException e) {
-            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": "+e.getMessage());
+            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 		}
 	}
 

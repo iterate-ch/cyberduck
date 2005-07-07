@@ -135,7 +135,7 @@ public abstract class Session extends Observable {
 									host.getHostname());
 		}
 		catch(IOException e) {
-            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": "+e.getMessage());
+            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
 			Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
 									host.getHostname());
 			this.close();

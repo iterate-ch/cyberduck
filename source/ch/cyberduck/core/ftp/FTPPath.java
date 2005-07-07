@@ -137,11 +137,11 @@ public class FTPPath extends Path {
                     session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
                 }
                 catch (FTPException e) {
-                    session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "Status", "")+": "+e.getMessage());
+                    session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
                     return null;
                 }
                 catch (IOException e) {
-                    session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": "+e.getMessage());
+                    session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
                     session.close();
                     return null;
                 }
@@ -183,10 +183,10 @@ public class FTPPath extends Path {
                 session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
             }
             catch (FTPException e) {
-                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "Status", "")+": "+e.getMessage());
+                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
             }
             catch (IOException e) {
-                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": " + e.getMessage());
+                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
                 session.close();
             }
         }
@@ -205,10 +205,10 @@ public class FTPPath extends Path {
                 session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
             }
             catch (FTPException e) {
-                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "Status", "")+": "+e.getMessage());
+                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
             }
             catch (IOException e) {
-                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": " + e.getMessage());
+                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
                 session.close();
             }
         }
@@ -220,7 +220,7 @@ public class FTPPath extends Path {
                 if (this.exists()) {
                     try {
                         session.check();
-                        session.log(Message.PROGRESS, NSBundle.localizedString("Getting timestamp of", "")+" "+this.getName());
+                        session.log(Message.PROGRESS, NSBundle.localizedString("Getting timestamp of", "Status", "")+" "+this.getName());
                         this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()));
                         if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
                             if (this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
@@ -247,7 +247,7 @@ public class FTPPath extends Path {
                         //ignore
                     }
                     catch (IOException e) {
-                        session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": " + e.getMessage());
+                        session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
                         session.close();
                     }
                 }
@@ -287,10 +287,10 @@ public class FTPPath extends Path {
                 session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
             }
             catch (FTPException e) {
-                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "Status", "")+": "+e.getMessage());
+                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
             }
             catch (IOException e) {
-                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": " + e.getMessage());
+                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
                 session.close();
             }
         }
@@ -322,10 +322,10 @@ public class FTPPath extends Path {
                 session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
             }
             catch (FTPException e) {
-                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "Status", "")+": "+e.getMessage());
+                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
             }
             catch (IOException e) {
-                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": " + e.getMessage());
+                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
                 session.close();
             }
         }
@@ -357,10 +357,10 @@ public class FTPPath extends Path {
                 session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
             }
             catch (FTPException e) {
-                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "Status", "")+": "+e.getMessage());
+                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
             }
             catch (IOException e) {
-                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": " + e.getMessage());
+                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
                 session.close();
             }
         }
@@ -393,10 +393,10 @@ public class FTPPath extends Path {
                 session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
             }
             catch (FTPException e) {
-                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "Status", "")+": "+e.getMessage());
+                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
             }
             catch (IOException e) {
-                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": " + e.getMessage());
+                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
                 session.close();
             }
         }
@@ -452,10 +452,10 @@ public class FTPPath extends Path {
                 session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
             }
             catch (FTPException e) {
-                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "Status", "")+": ("+this.getName()+")"+e.getMessage());
+                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": ("+this.getName()+")"+e.getMessage());
             }
             catch (IOException e) {
-                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": " + e.getMessage());
+                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
                 session.close();
             }
         }
@@ -652,10 +652,10 @@ public class FTPPath extends Path {
                 session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
             }
             catch (FTPException e) {
-                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "Status", "")+": ("+this.getName()+")"+e.getMessage());
+                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": ("+this.getName()+")"+e.getMessage());
             }
             catch (IOException e) {
-                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": " + e.getMessage());
+                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
                 session.close();
             }
         }

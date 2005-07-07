@@ -89,10 +89,10 @@ public class FTPSession extends Session {
             this.FTP.interrupt();
         }
         catch (FTPException e) {
-            this.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "Status", "")+": "+e.getMessage());
+            this.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
         }
         catch (IOException e) {
-            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": " + e.getMessage());
+            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
         }
     }
 
@@ -169,10 +169,10 @@ public class FTPSession extends Session {
             return workdir;
         }
         catch (FTPException e) {
-            this.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "Status", "")+": "+e.getMessage());
+            this.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
         }
         catch (IOException e) {
-            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": " + e.getMessage());
+            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
             this.close();
         }
         return null;
@@ -189,10 +189,10 @@ public class FTPSession extends Session {
             this.FTP.quote(command);
         }
         catch (FTPException e) {
-            this.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "Status", "")+": "+e.getMessage());
+            this.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
         }
         catch (IOException e) {
-            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "Status", "")+": " + e.getMessage());
+            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
             this.close();
         }
     }
