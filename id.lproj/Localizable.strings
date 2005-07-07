@@ -190,6 +190,9 @@
 /* No comment provided by engineer. */
 "No Bonjour services available" = "Tidak ada servis Bonjour yang tersedia";
 
+/* No comment provided by engineer. */
+"No external editor available" = "No external editor available";
+
 /* Alert sheet text */
 "No newer version available." = "Belum ada versi yang baru.";
 

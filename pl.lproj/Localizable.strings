@@ -197,6 +197,9 @@
 "No Bonjour services available" = "Brak dostępnych serwisów Randezvous";
 
 /* No comment provided by engineer. */
+"No external editor available" = "No external editor available";
+
+/* No comment provided by engineer. */
 "No recently connected servers available" = "No recently connected servers available";
 
 /* Alert sheet title */

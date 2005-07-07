@@ -190,6 +190,9 @@
 /* No comment provided by engineer. */
 "No Bonjour services available" = "No hi ha serveis Bonjour disponibles";
 
+/* No comment provided by engineer. */
+"No external editor available" = "No external editor available";
+
 /* Alert sheet text */
 "No newer version available." = "No hi ha noves versions disponibles.";
 
