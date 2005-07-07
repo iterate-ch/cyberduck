@@ -137,7 +137,7 @@
 "FTP (File Transfer Protocol)" = "FTP (Unverschlüsselte Verbindung)";
 
 /* No comment provided by engineer. */
-"FTP-SSL (FTP over TLS/SSL)" = "FTP-SSL (FTP over TLS/SSL)";
+"FTP-SSL (FTP over TLS/SSL)" = "FTP-SSL (FTP über TLS/SSL)";
 
 /* Toolbar item */
 "Get Info" = "Zeige Info";
@@ -279,7 +279,7 @@
 "Show in Finder" = "Im Finder zeigen";
 
 /* Toolbar item tooltip */
-"Show Transfers window" = "Transfer Fenster anzeigen";
+"Show Transfers window" = "Dateitransfer Fenster anzeigen";
 
 /* A column in the browser */
 "Size" = "Grösse";
@@ -309,7 +309,7 @@
 "Transfer in progress" = "Transfer in Gang";
 
 /* Toolbar item */
-"Transfers" = "Transfers";
+"Transfers" = "Dateitransfers";
 
 /* No comment provided by engineer. */
 "Unknown size" = "Unbekannte Grösse";
@@ -336,7 +336,7 @@
 "There was a problem checking for an update. Please try again later." = "Beim Überprüfen auf ein Update ist ein Fehler aufgetreten. Bitte versuchen Sie später erneut.";
 
 /* No comment provided by engineer. */
-"There are items in the queue currently being transferred. Quit anyway?" = "In der Warteschlange sind Transfers aktiv. Trotzdem beenden?";
+"There are items in the queue currently being transferred. Quit anyway?" = "In der Warteschlange sind Dateitransfers aktiv. Trotzdem beenden?";
 
 /* No comment provided by engineer. */
 "Try to resume transfer" = "Versuchen mit der Übertragung fortzufahren";
