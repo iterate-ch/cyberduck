@@ -115,5 +115,4 @@ public class UploadQueue extends Queue {
 	protected void process(Path p) {
 		p.upload();
 	}
-
 }
