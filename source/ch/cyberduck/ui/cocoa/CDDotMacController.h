@@ -60,9 +60,6 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookm
 - (IBAction)downloadBookmarksFromDotMacAction:(id)sender;
 - (IBAction)uploadBookmarksToDotMacAction:(id)sender;
 
-- (IBAction)downloadPreferencesFromDotMacAction:(id)sender;
-- (IBAction)uploadPreferencesToDotMacAction:(id)sender;
-
 - (NSData*)downloadFromDotMac:(NSString *)remoteFile usingAccount:(DMMemberAccount*)account;
 - (void)uploadToDotMac:(NSString *)localFile usingAccount:(DMMemberAccount*)account;
 
