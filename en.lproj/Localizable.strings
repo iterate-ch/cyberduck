@@ -190,6 +190,9 @@
 /* No comment provided by engineer. */
 "No Bonjour services available" = "No Bonjour services available";
 
+/* No comment provided by engineer. */
+"No external editor available" = "No external editor available"
+
 /* Alert sheet text */
 "No newer version available." = "No newer version available.";
 
@@ -214,7 +217,7 @@
 
 /* No comment provided by engineer. */
 "Open" = "Open";
-
+§
 /* Toolbar item */
 "Outline" = "Outline";
 
