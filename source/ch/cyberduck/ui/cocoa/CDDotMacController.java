@@ -31,6 +31,7 @@ import ch.cyberduck.core.Host;
  * @version $Id$
  */
 public class CDDotMacController {
+
     private static Logger log = Logger.getLogger(CDDotMacController.class);
 
     static {
@@ -50,81 +51,58 @@ public class CDDotMacController {
 
     public native void uploadBookmarks();
 
-    protected int noSkipped = 0;
-    protected int noAdded = 0;
-
-    private boolean canceled = false;
-
     public void loadBookmarks(java.io.File f) {
-        if (f.exists()) {
-            log.info("Found Bookmarks file: " + f.toString());
-            NSData plistData = new NSData(f);
-            String[] errorString = new String[]{null};
-            Object propertyListFromXMLData =
-                    NSPropertyListSerialization.propertyListFromData(plistData,
-                            NSPropertyListSerialization.PropertyListImmutable,
-                            new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-                            errorString);
-            if (errorString[0] != null) {
-                log.error("Problem reading bookmark file: " + errorString[0]);
-            }
-            else {
-                log.debug("Successfully read Bookmarks: " + propertyListFromXMLData);
-            }
-            if (propertyListFromXMLData instanceof NSArray) {
-                NSArray entries = (NSArray) propertyListFromXMLData;
-                java.util.Enumeration i = entries.objectEnumerator();
-                Object element;
-                while (i.hasMoreElements()) {
-                    element = i.nextElement();
-                    if (element instanceof NSDictionary) {
-                        this.addBookmark(new Host((NSDictionary) element));
-                    }
-                }
-            }
+        NSData plistData = new NSData(f);
+        String[] errorString = new String[]{null};
+        Object propertyListFromXMLData =
+                NSPropertyListSerialization.propertyListFromData(plistData,
+                        NSPropertyListSerialization.PropertyListImmutable,
+                        new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
+                        errorString);
+        if (errorString[0] != null) {
+            log.error("Problem reading bookmark file: " + errorString[0]);
         }
-    }
-
-    private boolean addBookmark(Object host) {
-        if (canceled) {
-            noSkipped++;
-            return false;
+        else {
+            log.debug("Successfully read Bookmarks: " + propertyListFromXMLData);
         }
-        if (host instanceof Host) {
-            if (!CDBookmarkTableDataSource.instance().contains(host)) {
-                int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Import Bookmark", ""),
-                        NSBundle.localizedString("Add the bookmark", "") + " (" + ((Host) host).getNickname() + ") "
-                        + NSBundle.localizedString("to your list of bookmarks?", ""),
-                        NSBundle.localizedString("Add", ""), //default
-                        NSBundle.localizedString("Cancel", ""), //alternate
-                        NSBundle.localizedString("Skip", "")); //other
-                if (choice == NSAlertPanel.AlternateReturn) {
-                    canceled = true;
-                }
-                if (choice == NSAlertPanel.OtherReturn) {
-                    noSkipped++;
-                    return false;
-                }
-                if (choice == NSAlertPanel.DefaultReturn) {
-                    CDBookmarkTableDataSource.instance().add(host);
-                    NSArray windows = NSApplication.sharedApplication().windows();
-                    int count = windows.count();
-                    while (0 != count--) {
-                        NSWindow window = (NSWindow) windows.objectAtIndex(count);
-                        CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-                        if (null != controller) {
-                            controller.reloadBookmarks();
+        if (propertyListFromXMLData instanceof NSArray) {
+            NSArray entries = (NSArray) propertyListFromXMLData;
+            java.util.Enumeration i = entries.objectEnumerator();
+            Object element;
+            while (i.hasMoreElements()) {
+                element = i.nextElement();
+                if (element instanceof NSDictionary) {
+                    Host bookmark = new Host((NSDictionary) element);
+                    if (bookmark instanceof Host) {
+                        if (!CDBookmarkTableDataSource.instance().contains(bookmark)) {
+                            int choice = NSAlertPanel.runAlert(((Host) bookmark).getNickname(),
+                                    NSBundle.localizedString("Add this bookmark to your existing bookmarks?", "IDisk", ""),
+                                    NSBundle.localizedString("Add", "IDisk", ""), //default
+                                    NSBundle.localizedString("Cancel", ""), //alternate
+                                    NSBundle.localizedString("Skip", "IDisk", "")); //other
+                            if (choice == NSAlertPanel.DefaultReturn) {
+                                CDBookmarkTableDataSource.instance().add(bookmark);
+                                NSArray windows = NSApplication.sharedApplication().windows();
+                                int count = windows.count();
+                                while (0 != count--) {
+                                    NSWindow window = (NSWindow) windows.objectAtIndex(count);
+                                    CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+                                    if (null != controller) {
+                                        controller.reloadBookmarks();
+                                    }
+                                }
+                            }
+                            if (choice == NSAlertPanel.AlternateReturn) {
+                                return;
+                            }
+                            if (choice == NSAlertPanel.OtherReturn) {
+                                //
+                            }
                         }
                     }
-                    noAdded++;
-                    return true;
                 }
             }
-            else {
-                noSkipped++;
-                return false;
-            }
+            return;
         }
-        return false;
     }
 }

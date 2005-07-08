@@ -28,7 +28,7 @@ import ch.cyberduck.core.PathFactory;
 /**
  * @version $Id$
  */
-public class CDBrowserColumnViewModel extends CDTableDataSource {
+public class CDBrowserColumnViewModel extends CDBrowserTableDataSource {
 
     public CDBrowserColumnViewModel(CDBrowserController controller) {
         super(controller);

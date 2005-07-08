@@ -32,7 +32,7 @@ import ch.cyberduck.core.*;
 /**
  * @version $Id$
  */
-public class CDBrowserOutlineViewModel extends CDTableDataSource {
+public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
     private static Logger log = Logger.getLogger(CDBrowserOutlineViewModel.class);
 
 	private static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
@@ -128,16 +128,16 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
             }
         }
 	}
-	
+
 	/**
-	* Invoked by outlineView, and returns the child item at the specified index. Children
+	 * Invoked by outlineView, and returns the child item at the specified index. Children
 	 * of a given parent item are accessed sequentially. If item is null, this method should
 	 * return the appropriate child item of the root object
 	 */
 	public Path outlineViewChildOfItem(NSOutlineView outlineView, int index, Path item) {
-		if(null == item) {
-			item = controller.workdir();
-		}
+        if(null == item) {
+            item = controller.workdir();
+        }
         if (index < this.childs(item).size()) {
             return (Path)this.childs(item).get(index);
         }
@@ -341,16 +341,12 @@ public class CDBrowserOutlineViewModel extends CDTableDataSource {
 				try {
 					this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
 																 this.promisedDragPaths[i].getName()));
-					//this.promisedDragPaths[i].getLocal().createNewFile();
 					q.addRoot(this.promisedDragPaths[i]);
 					promisedDragNames.addObject(this.promisedDragPaths[i].getName());
 				}
 				catch(java.io.UnsupportedEncodingException e) {
 					log.error(e.getMessage());
 				}
-				//					catch(java.io.IOException e) {
-				//						log.error(e.getMessage());
-				//					}
 			}
 			if(q.numberOfRoots() > 0) {
 				CDQueueController.instance().startItem(q);

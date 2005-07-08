@@ -31,7 +31,7 @@ import ch.cyberduck.core.Path;
 /**
  * @version $Id$
  */
-public abstract class CDTableDataSource {//implements NSTableView.DataSource {
+public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSource {
 
     protected static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
     protected static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
@@ -53,7 +53,7 @@ public abstract class CDTableDataSource {//implements NSTableView.DataSource {
 
     protected CDBrowserController controller;
 
-    public CDTableDataSource(CDBrowserController controller) {
+    public CDBrowserTableDataSource(CDBrowserController controller) {
         this.controller = controller;
     }
 

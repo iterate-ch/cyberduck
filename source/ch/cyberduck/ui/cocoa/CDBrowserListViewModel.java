@@ -31,7 +31,7 @@ import ch.cyberduck.core.*;
 /**
  * @version $Id$
  */
-public class CDBrowserListViewModel extends CDTableDataSource {
+public class CDBrowserListViewModel extends CDBrowserTableDataSource {
     private static Logger log = Logger.getLogger(CDBrowserListViewModel.class);
 
     public CDBrowserListViewModel(CDBrowserController controller) {

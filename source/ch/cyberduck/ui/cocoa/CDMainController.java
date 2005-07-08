@@ -156,7 +156,7 @@ public class CDMainController extends CDController {
 
 		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
             if(Editor.INSTALLED_EDITORS.size() == 0) {
-                item.setTitle(NSBundle.localizedString("No external editor available"));
+                item.setTitle(NSBundle.localizedString("No external editor available", ""));
                 return false;
             }
             String identifier = (String)Editor.INSTALLED_EDITORS.values().toArray(new String[]{})[index];
@@ -607,14 +607,6 @@ public class CDMainController extends CDController {
                 "Favorites.plist");
         controller.downloadBookmarks(tmp.getAbsolutePath());
         controller.loadBookmarks(tmp);
-        NSAlertPanel.runInformationalAlert(NSBundle.localizedString("Bookmarks Imported", ""),
-                NSBundle.localizedString("Imported", "") + " " + controller.noAdded + " " + NSBundle.localizedString("of", "") + " "
-                + (controller.noSkipped + controller.noAdded) + " " + NSBundle.localizedString("bookmarks.", "") + " "
-                + NSBundle.localizedString("Omitted", "")+" "+controller.noSkipped+" "
-                + NSBundle.localizedString("bookmarks because they already exist.", ""),
-                NSBundle.localizedString("OK", ""), //default
-                null,
-                null);
         tmp.delete();
     }
 
