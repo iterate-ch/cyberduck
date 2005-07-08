@@ -1,38 +1,38 @@
 /* No comment provided by engineer. */
-"Are you sure you want to replace any existing bookmarks on your iDisk?" = "Are you sure you want to replace any existing bookmarks on your iDisk?";
+"Are you sure you want to replace any existing bookmarks on your iDisk?" = "Určite chcete nahradiť existujúce záložky na vašom iDisku?";
 
 /* No comment provided by engineer. */
-"Cannot find file" = "Cannot find file";
+"Cannot find file" = "Nemožno nájsť súbor";
 
 /* No comment provided by engineer. */
-"Connection Error" = "Connection Error";
+"Connection Error" = "Chyba spojenia";
 
 /* No comment provided by engineer. */
-"Could not connect properly to your iDisk. Please make sure that your .Mac settings are correct." = "Could not connect properly to your iDisk. Please make sure that your .Mac settings are correct.";
+"Could not connect properly to your iDisk. Please make sure that your .Mac settings are correct." = "Nemožno sa korektne spojiť s iDiskom.\nSkontrolujte správnosť „.Mac“ nastavení.";
 
 /* No comment provided by engineer. */
-"Invalid Account" = "Invalid Account";
+"Invalid Account" = "Neplatný účet";
 
 /* No comment provided by engineer. */
-"The bookmarks file could not be found at ~/Library/Application Support/Cyberduck/Favorites.plist" = "The bookmarks file could not be found at ~/Library/Application Support/Cyberduck/Favorites.plist";
+"The bookmarks file could not be found at ~/Library/Application Support/Cyberduck/Favorites.plist" = "Súbor záložiek sa nepodarilo nájsť v ~/Library/Application Support/Cyberduck/Favorites.plist";
 
 /* No comment provided by engineer. */
-"The file Favorites.plist in the folder /Documents/Cyberduck/ could not be found on your iDisk." = "The file Favorites.plist in the folder /Documents/Cyberduck/ could not be found on your iDisk.";
+"The file Favorites.plist in the folder /Documents/Cyberduck/ could not be found on your iDisk." = "Súbor Favorites.plist v zložke /Documents/Cyberduck/ sa na iDisku nepodarilo nájsť.";
 
 /* No comment provided by engineer. */
-"Replace Bookmarks" = "Replace Bookmarks";
+"Replace Bookmarks" = "Nahradiť záložky";
 
 /* No comment provided by engineer. */
-"Successfully uploaded bookmarks to the iDisk" = "Successfully uploaded bookmarks to the iDisk";
+"Successfully uploaded bookmarks to the iDisk" = "Záložky boli úspešné odoslané na iDisk";
 
 /* No comment provided by engineer. */
-"Upload successful" = "Upload successful";
+"Upload successful" = "Odoslanie úspešné";
 
 /* No comment provided by engineer. */
-"Add" = "Add";
+"Add" = "Pridať";
 
 /* No comment provided by engineer. */
-"Skip" = "Skip";
+"Skip" = "Preskočiť";
 
 /* No comment provided by engineer. */
 "Add this bookmark to your existing bookmarks?" = "Add this bookmark to your existing bookmarks?";
