@@ -23,6 +23,7 @@ import com.apple.cocoa.foundation.*;
 
 import java.util.Iterator;
 import java.util.Observer;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -39,8 +40,9 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
     }
 
     public int numberOfRowsInTableView(NSTableView tableView) {
-        if (controller.isMounted())
+        if (controller.isMounted()) {
             return this.childs(this.controller.workdir()).size();
+        }
         return 0;
     }
 
@@ -76,9 +78,10 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
 //	}
 															
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-        if (row < this.childs(this.controller.workdir()).size()) {
+        List childs = this.childs(this.controller.workdir());
+        if (row < childs.size()) {
             String identifier = (String) tableColumn.identifier();
-            Path p = (Path) this.childs(this.controller.workdir()).get(row);
+            Path p = (Path) childs.get(row);
             if (identifier.equals("TYPE")) {
                 NSImage icon;
                 if (p.attributes.isSymbolicLink()) {
@@ -236,8 +239,9 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
             NSMutableArray queueDictionaries = new NSMutableArray();
             Queue q = new DownloadQueue();
             Session session = controller.workdir().getSession().copy();
+            List childs = this.childs(this.controller.workdir());
             for (int i = 0; i < rows.count(); i++) {
-                promisedDragPaths[i] = ((Path) this.childs(this.controller.workdir()).get(((Integer) rows.objectAtIndex(i)).intValue())).copy(session);
+                promisedDragPaths[i] = ((Path) childs.get(((Integer) rows.objectAtIndex(i)).intValue())).copy(session);
                 if (promisedDragPaths[i].attributes.isFile()) {
                     if (promisedDragPaths[i].getExtension() != null) {
                         fileTypes.addObject(promisedDragPaths[i].getExtension());

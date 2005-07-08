@@ -535,12 +535,13 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
 				NSEnumerator iterator = this.browserListView.selectedRowEnumerator();
-				List files = new ArrayList();
+				List selectedFiles = new ArrayList();
+                List childs = this.browserListModel.childs(this.workdir());
 				while (iterator.hasMoreElements()) {
-					int selected = ((Integer) iterator.nextElement()).intValue();
-					files.add(this.browserListModel.childs(this.workdir()).get(selected));
+					int selectedIndex = ((Integer) iterator.nextElement()).intValue();
+					selectedFiles.add(childs.get(selectedIndex));
 				}
-				return files;
+				return selectedFiles;
 			}
 			case OUTLINE_VIEW: {
 				NSEnumerator iterator = this.browserOutlineView.selectedRowEnumerator();
