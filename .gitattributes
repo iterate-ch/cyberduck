@@ -28,6 +28,7 @@ Cyberduck[!!-~]FAQ.rtfd/cyberduck-application.icns -text
 /Cyberduck.scriptTerminology -text svneol=unset#application/octet-stream
 Spotlight[!!-~]Importer/English.lproj/InfoPlist.strings svneol=native#unset
 Spotlight[!!-~]Importer/English.lproj/schema.strings svneol=native#unset
+build/DotMacKit.framework.zip -text
 build/Growl.framework.zip -text
 build/Keychain.framework.zip -text
 ca.lproj/Bookmark.nib/keyedobjects.nib -text
@@ -215,6 +216,7 @@ en.lproj/Browser.nib/keyedobjects.nib -text
 en.lproj/Browser.strings svneol=native#unset
 en.lproj/Certificate.nib/keyedobjects.nib -text
 en.lproj/Certificate.strings svneol=native#unset
+en.lproj/Command.nib/keyedobjects.nib -text
 en.lproj/Command.strings svneol=native#unset
 en.lproj/Connection.nib/keyedobjects.nib -text
 en.lproj/Connection.strings svneol=native#unset
@@ -491,6 +493,7 @@ img/certificate.tiff -text
 img/clean.tiff -text
 img/cleanAll.tiff -text
 img/column.tiff -text
+img/command.tiff -text
 img/connect.tiff svneol=native#unset
 img/deleteFile.tiff -text
 img/disk.tiff svneol=native#unset
@@ -541,6 +544,7 @@ img/ftp.tiff -text
 img/gear.tiff -text
 img/general.tiff -text
 img/history.tiff -text
+img/idisk.tiff -text
 img/info.tiff svneol=native#unset
 img/list.tiff -text
 img/locked.tiff -text
