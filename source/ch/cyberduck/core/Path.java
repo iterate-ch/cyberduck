@@ -47,6 +47,11 @@ public abstract class Path {
 	public static final int DIRECTORY_TYPE = 2;
 	public static final int SYMBOLIC_LINK_TYPE = 4;
 
+    protected void finalize() throws Throwable {
+        log.debug("finalize > "+this.toString());
+        super.finalize();
+    }
+
 	/**
 	 * Deep copies the current path with its attributes but without the status information
 	 *
@@ -197,6 +202,10 @@ public abstract class Path {
     public List list(boolean refresh) {
         return this.list(refresh, new NullFilter());
     }
+
+//    public List list(boolean refresh, boolean notifyObservers) {
+//        return this.list(refresh, new NullFilter(), notifyObservers);
+//    }
 
     public List list(boolean refresh, Filter filter) {
 		return this.list(Preferences.instance().getProperty("browser.charset.encoding"),

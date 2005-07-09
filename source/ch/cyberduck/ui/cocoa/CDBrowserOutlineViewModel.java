@@ -21,9 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Observer;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 
@@ -40,16 +38,18 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
     private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
     private static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
-    public CDBrowserOutlineViewModel(CDBrowserController controller) {
-        super(controller);
-    }
+    private Map content = new HashMap();
 
-    private NSArray content = null;
-
-    public void setWorkdir(Path workdir) {
+    protected List childs(Path path) {
+        List childs = super.childs(path);
         //Keep a referencd to all returned items so they don't get released by the java garbage collector when
         //there is still a weak reference from the obj-c runtime
-        this.content = new NSArray().arrayByAddingObject(workdir.list(false, false));
+        this.content.put(path, childs);
+        return childs;
+    }
+
+    public CDBrowserOutlineViewModel(CDBrowserController controller) {
+        super(controller);
     }
 
     public void outlineViewItemDidExpand(NSNotification notification) {
