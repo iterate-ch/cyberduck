@@ -44,6 +44,14 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         super(controller);
     }
 
+    private NSArray content = null;
+
+    public void setWorkdir(Path workdir) {
+        //Keep a referencd to all returned items so they don't get released by the java garbage collector when
+        //there is still a weak reference from the obj-c runtime
+        this.content = new NSArray().arrayByAddingObject(workdir.list(false, false));
+    }
+
     public void outlineViewItemDidExpand(NSNotification notification) {
         Path p = (Path) notification.userInfo().allValues().lastObject();
         p.getSession().cache().setExpanded(p.getAbsolute(), true);

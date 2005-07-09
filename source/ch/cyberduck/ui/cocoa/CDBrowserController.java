@@ -454,6 +454,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
 				break;
 			}
 			case OUTLINE_VIEW: {
+                if(this.isMounted()) {
+                    this.browserOutlineModel.setWorkdir(this.workdir());
+                }
 				this.browserOutlineView.reloadData();
 				if(this.isMounted()) {
                     for(int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {

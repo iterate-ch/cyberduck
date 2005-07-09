@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSMutableArray;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,17 +36,12 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
     protected static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
     protected static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
-    //Keep a referencd to all returned items so they don't get released by the java garbage collector when
-    //there is still a weak reference from the obj-c runtime
-    private NSMutableArray childs = new NSMutableArray();
-
     protected List childs(Path path) {
+        //get cached directory listing
         List l = path.list(controller.getEncoding(), //character encoding
                 false, // do not refresh
                 this.controller.getFileFilter(),
                 false); // do not notify observers (important!)
-        //fix memory++
-        childs.addObject(l); //should be a static intializer
         return l;
     }
 
@@ -208,8 +202,9 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
                 tableColumn);
         tableView.deselectAll(null);
         this.sort(tableColumn, sortAscending);
+        List childs = this.childs(controller.workdir());
         for (Iterator i = selectedRows.iterator(); i.hasNext();) {
-            tableView.selectRow(this.childs(controller.workdir()).indexOf(i.next()), true);
+            tableView.selectRow(childs.indexOf(i.next()), true);
         }
         tableView.reloadData();
     }
