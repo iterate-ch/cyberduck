@@ -409,7 +409,6 @@ public final class TwofishEngine implements CipherEngine {
     }
 
     /*
-     * TODO:  This can be optimised and made cleaner by combining
      * the functionality in this function and applying it appropriately
      * to the creation of the subkeys during key setup.
      */
