@@ -3,11 +3,23 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.4.6</string>
+	<string>2.5b3</string>
 	<key>file</key>
-	<string>Cyberduck-2.4.6.dmg</string>
+	<string>Cyberduck-2.5b3.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.5b3
+- [Localize] Catalan Localization
+- [Feature] Spotlight Importer for bookmarks
+- [Feature] Synchronize bookmarks with .Mac
+- [Feature] Send custom commands to server (FTP)
+- [Feature] Auto scrolling log view
+- [Bugfix] New connection dialog remembers field values
+- [Bugfix] Correctly parsing filenames beginning with whitespace (FTP)
+- [Bugfix] Don't allow editing files with well known binary file type extensions
+- [Bugfix] Excluding individual files when synchronising
+- [Bugfix] Various bugfixes reported by users
+
 2.5b2
 - [Localize] Indonesian Localization
 - [Bugfix] Resorting browser view will not change selection
