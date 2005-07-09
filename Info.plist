@@ -23,8 +23,6 @@
 			</dict>
 		</dict>
 	</array>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>English</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
@@ -48,6 +46,8 @@
 	<string>cyberduck-application</string>
 	<key>CFBundleIdentifier</key>
 	<string>ch.sudo.cyberduck</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

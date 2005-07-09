@@ -68,7 +68,7 @@ extractstrings() {
     genstrings -j -a -q -o English.lproj source/ch/cyberduck/ui/cocoa/*.java
     echo "*** Extracting strings from Java source files (genstrings)..."
     genstrings -j -a -q -o English.lproj source/ch/cyberduck/core/*.java
-    genstrings    -a -q -o English.lproj source/ch/cyberduck/ui/cocoa/**/*.m
+    genstrings    -a -q -o English.lproj source/ch/cyberduck/ui/cocoa/*.m
     genstrings -j -a -q -o English.lproj source/ch/cyberduck/core/ftp/*.java
     genstrings -j -a -q -o English.lproj source/ch/cyberduck/core/ftps/*.java
     genstrings -j -a -q -o English.lproj source/ch/cyberduck/core/sftp/*.java
