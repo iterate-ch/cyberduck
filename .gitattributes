@@ -237,7 +237,7 @@ en.lproj/IDisk.strings svneol=native#unset
 en.lproj/Info.nib/keyedobjects.nib -text
 en.lproj/Info.strings svneol=native#unset
 en.lproj/InfoPlist.strings -text
-en.lproj/Localizable.strings -text svneol=unset#application/octet-stream
+en.lproj/Localizable.strings -text
 en.lproj/Login.nib/keyedobjects.nib -text
 en.lproj/Login.strings svneol=native#unset
 en.lproj/Main.nib/keyedobjects.nib -text
