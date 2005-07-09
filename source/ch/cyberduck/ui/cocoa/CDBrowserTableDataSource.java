@@ -38,11 +38,10 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
 
     protected List childs(Path path) {
         //get cached directory listing
-        List l = path.list(controller.getEncoding(), //character encoding
+        return path.list(controller.getEncoding(), //character encoding
                 false, // do not refresh
                 this.controller.getFileFilter(),
                 false); // do not notify observers (important!)
-        return l;
     }
 
     protected CDBrowserController controller;
