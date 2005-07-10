@@ -83,7 +83,11 @@ public class CDBookmarkTableDataSource extends Collection {
         }
     }
 
-    private static NSImage documentIcon = NSImage.imageNamed("cyberduck-document.icns");
+    private static final NSImage DOCUMENT_ICON;
+	
+	static {
+		DOCUMENT_ICON = NSImage.imageNamed("bookmark40.tiff");
+	}
 
     public int numberOfRowsInTableView(NSTableView tableView) {
         return this.size();
@@ -93,7 +97,7 @@ public class CDBookmarkTableDataSource extends Collection {
         if (row < this.size()) {
             String identifier = (String) tableColumn.identifier();
             if (identifier.equals("ICON")) {
-                return documentIcon;
+                return DOCUMENT_ICON;
             }
             if (identifier.equals("BOOKMARK")) {
                 return this.get(row);
