@@ -1895,7 +1895,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void insideButtonClicked(Object sender) {
         log.debug("insideButtonClicked");
-        this.searchField.setStringValue("");
         if (this.getSelectionCount() > 0) {
             Path p = this.getSelectedPath(); //last row selected
             if (p.attributes.isDirectory()) {
