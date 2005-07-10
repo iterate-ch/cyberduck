@@ -108,9 +108,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
         if (userObj != null) {
             host.setCredentials((String) args.objectForKey("Username"), (String) args.objectForKey("Password"));
         }
-        Session session = SessionFactory.createSession(host);
-        session.addObserver((Observer) this);
-        session.mount(this.encoding, this.getFileFilter());
+        this.session = SessionFactory.createSession(host);
+        this.session.addObserver((Observer) this);
+        this.session.mount(this.encoding, this.getFileFilter());
         return null;
     }
 
@@ -2097,17 +2097,17 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
         )) {
             if(this.hasSession()) {
-                session.deleteObserver((Observer) this);
-                session.deleteObserver(this.transcript);
+                this.session.deleteObserver((Observer) this);
+                this.session.deleteObserver(this.transcript);
             }
-            session = SessionFactory.createSession(host);
+            this.session = SessionFactory.createSession(host);
             this.init(host, session);
             this.setEncoding(encoding, false);
-            if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
-                ((ch.cyberduck.core.sftp.SFTPSession) session).setHostKeyVerificationController(new CDHostKeyController(this));
+            if (this.session instanceof ch.cyberduck.core.sftp.SFTPSession) {
+                ((ch.cyberduck.core.sftp.SFTPSession) this.session).setHostKeyVerificationController(new CDHostKeyController(this));
             }
-            if (session instanceof ch.cyberduck.core.ftps.FTPSSession) {
-                ((ch.cyberduck.core.ftps.FTPSSession) session).setTrustManager(
+            if (this.session instanceof ch.cyberduck.core.ftps.FTPSSession) {
+                ((ch.cyberduck.core.ftps.FTPSSession) this.session).setTrustManager(
                         new CDX509TrustManagerController(this));
             }
             host.setLoginController(new CDLoginController(this));
@@ -2116,7 +2116,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     session.mount(encoding, getFileFilter());
                 }
             }.start();
-            return session;
+            return this.session;
         }
         return null;
     }
