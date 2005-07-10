@@ -316,7 +316,7 @@ public class CDMainController extends CDController {
 			sender.setTitle(h.toString());
 			sender.setTarget(this);
 			sender.setEnabled(true);
-			sender.setImage(NSImage.imageNamed("document16.tiff"));
+			sender.setImage(NSImage.imageNamed("bookmark16.tiff"));
 			sender.setAction(new NSSelector("historyMenuItemClicked", new Class[]{NSMenuItem.class}));
 			return !shouldCancel;
 		}
