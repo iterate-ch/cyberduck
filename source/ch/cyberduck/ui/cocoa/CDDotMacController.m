@@ -44,13 +44,11 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_downloadBoo
 {
 	CDDotMacController *c = [[CDDotMacController alloc] init];
 	[c downloadBookmarksFromDotMacAction:convertToNSString(env, file)];
-	[c release];
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookmarks(JNIEnv *env, jobject this) {
 	CDDotMacController *c = [[CDDotMacController alloc] init];
 	[c uploadBookmarksToDotMacAction:nil];
-	[c release];
 }
 
 @implementation CDDotMacController

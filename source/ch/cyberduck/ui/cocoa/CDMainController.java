@@ -603,11 +603,7 @@ public class CDMainController extends CDController {
 
     public void downloadBookmarksFromDotMacClicked(Object sender) {
         CDDotMacController controller = new CDDotMacController();
-        File tmp = new File(NSPathUtilities.temporaryDirectory(),
-                "Favorites.plist");
-        controller.downloadBookmarks(tmp.getAbsolutePath());
-        controller.loadBookmarks(tmp);
-        tmp.delete();
+        controller.downloadBookmarks();
     }
 
     public void uploadBookmarksToDotMacClicked(Object sender) {

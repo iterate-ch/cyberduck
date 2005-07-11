@@ -23,6 +23,8 @@ import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.*;
 
+import java.io.File;
+
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Host;
@@ -47,62 +49,66 @@ public class CDDotMacController {
         }
     }
 
-    public native void downloadBookmarks(String destination);
+    private native void downloadBookmarks(String destination);
 
     public native void uploadBookmarks();
-
-    public void loadBookmarks(java.io.File f) {
-        NSData plistData = new NSData(f);
-        String[] errorString = new String[]{null};
-        Object propertyListFromXMLData =
+	
+	public void downloadBookmarks() {
+        File f = new File(NSPathUtilities.temporaryDirectory(), "Favorites.plist");
+		this.downloadBookmarks(f.getAbsolutePath());
+		if(f.exists()) {
+			NSData plistData = new NSData(f);
+			String[] errorString = new String[]{null};
+			Object propertyListFromXMLData =
                 NSPropertyListSerialization.propertyListFromData(plistData,
-                        NSPropertyListSerialization.PropertyListImmutable,
-                        new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-                        errorString);
-        if (errorString[0] != null) {
-            log.error("Problem reading bookmark file: " + errorString[0]);
-        }
-        else {
-            log.debug("Successfully read Bookmarks: " + propertyListFromXMLData);
-        }
-        if (propertyListFromXMLData instanceof NSArray) {
-            NSArray entries = (NSArray) propertyListFromXMLData;
-            java.util.Enumeration i = entries.objectEnumerator();
-            Object element;
-            while (i.hasMoreElements()) {
-                element = i.nextElement();
-                if (element instanceof NSDictionary) {
-                    Host bookmark = new Host((NSDictionary) element);
-                    if (bookmark instanceof Host) {
-                        if (!CDBookmarkTableDataSource.instance().contains(bookmark)) {
-                            int choice = NSAlertPanel.runAlert(((Host) bookmark).getNickname(),
-                                    NSBundle.localizedString("Add this bookmark to your existing bookmarks?", "IDisk", ""),
-                                    NSBundle.localizedString("Add", "IDisk", ""), //default
-                                    NSBundle.localizedString("Cancel", ""), //alternate
-                                    NSBundle.localizedString("Skip", "IDisk", "")); //other
-                            if (choice == NSAlertPanel.DefaultReturn) {
-                                CDBookmarkTableDataSource.instance().add(bookmark);
-                                NSArray windows = NSApplication.sharedApplication().windows();
-                                int count = windows.count();
-                                while (0 != count--) {
-                                    NSWindow window = (NSWindow) windows.objectAtIndex(count);
-                                    CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-                                    if (null != controller) {
-                                        controller.reloadBookmarks();
-                                    }
-                                }
-                            }
-                            if (choice == NSAlertPanel.AlternateReturn) {
-                                return;
-                            }
-                            if (choice == NSAlertPanel.OtherReturn) {
-                                //
-                            }
-                        }
-                    }
-                }
-            }
-            return;
-        }
+																 NSPropertyListSerialization.PropertyListImmutable,
+																 new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
+																 errorString);
+			if (errorString[0] != null) {
+				log.error("Problem reading bookmark file: " + errorString[0]);
+			}
+			else {
+				log.debug("Successfully read Bookmarks: " + propertyListFromXMLData);
+			}
+			if (propertyListFromXMLData instanceof NSArray) {
+				NSArray entries = (NSArray) propertyListFromXMLData;
+				java.util.Enumeration i = entries.objectEnumerator();
+				Object element;
+				while (i.hasMoreElements()) {
+					element = i.nextElement();
+					if (element instanceof NSDictionary) {
+						Host bookmark = new Host((NSDictionary) element);
+						if (bookmark instanceof Host) {
+							if (!CDBookmarkTableDataSource.instance().contains(bookmark)) {
+								int choice = NSAlertPanel.runAlert(((Host) bookmark).getNickname(),
+																   NSBundle.localizedString("Add this bookmark to your existing bookmarks?", "IDisk", ""),
+																   NSBundle.localizedString("Add", "IDisk", ""), //default
+																   NSBundle.localizedString("Cancel", ""), //alternate
+																   NSBundle.localizedString("Skip", "IDisk", "")); //other
+								if (choice == NSAlertPanel.DefaultReturn) {
+									CDBookmarkTableDataSource.instance().add(bookmark);
+									NSArray windows = NSApplication.sharedApplication().windows();
+									int count = windows.count();
+									while (0 != count--) {
+										NSWindow window = (NSWindow) windows.objectAtIndex(count);
+										CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+										if (null != controller) {
+											controller.reloadBookmarks();
+										}
+									}
+								}
+								if (choice == NSAlertPanel.AlternateReturn) {
+									return;
+								}
+								if (choice == NSAlertPanel.OtherReturn) {
+									//
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		f.delete();
     }
 }
