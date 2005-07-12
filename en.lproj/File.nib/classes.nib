@@ -2,10 +2,10 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
-            ACTIONS = {closeButtonClicked = id; sendButtonClicked = id; }; 
-            CLASS = "ch.cyberduck.ui.cocoa.CDCommandController"; 
+            ACTIONS = {cancelButtonClicked = id; createButtonClicked = id; editButtonClicked = id; }; 
+            CLASS = "ch.cyberduck.ui.cocoa.CDFileController"; 
             LANGUAGE = Java; 
-            OUTLETS = {inputField = NSTextField; responseField = id; window = NSWindow; }; 
+            OUTLETS = {filenameField = NSTextField; window = NSWindow; }; 
             SUPERCLASS = NSObject; 
         }
     ); 
