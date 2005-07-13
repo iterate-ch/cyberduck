@@ -442,7 +442,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 	private void reloadData() {
 		log.debug("reloadData");
         this.reloadPathPopup();
-		this.sort();
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
 				this.browserListView.reloadData();
@@ -608,38 +607,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
         if(this.getClickedRow() != -1) { // make sure double click was not in table header
             this.insideButtonClicked(sender);
         }
-	}
-
-	private void sort() {
-		switch(this.browserSwitchView.selectedSegment()) {
-			case LIST_VIEW: {
-				NSTableColumn selectedColumn = this.browserListModel.selectedColumn();
-                if(null == selectedColumn) {
-                    selectedColumn = this.browserListView.tableColumnWithIdentifier("FILENAME");
-                }
-				this.browserListView.setIndicatorImage(this.browserListModel.isSortedAscending() ?
-														  NSImage.imageNamed("NSAscendingSortIndicator") :
-														  NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
-				this.browserListModel.sort(selectedColumn, this.browserListModel.isSortedAscending());
-//                this.browserListView.setHighlightedTableColumn(selectedColumn);
-				break;
-			}
-			case OUTLINE_VIEW: {
-				NSTableColumn selectedColumn = this.browserOutlineModel.selectedColumn();
-                if(null == selectedColumn) {
-                    selectedColumn = this.browserOutlineView.tableColumnWithIdentifier("FILENAME");
-                }
-				this.browserOutlineView.setIndicatorImage(this.browserOutlineModel.isSortedAscending() ?
-														  NSImage.imageNamed("NSAscendingSortIndicator") :
-														  NSImage.imageNamed("NSDescendingSortIndicator"), selectedColumn);
-				this.browserOutlineModel.sort(selectedColumn, this.browserOutlineModel.isSortedAscending());
-//                this.browserOutlineView.setHighlightedTableColumn(selectedColumn);
-				break;
-			}
-			case COLUMN_VIEW: {
-				break;
-			}
-		}
 	}
 
     public void update(final Observable o, final Object arg) {
@@ -1075,6 +1042,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             table.addTableColumn(c);
         }
+		table.setIndicatorImage(((CDBrowserTableDataSource)table.dataSource()).isSortedAscending() ?
+									NSImage.imageNamed("NSAscendingSortIndicator") :
+									NSImage.imageNamed("NSDescendingSortIndicator"),
+									table.tableColumnWithIdentifier(Preferences.instance().getProperty("browser.sort.column")));
         table.sizeToFit();
         this.reloadData();
     }

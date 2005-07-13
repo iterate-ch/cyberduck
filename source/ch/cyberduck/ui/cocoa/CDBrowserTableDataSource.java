@@ -22,10 +22,10 @@ import com.apple.cocoa.application.*;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 
 /**
  * @version $Id$
@@ -38,10 +38,12 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
 
     protected List childs(Path path) {
         //get cached directory listing
-        return path.list(controller.getEncoding(), //character encoding
+        List childs = path.list(controller.getEncoding(), //character encoding
                 false, // do not refresh
                 this.controller.getFileFilter(),
                 false); // do not notify observers (important!)
+		this.sort(childs, this.isSortedAscending());
+		return childs;
     }
 
     protected CDBrowserController controller;
@@ -54,118 +56,131 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
     // Sorting
     // ----------------------------------------------------------
 
-    public boolean isSortedAscending() {
-        return this.sortAscending;
+    private Boolean sortAscending;
+
+	protected void setSortedAscending(boolean sortAscending) {
+        this.sortAscending = new Boolean(sortAscending);
+        Preferences.instance().setProperty("browser.sort.ascending", sortAscending);
     }
 
-    public NSTableColumn selectedColumn() {
-        return this.selectedColumn;
-    }
-
-    private NSTableColumn selectedColumn = null;
-    private boolean sortAscending = true;
-
-
-    public void sort(NSTableColumn tableColumn, final boolean ascending) {
-        if (controller.isMounted()) {
-            final int higher = ascending ? 1 : -1;
-            final int lower = ascending ? -1 : 1;
-            List files = controller.workdir().getSession().cache().get(controller.workdir().getAbsolute());
-            if (files != null) {
-                if (tableColumn.identifier().equals("TYPE")) {
-                    Collections.sort(files,
-                            new Comparator() {
-                                public int compare(Object o1, Object o2) {
-                                    Path p1 = (Path) o1;
-                                    Path p2 = (Path) o2;
-                                    if (p1.attributes.isDirectory() && p2.attributes.isDirectory()) {
-                                        return 0;
-                                    }
-                                    if (p1.attributes.isFile() && p2.attributes.isFile()) {
-                                        return 0;
-                                    }
-                                    if (p1.attributes.isFile()) {
-                                        return higher;
-                                    }
-                                    return lower;
-                                }
-                            });
-                }
-                else if (tableColumn.identifier().equals("FILENAME")) {
-                    Collections.sort(files,
-                            new Comparator() {
-                                public int compare(Object o1, Object o2) {
-                                    Path p1 = (Path) o1;
-                                    Path p2 = (Path) o2;
-                                    if (ascending) {
-                                        return p1.getName().compareToIgnoreCase(p2.getName());
-                                    }
-                                    return -p1.getName().compareToIgnoreCase(p2.getName());
-                                }
-                            });
-                }
-                else if (tableColumn.identifier().equals("SIZE")) {
-                    Collections.sort(files,
-                            new Comparator() {
-                                public int compare(Object o1, Object o2) {
-                                    double p1 = ((Path) o1).attributes.getSize();
-                                    double p2 = ((Path) o2).attributes.getSize();
-                                    if (p1 > p2) {
-                                        return higher;
-                                    }
-                                    else if (p1 < p2) {
-                                        return lower;
-                                    }
-                                    return 0;
-                                }
-                            });
-                }
-                else if (tableColumn.identifier().equals("MODIFIED")) {
-                    Collections.sort(files,
-                            new Comparator() {
-                                public int compare(Object o1, Object o2) {
-                                    Path p1 = (Path) o1;
-                                    Path p2 = (Path) o2;
-                                    if (ascending) {
-                                        return p1.attributes.getTimestamp().compareTo(p2.attributes.getTimestamp());
-                                    }
-                                    return -p1.attributes.getTimestamp().compareTo(p2.attributes.getTimestamp());
-                                }
-                            });
-                }
-                else if (tableColumn.identifier().equals("OWNER")) {
-                    Collections.sort(files,
-                            new Comparator() {
-                                public int compare(Object o1, Object o2) {
-                                    Path p1 = (Path) o1;
-                                    Path p2 = (Path) o2;
-                                    if (ascending) {
-                                        return p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
-                                    }
-                                    return -p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
-                                }
-                            });
-                }
-                else if (tableColumn.identifier().equals("PERMISSIONS")) {
-                    Collections.sort(files,
-                            new Comparator() {
-                                public int compare(Object o1, Object o2) {
-                                    int p1 = Integer.parseInt(((Path) o1).attributes.getPermission().getOctalCode());
-                                    int p2 = Integer.parseInt(((Path) o2).attributes.getPermission().getOctalCode());
-                                    if (p1 > p2) {
-                                        return higher;
-                                    }
-                                    else if (p1 < p2) {
-                                        return lower;
-                                    }
-                                    return 0;
-                                }
-                            });
-                }
-            }
+    protected boolean isSortedAscending() {
+        if(null == this.sortAscending) {
+            return Preferences.instance().getBoolean("browser.sort.ascending");
         }
+        return this.sortAscending.booleanValue();
     }
 
+    private NSTableColumn selectedColumn;
+
+	private void setSelectedColumn(NSTableColumn selectedColumn) {
+		this.selectedColumn = selectedColumn;
+		Preferences.instance().setProperty("browser.sort.column", this.selectedColumnIdentifier());
+	}
+
+    protected String selectedColumnIdentifier() {
+		if(null == this.selectedColumn) {
+			return Preferences.instance().getProperty("browser.sort.column");
+		}
+        return (String)this.selectedColumn.identifier();
+    }
+
+    public void sort(List files, final boolean ascending) {
+		final int higher = ascending ? 1 : -1;
+		final int lower = ascending ? -1 : 1;
+		if (files != null) {
+			if (this.selectedColumnIdentifier().equals("TYPE")) {
+				Collections.sort(files,
+								 new Comparator() {
+									 public int compare(Object o1, Object o2) {
+										 Path p1 = (Path) o1;
+										 Path p2 = (Path) o2;
+										 if (p1.attributes.isDirectory() && p2.attributes.isDirectory()) {
+											 return 0;
+										 }
+										 if (p1.attributes.isFile() && p2.attributes.isFile()) {
+											 return 0;
+										 }
+										 if (p1.attributes.isFile()) {
+											 return higher;
+										 }
+										 return lower;
+									 }
+								 });
+			}
+			else if (this.selectedColumnIdentifier().equals("FILENAME")) {
+				Collections.sort(files,
+								 new Comparator() {
+									 public int compare(Object o1, Object o2) {
+										 Path p1 = (Path) o1;
+										 Path p2 = (Path) o2;
+										 if (ascending) {
+											 return p1.getName().compareToIgnoreCase(p2.getName());
+										 }
+										 return -p1.getName().compareToIgnoreCase(p2.getName());
+									 }
+								 });
+			}
+			else if (this.selectedColumnIdentifier().equals("SIZE")) {
+				Collections.sort(files,
+								 new Comparator() {
+									 public int compare(Object o1, Object o2) {
+										 double p1 = ((Path) o1).attributes.getSize();
+										 double p2 = ((Path) o2).attributes.getSize();
+										 if (p1 > p2) {
+											 return higher;
+										 }
+										 else if (p1 < p2) {
+											 return lower;
+										 }
+										 return 0;
+									 }
+								 });
+			}
+			else if (this.selectedColumnIdentifier().equals("MODIFIED")) {
+				Collections.sort(files,
+								 new Comparator() {
+									 public int compare(Object o1, Object o2) {
+										 Path p1 = (Path) o1;
+										 Path p2 = (Path) o2;
+										 if (ascending) {
+											 return p1.attributes.getTimestamp().compareTo(p2.attributes.getTimestamp());
+										 }
+										 return -p1.attributes.getTimestamp().compareTo(p2.attributes.getTimestamp());
+									 }
+								 });
+			}
+			else if (this.selectedColumnIdentifier().equals("OWNER")) {
+				Collections.sort(files,
+								 new Comparator() {
+									 public int compare(Object o1, Object o2) {
+										 Path p1 = (Path) o1;
+										 Path p2 = (Path) o2;
+										 if (ascending) {
+											 return p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
+										 }
+										 return -p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
+									 }
+								 });
+			}
+			else if (this.selectedColumnIdentifier().equals("PERMISSIONS")) {
+				Collections.sort(files,
+								 new Comparator() {
+									 public int compare(Object o1, Object o2) {
+										 int p1 = Integer.parseInt(((Path) o1).attributes.getPermission().getOctalCode());
+										 int p2 = Integer.parseInt(((Path) o2).attributes.getPermission().getOctalCode());
+										 if (p1 > p2) {
+											 return higher;
+										 }
+										 else if (p1 < p2) {
+											 return lower;
+										 }
+										 return 0;
+									 }
+								 });
+			}
+		}
+    }
+	
     // ----------------------------------------------------------
     // TableView/OutlineView Delegate methods
     // ----------------------------------------------------------
@@ -185,27 +200,24 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
     }
 
     public void tableViewDidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn) {
-        List selectedRows = controller.getSelectedPaths();
-        if (this.selectedColumn == tableColumn) {
-            this.sortAscending = !this.sortAscending;
+//        List selectedRows = controller.getSelectedPaths();
+        if (this.selectedColumnIdentifier().equals(tableColumn.identifier())) {
+            this.setSortedAscending(!this.isSortedAscending());
         }
         else {
-            if (selectedColumn != null) {
-                tableView.setIndicatorImage(null, selectedColumn);
-            }
-            this.selectedColumn = tableColumn;
+			tableView.setIndicatorImage(null, tableView.tableColumnWithIdentifier(this.selectedColumnIdentifier()));
+			this.setSelectedColumn(tableColumn);
         }
-        tableView.setIndicatorImage(this.sortAscending ?
+        tableView.setIndicatorImage(this.isSortedAscending() ?
                 NSImage.imageNamed("NSAscendingSortIndicator") :
                 NSImage.imageNamed("NSDescendingSortIndicator"),
                 tableColumn);
         tableView.deselectAll(null);
-        this.sort(tableColumn, sortAscending);
-        List childs = this.childs(controller.workdir());
-        for (Iterator i = selectedRows.iterator(); i.hasNext();) {
-            tableView.selectRow(childs.indexOf(i.next()), true);
-        }
         tableView.reloadData();
+		//todo        List childs = this.childs(controller.workdir());
+		//        for (Iterator i = selectedRows.iterator(); i.hasNext();) {
+		//			tableView.selectRowIndexes(new NSIndexSet(childs.indexOf(i.next())), true);
+		//		  }
     }
 
     /**

@@ -259,20 +259,22 @@ public class SFTPPath extends Path {
 				}
 				else if(this.attributes.isDirectory()) {
 					List files = this.list(true, new NullFilter(), false);
-					java.util.Iterator iterator = files.iterator();
-					Path file = null;
-					while(iterator.hasNext()) {
-						file = (Path)iterator.next();
-						if(file.attributes.isFile()) {
-                            session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "Status", "")+" "+this.getName());
-							session.SFTP.removeFile(file.getAbsolute());
+					if(files != null) {
+						java.util.Iterator iterator = files.iterator();
+						Path file = null;
+						while(iterator.hasNext()) {
+							file = (Path)iterator.next();
+							if(file.attributes.isFile()) {
+								session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "Status", "")+" "+this.getName());
+								session.SFTP.removeFile(file.getAbsolute());
+							}
+							if(file.attributes.isDirectory()) {
+								file.delete();
+							}
 						}
-						if(file.attributes.isDirectory()) {
-							file.delete();
-						}
+						session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "Status", "")+" "+this.getName());
+						session.SFTP.removeDirectory(this.getAbsolute());
 					}
-                    session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "Status", "")+" "+this.getName());
-					session.SFTP.removeDirectory(this.getAbsolute());
 				}
 				this.getParent().invalidate();
                 session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));

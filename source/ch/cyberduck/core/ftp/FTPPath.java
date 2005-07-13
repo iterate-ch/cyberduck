@@ -267,21 +267,23 @@ public class FTPPath extends Path {
                 }
                 else if (this.attributes.isDirectory()) {
                     List files = this.list(true, new NullFilter(), false);
-                    java.util.Iterator iterator = files.iterator();
-                    Path file = null;
-                    while (iterator.hasNext()) {
-                        file = (Path) iterator.next();
-                        if (file.attributes.isFile()) {
-                            session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "Status", "")+" "+this.getName());
-                            session.FTP.delete(file.getName());
-                        }
-                        if (file.attributes.isDirectory()) {
-                            file.delete();
-                        }
-                    }
-                    session.FTP.cdup();
-                    session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "Status", "")+" "+this.getName());
-                    session.FTP.rmdir(this.getName());
+					if(files != null) {
+						java.util.Iterator iterator = files.iterator();
+						Path file = null;
+						while (iterator.hasNext()) {
+							file = (Path) iterator.next();
+							if (file.attributes.isFile()) {
+								session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "Status", "")+" "+this.getName());
+								session.FTP.delete(file.getName());
+							}
+							if (file.attributes.isDirectory()) {
+								file.delete();
+							}
+						}
+						session.FTP.cdup();
+						session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "Status", "")+" "+this.getName());
+						session.FTP.rmdir(this.getName());
+					}
                 }
                 this.getParent().invalidate();
                 session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));

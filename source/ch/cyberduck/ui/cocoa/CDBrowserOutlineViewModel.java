@@ -265,10 +265,10 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
                 }
                 destination.invalidate();
                 NSRunLoop.currentRunLoop().addTimerForMode(new NSTimer(0.1f, outlineView,
-                        new NSSelector("reloadData", new Class[]{}),
-                        null,
-                        false),
-                        NSRunLoop.DefaultRunLoopMode);
+							   new NSSelector("reloadData", new Class[]{}),
+							   null,
+							   false),
+				   NSRunLoop.DefaultRunLoopMode);
             }
             return true;
         }
