@@ -41,6 +41,10 @@
 	<property name="resources" value="${home}/resources"/>
     <property name="doc" value="${home}/doc"/>
 
+	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+	    <classpath refid="build.classpath"/>
+	</taskdef>
+
     <path id="test.classpath">
         <path refid="build.classpath"/>
         <pathelement location="${build.classes}"/>
@@ -253,5 +257,33 @@
 			<attribute name="Specification-Vendor" value="David Kocher"/>
 			<attribute name="Implementation-Version" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
 		</manifest>
+	</target>
+
+	<target name="junit" depends="compile" description="Runs all test cases and generate report">
+        <javac
+            debug="${debug}"
+            deprecation="on"
+            srcdir="${unittests}"
+            destdir="${build.unittests}"
+            includes="**/*.java">
+            <classpath refid="test.classpath"/>
+        </javac>
+        <junit fork="yes" printsummary="on" filtertrace="on" haltonfailure="no" showoutput="yes">
+            <classpath refid="test.classpath"/>
+            <formatter type="plain" usefile="false"/>
+            <formatter type="xml" extension=".xml" usefile="true" />
+            <batchtest todir="${build.unittests.reports}">
+                <fileset dir="${build.unittests}">
+                    <include name="**/*Test*.class"/>
+                    <exclude name="**/AllTests.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+        <junitreport todir="${build.unittests.reports}/html">
+            <fileset dir="${build.unittests.reports}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${build.unittests.reports}/html"/>
+        </junitreport>
 	</target>
 </project>

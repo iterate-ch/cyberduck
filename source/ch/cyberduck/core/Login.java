@@ -153,7 +153,7 @@ public class Login {
 	 * @see #setPrivateKeyFile
 	 */
 	public boolean usesPublicKeyAuthentication() {
-		return this.privateKeyFile != null;
+		return this.privateKeyFile != null && this.protocol.equals(Session.SFTP);
 	}
 
 	public void setPrivateKeyFile(String file) {
