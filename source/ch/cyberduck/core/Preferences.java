@@ -99,6 +99,9 @@ public abstract class Preferences {
 		defaults.put("browser.columnOwner", "false");
 		defaults.put("browser.columnPermissions", "false");
 		
+		defaults.put("browser.sort.column", "FILENAME");
+        defaults.put("browser.sort.ascending", "true");
+
 		defaults.put("browser.alternatingRows", "false");
 		defaults.put("browser.verticalLines", "false");
 		defaults.put("browser.horizontalLines", "true");
