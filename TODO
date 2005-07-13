@@ -5,33 +5,11 @@
 [????] Manipulating permissions by entering octal value
 [????] SSH Agent Authentication
 [????] Kerberos (GSSAPI) Authentication
-[DONE] Selecting remote server timezone in synchronization dialog
-[DONE] Column View in browser window
+[????] Selecting remote server timezone in synchronization dialog
 [????] Drag and drop in browser column view
 [????] Corner view in browser tables to show/hide particular columns
 [????] Change permissions by octal value (text input field)
-[????] Tabbing support through the selection of bookmarks
-[????] Autoscroll transcript (again)
-[????] Better sorting in browser
+[????] Better sorting in browser view
 [????] Drag to the path popup in the browser window to upload files
 [????] Attach menu to back button (navigation history)
 [????] SSH verbose logging
--- Scheduled for 2.5
-[DONE] Spotlight Indexer Plugin
-[DONE] FTP-TLS (AUTH TLS) Implementation
-[DONE] Adjust icons reflecting progress when downloading files
-[DONE] NSSegmentedControl in toolbar view to switch view
-[DONE] Outline View in browser window
-[DONE] NSWorkspace noteFileSystemChangedAtPath when downloading
-[DONE] Drag and drop in outline  column view
-[DONE] Set character encoding per bookmark
-[DONE] History of recently connected hosts in connection dialog
-[DONE] History of recently connected hosts in bookmark menu
-[DONE] Link to forum in Help menu
-[DONE] Set FTP connect mode per bookmark (FTP)
-[DONE] Show folders in working directory (and autocomplete) in 'Go to Folder' dialog
-[DONE] Preferences previously only available using the 'defaults' command
-[DONE] Manually exclude files in synchronization dialog
-[DONE] 'Edit' toolbar button with menu to choose a particular editor
-[DONE] Right click in the browser should change the selection first
-[DONE] Error messages can get too long for alert sheet

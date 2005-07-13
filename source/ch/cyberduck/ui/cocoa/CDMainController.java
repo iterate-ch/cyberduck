@@ -44,7 +44,6 @@ public class CDMainController extends CDController {
     static {
         BasicConfigurator.configure();
         org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.toLevel(Preferences.instance().getProperty("logging")));
-//        java.util.logging.Logger.getLogger("javax.jmdns").setLevel(java.util.logging.Level.parse(Preferences.instance().getProperty("logging")));
     }
 
 	public void awakeFromNib() {
