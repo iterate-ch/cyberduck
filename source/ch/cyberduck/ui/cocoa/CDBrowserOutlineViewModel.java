@@ -52,6 +52,10 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         super(controller);
     }
 
+    public int indexOf(NSTableView tableView, Path p) {
+        return ((NSOutlineView)tableView).rowForItem(p);
+    }
+
     public void outlineViewItemDidExpand(NSNotification notification) {
         Path p = (Path) notification.userInfo().allValues().lastObject();
         p.getSession().cache().setExpanded(p.getAbsolute(), true);
@@ -197,6 +201,14 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
     // Drop methods
     // ----------------------------------------------------------
 
+    /**
+     *
+     * @param outlineView
+     * @param info
+     * @param item  The proposed parent
+     * @param row  The proposed child location.
+     * @return
+     */
     public int outlineViewValidateDrop(NSOutlineView outlineView, NSDraggingInfo info, Path item, int row) {
         if (controller.isMounted()) {
             if (null == item) {
@@ -264,7 +276,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
                     p.rename(destination.getAbsolute() + "/" + p.getName());
                 }
                 destination.invalidate();
-                NSRunLoop.currentRunLoop().addTimerForMode(new NSTimer(0.1f, outlineView,
+                NSRunLoop.currentRunLoop().addTimerForMode(new NSTimer(0.1f, controller,
 							   new NSSelector("reloadData", new Class[]{}),
 							   null,
 							   false),
@@ -329,8 +341,9 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
 
     public int draggingSourceOperationMaskForLocal(boolean local) {
         log.debug("draggingSourceOperationMaskForLocal:" + local);
-        if (local)
+        if (local) {
             return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
+        }
         return NSDraggingInfo.DragOperationCopy;
     }
 

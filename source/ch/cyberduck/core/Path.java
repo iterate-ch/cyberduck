@@ -18,9 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
-import com.apple.cocoa.foundation.NSBundle;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

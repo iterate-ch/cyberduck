@@ -34,7 +34,7 @@ public class CDBrowserColumnViewModel extends CDBrowserTableDataSource {
         super(controller);
     }
 
-	public int browserNumberOfRowsInColumn(NSBrowser sender, int col) {
+    public int browserNumberOfRowsInColumn(NSBrowser sender, int col) {
 		if(controller.isMounted()) {
 			String absolute = this.pathOfColumn(sender, col);
 			return this.childs(PathFactory.createPath(controller.workdir().getSession(),
