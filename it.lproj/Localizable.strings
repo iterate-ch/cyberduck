@@ -126,7 +126,7 @@
 "File" = "File";
 
 /* A column in the browser */
-"Filename" = "Nome";
+"Filename" = "Nome file";
 
 /* No comment provided by engineer. */
 "files" = "files";
@@ -156,13 +156,13 @@
 "Invalid character in folder name." = "Carattere non valido nel nome della cartella.";
 
 /* Alert sheet text */
-"is out of date. The current version is" = "non √® la versione pi√π recente. La versiona aggiornata √®";
+"is out of date. The current version is" = "non è la versione più recente. La versiona aggiornata è";
 
 /* Alert sheet text */
-"is up to date." = "√® la versione pi√π recente.";
+"is up to date." = "è la versione più recente.";
 
 /* No comment provided by engineer. */
-"It moved since you downloaded it." = "E stato spostato dopo il download.";
+"It moved since you downloaded it." = "E stato spostato dopo l'ultimo download.";
 
 /* Toolbar item */
 "List" = "Elenco";
@@ -180,7 +180,7 @@
 "Modified" = "Data di modifica";
 
 /* No comment provided by engineer. */
-"Multiple files" = "Multiple files";
+"Multiple files" = "Files multipli";
 
 /* Toolbar item */
 "New Connection" = "Nuova Connessione";
@@ -191,20 +191,17 @@
 /* No comment provided by engineer. */
 "No Bonjour services available" = "Nessun servizio Bonjour disponibile";
 
-/* No comment provided by engineer. */
-"No external editor available" = "No external editor available";
-
 /* Alert sheet text */
 "No newer version available." = "Non ci sono aggiornamenti.";
 
 /* No comment provided by engineer. */
-"No Private Key selected" = "Non √® stato selezionata una chiave privata";
+"No Private Key selected" = "Non è stato selezionata una chiave privata";
 
 /* No comment provided by engineer. */
-"No recently connected servers available" = "No recently connected servers available";
+"No recently connected servers available" = "Nessun server disponibile tra quelli a cui ci si è connessi recentemente";
 
 /* Alert sheet title */
-"No update" = "Non sono disponibili aggiornamenti";
+"No update" = "Nessun aggiornamento disponibile";
 
 /* No comment provided by engineer. */
 "None" = "Nessuno";
@@ -223,7 +220,7 @@
 "Outline" = "Schema";
 
 /* No comment provided by engineer. */
-"Overwrite existing file" = "Sostituisci il file gi√† esistente";
+"Overwrite existing file" = "Sostituisci il file esistente";
 
 /* A column in the browser */
 "Owner" = "Proprietario";
@@ -247,7 +244,7 @@
 "Quit Anyway" = "Esci comunque";
 
 /* Confirm deleting files. */
-"Really delete the following files? This cannot be undone." = "Sei sicuro di voler eliminare i file selezionati? Non potrai ricuperarli.";
+"Really delete the following files? This cannot be undone." = "Sei sicuro di voler eliminare i files selezionati? Non potrai ricuperarli.";
 
 /* Toolbar item */
 "Refresh" = "Aggiorna";
@@ -265,13 +262,13 @@
 "Resume" = "Riprendi";
 
 /* No comment provided by engineer. */
-"Review..." = "Review...";
+"Review..." = "Verifica...";
 
 /* No comment provided by engineer. */
 "Server File" = "Server File";
 
 /* No comment provided by engineer. */
-"SFTP (SSH Secure File Transfer)" = "SFTP (SSH Secure File Transfer)";
+"SFTP (SSH Secure File Transfer)" = "SFTP (SSH Trasferimento File Sicuro)";
 
 /* No comment provided by engineer. */
 "Show" = "Visualizza";
@@ -283,10 +280,10 @@
 "Show in Finder" = "Visualizza nel Finder";
 
 /* Toolbar item tooltip */
-"Show Transfers window" = "Show Transfers window";
+"Show Transfers window" = "Visualizza finestra Trasferimenti";
 
 /* A column in the browser */
-"Size" = "Dimensioni";
+"Size" = "Dimensione";
 
 /* No comment provided by engineer. */
 "Stop" = "Stop";
@@ -295,10 +292,10 @@
 "Switch Browser View" = "Cambia vista browser";
 
 /* No comment provided by engineer. */
-"Symbolic Link (File)" = "Symbolic Link (File)";
+"Symbolic Link (File)" = "Collegamento a (File)";
 
 /* No comment provided by engineer. */
-"Symbolic Link (Folder)" = "Symbolic Link (Folder)";
+"Symbolic Link (Folder)" = "Collegamento a (Cartella)";
 
 /* Toolbar item */
 "Synchronize" = "Sincronizza";
@@ -307,28 +304,28 @@
 "Synchronize files" = "Sincronizza files";
 
 /* Alert sheet text */
-"The connection will be closed." = "La connessione verr√† chiusa.";
+"The connection will be closed." = "La connessione verrà chiusa.";
 
 /* No comment provided by engineer. */
-"The current allowed key for this host is" = "La chiava attualmente autorizzata per questo Host √®";
+"The current allowed key for this host is" = "La chiava attualmente autorizzata per questo Host è";
 
 /* No comment provided by engineer. */
-"The file has not yet been downloaded." = "Questo file non √® ancora stato scaricato.";
+"The file has not yet been downloaded." = "Questo file non è ancora stato scaricato.";
 
 /* No comment provided by engineer. */
-"The host is currently unknown to the system. The host key fingerprint is" = "Questo Host √® attualmente sconosciuto dal sistema. L'impronta della sua Host Key √®";
+"The host is currently unknown to the system. The host key fingerprint is" = "Questo Host è attualmente sconosciuto dal sistema. L'identificativo univoco della sua Host Key è";
 
 /* No comment provided by engineer. */
-"The host key supplied is" = "La Host Key fornita √®";
+"The host key supplied is" = "La Host Key fornita è";
 
 /* No comment provided by engineer. */
-"There are items in the queue currently being transferred. Quit anyway?" = "Ci sono ancora trasferimenti di files in corso.Interrompo comunque?";
+"There are items in the queue currently being transferred. Quit anyway?" = "Ci sono ancora trasferimenti di files in corso. Interrompo comunque?";
 
 /* Alert sheet text */
-"There was a problem checking for an update. Please try again later." = "C'√® stato un problema nel reperire gli aggiornamenti.Riprova pi√π tardi.";
+"There was a problem checking for an update. Please try again later." = "C'è stato un problema nel reperire gli aggiornamenti.Riprova più tardi.";
 
 /* Toolbar item tooltip */
-"Toggle Bookmarks" = "Toggle Bookmarks";
+"Toggle Bookmarks" = "Visualizza/Nascondi Preferiti";
 
 /* No comment provided by engineer. */
 "Transfer in progress" = "Trasferimento in corso";
@@ -370,5 +367,5 @@
 "with" = "con";
 
 /* No comment provided by engineer. */
-"You are connected to at least one remote site. Do you want to review open browsers?" = "You are connected to at least one remote site. Do you want to review open browsers?";
+"You are connected to at least one remote site. Do you want to review open browsers?" = "Sei attualmente connesso ad almeno un sito remoto.Vuoi verificare i browsera aperti?";
 
