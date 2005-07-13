@@ -57,6 +57,7 @@ ca.lproj/IDisk.strings svneol=native#unset
 ca.lproj/Info.nib/keyedobjects.nib -text
 ca.lproj/Info.strings svneol=native#unset
 ca.lproj/InfoPlist.strings svneol=native#unset
+ca.lproj/Localizable.strings svneol=native#unset
 ca.lproj/Login.nib/keyedobjects.nib -text
 ca.lproj/Login.strings svneol=native#unset
 ca.lproj/Main.nib/keyedobjects.nib -text
@@ -583,6 +584,7 @@ it.lproj/IDisk.strings svneol=native#unset
 it.lproj/Info.nib/keyedobjects.nib -text
 it.lproj/Info.strings svneol=native#unset
 it.lproj/InfoPlist.strings svneol=native#unset
+it.lproj/Localizable.strings svneol=native#unset
 it.lproj/Login.nib/keyedobjects.nib -text
 it.lproj/Login.strings svneol=native#unset
 it.lproj/Main.nib/keyedobjects.nib -text
