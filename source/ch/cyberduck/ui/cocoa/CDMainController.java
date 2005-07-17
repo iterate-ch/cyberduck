@@ -120,7 +120,6 @@ public class CDMainController extends CDController {
 
 	public void setEncodingMenu(NSMenu encodingMenu) {
 		this.encodingMenu = encodingMenu;
-		this.encodingMenu.setAutoenablesItems(true);
 		java.util.SortedMap charsets = java.nio.charset.Charset.availableCharsets();
 		java.util.Iterator iterator = charsets.values().iterator();
 		while(iterator.hasNext()) {
@@ -135,7 +134,6 @@ public class CDMainController extends CDController {
 
     public void setEditMenu(NSMenu editMenu) {
         this.editMenu = editMenu;
-        this.editMenu.setAutoenablesItems(true);
         NSSelector setDelegateSelector =
                 new NSSelector("setDelegate", new Class[]{Object.class});
         if(setDelegateSelector.implementedByClass(NSMenu.class)) {

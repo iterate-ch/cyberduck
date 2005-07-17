@@ -2340,8 +2340,13 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     if(null == selected.getExtension()) {
                         return true;
                     }
-                    if (Preferences.instance().getProperty("editor.disabledFiles").indexOf(selected.getExtension()) != -1) {
-                        return false;
+                    if (selected.getExtension() != null) {
+                        StringTokenizer binaryTypes = new StringTokenizer(Preferences.instance().getProperty("editor.disabledFiles"), " ");
+                        while(binaryTypes.hasMoreTokens()) {
+                            if(binaryTypes.nextToken().equalsIgnoreCase(selected.getExtension())) {
+                                return false;
+                            }
+                        }
                     }
                     return true;
                 }

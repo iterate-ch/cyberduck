@@ -26,6 +26,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
+import java.util.StringTokenizer;
 
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
@@ -223,7 +224,7 @@ public class FTPPath extends Path {
                         session.log(Message.PROGRESS, NSBundle.localizedString("Getting timestamp of", "Status", "")+" "+this.getName());
                         this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()));
                         if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
-                            if (this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
+                            if(this.isASCIIType()) {
                                 session.FTP.setTransferType(FTPTransferType.ASCII);
                             }
                             else {
@@ -411,7 +412,7 @@ public class FTPPath extends Path {
                 if (this.attributes.isFile()) {
                     session.check();
                     if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
-                        if (this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
+                        if(this.isASCIIType()) {
                             this.downloadASCII();
                         }
                         else {
@@ -461,6 +462,18 @@ public class FTPPath extends Path {
                 session.close();
             }
         }
+    }
+
+    private boolean isASCIIType() {
+        if (this.getExtension() != null) {
+            StringTokenizer asciiTypes = new StringTokenizer(Preferences.instance().getProperty("ftp.transfermode.ascii.extensions"), " ");
+            while(asciiTypes.hasMoreTokens()) {
+                if(asciiTypes.nextToken().equalsIgnoreCase(this.getExtension())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void downloadBinary() throws IOException {
@@ -598,7 +611,7 @@ public class FTPPath extends Path {
                     session.check();
                     this.attributes.setSize(this.getLocal().getSize());
                     if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
-                        if (this.getExtension() != null && Preferences.instance().getProperty("ftp.transfermode.ascii.extensions").indexOf(this.getExtension()) != -1) {
+                        if(this.isASCIIType()) {
                             this.uploadASCII();
                         }
                         else {

@@ -111,8 +111,9 @@ public abstract class Preferences {
 
 		defaults.put("editor.name", "SubEthaEdit");
 		defaults.put("editor.bundleIdentifier", "de.codingmonkeys.SubEthaEdit");
-        defaults.put("editor.disabledFiles", "pdf doc ps exe bin jpeg jpg gif tif tiff png psd hqx sea zip sit tar gz tgz avi " +
-                "mpg mpeg mp3 mov qt ram aiff aif wav wma");
+        defaults.put("editor.disabledFiles", "pdf ps exe bin jpeg jpg jp2 gif tif ico icns tiff bmp pict sgi tga png psd " +
+                "hqx sea dmg zip sit tar gz tgz bz2 avi qtl bom pax pgp" +
+                "mpg mpeg mp3 m4p m4a mov qt ram aiff aif wav wma jar war ear doc xls ppt");
 
 		defaults.put("favorites.save", "true");
 
