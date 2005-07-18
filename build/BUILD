@@ -24,6 +24,9 @@ You need to install the Java Developer Tools from http://connect.apple.com (Free
 - Keychain.framework
 	You need to have the Keychain.framework in <CYBERDUCK_HOME>/build
 
+- DotMacKit.framework
+        You need to have the DotMacKit.framework in <CYBERDUCK_HOME>/build
+
 ----------
 Compiling:
 ----------
