@@ -37,13 +37,10 @@
 	<property name="config" value="${home}/config"/>
 	<property name="img" value="${home}/img"/>
 	<property name="lib" value="${home}/lib"/>
+	<property name="lib.ext" value="${lib}/ext"/>
 	<property name="source" value="${home}/source"/>
 	<property name="resources" value="${home}/resources"/>
     <property name="doc" value="${home}/doc"/>
-
-	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
-	    <classpath refid="build.classpath"/>
-	</taskdef>
 
     <path id="test.classpath">
         <path refid="build.classpath"/>
@@ -60,7 +57,15 @@
 		<fileset dir="${lib}">
 			<include name="*.jar"/>
 		</fileset>
+		<fileset dir="${lib.ext}">
+			<include name="*.jar"/>
+		</fileset>
     </path>
+
+	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+	    <classpath refid="build.classpath"/>
+	</taskdef>
+
 
 	<!-- mac os x properties-->
 	<property name="app.name" value="Cyberduck"/>
@@ -246,7 +251,7 @@
 		<delete>
             <fileset dir="${build}" includes="*.dylib"/>
 		</delete>
-		<delete dir="${build}/Cyberduck.app"/>
+		<delete dir="${app.bundle}"/>
 	</target>
 
 	<target name="manifest" description="Create a manifest used in the jar files">
