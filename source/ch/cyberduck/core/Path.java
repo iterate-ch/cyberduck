@@ -158,13 +158,6 @@ public abstract class Path {
 
 	private Path parent;
 	
-//	public Path getComponent(int level) {
-//		Path p = PathFactory.createPath(this.getSession(),
-//										(String)NSPathUtilities.pathComponents(this.getAbsolute()).objectAtIndex(level));
-//		p.attributes.setType(Path.DIRECTORY_TYPE);
-//		return p;
-//	}
-
 	/*
 	 * @return My parent directory
 	 */
@@ -202,10 +195,6 @@ public abstract class Path {
     public List list(boolean refresh) {
         return this.list(refresh, new NullFilter());
     }
-
-//    public List list(boolean refresh, boolean notifyObservers) {
-//        return this.list(refresh, new NullFilter(), notifyObservers);
-//    }
 
     public List list(boolean refresh, Filter filter) {
 		return this.list(Preferences.instance().getProperty("browser.charset.encoding"),

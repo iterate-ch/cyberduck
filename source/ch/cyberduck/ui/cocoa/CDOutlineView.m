@@ -82,8 +82,8 @@
 	char key = [str length] ? [str characterAtIndex:0] : '\0';
 	
 	if (key == NSCarriageReturnCharacter || key == NSEnterCharacter) {
-        if ([[self target] respondsToSelector:[self doubleAction]]) {
-            [[self target] performSelector:[self doubleAction] withObject:self];
+        if ([[self target] respondsToSelector:@selector(enterKeyPressed:)]) {
+            [[self target] performSelector:@selector(enterKeyPressed:) withObject:self];
             return;
         }
     } 
@@ -142,12 +142,12 @@
 						difference = abs(one - two);
 					}
 					smallest_difference = -1;
-					row = counter;
+					row = [self rowForItem:item];
 					if (to_index == [compare length] || to_index == [object length] + 1) { break; } // if we hava an exact match
 				} 
 				else if (smallest_difference == -1 || difference < smallest_difference) {
 					smallest_difference = difference;
-					row = counter;
+					row = [self rowForItem:item];
 				}
 			}
 		}

@@ -77,14 +77,14 @@
 	char key = [str length] ? [str characterAtIndex:0] : '\0';
 	
 	if (key == NSCarriageReturnCharacter || key == NSEnterCharacter) {
-        if ([[self target] respondsToSelector:[self doubleAction]]) {
-            [[self target] performSelector:[self doubleAction] withObject:self];
+        if ([[self target] respondsToSelector:@selector(enterKeyPressed:)]) {
+            [[self target] performSelector:@selector(enterKeyPressed:) withObject:self];
             return;
         }
     } 
 	else if (key == NSDeleteCharacter) {
-        if ([[self target] respondsToSelector:@selector(deleteKeyPerformed:)]) {
-            [[self target] performSelector:@selector(deleteKeyPerformed:) withObject:self];
+        if ([[self target] respondsToSelector:@selector(deleteKeyPressed:)]) {
+            [[self target] performSelector:@selector(deleteKeyPressed:) withObject:self];
             return;
         }
     }

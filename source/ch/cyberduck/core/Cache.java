@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -26,6 +27,19 @@ import java.util.ArrayList;
  * @version $Id$
  */
 public class Cache extends HashMap {
+	
+	private static Map CACHES = new HashMap();
+	
+	public static Cache create(String url) {
+		if(null == (Cache)CACHES.get(url)) {
+			CACHES.put(url, new Cache());
+		}
+		return (Cache)CACHES.get(url);
+	}
+	
+	private Cache() {
+		//private
+	}
 
     private List expandedItems = new ArrayList();
 
@@ -38,10 +52,12 @@ public class Cache extends HashMap {
 	}
 
     public void setExpanded(String path, boolean expanded) {
-        if(expanded)
+        if(expanded) {
             this.expandedItems.add(path);
-        else
+		}
+        else {
             this.expandedItems.remove(path);
+		}
     }
 
     public boolean isExpanded(String path) {

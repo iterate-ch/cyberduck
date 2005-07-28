@@ -34,7 +34,6 @@ import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Rendezvous;
 import ch.cyberduck.ui.cocoa.growl.Growl;
-import ch.cyberduck.ui.cocoa.odb.Editor;
 
 public class CDMainController extends CDController {
 	private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(CDMainController.class);
@@ -129,63 +128,6 @@ public class CDMainController extends CDController {
 		}
 	}
 
-    private NSMenu editMenu;
-    private NSObject editMenuDelegate;
-
-    public void setEditMenu(NSMenu editMenu) {
-        this.editMenu = editMenu;
-        NSSelector setDelegateSelector =
-                new NSSelector("setDelegate", new Class[]{Object.class});
-        if(setDelegateSelector.implementedByClass(NSMenu.class)) {
-            this.editMenu.setDelegate(this.editMenuDelegate = new EditMenuDelegate());
-        }
-    }
-
-    protected class EditMenuDelegate extends NSObject {
-
-		public int numberOfItemsInMenu(NSMenu menu) {
-            int n = Editor.INSTALLED_EDITORS.size();
-            if(0 == n) {
-                return 1;
-            }
-            return n;
-		}
-
-		public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
-            if(Editor.INSTALLED_EDITORS.size() == 0) {
-                item.setTitle(NSBundle.localizedString("No external editor available", ""));
-                return false;
-            }
-            String identifier = (String)Editor.INSTALLED_EDITORS.values().toArray(new String[]{})[index];
-            String editor = (String)Editor.INSTALLED_EDITORS.keySet().toArray(new String[]{})[index];
-            item.setTitle(editor);
-            if(editor.equals(Preferences.instance().getProperty("editor.name"))) {
-                item.setKeyEquivalent("j");
-                item.setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-            }
-            else {
-                item.setKeyEquivalent("");
-            }
-            NSSelector absolutePathForAppBundleWithIdentifierSelector =
-                    new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
-            if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-                String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                        identifier);
-                if(path != null) {
-                    NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
-                    icon.setScalesWhenResized(true);
-                    icon.setSize(new NSSize(16f, 16f));
-                    item.setImage(icon);
-                }
-                else {
-                    item.setImage(NSImage.imageNamed("pencil.tiff"));
-                }
-            }
-            item.setAction(new NSSelector("editButtonClicked", new Class[]{Object.class}));
-            return !shouldCancel;
-		}
-	}
-
 	private NSMenu bookmarkMenu;
     private NSObject bookmarkMenuDelegate;
 	private NSMenu rendezvousMenu;
@@ -199,15 +141,11 @@ public class CDMainController extends CDController {
 		this.rendezvousMenu = new NSMenu();
 		this.rendezvousMenu.setAutoenablesItems(false);
 		this.historyMenu = new NSMenu();
-		this.historyMenu.setAutoenablesItems(false);
-		NSSelector setDelegateSelector =
-		    new NSSelector("setDelegate", new Class[]{Object.class});
-		if(setDelegateSelector.implementedByClass(NSMenu.class)) {
-			this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
-			this.historyMenu.setDelegate(this.historyMenuDelegate = new HistoryMenuDelegate());
-			this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = new RendezvousMenuDelegate(
-                    this.rendezvous = Rendezvous.instance()));
-		}
+        this.historyMenu.setAutoenablesItems(false);
+        this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
+        this.historyMenu.setDelegate(this.historyMenuDelegate = new HistoryMenuDelegate());
+        this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = new RendezvousMenuDelegate(
+                this.rendezvous = Rendezvous.instance()));
         this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("History", "")).setAction(
                 new NSSelector("historyMenuClicked", new Class[]{NSMenuItem.class})
         );

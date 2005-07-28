@@ -466,7 +466,6 @@ public class SFTPPath extends Path {
 					}
 				}
 				catch(IOException e) {
-					e.printStackTrace();
 					log.error(e.getMessage());
 				}
 			}
@@ -558,7 +557,6 @@ public class SFTPPath extends Path {
 					}
 				}
 				catch(IOException e) {
-					log.error(e.getMessage());
 					e.printStackTrace();
 				}
 			}

@@ -66,11 +66,8 @@ public class Editor {
         while (editorNames.hasNext()) {
             String editor = (String) editorNames.next();
             String identifier = (String) editorIdentifiers.next();
-            if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-                boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier) != null;
-                if (enabled) {
-                    INSTALLED_EDITORS.put(editor, identifier);
-                }
+            if(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier) != null) {
+                INSTALLED_EDITORS.put(editor, identifier);
             }
         }
     }

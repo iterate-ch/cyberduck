@@ -184,16 +184,8 @@ public class CDQueueController extends CDWindowController {
 			c.setDataCell(new CDProgressCell());
 			this.queueTable.addTableColumn(c);
 		}
-		NSSelector setUsesAlternatingRowBackgroundColorsSelector =
-		    new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
-		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
-			this.queueTable.setUsesAlternatingRowBackgroundColors(true);
-		}
-		NSSelector setGridStyleMaskSelector =
-		    new NSSelector("setGridStyleMask", new Class[]{int.class});
-		if(setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
-			this.queueTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
-		}
+        this.queueTable.setUsesAlternatingRowBackgroundColors(true);
+        this.queueTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
 
 		//selection properties
 		this.queueTable.setAllowsMultipleSelection(true);
@@ -532,7 +524,13 @@ public class CDQueueController extends CDWindowController {
 		}
 	}
 
-	public void deleteKeyPerformed(Object sender) {
+	public void enterKeyPressed(Object sender) {
+        log.debug("enterKeyPressed:" + sender);
+		this.queueTableRowDoubleClicked(sender);
+    }
+
+	public void deleteKeyPressed(Object sender) {
+        log.debug("deleteKeyPressed:" + sender);
 		this.deleteButtonClicked(sender);
 	}
 

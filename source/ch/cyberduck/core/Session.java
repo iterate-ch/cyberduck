@@ -41,8 +41,8 @@ public abstract class Session extends Observable {
     public static final String FTP_TLS_STRING = NSBundle.localizedString("FTP-SSL (FTP over TLS/SSL)", "");
     public static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
 
-	private Cache cache = new Cache();
-
+	private Cache cache = null;
+		
 	/**
 	 * Default port for ftp
 	 */
@@ -56,7 +56,7 @@ public abstract class Session extends Observable {
 	/**
 	 * Encapsulating all the information of the remote host
 	 */
-	protected Host host;
+	protected Host host = null;
 
 	private List history = null;
 
@@ -259,6 +259,9 @@ public abstract class Session extends Observable {
     }
 
 	public Cache cache() {
+		if(null == this.cache) {
+			this.cache = Cache.create(this.host.toString());
+		}
 		return this.cache;
 	}
 

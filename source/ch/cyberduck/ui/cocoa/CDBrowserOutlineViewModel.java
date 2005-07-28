@@ -66,25 +66,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         p.getSession().cache().setExpanded(p.getAbsolute(), false);
     }
 
-//    public Object outlineViewItemForPersistentObject(NSOutlineView view, Object o) {
-//        if(controller.isMounted()) {
-//            if(o instanceof NSDictionary) {
-//                NSDictionary dict = (NSDictionary)o;
-//                Path p = PathFactory.createPath(this.controller.workdir().getSession(), dict);
-//                return p;
-//            }
-//        }
-//        return null;
-//    }
-//
-//    public Object outlineViewPersistentObjectForItem(NSOutlineView view, Object o) {
-//        if(o instanceof Path) {
-//            Path p = (Path)o;
-//            return p.getAsDictionary();
-//        }
-//        return null;
-//    }
-
     public boolean outlineViewShouldEditTableColumn(NSOutlineView outlineView,
                                                     NSTableColumn tableColumn, Object item) {
         return false;

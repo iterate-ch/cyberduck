@@ -231,27 +231,19 @@ public abstract class CDValidatorController extends CDWindowController implement
         this.fileTableView.setAllowsColumnResizing(true);
         this.fileTableView.setAllowsColumnSelection(false);
         this.fileTableView.setAllowsColumnReordering(true);
-		NSSelector setUsesAlternatingRowBackgroundColorsSelector =
-		    new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
-		if(setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
-			this.fileTableView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
-		}
-		NSSelector setGridStyleMaskSelector =
-		    new NSSelector("setGridStyleMask", new Class[]{int.class});
-		if(setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
-			if(Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
-				this.fileTableView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
-			}
-			else if(Preferences.instance().getBoolean("browser.verticalLines")) {
-				this.fileTableView.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
-			}
-			else if(Preferences.instance().getBoolean("browser.horizontalLines")) {
-				this.fileTableView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
-			}
-			else {
-				this.fileTableView.setGridStyleMask(NSTableView.GridNone);
-			}
-		}
+        this.fileTableView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
+        if(Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
+            this.fileTableView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
+        }
+        else if(Preferences.instance().getBoolean("browser.verticalLines")) {
+            this.fileTableView.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
+        }
+        else if(Preferences.instance().getBoolean("browser.horizontalLines")) {
+            this.fileTableView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
+        }
+        else {
+            this.fileTableView.setGridStyleMask(NSTableView.GridNone);
+        }
         NSSelector setResizableMaskSelector
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {

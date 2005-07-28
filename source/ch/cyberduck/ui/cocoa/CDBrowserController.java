@@ -22,6 +22,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 import org.apache.log4j.Logger;
@@ -253,7 +254,13 @@ public class CDBrowserController extends CDWindowController implements Observer 
             final Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"));
-            path.attributes.setType(Path.FILE_TYPE);
+			try {
+				path.cwdir();
+				path.attributes.setType(Path.DIRECTORY_TYPE);
+			}
+			catch(IOException e) {
+				path.attributes.setType(Path.FILE_TYPE);
+			}
             Object localObj = args.objectForKey("Local");
             if (localObj != null) {
                 path.setLocal(new Local((String) localObj, path.getName()));
@@ -275,7 +282,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
             final Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     new Local((String) args.objectForKey("Path")));
-            path.attributes.setType(Path.FILE_TYPE);
+			if(path.getLocal().isFile()) {
+				path.attributes.setType(Path.FILE_TYPE);
+			}
+			if(path.getLocal().isDirectory()) {
+				path.attributes.setType(Path.DIRECTORY_TYPE);
+			}
             Object remoteObj = args.objectForKey("Remote");
             if (remoteObj != null) {
                 path.setPath((String) remoteObj, path.getName());
@@ -482,6 +494,23 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
     }
 
+	private void selectRow(Path path, boolean expand) {
+		log.debug("selectRow:"+path);
+		switch(this.browserSwitchView.selectedSegment()) {
+			case LIST_VIEW: {
+				this.selectRow(this.browserListModel.indexOf(this.browserListView, path), expand);
+				break;
+			}
+			case OUTLINE_VIEW: {
+				this.selectRow(this.browserOutlineModel.indexOf(this.browserOutlineView, path), expand);
+				break;
+			}
+			case COLUMN_VIEW: {
+				break;
+			}
+		}
+	}
+	
 	private void selectRow(int row, boolean expand) {
 		log.debug("selectRow:"+row);
 		switch(this.browserSwitchView.selectedSegment()) {
@@ -604,14 +633,14 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void browserRowDoubleClicked(Object sender) {
+        log.debug("browserRowDoubleClicked:"+sender);
         if(this.getClickedRow() != -1) { // make sure double click was not in table header
             this.insideButtonClicked(sender);
         }
 	}
 
     public void update(final Observable o, final Object arg) {
-        if(!Thread.currentThread().getName().equals("main")
-        && !Thread.currentThread().getName().equals("AWT-AppKit")) {
+        if(!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit")) {
             this.invoke(new Runnable() {
                 public void run(){
                     update(o, arg);
@@ -917,50 +946,34 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     protected void _updateBrowserOutlineTableAttributes() {
-        NSSelector setUsesAlternatingRowBackgroundColorsSelector =
-                new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
-        if (setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
-            this.browserOutlineView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
+        this.browserOutlineView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
+        if (Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
+            this.browserOutlineView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
         }
-        NSSelector setGridStyleMaskSelector =
-                new NSSelector("setGridStyleMask", new Class[]{int.class});
-        if (setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
-            if (Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
-                this.browserOutlineView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
-            }
-            else if (Preferences.instance().getBoolean("browser.verticalLines")) {
-                this.browserOutlineView.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
-            }
-            else if (Preferences.instance().getBoolean("browser.horizontalLines")) {
-                this.browserOutlineView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
-            }
-            else {
-                this.browserOutlineView.setGridStyleMask(NSTableView.GridNone);
-            }
+        else if (Preferences.instance().getBoolean("browser.verticalLines")) {
+            this.browserOutlineView.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
+        }
+        else if (Preferences.instance().getBoolean("browser.horizontalLines")) {
+            this.browserOutlineView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
+        }
+        else {
+            this.browserOutlineView.setGridStyleMask(NSTableView.GridNone);
         }
     }
 
     protected void _updateBrowserListTableAttributes() {
-        NSSelector setUsesAlternatingRowBackgroundColorsSelector =
-                new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
-        if (setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
-            this.browserListView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
+        this.browserListView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
+        if (Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
+            this.browserListView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
         }
-        NSSelector setGridStyleMaskSelector =
-                new NSSelector("setGridStyleMask", new Class[]{int.class});
-        if (setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
-            if (Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
-                this.browserListView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
-            }
-            else if (Preferences.instance().getBoolean("browser.verticalLines")) {
-                this.browserListView.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
-            }
-            else if (Preferences.instance().getBoolean("browser.horizontalLines")) {
-                this.browserListView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
-            }
-            else {
-                this.browserListView.setGridStyleMask(NSTableView.GridNone);
-            }
+        else if (Preferences.instance().getBoolean("browser.verticalLines")) {
+            this.browserListView.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
+        }
+        else if (Preferences.instance().getBoolean("browser.horizontalLines")) {
+            this.browserListView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
+        }
+        else {
+            this.browserListView.setGridStyleMask(NSTableView.GridNone);
         }
     }
 
@@ -1109,16 +1122,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
 
         // setting appearance attributes
-        NSSelector setUsesAlternatingRowBackgroundColorsSelector =
-                new NSSelector("setUsesAlternatingRowBackgroundColors", new Class[]{boolean.class});
-        if (setUsesAlternatingRowBackgroundColorsSelector.implementedByClass(NSTableView.class)) {
-            this.bookmarkTable.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
-        }
-        NSSelector setGridStyleMaskSelector =
-                new NSSelector("setGridStyleMask", new Class[]{int.class});
-        if (setGridStyleMaskSelector.implementedByClass(NSTableView.class)) {
-            this.bookmarkTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
-        }
+        this.bookmarkTable.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
+        this.bookmarkTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
 
         // selection properties
         this.bookmarkTable.setAllowsMultipleSelection(true);
@@ -1156,11 +1161,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public void setEditMenu(NSMenu editMenu) {
         this.editMenu = editMenu;
         this.editMenu.setAutoenablesItems(true);
-        NSSelector setDelegateSelector =
-                new NSSelector("setDelegate", new Class[]{Object.class});
-        if(setDelegateSelector.implementedByClass(NSMenu.class)) {
-            this.editMenu.setDelegate(this.editMenuDelegate = new EditMenuDelegate());
-        }
+        this.editMenu.setDelegate(this.editMenuDelegate = new EditMenuDelegate());
     }
 
     protected class EditMenuDelegate extends NSObject {
@@ -1188,20 +1189,16 @@ public class CDBrowserController extends CDWindowController implements Observer 
             else {
                 item.setKeyEquivalent("");
             }
-            NSSelector absolutePathForAppBundleWithIdentifierSelector =
-                    new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
-            if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-                String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                        identifier);
-                if(path != null) {
-                    NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
-                    icon.setScalesWhenResized(true);
-                    icon.setSize(new NSSize(16f, 16f));
-                    item.setImage(icon);
-                }
-                else {
-                    item.setImage(NSImage.imageNamed("pencil.tiff"));
-                }
+            String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                    identifier);
+            if(path != null) {
+                NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
+                icon.setScalesWhenResized(true);
+                icon.setSize(new NSSize(16f, 16f));
+                item.setImage(icon);
+            }
+            else {
+                item.setImage(NSImage.imageNamed("pencil.tiff"));
             }
             item.setAction(new NSSelector("editButtonClicked", new Class[]{Object.class}));
             return !shouldCancel;
@@ -1399,6 +1396,26 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.backButton.setAction(new NSSelector("backButtonClicked", new Class[]{Object.class}));
     }
 
+	public void enterKeyPressed(Object sender) {
+        log.debug("enterKeyPressed:" + sender);
+        if (sender == this.bookmarkTable) {
+            this.bookmarkTableRowDoubleClicked(sender);
+        }
+		else {
+            this.insideButtonClicked(sender);
+		}
+    }
+	
+    public void deleteKeyPressed(Object sender) {
+        log.debug("deleteKeyPressed:" + sender);
+        if (sender == this.bookmarkTable) {
+            this.deleteBookmarkButtonClicked(sender);
+        }
+		else {
+            this.deleteFileButtonClicked(sender);
+		}
+    }
+		
     private static final NSImage DISK_ICON = NSImage.imageNamed("disk.tiff");
 
     private List pathPopupItems = new ArrayList();
@@ -1467,10 +1484,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         log.info("Encoding changed to:" + this.encoding);
         this.encodingPopup.setTitle(this.encoding);
         if(force) {
-            if (this.isMounted()) {
-                this.session.close();
-                this.reloadButtonClicked(null);
-            }
+			this.reloadButtonClicked(null);
         }
     }
 
@@ -1658,16 +1672,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
     }
 
-    public void deleteKeyPerformed(Object sender) {
-        log.debug("deleteKeyPerformed:" + sender);
-        if (sender == this.bookmarkTable) {
-            this.deleteBookmarkButtonClicked(sender);
-        }
-		else {
-            this.deleteFileButtonClicked(sender);
-		}
-    }
-
     public void deleteFileButtonClicked(Object sender) {
         log.debug("deleteFileButtonClicked:" + sender);
         List files = new ArrayList();
@@ -1724,7 +1728,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 					p = (Path)i.next();
 					p.delete();
 				}
-				p.getParent().list(encoding, true, this.getFileFilter());
+				this.workdir().list(encoding, true, this.getFileFilter());
 			}
 		}
 	}
@@ -1734,16 +1738,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext(); ) {
             Path path = ((Path)i.next()).copy(session);
             NSSavePanel panel = NSSavePanel.savePanel();
-            NSSelector setMessageSelector =
-                    new NSSelector("setMessage", new Class[]{String.class});
-            if (setMessageSelector.implementedByClass(NSOpenPanel.class)) {
-                panel.setMessage(NSBundle.localizedString("Download the selected file to...", ""));
-            }
-            NSSelector setNameFieldLabelSelector =
-                    new NSSelector("setNameFieldLabel", new Class[]{String.class});
-            if (setNameFieldLabelSelector.implementedByClass(NSOpenPanel.class)) {
-                panel.setNameFieldLabel(NSBundle.localizedString("Download As:", ""));
-            }
+            panel.setMessage(NSBundle.localizedString("Download the selected file to...", ""));
+            panel.setNameFieldLabel(NSBundle.localizedString("Download As:", ""));
             panel.setPrompt(NSBundle.localizedString("Download", ""));
             panel.setTitle(NSBundle.localizedString("Download", ""));
             panel.setCanCreateDirectories(true);
@@ -1784,13 +1780,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
         panel.setCanChooseFiles(selection.attributes.isFile());
         panel.setCanCreateDirectories(true);
         panel.setAllowsMultipleSelection(false);
-        NSSelector setMessageSelector =
-                new NSSelector("setMessage", new Class[]{String.class});
-        if (setMessageSelector.implementedByClass(NSOpenPanel.class)) {
-            panel.setMessage(NSBundle.localizedString("Synchronize", "")
-                    + " " + selection.getName() + " "
-                    + NSBundle.localizedString("with", "Synchronize <file> with <file>") + "...");
-        }
+        panel.setMessage(NSBundle.localizedString("Synchronize", "")
+                + " " + selection.getName() + " "
+                + NSBundle.localizedString("with", "Synchronize <file> with <file>") + "...");
         panel.setPrompt(NSBundle.localizedString("Choose", ""));
         panel.setTitle(NSBundle.localizedString("Synchronize", ""));
         panel.beginSheetForDirectory(null,
@@ -1894,7 +1886,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		this.deselectAll();
         Path previous = this.workdir();
         List listing = this.workdir().getParent().list(this.encoding, false, this.getFileFilter());
-		this.selectRow(listing.indexOf(previous), false);
+		this.selectRow(previous, false);
     }
 
     private CDWindowController connectionController;
@@ -2268,14 +2260,16 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 item.setTitle(NSBundle.localizedString("Cut", "Menu item"));
         }
         if (identifier.equals("editButtonClicked:")) {
-            if(this.isMounted() && this.getSelectionCount() > 0) {
-                if(this.getSelectedPath().attributes.isFile()) {
-                    String bundleIdentifier = (String)Editor.SUPPORTED_EDITORS.get(item.title());
-                    if(null != bundleIdentifier)
-                        return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                                bundleIdentifier) != null;
-                }
-            }
+			String bundleIdentifier = (String)Editor.SUPPORTED_EDITORS.get(item.title());
+			if(null != bundleIdentifier) {
+				String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
+				if(path != null) {
+					NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
+					icon.setScalesWhenResized(true);
+					icon.setSize(new NSSize(16f, 16f));
+					item.setImage(icon);
+				}
+			}
         }
         if (identifier.equals("showHiddenFilesClicked:")) {
             item.setState((this.getFileFilter() instanceof NullFilter) ? NSCell.OnState : NSCell.OffState);
@@ -2408,17 +2402,13 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.searchField.setEnabled(enabled);
         String identifier = item.itemIdentifier();
         if(identifier.equals("Edit")) {
-            NSSelector absolutePathForAppBundleWithIdentifierSelector =
-                    new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
-            if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-                String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                        Preferences.instance().getProperty("editor.bundleIdentifier"));
-                if (editorPath != null) {
-                    item.setImage(NSWorkspace.sharedWorkspace().iconForFile(editorPath));
-                }
-                else {
-                    item.setImage(NSImage.imageNamed("pencil.tiff"));
-                }
+            String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                    Preferences.instance().getProperty("editor.bundleIdentifier"));
+            if (editorPath != null) {
+                item.setImage(NSWorkspace.sharedWorkspace().iconForFile(editorPath));
+            }
+            else {
+                item.setImage(NSImage.imageNamed("pencil.tiff"));
             }
         }
         return this.validateItem(identifier);
@@ -2579,14 +2569,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
             item.setPaletteLabel(NSBundle.localizedString("Edit", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Edit file in external editor", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("pencil.tiff"));
-            NSSelector absolutePathForAppBundleWithIdentifierSelector =
-                    new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
-            if (absolutePathForAppBundleWithIdentifierSelector.implementedByClass(NSWorkspace.class)) {
-                String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                        Preferences.instance().getProperty("editor.bundleIdentifier"));
-                if (editorPath != null) {
-                    item.setImage(NSWorkspace.sharedWorkspace().iconForFile(editorPath));
-                }
+            String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                    Preferences.instance().getProperty("editor.bundleIdentifier"));
+            if (editorPath != null) {
+                item.setImage(NSWorkspace.sharedWorkspace().iconForFile(editorPath));
             }
             item.setTarget(this);
             item.setAction(new NSSelector("editButtonClicked", new Class[]{Object.class}));
