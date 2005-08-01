@@ -419,8 +419,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
         return filenameFilter instanceof NullFilter;
     }
 
-    private CDInfoController inspector = null;
-
 	private void getFocus() {
 		log.debug("getFocus");
 		switch(this.browserSwitchView.selectedSegment()) {
@@ -432,10 +430,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
 				this.window().makeFirstResponder(this.browserOutlineView);
 				break;
 			}
-			case COLUMN_VIEW: {
-				this.window().makeFirstResponder(this.browserColumnView);
-				break;
-			}
+//			case COLUMN_VIEW: {
+//				this.window().makeFirstResponder(this.browserColumnView);
+//				break;
+//			}
 		}
 	}
 
@@ -479,18 +477,18 @@ public class CDBrowserController extends CDWindowController implements Observer 
 				else this.infoLabel.setStringValue("");
 				break;
 			}
-			case COLUMN_VIEW: {
-                if(this.isMounted()) {
-                    this.browserColumnView.setPath(workdir().getAbsolute());
-                    this.browserColumnView.reloadColumn(browserColumnView.lastColumn());
-                    this.browserColumnView.setPath(workdir().getAbsolute());
-                    this.infoLabel.setStringValue(browserListModel.childs(workdir()).size() + " " +
-                            NSBundle.localizedString("files", ""));
-                    this.browserColumnView.validateVisibleColumns();
-                }
-                else infoLabel.setStringValue("");
-				break;
-			}
+//			case COLUMN_VIEW: {
+//                if(this.isMounted()) {
+//                    this.browserColumnView.setPath(workdir().getAbsolute());
+//                    this.browserColumnView.reloadColumn(browserColumnView.lastColumn());
+//                    this.browserColumnView.setPath(workdir().getAbsolute());
+//                    this.infoLabel.setStringValue(browserListModel.childs(workdir()).size() + " " +
+//                            NSBundle.localizedString("files", ""));
+//                    this.browserColumnView.validateVisibleColumns();
+//                }
+//                else infoLabel.setStringValue("");
+//				break;
+//			}
 		}
     }
 
@@ -505,9 +503,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
 				this.selectRow(this.browserOutlineModel.indexOf(this.browserOutlineView, path), expand);
 				break;
 			}
-			case COLUMN_VIEW: {
-				break;
-			}
+//			case COLUMN_VIEW: {
+//				break;
+//			}
 		}
 	}
 	
@@ -522,26 +520,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
 				this.browserOutlineView.selectRow(row, expand);
 				break;
 			}
-			case COLUMN_VIEW: {
-				break;
-			}
+//			case COLUMN_VIEW: {
+//				break;
+//			}
 		}
 		this.getFocus();
-	}
-
-	private Path getSelectedPath() {
-		switch(this.browserSwitchView.selectedSegment()) {
-			case LIST_VIEW: {
-				return (Path)this.browserListModel.childs(this.workdir()).get(this.browserListView.selectedRow());
-			}
-			case OUTLINE_VIEW: {
-				return (Path)this.browserOutlineView.itemAtRow(this.browserOutlineView.selectedRow());
-			}
-			case COLUMN_VIEW: {
-				return ((CDBrowserCell)this.browserColumnView.selectedCell()).getPath();
-			}
-		}
-		return null;
 	}
 
     private int getClickedRow() {
@@ -552,14 +535,29 @@ public class CDBrowserController extends CDWindowController implements Observer 
             case OUTLINE_VIEW: {
                 return this.browserOutlineView.clickedRow();
             }
-            case COLUMN_VIEW: {
-
-            }
+//            case COLUMN_VIEW: {
+//                break;
+//            }
         }
         return -1;
     }
 
-	protected List getSelectedPaths() {
+    private Path getSelectedPath() {
+        switch(this.browserSwitchView.selectedSegment()) {
+            case LIST_VIEW: {
+                return (Path)this.browserListModel.childs(this.workdir()).get(this.browserListView.selectedRow());
+            }
+            case OUTLINE_VIEW: {
+                return (Path)this.browserOutlineView.itemAtRow(this.browserOutlineView.selectedRow());
+            }
+//			case COLUMN_VIEW: {
+//				return ((CDBrowserCell)this.browserColumnView.selectedCell()).getPath();
+//			}
+        }
+        return null;
+    }
+
+	private List getSelectedPaths() {
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
 				NSEnumerator iterator = this.browserListView.selectedRowEnumerator();
@@ -573,21 +571,21 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			}
 			case OUTLINE_VIEW: {
 				NSEnumerator iterator = this.browserOutlineView.selectedRowEnumerator();
-				List files = new ArrayList();
+				List selectedFiles = new ArrayList();
 				while (iterator.hasMoreElements()) {
 					int selected = ((Integer) iterator.nextElement()).intValue();
-					files.add(this.browserOutlineView.itemAtRow(selected));
+					selectedFiles.add(this.browserOutlineView.itemAtRow(selected));
 				}
-				return files;
+				return selectedFiles;
 			}
-			case COLUMN_VIEW: {
-				java.util.Enumeration iterator = this.browserColumnView.selectedCells().objectEnumerator();
-				List files = new ArrayList();
-				while (iterator.hasMoreElements()) {
-					files.add(((CDBrowserCell)iterator.nextElement()).getPath());
-				}
-				return files;
-			}
+//			case COLUMN_VIEW: {
+//				java.util.Enumeration iterator = this.browserColumnView.selectedCells().objectEnumerator();
+//				List files = new ArrayList();
+//				while (iterator.hasMoreElements()) {
+//					files.add(((CDBrowserCell)iterator.nextElement()).getPath());
+//				}
+//				return files;
+//			}
 		}
 		return null;
 	}
@@ -600,11 +598,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			case OUTLINE_VIEW: {
 				return this.browserOutlineView.numberOfSelectedRows();
 			}
-			case COLUMN_VIEW: {
-				NSArray selectedCells = this.browserColumnView.selectedCells();
-				if(selectedCells != null)
-					return selectedCells.count();
-			}
+//			case COLUMN_VIEW: {
+//				NSArray selectedCells = this.browserColumnView.selectedCells();
+//				if(selectedCells != null)
+//					return selectedCells.count();
+//			}
 		}
 		return 0;
 	}
@@ -619,25 +617,18 @@ public class CDBrowserController extends CDWindowController implements Observer 
 				this.browserOutlineView.deselectAll(null);
 				break;
 			}
-			case COLUMN_VIEW: {
-				break;
-			}
+//			case COLUMN_VIEW: {
+//				break;
+//			}
 		}
 	}
 
-	public void browserColumnViewRowClicked(Object sender) {
-		this.browserSelectionDidChange(null);
-		if(!((NSBrowserCell)this.browserColumnView.selectedCell()).isLeaf()) {
-			this.browserRowDoubleClicked(sender);
-		}
-    }
-
-    public void browserRowDoubleClicked(Object sender) {
-        log.debug("browserRowDoubleClicked:"+sender);
-        if(this.getClickedRow() != -1) { // make sure double click was not in table header
-            this.insideButtonClicked(sender);
-        }
-	}
+//	public void browserColumnViewRowClicked(Object sender) {
+//		this.browserSelectionDidChange(null);
+//		if(!((NSBrowserCell)this.browserColumnView.selectedCell()).isLeaf()) {
+//			this.browserRowDoubleClicked(sender);
+//		}
+//    }
 
     public void update(final Observable o, final Object arg) {
         if(!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit")) {
@@ -741,9 +732,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			case OUTLINE_VIEW: {
 				return this.browserOutlineView;
 			}
-			case COLUMN_VIEW: {
-				return this.browserColumnView;
-			}
+//			case COLUMN_VIEW: {
+//				return this.browserColumnView;
+//			}
 		}
 		return null;
 	}
@@ -909,31 +900,38 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
     }
 
-    private CDBrowserColumnViewModel browserColumnModel;
-    private NSBrowser browserColumnView; // IBOutlet
+//    private CDBrowserColumnViewModel browserColumnModel;
+//    private NSBrowser browserColumnView; // IBOutlet
+//
+//    public void setBrowserColumnView(NSBrowser browserColumnView) {
+//        this.browserColumnView = browserColumnView;
+//        this.browserColumnView.setTarget(this);
+//        this.browserColumnView.setAction(new NSSelector("browserColumnViewRowClicked", new Class[]{Object.class}));
+//        this.browserColumnView.setDoubleAction(new NSSelector("browserRowDoubleClicked", new Class[]{Object.class}));
+//        this.browserColumnView.setAcceptsArrowKeys(true);
+//		this.browserColumnView.setSendsActionOnArrowKeys(true);
+//        this.browserColumnView.setMaxVisibleColumns(5);
+//        this.browserColumnView.setAllowsEmptySelection(true);
+//        this.browserColumnView.setAllowsMultipleSelection(true);
+//		this.browserColumnView.setAllowsBranchSelection(true);
+//        this.browserColumnView.setPathSeparator("/");
+//        this.browserColumnView.setReusesColumns(false);
+//        this.browserColumnView.setSeparatesColumns(false);
+//        this.browserColumnView.setTitled(false);
+//        this.browserColumnView.setHasHorizontalScroller(false);
+//
+//        this.browserColumnView.setDelegate(this.browserColumnModel = new CDBrowserColumnViewModel(this));
+//        // Make the browser user our custom browser cell.
+//        this.browserColumnView.setNewCellClass(CDBrowserCell.class);
+//        this.browserColumnView.setNewMatrixClass(CDBrowserMatrix.class);
+//    }
 
-    public void setBrowserColumnView(NSBrowser browserColumnView) {
-        this.browserColumnView = browserColumnView;
-        this.browserColumnView.setTarget(this);
-        this.browserColumnView.setAction(new NSSelector("browserColumnViewRowClicked", new Class[]{Object.class}));
-        this.browserColumnView.setDoubleAction(new NSSelector("browserRowDoubleClicked", new Class[]{Object.class}));
-        this.browserColumnView.setAcceptsArrowKeys(true);
-		this.browserColumnView.setSendsActionOnArrowKeys(true);
-        this.browserColumnView.setMaxVisibleColumns(5);
-        this.browserColumnView.setAllowsEmptySelection(true);
-        this.browserColumnView.setAllowsMultipleSelection(true);
-		this.browserColumnView.setAllowsBranchSelection(true);
-        this.browserColumnView.setPathSeparator("/");
-        this.browserColumnView.setReusesColumns(false);
-        this.browserColumnView.setSeparatesColumns(false);
-        this.browserColumnView.setTitled(false);
-        this.browserColumnView.setHasHorizontalScroller(false);
-
-        this.browserColumnView.setDelegate(this.browserColumnModel = new CDBrowserColumnViewModel(this));
-        // Make the browser user our custom browser cell.
-        this.browserColumnView.setNewCellClass(CDBrowserCell.class);
-        this.browserColumnView.setNewMatrixClass(CDBrowserMatrix.class);
-    }
+    public void browserRowDoubleClicked(Object sender) {
+        log.debug("browserRowDoubleClicked:"+sender);
+        if(this.getClickedRow() != -1) { // make sure double click was not in table header
+            this.insideButtonClicked(sender);
+        }
+	}
 
     public void browserSelectionDidChange(NSNotification notification) {
         if (this.inspector != null && this.inspector.window().isVisible()) {
@@ -1401,8 +1399,22 @@ public class CDBrowserController extends CDWindowController implements Observer 
         if (sender == this.bookmarkTable) {
             this.bookmarkTableRowDoubleClicked(sender);
         }
-		else {
-            this.insideButtonClicked(sender);
+        if (sender == this.getSelectedBrowserView()) {
+            if (this.getSelectionCount() > 0) {
+                switch(this.browserSwitchView.selectedSegment()) {
+                    case LIST_VIEW: {
+                        this.insideButtonClicked(sender);
+                        break;
+                    }
+                    case OUTLINE_VIEW: {
+                        this.browserOutlineView.expandItem(this.getSelectedPath());
+                        break;
+                    }
+//                    case COLUMN_VIEW: {
+//                        break;
+//                    }
+                }
+            }
 		}
     }
 	
@@ -1576,13 +1588,19 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
 	public void reloadButtonClicked(Object sender) {
+        log.debug("reloadButtonClicked");
 		if (this.isMounted()) {
-			this.deselectAll();
+            List selected = this.getSelectedPaths();
+            this.deselectAll();
 			this.workdir().list(this.encoding, true, this.getFileFilter());
+            for(Iterator i = selected.iterator(); i.hasNext(); ) {
+                this.selectRow((Path)i.next(), true);
+            }
 		}
 	}
 	
     public void editButtonClicked(Object sender) {
+        log.debug("editButtonClicked");
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext(); ) {
             Path path = (Path) i.next();
             if (path.attributes.isFile()) {
@@ -1652,7 +1670,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
                         new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
                 this.workdir()); //contextInfo
     }
-	
+
+    private CDInfoController inspector = null;
+
     public void infoButtonClicked(Object sender) {
         log.debug("infoButtonClicked");
         if (this.getSelectionCount() > 0) {
@@ -1858,19 +1878,17 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void insideButtonClicked(Object sender) {
         log.debug("insideButtonClicked");
-        if (this.getSelectionCount() > 0) {
-            Path p = this.getSelectedPath(); //last row selected
-            if (p.attributes.isDirectory()) {
-                this.deselectAll();
-                p.list(this.encoding, false, this.getFileFilter());
+        Path p = this.getSelectedPath(); //last row selected
+        if (p.attributes.isDirectory()) {
+            this.deselectAll();
+            p.list(this.encoding, false, this.getFileFilter());
+        }
+        if (p.attributes.isFile() || this.getSelectionCount() > 1) {
+            if (Preferences.instance().getBoolean("browser.doubleclick.edit")) {
+                this.editButtonClicked(null);
             }
-            if (p.attributes.isFile() || this.getSelectionCount() > 1) {
-                if (Preferences.instance().getBoolean("browser.doubleclick.edit")) {
-                    this.editButtonClicked(null);
-                }
-                else {
-                    this.downloadButtonClicked(null);
-                }
+            else {
+                this.downloadButtonClicked(null);
             }
         }
 	}
@@ -1885,7 +1903,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         log.debug("upButtonClicked");
 		this.deselectAll();
         Path previous = this.workdir();
-        List listing = this.workdir().getParent().list(this.encoding, false, this.getFileFilter());
+        this.workdir().getParent().list(this.encoding, false, this.getFileFilter());
 		this.selectRow(previous, false);
     }
 

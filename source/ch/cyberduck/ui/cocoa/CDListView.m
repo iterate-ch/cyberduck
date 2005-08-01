@@ -75,7 +75,7 @@
 {
 	NSString *str = [event characters];
 	char key = [str length] ? [str characterAtIndex:0] : '\0';
-	
+
 	if (key == NSCarriageReturnCharacter || key == NSEnterCharacter) {
         if ([[self target] respondsToSelector:@selector(enterKeyPressed:)]) {
             [[self target] performSelector:@selector(enterKeyPressed:) withObject:self];

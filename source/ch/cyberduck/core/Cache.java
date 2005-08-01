@@ -18,10 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -41,7 +38,7 @@ public class Cache extends HashMap {
 		//private
 	}
 
-    private List expandedItems = new ArrayList();
+    private Set expandedItems = new HashSet();
 
     public List get(String path) {
         return (List)super.get(path);

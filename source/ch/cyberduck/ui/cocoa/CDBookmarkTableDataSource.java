@@ -33,6 +33,7 @@ import ch.cyberduck.core.*;
  * @version $Id$
  */
 public class CDBookmarkTableDataSource extends Collection {
+
     private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 
     private static final File BOOKMARKS_FILE_USER
@@ -84,10 +85,10 @@ public class CDBookmarkTableDataSource extends Collection {
     }
 
     private static final NSImage DOCUMENT_ICON;
-	
-	static {
-		DOCUMENT_ICON = NSImage.imageNamed("bookmark40.tiff");
-	}
+
+    static {
+        DOCUMENT_ICON = NSImage.imageNamed("bookmark40.tiff");
+    }
 
     public int numberOfRowsInTableView(NSTableView tableView) {
         return this.size();
