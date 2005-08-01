@@ -217,7 +217,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"));
             path.delete();
-            path.getParent().list(this.encoding, true, this.getFileFilter());
+			this.workdir().list(encoding, true, this.getFileFilter());
         }
         return null;
     }
@@ -1679,13 +1679,13 @@ public class CDBrowserController extends CDWindowController implements Observer 
             List files = this.getSelectedPaths();
             if (Preferences.instance().getBoolean("browser.info.isInspector")) {
                 if (null == this.inspector) {
-                    this.inspector = new CDInfoController();
+                    this.inspector = new CDInfoController(this);
                 }
 				this.inspector.setFiles(files);
                 this.inspector.window().makeKeyAndOrderFront(null);
             }
             else {
-                CDInfoController c = new CDInfoController();
+                CDInfoController c = new CDInfoController(this);
 				c.setFiles(files);
                 c.window().makeKeyAndOrderFront(null);
             }

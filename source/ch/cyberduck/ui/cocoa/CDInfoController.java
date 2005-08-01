@@ -127,7 +127,10 @@ public class CDInfoController extends CDWindowController {
 	// Constructors
 	// ----------------------------------------------------------
 
-	public CDInfoController() {
+	private CDBrowserController controller;
+	
+	public CDInfoController(CDBrowserController controller) {
+		this.controller = controller;
 		instances.addObject(this);
 		if(false == NSApplication.loadNibNamed("Info", this)) {
 			log.fatal("Couldn't load Info.nib");
@@ -335,8 +338,7 @@ public class CDInfoController extends CDWindowController {
 		if(!this.filenameField.stringValue().equals(file.getName())) {
 			if(this.filenameField.stringValue().indexOf('/') == -1) {
 				file.rename(file.getParent().getAbsolute()+"/"+this.filenameField.stringValue());
-				// refresh the file listing so that the observers (if any) get notified of the change
-				file.getParent().list(true);
+                controller.workdir().list(controller.getEncoding(), true, controller.getFileFilter());
 			}
 			else if(filenameField.stringValue().length() == 0) {
 				this.filenameField.setStringValue(file.getName());
@@ -393,7 +395,6 @@ public class CDInfoController extends CDWindowController {
 			f.changePermissions(permission,
                     this.recursiveCheckbox.state() == NSCell.OnState);
 		}
-		// refresh the file listing so that the observers (if any) get notified of the change
-		f.getParent().list(true);
+		controller.workdir().list(controller.getEncoding(), true, controller.getFileFilter());
 	}
 }
