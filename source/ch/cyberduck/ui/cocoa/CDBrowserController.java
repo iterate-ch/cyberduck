@@ -542,7 +542,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         return -1;
     }
 
-    private Path getSelectedPath() {
+    protected Path getSelectedPath() {
         switch(this.browserSwitchView.selectedSegment()) {
             case LIST_VIEW: {
                 return (Path)this.browserListModel.childs(this.workdir()).get(this.browserListView.selectedRow());
@@ -557,7 +557,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         return null;
     }
 
-	private List getSelectedPaths() {
+	protected List getSelectedPaths() {
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
 				NSEnumerator iterator = this.browserListView.selectedRowEnumerator();
