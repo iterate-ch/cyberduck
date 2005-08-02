@@ -1375,19 +1375,16 @@ public class CDBrowserController extends CDWindowController implements Observer 
     // ----------------------------------------------------------
 
     private static final int NAVIGATION_LEFT_SEGMENT_BUTTON = 0;
-    private static final int NAVIGATION_UP_SEGMENT_BUTTON = 1;
+    private static final int NAVIGATION_RIGHT_SEGMENT_BUTTON = 1;
+
+    private static final int NAVIGATION_UP_SEGMENT_BUTTON = 0;
 
     private NSSegmentedControl navigationButton; // IBOutlet
 
     public void setNavigationButton(NSSegmentedControl navigationButton) {
         this.navigationButton = navigationButton;
-        this.navigationButton.setSegmentCount(2); //back, up
-		this.navigationButton.setImage(NSImage.imageNamed("arrowLeftBlack16.tiff"), NAVIGATION_LEFT_SEGMENT_BUTTON);
-		this.navigationButton.setImage(NSImage.imageNamed("arrowUpBlack16.tiff"), NAVIGATION_UP_SEGMENT_BUTTON);
         this.navigationButton.setTarget(this);
         this.navigationButton.setAction(new NSSelector("navigationButtonClicked", new Class[]{Object.class}));
-        ((NSSegmentedCell) this.navigationButton.cell()).setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingMomentary);
-        this.navigationButton.cell().setControlSize(NSCell.RegularControlSize);
     }
 
     public void navigationButtonClicked(NSSegmentedControl sender) {
@@ -1396,17 +1393,35 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 this.backButtonClicked(sender);
                 break;
             }
-            case NAVIGATION_UP_SEGMENT_BUTTON: {
-                this.upButtonClicked(sender);
+            case NAVIGATION_RIGHT_SEGMENT_BUTTON: {
+                this.forwardButtonClicked(sender);
                 break;
             }
+//            case NAVIGATION_UP_SEGMENT_BUTTON: {
+//                this.upButtonClicked(sender);
+//                break;
+//            }
         }
+    }
+
+    private NSSegmentedControl upButton; // IBOutlet
+
+    public void setUpButton(NSSegmentedControl upButton) {
+        this.upButton = upButton;
+        this.upButton.setTarget(this);
+        this.upButton.setAction(new NSSelector("upButtonClicked", new Class[]{Object.class}));
     }
 
     public void backButtonClicked(Object sender) {
         log.debug("backButtonClicked");
 		this.deselectAll();
         this.session.getPreviousPath().list(this.encoding, false, this.getFileFilter());
+    }
+
+    public void forwardButtonClicked(Object sender) {
+        log.debug("forwardButtonClicked");
+		this.deselectAll();
+        this.session.getForwardPath().list(this.encoding, false, this.getFileFilter());
     }
 
     public void upButtonClicked(Object sender) {
@@ -2407,7 +2422,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
             return this.isMounted() && !this.workdir().isRoot();
         }
         if (identifier.equals("backButtonClicked:")) {
-            return this.isMounted();
+            return this.isMounted() && this.workdir().getSession().getBackHistory().length > 1;
+        }
+        if (identifier.equals("forwardButtonClicked:")) {
+            return this.isMounted() && this.workdir().getSession().getForwardHistory().length > 0;
         }
         if (identifier.equals("copyURLButtonClicked:")) {
             return this.isMounted();
@@ -2423,10 +2441,13 @@ public class CDBrowserController extends CDWindowController implements Observer 
     // ----------------------------------------------------------
 
     public boolean validateToolbarItem(NSToolbarItem item) {
-        this.navigationButton.setEnabled(this.isMounted() && this.workdir().getSession().getHistory().length > 1, 
+        this.navigationButton.setEnabled(this.isMounted() && this.workdir().getSession().getBackHistory().length > 1,
                 NAVIGATION_LEFT_SEGMENT_BUTTON);
-        this.navigationButton.setEnabled(this.isMounted() && !this.workdir().isRoot(),
+        this.navigationButton.setEnabled(this.isMounted() && this.workdir().getSession().getForwardHistory().length > 0,
+                NAVIGATION_RIGHT_SEGMENT_BUTTON);
+        this.upButton.setEnabled(this.isMounted() && !this.workdir().isRoot(),
                 NAVIGATION_UP_SEGMENT_BUTTON);
+
         this.pathPopupButton.setEnabled(this.isMounted());
         this.searchField.setEnabled(this.isMounted());
 

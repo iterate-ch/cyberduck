@@ -58,7 +58,9 @@ public abstract class Session extends Observable {
 	 */
 	protected Host host = null;
 
-	private List history = null;
+	private List backHistory = new ArrayList();
+
+    private List forwardHistory = new ArrayList();
 
 	private boolean connected;
 
@@ -71,7 +73,6 @@ public abstract class Session extends Observable {
 	protected Session(Host h) {
 		log.debug("Session("+h+")");
 		this.host = h;
-		this.history = new ArrayList();
 	}
 
 	public void callObservers(Object arg) {
@@ -229,36 +230,53 @@ public abstract class Session extends Observable {
 	}
 
 	public void addPathToHistory(Path p) {
-		if(history.size() > 0) {
-			if(!p.equals(history.get(history.size()-1))) {
-				this.history.add(p);
+		if(backHistory.size() > 0) {
+			if(!p.equals(backHistory.get(backHistory.size()-1))) {
+				this.backHistory.add(p);
 			}
 		}
 		else {
-			this.history.add(p);
+			this.backHistory.add(p);
 		}
 	}
 
 	public Path getPreviousPath() {
-		int size = history.size();
+		int size = this.backHistory.size();
 		if(size > 1) {
-			Path p = (Path)history.get(size-2);
+            this.forwardHistory.add(this.backHistory.get(size-1));
+            Path p = (Path)this.backHistory.get(size-2);
 			//delete the fetched path - otherwise we produce a loop
-			history.remove(size-1);
-			history.remove(size-2);
+			this.backHistory.remove(size-1);
+			this.backHistory.remove(size-2);
 			return p;
 		}
 		else if(1 == size) {
-			return (Path)history.get(size-1);
+            this.forwardHistory.add(this.backHistory.get(size-1));
+			return (Path)this.backHistory.get(size-1);
 		}
-		return workdir();
+		return null;
 	}
 
-    public Path[] getHistory() {
-        return (Path[])this.history.toArray(new Path[this.history.size()]);
+    public Path getForwardPath() {
+        int size = this.forwardHistory.size();
+        if(size > 0) {
+            Path p = (Path)this.forwardHistory.get(size-1);
+            this.forwardHistory.remove(size-1);
+            return p;
+        }
+        return null;
     }
 
-	public Cache cache() {
+
+    public Path[] getBackHistory() {
+        return (Path[])this.backHistory.toArray(new Path[this.backHistory.size()]);
+    }
+
+    public Path[] getForwardHistory() {
+        return (Path[])this.forwardHistory.toArray(new Path[this.forwardHistory.size()]);
+    }
+
+    public Cache cache() {
 		if(null == this.cache) {
 			this.cache = Cache.create(this.host.toString());
 		}
