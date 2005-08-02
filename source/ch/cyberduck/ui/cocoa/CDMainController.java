@@ -22,10 +22,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 import org.apache.log4j.BasicConfigurator;
 
@@ -35,6 +32,9 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Rendezvous;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
+/**
+ * @version $Id$
+ */
 public class CDMainController extends CDController {
 	private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(CDMainController.class);
 
@@ -217,13 +217,27 @@ public class CDMainController extends CDController {
         private Host[] cache = null;
 
         private File[] listFiles() {
-            return HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
+            File[] files = HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
                 public boolean accept(File dir, String name) {
                     if(name.endsWith(".duck"))
                         return true;
                     return false;
                 }
             });
+            Arrays.sort(files, new Comparator() {
+                public int compare(Object o1, Object o2) {
+                    File f1 = (File)o1;
+                    File f2 = (File)o2;
+                    if(f1.lastModified() < f2.lastModified()) {
+                        return 1;
+                    }
+                    if(f1.lastModified() > f2.lastModified()) {
+                        return -1;
+                    }
+                    return 0;
+                }
+            });
+            return files;
         }
 
 		public int numberOfItemsInMenu(NSMenu menu) {

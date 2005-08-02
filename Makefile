@@ -3,17 +3,19 @@ DEFAULT_BUILDSTYLE=Deployment
 
 BUILDSTYLE=$(DEFAULT_BUILDSTYLE)
 
+PROJECT=Cyberduck.xcodeproj
+
 CP=ditto --rsrc
 
 export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/1.4/Home
 
 default:
-	make -f Spotlight\ Importer/Makefile
-	xcodebuild -target build -configuration $(BUILDSTYLE)
+	xcodebuild -project Spotlight\ Importer/Spotlight\ Importer.xcodeproj -target Spotlight\ Importer -configuration $(BUILDSTYLE)
+	xcodebuild -project $(PROJECT) -target build -configuration $(BUILDSTYLE)
 
 release:
-	make -f Spotlight\ Importer/Makefile
-	xcodebuild -target release -configuration $(BUILDSTYLE)
+	xcodebuild -project Spotlight\ Importer/Spotlight\ Importer.xcodeproj -target Spotlight\ Importer -configuration $(BUILDSTYLE)
+	xcodebuild -project $(PROJECT) -target release -configuration $(BUILDSTYLE)
 
 clean:
 	ant clean

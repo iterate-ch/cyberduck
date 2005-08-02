@@ -1374,16 +1374,16 @@ public class CDBrowserController extends CDWindowController implements Observer 
     // Browser navigation
     // ----------------------------------------------------------
 
-    private static final int LEFT_SEGMENT_BUTTON = 0;
-    private static final int UP_SEGMENT_BUTTON = 1;
+    private static final int NAVIGATION_LEFT_SEGMENT_BUTTON = 0;
+    private static final int NAVIGATION_UP_SEGMENT_BUTTON = 1;
 
     private NSSegmentedControl navigationButton; // IBOutlet
 
     public void setNavigationButton(NSSegmentedControl navigationButton) {
         this.navigationButton = navigationButton;
         this.navigationButton.setSegmentCount(2); //back, up
-		this.navigationButton.setImage(NSImage.imageNamed("arrowLeftBlack16.tiff"), LEFT_SEGMENT_BUTTON);
-		this.navigationButton.setImage(NSImage.imageNamed("arrowUpBlack16.tiff"), UP_SEGMENT_BUTTON);
+		this.navigationButton.setImage(NSImage.imageNamed("arrowLeftBlack16.tiff"), NAVIGATION_LEFT_SEGMENT_BUTTON);
+		this.navigationButton.setImage(NSImage.imageNamed("arrowUpBlack16.tiff"), NAVIGATION_UP_SEGMENT_BUTTON);
         this.navigationButton.setTarget(this);
         this.navigationButton.setAction(new NSSelector("navigationButtonClicked", new Class[]{Object.class}));
         ((NSSegmentedCell) this.navigationButton.cell()).setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingMomentary);
@@ -1392,11 +1392,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void navigationButtonClicked(NSSegmentedControl sender) {
         switch(sender.selectedSegment()) {
-            case LEFT_SEGMENT_BUTTON: {
+            case NAVIGATION_LEFT_SEGMENT_BUTTON: {
                 this.backButtonClicked(sender);
                 break;
             }
-            case UP_SEGMENT_BUTTON: {
+            case NAVIGATION_UP_SEGMENT_BUTTON: {
                 this.upButtonClicked(sender);
                 break;
             }
@@ -2423,12 +2423,13 @@ public class CDBrowserController extends CDWindowController implements Observer 
     // ----------------------------------------------------------
 
     public boolean validateToolbarItem(NSToolbarItem item) {
-        boolean enabled = this.pathPopupItems.size() > 0;
-        this.navigationButton.setEnabled(enabled);
-//        this.backButton.setEnabled(enabled);
-//        this.upButton.setEnabled(enabled);
-        this.pathPopupButton.setEnabled(enabled);
-        this.searchField.setEnabled(enabled);
+        this.navigationButton.setEnabled(this.isMounted() && this.workdir().getSession().getHistory().length > 1, 
+                NAVIGATION_LEFT_SEGMENT_BUTTON);
+        this.navigationButton.setEnabled(this.isMounted() && !this.workdir().isRoot(),
+                NAVIGATION_UP_SEGMENT_BUTTON);
+        this.pathPopupButton.setEnabled(this.isMounted());
+        this.searchField.setEnabled(this.isMounted());
+
         String identifier = item.itemIdentifier();
         if(identifier.equals("Edit")) {
             String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
