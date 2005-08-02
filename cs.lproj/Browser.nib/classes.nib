@@ -28,7 +28,6 @@
             OUTLETS = {
                 actionPopupButton = NSPopUpButton; 
                 addBookmarkButton = NSButton; 
-                backButton = NSButton; 
                 bookmarkDrawer = NSDrawer; 
                 bookmarkTable = NSTableView; 
                 browserColumnView = NSBrowser; 
@@ -43,13 +42,13 @@
                 infoLabel = NSTextField; 
                 logDrawer = NSDrawer; 
                 logView = NSTextView; 
+                navigationButton = NSSegmentedControl; 
                 pathPopup = NSPopUpButton; 
                 progressIndicator = NSProgressIndicator; 
                 quickConnectPopup = NSComboBox; 
                 searchField = NSView; 
                 statusIcon = NSImageView; 
                 statusLabel = NSTextField; 
-                upButton = NSButton; 
                 window = NSWindow; 
             }; 
             SUPERCLASS = NSObject; 

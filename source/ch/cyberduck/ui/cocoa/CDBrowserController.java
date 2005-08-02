@@ -28,8 +28,6 @@ import java.util.*;
 import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**
@@ -743,7 +741,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
 	private static final int LIST_VIEW = 0;
 	private static final int OUTLINE_VIEW = 1;
-	private static final int COLUMN_VIEW = 2;
+//	private static final int COLUMN_VIEW = 2;
 
     public void setBrowserSwitchView(NSSegmentedControl browserSwitchView) {
         this.browserSwitchView = browserSwitchView;
@@ -1376,22 +1374,47 @@ public class CDBrowserController extends CDWindowController implements Observer 
     // Browser navigation
     // ----------------------------------------------------------
 
-    private NSButton upButton; // IBOutlet
+    private static final int LEFT_SEGMENT_BUTTON = 0;
+    private static final int UP_SEGMENT_BUTTON = 1;
 
-    public void setUpButton(NSButton upButton) {
-        this.upButton = upButton;
-        this.upButton.setImage(NSImage.imageNamed("arrowUpBlack16.tiff"));
-        this.upButton.setTarget(this);
-        this.upButton.setAction(new NSSelector("upButtonClicked", new Class[]{Object.class}));
+    private NSSegmentedControl navigationButton; // IBOutlet
+
+    public void setNavigationButton(NSSegmentedControl navigationButton) {
+        this.navigationButton = navigationButton;
+        this.navigationButton.setSegmentCount(2); //back, up
+		this.navigationButton.setImage(NSImage.imageNamed("arrowLeftBlack16.tiff"), LEFT_SEGMENT_BUTTON);
+		this.navigationButton.setImage(NSImage.imageNamed("arrowUpBlack16.tiff"), UP_SEGMENT_BUTTON);
+        this.navigationButton.setTarget(this);
+        this.navigationButton.setAction(new NSSelector("navigationButtonClicked", new Class[]{Object.class}));
+        ((NSSegmentedCell) this.navigationButton.cell()).setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingMomentary);
+        this.navigationButton.cell().setControlSize(NSCell.RegularControlSize);
     }
 
-    private NSButton backButton; // IBOutlet
+    public void navigationButtonClicked(NSSegmentedControl sender) {
+        switch(sender.selectedSegment()) {
+            case LEFT_SEGMENT_BUTTON: {
+                this.backButtonClicked(sender);
+                break;
+            }
+            case UP_SEGMENT_BUTTON: {
+                this.upButtonClicked(sender);
+                break;
+            }
+        }
+    }
 
-    public void setBackButton(NSButton backButton) {
-        this.backButton = backButton;
-        this.backButton.setImage(NSImage.imageNamed("arrowLeftBlack16.tiff"));
-        this.backButton.setTarget(this);
-        this.backButton.setAction(new NSSelector("backButtonClicked", new Class[]{Object.class}));
+    public void backButtonClicked(Object sender) {
+        log.debug("backButtonClicked");
+		this.deselectAll();
+        this.session.getPreviousPath().list(this.encoding, false, this.getFileFilter());
+    }
+
+    public void upButtonClicked(Object sender) {
+        log.debug("upButtonClicked");
+		this.deselectAll();
+        Path previous = this.workdir();
+        this.workdir().getParent().list(this.encoding, false, this.getFileFilter());
+		this.selectRow(previous, false);
     }
 
 	public void enterKeyPressed(Object sender) {
@@ -1893,20 +1916,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
 	}
 
-    public void backButtonClicked(Object sender) {
-        log.debug("backButtonClicked");
-		this.deselectAll();
-        this.session.getPreviousPath().list(this.encoding, false, this.getFileFilter());
-    }
-
-    public void upButtonClicked(Object sender) {
-        log.debug("upButtonClicked");
-		this.deselectAll();
-        Path previous = this.workdir();
-        this.workdir().getParent().list(this.encoding, false, this.getFileFilter());
-		this.selectRow(previous, false);
-    }
-
     private CDWindowController connectionController;
 
     public void connectButtonClicked(Object sender) {
@@ -2355,7 +2364,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
             return false;
 		}
         if(identifier.equals("sendCustomCommandClicked:")) {
-            return (this.session instanceof FTPSession) && this.isConnected();
+//            return (this.session instanceof FTPSession) && this.isConnected();
+            return this.isConnected();
         }
         if (identifier.equals("gotoButtonClicked:")) {
             return this.isMounted();
@@ -2414,8 +2424,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public boolean validateToolbarItem(NSToolbarItem item) {
         boolean enabled = this.pathPopupItems.size() > 0;
-        this.backButton.setEnabled(enabled);
-        this.upButton.setEnabled(enabled);
+        this.navigationButton.setEnabled(enabled);
+//        this.backButton.setEnabled(enabled);
+//        this.upButton.setEnabled(enabled);
         this.pathPopupButton.setEnabled(enabled);
         this.searchField.setEnabled(enabled);
         String identifier = item.itemIdentifier();
