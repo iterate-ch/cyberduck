@@ -49,6 +49,7 @@
                 searchField = NSView; 
                 statusIcon = NSImageView; 
                 statusLabel = NSTextField; 
+                upButton = NSSegmentedControl; 
                 window = NSWindow; 
             }; 
             SUPERCLASS = NSObject; 

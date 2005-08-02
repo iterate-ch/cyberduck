@@ -17,6 +17,7 @@
                 duplicateFileButtonClicked = id; 
                 editBookmarkButtonClicked = id; 
                 editButtonClicked = id; 
+                forwardButtonClicked = id; 
                 gotoButtonClicked = id; 
                 infoButtonClicked = id; 
                 insideButtonClicked = id; 
