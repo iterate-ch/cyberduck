@@ -1,5 +1,5 @@
 /* Toolbar item */
-"Action" = "Action";
+"Action" = "Handling";
 
 /* No comment provided by engineer. */
 "Active" = "Aktiv";
@@ -14,7 +14,7 @@
 "ASCII" = "ASCII";
 
 /* No comment provided by engineer. */
-"Ask me what to do" = "Sp√∏r meg hva som skal gj√∏res";
+"Ask me what to do" = "Spør meg hva som skal gjøres";
 
 /* No comment provided by engineer. */
 "Auto" = "Auto";
@@ -32,7 +32,7 @@
 "Cannot continue without a valid host key." = "Kan ikke fortsette uten et gyldig brukernavn";
 
 /* Toolbar item tooltip */
-"Character Encoding" = "Tegn-enkoding";
+"Character Encoding" = "Tegn-koding";
 
 /* No comment provided by engineer. */
 "Choose" = "Velg";
@@ -41,16 +41,16 @@
 "Clear" = "Avbryt";
 
 /* Toolbar item */
-"Column" = "Column";
+"Column" = "Kolonne";
 
 /* Toolbar item tooltip */
 "Connect to server" = "Koble til server";
 
 /* Alert sheet text */
-"Could not open or read the host file" = "Kunne ikke √•pne eller lese vertsfilen";
+"Could not open or read the host file" = "Kunne ikke åpne eller lese vertsfilen";
 
 /* No comment provided by engineer. */
-"Could not open the file" = "Kunne ikke √•pne filen";
+"Could not open the file" = "Kunne ikke åpne filen";
 
 /* No comment provided by engineer. */
 "Could not show the file" = "Kunne ikke vise filen";
@@ -62,7 +62,7 @@
 "Create New Folder" = "Lag ny mappe";
 
 /* Menu item */
-"Cut" = "Cut";
+"Cut" = "Klipp ut";
 
 /* No comment provided by engineer. */
 "Default" = "Grunninnstillinger";
@@ -95,7 +95,7 @@
 "Do you want to allow the host access?" = "Vil du gi verten tilgang?";
 
 /* No comment provided by engineer. */
-"Do you want to delete the selected bookmark?" = "√ònsker du √• slette det valgte bokmerket?";
+"Do you want to delete the selected bookmark?" = "Ønsker du å slette det valgte bokmerket?";
 
 /* Toolbar item */
 "Download" = "Last ned";
@@ -116,7 +116,7 @@
 "Edit file in external editor" = "Rediger fil i ekstern redigerer";
 
 /* Toolbar item */
-"Encoding" = "Enkoding";
+"Encoding" = "Koding";
 
 /* Alert sheet title */
 "Error" = "Feil";
@@ -134,7 +134,7 @@
 "Folder" = "mappe";
 
 /* No comment provided by engineer. */
-"FTP (File Transfer Protocol)" = "FTP (Filoverf√∏ring)";
+"FTP (File Transfer Protocol)" = "FTP (Filoverføring)";
 
 /* No comment provided by engineer. */
 "FTP-SSL (FTP over TLS/SSL)" = "FTP-SSL (FTP over TLS/SSL)";
@@ -143,10 +143,10 @@
 "Get Info" = "Hent info";
 
 /* No comment provided by engineer. */
-"History" = "History";
+"History" = "Historie";
 
 /* No comment provided by engineer. */
-"Host key mismatch:" = "Feil vertsn√∏kkel:";
+"Host key mismatch:" = "Feil vertsnøkkel:";
 
 /* No comment provided by engineer. */
 "Invalid character in filename." = "Ugyldig tegn i filnavnet.";
@@ -164,7 +164,7 @@
 "It moved since you downloaded it." = "Den har flyttet siden du lastet den ned.";
 
 /* Toolbar item */
-"List" = "List";
+"List" = "Liste";
 
 /* No comment provided by engineer. */
 "Local" = "Lokal";
@@ -191,7 +191,7 @@
 "No newer version available." = "Ingen nyere versjon er tilgjengelig.";
 
 /* No comment provided by engineer. */
-"No Private Key selected" = "Ingen private n√∏kler er valgt";
+"No Private Key selected" = "Ingen private nøkler er valgt";
 
 /* No comment provided by engineer. */
 "No Bonjour services available" = "Ingen Bonjour-tjenester er tilgjengelige";
@@ -216,7 +216,7 @@
 "OK" = "OK";
 
 /* No comment provided by engineer. */
-"Open" = "√Öpne";
+"Open" = "Åpne";
 
 /* Toolbar item */
 "Outline" = "Outline";
@@ -246,7 +246,7 @@
 "Quit Anyway" = "Avslutt likevel";
 
 /* Confirm deleting files. */
-"Really delete the following files? This cannot be undone." = "Sikker p√• at du vil slette filene? Dette kan ikke gj√∏res om.";
+"Really delete the following files? This cannot be undone." = "Sikker på at du vil slette filene? Dette kan ikke gjøres om.";
 
 /* Toolbar item */
 "Refresh" = "Gjenoppfrisk";
@@ -264,7 +264,7 @@
 "Resume" = "Fortsett";
 
 /* No comment provided by engineer. */
-"Review..." = "G√• gjennom...";
+"Review..." = "Gå gjennom...";
 
 /* No comment provided by engineer. */
 "Server File" = "Serverfil";
@@ -285,7 +285,7 @@
 "Show Transfers window" = "Show Transfers window";
 
 /* A column in the browser */
-"Size" = "St√∏rrelse";
+"Size" = "Størrelse";
 
 /* No comment provided by engineer. */
 "Stop" = "Stopp";
@@ -306,40 +306,40 @@
 "Synchronize files" = "Synkroniser filer";
 
 /* No comment provided by engineer. */
-"Unknown size" = "Ukjent st√∏rrelse";
+"Unknown size" = "Ukjent størrelse";
 
 /* Alert sheet text */
 "The connection will be closed." = "Tilkoblingen vil bli stengt.";
 
 /* No comment provided by engineer. */
-"The current allowed key for this host is" = "Den n√•v√¶rende tillatte n√∏kkelen for denne verten er";
+"The current allowed key for this host is" = "Den nåværende tillatte nøkkelen for denne verten er";
 
 /* No comment provided by engineer. */
 "The file has not yet been downloaded." = "Denne filen har enda ikke blitt lastet ned.";
 
 /* No comment provided by engineer. */
-"The host is currently unknown to the system. The host key fingerprint is" = "Verten er p√• n√•v√¶rende tidspunkt ukjent for systemet. Vertens fingeravtrykk er";
+"The host is currently unknown to the system. The host key fingerprint is" = "Verten er på nåværende tidspunkt ukjent for systemet. Vertens fingeravtrykk er";
 
 /* No comment provided by engineer. */
-"The host key supplied is" = "Den oppgitte vertsn√∏kkelen er";
+"The host key supplied is" = "Den oppgitte vertsnøkkelen er";
 
 /* No comment provided by engineer. */
-"There are items in the queue currently being transferred. Quit anyway?" = "Det st√•r fortsatt filer i k√∏en for √• bli overf√∏rt. Vil du avslutte likevel?";
+"There are items in the queue currently being transferred. Quit anyway?" = "Det står fortsatt filer i køen for å bli overført. Vil du avslutte likevel?";
 
 /* Alert sheet text */
-"There was a problem checking for an update. Please try again later." = "Det oppstod et problem under oppdateringen. Vennligst pr√∏v igjen senere.";
+"There was a problem checking for an update. Please try again later." = "Det oppstod et problem under oppdateringen. Vennligst prøv igjen senere.";
 
 /* Toolbar item tooltip */
 "Toggle Bookmarks" = "Veksle bokmerker";
 
 /* No comment provided by engineer. */
-"Transfer in progress" = "Overf√∏ring er igang";
+"Transfer in progress" = "Overføring er igang";
 
 /* Toolbar item */
 "Transfers" = "Transfers";
 
 /* No comment provided by engineer. */
-"Try to resume transfer" = "Fors√∏k √• gjenoppta overf√∏ring";
+"Try to resume transfer" = "Forsøk å gjenoppta overføring";
 
 /* No comment provided by engineer. */
 "Unix Line Endings (LF)" = "Unix linjeavslutninger (LF)";
@@ -348,7 +348,7 @@
 "Unknown" = "Ukjent";
 
 /* No comment provided by engineer. */
-"Unknown host key for" = "Ukjent vertsn√∏kkel for";
+"Unknown host key for" = "Ukjent vertsnøkkel for";
 
 /* Toolbar item */
 "Upload" = "Last opp";
@@ -369,4 +369,4 @@
 "with" = "med";
 
 /* No comment provided by engineer. */
-"You are connected to at least one remote site. Do you want to review open browsers?" = "Du er tilkoblet minst √©n fjern tjener. Vil du se gjennom √•pne nettlesere?";
+"You are connected to at least one remote site. Do you want to review open browsers?" = "Du er tilkoblet minst en fjern tjener. Vil du se gjennom åpne nettlesere?";
