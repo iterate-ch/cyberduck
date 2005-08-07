@@ -52,6 +52,10 @@ public class Cache extends HashMap {
         return super.containsKey(path.getAbsolute());
     }
 
+    public Object remove(Path path) {
+        return super.remove(path.getAbsolute());
+    }
+
     /**
      *
      * @param path
