@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-
 import java.util.*;
 
 /**
@@ -51,12 +49,10 @@ public class Cache extends HashMap {
             return childs;
         }
         if(!childs.getAttributes().get(Attributes.COMPARATOR).equals(comparator)) {
-            path.getSession().log(Message.PROGRESS, NSBundle.localizedString("Sorting files", "Status", ""));
             Collections.sort(childs, comparator);
             childs.attributes.put(Attributes.COMPARATOR, comparator);
         }
         if(!childs.getAttributes().get(Attributes.FILTER).equals(filter)) {
-            path.getSession().log(Message.PROGRESS, NSBundle.localizedString("Filter files", "Status", ""));
             childs.addAll((Set)childs.getAttributes().get(Attributes.HIDDEN));
             ((Set)childs.getAttributes().get(Attributes.HIDDEN)).clear();
             for(Iterator i = childs.iterator(); i.hasNext(); ) {
