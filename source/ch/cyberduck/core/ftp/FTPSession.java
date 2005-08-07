@@ -60,7 +60,7 @@ public class FTPSession extends Session {
 		return false;
 	}
 	
-    public synchronized void close() {
+    public void close() {
         try {
             if (this.FTP != null) {
                 this.log(Message.PROGRESS, NSBundle.localizedString("Disconnecting...", "Status", ""));
@@ -96,7 +96,7 @@ public class FTPSession extends Session {
         }
     }
 
-    public synchronized void connect(String encoding) throws IOException, FTPException {
+    public void connect(String encoding) throws IOException, FTPException {
         this.log(Message.PROGRESS, NSBundle.localizedString("Opening FTP connection to", "Status", "")+" "+host.getIp()+"...");
         this.setConnected();
         this.log(Message.TRANSCRIPT, "=====================================");
@@ -134,7 +134,7 @@ public class FTPSession extends Session {
         this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.host.getIdentification());
     }
 
-    protected synchronized void login() throws IOException {
+    protected void login() throws IOException {
         log.debug("login");
         Login credentials = host.getCredentials();
         if (credentials.check()) {
@@ -161,7 +161,7 @@ public class FTPSession extends Session {
         }
     }
 
-    public synchronized Path workdir() {
+    public Path workdir() {
         try {
             this.check();
             Path workdir = PathFactory.createPath(this, this.FTP.pwd());
@@ -178,13 +178,13 @@ public class FTPSession extends Session {
         return null;
     }
 
-    public synchronized void noop() throws IOException {
+    public void noop() throws IOException {
         if (this.isConnected()) {
             this.FTP.noop();
         }
     }
 
-    public synchronized void sendCommand(String command) {
+    public void sendCommand(String command) {
         try {
             this.FTP.quote(command);
         }
@@ -197,7 +197,7 @@ public class FTPSession extends Session {
         }
     }
 
-    public synchronized void check() throws IOException {
+    public void check() throws IOException {
         this.log(Message.START, "Working");
         if (null == this.FTP) {
             this.connect();

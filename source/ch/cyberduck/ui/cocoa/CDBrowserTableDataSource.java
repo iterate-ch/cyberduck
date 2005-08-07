@@ -21,31 +21,37 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSIndexSet;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Collections;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.BrowserComparator;
+
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
 public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSource {
+    private static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 
     protected static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
     protected static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
     protected static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
+    public static final String TYPE_COLUMN = "TYPE";
+    public static final String FILENAME_COLUMN = "FILENAME";
+    public static final String SIZE_COLUMN = "SIZE";
+    public static final String MODIFIED_COLUMN = "MODIFIED";
+    public static final String OWNER_COLUMN = "OWNER";
+    public static final String PERMISSIONS_COLUMN = "PERMISSIONS";
+
     protected List childs(Path path) {
-        //get cached directory listing
-        List childs = path.list(controller.getEncoding(), //character encoding
-                false, // do not refresh
-                this.controller.getFileFilter(),
-                false); // do not notify observers (important!)
-        this.sort(childs, this.isSortedAscending());
-        return childs;
+        return path.list(false, controller.getEncoding(), false, 
+                this.getComparator(), controller.getFileFilter());
     }
 
     protected CDBrowserController controller;
@@ -61,12 +67,15 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
     private Boolean sortAscending;
 
     protected void setSortedAscending(boolean sortAscending) {
+        //cache custom sorting preference
         this.sortAscending = new Boolean(sortAscending);
+        //set default value
         Preferences.instance().setProperty("browser.sort.ascending", sortAscending);
     }
 
     protected boolean isSortedAscending() {
         if (null == this.sortAscending) {
+            //return default value
             return Preferences.instance().getBoolean("browser.sort.ascending");
         }
         return this.sortAscending.booleanValue();
@@ -76,113 +85,50 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
 
     private void setSelectedColumn(NSTableColumn selectedColumn) {
         this.selectedColumn = selectedColumn;
+        //set default value
         Preferences.instance().setProperty("browser.sort.column", this.selectedColumnIdentifier());
     }
 
     protected String selectedColumnIdentifier() {
         if (null == this.selectedColumn) {
+            //return default value
             return Preferences.instance().getProperty("browser.sort.column");
         }
+        //return previously set custom sorting preference
         return (String) this.selectedColumn.identifier();
     }
 
-    public void sort(List files, final boolean ascending) {
-        final int higher = ascending ? 1 : -1;
-        final int lower = ascending ? -1 : 1;
+    public void sort(List files) {
         if (files != null) {
-            if (this.selectedColumnIdentifier().equals("TYPE")) {
-                Collections.sort(files,
-                        new Comparator() {
-                            public int compare(Object o1, Object o2) {
-                                Path p1 = (Path) o1;
-                                Path p2 = (Path) o2;
-                                if (p1.attributes.isDirectory() && p2.attributes.isDirectory()) {
-                                    return 0;
-                                }
-                                if (p1.attributes.isFile() && p2.attributes.isFile()) {
-                                    return 0;
-                                }
-                                if (p1.attributes.isFile()) {
-                                    return higher;
-                                }
-                                return lower;
-                            }
-                        });
-            }
-            else if (this.selectedColumnIdentifier().equals("FILENAME")) {
-                Collections.sort(files,
-                        new Comparator() {
-                            public int compare(Object o1, Object o2) {
-                                Path p1 = (Path) o1;
-                                Path p2 = (Path) o2;
-                                if (ascending) {
-                                    return p1.getName().compareToIgnoreCase(p2.getName());
-                                }
-                                return -p1.getName().compareToIgnoreCase(p2.getName());
-                            }
-                        });
-            }
-            else if (this.selectedColumnIdentifier().equals("SIZE")) {
-                Collections.sort(files,
-                        new Comparator() {
-                            public int compare(Object o1, Object o2) {
-                                double p1 = ((Path) o1).attributes.getSize();
-                                double p2 = ((Path) o2).attributes.getSize();
-                                if (p1 > p2) {
-                                    return higher;
-                                }
-                                else if (p1 < p2) {
-                                    return lower;
-                                }
-                                return 0;
-                            }
-                        });
-            }
-            else if (this.selectedColumnIdentifier().equals("MODIFIED")) {
-                Collections.sort(files,
-                        new Comparator() {
-                            public int compare(Object o1, Object o2) {
-                                Path p1 = (Path) o1;
-                                Path p2 = (Path) o2;
-                                if (ascending) {
-                                    return p1.attributes.getTimestamp().compareTo(p2.attributes.getTimestamp());
-                                }
-                                return -p1.attributes.getTimestamp().compareTo(p2.attributes.getTimestamp());
-                            }
-                        });
-            }
-            else if (this.selectedColumnIdentifier().equals("OWNER")) {
-                Collections.sort(files,
-                        new Comparator() {
-                            public int compare(Object o1, Object o2) {
-                                Path p1 = (Path) o1;
-                                Path p2 = (Path) o2;
-                                if (ascending) {
-                                    return p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
-                                }
-                                return -p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
-                            }
-                        });
-            }
-            else if (this.selectedColumnIdentifier().equals("PERMISSIONS")) {
-                Collections.sort(files,
-                        new Comparator() {
-                            public int compare(Object o1, Object o2) {
-                                int p1 = Integer.parseInt(((Path) o1).attributes.getPermission().getOctalCode());
-                                int p2 = Integer.parseInt(((Path) o2).attributes.getPermission().getOctalCode());
-                                if (p1 > p2) {
-                                    return higher;
-                                }
-                                else if (p1 < p2) {
-                                    return lower;
-                                }
-                                return 0;
-                            }
-                        });
-            }
+            Collections.sort(files, this.getComparator());
         }
     }
-	
+
+    private Comparator getComparator() {
+        final boolean ascending = this.isSortedAscending();
+        String identifier = this.selectedColumnIdentifier();
+        if (identifier.equals(TYPE_COLUMN)) {
+            return new FileTypeComparator(ascending);
+        }
+        else if (identifier.equals(FILENAME_COLUMN)) {
+            return new FilenameComparator(ascending);
+        }
+        else if (identifier.equals(SIZE_COLUMN)) {
+            return new SizeComparator(ascending);
+        }
+        else if (identifier.equals(MODIFIED_COLUMN)) {
+            return new TimestampComparator(ascending);
+        }
+        else if (identifier.equals(OWNER_COLUMN)) {
+            return new OwnerComparator(ascending);
+        }
+        else if (identifier.equals(PERMISSIONS_COLUMN)) {
+            return new PermissionsComparator(ascending);
+        }
+        log.error("Unknown column identifier:" + identifier);
+        return null;
+    }
+
     // ----------------------------------------------------------
     // TableView/OutlineView Delegate methods
     // ----------------------------------------------------------
@@ -197,11 +143,11 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
     }
 
 
-    public void outlineViewDidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn) {
+    public void outlineViewDidClickTableColumn(NSOutlineView tableView, NSTableColumn tableColumn) {
         this.tableViewDidClickTableColumn(tableView, tableColumn);
     }
 
-    public void tableViewDidClickTableColumn(NSTableView tableView, NSTableColumn tableColumn) {
+    public void tableViewDidClickTableColumn(NSOutlineView tableView, NSTableColumn tableColumn) {
         List selected = controller.getSelectedPaths();
         if (this.selectedColumnIdentifier().equals(tableColumn.identifier())) {
             this.setSortedAscending(!this.isSortedAscending());
@@ -257,5 +203,137 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
 
     public int draggingSourceOperationMaskForLocal(boolean local) {
         return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
+    }
+
+    private static class FileTypeComparator extends BrowserComparator {
+
+        public FileTypeComparator(boolean ascending) {
+            super(ascending);
+        }
+
+        public int compare(Object o1, Object o2) {
+            Path p1 = (Path) o1;
+            Path p2 = (Path) o2;
+            if (p1.attributes.isDirectory() && p2.attributes.isDirectory()) {
+                return 0;
+            }
+            if (p1.attributes.isFile() && p2.attributes.isFile()) {
+                return 0;
+            }
+            if (p1.attributes.isFile()) {
+                return ascending ? 1 : -1;
+            }
+            return ascending ? -1 : 1;
+        }
+
+        public String toString() {
+            return TYPE_COLUMN;
+        }
+    }
+
+    private static class FilenameComparator extends BrowserComparator {
+
+        public FilenameComparator(boolean ascending) {
+            super(ascending);
+        }
+
+        public int compare(Object o1, Object o2) {
+            Path p1 = (Path) o1;
+            Path p2 = (Path) o2;
+            if (ascending) {
+                return p1.getName().compareToIgnoreCase(p2.getName());
+            }
+            return -p1.getName().compareToIgnoreCase(p2.getName());
+        }
+
+        public String toString() {
+            return FILENAME_COLUMN;
+        }
+    }
+
+    private static class SizeComparator extends BrowserComparator {
+
+        public SizeComparator(boolean ascending) {
+            super(ascending);
+        }
+
+        public int compare(Object o1, Object o2) {
+            double p1 = ((Path) o1).attributes.getSize();
+            double p2 = ((Path) o2).attributes.getSize();
+            if (p1 > p2) {
+                return ascending ? 1 : -1;
+            }
+            else if (p1 < p2) {
+                return ascending ? -1 : 1;
+            }
+            return 0;
+        }
+
+        public String toString() {
+            return SIZE_COLUMN;
+        }
+    }
+
+    private static class TimestampComparator extends BrowserComparator {
+
+        public TimestampComparator(boolean ascending) {
+            super(ascending);
+        }
+
+        public int compare(Object o1, Object o2) {
+            Path p1 = (Path) o1;
+            Path p2 = (Path) o2;
+            if (ascending) {
+                return p1.attributes.getTimestamp().compareTo(p2.attributes.getTimestamp());
+            }
+            return -p1.attributes.getTimestamp().compareTo(p2.attributes.getTimestamp());
+        }
+
+        public String toString() {
+            return MODIFIED_COLUMN;
+        }
+    }
+
+    private static class OwnerComparator extends BrowserComparator {
+
+        public OwnerComparator(boolean ascending) {
+            super(ascending);
+        }
+
+        public int compare(Object o1, Object o2) {
+            Path p1 = (Path) o1;
+            Path p2 = (Path) o2;
+            if (ascending) {
+                return p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
+            }
+            return -p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
+        }
+
+        public String toString() {
+            return TYPE_COLUMN;
+        }
+    }
+
+    private static class PermissionsComparator extends BrowserComparator {
+
+        public PermissionsComparator(boolean ascending) {
+            super(ascending);
+        }
+
+        public int compare(Object o1, Object o2) {
+            int p1 = Integer.parseInt(((Path) o1).attributes.getPermission().getOctalCode());
+            int p2 = Integer.parseInt(((Path) o2).attributes.getPermission().getOctalCode());
+            if (p1 > p2) {
+                return ascending ? 1 : -1;
+            }
+            else if (p1 < p2) {
+                return ascending ? -1 : 1;
+            }
+            return 0;
+        }
+
+        public String toString() {
+            return PERMISSIONS_COLUMN;
+        }
     }
 }

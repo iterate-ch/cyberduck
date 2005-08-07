@@ -42,8 +42,8 @@ public class CDGotoController extends CDWindowController {
 	public void awakeFromNib() {
         super.awakeFromNib();
 
-		this.window().setReleasedWhenClosed(true);
-		this.folderCombobox.setStringValue(workdir.getAbsolute());
+        this.window().setReleasedWhenClosed(true);
+		this.folderCombobox.setStringValue(controller.workdir().getAbsolute());
 	}
 
 	private NSComboBox folderCombobox; // IBOutlet
@@ -57,7 +57,7 @@ public class CDGotoController extends CDWindowController {
 			private List directories = new ArrayList();
 			
 			{
-				for(Iterator i = workdir.list(false, new NullFilter(), false).iterator(); i.hasNext(); ) {
+				for(Iterator i = controller.workdir().list(false, controller.getEncoding(), false).iterator(); i.hasNext(); ) {
 					Path p = (Path)i.next();
 					if(p.attributes.isDirectory()) {
 						directories.add(p.getName());
@@ -78,11 +78,11 @@ public class CDGotoController extends CDWindowController {
 		});
 	}
 	
-	private Path workdir;
+    private CDBrowserController controller;
 
-	public CDGotoController(Path workdir) {
+    public CDGotoController(CDBrowserController controller) {
 		instances.addObject(this);
-		this.workdir = workdir;
+        this.controller = controller;
 		if(false == NSApplication.loadNibNamed("Goto", this)) {
 			log.fatal("Couldn't load Goto.nib");
 		}
@@ -118,7 +118,7 @@ public class CDGotoController extends CDWindowController {
 		}
 	}
 	
-	protected Path gotoFolder(Path workdir, String filename) {
+	protected void gotoFolder(Path workdir, String filename) {
 		Path dir = workdir.copy(workdir.getSession());
 		if(filename.charAt(0) != '/') {
 			dir.setPath(workdir.getAbsolute(), filename);
@@ -126,7 +126,6 @@ public class CDGotoController extends CDWindowController {
 		else {
 			dir.setPath(filename);
 		}
-		dir.list(false);
-		return dir;
+		dir.list(false, controller.getEncoding());
 	}
 }

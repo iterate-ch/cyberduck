@@ -108,7 +108,7 @@ public abstract class Session extends Observable {
 	/**
 	 * Connect to the remote host and mount the home directory
 	 */
-	public synchronized void mount(String encoding, Filter filter) {
+	public synchronized void mount(String encoding) {
 		this.log(Message.PROGRESS, NSBundle.localizedString("Mounting", "Status", "")+" "+host.getHostname()+"...");
 		try {
 			this.check();
@@ -122,15 +122,15 @@ public abstract class Session extends Observable {
 					home = PathFactory.createPath(this, host.getDefaultPath());
 					home.attributes.setType(Path.DIRECTORY_TYPE);
 				}
-				if(null == home.list(encoding, true, filter)) {
+				if(null == home.list(true, encoding)) {
 					// the default path does not exist
 					home = workdir();
-					home.list(encoding, true, filter);
+					home.list(true, encoding);
 				}
 			}
 			else {
 				home = workdir();
-				home.list(encoding, true, filter);
+				home.list(true, encoding);
 			}
 			Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl", "Growl Notification"),
 									host.getHostname());

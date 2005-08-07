@@ -46,8 +46,11 @@ public class CDFolderController extends CDWindowController {
 		this.folderField = folderField;
 	}
 
-	public CDFolderController() {
-		instances.addObject(this);
+    private CDBrowserController controller;
+    
+    public CDFolderController(CDBrowserController controller) {
+        this.controller = controller;
+        instances.addObject(this);
 		if(false == NSApplication.loadNibNamed("Folder", this)) {
 			log.fatal("Couldn't load Folder.nib");
 		}
@@ -107,9 +110,9 @@ public class CDFolderController extends CDWindowController {
 		folder.mkdir(false);
 		List l = null;
 		if(filename.charAt(0) == '.')
-			l = workdir.list(true, new NullFilter());
+			l = workdir.list(true, controller.getEncoding());
 		else 
-			l = workdir.list(true, new HiddenFilesFilter());
+			l = workdir.list(true, controller.getEncoding());
 		if(l.contains(folder))
 			return (Path)l.get(l.indexOf(folder));
 		return null;

@@ -66,7 +66,7 @@ public class FTPSSession extends FTPSession {
 
     private AbstractX509TrustManager trustManager;
 
-    public synchronized void connect(String encoding) throws IOException, FTPException {
+    public void connect(String encoding) throws IOException, FTPException {
         this.log(Message.PROGRESS, NSBundle.localizedString("Opening FTP-TLS connection to", "Status", "")+" "+host.getIp()+"...");
         this.setConnected();
         this.log(Message.TRANSCRIPT, "=====================================");

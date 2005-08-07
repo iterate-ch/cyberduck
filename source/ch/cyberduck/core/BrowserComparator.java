@@ -18,11 +18,30 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import java.util.Comparator;
+
 /**
  * @version $Id$
  */
-public class NullFilter implements Filter {
-	public boolean accept(Path file) {
-		return true;
-	}
+public abstract class BrowserComparator implements Comparator {
+
+    protected boolean ascending;
+
+    public BrowserComparator(boolean ascending) {
+        this.ascending = ascending;
+    }
+
+    public boolean isAscending() {
+        return this.ascending;
+    }
+
+    public boolean equals(Object object) {
+        if(object instanceof BrowserComparator) {
+            BrowserComparator other = (BrowserComparator)object;
+            if(other.toString().equals(this.toString())) {
+                return other.isAscending() == this.isAscending();
+            }
+        }
+        return false;
+    }
 }

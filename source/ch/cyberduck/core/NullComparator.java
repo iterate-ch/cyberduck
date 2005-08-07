@@ -18,11 +18,18 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import java.util.Comparator;
+
 /**
  * @version $Id$
  */
-public class NullFilter implements Filter {
-	public boolean accept(Path file) {
-		return true;
+public class NullComparator implements Comparator {
+
+	public int compare(Object x, Object y) {
+		return 0;
 	}
+
+    public boolean equals(Object object) {
+        return object instanceof NullComparator;
+    }
 }

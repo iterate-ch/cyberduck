@@ -32,9 +32,12 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 * @version $Id$
  */
 public class CDCreateFileController extends CDFileController {
-	
-	public CDCreateFileController() {
-		if(false == NSApplication.loadNibNamed("File", this)) {
+
+    private CDBrowserController controller;
+
+    public CDCreateFileController(CDBrowserController controller) {
+        this.controller = controller;
+        if(false == NSApplication.loadNibNamed("File", this)) {
 			log.fatal("Couldn't load File.nib");
 		}
 	}
@@ -85,9 +88,9 @@ public class CDCreateFileController extends CDFileController {
 		}
 		List l = null;
 		if(filename.charAt(0) == '.')
-			l = workdir.list(true, new NullFilter());
+			l = workdir.list(true, controller.getEncoding());
 		else 
-			l = workdir.list(true, new HiddenFilesFilter());
+			l = workdir.list(true, controller.getEncoding());
 		if(l.contains(file))
 			return (Path)l.get(l.indexOf(file));
 		return null;

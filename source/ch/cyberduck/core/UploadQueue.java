@@ -86,7 +86,7 @@ public class UploadQueue extends Queue {
 				if(p.attributes.isDirectory()) {
                     if(!p.getRemote().exists()) {
                         //hack
-                        p.getSession().cache().put(p.getAbsolute(), new ArrayList());
+                        p.getSession().cache().put(p, new ArrayList());
                     }
 					p.attributes.setSize(0);
 					File[] files = p.getLocal().listFiles();

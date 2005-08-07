@@ -26,9 +26,10 @@ import java.util.*;
 public class Cache extends HashMap {
 	
 	private static Map CACHES = new HashMap();
-	
-	public static Cache create(String url) {
-		if(null == (Cache)CACHES.get(url)) {
+
+    //Factory constructor
+    public static Cache create(String url) {
+		if(null == CACHES.get(url)) {
 			CACHES.put(url, new Cache());
 		}
 		return (Cache)CACHES.get(url);
@@ -38,26 +39,116 @@ public class Cache extends HashMap {
 		//private
 	}
 
-    private Set expandedItems = new HashSet();
-
-    public List get(String path) {
-        return (List)super.get(path);
+    private AttributedList get(Path path) {
+        return (AttributedList)super.get(path);
     }
 
-	public void put(String path, List childs) {
-		super.put(path, childs);
+    public AttributedList get(Path path, Comparator comparator, Filter filter) {
+        AttributedList childs = (AttributedList)super.get(path);
+        if(!childs.getAttributes().get(Attributes.COMPARATOR).equals(comparator)) {
+            Collections.sort(childs, comparator);
+            childs.attributes.put(Attributes.COMPARATOR, comparator);
+        }
+        if(!childs.getAttributes().get(Attributes.FILTER).equals(filter)) {
+            childs.addAll((Set)childs.getAttributes().get(Attributes.HIDDEN));
+            ((Set)childs.getAttributes().get(Attributes.HIDDEN)).clear();
+            for(Iterator i = childs.iterator(); i.hasNext(); ) {
+                Path child = (Path)i.next();
+                if(!filter.accept(child)) {
+                    childs.attributes.addHidden(child);
+                    i.remove();
+                }
+            }
+            childs.attributes.put(Attributes.FILTER, filter);
+        }
+        return childs;
+    }
+
+    public Object put(Path path, List childs) {
+		return super.put(path, new AttributedList(childs));
 	}
 
-    public void setExpanded(String path, boolean expanded) {
-        if(expanded) {
-            this.expandedItems.add(path);
-		}
-        else {
-            this.expandedItems.remove(path);
-		}
+    /**
+     *
+     * @param path ch.cyberduck.core.Path
+     * @param childs java.util.List
+     */
+    public Object put(Object path, Object childs) {
+        return this.put((Path)path, (List)childs);
     }
 
-    public boolean isExpanded(String path) {
-        return this.expandedItems.contains(path);
+    protected class AttributedList extends ArrayList {
+
+        private Attributes attributes;
+
+        public AttributedList(List List) {
+            super(List);
+            this.attributes = new Attributes();
+        }
+
+        public AttributedList(List List, Attributes attributes) {
+            super(List);
+            this.attributes = attributes;
+        }
+
+        public Attributes getAttributes() {
+            return this.attributes;
+        }
+    }
+
+    protected class Attributes extends HashMap {
+        //primary attributes
+        protected static final String FILTER = "FILTER";
+        protected static final String COMPARATOR = "COMPARATOR";
+
+        protected static final String EXPANDED = "EXPANDED";
+        protected static final String HIDDEN = "HIDDEN";
+
+        /**
+         * Initialize with default values
+         */
+        public Attributes() {
+            this.put(FILTER, new NullFilter());
+            this.put(COMPARATOR, new NullComparator());
+            this.put(HIDDEN, new HashSet());
+            this.put(EXPANDED, new Boolean(false));
+        }
+
+        public Attributes(Comparator comparator, Filter filter) {
+            this.put(COMPARATOR, comparator);
+            this.put(FILTER, filter);
+            this.put(HIDDEN, new HashSet());
+            this.put(EXPANDED, new Boolean(false));
+        }
+
+        public void setExpanded(boolean expanded) {
+            this.put(Attributes.EXPANDED, new Boolean(expanded));
+        }
+
+        public boolean isExpanded() {
+            return this.get(Attributes.EXPANDED).equals(Boolean.TRUE);
+        }
+
+        public void addHidden(Path child) {
+            ((Set)this.get(HIDDEN)).add(child);
+        }
+
+    }
+
+    public void setExpanded(Path path, boolean expanded) {
+        if(path.attributes.isDirectory()) {
+            if(this.containsKey(path)) {
+                this.get(path).attributes.setExpanded(expanded);
+            }
+        }
+    }
+
+    public boolean isExpanded(Path path) {
+        if(path.attributes.isDirectory()) {
+            if(this.containsKey(path)) {
+                return this.get(path).attributes.isExpanded();
+            }
+        }
+        return false;
     }
 }

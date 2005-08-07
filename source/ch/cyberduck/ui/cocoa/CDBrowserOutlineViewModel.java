@@ -58,12 +58,12 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
 
     public void outlineViewItemDidExpand(NSNotification notification) {
         Path p = (Path) notification.userInfo().allValues().lastObject();
-        p.getSession().cache().setExpanded(p.getAbsolute(), true);
+        p.getSession().cache().setExpanded(p, true);
     }
 
     public void outlineViewItemDidCollapse(NSNotification notification) {
         Path p = (Path) notification.userInfo().allValues().lastObject();
-        p.getSession().cache().setExpanded(p.getAbsolute(), false);
+        p.getSession().cache().setExpanded(p, true);
     }
 
     public boolean outlineViewShouldEditTableColumn(NSOutlineView outlineView,
@@ -188,7 +188,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
      * @param info
      * @param item  The proposed parent
      * @param row  The proposed child location.
-     * @return
      */
     public int outlineViewValidateDrop(NSOutlineView outlineView, NSDraggingInfo info, Path item, int row) {
         if (controller.isMounted()) {

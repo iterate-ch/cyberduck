@@ -23,10 +23,7 @@ import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSBundle;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
@@ -115,352 +112,326 @@ public class FTPPath extends Path {
         return this.session;
     }
 
-    public List list(String encoding, boolean refresh, Filter filter, boolean notifyObservers) {
-        synchronized (session) {
-            if (notifyObservers) {
-                session.addPathToHistory(this);
-            }
-            if (refresh || session.cache().get(this.getAbsolute()) == null) {
-                List files = new ArrayList();
-                session.log(Message.PROGRESS, NSBundle.localizedString("Listing directory", "Status", "")+" "+this.getAbsolute());
-                try {
-                    session.check();
-                    session.FTP.setTransferType(FTPTransferType.ASCII);
-                    session.FTP.chdir(this.getAbsolute());
-                    String[] lines = session.FTP.dir(encoding);
-                    for (int i = 0; i < lines.length; i++) {
-                        Path p = session.parser.parseFTPEntry(this, lines[i]);
-                        if (p != null) {
-                            files.add(p);
-                        }
-                    }
-                    session.cache().put(this.getAbsolute(), files);
-                    session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
-                }
-                catch (FTPException e) {
-                    session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-                    return null;
-                }
-                catch (IOException e) {
-                    session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-                    session.close();
-                    return null;
-                }
-            }
-            if (notifyObservers) {
-                session.callObservers(this);
-            }
-            List files = new ArrayList(session.cache().get(this.getAbsolute()));
-			for(Iterator i = files.iterator(); i.hasNext(); ) {
-				if(!filter.accept((Path)i.next())) {
-					i.remove();
-				}
-			}
-            return files;
+    public List list(boolean refresh, String encoding, boolean notifyObservers, Comparator comparator, Filter filter) {
+        if (notifyObservers) {
+            session.addPathToHistory(this);
         }
-    }
-
-    public void cwdir() throws IOException {
-        synchronized (session) {
-            session.check();
-            session.FTP.chdir(this.getAbsolute());
-        }
-    }
-
-    public void mkdir(boolean recursive) {
-        synchronized (session) {
-            log.debug("mkdir:" + this.getName());
+        if (refresh || session.cache().get(this, comparator, filter) == null) {
+            List files = new ArrayList();
+            session.log(Message.PROGRESS, NSBundle.localizedString("Listing directory", "Status", "")+" "+this.getAbsolute());
             try {
-                if (recursive) {
-                    if (!this.getParent().exists()) {
-                        this.getParent().mkdir(recursive);
+                session.check();
+                session.FTP.setTransferType(FTPTransferType.ASCII);
+                session.FTP.chdir(this.getAbsolute());
+                String[] lines = session.FTP.dir(encoding);
+                for (int i = 0; i < lines.length; i++) {
+                    Path p = session.parser.parseFTPEntry(this, lines[i]);
+                    if (p != null) {
+                        files.add(p);
                     }
                 }
-                session.check();
-                session.log(Message.PROGRESS, NSBundle.localizedString("Make directory", "Status", "")+" "+this.getName());
-                session.FTP.mkdir(this.getAbsolute());
-                session.cache().put(this.getAbsolute(), new ArrayList());
-                this.getParent().invalidate();
+                session.cache().put(this, files);
                 session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
             }
             catch (FTPException e) {
                 session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+                return null;
             }
             catch (IOException e) {
                 session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
                 session.close();
+                return null;
             }
+        }
+        if (notifyObservers) {
+            session.callObservers(this);
+        }
+        return session.cache().get(this, comparator, filter);
+    }
+
+    public void cwdir() throws IOException {
+        session.check();
+        session.FTP.chdir(this.getAbsolute());
+    }
+
+    public void mkdir(boolean recursive) {
+        log.debug("mkdir:" + this.getName());
+        try {
+            if (recursive) {
+                if (!this.getParent().exists()) {
+                    this.getParent().mkdir(recursive);
+                }
+            }
+            session.check();
+            session.log(Message.PROGRESS, NSBundle.localizedString("Make directory", "Status", "")+" "+this.getName());
+            session.FTP.mkdir(this.getAbsolute());
+            session.cache().put(this, new ArrayList());
+            this.getParent().invalidate();
+            session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
+        }
+        catch (FTPException e) {
+            session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+        }
+        catch (IOException e) {
+            session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+            session.close();
         }
     }
 
     public void rename(String filename) {
-        synchronized (session) {
-            log.debug("rename:" + filename);
-            try {
-                session.check();
-                session.log(Message.PROGRESS, "Renaming " + this.getName() + " to " + filename); //todo localize
-                session.FTP.rename(this.getAbsolute(), filename);
-                this.getParent().invalidate();
-                this.setPath(filename);
-                this.getParent().invalidate();
-                session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
-            }
-            catch (FTPException e) {
-                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-            }
-            catch (IOException e) {
-                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-                session.close();
-            }
+        log.debug("rename:" + filename);
+        try {
+            session.check();
+            session.log(Message.PROGRESS, "Renaming " + this.getName() + " to " + filename); //todo localize
+            session.FTP.rename(this.getAbsolute(), filename);
+            this.getParent().invalidate();
+            this.setPath(filename);
+            this.getParent().invalidate();
+            session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
+        }
+        catch (FTPException e) {
+            session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+        }
+        catch (IOException e) {
+            session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+            session.close();
         }
     }
 
     public void reset() {
-        synchronized (session) {
-            if (this.attributes.isFile() && this.attributes.isUndefined()) {
-                if (this.exists()) {
-                    try {
-                        session.check();
-                        session.log(Message.PROGRESS, NSBundle.localizedString("Getting timestamp of", "Status", "")+" "+this.getName());
-                        this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()));
-                        if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
-                            if(this.isASCIIType()) {
-                                session.FTP.setTransferType(FTPTransferType.ASCII);
-                            }
-                            else {
-                                session.FTP.setTransferType(FTPTransferType.BINARY);
-                            }
-                        }
-                        else if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
-                            session.FTP.setTransferType(FTPTransferType.BINARY);
-                        }
-                        else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+        if (this.attributes.isFile() && this.attributes.isUndefined()) {
+            if (this.exists()) {
+                try {
+                    session.check();
+                    session.log(Message.PROGRESS, NSBundle.localizedString("Getting timestamp of", "Status", "")+" "+this.getName());
+                    this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()));
+                    if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+                        if(this.isASCIIType()) {
                             session.FTP.setTransferType(FTPTransferType.ASCII);
                         }
                         else {
-                            throw new FTPException("Transfer type not set");
+                            session.FTP.setTransferType(FTPTransferType.BINARY);
                         }
-                        session.log(Message.PROGRESS, NSBundle.localizedString("Getting size of", "Status", "")+" "+this.getName());
-                        this.attributes.setSize(session.FTP.size(this.getAbsolute()));
                     }
-                    catch (FTPException e) {
-                        log.error(e.getMessage());
-                        //ignore
+                    else if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+                        session.FTP.setTransferType(FTPTransferType.BINARY);
                     }
-                    catch (IOException e) {
-						session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-                        session.close();
+                    else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+                        session.FTP.setTransferType(FTPTransferType.ASCII);
                     }
+                    else {
+                        throw new FTPException("Transfer type not set");
+                    }
+                    session.log(Message.PROGRESS, NSBundle.localizedString("Getting size of", "Status", "")+" "+this.getName());
+                    this.attributes.setSize(session.FTP.size(this.getAbsolute()));
+                }
+                catch (FTPException e) {
+                    log.error(e.getMessage());
+                    //ignore
+                }
+                catch (IOException e) {
+                    session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+                    session.close();
                 }
             }
         }
     }
 
     public void delete() {
-        synchronized (session) {
-            log.debug("delete:" + this.toString());
-            try {
-                if (this.attributes.isFile()) {
-                    session.check();
-                    session.FTP.chdir(this.getParent().getAbsolute());
+        log.debug("delete:" + this.toString());
+        try {
+            if (this.attributes.isFile()) {
+                session.check();
+                session.FTP.chdir(this.getParent().getAbsolute());
+                session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "Status", "")+" "+this.getName());
+                session.FTP.delete(this.getName());
+            }
+            else if (this.attributes.isDirectory()) {
+                List files = this.list(true, false);
+                if(files != null) {
+                    java.util.Iterator iterator = files.iterator();
+                    Path file = null;
+                    while (iterator.hasNext()) {
+                        file = (Path) iterator.next();
+                        if (file.attributes.isFile()) {
+                            session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "Status", "")+" "+this.getName());
+                            session.FTP.delete(file.getName());
+                        }
+                        if (file.attributes.isDirectory()) {
+                            file.delete();
+                        }
+                    }
+                    session.FTP.cdup();
                     session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "Status", "")+" "+this.getName());
-                    session.FTP.delete(this.getName());
+                    session.FTP.rmdir(this.getName());
                 }
-                else if (this.attributes.isDirectory()) {
-                    List files = this.list(true, new NullFilter(), false);
-					if(files != null) {
-						java.util.Iterator iterator = files.iterator();
-						Path file = null;
-						while (iterator.hasNext()) {
-							file = (Path) iterator.next();
-							if (file.attributes.isFile()) {
-								session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "Status", "")+" "+this.getName());
-								session.FTP.delete(file.getName());
-							}
-							if (file.attributes.isDirectory()) {
-								file.delete();
-							}
-						}
-						session.FTP.cdup();
-						session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "Status", "")+" "+this.getName());
-						session.FTP.rmdir(this.getName());
-					}
-                }
-                this.getParent().invalidate();
-                session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
             }
-            catch (FTPException e) {
-                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-            }
-            catch (IOException e) {
-                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-                session.close();
-            }
+            this.getParent().invalidate();
+            session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
+        }
+        catch (FTPException e) {
+            session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+        }
+        catch (IOException e) {
+            session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+            session.close();
         }
     }
 
     public void changeOwner(String owner, boolean recursive) {
-        synchronized (session) {
-            String command = "chown";
-            try {
-                session.check();
-                if (this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-                    session.log(Message.PROGRESS, "Changing owner to " + this.attributes.getOwner() + " on " + this.getName()); //todo localize
-                    session.FTP.site(command + " " + owner + " " + this.getAbsolute());
-                }
-                else if (this.attributes.isDirectory()) {
-                    session.log(Message.PROGRESS, "Changing owner to " + this.attributes.getOwner() + " on " + this.getName()); //todo localize
-                    session.FTP.site(command + " " + owner + " " + this.getAbsolute());
-                    if (recursive) {
-                        List files = this.list(false, new NullFilter(), false);
-                        java.util.Iterator iterator = files.iterator();
-                        Path file = null;
-                        while (iterator.hasNext()) {
-                            file = (Path) iterator.next();
-                            file.changeOwner(owner, recursive);
-                        }
+        String command = "chown";
+        try {
+            session.check();
+            if (this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
+                session.log(Message.PROGRESS, "Changing owner to " + this.attributes.getOwner() + " on " + this.getName()); //todo localize
+                session.FTP.site(command + " " + owner + " " + this.getAbsolute());
+            }
+            else if (this.attributes.isDirectory()) {
+                session.log(Message.PROGRESS, "Changing owner to " + this.attributes.getOwner() + " on " + this.getName()); //todo localize
+                session.FTP.site(command + " " + owner + " " + this.getAbsolute());
+                if (recursive) {
+                    List files = this.list(false, false);
+                    java.util.Iterator iterator = files.iterator();
+                    Path file = null;
+                    while (iterator.hasNext()) {
+                        file = (Path) iterator.next();
+                        file.changeOwner(owner, recursive);
                     }
                 }
-                this.getParent().invalidate();
-                session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
             }
-            catch (FTPException e) {
-                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-            }
-            catch (IOException e) {
-                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-                session.close();
-            }
+            this.getParent().invalidate();
+            session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
+        }
+        catch (FTPException e) {
+            session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+        }
+        catch (IOException e) {
+            session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+            session.close();
         }
     }
 
     public void changeGroup(String group, boolean recursive) {
-        synchronized (session) {
-            String command = "chgrp";
-            try {
-                session.check();
-                if (this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-                    session.log(Message.PROGRESS, "Changing group to " + this.attributes.getGroup() + " on " + this.getName()); //todo localize
-                    session.FTP.site(command + " " + group + " " + this.getAbsolute());
-                }
-                else if (this.attributes.isDirectory()) {
-                    session.log(Message.PROGRESS, "Changing group to " + this.attributes.getGroup() + " on " + this.getName()); //todo localize
-                    session.FTP.site(command + " " + group + " " + this.getAbsolute());
-                    if (recursive) {
-                        List files = this.list(false, new NullFilter(), false);
-                        java.util.Iterator iterator = files.iterator();
-                        Path file = null;
-                        while (iterator.hasNext()) {
-                            file = (Path) iterator.next();
-                            file.changeGroup(group, recursive);
-                        }
+        String command = "chgrp";
+        try {
+            session.check();
+            if (this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
+                session.log(Message.PROGRESS, "Changing group to " + this.attributes.getGroup() + " on " + this.getName()); //todo localize
+                session.FTP.site(command + " " + group + " " + this.getAbsolute());
+            }
+            else if (this.attributes.isDirectory()) {
+                session.log(Message.PROGRESS, "Changing group to " + this.attributes.getGroup() + " on " + this.getName()); //todo localize
+                session.FTP.site(command + " " + group + " " + this.getAbsolute());
+                if (recursive) {
+                    List files = this.list(false, false);
+                    java.util.Iterator iterator = files.iterator();
+                    Path file = null;
+                    while (iterator.hasNext()) {
+                        file = (Path) iterator.next();
+                        file.changeGroup(group, recursive);
                     }
                 }
-                this.getParent().invalidate();
-                session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
             }
-            catch (FTPException e) {
-                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-            }
-            catch (IOException e) {
-                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-                session.close();
-            }
+            this.getParent().invalidate();
+            session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
+        }
+        catch (FTPException e) {
+            session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+        }
+        catch (IOException e) {
+            session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+            session.close();
         }
     }
 
     public void changePermissions(Permission perm, boolean recursive) {
-        synchronized (session) {
-            log.debug("changePermissions:" + perm);
-            String command = "chmod";
-            try {
-                session.check();
-                if (this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-                    session.log(Message.PROGRESS, "Changing permission to " + perm.getOctalCode() + " on " + this.getName()); //todo localize
-                    session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getAbsolute());
-                }
-                else if (this.attributes.isDirectory()) {
-                    session.log(Message.PROGRESS, "Changing permission to " + perm.getOctalCode() + " on " + this.getName()); //todo localize
-                    session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getAbsolute());
-                    if (recursive) {
-                        List files = this.list(false, new NullFilter(), false);
-                        java.util.Iterator iterator = files.iterator();
-                        Path file = null;
-                        while (iterator.hasNext()) {
-                            file = (Path) iterator.next();
-                            file.changePermissions(perm, recursive);
-                        }
+        log.debug("changePermissions:" + perm);
+        String command = "chmod";
+        try {
+            session.check();
+            if (this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
+                session.log(Message.PROGRESS, "Changing permission to " + perm.getOctalCode() + " on " + this.getName()); //todo localize
+                session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getAbsolute());
+            }
+            else if (this.attributes.isDirectory()) {
+                session.log(Message.PROGRESS, "Changing permission to " + perm.getOctalCode() + " on " + this.getName()); //todo localize
+                session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getAbsolute());
+                if (recursive) {
+                    List files = this.list(false, false);
+                    java.util.Iterator iterator = files.iterator();
+                    Path file = null;
+                    while (iterator.hasNext()) {
+                        file = (Path) iterator.next();
+                        file.changePermissions(perm, recursive);
                     }
                 }
-                this.getParent().invalidate();
-                session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
             }
-            catch (FTPException e) {
-                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-            }
-            catch (IOException e) {
-                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-                session.close();
-            }
+            this.getParent().invalidate();
+            session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
+        }
+        catch (FTPException e) {
+            session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+        }
+        catch (IOException e) {
+            session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+            session.close();
         }
     }
 
     public void download() {
-        synchronized (session) {
-            log.debug("download:" + this.toString());
-            try {
-                if (this.attributes.isFile()) {
-                    session.check();
-                    if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
-                        if(this.isASCIIType()) {
-                            this.downloadASCII();
-                        }
-                        else {
-                            this.downloadBinary();
-                        }
-                    }
-                    else if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
-                        this.downloadBinary();
-                    }
-                    else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+        log.debug("download:" + this.toString());
+        try {
+            if (this.attributes.isFile()) {
+                session.check();
+                if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+                    if(this.isASCIIType()) {
                         this.downloadASCII();
                     }
                     else {
-                        throw new FTPException("Transfer mode not set");
+                        this.downloadBinary();
                     }
-                    if (this.status.isComplete()) {
-                        if (Preferences.instance().getBoolean("queue.download.changePermissions")) {
-                            log.info("Updating permissions");
-                            Permission perm = null;
-                            if (Preferences.instance().getBoolean("queue.download.permissions.useDefault")) {
-                                perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
-                            }
-                            else {
-                                perm = this.attributes.getPermission();
-                            }
-                            if (!perm.isUndefined()) {
-                                this.getLocal().setPermission(perm);
-                            }
+                }
+                else if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+                    this.downloadBinary();
+                }
+                else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+                    this.downloadASCII();
+                }
+                else {
+                    throw new FTPException("Transfer mode not set");
+                }
+                if (this.status.isComplete()) {
+                    if (Preferences.instance().getBoolean("queue.download.changePermissions")) {
+                        log.info("Updating permissions");
+                        Permission perm = null;
+                        if (Preferences.instance().getBoolean("queue.download.permissions.useDefault")) {
+                            perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
                         }
-                    }
-                    if (Preferences.instance().getBoolean("queue.download.preserveDate")) {
-                        if (!this.attributes.isUndefined()) {
-                            this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
+                        else {
+                            perm = this.attributes.getPermission();
+                        }
+                        if (!perm.isUndefined()) {
+                            this.getLocal().setPermission(perm);
                         }
                     }
                 }
-                if (this.attributes.isDirectory()) {
-                    this.getLocal().mkdirs();
+                if (Preferences.instance().getBoolean("queue.download.preserveDate")) {
+                    if (!this.attributes.isUndefined()) {
+                        this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
+                    }
                 }
-                session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
             }
-            catch (FTPException e) {
-                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": ("+this.getName()+") "+e.getMessage());
+            if (this.attributes.isDirectory()) {
+                this.getLocal().mkdirs();
             }
-            catch (IOException e) {
-                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
-                session.close();
-            }
+            session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
+        }
+        catch (FTPException e) {
+            session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": ("+this.getName()+") "+e.getMessage());
+        }
+        catch (IOException e) {
+            session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": " + e.getMessage());
+            session.close();
         }
     }
 
@@ -602,75 +573,73 @@ public class FTPPath extends Path {
     }
 
     public void upload() {
-        synchronized (session) {
-            log.debug("upload:" + this.toString());
-            try {
-                if (this.attributes.isFile()) {
-                    session.check();
-                    this.attributes.setSize(this.getLocal().getSize());
-                    if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
-                        if(this.isASCIIType()) {
-                            this.uploadASCII();
-                        }
-                        else {
-                            this.uploadBinary();
-                        }
-                    }
-                    else if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
-                        this.uploadBinary();
-                    }
-                    else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+        log.debug("upload:" + this.toString());
+        try {
+            if (this.attributes.isFile()) {
+                session.check();
+                this.attributes.setSize(this.getLocal().getSize());
+                if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+                    if(this.isASCIIType()) {
                         this.uploadASCII();
                     }
                     else {
-                        throw new FTPException("Transfer mode not set");
+                        this.uploadBinary();
                     }
-                    if (Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        try {
-                            if (Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                                Permission perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
+                }
+                else if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+                    this.uploadBinary();
+                }
+                else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+                    this.uploadASCII();
+                }
+                else {
+                    throw new FTPException("Transfer mode not set");
+                }
+                if (Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                    try {
+                        if (Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                            Permission perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
+                            session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
+                        }
+                        else {
+                            Permission perm = this.getLocal().getPermission();
+                            if (!perm.isUndefined()) {
                                 session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
                             }
-                            else {
-                                Permission perm = this.getLocal().getPermission();
-                                if (!perm.isUndefined()) {
-                                    session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
-                                }
-                            }
-                        }
-                        catch (FTPException e) {
-                            log.warn(e.getMessage());
                         }
                     }
-                    if (Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                        try {
-                            session.FTP.setmodtime(this.getLocal().getTimestamp(), this.getAbsolute());
-                        }
-                        catch (FTPException e) {
-                            log.warn(e.getMessage());
-                            if(Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
-                                if(!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
-                                    this.getLocal().setLastModified(session.FTP.modtime(this.getAbsolute()).getTime());
-                                }
+                    catch (FTPException e) {
+                        log.warn(e.getMessage());
+                    }
+                }
+                if (Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                    try {
+                        session.FTP.setmodtime(this.getLocal().getTimestamp(), this.getAbsolute());
+                    }
+                    catch (FTPException e) {
+                        log.warn(e.getMessage());
+                        if(Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
+                            if(!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
+                                this.getLocal().setLastModified(session.FTP.modtime(this.getAbsolute()).getTime());
                             }
                         }
                     }
                 }
-                if (this.attributes.isDirectory()) {
-                    if(!this.isRoot()) {
-                        this.mkdir();
-                    }
+            }
+            if (this.attributes.isDirectory()) {
+                if(!this.isRoot()) {
+                    this.mkdir();
                 }
-                this.getParent().invalidate();
-                session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
             }
-            catch (FTPException e) {
-                session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": ("+this.getName()+") "+e.getMessage());
-            }
-            catch (IOException e) {
-                session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-                session.close();
-            }
+            this.getParent().invalidate();
+            session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
+        }
+        catch (FTPException e) {
+            session.log(Message.ERROR, "FTP "+NSBundle.localizedString("Error", "")+": ("+this.getName()+") "+e.getMessage());
+        }
+        catch (IOException e) {
+            session.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+            session.close();
         }
     }
 

@@ -207,7 +207,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
                             Path p = PathFactory.createPath(selected.getSession(), ((Path) iter.next()).getAbsolute());
 							p.rename(selected.getAbsolute()+"/"+p.getName());
                         }
-                        this.controller.workdir().list(this.controller.getEncoding(), true, this.controller.getFileFilter());
+                        this.controller.workdir().list(true, this.controller.getEncoding());
                     }
                 }
 				return true;

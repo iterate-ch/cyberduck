@@ -26,6 +26,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Comparator;
 
 import org.apache.log4j.Logger;
 
@@ -188,39 +189,43 @@ public abstract class Path {
 		return this.getSession().getHost();
 	}
 
+    /**
+     * @throws NullPointerException if session is not initialized
+     */
 	public void invalidate() {
-		this.getSession().cache().remove(this.getAbsolute());
+		this.getSession().cache().remove(this);
     }
 
-    public List list(boolean refresh) {
-        return this.list(refresh, new NullFilter());
+    public List list(boolean reload) {
+		return this.list(reload, Preferences.instance().getProperty("browser.charset.encoding"));
+	}
+
+    public List list(boolean reload, String encoding) {
+		return this.list(reload, encoding, true);
+	}
+
+	public List list(boolean reload, boolean notifyObservers) {
+		return this.list(reload, Preferences.instance().getProperty("browser.charset.encoding"),
+                notifyObservers);
+	}
+
+	public List list(boolean reload, String encoding, boolean notifyObservers) {
+        return this.list(reload, encoding, notifyObservers, new NullComparator(), new NullFilter());
     }
-
-    public List list(boolean refresh, Filter filter) {
-		return this.list(Preferences.instance().getProperty("browser.charset.encoding"),
-                refresh,
-                filter);
-	}
-
-	public List list(boolean refresh, Filter filter, boolean notifyObservers) {
-		return this.list(Preferences.instance().getProperty("browser.charset.encoding"), refresh, filter, notifyObservers);
-	}
-
-	/**
-	 * Request a file listing from the server. Has to be a directory.
-	 */
-	public List list(String encoding, boolean refresh, Filter filter) {
-		return this.list(encoding, refresh, filter, true);
-	}
 
     /**
-     * @return null if there is an error, otherewise a list with 0-n <code>Path</code> references
+     * Request a file listing from the server. Has to be a directory.
+     * @param reload Discard any cached entries
+     * @param encoding The character encoding to decode the filenames with
+     * @param notifyObservers call all observers afterwards
+     * @param comparator The comparator to sort the listing with
+     * @param filter The filter to exlude certain files
+     * @return null if there is an error, otherwise a list with 0-n <code>Path</code> references
      */
-	public abstract List list(String encoding, boolean refresh, Filter filter, boolean notifyObservers);
+    public abstract List list(boolean reload, String encoding, boolean notifyObservers, Comparator comparator, Filter filter);
 
-	/**
-	 * Remove this file from the remote host. Does not affect
-	 * any corresponding local file
+    /**
+	 * Remove this file from the remote host. Does not affect any corresponding local file
 	 */
 	public abstract void delete();
 
@@ -240,7 +245,7 @@ public abstract class Path {
 	public abstract void mkdir(boolean recursive);
 
 	/**
-	 * @param newFilename Should be an absolute path
+	 * @param newFilename Must be an absolute path
 	 */
 	public abstract void rename(String newFilename);
 
@@ -442,8 +447,7 @@ public abstract class Path {
         if(this.isRoot()) {
             return true;
         }
-		List listing = this.getParent().list(Preferences.instance().getProperty("browser.charset.encoding"),
-										 false, new NullFilter(), false);
+		List listing = this.getParent().list(false, Preferences.instance().getProperty("browser.charset.encoding"), false);
 		if(null == listing)
 			return false;
 		return listing.contains(this);

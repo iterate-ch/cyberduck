@@ -37,12 +37,12 @@ public class CDDuplicateFileController extends CDFileController {
 	public void setIconView(NSImageView iconView) {
 		this.iconView = iconView;
 	}
-	
-	private Path file;
-	
-	public CDDuplicateFileController(Path file) {
-		this.file = file;
-		if(false == NSApplication.loadNibNamed("Duplicate", this)) {
+
+    private CDBrowserController controller;
+
+    public CDDuplicateFileController(CDBrowserController controller) {
+        this.controller = controller;
+        if(false == NSApplication.loadNibNamed("Duplicate", this)) {
 			log.fatal("Couldn't load Duplicate.nib");
 		}
 	}
@@ -50,11 +50,11 @@ public class CDDuplicateFileController extends CDFileController {
 	public void awakeFromNib() {
         super.awakeFromNib();
 
-		NSImage icon = NSWorkspace.sharedWorkspace().iconForFileType(this.file.getExtension());
+		NSImage icon = NSWorkspace.sharedWorkspace().iconForFileType(controller.getSelectedPath().getExtension());
         icon.setScalesWhenResized(true);
 		icon.setSize(new NSSize(64f, 64f));
 		this.iconView.setImage(icon);
-		this.filenameField.setStringValue(this.file.getName()+"-Copy");
+		this.filenameField.setStringValue(controller.getSelectedPath().getName()+"-Copy");
 		this.window().setReleasedWhenClosed(true);
 	}
 	
@@ -81,15 +81,15 @@ public class CDDuplicateFileController extends CDFileController {
 		Path p = PathFactory.createPath(workdir.getSession(), 
 										workdir.getAbsolute(), 
 										new Local(NSPathUtilities.temporaryDirectory(), 
-												  this.file.getName()));
+												  controller.getSelectedPath().getName()));
 		p.download();
 		p.setPath(workdir.getAbsolute(), filename);
 		p.upload();
 		List l = null;
 		if(filename.charAt(0) == '.')
-			l = workdir.list(true, new NullFilter());
+			l = workdir.list(true, controller.getEncoding());
 		else 
-			l = workdir.list(true, new HiddenFilesFilter());
+			l = workdir.list(true, controller.getEncoding());
 		if(l.contains(p))
 			return (Path)l.get(l.indexOf(p));
 		return null;

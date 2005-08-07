@@ -23,8 +23,10 @@ import com.sshtools.j2ssh.SshEventAdapter;
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.authentication.*;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
-import com.sshtools.j2ssh.connection.ChannelEventAdapter;
 import com.sshtools.j2ssh.connection.Channel;
+import com.sshtools.j2ssh.connection.ChannelEventAdapter;
+import com.sshtools.j2ssh.io.IOStreamConnector;
+import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
 import com.sshtools.j2ssh.transport.TransportProtocol;
@@ -34,6 +36,8 @@ import com.apple.cocoa.foundation.NSAutoreleasePool;
 import com.apple.cocoa.foundation.NSBundle;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.ByteArrayInputStream;
 
 import org.apache.log4j.Logger;
 
@@ -68,7 +72,7 @@ public class SFTPSession extends Session {
         return true;
     }
 
-	public synchronized void close() {
+	public void close() {
 		try {
 			if(this.SFTP != null) {
 				this.log(Message.PROGRESS, NSBundle.localizedString("Disconnecting...", "Status", ""));
@@ -109,8 +113,88 @@ public class SFTPSession extends Session {
 		}
 	}
 
-    public synchronized void sendCommand(String command) {
+    private SessionChannelClient channel;
 
+    public void sendCommand(String command) { //todo shell support
+        try {
+            if(null == channel) {
+                channel = this.SSH.openSessionChannel();
+                if(!channel.requestPseudoTerminal("vt100", 80, 24, 0, 0, "")) {
+                    throw new SshException("Failed to allocate a pseudo terminal");
+                }
+                if(!channel.startShell()) {
+                    throw new SshException("Failed to start the login shell");
+                }
+                IOStreamConnector output = new IOStreamConnector();
+                output.setCloseOutput(false);
+                IOStreamConnector error = new IOStreamConnector();
+                error.setCloseOutput(false);
+
+                output.connect(channel.getInputStream(), new OutputStream() {
+                    public void write(int b) throws IOException {
+                        byte[] data = new byte[1];
+                        data[0] = (byte)b;
+                        log(Message.TRANSCRIPT,
+                                new String(data, Preferences.instance().getProperty("browser.charset.encoding")));
+                    }
+                });
+//                error.connect(channel.getStderrInputStream(), out);
+
+//                new Thread() {
+//                    public void run() {
+//                        try {
+//                            while (!(channel.getState().getValue() == ChannelState.CHANNEL_CLOSED)) {
+//                                byte[] buffer = new byte[1024];
+//                                int bytesRead = channel.getInputStream().read(buffer);
+//                                if (-1 == bytesRead) {
+//                                    break;
+//                                }
+//                                log(Message.TRANSCRIPT,
+//                                        new String(buffer, Preferences.instance().getProperty("browser.charset.encoding")));
+//                            }
+//                        }
+//                        catch(IOException e) {
+//                            log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+//                        }
+//                    }
+//                }.start();
+//
+//                new Thread() {
+//                    public void run() {
+//                        try {
+//                            while (!(channel.getState().getValue() == ChannelState.CHANNEL_CLOSED)) {
+//                                byte[] buffer = new byte[1024];
+//                                int bytesRead = channel.getStderrInputStream().read(buffer);
+//                                if (-1 == bytesRead) {
+//                                    break;
+//                                }
+//                                log(Message.TRANSCRIPT,
+//                                        new String(buffer, Preferences.instance().getProperty("browser.charset.encoding")));
+//                            }
+//                        }
+//                        catch(IOException e) {
+//                            log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+//                        }
+//                    }
+//                }.start();
+            }
+
+            IOStreamConnector input = new IOStreamConnector();
+            input.setCloseInput(true);
+            input.connect(new ByteArrayInputStream(command.getBytes()),
+                    channel.getOutputStream());
+
+//            channel.getOutputStream().write(command.getBytes(), 0, command.getBytes().length);
+//            input.close();
+//            output.close();
+//            error.close();
+        }
+        catch(SshException e) {
+            log.error("SSH Error: "+e.getMessage());
+        }
+        catch(IOException e) {
+            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
+        }
     }
 
 	private HostKeyVerification hostKeyVerification;
@@ -123,7 +207,7 @@ public class SFTPSession extends Session {
 		return this.hostKeyVerification;
 	}
 		
-	public synchronized void connect(String encoding) throws IOException {
+	public void connect(String encoding) throws IOException {
 		this.log(Message.PROGRESS, NSBundle.localizedString("Opening SSH connection to", "Status", "")+" "+host.getIp()+"...");
 		this.setConnected();
 		this.log(Message.TRANSCRIPT, "=====================================");
@@ -252,7 +336,7 @@ public class SFTPSession extends Session {
 		return SSH.authenticate(pk);
 	}
 
-	private synchronized void login() throws IOException {
+	private void login() throws IOException {
 		log.debug("login");
 		Login credentials = host.getCredentials();
 		if(credentials.check()) {
@@ -285,7 +369,7 @@ public class SFTPSession extends Session {
 		throw new IOException("Login as user "+host.getCredentials().getUsername()+" failed."); //todo localize
 	}
 
-	public synchronized Path workdir() {
+	public Path workdir() {
 		try {
 			Path workdir = PathFactory.createPath(this, SFTP.getDefaultDirectory());
 			workdir.attributes.setType(Path.DIRECTORY_TYPE);
@@ -300,13 +384,13 @@ public class SFTPSession extends Session {
 		return null;
 	}
 
-	public synchronized void noop() throws IOException {
+	public void noop() throws IOException {
 		if(this.isConnected()) {
 			this.SSH.noop();
 		}
 	}
 
-	public synchronized void check() throws IOException {
+	public void check() throws IOException {
 		this.log(Message.START, "Working");
 		if(null == this.SSH) {
 			this.connect();
