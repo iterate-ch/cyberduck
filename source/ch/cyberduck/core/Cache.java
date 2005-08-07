@@ -39,10 +39,22 @@ public class Cache extends HashMap {
 		//private
 	}
 
+    /**
+     *
+     * @param path
+     * @return null if no cached file listing is available
+     */
     public AttributedList get(Path path) {
         return (AttributedList)super.get(path.getAbsolute());
     }
 
+    /**
+     *
+     * @param path
+     * @param comparator
+     * @param filter
+     * @return null if no cached file listing is available
+     */
     public AttributedList get(Path path, Comparator comparator, Filter filter) {
         AttributedList childs = (AttributedList)super.get(path.getAbsolute());
         if(null == childs) {
@@ -50,18 +62,24 @@ public class Cache extends HashMap {
         }
         if(!childs.getAttributes().get(Attributes.COMPARATOR).equals(comparator)) {
             Collections.sort(childs, comparator);
+            //saving last sorting comparator
             childs.attributes.put(Attributes.COMPARATOR, comparator);
         }
         if(!childs.getAttributes().get(Attributes.FILTER).equals(filter)) {
+            //add previously hidden files to childs
             childs.addAll((Set)childs.getAttributes().get(Attributes.HIDDEN));
+            //clear the previously set of hidden files
             ((Set)childs.getAttributes().get(Attributes.HIDDEN)).clear();
             for(Iterator i = childs.iterator(); i.hasNext(); ) {
                 Path child = (Path)i.next();
                 if(!filter.accept(child)) {
+                    //child not accepted by filter; add to cached hidden files
                     childs.attributes.addHidden(child);
+                    //remove hidden file from current file listing
                     i.remove();
                 }
             }
+            //saving last filter
             childs.attributes.put(Attributes.FILTER, filter);
         }
         return childs;
@@ -84,6 +102,10 @@ public class Cache extends HashMap {
 
         private Attributes attributes;
 
+        /**
+         * Initialize an attributed list with default attributes
+         * @param List
+         */
         public AttributedList(List List) {
             super(List);
             this.attributes = new Attributes();
@@ -99,6 +121,11 @@ public class Cache extends HashMap {
         }
     }
 
+    /**
+     * Container for file listing attributes, such as a sorting comparator and filter
+     * @see ch.cyberduck.core.Filter
+     * @see ch.cyberduck.core.BrowserComparator
+     */
     protected class Attributes extends HashMap {
         //primary attributes
         protected static final String FILTER = "FILTER";
@@ -138,6 +165,12 @@ public class Cache extends HashMap {
 
     }
 
+    /**
+     * Memorize the given path to be expaned in outline view
+     * @param path Must be a directory
+     * @param expanded
+     * @see ch.cyberduck.core.Attributes#isDirectory()
+     */
     public void setExpanded(Path path, boolean expanded) {
         if(path.attributes.isDirectory()) {
             if(this.containsKey(path)) {
@@ -146,6 +179,12 @@ public class Cache extends HashMap {
         }
     }
 
+    /**
+     *
+     * @param path Must be a directory
+     * @return true if the given path should be expanded in outline view
+     * @see ch.cyberduck.core.Attributes#isDirectory()
+     */
     public boolean isExpanded(Path path) {
         if(path.attributes.isDirectory()) {
             if(this.containsKey(path)) {

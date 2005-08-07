@@ -18,19 +18,17 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.BrowserComparator;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSIndexSet;
+import org.apache.log4j.Logger;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Collections;
-
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.BrowserComparator;
-
-import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
@@ -50,7 +48,7 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
     public static final String PERMISSIONS_COLUMN = "PERMISSIONS";
 
     protected List childs(Path path) {
-        return path.list(false, controller.getEncoding(), false, 
+        return path.list(false, controller.getEncoding(), false,
                 this.getComparator(), controller.getFileFilter());
     }
 
@@ -205,7 +203,7 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
         return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
     }
 
-    private static class FileTypeComparator extends BrowserComparator {
+    private class FileTypeComparator extends BrowserComparator {
 
         public FileTypeComparator(boolean ascending) {
             super(ascending);
@@ -231,7 +229,7 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
         }
     }
 
-    private static class FilenameComparator extends BrowserComparator {
+    private class FilenameComparator extends BrowserComparator {
 
         public FilenameComparator(boolean ascending) {
             super(ascending);
@@ -251,7 +249,7 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
         }
     }
 
-    private static class SizeComparator extends BrowserComparator {
+    private class SizeComparator extends BrowserComparator {
 
         public SizeComparator(boolean ascending) {
             super(ascending);
@@ -274,7 +272,7 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
         }
     }
 
-    private static class TimestampComparator extends BrowserComparator {
+    private class TimestampComparator extends BrowserComparator {
 
         public TimestampComparator(boolean ascending) {
             super(ascending);
@@ -294,7 +292,7 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
         }
     }
 
-    private static class OwnerComparator extends BrowserComparator {
+    private class OwnerComparator extends BrowserComparator {
 
         public OwnerComparator(boolean ascending) {
             super(ascending);
@@ -314,7 +312,7 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
         }
     }
 
-    private static class PermissionsComparator extends BrowserComparator {
+    private class PermissionsComparator extends BrowserComparator {
 
         public PermissionsComparator(boolean ascending) {
             super(ascending);
