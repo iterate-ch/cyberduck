@@ -48,6 +48,10 @@ public class Cache extends HashMap {
         return (AttributedList)super.get(path.getAbsolute());
     }
 
+    public boolean containsKey(Path path) {
+        return super.containsKey(path.getAbsolute());
+    }
+
     /**
      *
      * @param path
