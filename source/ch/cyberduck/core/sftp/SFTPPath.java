@@ -99,7 +99,7 @@ public class SFTPPath extends Path {
         if(notifyObservers) {
             session.addPathToHistory(this);
         }
-        if (refresh || session.cache().get(this, comparator, filter) == null) {
+        if (refresh || session.cache().get(this) == null) {
             List files = new ArrayList();
             session.log(Message.PROGRESS, NSBundle.localizedString("Listing directory", "Status", "")+" "+this.getAbsolute());
             try {

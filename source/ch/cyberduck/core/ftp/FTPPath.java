@@ -18,13 +18,10 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.*;
+import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSBundle;
-
-import java.io.*;
-import java.util.*;
-
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
 import org.apache.commons.net.io.FromNetASCIIInputStream;
@@ -33,7 +30,11 @@ import org.apache.commons.net.io.ToNetASCIIInputStream;
 import org.apache.commons.net.io.ToNetASCIIOutputStream;
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.*;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * @version $Id$
@@ -116,7 +117,7 @@ public class FTPPath extends Path {
         if (notifyObservers) {
             session.addPathToHistory(this);
         }
-        if (refresh || session.cache().get(this, comparator, filter) == null) {
+        if (refresh || session.cache().get(this) == null) {
             List files = new ArrayList();
             session.log(Message.PROGRESS, NSBundle.localizedString("Listing directory", "Status", "")+" "+this.getAbsolute());
             try {

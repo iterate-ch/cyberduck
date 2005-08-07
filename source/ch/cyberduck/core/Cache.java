@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSBundle;
+
 import java.util.*;
 
 /**
@@ -39,17 +41,22 @@ public class Cache extends HashMap {
 		//private
 	}
 
-    private AttributedList get(Path path) {
-        return (AttributedList)super.get(path);
+    public AttributedList get(Path path) {
+        return (AttributedList)super.get(path.getAbsolute());
     }
 
     public AttributedList get(Path path, Comparator comparator, Filter filter) {
-        AttributedList childs = (AttributedList)super.get(path);
+        AttributedList childs = (AttributedList)super.get(path.getAbsolute());
+        if(null == childs) {
+            return childs;
+        }
         if(!childs.getAttributes().get(Attributes.COMPARATOR).equals(comparator)) {
+            path.getSession().log(Message.PROGRESS, NSBundle.localizedString("Sorting files", "Status", ""));
             Collections.sort(childs, comparator);
             childs.attributes.put(Attributes.COMPARATOR, comparator);
         }
         if(!childs.getAttributes().get(Attributes.FILTER).equals(filter)) {
+            path.getSession().log(Message.PROGRESS, NSBundle.localizedString("Filter files", "Status", ""));
             childs.addAll((Set)childs.getAttributes().get(Attributes.HIDDEN));
             ((Set)childs.getAttributes().get(Attributes.HIDDEN)).clear();
             for(Iterator i = childs.iterator(); i.hasNext(); ) {
@@ -65,7 +72,7 @@ public class Cache extends HashMap {
     }
 
     public Object put(Path path, List childs) {
-		return super.put(path, new AttributedList(childs));
+		return super.put(path.getAbsolute(), new AttributedList(childs));
 	}
 
     /**
