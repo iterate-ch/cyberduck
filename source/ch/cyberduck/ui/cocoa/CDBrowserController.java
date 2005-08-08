@@ -414,6 +414,19 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		return this.filenameFilter;
     }
 
+    public void setShowHiddenFiles(boolean showHidden) {
+        if(showHidden) {
+            filenameFilter = new NullFilter();
+        }
+        else {
+            filenameFilter = new HiddenFilesFilter();
+        }
+    }
+
+    public boolean getShowHiddenFiles() {
+        return filenameFilter instanceof NullFilter;
+    }
+
 	private void getFocus() {
 		log.debug("getFocus");
 		switch(this.browserSwitchView.selectedSegment()) {
