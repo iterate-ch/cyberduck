@@ -18,19 +18,18 @@ package ch.cyberduck.core.sftp;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.*;
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSDictionary;
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.sftp.*;
-
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
-
-import java.io.*;
-import java.util.*;
-
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.*;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -99,8 +98,14 @@ public class SFTPPath extends Path {
         if(notifyObservers) {
             session.addPathToHistory(this);
         }
-        if (refresh || session.cache().get(this) == null) {
-            List files = new ArrayList();
+        if (refresh || !session.cache().exists(this) || session.cache().isInvalid(this)) {
+            List files = null;
+            if(session.cache().isInvalid(this)) {
+                files = new AttributedList(session.cache().get(this).getAttributes());
+            }
+            else {
+                files = new AttributedList();
+            }
             session.log(Message.PROGRESS, NSBundle.localizedString("Listing directory", "Status", "")+" "+this.getAbsolute());
             try {
                 session.check();

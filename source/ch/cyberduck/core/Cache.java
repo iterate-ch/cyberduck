@@ -47,6 +47,21 @@ public class Cache extends HashMap {
         return super.remove(path.getAbsolute());
     }
 
+    public void invalidate(Path path) {
+        this.get(path).getAttributes().put(AttributedList.INVALID, new Boolean(true));
+    }
+
+    /**
+     * @param path
+     * @return true if the file listing of the given path has been changed since caching
+     */
+    public boolean isInvalid(Path path) {
+        if(this.exists(path)) {
+            return this.get(path).getAttributes().get(AttributedList.INVALID).equals(Boolean.TRUE);
+        }
+        return false;
+    }
+
     /**
      *
      * @param path
@@ -54,6 +69,10 @@ public class Cache extends HashMap {
      */
     public AttributedList get(Path path) {
         return (AttributedList)super.get(path.getAbsolute());
+    }
+
+    public boolean exists(Path path) {
+        return this.get(path) != null;
     }
 
     /**
@@ -68,32 +87,32 @@ public class Cache extends HashMap {
         if(null == childs) {
             return childs;
         }
-        boolean needsSorting = !childs.getAttributes().get(Attributes.COMPARATOR).equals(comparator);
-        boolean needsFiltering = !childs.getAttributes().get(Attributes.FILTER).equals(filter);
+        boolean needsSorting = !childs.getAttributes().get(AttributedList.COMPARATOR).equals(comparator);
+        boolean needsFiltering = !childs.getAttributes().get(AttributedList.FILTER).equals(filter);
         if(needsSorting) {
             //do not sort when the list has not been filtered yet
             if(!needsFiltering) {
                 Collections.sort(childs, comparator);
             }
             //saving last sorting comparator
-            childs.attributes.put(Attributes.COMPARATOR, comparator);
+            childs.getAttributes().put(AttributedList.COMPARATOR, comparator);
         }
         if(needsFiltering) {
             //add previously hidden files to childs
-            childs.addAll((Set)childs.getAttributes().get(Attributes.HIDDEN));
+            childs.addAll((Set)childs.getAttributes().get(AttributedList.HIDDEN));
             //clear the previously set of hidden files
-            ((Set)childs.getAttributes().get(Attributes.HIDDEN)).clear();
+            ((Set)childs.getAttributes().get(AttributedList.HIDDEN)).clear();
             for(Iterator i = childs.iterator(); i.hasNext(); ) {
                 Path child = (Path)i.next();
                 if(!filter.accept(child)) {
                     //child not accepted by filter; add to cached hidden files
-                    childs.attributes.addHidden(child);
+                    childs.getAttributes().addHidden(child);
                     //remove hidden file from current file listing
                     i.remove();
                 }
             }
             //saving last filter
-            childs.attributes.put(Attributes.FILTER, filter);
+            childs.getAttributes().put(AttributedList.FILTER, filter);
             //sort again because the list has changed
             Collections.sort(childs, comparator);
         }
@@ -113,73 +132,6 @@ public class Cache extends HashMap {
         return this.put((Path)path, (List)childs);
     }
 
-    protected class AttributedList extends ArrayList {
-
-        private Attributes attributes;
-
-        /**
-         * Initialize an attributed list with default attributes
-         * @param List
-         */
-        public AttributedList(List List) {
-            super(List);
-            this.attributes = new Attributes();
-        }
-
-        public AttributedList(List List, Attributes attributes) {
-            super(List);
-            this.attributes = attributes;
-        }
-
-        public Attributes getAttributes() {
-            return this.attributes;
-        }
-    }
-
-    /**
-     * Container for file listing attributes, such as a sorting comparator and filter
-     * @see ch.cyberduck.core.Filter
-     * @see ch.cyberduck.core.BrowserComparator
-     */
-    protected class Attributes extends HashMap {
-        //primary attributes
-        protected static final String FILTER = "FILTER";
-        protected static final String COMPARATOR = "COMPARATOR";
-
-        protected static final String EXPANDED = "EXPANDED";
-        protected static final String HIDDEN = "HIDDEN";
-
-        /**
-         * Initialize with default values
-         */
-        public Attributes() {
-            this.put(FILTER, new NullFilter());
-            this.put(COMPARATOR, new NullComparator());
-            this.put(HIDDEN, new HashSet());
-            this.put(EXPANDED, new Boolean(false));
-        }
-
-        public Attributes(Comparator comparator, Filter filter) {
-            this.put(COMPARATOR, comparator);
-            this.put(FILTER, filter);
-            this.put(HIDDEN, new HashSet());
-            this.put(EXPANDED, new Boolean(false));
-        }
-
-        public void setExpanded(boolean expanded) {
-            this.put(Attributes.EXPANDED, new Boolean(expanded));
-        }
-
-        public boolean isExpanded() {
-            return this.get(Attributes.EXPANDED).equals(Boolean.TRUE);
-        }
-
-        public void addHidden(Path child) {
-            ((Set)this.get(HIDDEN)).add(child);
-        }
-
-    }
-
     /**
      * Memorize the given path to be expaned in outline view
      * @param path Must be a directory
@@ -189,7 +141,7 @@ public class Cache extends HashMap {
     public void setExpanded(Path path, boolean expanded) {
         if(path.attributes.isDirectory()) {
             if(this.containsKey(path)) {
-                this.get(path).attributes.setExpanded(expanded);
+                this.get(path).getAttributes().setExpanded(expanded);
             }
         }
     }
@@ -203,7 +155,7 @@ public class Cache extends HashMap {
     public boolean isExpanded(Path path) {
         if(path.attributes.isDirectory()) {
             if(this.containsKey(path)) {
-                return this.get(path).attributes.isExpanded();
+                return this.get(path).getAttributes().isExpanded();
             }
         }
         return false;

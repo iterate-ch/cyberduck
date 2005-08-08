@@ -117,8 +117,14 @@ public class FTPPath extends Path {
         if (notifyObservers) {
             session.addPathToHistory(this);
         }
-        if (refresh || session.cache().get(this) == null) {
-            List files = new ArrayList();
+        if (refresh || !session.cache().exists(this) || session.cache().isInvalid(this)) {
+            List files = null;
+            if(session.cache().isInvalid(this)) {
+                files = new AttributedList(session.cache().get(this).getAttributes());
+            }
+            else {
+                files = new AttributedList();
+            }
             session.log(Message.PROGRESS, NSBundle.localizedString("Listing directory", "Status", "")+" "+this.getAbsolute());
             try {
                 session.check();

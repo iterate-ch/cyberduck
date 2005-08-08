@@ -207,7 +207,6 @@ public abstract class Session extends Observable {
 		if(Preferences.instance().getBoolean("connection.keepalive") && this.keepAliveTimer != null) {
 			this.keepAliveTimer.cancel();
 		}
-//		this.cache().clear();
 		this.release();
 	}
 

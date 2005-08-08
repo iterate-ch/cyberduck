@@ -23,9 +23,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Observer;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -37,6 +35,16 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
     private static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
     private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
     private static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
+
+    private Map content = new HashMap();
+
+    protected List childs(Path path) {
+        List childs = super.childs(path);
+        //Keep a referencd to all returned items so they don't get released by the java garbage collector when
+        //there is still a weak reference from the obj-c runtime
+        this.content.put(path, childs);
+        return childs;
+    }
 
     public CDBrowserOutlineViewModel(CDBrowserController controller) {
         super(controller);
@@ -247,10 +255,10 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
                 }
                 destination.invalidate();
                 NSRunLoop.currentRunLoop().addTimerForMode(new NSTimer(0.1f, controller,
-							   new NSSelector("reloadData", new Class[]{}),
-							   null,
-							   false),
-				   NSRunLoop.DefaultRunLoopMode);
+                               new NSSelector("reloadData", new Class[]{}),
+                               null,
+                               false),
+                   NSRunLoop.DefaultRunLoopMode);
             }
             return true;
         }

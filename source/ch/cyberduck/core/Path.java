@@ -192,7 +192,7 @@ public abstract class Path {
      * @throws NullPointerException if session is not initialized
      */
 	public void invalidate() {
-		this.getSession().cache().remove(this);
+		this.getSession().cache().invalidate(this);
     }
 
     /**
