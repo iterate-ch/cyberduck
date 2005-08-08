@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -2398,8 +2400,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             return false;
 		}
         if(identifier.equals("sendCustomCommandClicked:")) {
-//            return (this.session instanceof FTPSession) && this.isConnected();
-            return this.isConnected();
+            return (this.session instanceof FTPSession) && this.isConnected();
         }
         if (identifier.equals("gotoButtonClicked:")) {
             return this.isMounted();
