@@ -105,9 +105,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
         if (userObj != null) {
             host.setCredentials((String) args.objectForKey("Username"), (String) args.objectForKey("Password"));
         }
-        this.session = SessionFactory.createSession(host);
-        this.session.addObserver((Observer) this);
-        this.session.mount(this.encoding, this.getFileComparator(), this.getFileFilter());
+        Session session = this.init(host);
+        session.mount(this.getEncoding(), this.getFileComparator(), this.getFileFilter());
         return null;
     }
 
@@ -143,7 +142,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                             folder);
                 }
             }
-            for (Iterator i = path.list(false, this.encoding, this.getFileComparator(), this.getFileFilter()).iterator(); i.hasNext();) {
+            for (Iterator i = path.list(false, this.getEncoding(), this.getFileComparator(), this.getFileFilter()).iterator(); i.hasNext();) {
                 result.addObject(((Path) i.next()).getName());
             }
         }
@@ -1427,20 +1426,20 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public void backButtonClicked(Object sender) {
         log.debug("backButtonClicked");
 		this.deselectAll();
-        this.session.getPreviousPath().list(false, this.encoding, this.getFileComparator(), this.getFileFilter());
+        this.session.getPreviousPath().list(false, this.getEncoding(), this.getFileComparator(), this.getFileFilter());
     }
 
     public void forwardButtonClicked(Object sender) {
         log.debug("forwardButtonClicked");
 		this.deselectAll();
-        this.session.getForwardPath().list(false, this.encoding, this.getFileComparator(), this.getFileFilter());
+        this.session.getForwardPath().list(false, this.getEncoding(), this.getFileComparator(), this.getFileFilter());
     }
 
     public void upButtonClicked(Object sender) {
         log.debug("upButtonClicked");
 		this.deselectAll();
         Path previous = this.workdir();
-        this.workdir().getParent().list(false, this.encoding, this.getFileComparator(), this.getFileFilter());
+        this.workdir().getParent().list(false, this.getEncoding(), this.getFileComparator(), this.getFileFilter());
 		this.selectRow(previous, false);
     }
 
@@ -1500,7 +1499,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public void pathPopupSelectionChanged(Object sender) {
         Path p = (Path) pathPopupItems.get(pathPopupButton.indexOfSelectedItem());
         this.deselectAll();
-        p.list(false, this.encoding, this.getFileComparator(), this.getFileFilter());
+        p.list(false, this.getEncoding(), this.getFileComparator(), this.getFileFilter());
     }
 
     private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
@@ -1543,8 +1542,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void setEncoding(String encoding, boolean force) {
         this.encoding = encoding;
-        log.info("Encoding changed to:" + this.encoding);
-        this.encodingPopup.setTitle(this.encoding);
+        log.info("Encoding changed to:" + this.getEncoding());
+        this.encodingPopup.setTitle(this.getEncoding());
         if(force) {
 			this.reloadButtonClicked(null);
         }
@@ -1642,7 +1641,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		if (this.isMounted()) {
             List selected = this.getSelectedPaths();
             this.deselectAll();
-			this.workdir().list(true, this.encoding, this.getFileComparator(), this.getFileFilter());
+			this.workdir().list(true, this.getEncoding(), this.getFileComparator(), this.getFileFilter());
             for(Iterator i = selected.iterator(); i.hasNext(); ) {
                 this.selectRow((Path)i.next(), true);
             }
@@ -1930,7 +1929,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         Path p = this.getSelectedPath(); //last row selected
         if (p.attributes.isDirectory()) {
             this.deselectAll();
-            p.list(false, this.encoding, this.getFileComparator(), this.getFileFilter());
+            p.list(false, this.getEncoding(), this.getFileComparator(), this.getFileFilter());
         }
         if (p.attributes.isFile() || this.getSelectionCount() > 1) {
             if (Preferences.instance().getBoolean("browser.doubleclick.edit")) {
@@ -1972,7 +1971,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			}
             if (this.isMounted()) {
 				this.deselectAll();
-                this.workdir().list(false, this.encoding, this.getFileComparator(), this.getFileFilter());
+                this.workdir().list(false, this.getEncoding(), this.getFileComparator(), this.getFileFilter());
             }
         }
     }
@@ -2024,7 +2023,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     }
                 }
                 pboard.setPropertyListForType(null, "PathPBoardType");
-				workdir.list(true, this.encoding, this.getFileComparator(), this.getFileFilter());
+				workdir.list(true, this.getEncoding(), this.getFileComparator(), this.getFileFilter());
                 this.reloadData();
             }
         }
@@ -2077,22 +2076,36 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     private Observer transcript;
 
-    private void init(Host host, Session session) {
-		this.workdir = null;
+    private Session init(Host host) {
+        if(this.hasSession()) {
+            this.session.deleteObserver((Observer) this);
+            this.session.deleteObserver(this.transcript);
+        }
+        this.session = SessionFactory.createSession(host);
+        if (this.session instanceof ch.cyberduck.core.sftp.SFTPSession) {
+            ((ch.cyberduck.core.sftp.SFTPSession) this.session).setHostKeyVerificationController(new CDHostKeyController(this));
+        }
+        if (this.session instanceof ch.cyberduck.core.ftps.FTPSSession) {
+            ((ch.cyberduck.core.ftps.FTPSSession) this.session).setTrustManager(
+                    new CDX509TrustManagerController(this));
+        }
+        host.setLoginController(new CDLoginController(this));
+        this.workdir = null;
 		this.reloadData();
-        session.addObserver(transcript = new CDTranscriptImpl(this.logView));
+        session.addObserver(transcript = new CDTranscriptController(this.logView));
         this.window().setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername() + "@" + host.getHostname());
         File bookmark = new File(HISTORY_FOLDER + "/" + host.getHostname() + ".duck");
         CDBookmarkTableDataSource.instance().exportBookmark(host, bookmark);
         this.window().setRepresentedFilename(bookmark.getAbsolutePath());
         session.addObserver((Observer) this);
         this.getFocus();
+        return this.session;
     }
 
     private Session session;
 
     public Session mount(Host host) {
-        return this.mount(host, this.encoding);
+        return this.mount(host, this.getEncoding());
     }
 
     public Session mount(Host host, final String encoding) {
@@ -2108,21 +2121,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
         if (this.unmount(new NSSelector("mountSheetDidEnd",
                 new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
         )) {
-            if(this.hasSession()) {
-                this.session.deleteObserver((Observer) this);
-                this.session.deleteObserver(this.transcript);
-            }
-            this.session = SessionFactory.createSession(host);
-            this.init(host, session);
             this.setEncoding(encoding, false);
-            if (this.session instanceof ch.cyberduck.core.sftp.SFTPSession) {
-                ((ch.cyberduck.core.sftp.SFTPSession) this.session).setHostKeyVerificationController(new CDHostKeyController(this));
-            }
-            if (this.session instanceof ch.cyberduck.core.ftps.FTPSSession) {
-                ((ch.cyberduck.core.ftps.FTPSSession) this.session).setTrustManager(
-                        new CDX509TrustManagerController(this));
-            }
-            host.setLoginController(new CDLoginController(this));
+            this.init(host);
             new Thread("Session") {
                 public void run() {
                     session.mount(encoding, getFileComparator(), getFileFilter());
@@ -2336,7 +2336,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             item.setState((this.getFileFilter() instanceof NullFilter) ? NSCell.OnState : NSCell.OffState);
         }
         if (identifier.equals("encodingButtonClicked:")) {
-            item.setState(this.encoding.equalsIgnoreCase(item.title()) ? NSCell.OnState : NSCell.OffState);
+            item.setState(this.getEncoding().equalsIgnoreCase(item.title()) ? NSCell.OnState : NSCell.OffState);
         }
         if (identifier.equals("browserSwitchClicked:")) {
 			if(item.tag() == Preferences.instance().getInteger("browser.view")) {

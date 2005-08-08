@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Message;
 import com.apple.cocoa.application.NSFont;
 import com.apple.cocoa.application.NSLayoutManager;
 import com.apple.cocoa.application.NSTextContainer;
@@ -25,25 +26,22 @@ import com.apple.cocoa.application.NSTextView;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSRange;
+import org.apache.log4j.Logger;
 
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.log4j.Logger;
-
-import ch.cyberduck.core.Message;
-
 /**
  * @version $Id$
  */
-public class CDTranscriptImpl extends CDController implements Observer {
-	private static Logger log = Logger.getLogger(CDTranscriptImpl.class);
+public class CDTranscriptController extends CDController implements Observer {
+	private static Logger log = Logger.getLogger(CDTranscriptController.class);
 
 	private NSTextView textView;
 
-	public CDTranscriptImpl(NSTextView textView) {
+	public CDTranscriptController(NSTextView textView) {
 		this.textView = textView;
-        this.textView.layoutManager().setDelegate(CDTranscriptImpl.this);
+        this.textView.layoutManager().setDelegate(CDTranscriptController.this);
         super.awakeFromNib();
 	}
 
@@ -63,13 +61,17 @@ public class CDTranscriptImpl extends CDController implements Observer {
             final Message msg = (Message) arg;
             if (msg.getTitle().equals(Message.TRANSCRIPT)) {
                 log.info(msg.getContent());
-                // Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
-                // formatting attributes of the first character of the text it replaces, or of the character immediately
-                // before aRange if the range's length is 0. If the range's location is 0, the formatting
-                // attributes of the first character in the receiver are used.
-                textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0),
-                        new NSAttributedString(msg.getContent()+"\n", FIXED_WITH_FONT_ATTRIBUTES));
+//                this.invoke(new Runnable() {
+//                    public void run() {
+                        // Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
+                        // formatting attributes of the first character of the text it replaces, or of the character immediately
+                        // before aRange if the range's length is 0. If the range's location is 0, the formatting
+                        // attributes of the first character in the receiver are used.
+                        textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0),
+                                new NSAttributedString(msg.getContent()+"\n", FIXED_WITH_FONT_ATTRIBUTES));
+//                    }
+//                });
             }
         }
-	}
+    }
 }
