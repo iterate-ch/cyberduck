@@ -161,7 +161,7 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
         tableView.deselectAll(null);
         tableView.reloadData();
         for (Iterator i = selected.iterator(); i.hasNext();) {
-            tableView.selectRowIndexes(new NSIndexSet(this.indexOf(tableView, (Path) i.next())), true);
+            tableView.selectRowIndexes(new NSIndexSet(this.indexOf(tableView, (Path)i.next())), true);
         }
     }
 

@@ -18,14 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.*;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
-
-import java.util.*;
-
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Observer;
 
 /**
  * @version $Id$
@@ -37,16 +37,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
     private static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
     private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
     private static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
-
-//    private Map content = new HashMap();
-//todo
-//    protected List childs(Path path) {
-//        List childs = super.childs(path);
-//        //Keep a referencd to all returned items so they don't get released by the java garbage collector when
-//        //there is still a weak reference from the obj-c runtime
-//        this.content.put(path, childs);
-//        return childs;
-//    }
 
     public CDBrowserOutlineViewModel(CDBrowserController controller) {
         super(controller);
@@ -63,7 +53,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
 
     public void outlineViewItemDidCollapse(NSNotification notification) {
         Path p = (Path) notification.userInfo().allValues().lastObject();
-        p.getSession().cache().setExpanded(p, true);
+        p.getSession().cache().setExpanded(p, false);
     }
 
     public boolean outlineViewShouldEditTableColumn(NSOutlineView outlineView,
