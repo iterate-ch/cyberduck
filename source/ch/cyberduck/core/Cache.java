@@ -68,12 +68,17 @@ public class Cache extends HashMap {
         if(null == childs) {
             return childs;
         }
-        if(!childs.getAttributes().get(Attributes.COMPARATOR).equals(comparator)) {
-            Collections.sort(childs, comparator);
+        boolean needsSorting = !childs.getAttributes().get(Attributes.COMPARATOR).equals(comparator);
+        boolean needsFiltering = !childs.getAttributes().get(Attributes.FILTER).equals(filter);
+        if(needsSorting) {
+            //do not sort when the list has not been filtered yet
+            if(!needsFiltering) {
+                Collections.sort(childs, comparator);
+            }
             //saving last sorting comparator
             childs.attributes.put(Attributes.COMPARATOR, comparator);
         }
-        if(!childs.getAttributes().get(Attributes.FILTER).equals(filter)) {
+        if(needsFiltering) {
             //add previously hidden files to childs
             childs.addAll((Set)childs.getAttributes().get(Attributes.HIDDEN));
             //clear the previously set of hidden files
@@ -89,6 +94,8 @@ public class Cache extends HashMap {
             }
             //saving last filter
             childs.attributes.put(Attributes.FILTER, filter);
+            //sort again because the list has changed
+            Collections.sort(childs, comparator);
         }
         return childs;
     }

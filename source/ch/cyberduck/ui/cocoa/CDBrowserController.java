@@ -414,19 +414,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		return this.filenameFilter;
     }
 
-    public void setShowHiddenFiles(boolean showHidden) {
-        if(showHidden) {
-            filenameFilter = new NullFilter();
-        }
-        else {
-            filenameFilter = new HiddenFilesFilter();
-        }
-    }
-
-    public boolean getShowHiddenFiles() {
-        return filenameFilter instanceof NullFilter;
-    }
-
 	private void getFocus() {
 		log.debug("getFocus");
 		switch(this.browserSwitchView.selectedSegment()) {
@@ -2007,9 +1994,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void paste(Object sender) {
         log.debug("paste");
-        NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-        if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-            Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
+        NSPasteboard pboard = NSPasteboard.pasteboardWithName("PathPBoard");
+        if (pboard.availableTypeFromArray(new NSArray("PathPBoardType")) != null) {
+            Object o = pboard.propertyListForType("PathPBoardType");// get the data from paste board
             if (o != null) {
                 this.deselectAll();
                 NSArray elements = (NSArray) o;
@@ -2023,7 +2010,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                         p.getParent().invalidate();
                     }
                 }
-                pboard.setPropertyListForType(null, "QueuePBoardType");
+                pboard.setPropertyListForType(null, "PathPBoardType");
 				workdir.list(true, this.encoding, this.getFileComparator(), this.getFileFilter());
                 this.reloadData();
             }
@@ -2057,10 +2044,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 q.addRoot(path.copy(session));
             }
             // Writing data for private use when the item gets dragged to the transfer queue.
-            NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-            queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
-            if (queuePboard.setPropertyListForType(new NSArray(q.getAsDictionary()), "QueuePBoardType")) {
-                log.debug("QueuePBoardType data sucessfully written to pasteboard");
+            NSPasteboard pathPBoard = NSPasteboard.pasteboardWithName("PathPBoard");
+            pathPBoard.declareTypes(new NSArray("PathPBoardType"), null);
+            if (pathPBoard.setPropertyListForType(new NSArray(q.getAsDictionary()), "PathPBoardType")) {
+                log.debug("PathPBoardType data sucessfully written to pasteboard");
             }
             Path p = this.getSelectedPath();
             NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
@@ -2284,10 +2271,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
         String identifier = item.action().name();
         if (item.action().name().equals("paste:")) {
             if (this.isMounted()) {
-                NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-                if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null
-                        && pboard.propertyListForType("QueuePBoardType") != null) {
-                    NSArray elements = (NSArray) pboard.propertyListForType("QueuePBoardType");
+                NSPasteboard pboard = NSPasteboard.pasteboardWithName("PathPBoard");
+                if (pboard.availableTypeFromArray(new NSArray("PathPBoardType")) != null
+                        && pboard.propertyListForType("PathPBoardType") != null) {
+                    NSArray elements = (NSArray) pboard.propertyListForType("PathPBoardType");
                     for (int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                         Queue q = Queue.createQueue(dict);
@@ -2357,10 +2344,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
             return this.isMounted() && this.getSelectionCount() > 0;
         }
         if (identifier.equals("paste:")) {
-            NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+            NSPasteboard pboard = NSPasteboard.pasteboardWithName("PathPBoard");
             return this.isMounted()
-                    && pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null
-                    && pboard.propertyListForType("QueuePBoardType") != null;
+                    && pboard.availableTypeFromArray(new NSArray("PathPBoardType")) != null
+                    && pboard.propertyListForType("PathPBoardType") != null;
         }
         if (identifier.equals("showHiddenFilesClicked:")) {
             return true;
