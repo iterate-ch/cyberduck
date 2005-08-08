@@ -39,6 +39,14 @@ public class Cache extends HashMap {
 		//private
 	}
 
+    public boolean containsKey(Path path) {
+        return super.containsKey(path.getAbsolute());
+    }
+
+    public Object remove(Path path) {
+        return super.remove(path.getAbsolute());
+    }
+
     /**
      *
      * @param path
@@ -46,14 +54,6 @@ public class Cache extends HashMap {
      */
     public AttributedList get(Path path) {
         return (AttributedList)super.get(path.getAbsolute());
-    }
-
-    public boolean containsKey(Path path) {
-        return super.containsKey(path.getAbsolute());
-    }
-
-    public Object remove(Path path) {
-        return super.remove(path.getAbsolute());
     }
 
     /**

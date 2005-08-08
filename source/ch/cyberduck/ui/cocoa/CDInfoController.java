@@ -18,17 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
-
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Status;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
+import org.apache.log4j.Logger;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -338,7 +336,7 @@ public class CDInfoController extends CDWindowController {
 		if(!this.filenameField.stringValue().equals(file.getName())) {
 			if(this.filenameField.stringValue().indexOf('/') == -1) {
 				file.rename(file.getParent().getAbsolute()+"/"+this.filenameField.stringValue());
-                controller.workdir().list(true, controller.getEncoding());
+                controller.workdir().list(true, controller.getEncoding(), controller.getFileComparator(), controller.getFileFilter());
 			}
 			else if(filenameField.stringValue().length() == 0) {
 				this.filenameField.setStringValue(file.getName());
@@ -395,6 +393,6 @@ public class CDInfoController extends CDWindowController {
 			f.changePermissions(permission,
                     this.recursiveCheckbox.state() == NSCell.OnState);
 		}
-		controller.workdir().list(true, controller.getEncoding());
+		controller.workdir().list(true, controller.getEncoding(), controller.getFileComparator(), controller.getFileFilter());
 	}
 }

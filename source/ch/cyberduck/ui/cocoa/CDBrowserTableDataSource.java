@@ -102,7 +102,7 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
         }
     }
 
-    private Comparator getComparator() {
+    public Comparator getComparator() {
         final boolean ascending = this.isSortedAscending();
         String identifier = this.selectedColumnIdentifier();
         if (identifier.equals(TYPE_COLUMN)) {

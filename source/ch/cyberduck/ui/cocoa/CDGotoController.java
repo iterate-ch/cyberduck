@@ -18,18 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.log4j.Logger;
-
-import ch.cyberduck.core.NullFilter;
-import ch.cyberduck.core.Path;
 
 /**
  * @version $Id$
@@ -57,7 +54,8 @@ public class CDGotoController extends CDWindowController {
 			private List directories = new ArrayList();
 			
 			{
-				for(Iterator i = controller.workdir().list(false, controller.getEncoding(), false).iterator(); i.hasNext(); ) {
+				for(Iterator i = controller.workdir().list(false, controller.getEncoding(),
+                        controller.getFileComparator(), controller.getFileFilter()).iterator(); i.hasNext(); ) {
 					Path p = (Path)i.next();
 					if(p.attributes.isDirectory()) {
 						directories.add(p.getName());
@@ -126,6 +124,6 @@ public class CDGotoController extends CDWindowController {
 		else {
 			dir.setPath(filename);
 		}
-		dir.list(false, controller.getEncoding());
+		dir.list(false, controller.getEncoding(), controller.getFileComparator(), controller.getFileFilter());
 	}
 }

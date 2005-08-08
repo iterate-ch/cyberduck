@@ -18,15 +18,17 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.ui.cocoa.odb.Editor;
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSPanel;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
 import java.util.List;
-
-import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**
 * @version $Id$
@@ -88,9 +90,9 @@ public class CDCreateFileController extends CDFileController {
 		}
 		List l = null;
 		if(filename.charAt(0) == '.')
-			l = workdir.list(true, controller.getEncoding());
+			l = workdir.list(true, controller.getEncoding(), controller.getFileComparator(), controller.getFileFilter());
 		else 
-			l = workdir.list(true, controller.getEncoding());
+			l = workdir.list(true, controller.getEncoding(), controller.getFileComparator(), controller.getFileFilter());
 		if(l.contains(file))
 			return (Path)l.get(l.indexOf(file));
 		return null;

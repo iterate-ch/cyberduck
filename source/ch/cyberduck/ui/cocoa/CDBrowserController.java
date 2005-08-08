@@ -18,17 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.odb.Editor;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-
-import org.apache.log4j.Logger;
-
-import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**
  * @version $Id$
@@ -109,7 +107,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
         this.session = SessionFactory.createSession(host);
         this.session.addObserver((Observer) this);
-        this.session.mount(this.encoding);
+        this.session.mount(this.encoding, this.getFileComparator(), this.getFileFilter());
         return null;
     }
 
@@ -145,7 +143,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                             folder);
                 }
             }
-            for (Iterator i = path.list(false, this.encoding).iterator(); i.hasNext();) {
+            for (Iterator i = path.list(false, this.encoding, this.getFileComparator(), this.getFileFilter()).iterator(); i.hasNext();) {
                 result.addObject(((Path) i.next()).getName());
             }
         }
@@ -215,7 +213,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"));
             path.delete();
-			this.workdir().list(true, encoding);
+			this.workdir().list(true, encoding, this.getFileComparator(), this.getFileFilter());
         }
         return null;
     }
@@ -389,7 +387,19 @@ public class CDBrowserController extends CDWindowController implements Observer 
         return this.encoding;
     }
 
-	private Filter filenameFilter;
+    protected Comparator getFileComparator() {
+		switch(this.browserSwitchView.selectedSegment()) {
+			case LIST_VIEW: {
+                return this.browserListModel.getComparator();
+			}
+			case OUTLINE_VIEW: {
+                return this.browserOutlineModel.getComparator();
+			}
+		}
+        return null;
+    }
+
+    private Filter filenameFilter;
 
 	{
 		if(Preferences.instance().getBoolean("browser.showHidden")) {
@@ -1417,20 +1427,20 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public void backButtonClicked(Object sender) {
         log.debug("backButtonClicked");
 		this.deselectAll();
-        this.session.getPreviousPath().list(false, this.encoding);
+        this.session.getPreviousPath().list(false, this.encoding, this.getFileComparator(), this.getFileFilter());
     }
 
     public void forwardButtonClicked(Object sender) {
         log.debug("forwardButtonClicked");
 		this.deselectAll();
-        this.session.getForwardPath().list(false, this.encoding);
+        this.session.getForwardPath().list(false, this.encoding, this.getFileComparator(), this.getFileFilter());
     }
 
     public void upButtonClicked(Object sender) {
         log.debug("upButtonClicked");
 		this.deselectAll();
         Path previous = this.workdir();
-        this.workdir().getParent().list(false, this.encoding);
+        this.workdir().getParent().list(false, this.encoding, this.getFileComparator(), this.getFileFilter());
 		this.selectRow(previous, false);
     }
 
@@ -1490,7 +1500,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public void pathPopupSelectionChanged(Object sender) {
         Path p = (Path) pathPopupItems.get(pathPopupButton.indexOfSelectedItem());
         this.deselectAll();
-        p.list(false, this.encoding);
+        p.list(false, this.encoding, this.getFileComparator(), this.getFileFilter());
     }
 
     private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
@@ -1632,7 +1642,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		if (this.isMounted()) {
             List selected = this.getSelectedPaths();
             this.deselectAll();
-			this.workdir().list(true, this.encoding);
+			this.workdir().list(true, this.encoding, this.getFileComparator(), this.getFileFilter());
             for(Iterator i = selected.iterator(); i.hasNext(); ) {
                 this.selectRow((Path)i.next(), true);
             }
@@ -1787,7 +1797,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 					p = (Path)i.next();
 					p.delete();
 				}
-				this.workdir().list(true, encoding);
+				this.workdir().list(true, encoding, this.getFileComparator(), this.getFileFilter());
 			}
 		}
 	}
@@ -1920,7 +1930,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         Path p = this.getSelectedPath(); //last row selected
         if (p.attributes.isDirectory()) {
             this.deselectAll();
-            p.list(false, this.encoding);
+            p.list(false, this.encoding, this.getFileComparator(), this.getFileFilter());
         }
         if (p.attributes.isFile() || this.getSelectionCount() > 1) {
             if (Preferences.instance().getBoolean("browser.doubleclick.edit")) {
@@ -1962,7 +1972,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 			}
             if (this.isMounted()) {
 				this.deselectAll();
-                this.workdir().list(false, this.encoding);
+                this.workdir().list(false, this.encoding, this.getFileComparator(), this.getFileFilter());
             }
         }
     }
@@ -2014,7 +2024,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     }
                 }
                 pboard.setPropertyListForType(null, "QueuePBoardType");
-				workdir.list(true, this.encoding);
+				workdir.list(true, this.encoding, this.getFileComparator(), this.getFileFilter());
                 this.reloadData();
             }
         }
@@ -2088,10 +2098,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public Session mount(Host host, final String encoding) {
         log.debug("mount:" + host);
         if(this.isMounted()) {
-            if(this.session.getHost().equals(host)) {
+            if(this.session.getHost().getURL().equals(host.getURL())) {
                 Path home = PathFactory.createPath(session, host.getDefaultPath());
                 home.attributes.setType(Path.DIRECTORY_TYPE);
-                home.list(true, this.getEncoding());
+                home.list(true, this.getEncoding(), this.getFileComparator(), this.getFileFilter());
                 return session;
             }
         }
@@ -2115,7 +2125,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             host.setLoginController(new CDLoginController(this));
             new Thread("Session") {
                 public void run() {
-                    session.mount(encoding);
+                    session.mount(encoding, getFileComparator(), getFileFilter());
                 }
             }.start();
             return this.session;

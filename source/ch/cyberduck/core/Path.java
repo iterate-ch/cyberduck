@@ -21,14 +21,13 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
+import org.apache.log4j.Logger;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.Comparator;
-
-import org.apache.log4j.Logger;
+import java.util.List;
 
 /**
  * A path is a remote directory or file.
@@ -196,20 +195,29 @@ public abstract class Path {
 		this.getSession().cache().remove(this);
     }
 
-    public List list(boolean reload) {
-		return this.list(reload, Preferences.instance().getProperty("browser.charset.encoding"));
-	}
-
+    /**
+     * @deprecated
+     */
     public List list(boolean reload, String encoding) {
 		return this.list(reload, encoding, true);
 	}
 
-	public List list(boolean reload, boolean notifyObservers) {
+    public List list(boolean reload, String encoding, Comparator comparator, Filter filter) {
+		return this.list(reload, encoding, true, comparator, filter);
+	}
+
+    /**
+     * @deprecated
+     */
+    protected List list(boolean reload, boolean notifyObservers) {
 		return this.list(reload, Preferences.instance().getProperty("browser.charset.encoding"),
                 notifyObservers);
 	}
 
-	public List list(boolean reload, String encoding, boolean notifyObservers) {
+    /**
+     * @deprecated
+     */
+    protected List list(boolean reload, String encoding, boolean notifyObservers) {
         return this.list(reload, encoding, notifyObservers, new NullComparator(), new NullFilter());
     }
 

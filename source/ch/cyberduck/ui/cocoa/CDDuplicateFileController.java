@@ -18,14 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.ui.cocoa.odb.Editor;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSSize;
 
 import java.util.List;
-
-import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.odb.Editor;
 
 /**
 * @version $Id$
@@ -87,9 +89,9 @@ public class CDDuplicateFileController extends CDFileController {
 		p.upload();
 		List l = null;
 		if(filename.charAt(0) == '.')
-			l = workdir.list(true, controller.getEncoding());
+			l = workdir.list(true, controller.getEncoding(), controller.getFileComparator(), controller.getFileFilter());
 		else 
-			l = workdir.list(true, controller.getEncoding());
+			l = workdir.list(true, controller.getEncoding(), controller.getFileComparator(), controller.getFileFilter());
 		if(l.contains(p))
 			return (Path)l.get(l.indexOf(p));
 		return null;

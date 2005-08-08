@@ -18,14 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.growl.Growl;
 import com.apple.cocoa.foundation.NSBundle;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.*;
-
-import org.apache.log4j.Logger;
-
-import ch.cyberduck.ui.cocoa.growl.Growl;
 
 /**
  * @version $Id$
@@ -108,7 +106,7 @@ public abstract class Session extends Observable {
 	/**
 	 * Connect to the remote host and mount the home directory
 	 */
-	public synchronized void mount(String encoding) {
+	public synchronized void mount(String encoding, Comparator comparator, Filter filter) {
 		this.log(Message.PROGRESS, NSBundle.localizedString("Mounting", "Status", "")+" "+host.getHostname()+"...");
 		try {
 			this.check();
@@ -122,15 +120,15 @@ public abstract class Session extends Observable {
 					home = PathFactory.createPath(this, host.getDefaultPath());
 					home.attributes.setType(Path.DIRECTORY_TYPE);
 				}
-				if(null == home.list(true, encoding)) {
+				if(null == home.list(true, encoding, comparator, filter)) {
 					// the default path does not exist
 					home = workdir();
-					home.list(true, encoding);
+					home.list(true, encoding, comparator, filter);
 				}
 			}
 			else {
 				home = workdir();
-				home.list(true, encoding);
+				home.list(true, encoding, comparator, filter);
 			}
 			Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl", "Growl Notification"),
 									host.getHostname());

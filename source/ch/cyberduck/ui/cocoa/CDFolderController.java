@@ -18,19 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
-
-import java.util.List;
-
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.HiddenFilesFilter;
-import ch.cyberduck.core.NullFilter;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -110,9 +106,9 @@ public class CDFolderController extends CDWindowController {
 		folder.mkdir(false);
 		List l = null;
 		if(filename.charAt(0) == '.')
-			l = workdir.list(true, controller.getEncoding());
+			l = workdir.list(true, controller.getEncoding(), controller.getFileComparator(), controller.getFileFilter());
 		else 
-			l = workdir.list(true, controller.getEncoding());
+			l = workdir.list(true, controller.getEncoding(), controller.getFileComparator(), controller.getFileFilter());
 		if(l.contains(folder))
 			return (Path)l.get(l.indexOf(folder));
 		return null;
