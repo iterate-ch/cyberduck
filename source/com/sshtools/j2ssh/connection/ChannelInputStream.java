@@ -46,15 +46,16 @@
  */
 package com.sshtools.j2ssh.connection;
 
+import com.sshtools.j2ssh.transport.MessageNotAvailableException;
+import com.sshtools.j2ssh.transport.MessageStoreEOFException;
+import com.sshtools.j2ssh.transport.SshMessageStore;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.sshtools.j2ssh.transport.MessageNotAvailableException;
-import com.sshtools.j2ssh.transport.MessageStoreEOFException;
-import com.sshtools.j2ssh.transport.SshMessageStore;
 
 
 /**
@@ -257,7 +258,7 @@ public class ChannelInputStream extends InputStream {
 		}
 	}
 
-	private void stopBlockingOperation() throws IOException {
+	private void stopBlockingOperation() {
 		synchronized(lock) {
 			log.debug("Completed blocking operation");
 			blockingThread = null;

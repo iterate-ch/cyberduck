@@ -3,11 +3,18 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.5b3</string>
+	<string>2.5b4</string>
 	<key>file</key>
-	<string>Cyberduck-2.5b3.dmg</string>
+	<string>Cyberduck-2.5b4.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.5b4
+- [Feature] Updated navigation bar interface elements
+- [Bugfix] Vastly improved performance when listing directories 
+- [Bugfix] Do not reconnect if connecting to the same host from a different bookmark
+- [Bugfix] Sorting history menu correctly 
+- [Bugfix] Refresh issues in outline view
+
 2.5b3
 - [Localize] Catalan Localization
 - [Feature] Spotlight Importer for bookmarks
