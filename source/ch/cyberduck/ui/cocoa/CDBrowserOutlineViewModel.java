@@ -251,7 +251,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
                 Queue q = Queue.createQueue(dict);
                 for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                     Path p = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
-                    Path tmp = p.copy(p.getSession());
                     p.rename(destination.getAbsolute() + "/" + p.getName());
                 }
                 destination.invalidate();

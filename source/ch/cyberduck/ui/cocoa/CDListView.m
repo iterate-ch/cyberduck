@@ -45,7 +45,8 @@
 }
 
 // Taken from http://www.cocoadev.com/index.pl?RightClickSelectInTableView
-- (NSMenu *) menuForEvent:(NSEvent *) event {
+- (NSMenu *) menuForEvent:(NSEvent *) event 
+{
 	NSPoint where;
 	int row = -1, col = -1;
 	
@@ -165,7 +166,18 @@
 	return [[NSTableColumn alloc] initWithIdentifier:@"TYPEAHEAD"];
 }
 
-- (NSImage *)dragImageForRows:(NSArray *)dragRows event:(NSEvent *)dragEvent dragImageOffset:(NSPointPointer)dragImageOffset {
+- (NSImage *)dragImageForRows:(NSArray *)dragRows 
+						event:(NSEvent *)dragEvent 
+			  dragImageOffset:(NSPointPointer)dragImageOffset 
+{
+	return [[NSImage alloc] initByReferencingFile: @"transparent.tiff"];
+}
+
+- (NSImage *)dragImageForRowsWithIndexes:(NSIndexSet *)dragRows 
+							tableColumns:(NSArray *)tableColumns 
+								   event:(NSEvent*)dragEvent 
+								  offset:(NSPointPointer)dragImageOffset 
+{
 	return [[NSImage alloc] initByReferencingFile: @"transparent.tiff"];
 }
 

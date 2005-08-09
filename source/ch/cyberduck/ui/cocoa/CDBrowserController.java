@@ -339,8 +339,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
             NSWindow window = (NSWindow) windows.objectAtIndex(count);
             CDBrowserController controller = CDBrowserController.controllerForWindow(window);
             if (null != controller) {
-                controller._updateBrowserListTableAttributes();
-                controller._updateBrowserOutlineTableAttributes();
+                controller._updateBrowserAttributes(controller.browserListView);
+                controller._updateBrowserAttributes(controller.browserOutlineView);
             }
         }
     }
@@ -352,8 +352,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
             NSWindow window = (NSWindow) windows.objectAtIndex(count);
             CDBrowserController controller = CDBrowserController.controllerForWindow(window);
             if (null != controller) {
-                controller._updateBrowserTableColumns(controller.browserListView);
-                controller._updateBrowserTableColumns(controller.browserOutlineView);
+                controller._updateBrowserColumns(controller.browserListView);
+                controller._updateBrowserColumns(controller.browserOutlineView);
             }
         }
     }
@@ -361,8 +361,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public void awakeFromNib() {
         super.awakeFromNib();
 
-        this._updateBrowserTableColumns(this.browserListView);
-        this._updateBrowserTableColumns(this.browserOutlineView);
+        this._updateBrowserColumns(this.browserListView);
+        this._updateBrowserColumns(this.browserOutlineView);
 
         // Configure window
         this.window().setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
@@ -389,15 +389,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     protected Comparator getFileComparator() {
-		switch(this.browserSwitchView.selectedSegment()) {
-			case LIST_VIEW: {
-                return this.browserListModel.getComparator();
-			}
-			case OUTLINE_VIEW: {
-                return this.browserOutlineModel.getComparator();
-			}
-		}
-        return null;
+        return this.getSelectedBrowserModel().getComparator();
     }
 
     private Filter filenameFilter;
@@ -429,21 +421,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
 	private void getFocus() {
-		log.debug("getFocus");
-		switch(this.browserSwitchView.selectedSegment()) {
-			case LIST_VIEW: {
-				this.window().makeFirstResponder(this.browserListView);
-				break;
-			}
-			case OUTLINE_VIEW: {
-				this.window().makeFirstResponder(this.browserOutlineView);
-				break;
-			}
-//			case COLUMN_VIEW: {
-//				this.window().makeFirstResponder(this.browserColumnView);
-//				break;
-//			}
-		}
+        this.window().makeFirstResponder(this.getSelectedBrowserView());
 	}
 
     private void reloadPathPopup() {
@@ -461,19 +439,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
 	private void reloadData() {
 		log.debug("reloadData");
         this.reloadPathPopup();
-		switch(this.browserSwitchView.selectedSegment()) {
-			case LIST_VIEW: {
-				this.browserListView.reloadData();
-				if(this.isMounted()) {
-					this.infoLabel.setStringValue(this.browserListView.numberOfRows() + " " +
-												  NSBundle.localizedString("files", ""));
-				}
-				else this.infoLabel.setStringValue("");
-				break;
-			}
-			case OUTLINE_VIEW: {
-				this.browserOutlineView.reloadData();
-				if(this.isMounted()) {
+        this.getSelectedBrowserView().reloadData();
+        if(this.isMounted()) {
+            this.infoLabel.setStringValue(this.getSelectedBrowserView().numberOfRows() + " " +
+                    NSBundle.localizedString("files", ""));
+            switch(this.browserSwitchView.selectedSegment()) {
+                case OUTLINE_VIEW: {
                     for(int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
                         Path p = (Path)this.browserOutlineView.itemAtRow(i);
                         if(p.attributes.isDirectory()) {
@@ -482,75 +453,36 @@ public class CDBrowserController extends CDWindowController implements Observer 
                             }
                         }
                     }
-					this.infoLabel.setStringValue(this.browserOutlineView.numberOfRows() + " " +
-												  NSBundle.localizedString("files", ""));
-				}
-				else this.infoLabel.setStringValue("");
-				break;
-			}
+                    break;
+                }
 //			case COLUMN_VIEW: {
 //                if(this.isMounted()) {
 //                    this.browserColumnView.setPath(workdir().getAbsolute());
 //                    this.browserColumnView.reloadColumn(browserColumnView.lastColumn());
 //                    this.browserColumnView.setPath(workdir().getAbsolute());
-//                    this.infoLabel.setStringValue(browserListModel.childs(workdir()).size() + " " +
-//                            NSBundle.localizedString("files", ""));
 //                    this.browserColumnView.validateVisibleColumns();
 //                }
-//                else infoLabel.setStringValue("");
 //				break;
-//			}
-		}
+			}
+        }
+        else {
+            this.infoLabel.setStringValue("");
+        }
     }
 
 	private void selectRow(Path path, boolean expand) {
 		log.debug("selectRow:"+path);
-		switch(this.browserSwitchView.selectedSegment()) {
-			case LIST_VIEW: {
-				this.selectRow(this.browserListModel.indexOf(this.browserListView, path), expand);
-				break;
-			}
-			case OUTLINE_VIEW: {
-				this.selectRow(this.browserOutlineModel.indexOf(this.browserOutlineView, path), expand);
-				break;
-			}
-//			case COLUMN_VIEW: {
-//				break;
-//			}
-		}
+        this.selectRow(this.getSelectedBrowserModel().indexOf(this.getSelectedBrowserView(), path), expand);
 	}
 	
 	private void selectRow(int row, boolean expand) {
 		log.debug("selectRow:"+row);
-		switch(this.browserSwitchView.selectedSegment()) {
-			case LIST_VIEW: {
-				this.browserListView.selectRow(row, expand);
-				break;
-			}
-			case OUTLINE_VIEW: {
-				this.browserOutlineView.selectRow(row, expand);
-				break;
-			}
-//			case COLUMN_VIEW: {
-//				break;
-//			}
-		}
+        this.getSelectedBrowserView().selectRow(row, expand);
 		this.getFocus();
 	}
 
     private int getClickedRow() {
-        switch(this.browserSwitchView.selectedSegment()) {
-            case LIST_VIEW: {
-                return this.browserListView.clickedRow();
-            }
-            case OUTLINE_VIEW: {
-                return this.browserOutlineView.clickedRow();
-            }
-//            case COLUMN_VIEW: {
-//                break;
-//            }
-        }
-        return -1;
+        return this.getSelectedBrowserView().clickedRow();
     }
 
     protected Path getSelectedPath() {
@@ -602,36 +534,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
 	}
 
 	private int getSelectionCount() {
-		switch(this.browserSwitchView.selectedSegment()) {
-			case LIST_VIEW: {
-				return this.browserListView.numberOfSelectedRows();
-			}
-			case OUTLINE_VIEW: {
-				return this.browserOutlineView.numberOfSelectedRows();
-			}
-//			case COLUMN_VIEW: {
-//				NSArray selectedCells = this.browserColumnView.selectedCells();
-//				if(selectedCells != null)
-//					return selectedCells.count();
-//			}
-		}
-		return 0;
+        return this.getSelectedBrowserView().numberOfSelectedRows();
 	}
 
 	private void deselectAll() {
-		switch(this.browserSwitchView.selectedSegment()) {
-			case LIST_VIEW: {
-				this.browserListView.deselectAll(null);
-				break;
-			}
-			case OUTLINE_VIEW: {
-				this.browserOutlineView.deselectAll(null);
-				break;
-			}
-//			case COLUMN_VIEW: {
-//				break;
-//			}
-		}
+        this.getSelectedBrowserView().deselectAll(null);
 	}
 
 //	public void browserColumnViewRowClicked(Object sender) {
@@ -735,7 +642,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 //		}
 //	}
 
-	public NSView getSelectedBrowserView() {
+	public NSTableView getSelectedBrowserView() {
 		switch(this.browserSwitchView.selectedSegment()) {
 			case LIST_VIEW: {
 				return this.browserListView;
@@ -749,6 +656,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
 		return null;
 	}
+
+    public CDBrowserTableDataSource getSelectedBrowserModel() {
+        return (CDBrowserTableDataSource)this.getSelectedBrowserView().dataSource();
+    }
 
     private NSSegmentedControl browserSwitchView;
 
@@ -802,7 +713,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
         // setting appearance attributes
         this.browserOutlineView.setRowHeight(17f);
-        this._updateBrowserOutlineTableAttributes();
+        this._updateBrowserAttributes(this.browserOutlineView);
         // selection properties
         this.browserOutlineView.setAllowsMultipleSelection(true);
         this.browserOutlineView.setAllowsEmptySelection(true);
@@ -855,7 +766,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
         // setting appearance attributes
         this.browserListView.setRowHeight(17f);
-        this._updateBrowserListTableAttributes();
+        this._updateBrowserAttributes(this.browserListView);
         // selection properties
         this.browserListView.setAllowsMultipleSelection(true);
         this.browserListView.setAllowsEmptySelection(true);
@@ -954,40 +865,24 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
     }
 
-    protected void _updateBrowserOutlineTableAttributes() {
-        this.browserOutlineView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
+    protected void _updateBrowserAttributes(NSTableView tableView) {
+        tableView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
         if (Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
-            this.browserOutlineView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
+            tableView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
         }
         else if (Preferences.instance().getBoolean("browser.verticalLines")) {
-            this.browserOutlineView.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
+            tableView.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
         }
         else if (Preferences.instance().getBoolean("browser.horizontalLines")) {
-            this.browserOutlineView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
+            tableView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
         }
         else {
-            this.browserOutlineView.setGridStyleMask(NSTableView.GridNone);
+            tableView.setGridStyleMask(NSTableView.GridNone);
         }
     }
 
-    protected void _updateBrowserListTableAttributes() {
-        this.browserListView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
-        if (Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
-            this.browserListView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
-        }
-        else if (Preferences.instance().getBoolean("browser.verticalLines")) {
-            this.browserListView.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
-        }
-        else if (Preferences.instance().getBoolean("browser.horizontalLines")) {
-            this.browserListView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
-        }
-        else {
-            this.browserListView.setGridStyleMask(NSTableView.GridNone);
-        }
-    }
-
-    protected void _updateBrowserTableColumns(NSTableView table) {
-        log.debug("_updateBrowserTableColumns");
+    protected void _updateBrowserColumns(NSTableView table) {
+        log.debug("_updateBrowserColumns");
         table.removeTableColumn(table.tableColumnWithIdentifier("SIZE"));
         NSSelector setResizableMaskSelector
                 = new NSSelector("setResizingMask", new Class[]{int.class});
@@ -1653,8 +1548,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public void editButtonClicked(Object sender) {
         log.debug("editButtonClicked");
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext(); ) {
-            Path path = (Path) i.next();
-            if (path.attributes.isFile()) {
+            Path selected = (Path) i.next();
+            if(this.isEditable(selected)) {
                 Editor editor = null;
                 if (sender instanceof NSMenuItem) {
 					Object identifier = Editor.SUPPORTED_EDITORS.get(((NSMenuItem)sender).title());
@@ -1665,7 +1560,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 				if(null == editor) {
                     editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
 				}
-				editor.open(path);
+				editor.open(selected);
             }
         }
     }
@@ -1957,7 +1852,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void disconnectButtonClicked(Object sender) {
 		this.unmount();
-		this.reloadData();
+        this.deselectAll();
+        this.getSelectedBrowserView().setNeedsDisplay(true);
     }
 
     public void showHiddenFilesClicked(Object sender) {
@@ -2381,21 +2277,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
 		if(identifier.equals("Edit") || identifier.equals("editButtonClicked:")) {
             if(this.isMounted() && this.getSelectionCount() > 0) {
-                Path selected = this.getSelectedPath();
-                if(selected.attributes.isFile()) {
-                    if(null == selected.getExtension()) {
-                        return true;
-                    }
-                    if (selected.getExtension() != null) {
-                        StringTokenizer binaryTypes = new StringTokenizer(Preferences.instance().getProperty("editor.disabledFiles"), " ");
-                        while(binaryTypes.hasMoreTokens()) {
-                            if(binaryTypes.nextToken().equalsIgnoreCase(selected.getExtension())) {
-                                return false;
-                            }
-                        }
-                    }
-                    return true;
-                }
+                return this.isEditable(this.getSelectedPath());
             }
             return false;
 		}
@@ -2454,6 +2336,24 @@ public class CDBrowserController extends CDWindowController implements Observer 
             return this.isMounted() && this.isConnected();
         }
         return true; // by default everything is enabled
+    }
+
+    private boolean isEditable(Path selected) {
+        if(selected.attributes.isFile()) {
+            if(null == selected.getExtension()) {
+                return true;
+            }
+            if (selected.getExtension() != null) {
+                StringTokenizer binaryTypes = new StringTokenizer(Preferences.instance().getProperty("editor.disabledFiles"), " ");
+                while(binaryTypes.hasMoreTokens()) {
+                    if(binaryTypes.nextToken().equalsIgnoreCase(selected.getExtension())) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     // ----------------------------------------------------------
