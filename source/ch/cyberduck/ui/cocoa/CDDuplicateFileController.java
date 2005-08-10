@@ -73,7 +73,7 @@ public class CDDuplicateFileController extends CDFileController {
                     Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
 					editor.open(path);
 				}
-					break;
+                break;
 			case (NSAlertPanel.AlternateReturn): //Cancel
 				break;
 		}

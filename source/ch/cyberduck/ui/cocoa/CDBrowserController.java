@@ -2219,16 +2219,14 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 item.setTitle(NSBundle.localizedString("Cut", "Menu item"));
         }
         if (identifier.equals("editButtonClicked:")) {
-			String bundleIdentifier = (String)Editor.SUPPORTED_EDITORS.get(item.title());
-			if(null != bundleIdentifier) {
-				String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
-				if(path != null) {
-					NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
-					icon.setScalesWhenResized(true);
-					icon.setSize(new NSSize(16f, 16f));
-					item.setImage(icon);
-				}
-			}
+            String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                    Preferences.instance().getProperty("editor.bundleIdentifier"));
+            if (editorPath != null) {
+                NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(editorPath);
+                icon.setScalesWhenResized(true);
+                icon.setSize(new NSSize(16f, 16f));
+                item.setImage(icon);
+            }
         }
         if (identifier.equals("showHiddenFilesClicked:")) {
             item.setState((this.getFileFilter() instanceof NullFilter) ? NSCell.OnState : NSCell.OffState);
@@ -2277,7 +2275,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
 		if(identifier.equals("Edit") || identifier.equals("editButtonClicked:")) {
             if(this.isMounted() && this.getSelectionCount() > 0) {
-                return this.isEditable(this.getSelectedPath());
+                String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                        Preferences.instance().getProperty("editor.bundleIdentifier"));
+                if (editorPath != null) {
+                    return this.isEditable(this.getSelectedPath());
+                }
             }
             return false;
 		}
