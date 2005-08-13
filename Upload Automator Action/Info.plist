@@ -19,34 +19,34 @@
 	<false/>
 	<key>AMCanShowWhenRun</key>
 	<true/>
-	<key>AMCategory</key>
-	<string>Cyberduck</string>
 	<key>AMDefaultParameters</key>
 	<dict>
-		<key>server</key>
-		<string></string>
-		<key>protocol</key>
-		<integer>0</integer>
-		<key>username</key>
-		<string></string>
 		<key>password</key>
 		<string></string>
 		<key>path</key>
 		<string></string>
+		<key>protocol</key>
+		<integer>0</integer>
+		<key>server</key>
+		<string></string>
+		<key>username</key>
+		<string>anonymous</string>
 	</dict>
+	<key>AMKeywords</key>
+	<array>
+		<string>Upload</string>
+	</array>
+	<key>AMName</key>
+	<string>Upload files</string>
 	<key>AMDescription</key>
 	<dict>
 		<key>AMDInput</key>
-		<string></string>
-		<key>AMDOptions</key>
-		<string></string>
+		<string>References to files and folders to upload.</string>
+		<key>AMDResult</key>
+		<string>References to files and folders uploaded.</string>
 		<key>AMDSummary</key>
-		<string></string>
+		<string>This action upload files to a server using FTP/FTP-TLS or SFTP.</string>
 	</dict>
-	<key>AMKeywords</key>
-	<array/>
-	<key>AMName</key>
-	<string>Upload</string>
 	<key>AMProvides</key>
 	<dict>
 		<key>Container</key>
@@ -56,8 +56,6 @@
 			<string>com.apple.applescript.alias-object</string>
 		</array>
 	</dict>
-	<key>AMRequiredResources</key>
-	<array/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleGetInfoString</key>
