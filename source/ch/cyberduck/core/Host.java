@@ -166,7 +166,13 @@ public class Host {
 		log.debug(this.toString());
 	}
 
-	public static Host parse(String input) throws MalformedURLException {
+    /**
+     * Parses URL in the format ftp://username:pass@hostname:portnumber/path/to/file
+     * @param input
+     * @return
+     * @throws MalformedURLException
+     */
+    public static Host parse(String input) throws MalformedURLException {
 		if(null == input || input.length() == 0)
 			throw new MalformedURLException("No hostname given");
 		int begin = 0;
@@ -195,7 +201,8 @@ public class Host {
 			throw new MalformedURLException("Unknown protocol: "+protocol);
 		}
 		if(input.indexOf('@', begin) != -1) {
-            if(input.indexOf(':', begin) != -1) {
+            if(input.indexOf(':', begin) != -1 && input.indexOf('@', begin) > input.indexOf(':', begin)) {
+                // ':' is not for the port number but username:pass seperator
                 cut = input.indexOf(':', begin);
                 username = input.substring(begin, cut);
                 begin += username.length()+1;
@@ -204,6 +211,7 @@ public class Host {
                 begin += password.length()+1;
             }
             else {
+                //no password given
                 cut = input.indexOf('@', begin);
                 username = input.substring(begin, cut);
                 begin += username.length()+1;
@@ -235,7 +243,7 @@ public class Host {
 		else if(input.indexOf('/', begin) != -1) {
 			cut = input.indexOf('/', begin);
 			hostname = input.substring(begin, cut);
-			begin += hostname.length();
+			begin += hostname.length()+1;
 			path = input.substring(begin, input.length());
 		}
 		Host h = new Host(protocol,

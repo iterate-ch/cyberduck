@@ -42,7 +42,7 @@ public class HostTest extends TestCase {
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNotNull(h.getCredentials().getPassword());
                 assertTrue(h.getCredentials().getPassword().equals("pass"));
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
+                assertTrue(h.getDefaultPath().equals("path/to/file"));
             }
             {
                 String url = "ftp://user:pass@hostname/path/to/file";
@@ -53,7 +53,7 @@ public class HostTest extends TestCase {
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNotNull(h.getCredentials().getPassword());
                 assertTrue(h.getCredentials().getPassword().equals("pass"));
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
+                assertTrue(h.getDefaultPath().equals("path/to/file"));
             }
             {
                 String url = "ftps://user:pass@hostname/path/to/file";
@@ -64,7 +64,51 @@ public class HostTest extends TestCase {
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNotNull(h.getCredentials().getPassword());
                 assertTrue(h.getCredentials().getPassword().equals("pass"));
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
+                assertTrue(h.getDefaultPath().equals("path/to/file"));
+            }
+        }
+        catch(MalformedURLException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    public void testParseURLWithPortNumber() {
+        try {
+            {
+                String url = "sftp://user:pass@hostname:999/path/to/file";
+                Host h = Host.parse(url);
+                assertTrue(h.getHostname().equals("hostname"));
+                assertTrue(h.getProtocol().equals(Session.SFTP));
+                assertTrue(h.getPort() == 999);
+                assertNotNull(h.getCredentials().getUsername());
+                assertTrue(h.getCredentials().getUsername().equals("user"));
+                assertNotNull(h.getCredentials().getPassword());
+                assertTrue(h.getCredentials().getPassword().equals("pass"));
+                assertTrue(h.getDefaultPath().equals("path/to/file"));
+            }
+            {
+                String url = "ftp://user:pass@hostname:999/path/to/file";
+                Host h = Host.parse(url);
+                assertTrue(h.getHostname().equals("hostname"));
+                assertTrue(h.getProtocol().equals(Session.FTP));
+                assertTrue(h.getPort() == 999);
+                assertNotNull(h.getCredentials().getUsername());
+                assertTrue(h.getCredentials().getUsername().equals("user"));
+                assertNotNull(h.getCredentials().getPassword());
+                assertTrue(h.getCredentials().getPassword().equals("pass"));
+                assertTrue(h.getDefaultPath().equals("path/to/file"));
+            }
+            {
+                String url = "ftps://user:pass@hostname:999/path/to/file";
+                Host h = Host.parse(url);
+                assertTrue(h.getHostname().equals("hostname"));
+                assertTrue(h.getProtocol().equals(Session.FTP_TLS));
+                assertTrue(h.getPort() == 999);
+                assertNotNull(h.getCredentials().getUsername());
+                assertTrue(h.getCredentials().getUsername().equals("user"));
+                assertNotNull(h.getCredentials().getPassword());
+                assertTrue(h.getCredentials().getPassword().equals("pass"));
+                assertTrue(h.getDefaultPath().equals("path/to/file"));
             }
         }
         catch(MalformedURLException e) {
@@ -82,7 +126,7 @@ public class HostTest extends TestCase {
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNull(h.getCredentials().getPassword());
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
+                assertTrue(h.getDefaultPath().equals("path/to/file"));
             }
             {
                 String url = "ftp://user@hostname/path/to/file";
@@ -92,7 +136,7 @@ public class HostTest extends TestCase {
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNull(h.getCredentials().getPassword());
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
+                assertTrue(h.getDefaultPath().equals("path/to/file"));
             }
             {
                 String url = "ftps://user@hostname/path/to/file";
@@ -102,7 +146,7 @@ public class HostTest extends TestCase {
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNull(h.getCredentials().getPassword());
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
+                assertTrue(h.getDefaultPath().equals("path/to/file"));
             }
         }
         catch(MalformedURLException e) {
@@ -120,7 +164,7 @@ public class HostTest extends TestCase {
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNull(h.getCredentials().getPassword());
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
+                assertTrue(h.getDefaultPath().equals("path/to/file"));
             }
             {
                 String url = "user@hostname";
@@ -130,6 +174,34 @@ public class HostTest extends TestCase {
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNull(h.getCredentials().getPassword());
+            }
+        }
+        catch(MalformedURLException e) {
+            fail(e.getMessage());
+        }
+    }
+
+        public void testParseURLWithDefaultPath() {
+        try {
+            {
+                String url = "user@hostname//path/to/file";
+                Host h = Host.parse(url);
+                assertTrue(h.getDefaultPath().equals("/path/to/file"));
+            }
+            {
+                String url = "user@hostname/path/to/file";
+                Host h = Host.parse(url);
+                assertTrue(h.getDefaultPath().equals("path/to/file"));
+            }
+            {
+                String url = "user@hostname:999//path/to/file";
+                Host h = Host.parse(url);
+                assertTrue(h.getDefaultPath().equals("/path/to/file"));
+            }
+            {
+                String url = "user@hostname:999/path/to/file";
+                Host h = Host.parse(url);
+                assertTrue(h.getDefaultPath().equals("path/to/file"));
             }
         }
         catch(MalformedURLException e) {
