@@ -18,13 +18,26 @@ package ch.cyberduck.core;
 *  dkocher@cyberduck.ch
 */
 
-import java.util.*;
+import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSArray;
 
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+import java.lang.reflect.Array;
 
 /**
+ * Facade for com.apple.cocoa.foundation.NSMutableArray
+ *
  * @version $Id$
  */
-public class AttributedList extends ArrayList {
+public class AttributedList implements List {
+
+    private NSMutableArray content = new NSMutableArray();
 
     //primary attributes
     protected static final String FILTER = "FILTER";
@@ -46,10 +59,10 @@ public class AttributedList extends ArrayList {
     /**
      * Initialize an attributed list with default attributes
      *
-     * @param List
+     * @param list
      */
-    public AttributedList(List List) {
-        super(List);
+    public AttributedList(java.util.List list) {
+        this.content = new NSMutableArray(list.toArray());
         this.attributes = new Attributes();
     }
 
@@ -57,13 +70,9 @@ public class AttributedList extends ArrayList {
         this.attributes = attributes;
     }
 
-    public AttributedList(List List, Attributes attributes) {
-        super(List);
+    public AttributedList(java.util.List list, Attributes attributes) {
+        this.content = new NSMutableArray(list.toArray());
         this.attributes = attributes;
-    }
-
-    public Attributes getAttributes() {
-        return attributes;
     }
 
     /**
@@ -72,7 +81,7 @@ public class AttributedList extends ArrayList {
      * @see Filter
      * @see BrowserComparator
      */
-    protected class Attributes extends HashMap {
+    protected class Attributes extends java.util.HashMap {
         /**
          * Initialize with default values
          */
@@ -87,7 +96,7 @@ public class AttributedList extends ArrayList {
         public Attributes(Comparator comparator, Filter filter) {
             this.put(COMPARATOR, comparator);
             this.put(FILTER, filter);
-            this.put(HIDDEN, new HashSet());
+            this.put(HIDDEN, new java.util.HashSet());
             this.put(EXPANDED, new Boolean(false));
             this.put(INVALID, new Boolean(false));
         }
@@ -103,6 +112,293 @@ public class AttributedList extends ArrayList {
         public void addHidden(Path child) {
             ((Set) this.get(HIDDEN)).add(child);
         }
+    }
 
+    public Attributes getAttributes() {
+        return attributes;
+    }
+
+    public int size() {
+        return this.content.count();
+    }
+
+    public boolean isEmpty() {
+        return this.size() == 0;
+    }
+
+    public boolean contains(Object object) {
+        return this.content.containsObject(object);
+    }
+
+    public Iterator iterator() {
+        return new Iterator() {
+            private int pos = 0;
+            private int size = AttributedList.this.size();
+            private int last = -1;
+
+            public boolean hasNext() {
+                return pos < size;
+            }
+
+            public Object next() {
+                if (pos == size) {
+                    throw new NoSuchElementException();
+                }
+                last = pos;
+                return AttributedList.this.get(pos++);
+            }
+
+            public void remove() {
+                if (last < 0) {
+                    throw new IllegalStateException();
+                }
+                AttributedList.this.remove(last);
+                pos--;
+                size--;
+                last = -1;
+            }
+        };
+    }
+
+    /**
+     * @return an array containing all of the elements in this collection
+     */
+    public Object[] toArray() {
+        Object[] array = new Object[this.size()];
+        int i = 0;
+        for (Iterator iter = this.iterator(); iter.hasNext(); i++) {
+            array[i] = iter.next();
+        }
+        return array;
+    }
+
+    public Object[] toArray(Object[] objects) {
+        int size = this.size();
+        if (objects.length < size) {
+            objects = (Object[]) Array.newInstance(objects.getClass().getComponentType(), size);
+        }
+        else if (objects.length > size) {
+            objects[size] = null;
+        }
+        Iterator iter = iterator();
+        for (int pos = 0; pos < size; pos++) {
+            objects[pos] = iter.next();
+        }
+        return objects;
+    }
+
+    /**
+     * @param object
+     * @return true if this collection changed as a result of the call
+     */
+    public boolean add(Object object) {
+        this.content.addObject(object);
+        return true;
+    }
+
+    /**
+     * @param object
+     * @return true if this collection changed as a result of the call
+     */
+    public boolean remove(Object object) {
+        this.content.removeObject(object);
+        return true;
+    }
+
+    /**
+     * @param collection
+     * @return true if this collection contains all of the elements in the specified collection
+     */
+    public boolean containsAll(java.util.Collection collection) {
+        for (Iterator iter = collection.iterator(); iter.hasNext();) {
+            if (!this.contains(iter.next())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param collection
+     * @return true if this collection changed as a result of the call
+     */
+    public boolean addAll(java.util.Collection collection) {
+        this.content.addObjectsFromArray(new NSArray(collection.toArray()));
+        return true;
+    }
+
+    public boolean addAll(int i, java.util.Collection collection) {
+        for (Iterator iter = collection.iterator(); iter.hasNext();) {
+            this.content.insertObjectAtIndex(iter.next(), i);
+            i++;
+        }
+        return true;
+    }
+
+    /**
+     * @param collection
+     * @return true if this collection changed as a result of the call
+     */
+    public boolean removeAll(java.util.Collection collection) {
+        this.content.removeObjectsInArray(new NSArray(collection.toArray()));
+        return true;
+    }
+
+    /**
+     * @param collection
+     * @return true if this collection changed as a result of the call
+     */
+    public boolean retainAll(java.util.Collection collection) {
+        boolean changed = false;
+        for (Iterator iter = this.iterator(); iter.hasNext();) {
+            if (!collection.contains(iter.next())) {
+                iter.remove();
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    /**
+     * Removes all of the elements from this collection
+     */
+    public void clear() {
+        this.content.removeAllObjects();
+    }
+
+    public boolean equals(Object object) {
+        return this.content.equals(object);
+    }
+
+    public int hashCode() {
+        return this.content.hashCode();
+    }
+
+    public Object get(int i) {
+        return this.content.objectAtIndex(i);
+    }
+
+    /**
+     * @param i      position
+     * @param object
+     * @return the element previously at the specified position.
+     */
+    public Object set(int i, Object object) {
+        Object previous = this.get(i);
+        this.content.replaceObjectAtIndex(i, object);
+        return previous;
+    }
+
+    public void add(int i, Object object) {
+        this.content.insertObjectAtIndex(object, i);
+    }
+
+    /**
+     * @param i
+     * @return the element previously at the specified position.
+     */
+    public Object remove(int i) {
+        Object previous = this.get(i);
+        this.content.removeObjectAtIndex(i);
+        return previous;
+    }
+
+    public int indexOf(Object object) {
+        int i = this.content.indexOfObject(object);
+        if (i == NSArray.NotFound) {
+            return -1;
+        }
+        return i;
+    }
+
+    public int lastIndexOf(Object o) {
+        int pos = size();
+        ListIterator itr = listIterator(pos);
+        while (--pos >= 0) {
+            if (o.equals(itr.previous())) {
+                return pos;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * @return a list iterator of the elements in this list (in proper sequence), starting at the specified
+     *         position in this list.
+     */
+    public ListIterator listIterator() {
+        return this.listIterator(0);
+    }
+
+    /**
+     * @param index index of first element to be returned from the list iterator (by a call to the next method).
+     * @return a list iterator of the elements in this list (in proper sequence), starting at the specified
+     *         position in this list.
+     */
+    public ListIterator listIterator(final int index) {
+        return new ListIterator() {
+            private int position = index;
+            private int lastReturned = -1;
+            private int size = AttributedList.this.size();
+
+            public boolean hasNext() {
+                return position < size;
+            }
+
+            public boolean hasPrevious() {
+                return position > 0;
+            }
+
+            public Object next() {
+                if (position == size) {
+                    throw new NoSuchElementException();
+                }
+                lastReturned = position;
+                return AttributedList.this.get(position++);
+            }
+
+            public Object previous() {
+                if (position == 0) {
+                    throw new NoSuchElementException();
+                }
+                lastReturned = --position;
+                return AttributedList.this.get(lastReturned);
+            }
+
+            public int nextIndex() {
+                return position;
+            }
+
+            public int previousIndex() {
+                return position - 1;
+            }
+
+            public void remove() {
+                if (lastReturned < 0)
+                    throw new IllegalStateException();
+                AttributedList.this.remove(lastReturned);
+                size--;
+                position = lastReturned;
+                lastReturned = -1;
+            }
+
+            public void set(Object o) {
+                if (lastReturned < 0)
+                    throw new IllegalStateException();
+                AttributedList.this.set(lastReturned, o);
+            }
+
+            public void add(Object o) {
+                AttributedList.this.add(position++, o);
+                size++;
+                lastReturned = -1;
+            }
+        };
+    }
+
+    public List subList(int fromIndex, int toIndex) {
+        throw new UnsupportedOperationException("Not implemented");
     }
 }
+
+

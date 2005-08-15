@@ -136,8 +136,9 @@ public abstract class Preferences {
 		defaults.put("queue.download.permissions.useDefault", "false");
 		defaults.put("queue.download.permissions.default", "rw-r--r--");
 		defaults.put("queue.download.preserveDate", "true");
+        defaults.put("queue.download.updateIcon", "true");
 
-		defaults.put("queue.sync.ignore.hour", "false");
+        defaults.put("queue.sync.ignore.hour", "false");
 		defaults.put("queue.sync.ignore.minute", "false");
 		defaults.put("queue.sync.ignore.second", "true");
 		defaults.put("queue.sync.ignore.millisecond", "true");

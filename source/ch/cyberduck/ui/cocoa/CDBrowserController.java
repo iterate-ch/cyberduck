@@ -114,7 +114,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public Object handleCloseScriptCommand(NSScriptCommand command) {
         log.debug("handleCloseScriptCommand:" + command);
-        this.unmount();
+		this.handleDisconnectScriptCommand(command);
         this.window().close();
         return null;
     }
@@ -122,6 +122,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public Object handleDisconnectScriptCommand(NSScriptCommand command) {
         log.debug("handleDisconnectScriptCommand:" + command);
         this.unmount();
+        this.deselectAll();
+        this.getSelectedBrowserView().setNeedsDisplay(true);
         return null;
     }
 
@@ -366,7 +368,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
         // Configure window
         this.window().setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
-        this.window().setInitialFirstResponder(quickConnectPopup);
+        this.window().setInitialFirstResponder(this.quickConnectPopup);
         // Drawer states
         if (Preferences.instance().getBoolean("bookmarkDrawer.isOpen")) {
             this.bookmarkDrawer.open();
@@ -1104,7 +1106,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             else {
                 item.setImage(NSImage.imageNamed("pencil.tiff"));
             }
-            item.setAction(new NSSelector("editButtonClicked", new Class[]{Object.class}));
+            item.setAction(new NSSelector("editButtonContextMenuClicked", new Class[]{Object.class}));
             return !shouldCancel;
 		}
 	}
@@ -1134,7 +1136,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
             public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
                 if (row < this.numberOfItemsInComboBox(combo)) {
-                    return ((Host) CDBookmarkTableDataSource.instance().get(row)).getHostname();
+                    return ((Host) CDBookmarkTableDataSource.instance().get(row)).getNickname();
                 }
                 return null;
             }
@@ -1147,7 +1149,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         try {
             for (Iterator iter = bookmarkModel.iterator(); iter.hasNext();) {
                 Host h = (Host) iter.next();
-                if (h.getHostname().equals(input)) {
+                if (h.getNickname().equals(input)) {
                     this.mount(h);
                     return;
                 }
@@ -1545,6 +1547,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
 	}
 	
+	public void editButtonContextMenuClicked(Object sender) {
+		this.editButtonClicked(sender);
+	}
+		
     public void editButtonClicked(Object sender) {
         log.debug("editButtonClicked");
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext(); ) {
@@ -2228,6 +2234,18 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 item.setImage(icon);
             }
         }
+		if (identifier.equals("editButtonContextMenuClicked:")) {
+			String bundleIdentifier = (String)Editor.SUPPORTED_EDITORS.get(item.title());
+			if(null != bundleIdentifier) {
+				String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
+				if(path != null) {
+					NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
+					icon.setScalesWhenResized(true);
+					icon.setSize(new NSSize(16f, 16f));
+					item.setImage(icon);
+				}
+			}
+		}
         if (identifier.equals("showHiddenFilesClicked:")) {
             item.setState((this.getFileFilter() instanceof NullFilter) ? NSCell.OnState : NSCell.OffState);
         }
@@ -2393,7 +2411,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             item.setLabel(NSBundle.localizedString("View", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("View", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Switch Browser View", "Toolbar item tooltip"));
-            item.setView(browserSwitchView);
+            item.setView(this.browserSwitchView);
             NSMenuItem viewMenu = new NSMenuItem();
 			viewMenu.setTitle(NSBundle.localizedString("View", "Toolbar item"));
             NSMenu viewSubmenu = new NSMenu();
@@ -2411,8 +2429,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
 //			viewSubmenu.itemWithTitle(NSBundle.localizedString("Column", "Toolbar item")).setTag(2);
             viewMenu.setSubmenu(viewSubmenu);
             item.setMenuFormRepresentation(viewMenu);
-			item.setMinSize(browserSwitchView.frame().size());
-            item.setMaxSize(browserSwitchView.frame().size());
+			item.setMinSize(this.browserSwitchView.frame().size());
+            item.setMaxSize(this.browserSwitchView.frame().size());
             return item;
         }
         if (itemIdentifier.equals("New Connection")) {
@@ -2445,36 +2463,36 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		if (itemIdentifier.equals("Tools")) {
             item.setLabel(NSBundle.localizedString("Action", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Action", "Toolbar item"));
-            item.setView(actionPopupButton);
+            item.setView(this.actionPopupButton);
             NSMenuItem toolMenu = new NSMenuItem();
 			toolMenu.setTitle(NSBundle.localizedString("Action", "Toolbar item"));
             NSMenu toolSubmenu = new NSMenu();
-			for(int i = 1; i < actionPopupButton.menu().numberOfItems(); i++) {
-				NSMenuItem template = actionPopupButton.menu().itemAtIndex(i);
+			for(int i = 1; i < this.actionPopupButton.menu().numberOfItems(); i++) {
+				NSMenuItem template = this.actionPopupButton.menu().itemAtIndex(i);
 				toolSubmenu.addItem(new NSMenuItem(template.title(),
 												   template.action(),
 												   template.keyEquivalent()));
 			}
             toolMenu.setSubmenu(toolSubmenu);
             item.setMenuFormRepresentation(toolMenu);
-            item.setMinSize(actionPopupButton.frame().size());
-            item.setMaxSize(actionPopupButton.frame().size());
+            item.setMinSize(this.actionPopupButton.frame().size());
+            item.setMaxSize(this.actionPopupButton.frame().size());
             return item;
 		}
         if (itemIdentifier.equals("Quick Connect")) {
             item.setLabel(NSBundle.localizedString("Quick Connect", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Quick Connect", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Connect to server", "Toolbar item tooltip"));
-            item.setView(quickConnectPopup);
-            item.setMinSize(quickConnectPopup.frame().size());
-            item.setMaxSize(quickConnectPopup.frame().size());
+            item.setView(this.quickConnectPopup);
+            item.setMinSize(this.quickConnectPopup.frame().size());
+            item.setMaxSize(this.quickConnectPopup.frame().size());
             return item;
         }
         if (itemIdentifier.equals("Encoding")) {
             item.setLabel(NSBundle.localizedString("Encoding", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Encoding", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Character Encoding", "Toolbar item tooltip"));
-            item.setView(encodingPopup);
+            item.setView(this.encodingPopup);
             NSMenuItem encodingMenu = new NSMenuItem(NSBundle.localizedString("Encoding", "Toolbar item"),
                     new NSSelector("encodingButtonClicked", new Class[]{Object.class}),
                     "");
@@ -2488,8 +2506,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
             }
             encodingMenu.setSubmenu(charsetMenu);
             item.setMenuFormRepresentation(encodingMenu);
-            item.setMinSize(encodingPopup.frame().size());
-            item.setMaxSize(encodingPopup.frame().size());
+            item.setMinSize(this.encodingPopup.frame().size());
+            item.setMaxSize(this.encodingPopup.frame().size());
             return item;
         }
         if (itemIdentifier.equals("Refresh")) {
@@ -2564,7 +2582,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                         identifier) != null;
                 if(enabled) {
                     editMenu.addItem(new NSMenuItem(editor,
-                            new NSSelector("editButtonClicked", new Class[]{Object.class}),
+                            new NSSelector("editButtonContextMenuClicked", new Class[]{Object.class}),
                             ""));
                 }
             }

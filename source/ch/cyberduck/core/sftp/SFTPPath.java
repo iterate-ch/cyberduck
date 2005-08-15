@@ -94,12 +94,12 @@ public class SFTPPath extends Path {
         return this.session;
     }
 
-    public List list(boolean refresh, String encoding, boolean notifyObservers, Comparator comparator, Filter filter) {
+    public AttributedList list(boolean refresh, String encoding, boolean notifyObservers, Comparator comparator, Filter filter) {
         if(notifyObservers) {
             session.addPathToHistory(this);
         }
         if (refresh || !session.cache().exists(this) || session.cache().isInvalid(this)) {
-            List files = null;
+            AttributedList files = null;
             if(session.cache().isInvalid(this)) {
                 files = new AttributedList(session.cache().get(this).getAttributes());
             }

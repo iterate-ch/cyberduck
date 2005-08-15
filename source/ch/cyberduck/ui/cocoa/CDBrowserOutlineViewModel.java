@@ -37,16 +37,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
     private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
     private static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
-    private Map content = new HashMap();
-
-    protected List childs(Path path) {
-        List childs = super.childs(path);
-        //Keep a referencd to all returned items so they don't get released by the java garbage collector when
-        //there is still a weak reference from the obj-c runtime
-        this.content.put(path, childs);
-        return childs;
-    }
-
     public CDBrowserOutlineViewModel(CDBrowserController controller) {
         super(controller);
     }
