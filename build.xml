@@ -34,6 +34,8 @@
     <property name="build.unittests" value="${build}/unittests" />
     <property name="build.unittests.reports" value="${build}/unittests/junit_reports" />
 	<property name="build.spotlight" value="${home}/Spotlight Importer/build/Deployment"/>
+	<property name="build.automator.upload" value="${home}/Upload Automator Action/build/Deployment"/>
+	<property name="build.automator.download" value="${home}/Download Automator Action/build/Deployment"/>
 	<property name="config" value="${home}/config"/>
 	<property name="img" value="${home}/img"/>
 	<property name="lib" value="${home}/lib"/>
@@ -75,6 +77,7 @@
 	<property name="app.resources" value="${app.contents}/Resources"/>
 	<property name="app.java" value="${app.resources}/Java"/>
 	<property name="app.spotlight" value="${app.library}/Spotlight"/>
+	<property name="app.automator" value="${app.library}/Automator"/>
 
 	<target name="init" depends="manifest">
 	  <tstamp>
@@ -149,6 +152,14 @@
 		<copy todir="${app.spotlight}">
 			<fileset dir="${build.spotlight}">
 				<include name="*.mdimporter/**"/>
+			</fileset>
+		</copy>
+		<copy todir="${app.automator}">
+			<fileset dir="${build.automator.upload}">
+				<include name="*.action/**"/>
+			</fileset>
+			<fileset dir="${build.automator.download}">
+				<include name="*.action/**"/>
 			</fileset>
 		</copy>
 		<antcall target="repace-tokens"/>
