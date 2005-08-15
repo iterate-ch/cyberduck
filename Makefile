@@ -13,8 +13,7 @@ default:
 	xcodebuild -project Spotlight\ Importer/Spotlight\ Importer.xcodeproj -target Spotlight\ Importer -configuration $(BUILDSTYLE)
 	xcodebuild -project $(PROJECT) -target build -configuration $(BUILDSTYLE)
 
-release:
-	xcodebuild -project Spotlight\ Importer/Spotlight\ Importer.xcodeproj -target Spotlight\ Importer -configuration $(BUILDSTYLE)
+release: default
 	xcodebuild -project $(PROJECT) -target release -configuration $(BUILDSTYLE)
 
 clean:
