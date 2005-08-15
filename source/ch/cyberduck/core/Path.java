@@ -230,7 +230,7 @@ public abstract class Path {
      * @param filter The filter to exlude certain files
      * @return null if there is an error, otherwise a list with 0-n <code>Path</code> references
      */
-    public abstract List list(boolean reload, String encoding, boolean notifyObservers, Comparator comparator, Filter filter);
+    public abstract AttributedList list(boolean reload, String encoding, boolean notifyObservers, Comparator comparator, Filter filter);
 
     /**
 	 * Remove this file from the remote host. Does not affect any corresponding local file

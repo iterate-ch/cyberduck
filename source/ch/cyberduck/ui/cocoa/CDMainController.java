@@ -622,8 +622,12 @@ public class CDMainController extends CDController {
 
 	public void applicationShouldSleep(Object o) {
 		log.debug("applicationShouldSleep");
-		this.rendezvous.quit();
-		NSArray windows = NSApplication.sharedApplication().windows();
+        //Stopping rendezvous service discovery
+        this.rendezvous.quit();
+        //halt all transfers
+        CDQueueController.instance().stopAllButtonClicked(null);
+        //close all browsing connections
+        NSArray windows = NSApplication.sharedApplication().windows();
 		int count = windows.count();
 		// Determine if there are any open connections
 		while(0 != count--) {
@@ -633,7 +637,7 @@ public class CDMainController extends CDController {
 				controller.unmount();
 			}
 		}
-	}
+    }
 
 	public void applicationShouldWake(Object o) {
 		log.debug("applicationShouldWake");

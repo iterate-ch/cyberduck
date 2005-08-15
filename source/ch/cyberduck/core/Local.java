@@ -77,13 +77,15 @@ public class Local extends File {
     }
 	
     public void setProgress(int progress) {
-		if(-1 == progress) {
-			this.setIconFromExtension(this.getAbsolute(), this.getExtension());
+        if(Preferences.instance().getBoolean("queue.download.updateIcon")) {
+            if(-1 == progress) {
+                this.setIconFromExtension(this.getAbsolute(), this.getExtension());
+            }
+            else {
+                this.setIconFromFile(this.getAbsolute(), "download"+progress+".icns");
+            }
+            NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
         }
-		else {
-			this.setIconFromFile(this.getAbsolute(), "download"+progress+".icns");
-        }
-        NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
     }
 
 	/**

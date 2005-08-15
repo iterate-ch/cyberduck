@@ -71,7 +71,7 @@ public class Codec {
 
 	/**
 	 * Encodes this String into a sequence of bytes using the named charset, storing the result into a new byte array.
-	 * If the encoding with the desired encoding fails, we return the bytes with the default encoding$
+	 * If the encoding with the desired encoding fails, we return the bytes with the default encoding
 	 *
 	 * @param text     The string to encode
 	 * @param encoding The desired encoding
