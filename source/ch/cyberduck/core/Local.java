@@ -79,7 +79,7 @@ public class Local extends File {
     public void setProgress(int progress) {
         if(Preferences.instance().getBoolean("queue.download.updateIcon")) {
             if(-1 == progress) {
-                this.setIconFromExtension(this.getAbsolute(), this.getExtension());
+				this.removeCustomIcon();
             }
             else {
                 this.setIconFromFile(this.getAbsolute(), "download"+progress+".icns");
@@ -88,15 +88,29 @@ public class Local extends File {
         }
     }
 
+    public void setIconFromExtension(String extension) {
+		this.setIconFromExtension(this.getAbsolute(), extension);
+	}
+
 	/**
      * @param icon The file extension to load the appropriate default system icon for
 	 */
-    public native void setIconFromExtension(String path, String icon);
+    public native void setIconFromExtension(String path, String extension);
+
+	public void setIconFromFile(String icon) {
+		this.setIconFromFile(this.getAbsolute(), icon);
+	}
 
 	/**
 	 * @param icon the absolute path to the image file to use as an icon
 	 */
 	public native void setIconFromFile(String path, String icon);
+
+    public void removeCustomIcon() {
+		this.removeCustomIcon(this.getAbsolute());
+	}
+
+    public native void removeCustomIcon(String path);
 
 	public Permission getPermission() {
 		NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);

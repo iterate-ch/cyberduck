@@ -72,3 +72,14 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromFile(JNIEnv *env,
 	}
 	[pool release];
 }
+
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_removeCustomIcon(JNIEnv *env, jobject this, jstring path)
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	[IconFamily removeCustomIconFromFile:convertToNSString(env, path)];
+	[pool release];
+}
+
+
+
+

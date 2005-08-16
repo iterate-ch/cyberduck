@@ -35,6 +35,15 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromExtension
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromFile
   (JNIEnv *, jobject, jstring, jstring);
 
+/*
+ * Class:     ch_cyberduck_core_Local
+ * Method:    removeIcon
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_Loca_removeCustomIcon
+  (JNIEnv *, jobject, jstring);
+
+
 #ifdef __cplusplus
 }
 #endif
