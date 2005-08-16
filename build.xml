@@ -260,7 +260,7 @@
             <fileset dir="${build}" includes="*.jar"/>
 		</delete>
 		<delete>
-            <fileset dir="${build}" includes="*.dylib"/>
+            <fileset dir="${build}/Deployment" includes="*.dylib"/>
 		</delete>
 		<delete dir="${app.bundle}"/>
 	</target>
