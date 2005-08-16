@@ -13,7 +13,7 @@
 		<key>1034</key>
 		<string>231 302 527 389 0 0 1024 746 </string>
 		<key>1035</key>
-		<string>356 452 527 431 0 0 1280 1002 </string>
+		<string>355 452 527 431 0 0 1280 1002 </string>
 		<key>848</key>
 		<string>231 332 527 330 0 0 1024 746 </string>
 		<key>874</key>
@@ -26,6 +26,6 @@
 	<key>IBOldestOS</key>
 	<integer>3</integer>
 	<key>IBSystem Version</key>
-	<string>8B15</string>
+	<string>8C46</string>
 </dict>
 </plist>
