@@ -13,19 +13,19 @@ Prerequisites:
 You need to install the Java Developer Tools from http://connect.apple.com (Free online membership). A complain is reported to Apple that these headers are not included in the standard installation.
 
 - Jakarta Ant
-	You need the ant executable (or a symlink to) in /sw/bin/ant.
+	You need the ant executable (or a symlink to) in /usr/bin/ant.
 
 - xcodebuild and make
 	Included with the developer tools. 
 
 - Growl.framework
-	You need to have the Growl.framework in <CYBERDUCK_HOME>/build
+	You need to have the Growl.framework in <CYBERDUCK_HOME>/build (unzip Growl.framework.zip)
 
 - Keychain.framework
-	You need to have the Keychain.framework in <CYBERDUCK_HOME>/build
+	You need to have the Keychain.framework in <CYBERDUCK_HOME>/build (unzip Keychain.framework.zip)
 
 - DotMacKit.framework
-        You need to have the DotMacKit.framework in <CYBERDUCK_HOME>/build
+        You need to have the DotMacKit.framework in <CYBERDUCK_HOME>/build (unzip DotMacKit.framework.zip)
 
 ----------
 Compiling:
@@ -33,19 +33,15 @@ Compiling:
 
 - Type 'make' in <CYBERDUCK_HOME>
 
-OR
-
-- Execute the target 'build' in XCode
-
 -----
 Tags:
 -----
 
-Cyberduck releases are tagged in CVS such as 'release-2-4-1'. Checkout using the -r flag.
+Cyberduck releases are tagged in CVS such as 'release-2-5-beta4'. Checkout using the -r flag.
 
 ---------------------
 Commit notifications:
 ---------------------
 
-Commits to the CVS are reported to the cyberduck-commit mailing list. Subscribe at http://lists.cyberduck.ch/mailman/listinfo/cyberduck-commit
+Commits to the CVS are reported to the cyberduck-commit mailing list. Subscribe at http://lists.cyberduck.ch/mailman/listinfo/cyberduck-commit/
 
