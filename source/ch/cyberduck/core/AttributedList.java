@@ -89,20 +89,20 @@ public class AttributedList implements List {
             this.put(FILTER, new NullFilter());
             this.put(COMPARATOR, new NullComparator());
             this.put(HIDDEN, new HashSet());
-            this.put(EXPANDED, new Boolean(false));
-            this.put(INVALID, new Boolean(false));
+            this.put(EXPANDED, Boolean.FALSE);
+            this.put(INVALID, Boolean.FALSE);
         }
 
         public Attributes(Comparator comparator, Filter filter) {
             this.put(COMPARATOR, comparator);
             this.put(FILTER, filter);
             this.put(HIDDEN, new java.util.HashSet());
-            this.put(EXPANDED, new Boolean(false));
-            this.put(INVALID, new Boolean(false));
+            this.put(EXPANDED, Boolean.FALSE);
+            this.put(INVALID, Boolean.FALSE);
         }
 
         public void setExpanded(boolean expanded) {
-            this.put(EXPANDED, new Boolean(expanded));
+            this.put(EXPANDED, Boolean.valueOf(expanded));
         }
 
         public boolean isExpanded() {
