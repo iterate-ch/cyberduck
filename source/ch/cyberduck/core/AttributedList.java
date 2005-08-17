@@ -374,8 +374,9 @@ public class AttributedList implements List {
             }
 
             public void remove() {
-                if (lastReturned < 0)
+                if (lastReturned < 0) {
                     throw new IllegalStateException();
+                }
                 AttributedList.this.remove(lastReturned);
                 size--;
                 position = lastReturned;
@@ -383,8 +384,9 @@ public class AttributedList implements List {
             }
 
             public void set(Object o) {
-                if (lastReturned < 0)
+                if (lastReturned < 0) {
                     throw new IllegalStateException();
+                }
                 AttributedList.this.set(lastReturned, o);
             }
 

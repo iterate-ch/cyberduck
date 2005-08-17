@@ -295,11 +295,11 @@ public class CDMainController extends CDController {
                     Host host = rendezvous.getService((String)msg.getContent());
                     if(msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
                         Growl.instance().notifyWithImage("Bonjour", (String)msg.getContent(), "rendezvous.icns");
-                        items.put((String)msg.getContent(),
+                        items.put(msg.getContent(),
 								  host);
                     }
                     if(msg.getTitle().equals(Message.RENDEZVOUS_REMOVE)) {
-                        items.remove((String)msg.getContent());
+                        items.remove(msg.getContent());
                     }
                 }
             }
@@ -539,7 +539,7 @@ public class CDMainController extends CDController {
 	}
 
 	public void newBrowserMenuClicked(Object sender) {
-		CDWindowController c = this.newDocument(true);
+		this.newDocument(true);
 	}
 
 	public void showTransferQueueClicked(Object sender) {
@@ -728,9 +728,7 @@ public class CDMainController extends CDController {
 	
 	public boolean applicationDelegateHandlesKey(NSApplication application, String key) {
 		log.debug("applicationDelegateHandlesKey:"+key);
-		if(key.equals("orderedBrowsers"))
-			return true;
-		return false;
+		return key.equals("orderedBrowsers");
 	}
 
 	public NSArray orderedTransfers() {
@@ -800,7 +798,7 @@ public class CDMainController extends CDController {
 	private void saveVersionInfo() {
 		try {
 			NSMutableDictionary dict = new NSMutableDictionary();
-			dict.setObjectForKey((String)NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion"), "Version");
+			dict.setObjectForKey(NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion"), "Version");
 			NSMutableData collection = new NSMutableData();
 			String[] errorString = new String[]{null};
 			collection.appendData(NSPropertyListSerialization.dataFromPropertyList(dict,
