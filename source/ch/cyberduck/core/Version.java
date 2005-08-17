@@ -98,8 +98,8 @@ public class Version implements Comparable {
             if (this.minor > other.minor) return 1;
             if (this.revision < other.revision) return -1;
             if (this.revision > other.revision) return 1;
-            if(null == this.suffix) return 1;
-            if(null == other.suffix) return -1;
+            if("".equals(this.suffix)) return 1;
+            if("".equals(other.suffix)) return -1;
             return this.suffix.compareToIgnoreCase(other.suffix);
         }
         throw new IllegalArgumentException();
