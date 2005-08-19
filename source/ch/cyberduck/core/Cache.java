@@ -24,21 +24,11 @@ import java.util.*;
  * @version $Id$
  */
 public class Cache extends HashMap {
-	
-	private static Map CACHES = new HashMap();
 
-    //Factory constructor
-    public static Cache create(String url) {
-		if(null == CACHES.get(url)) {
-			CACHES.put(url, new Cache());
-		}
-		return (Cache)CACHES.get(url);
-	}
+    public Cache() {
+        super();
+    }
 	
-	private Cache() {
-		//private
-	}
-
     public boolean containsKey(Path path) {
         return super.containsKey(path.getAbsolute());
     }
@@ -48,7 +38,7 @@ public class Cache extends HashMap {
     }
 
     public void invalidate(Path path) {
-        this.get(path).getAttributes().put(AttributedList.INVALID, new Boolean(true));
+        this.get(path).getAttributes().put(AttributedList.INVALID, Boolean.TRUE);
     }
 
     /**
