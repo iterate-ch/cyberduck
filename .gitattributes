@@ -766,6 +766,7 @@ no.lproj/IDisk.strings svneol=native#unset
 no.lproj/Info.nib/keyedobjects.nib -text
 no.lproj/Info.strings svneol=native#unset
 no.lproj/InfoPlist.strings svneol=native#unset
+no.lproj/Localizable.strings svneol=native#unset
 no.lproj/Login.nib/keyedobjects.nib -text
 no.lproj/Login.strings svneol=native#unset
 no.lproj/Main.nib/keyedobjects.nib -text
