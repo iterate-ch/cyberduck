@@ -3,11 +3,14 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.5b4</string>
+	<string>2.5</string>
 	<key>file</key>
-	<string>Cyberduck-2.5b4.dmg</string>
+	<string>Cyberduck-2.5.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.5
+- [Bugfix] Various bug fixes
+
 2.5b4
 - [Feature] Updated navigation bar interface elements
 - [Bugfix] Vastly improved performance when listing directories 

@@ -154,6 +154,7 @@
 				<include name="*.mdimporter/**"/>
 			</fileset>
 		</copy>
+		<!--
 		<copy todir="${app.automator}">
 			<fileset dir="${build.automator.upload}">
 				<include name="*.action/**"/>
@@ -162,6 +163,7 @@
 				<include name="*.action/**"/>
 			</fileset>
 		</copy>
+		-->
 		<antcall target="repace-tokens"/>
 	</target>
 	

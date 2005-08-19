@@ -19,6 +19,27 @@
 			<string>Editor</string>
 		</dict>
 	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>ch.sudo.cyberduck.bookmark</string>
+			<key>UTTypeDescription</key>
+			<string>Cyberduck Bookmark</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+				<string>public.xml</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>duck</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>Cyberduck</string>
 	<key>CFBundleGetInfoString</key>
@@ -78,26 +99,5 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>UTExportedTypeDeclarations</key>
-	<array>
-		<dict>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.data</string>
-				<string>public.content</string>
-			</array>
-			<key>UTTypeDescription</key>
-			<string>Cyberduck Bookmark</string>
-			<key>UTTypeIdentifier</key>
-			<string>ch.sudo.cyberduck.bookmark</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>duck</string>
-				</array>
-			</dict>
-		</dict>
-	</array>
 </dict>
 </plist>
