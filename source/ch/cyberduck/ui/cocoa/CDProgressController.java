@@ -59,7 +59,7 @@ public class CDProgressController extends CDController implements Observer {
 
 	public CDProgressController(Queue queue) {
 		this.queue = queue;
-		if(false == NSApplication.loadNibNamed("Progress", this)) {
+		if(!NSApplication.loadNibNamed("Progress", this)) {
 			log.fatal("Couldn't load Progress.nib");
 		}
 	}
@@ -96,7 +96,7 @@ public class CDProgressController extends CDController implements Observer {
                             errorText.append("\n- (...)");
                         }
                         if(l < 10)  {
-                            errorText.append("\n"+(String)msg.getContent());
+                            errorText.append("\n"+msg.getContent());
                         }
                         alertIcon.setHidden(false);
                     }

@@ -51,7 +51,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	}
 
 	protected void load() {
-		if(false == NSApplication.loadNibNamed("Sync", this)) {
+		if(!NSApplication.loadNibNamed("Sync", this)) {
 			log.fatal("Couldn't load Sync.nib");
 		}
 		this.setEnabled(false);
@@ -216,22 +216,22 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 	}
 
     //todo - add timezone support
-	private NSPopUpButton timezonePopupButton;
-
-	public void setTimezonePopupButton(NSPopUpButton timezonePopupButton) {
-		this.timezonePopupButton = timezonePopupButton;
-		this.timezonePopupButton.setTarget(this);
-		this.timezonePopupButton.setAction(new NSSelector("timezonePopupButtonClicked", new Class[]{NSPopUpButton.class}));
-		this.timezonePopupButton.removeAllItems();
-		this.timezonePopupButton.addItemsWithTitles(new NSArray(TimeZone.getAvailableIDs()));
-		this.timezonePopupButton.setTitle(TimeZone.getDefault().getID());
-	}
-
-	public void timezonePopupButtonClicked(NSPopUpButton sender) {
-		Preferences.instance().setProperty("queue.sync.timezone",
-                sender.titleOfSelectedItem());
-		super.fireDataChanged();
-	}
+//	private NSPopUpButton timezonePopupButton;
+//
+//	public void setTimezonePopupButton(NSPopUpButton timezonePopupButton) {
+//		this.timezonePopupButton = timezonePopupButton;
+//		this.timezonePopupButton.setTarget(this);
+//		this.timezonePopupButton.setAction(new NSSelector("timezonePopupButtonClicked", new Class[]{NSPopUpButton.class}));
+//		this.timezonePopupButton.removeAllItems();
+//		this.timezonePopupButton.addItemsWithTitles(new NSArray(TimeZone.getAvailableIDs()));
+//		this.timezonePopupButton.setTitle(TimeZone.getDefault().getID());
+//	}
+//
+//	public void timezonePopupButtonClicked(NSPopUpButton sender) {
+//		Preferences.instance().setProperty("queue.sync.timezone",
+//                sender.titleOfSelectedItem());
+//		super.fireDataChanged();
+//	}
 
 	// ----------------------------------------------------------
 	// NSTableView.DataSource
