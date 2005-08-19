@@ -195,31 +195,22 @@ public abstract class Path {
 		this.getSession().cache().invalidate(this);
     }
 
-    /**
-     * @deprecated
-     */
-    public List list(boolean reload, String encoding) {
-		return this.list(reload, encoding, true);
+    protected List list(boolean reload) {
+		return this.list(reload, Preferences.instance().getProperty("browser.charset.encoding"), true);
 	}
 
-    public List list(boolean reload, String encoding, Comparator comparator, Filter filter) {
-		return this.list(reload, encoding, true, comparator, filter);
-	}
-
-    /**
-     * @deprecated
-     */
     protected List list(boolean reload, boolean notifyObservers) {
 		return this.list(reload, Preferences.instance().getProperty("browser.charset.encoding"),
                 notifyObservers);
 	}
 
-    /**
-     * @deprecated
-     */
     protected List list(boolean reload, String encoding, boolean notifyObservers) {
         return this.list(reload, encoding, notifyObservers, new NullComparator(), new NullFilter());
     }
+
+    public List list(boolean reload, String encoding, Comparator comparator, Filter filter) {
+		return this.list(reload, encoding, true, comparator, filter);
+	}
 
     /**
      * Request a file listing from the server. Has to be a directory.

@@ -275,7 +275,7 @@ public abstract class Session extends Observable {
 
     public Cache cache() {
 		if(null == this.cache) {
-			this.cache = Cache.create(this.host.toString());
+            this.cache = new Cache();
 		}
 		return this.cache;
 	}
