@@ -81,14 +81,14 @@ status() {
 			language=$lproj;
 			if [ $language != "en.lproj" ]; then
 				echo "*** Status of $language Localization...";
-				/usr/local/bin/polyglot -l `basename $language .lproj` .
+				/usr/local/bin/polyglot -v -b en -l `basename $language .lproj` .
 			fi;
 		done;
 	}
 	else
 	{
 		echo "*** Status of $language Localization...";
-		/usr/local/bin/polyglot -l `basename $language .lproj` .
+		/usr/local/bin/polyglot -v -b en -l `basename $language .lproj` .
 	}
 	fi;
 }
