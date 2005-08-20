@@ -23,6 +23,11 @@
         }, 
         {CLASS = NSSegmentedControl; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
         {
+            CLASS = SKWSegmentedControl; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSSegmentedControl; 
+        }, 
+        {
             CLASS = "ch.cyberduck.ui.cocoa.CDBrowserController"; 
             LANGUAGE = Java; 
             OUTLETS = {
