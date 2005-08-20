@@ -989,6 +989,7 @@ sv.lproj/IDisk.strings svneol=native#unset
 sv.lproj/Info.nib/keyedobjects.nib -text
 sv.lproj/Info.strings svneol=native#unset
 sv.lproj/InfoPlist.strings svneol=native#unset
+sv.lproj/Localizable.strings svneol=native#unset
 sv.lproj/Login.nib/keyedobjects.nib -text
 sv.lproj/Login.strings svneol=native#unset
 sv.lproj/Main.nib/keyedobjects.nib -text
