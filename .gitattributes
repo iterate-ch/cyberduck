@@ -674,6 +674,7 @@ ko.lproj/IDisk.strings svneol=native#unset
 ko.lproj/Info.nib/keyedobjects.nib -text
 ko.lproj/Info.strings svneol=native#unset
 ko.lproj/InfoPlist.strings svneol=native#unset
+ko.lproj/Localizable.strings svneol=native#unset
 ko.lproj/Login.nib/keyedobjects.nib -text
 ko.lproj/Login.strings svneol=native#unset
 ko.lproj/Main.nib/keyedobjects.nib -text
