@@ -195,17 +195,9 @@ public abstract class Path {
 		this.getSession().cache().invalidate(this);
     }
 
-    protected List list(boolean reload) {
-		return this.list(reload, Preferences.instance().getProperty("browser.charset.encoding"), true);
-	}
-
     protected List list(boolean reload, boolean notifyObservers) {
 		return this.list(reload, Preferences.instance().getProperty("browser.charset.encoding"),
-                notifyObservers);
-	}
-
-    protected List list(boolean reload, String encoding, boolean notifyObservers) {
-        return this.list(reload, encoding, notifyObservers, new NullComparator(), new NullFilter());
+                notifyObservers, new NullComparator(), new NullFilter());
     }
 
     public List list(boolean reload, String encoding, Comparator comparator, Filter filter) {
@@ -446,7 +438,7 @@ public abstract class Path {
         if(this.isRoot()) {
             return true;
         }
-		List listing = this.getParent().list(false, Preferences.instance().getProperty("browser.charset.encoding"), false);
+		List listing = this.getParent().list(false, false);
 		if(null == listing)
 			return false;
 		return listing.contains(this);

@@ -1200,8 +1200,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void setEditBookmarkButton(NSButton editBookmarkButton) {
         this.editBookmarkButton = editBookmarkButton;
-        this.editBookmarkButton.setImage(NSImage.imageNamed("edit.tiff"));
-        this.editBookmarkButton.setAlternateImage(NSImage.imageNamed("editPressed.tiff"));
         this.editBookmarkButton.setEnabled(false);
         this.editBookmarkButton.setTarget(this);
         this.editBookmarkButton.setAction(new NSSelector("editBookmarkButtonClicked", new Class[]{Object.class}));
@@ -1218,8 +1216,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void setAddBookmarkButton(NSButton addBookmarkButton) {
         this.addBookmarkButton = addBookmarkButton;
-        this.addBookmarkButton.setImage(NSImage.imageNamed("add"));
-        this.addBookmarkButton.setAlternateImage(NSImage.imageNamed("addPressed.tiff"));
         this.addBookmarkButton.setTarget(this);
         this.addBookmarkButton.setAction(new NSSelector("addBookmarkButtonClicked", new Class[]{Object.class}));
     }
@@ -1248,8 +1244,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void setDeleteBookmarkButton(NSButton deleteBookmarkButton) {
         this.deleteBookmarkButton = deleteBookmarkButton;
-        this.deleteBookmarkButton.setImage(NSImage.imageNamed("remove.tiff"));
-        this.deleteBookmarkButton.setAlternateImage(NSImage.imageNamed("removePressed.tiff"));
         this.deleteBookmarkButton.setEnabled(false);
         this.deleteBookmarkButton.setTarget(this);
         this.deleteBookmarkButton.setAction(new NSSelector("deleteBookmarkButtonClicked",
