@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.BrowserComparator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.AttributedList;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSIndexSet;
 import org.apache.log4j.Logger;
@@ -47,7 +48,7 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
     public static final String OWNER_COLUMN = "OWNER";
     public static final String PERMISSIONS_COLUMN = "PERMISSIONS";
 
-    protected List childs(Path path) {
+    protected AttributedList childs(Path path) {
         return path.list(false, controller.getEncoding(), false,
                 this.getComparator(), controller.getFileFilter());
     }
@@ -66,7 +67,7 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
 
     protected void setSortedAscending(boolean sortAscending) {
         //cache custom sorting preference
-        this.sortAscending = new Boolean(sortAscending);
+        this.sortAscending = Boolean.valueOf(sortAscending);
         //set default value
         Preferences.instance().setProperty("browser.sort.ascending", sortAscending);
     }

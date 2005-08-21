@@ -394,14 +394,17 @@ public class CDBrowserController extends CDWindowController implements Observer 
         return this.getSelectedBrowserModel().getComparator();
     }
 
+    private boolean showHiddenFiles;
     private Filter filenameFilter;
 
 	{
 		if(Preferences.instance().getBoolean("browser.showHidden")) {
-			filenameFilter = new NullFilter();
+			this.filenameFilter = new NullFilter();
+            this.showHiddenFiles = true;
         }
 		else {
-			filenameFilter = new HiddenFilesFilter();
+			this.filenameFilter = new HiddenFilesFilter();
+            this.showHiddenFiles = false;
         }
 	}
 
@@ -411,15 +414,17 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void setShowHiddenFiles(boolean showHidden) {
         if(showHidden) {
-            filenameFilter = new NullFilter();
+            this.filenameFilter = new NullFilter();
+            this.showHiddenFiles = true;
         }
         else {
-            filenameFilter = new HiddenFilesFilter();
+            this.filenameFilter = new HiddenFilesFilter();
+            this.showHiddenFiles = false;
         }
     }
 
     public boolean getShowHiddenFiles() {
-        return filenameFilter instanceof NullFilter;
+        return this.showHiddenFiles;
     }
 
 	private void getFocus() {
@@ -1178,7 +1183,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
             if (null != o) {
                 final String searchString = ((NSText) o).string();
                 if (null == searchString || searchString.length() == 0) {
-					this.filenameFilter = new HiddenFilesFilter();
+					if(this.getShowHiddenFiles()) {
+                        this.filenameFilter = new NullFilter();
+                    }
+                    else {
+                        this.filenameFilter = new HiddenFilesFilter();
+                    }
                 }
                 else {
 					this.filenameFilter = new Filter() {
@@ -1301,19 +1311,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 this.forwardButtonClicked(sender);
                 break;
             }
-//            case NAVIGATION_UP_SEGMENT_BUTTON: {
-//                this.upButtonClicked(sender);
-//                break;
-//            }
         }
-    }
-
-    private NSSegmentedControl upButton; // IBOutlet
-
-    public void setUpButton(NSSegmentedControl upButton) {
-        this.upButton = upButton;
-        this.upButton.setTarget(this);
-        this.upButton.setAction(new NSSelector("upButtonClicked", new Class[]{Object.class}));
     }
 
     public void backButtonClicked(Object sender) {
@@ -1328,12 +1326,20 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.session.getForwardPath().list(false, this.getEncoding(), this.getFileComparator(), this.getFileFilter());
     }
 
+    private NSSegmentedControl upButton; // IBOutlet
+
+    public void setUpButton(NSSegmentedControl upButton) {
+        this.upButton = upButton;
+        this.upButton.setTarget(this);
+        this.upButton.setAction(new NSSelector("upButtonClicked", new Class[]{Object.class}));
+    }
+
     public void upButtonClicked(Object sender) {
         log.debug("upButtonClicked");
 		this.deselectAll();
         Path previous = this.workdir();
-        this.workdir().getParent().list(false, this.getEncoding(), this.getFileComparator(), this.getFileFilter());
-		this.selectRow(previous, false);
+        List listing = this.workdir().getParent().list(false, this.getEncoding(), this.getFileComparator(), this.getFileFilter());
+		this.selectRow((Path)listing.get(listing.indexOf(previous)), false);
     }
 
 	public void enterKeyPressed(Object sender) {
@@ -1529,14 +1535,23 @@ public class CDBrowserController extends CDWindowController implements Observer 
         controller.window().makeKeyAndOrderFront(null);
     }
 
-	public void reloadButtonClicked(Object sender) {
+    public void reloadButtonClicked(Object sender) {
         log.debug("reloadButtonClicked");
-		if (this.isMounted()) {
+        //bug: doesn't reload child items in outline view
+        if (this.isMounted()) {
             List selected = this.getSelectedPaths();
             this.deselectAll();
-			this.workdir().list(true, this.getEncoding(), this.getFileComparator(), this.getFileFilter());
-            for(Iterator i = selected.iterator(); i.hasNext(); ) {
-                this.selectRow((Path)i.next(), true);
+            List listing = this.workdir().list(true, this.getEncoding(), this.getFileComparator(), this.getFileFilter());
+            for(Iterator iter = selected.iterator(); iter.hasNext(); ) {
+                Path p = (Path)iter.next();
+                if(listing.contains(p)) {
+                    //path is in current working directory; pass new reference
+                    this.selectRow((Path)listing.get(listing.indexOf(p)), true);
+                }
+                else {
+                    //path is in child; old reference is still valid
+                    this.selectRow(p, true);
+                }
             }
 		}
 	}
@@ -1860,11 +1875,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
         if (sender instanceof NSMenuItem) {
             NSMenuItem item = (NSMenuItem) sender;
             if(item.state() == NSCell.OnState) {
-                this.filenameFilter = new HiddenFilesFilter();
+                this.setShowHiddenFiles(false);
                 item.setState(NSCell.OffState);
 			}
 			else if(item.state() == NSCell.OffState) {
-                this.filenameFilter = new NullFilter();
+                this.setShowHiddenFiles(true);
                 item.setState(NSCell.OnState);
 			}
             if (this.isMounted()) {

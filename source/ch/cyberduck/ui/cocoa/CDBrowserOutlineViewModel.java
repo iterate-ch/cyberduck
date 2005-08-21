@@ -41,10 +41,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         super(controller);
     }
 
-    public int indexOf(NSTableView tableView, Path p) {
-        return ((NSOutlineView)tableView).rowForItem(p);
-    }
-
     public void outlineViewItemDidExpand(NSNotification notification) {
         Path p = (Path) notification.userInfo().allValues().lastObject();
         p.getSession().cache().setExpanded(p, true);
@@ -58,6 +54,12 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
     public boolean outlineViewShouldEditTableColumn(NSOutlineView outlineView,
                                                     NSTableColumn tableColumn, Object item) {
         return false;
+    }
+
+    public int indexOf(NSTableView tableView, Path p) {
+        //bug: the rowForItem method does not use p.equals() therefore only returns a valid value
+        //if the exact reference is passed
+        return ((NSOutlineView)tableView).rowForItem(p);
     }
 
     public int outlineViewNumberOfChildrenOfItem(NSOutlineView outlineView, Path item) {

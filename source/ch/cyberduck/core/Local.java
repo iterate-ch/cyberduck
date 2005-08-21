@@ -88,15 +88,6 @@ public class Local extends File {
         }
     }
 
-    public void setIconFromExtension(String extension) {
-		this.setIconFromExtension(this.getAbsolute(), extension);
-	}
-
-	/**
-     * @param icon The file extension to load the appropriate default system icon for
-	 */
-    public native void setIconFromExtension(String path, String extension);
-
 	public void setIconFromFile(String icon) {
 		this.setIconFromFile(this.getAbsolute(), icon);
 	}
