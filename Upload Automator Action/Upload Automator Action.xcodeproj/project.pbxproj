@@ -63,7 +63,7 @@
 		47E4BA0208AB51240049A0CB /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/main.nib; sourceTree = "<group>"; };
 		47EFFC8408AAB0EF00719B3A /* Cyberduck.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.sdef; name = Cyberduck.sdef; path = ../Cyberduck.sdef; sourceTree = SOURCE_ROOT; };
 		65081C3A067A9A0C006247A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
-		65081C3B067A9A0C006247A1 /* Upload files.action */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Upload files.action"; sourceTree = BUILT_PRODUCTS_DIR; };
+		65081C3B067A9A0C006247A1 /* Download files.action */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Download files.action"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6578AEF2078DDFFD004A0FC7 /* AppleScriptKit.sdef */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.sdef; name = AppleScriptKit.sdef; path = /System/Library/Frameworks/AppleScriptKit.framework/Versions/A/Resources/AppleScriptKit.sdef; sourceTree = "<absolute>"; };
 		65AABA78056AB2A5006CE269 /* Automator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Automator.framework; path = /System/Library/Frameworks/Automator.framework; sourceTree = "<absolute>"; };
 		65E2187306F52A5F00613B9C /* main.applescript */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.applescript; path = main.applescript; sourceTree = "<group>"; };
@@ -135,7 +135,7 @@
 		19C28FB8FE9D52D311CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				65081C3B067A9A0C006247A1 /* Upload files.action */,
+				65081C3B067A9A0C006247A1 /* Download files.action */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -151,9 +151,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		65081C2D067A9A0C006247A1 /* Upload files */ = {
+		65081C2D067A9A0C006247A1 /* Download files */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 4746CBF908AA8F9F008A51C9 /* Build configuration list for PBXNativeTarget "Upload files" */;
+			buildConfigurationList = 4746CBF908AA8F9F008A51C9 /* Build configuration list for PBXNativeTarget "Download files" */;
 			buildPhases = (
 				65081C2E067A9A0C006247A1 /* AppleScript */,
 				65081C31067A9A0C006247A1 /* Resources */,
@@ -182,10 +182,10 @@
 			};
 			dependencies = (
 			);
-			name = "Upload files";
+			name = "Download files";
 			productInstallPath = "$(USER_LIBRARY_DIR)/Automator";
 			productName = "Automator Action";
-			productReference = 65081C3B067A9A0C006247A1 /* Upload files.action */;
+			productReference = 65081C3B067A9A0C006247A1 /* Download files.action */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -193,7 +193,7 @@
 /* Begin PBXProject section */
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = 4746CBFD08AA8F9F008A51C9 /* Build configuration list for PBXProject "Upload Automator Action" */;
+			buildConfigurationList = 4746CBFD08AA8F9F008A51C9 /* Build configuration list for PBXProject "Download Automator Action" */;
 			buildSettings = {
 			};
 			buildStyles = (
@@ -204,7 +204,7 @@
 			mainGroup = 089C166AFE841209C02AAC07 /* Automator Action */;
 			projectDirPath = "";
 			targets = (
-				65081C2D067A9A0C006247A1 /* Upload files */,
+				65081C2D067A9A0C006247A1 /* Download files */,
 			);
 		};
 /* End PBXProject section */
@@ -233,7 +233,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/bin/amlint \"$BUILT_PRODUCTS_DIR/Upload files.action\"";
+			shellScript = "/usr/bin/amlint \"$BUILT_PRODUCTS_DIR/Download files.action\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -273,7 +273,7 @@
 				OTHER_OSAFLAGS = "-x";
 				OTHER_REZFLAGS = "";
 				PREBINDING = NO;
-				PRODUCT_NAME = "Upload files";
+				PRODUCT_NAME = "Download files";
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "";
 				WRAPPER_EXTENSION = action;
@@ -284,7 +284,10 @@
 		4746CBFF08AA8F9F008A51C9 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = ppc;
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
@@ -293,7 +296,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4746CBF908AA8F9F008A51C9 /* Build configuration list for PBXNativeTarget "Upload files" */ = {
+		4746CBF908AA8F9F008A51C9 /* Build configuration list for PBXNativeTarget "Download files" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4746CBFB08AA8F9F008A51C9 /* Deployment */,
@@ -301,7 +304,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
 		};
-		4746CBFD08AA8F9F008A51C9 /* Build configuration list for PBXProject "Upload Automator Action" */ = {
+		4746CBFD08AA8F9F008A51C9 /* Build configuration list for PBXProject "Download Automator Action" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4746CBFF08AA8F9F008A51C9 /* Deployment */,
