@@ -103,6 +103,7 @@ cs.lproj/IDisk.strings svneol=native#unset
 cs.lproj/Info.nib/keyedobjects.nib -text
 cs.lproj/Info.strings svneol=native#unset
 cs.lproj/InfoPlist.strings svneol=native#unset
+cs.lproj/Localizable.strings svneol=native#unset
 cs.lproj/Login.nib/keyedobjects.nib -text
 cs.lproj/Login.strings svneol=native#unset
 cs.lproj/Main.nib/keyedobjects.nib -text
