@@ -84,7 +84,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
     public CDX509TrustManagerController(CDWindowController windowController) {
         this.windowController = windowController;
         instances.addObject(this);
-        if(false == NSApplication.loadNibNamed("Certificate", this)) {
+        if(!NSApplication.loadNibNamed("Certificate", this)) {
             log.fatal("Couldn't load Certificate.nib");
         }
         try {

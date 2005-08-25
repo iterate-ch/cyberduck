@@ -47,7 +47,7 @@ public class CDFolderController extends CDWindowController {
     public CDFolderController(CDBrowserController controller) {
         this.controller = controller;
         instances.addObject(this);
-		if(false == NSApplication.loadNibNamed("Folder", this)) {
+		if(!NSApplication.loadNibNamed("Folder", this)) {
 			log.fatal("Couldn't load Folder.nib");
 		}
 	}

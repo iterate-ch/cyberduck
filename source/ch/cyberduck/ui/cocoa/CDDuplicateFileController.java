@@ -44,7 +44,7 @@ public class CDDuplicateFileController extends CDFileController {
 
     public CDDuplicateFileController(CDBrowserController controller) {
         this.controller = controller;
-        if(false == NSApplication.loadNibNamed("Duplicate", this)) {
+        if(!NSApplication.loadNibNamed("Duplicate", this)) {
 			log.fatal("Couldn't load Duplicate.nib");
 		}
 	}

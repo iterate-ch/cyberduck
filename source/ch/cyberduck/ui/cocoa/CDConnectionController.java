@@ -386,7 +386,7 @@ public class CDConnectionController extends CDWindowController {
 
 	public CDConnectionController(CDBrowserController browserController) {
 		this.browserController = browserController;
-		if(false == NSApplication.loadNibNamed("Connection", this)) {
+		if(!NSApplication.loadNibNamed("Connection", this)) {
 			log.fatal("Couldn't load Connection.nib");
 		}
 		instances.addObject(this);

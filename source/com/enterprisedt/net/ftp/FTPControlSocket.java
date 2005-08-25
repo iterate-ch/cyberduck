@@ -384,7 +384,7 @@ public class FTPControlSocket {
 				}
 			}
 			if(buf.length() == 0) throw new FTPException("Malformed PASV reply: "+response);
-			parts[i] = new Integer(buf.toString()).intValue();
+			parts[i] = Integer.parseInt(buf.toString());
 		}
 		return parts;
 	}

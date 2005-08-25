@@ -99,7 +99,7 @@ public class CDLoginController extends CDWindowController implements LoginContro
 	public CDLoginController(CDWindowController windowController) {
 		instances.addObject(this);
 		this.windowController = windowController;
-		if(false == NSApplication.loadNibNamed("Login", this)) {
+		if(!NSApplication.loadNibNamed("Login", this)) {
 			log.fatal("Couldn't load Login.nib");
 		}
 	}

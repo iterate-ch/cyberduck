@@ -13,3 +13,11 @@
 [????] SSH Agent Authentication
 [????] Kerberos (GSSAPI) Authentication
 [????] SSH verbose logging
+[????] CFNetworkDiagnostics
+[????] Prevent computing going to sleep when file transfer is in progress
+[????] Dock status icon
+[????] Estimated time left for file transfers
+[????] Indicate secure connection in browser window
+[????] Replace FTP api com.enterprisedt with org.apache.commons.net.ftp
+[????] Exclusion lists for synchronization (e.g. skip CVS dirs)
+[????] Outline view in synchronization dialog

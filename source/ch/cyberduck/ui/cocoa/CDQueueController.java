@@ -66,7 +66,7 @@ public class CDQueueController extends CDWindowController {
 	public static CDQueueController instance() {
 		if(null == instance) {
 			instance = new CDQueueController();
-			if(false == NSApplication.loadNibNamed("Queue", instance)) {
+			if(!NSApplication.loadNibNamed("Queue", instance)) {
 				log.fatal("Couldn't load Queue.nib");
 			}
 		}

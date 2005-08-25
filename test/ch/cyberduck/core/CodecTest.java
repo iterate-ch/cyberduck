@@ -38,8 +38,8 @@ public class CodecTest extends TestCase {
 		try {
 			String testString = "aÃàoÃàuÃàaÃàaÃàaÃà!eÃÄ&%cÃß"; //encoded
 			{
-                String decoded = Codec.decode(testString);
-                String encoded = new String(Codec.encode(decoded));
+                String decoded = Codec.decode(testString, "utf-8");
+                String encoded = new String(Codec.encode(decoded, "utf-8"));
 				assertTrue("Teststring not equal to encoded/decoded string", testString.equals(encoded));
 			}
 			{

@@ -84,14 +84,7 @@ public class CDMainController extends CDController {
 	}
 
 	public void autoUpdateCheckboxClicked(NSButton sender) {
-		switch(sender.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("update.check", true);
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("update.check", false);
-				break;
-		}
+		Preferences.instance().setProperty("update.check", sender.state() == NSCell.OnState);
 	}
 
 	public NSWindow updateSheet; // IBOutlet
@@ -417,7 +410,7 @@ public class CDMainController extends CDController {
 						else {
                             if(currentVersion.compareTo(latestVersion) < 0) {
 								// Update available, show update dialog
-								if(false == NSApplication.loadNibNamed("Update", CDMainController.this)) {
+								if(!NSApplication.loadNibNamed("Update", CDMainController.this)) {
 									log.fatal("Couldn't load Update.nib");
 									return;
 								}
@@ -478,8 +471,8 @@ public class CDMainController extends CDController {
 
 	public void feedbackMenuClicked(Object sender) {
 		try {
-			String currentVersionNumber = (String)NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion");
-			NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail")+"?subject=Cyberduck-"+currentVersionNumber));
+			String versionString = (String)NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion");
+			NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail")+"?subject=Cyberduck-"+versionString));
 		}
 		catch(java.net.MalformedURLException e) {
 			log.error(e.getMessage());
@@ -489,42 +482,27 @@ public class CDMainController extends CDController {
 	public void closeUpdateSheet(NSButton sender) {
 		log.debug("closeUpdateSheet");
 		updateSheet.close();
-		switch(sender.tag()) {
-			case (NSAlertPanel.DefaultReturn):
-				try {
-					NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")+updateSheet.title()));
-				}
-				catch(java.net.MalformedURLException e) {
-					log.error(e.getMessage());
-				}
-				break;
-			case (NSAlertPanel.AlternateReturn):
-				break;
+		if(sender.tag() == NSAlertPanel.DefaultReturn) {
+			try {
+				NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update")+updateSheet.title()));
+			}
+			catch(java.net.MalformedURLException e) {
+				log.error(e.getMessage());
+			}
 		}
 	}
 
 	public void closeDonationSheet(NSButton sender) {
 		log.debug("closeDonationSheet");
 		donationSheet.close();
-		switch(sender.tag()) {
-			case NSAlertPanel.DefaultReturn:
-				try {
-					NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.donate")));
-				}
-				catch(java.net.MalformedURLException e) {
-					log.error(e.getMessage());
-				}
-				break;
-			case NSAlertPanel.AlternateReturn:
-				break;
-		}
-		switch(neverShowDonationCheckbox.state()) {
-			case NSCell.OnState:
-				Preferences.instance().setProperty("donate", "false");
-				break;
-			case NSCell.OffState:
-				Preferences.instance().setProperty("donate", "true");
-				break;
+		Preferences.instance().setProperty("donate", neverShowDonationCheckbox.state() == NSCell.OffState);
+		if(sender.tag() == NSAlertPanel.DefaultReturn) {
+			try {
+				NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.donate")));
+			}
+			catch(java.net.MalformedURLException e) {
+				log.error(e.getMessage());
+			}
 		}
 	}
 
@@ -605,7 +583,7 @@ public class CDMainController extends CDController {
 		}
 		int uses = Preferences.instance().getInteger("uses");
 		if(Preferences.instance().getBoolean("donate")) {
-			if(false == NSApplication.loadNibNamed("Donate", this)) {
+			if(!NSApplication.loadNibNamed("Donate", this)) {
 				log.fatal("Couldn't load Donate.nib");
 			}
 			else {

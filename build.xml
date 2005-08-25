@@ -104,6 +104,16 @@
 	</target>
 
 	<target name="release" depends="build">
+		<!--
+		<exec executable="make" spawn="false">
+			<arg line="-e -f ${build}/Makefile"/>
+			<env key="NAME" value="${app.name}"/>
+			<env key="VERSION" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
+			<env key="SOURCE_DIR" value="${home}"/>
+			<env key="SOURCE_FILES" value="${app.bundle} Readme.rtfd Credits.html"/>
+			<env key="TEMPLATE_DMG" value="${build}/Template.dmg"/>
+		</exec>
+		-->
 		<exec executable="./buildDMG.pl" spawn="false">
 		    <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor} -buildDir ${build} -compressionLevel 9 -volSize 25 ${app.bundle} ${app.name}\ FAQ.rtfd ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.html  AppleScript\ Samples"/>
 		</exec>

@@ -9,6 +9,7 @@
 	<key>comment</key>
         <string>Changelog:
 2.5
+- [Feature] Universal binary (PPC/Intel)
 - [Feature] Updated to Growl 0.7.2
 - [Feature] Graphical interface refinements
 - [Bugfix] Caching issue with multiple connections to the same host

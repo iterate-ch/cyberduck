@@ -186,7 +186,7 @@ public class CDBookmarkController extends CDWindowController {
         this.callback = callback;
         this.host = host;
         instances.addObject(this);
-        if (false == NSApplication.loadNibNamed("Bookmark", this)) {
+        if (!NSApplication.loadNibNamed("Bookmark", this)) {
             log.fatal("Couldn't load Bookmark.nib");
         }
     }

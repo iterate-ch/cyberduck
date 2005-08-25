@@ -43,7 +43,7 @@ public class CDPreferencesController extends CDWindowController {
 		log.debug("instance");
 		if(null == instance) {
 			instance = new CDPreferencesController();
-			if(false == NSApplication.loadNibNamed("Preferences", instance)) {
+			if(!NSApplication.loadNibNamed("Preferences", instance)) {
 				log.fatal("Couldn't load Preferences.nib");
 			}
 		}
@@ -293,7 +293,7 @@ public class CDPreferencesController extends CDWindowController {
 		this.encodingCombobox.setTarget(this);
 		this.encodingCombobox.setAction(new NSSelector("encodingComboboxClicked", new Class[]{NSPopUpButton.class}));
 		this.encodingCombobox.removeAllItems();
-		java.util.SortedMap charsets = java.nio.charset.Charset.availableCharsets();
+        java.util.SortedMap charsets = java.nio.charset.Charset.availableCharsets();
 		String[] items = new String[charsets.size()];
 		java.util.Iterator iterator = charsets.values().iterator();
 		int i = 0;

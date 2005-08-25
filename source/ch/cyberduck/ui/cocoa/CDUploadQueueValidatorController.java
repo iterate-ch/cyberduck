@@ -49,7 +49,7 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 	}
 	
 	protected void load() {
-		if(false == NSApplication.loadNibNamed("Validator", this)) {
+		if(!NSApplication.loadNibNamed("Validator", this)) {
 			log.fatal("Couldn't load Validator.nib");
 		}
 		this.setEnabled(false);

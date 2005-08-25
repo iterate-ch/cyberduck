@@ -154,11 +154,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
                 return new NSAttributedString(item.attributes.getPermission().toString(),
                         CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
             }
-            if (identifier.equals("TOOLTIP")) {
-                return item.getAbsolute() + "\n"
-                        + Status.getSizeAsString(item.attributes.getSize()) + "\n"
-                        + item.attributes.getTimestampAsString();
-            }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
         return null;
@@ -350,7 +345,10 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
     public String outlineViewToolTipForCell(NSOutlineView ov, NSCell cell, NSMutableRect rect, NSTableColumn tc,
                                             Object item, NSPoint mouseLocation) {
         if (item instanceof Path) {
-            return ((Path) item).getAbsolute();
+            Path p = (Path)item;
+            return p.getAbsolute() + "\n"
+                    + Status.getSizeAsString(p.attributes.getSize()) + "\n"
+                    + p.attributes.getTimestampAsString();
         }
         return null;
     }

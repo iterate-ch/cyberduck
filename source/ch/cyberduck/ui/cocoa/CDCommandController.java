@@ -72,7 +72,7 @@ public class CDCommandController extends CDWindowController implements Observer 
         instances.addObject(this);
         this.session = session;
         this.session.addObserver(this);
-        if(false == NSApplication.loadNibNamed("Command", this)) {
+        if(!NSApplication.loadNibNamed("Command", this)) {
             log.fatal("Couldn't load Command.nib");
         }
     }

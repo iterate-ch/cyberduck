@@ -81,7 +81,7 @@ public class CDGotoController extends CDWindowController {
     public CDGotoController(CDBrowserController controller) {
 		instances.addObject(this);
         this.controller = controller;
-		if(false == NSApplication.loadNibNamed("Goto", this)) {
+		if(!NSApplication.loadNibNamed("Goto", this)) {
 			log.fatal("Couldn't load Goto.nib");
 		}
 	}

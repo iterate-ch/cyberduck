@@ -39,7 +39,7 @@ public class CDCreateFileController extends CDFileController {
 
     public CDCreateFileController(CDBrowserController controller) {
         this.controller = controller;
-        if(false == NSApplication.loadNibNamed("File", this)) {
+        if(!NSApplication.loadNibNamed("File", this)) {
 			log.fatal("Couldn't load File.nib");
 		}
 	}

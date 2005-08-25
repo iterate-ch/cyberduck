@@ -48,7 +48,7 @@ public class CDDownloadController extends CDWindowController {
 
 	public CDDownloadController() {
 		instances.addObject(this);
-		if(false == NSApplication.loadNibNamed("Download", this)) {
+		if(!NSApplication.loadNibNamed("Download", this)) {
 			log.fatal("Couldn't load Download.nib");
 		}
 	}

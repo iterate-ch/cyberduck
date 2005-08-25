@@ -38,7 +38,7 @@ import ch.cyberduck.core.Codec;
  */
 public class ByteArrayWriter extends ByteArrayOutputStream {
 
-	private String encoding;
+    private String encoding;
 
 	public ByteArrayWriter() {
 		//
@@ -103,7 +103,6 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
 
 	/**
 	 * @param i
-	 * @return
 	 */
 	public static byte[] encodeInt(int i) {
 		byte[] raw = new byte[4];
@@ -156,7 +155,6 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
 	}
 
 	/**
-	 * @param str
 	 * @throws IOException
 	 */
 	public void writeString(String s) throws IOException {
@@ -164,7 +162,11 @@ public class ByteArrayWriter extends ByteArrayOutputStream {
 			writeInt(0);
 		}
 		else {
-			byte[] b = Codec.encode(s, encoding);
+            byte[] b;
+            if(null == encoding)
+                b = s.getBytes();
+            else
+                b = Codec.encode(s, encoding);
 			writeInt(b.length);
 			write(b);
 		}

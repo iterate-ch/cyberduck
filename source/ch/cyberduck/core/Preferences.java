@@ -202,7 +202,7 @@ public abstract class Preferences {
 	public String getProperty(String property) {
 		String value = (String)defaults.get(property);
 		if(value == null) {
-			throw new IllegalArgumentException("No property with key '"+property.toString()+"'");
+			throw new IllegalArgumentException("No property with key '"+property+"'");
 		}
 		return value;
 	}

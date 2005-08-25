@@ -18,14 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+
 import org.apache.log4j.Logger;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observer;
+
+import ch.cyberduck.core.*;
 
 /**
  * @version $Id$
@@ -56,25 +58,9 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
 	}
 	
 	public boolean tableViewShouldEditLocation(NSTableView tableview, NSTableColumn tableColumn, int row) {
-//		String identifier = (String) tableColumn.identifier();
-//		if (identifier.equals("FILENAME")) {
-//			return true;
-//		}
 		return false;
 	}
 	
-//	public void tableViewSetObjectValueForLocation(NSTableView tableview, String value, NSTableColumn tableColumn, int row) {
-//        if (row < this.childs(this.controller.workdir()).size()) {
-//			String identifier = (String) tableColumn.identifier();
-//            if (identifier.equals("FILENAME")) {
-//                Path p = (Path) this.childs(this.controller.workdir()).get(row);
-//                if(!p.getName().equals(value)) {
-//                    p.rename(value);
-//                }
-//            }
-//		}
-//	}
-															
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
         List childs = this.childs(this.controller.workdir());
         if (row < childs.size()) {
@@ -98,7 +84,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
                 return icon;
             }
             if (identifier.equals("FILENAME")) {
-                return new NSAttributedString(p.getName(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+                return new NSAttributedString(p.getName(), CDTableCell. TABLE_CELL_PARAGRAPH_DICTIONARY);
             }
             if (identifier.equals("TYPEAHEAD")) {
                 return p.getName();
@@ -115,11 +101,6 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
             }
             if (identifier.equals("PERMISSIONS")) {
                 return new NSAttributedString(p.attributes.getPermission().toString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
-            }
-            if (identifier.equals("TOOLTIP")) {
-                return p.getAbsolute() + "\n"
-                        + Status.getSizeAsString(p.attributes.getSize()) + "\n"
-                        + p.attributes.getTimestampAsString();
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
@@ -325,7 +306,9 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
                                                    NSTableColumn tc, int row, NSPoint mouseLocation) {
         if (row < this.childs(this.controller.workdir()).size()) {
             Path p = (Path) this.childs(this.controller.workdir()).get(row);
-            return p.getAbsolute();
+            return p.getAbsolute() + "\n"
+                    + Status.getSizeAsString(p.attributes.getSize()) + "\n"
+                    + p.attributes.getTimestampAsString();
         }
         return null;
     }

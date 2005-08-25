@@ -170,6 +170,9 @@ public abstract class CDBrowserTableDataSource {//implements NSTableView.DataSou
         return this.childs(controller.workdir()).indexOf(p);
     }
 
+    public boolean contains(Path p) {
+        return this.childs(controller.workdir()).contains(p);
+    }
 
     /**
      * Returns true to permit aTableView to select the row at rowIndex, false to deny permission.

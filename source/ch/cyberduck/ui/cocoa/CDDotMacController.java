@@ -49,7 +49,7 @@ public class CDDotMacController {
         }
     }
 
-    private native void downloadBookmarks(String destination);
+    private native void downloadBookmarks(String cddotmacdestination);
 
     public native void uploadBookmarks();
 	

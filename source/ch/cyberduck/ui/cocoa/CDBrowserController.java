@@ -307,7 +307,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public CDBrowserController() {
         instances.addObject(this);
-        if (false == NSApplication.loadNibNamed("Browser", this)) {
+        if (!NSApplication.loadNibNamed("Browser", this)) {
             log.fatal("Couldn't load Browser.nib");
         }
     }
@@ -479,8 +479,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
 	private void selectRow(Path path, boolean expand) {
 		log.debug("selectRow:"+path);
-        this.selectRow(this.getSelectedBrowserModel().indexOf(this.getSelectedBrowserView(), path), expand);
-	}
+        if(this.getSelectedBrowserModel().contains(path)) {
+            this.selectRow(this.getSelectedBrowserModel().indexOf(this.getSelectedBrowserView(), path), expand);
+        }
+    }
 	
 	private void selectRow(int row, boolean expand) {
 		log.debug("selectRow:"+row);
@@ -1339,7 +1341,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		this.deselectAll();
         Path previous = this.workdir();
         List listing = this.workdir().getParent().list(false, this.getEncoding(), this.getFileComparator(), this.getFileFilter());
-		this.selectRow((Path)listing.get(listing.indexOf(previous)), false);
+        if(listing.contains(previous)) {
+            this.selectRow((Path)listing.get(listing.indexOf(previous)), false);
+        }
     }
 
 	public void enterKeyPressed(Object sender) {
@@ -1546,7 +1550,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 Path p = (Path)iter.next();
                 if(listing.contains(p)) {
                     //path is in current working directory; pass new reference
-                    this.selectRow((Path)listing.get(listing.indexOf(p)), true);
+                    if(listing.contains(p)) {
+                        this.selectRow((Path)listing.get(listing.indexOf(p)), true);
+                    }
                 }
                 else {
                     //path is in child; old reference is still valid

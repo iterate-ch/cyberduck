@@ -57,7 +57,6 @@ public class ByteArrayReader extends ByteArrayInputStream {
 	/**
 	 * @param data
 	 * @param start
-	 * @return
 	 */
 	public static long readInt(byte[] data, int start) {
 		long ret = (((long)(data[start] & 0xFF)<<24) & 0xFFFFFFFF) |
@@ -127,15 +126,12 @@ public class ByteArrayReader extends ByteArrayInputStream {
 	/**
 	 * @param data
 	 * @param start
-	 * @return
 	 */
 	public static String readString(byte[] data, int start) {
 		int len = (int)readInt(data, start);
-		byte[] chars = new byte[(int)len];
+		byte[] chars = new byte[len];
 		System.arraycopy(data, start+4, chars, 0, len);
-
-		return Codec.decode(chars);
-//        return new String(chars);
+        return new String(chars);
 	}
 
 	/**
@@ -146,8 +142,9 @@ public class ByteArrayReader extends ByteArrayInputStream {
 		long len = readInt();
 		byte[] raw = new byte[(int)len];
 		read(raw);
-
-		return Codec.decode(raw);
-//        return new String(raw);
+        if(null == encoding) {
+            return new String(raw);
+        }
+        return Codec.decode(raw, encoding);
 	}
 }
