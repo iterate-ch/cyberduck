@@ -104,7 +104,7 @@ public class CDBookmarkTableDataSource extends Collection {
                 return this.get(row);
             }
             if (identifier.equals("TYPEAHEAD")) {
-                return ((Host) this.get(row)).getHostname();
+                return ((Host) this.get(row)).getNickname();
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
@@ -163,35 +163,39 @@ public class CDBookmarkTableDataSource extends Collection {
             for (int i = 0; i < filesList.count(); i++) {
                 String filename = (String) filesList.objectAtIndex(i);
                 if (filename.endsWith(".duck")) {
-// Adding a previously exported bookmark file from the Finder
+                    // Adding a previously exported bookmark file from the Finder
                     if (index < 0) {
                         index = 0;
                     }
                     if (index > tableView.numberOfRows()) {
                         index = tableView.numberOfRows();
                     }
-                    this.add(index, this.importBookmark(new java.io.File(filename)));
-                    tableView.reloadData();
-                    tableView.selectRow(index, false);
+                    Host bookmark = this.importBookmark(new File(filename));
+                    if(bookmark != null) {
+                        //parsing succeeded
+                        this.add(index, bookmark);
+                        tableView.reloadData();
+                        tableView.selectRow(index, false);
+                    }
                 }
                 else {
-//the bookmark this file has been dropped onto
+                    //the bookmark this file has been dropped onto
                     Host h = (Host) this.get(index);
                     if (null == session) {
                         session = SessionFactory.createSession(h);
                     }
-// Drop of a file from the finder > upload to the remote host this bookmark points to
+                    // Drop of a file from the finder > upload to the remote host this bookmark points to
                     q.addRoot(PathFactory.createPath(session, h.getDefaultPath(), new Local(filename)));
                 }
             }
-// if anything has been added to the queue then process the queue
+            // if anything has been added to the queue then process the queue
             if (q.numberOfRoots() > 0) {
                 CDQueueController.instance().startItem(q);
             }
             return true;
         }
         if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilesPromisePboardType)) != null) {
-// we are only interested in our private pasteboard with a description of the host encoded in as a xml.
+            // we are only interested in our private pasteboard with a description of the host encoded in as a xml.
             NSPasteboard pboard = NSPasteboard.pasteboardWithName("HostPBoard");
             if (this.hostPboardChangeCount < pboard.changeCount()) {
                 log.debug("availableTypeFromArray:HostPBoardType: " + pboard.availableTypeFromArray(new NSArray("HostPBoardType")));

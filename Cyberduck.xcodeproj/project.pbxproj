@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		47026428087DC91C008837FD /* IDisk.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47026426087DC91C008837FD /* IDisk.strings */; };
+		470E56D508BE3E1E00BDF3CD /* MacOSXForkerIO.c in Sources */ = {isa = PBXBuildFile; fileRef = 470E56D008BE3E1E00BDF3CD /* MacOSXForkerIO.c */; };
+		470E56D608BE3E1F00BDF3CD /* TinAlias.h in Headers */ = {isa = PBXBuildFile; fileRef = 470E56D108BE3E1E00BDF3CD /* TinAlias.h */; };
+		470E56D708BE3E1F00BDF3CD /* TinFSFork.h in Headers */ = {isa = PBXBuildFile; fileRef = 470E56D208BE3E1E00BDF3CD /* TinFSFork.h */; };
+		470E56D808BE3E1F00BDF3CD /* TinFSRefItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 470E56D308BE3E1E00BDF3CD /* TinFSRefItem.h */; };
+		470E56D908BE3E1F00BDF3CD /* TinWatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 470E56D408BE3E1E00BDF3CD /* TinWatcher.h */; };
 		4716C5F50872BA9900938886 /* Command.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5EF0872BA9800938886 /* Command.nib */; };
 		4716C5F80872BAA900938886 /* command.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5F70872BAA900938886 /* command.tiff */; };
 		4716C6440872C8BA00938886 /* idisk.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4716C6430872C8BA00938886 /* idisk.tiff */; };
@@ -130,6 +135,10 @@
 		475D17C00805D54C00166B8A /* download2.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B60805D54C00166B8A /* download2.icns */; };
 		475D17C10805D54C00166B8A /* download1.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B70805D54C00166B8A /* download1.icns */; };
 		475D17C20805D54C00166B8A /* download4.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B80805D54C00166B8A /* download4.icns */; };
+		4764B48108B7835E00441096 /* SKWSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 4764B47D08B7835E00441096 /* SKWSegmentedControl.m */; };
+		4764B48208B7835E00441096 /* SKWSegmentedControlWindowProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4764B47E08B7835E00441096 /* SKWSegmentedControlWindowProxy.m */; };
+		4764B48308B7835E00441096 /* SKWSegmentedControlWindowProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4764B47F08B7835E00441096 /* SKWSegmentedControlWindowProxy.h */; };
+		4764B48408B7835E00441096 /* SKWSegmentedControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 4764B48008B7835E00441096 /* SKWSegmentedControl.h */; };
 		476C7C1107F5A27900CF6032 /* Cyberduck FAQ.rtfd in Resources */ = {isa = PBXBuildFile; fileRef = 476C7C1007F5A27900CF6032 /* Cyberduck FAQ.rtfd */; };
 		476C7C1907F5A2A700CF6032 /* File.nib in Resources */ = {isa = PBXBuildFile; fileRef = 476C7C1707F5A2A700CF6032 /* File.nib */; };
 		47748981085825460030AED1 /* Cyberduck.scriptTerminology in Resources */ = {isa = PBXBuildFile; fileRef = 4774897F085825460030AED1 /* Cyberduck.scriptTerminology */; };
@@ -298,6 +307,58 @@
 		47026440087DC98B008837FD /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/IDisk.strings; sourceTree = "<group>"; };
 		47026441087DC98E008837FD /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/IDisk.strings; sourceTree = "<group>"; };
 		470B45BF0766162000E73D07 /* CDInfoController.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CDInfoController.java; sourceTree = "<group>"; };
+		470E56D008BE3E1E00BDF3CD /* MacOSXForkerIO.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MacOSXForkerIO.c; sourceTree = "<group>"; };
+		470E56D108BE3E1E00BDF3CD /* TinAlias.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinAlias.h; sourceTree = "<group>"; };
+		470E56D208BE3E1E00BDF3CD /* TinFSFork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinFSFork.h; sourceTree = "<group>"; };
+		470E56D308BE3E1E00BDF3CD /* TinFSRefItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinFSRefItem.h; sourceTree = "<group>"; };
+		470E56D408BE3E1E00BDF3CD /* TinWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinWatcher.h; sourceTree = "<group>"; };
+		470E570708BE4A6000BDF3CD /* AccentComposer.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AccentComposer.java; sourceTree = "<group>"; };
+		470E570808BE4A6000BDF3CD /* BasicFileInfo.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = BasicFileInfo.java; sourceTree = "<group>"; };
+		470E570908BE4A6000BDF3CD /* FileAccess.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FileAccess.java; sourceTree = "<group>"; };
+		470E570A08BE4A6000BDF3CD /* FileForker.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FileForker.java; sourceTree = "<group>"; };
+		470E570B08BE4A6000BDF3CD /* FileHelper.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FileHelper.java; sourceTree = "<group>"; };
+		470E570C08BE4A6000BDF3CD /* FileInfo.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FileInfo.java; sourceTree = "<group>"; };
+		470E570F08BE4A6000BDF3CD /* Errors.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Errors.java; sourceTree = "<group>"; };
+		470E571008BE4A6100BDF3CD /* ForkRW.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ForkRW.java; sourceTree = "<group>"; };
+		470E571108BE4A6100BDF3CD /* FSCatInfo.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FSCatInfo.java; sourceTree = "<group>"; };
+		470E571208BE4A6100BDF3CD /* FSForker.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FSForker.java; sourceTree = "<group>"; };
+		470E571308BE4A6100BDF3CD /* FSItem.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FSItem.java; sourceTree = "<group>"; };
+		470E571408BE4A6100BDF3CD /* FSRefItem.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FSRefItem.java; sourceTree = "<group>"; };
+		470E571508BE4A6100BDF3CD /* FSRefItemX.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FSRefItemX.java; sourceTree = "<group>"; };
+		470E571608BE4A6100BDF3CD /* FSSpec.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FSSpec.java; sourceTree = "<group>"; };
+		470E571808BE4A6100BDF3CD /* MacOSXForker.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MacOSXForker.java; sourceTree = "<group>"; };
+		470E571908BE4A6100BDF3CD /* SignalCounter.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SignalCounter.java; sourceTree = "<group>"; };
+		470E571A08BE4A6100BDF3CD /* TinAlias.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TinAlias.java; sourceTree = "<group>"; };
+		470E571B08BE4A6100BDF3CD /* TinFSFork.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TinFSFork.java; sourceTree = "<group>"; };
+		470E571C08BE4A6100BDF3CD /* TinFSRefItem.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TinFSRefItem.java; sourceTree = "<group>"; };
+		470E571D08BE4A6100BDF3CD /* TinWatcher.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TinWatcher.java; sourceTree = "<group>"; };
+		470E571E08BE4A6100BDF3CD /* MemoryException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MemoryException.java; sourceTree = "<group>"; };
+		470E571F08BE4A6100BDF3CD /* NameString.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NameString.java; sourceTree = "<group>"; };
+		470E572008BE4A6100BDF3CD /* MacRoman.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MacRoman.java; sourceTree = "<group>"; };
+		470E572108BE4A6100BDF3CD /* NamingStrategy.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NamingStrategy.java; sourceTree = "<group>"; };
+		470E572208BE4A6100BDF3CD /* NamingStrategyKeep.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NamingStrategyKeep.java; sourceTree = "<group>"; };
+		470E572308BE4A6100BDF3CD /* NamingStrategyUnique.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NamingStrategyUnique.java; sourceTree = "<group>"; };
+		470E572408BE4A6100BDF3CD /* Pathname.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Pathname.java; sourceTree = "<group>"; };
+		470E572508BE4A6100BDF3CD /* PathnameFormat.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PathnameFormat.java; sourceTree = "<group>"; };
+		470E572608BE4A6100BDF3CD /* PF_MacOS.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PF_MacOS.java; sourceTree = "<group>"; };
+		470E572708BE4A6100BDF3CD /* PF_MacOSX.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PF_MacOSX.java; sourceTree = "<group>"; };
+		470E572808BE4A6100BDF3CD /* PF_Simple.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PF_Simple.java; sourceTree = "<group>"; };
+		470E572908BE4A6100BDF3CD /* RandomRW.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RandomRW.java; sourceTree = "<group>"; };
+		470E572A08BE4A6100BDF3CD /* RandomRWArray.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RandomRWArray.java; sourceTree = "<group>"; };
+		470E572B08BE4A6100BDF3CD /* RandomRWFile.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RandomRWFile.java; sourceTree = "<group>"; };
+		470E572C08BE4A6100BDF3CD /* RandomRWInputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RandomRWInputStream.java; sourceTree = "<group>"; };
+		470E572D08BE4A6100BDF3CD /* RandomRWOutputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RandomRWOutputStream.java; sourceTree = "<group>"; };
+		470E572E08BE4A6100BDF3CD /* RandomRWRange.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RandomRWRange.java; sourceTree = "<group>"; };
+		470E572F08BE4A6100BDF3CD /* RandomRWSink.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RandomRWSink.java; sourceTree = "<group>"; };
+		470E573008BE4A6100BDF3CD /* RandomRWWrapper.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RandomRWWrapper.java; sourceTree = "<group>"; };
+		470E573108BE4A6100BDF3CD /* UnsupportedIOException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = UnsupportedIOException.java; sourceTree = "<group>"; };
+		470E573308BE4A6100BDF3CD /* Arrayer.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Arrayer.java; sourceTree = "<group>"; };
+		470E573408BE4A6100BDF3CD /* Byter.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Byter.java; sourceTree = "<group>"; };
+		470E573508BE4A6100BDF3CD /* Implicator.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Implicator.java; sourceTree = "<group>"; };
+		470E573608BE4A6100BDF3CD /* LibLoader.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = LibLoader.java; sourceTree = "<group>"; };
+		470E573708BE4A6100BDF3CD /* MacPlatform.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MacPlatform.java; sourceTree = "<group>"; };
+		470E573808BE4A6100BDF3CD /* MacTime.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MacTime.java; sourceTree = "<group>"; };
+		470E573908BE4A6100BDF3CD /* SmallPoint.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SmallPoint.java; sourceTree = "<group>"; };
 		4716C5F00872BA9800938886 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Command.nib; sourceTree = "<group>"; };
 		4716C5F70872BAA900938886 /* command.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = command.tiff; sourceTree = "<group>"; };
 		4716C6430872C8BA00938886 /* idisk.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = idisk.tiff; sourceTree = "<group>"; };
@@ -1073,6 +1134,10 @@
 		475D187E0805E24B00166B8A /* IconFamily.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IconFamily.h; sourceTree = "<group>"; };
 		475D189E0805E2FD00166B8A /* NSString+CarbonFSSpecCreation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+CarbonFSSpecCreation.h"; sourceTree = "<group>"; };
 		475D189F0805E2FD00166B8A /* NSString+CarbonFSSpecCreation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+CarbonFSSpecCreation.m"; sourceTree = "<group>"; };
+		4764B47D08B7835E00441096 /* SKWSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControl.m; sourceTree = "<group>"; };
+		4764B47E08B7835E00441096 /* SKWSegmentedControlWindowProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControlWindowProxy.m; sourceTree = "<group>"; };
+		4764B47F08B7835E00441096 /* SKWSegmentedControlWindowProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControlWindowProxy.h; sourceTree = "<group>"; };
+		4764B48008B7835E00441096 /* SKWSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControl.h; sourceTree = "<group>"; };
 		47685DD80759706B00C744E1 /* Local.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; name = Local.java; path = source/ch/cyberduck/core/Local.java; sourceTree = SOURCE_ROOT; };
 		476C7C1007F5A27900CF6032 /* Cyberduck FAQ.rtfd */ = {isa = PBXFileReference; lastKnownFileType = wrapper.rtfd; path = "Cyberduck FAQ.rtfd"; sourceTree = "<group>"; };
 		476C7C1807F5A2A700CF6032 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/File.nib; sourceTree = "<group>"; };
@@ -1455,6 +1520,112 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		470E56CF08BE3E1E00BDF3CD /* forker */ = {
+			isa = PBXGroup;
+			children = (
+				470E56D008BE3E1E00BDF3CD /* MacOSXForkerIO.c */,
+				470E56D108BE3E1E00BDF3CD /* TinAlias.h */,
+				470E56D208BE3E1E00BDF3CD /* TinFSFork.h */,
+				470E56D308BE3E1E00BDF3CD /* TinFSRefItem.h */,
+				470E56D408BE3E1E00BDF3CD /* TinWatcher.h */,
+			);
+			path = forker;
+			sourceTree = "<group>";
+		};
+		470E570508BE4A6000BDF3CD /* glguerin */ = {
+			isa = PBXGroup;
+			children = (
+				470E570608BE4A6000BDF3CD /* io */,
+				470E573208BE4A6100BDF3CD /* util */,
+			);
+			path = glguerin;
+			sourceTree = "<group>";
+		};
+		470E570608BE4A6000BDF3CD /* io */ = {
+			isa = PBXGroup;
+			children = (
+				470E570708BE4A6000BDF3CD /* AccentComposer.java */,
+				470E570808BE4A6000BDF3CD /* BasicFileInfo.java */,
+				470E570908BE4A6000BDF3CD /* FileAccess.java */,
+				470E570A08BE4A6000BDF3CD /* FileForker.java */,
+				470E570B08BE4A6000BDF3CD /* FileHelper.java */,
+				470E570C08BE4A6000BDF3CD /* FileInfo.java */,
+				470E570D08BE4A6000BDF3CD /* imp */,
+				470E572008BE4A6100BDF3CD /* MacRoman.java */,
+				470E572108BE4A6100BDF3CD /* NamingStrategy.java */,
+				470E572208BE4A6100BDF3CD /* NamingStrategyKeep.java */,
+				470E572308BE4A6100BDF3CD /* NamingStrategyUnique.java */,
+				470E572408BE4A6100BDF3CD /* Pathname.java */,
+				470E572508BE4A6100BDF3CD /* PathnameFormat.java */,
+				470E572608BE4A6100BDF3CD /* PF_MacOS.java */,
+				470E572708BE4A6100BDF3CD /* PF_MacOSX.java */,
+				470E572808BE4A6100BDF3CD /* PF_Simple.java */,
+				470E572908BE4A6100BDF3CD /* RandomRW.java */,
+				470E572A08BE4A6100BDF3CD /* RandomRWArray.java */,
+				470E572B08BE4A6100BDF3CD /* RandomRWFile.java */,
+				470E572C08BE4A6100BDF3CD /* RandomRWInputStream.java */,
+				470E572D08BE4A6100BDF3CD /* RandomRWOutputStream.java */,
+				470E572E08BE4A6100BDF3CD /* RandomRWRange.java */,
+				470E572F08BE4A6100BDF3CD /* RandomRWSink.java */,
+				470E573008BE4A6100BDF3CD /* RandomRWWrapper.java */,
+				470E573108BE4A6100BDF3CD /* UnsupportedIOException.java */,
+			);
+			path = io;
+			sourceTree = "<group>";
+		};
+		470E570D08BE4A6000BDF3CD /* imp */ = {
+			isa = PBXGroup;
+			children = (
+				470E570E08BE4A6000BDF3CD /* mac */,
+			);
+			path = imp;
+			sourceTree = "<group>";
+		};
+		470E570E08BE4A6000BDF3CD /* mac */ = {
+			isa = PBXGroup;
+			children = (
+				470E570F08BE4A6000BDF3CD /* Errors.java */,
+				470E571008BE4A6100BDF3CD /* ForkRW.java */,
+				470E571108BE4A6100BDF3CD /* FSCatInfo.java */,
+				470E571208BE4A6100BDF3CD /* FSForker.java */,
+				470E571308BE4A6100BDF3CD /* FSItem.java */,
+				470E571408BE4A6100BDF3CD /* FSRefItem.java */,
+				470E571508BE4A6100BDF3CD /* FSRefItemX.java */,
+				470E571608BE4A6100BDF3CD /* FSSpec.java */,
+				470E571708BE4A6100BDF3CD /* macosx */,
+				470E571E08BE4A6100BDF3CD /* MemoryException.java */,
+				470E571F08BE4A6100BDF3CD /* NameString.java */,
+			);
+			path = mac;
+			sourceTree = "<group>";
+		};
+		470E571708BE4A6100BDF3CD /* macosx */ = {
+			isa = PBXGroup;
+			children = (
+				470E571808BE4A6100BDF3CD /* MacOSXForker.java */,
+				470E571908BE4A6100BDF3CD /* SignalCounter.java */,
+				470E571A08BE4A6100BDF3CD /* TinAlias.java */,
+				470E571B08BE4A6100BDF3CD /* TinFSFork.java */,
+				470E571C08BE4A6100BDF3CD /* TinFSRefItem.java */,
+				470E571D08BE4A6100BDF3CD /* TinWatcher.java */,
+			);
+			path = macosx;
+			sourceTree = "<group>";
+		};
+		470E573208BE4A6100BDF3CD /* util */ = {
+			isa = PBXGroup;
+			children = (
+				470E573308BE4A6100BDF3CD /* Arrayer.java */,
+				470E573408BE4A6100BDF3CD /* Byter.java */,
+				470E573508BE4A6100BDF3CD /* Implicator.java */,
+				470E573608BE4A6100BDF3CD /* LibLoader.java */,
+				470E573708BE4A6100BDF3CD /* MacPlatform.java */,
+				470E573808BE4A6100BDF3CD /* MacTime.java */,
+				470E573908BE4A6100BDF3CD /* SmallPoint.java */,
+			);
+			path = util;
+			sourceTree = "<group>";
+		};
 		472155E107FA221D00451725 /* ftps */ = {
 			isa = PBXGroup;
 			children = (
@@ -1528,6 +1699,7 @@
 				29B97316FDCFA39411CA2CEA /* main.m */,
 				474152D806C4F08A00AC0BD2 /* ch */,
 				4741532B06C4F08A00AC0BD2 /* com */,
+				470E570508BE4A6000BDF3CD /* glguerin */,
 				4741545906C4F08B00AC0BD2 /* org */,
 			);
 			path = source;
@@ -1553,6 +1725,7 @@
 		474152DA06C4F08A00AC0BD2 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				470E56CF08BE3E1E00BDF3CD /* forker */,
 				47CD997C0738DEC700E9379E /* proxy */,
 				474152DB06C4F08A00AC0BD2 /* Attributes.java */,
 				474152DD06C4F08A00AC0BD2 /* Cache.java */,
@@ -2300,6 +2473,10 @@
 		4798434E072B0DAA00FA3CDB /* view */ = {
 			isa = PBXGroup;
 			children = (
+				4764B48008B7835E00441096 /* SKWSegmentedControl.h */,
+				4764B47D08B7835E00441096 /* SKWSegmentedControl.m */,
+				4764B47F08B7835E00441096 /* SKWSegmentedControlWindowProxy.h */,
+				4764B47E08B7835E00441096 /* SKWSegmentedControlWindowProxy.m */,
 				4741531A06C4F08A00AC0BD2 /* CDTableCell.java */,
 				4741531506C4F08A00AC0BD2 /* CDProgressCell.java */,
 				4741530306C4F08A00AC0BD2 /* CDBookmarkCell.java */,
@@ -2538,6 +2715,8 @@
 				47494C4107EC6B4200B34D53 /* CDOutlineView.h in Headers */,
 				47494C4307EC6B4200B34D53 /* CDListView.h in Headers */,
 				47FD45330801EAEE00716715 /* UKPrefsPanel.h in Headers */,
+				4764B48308B7835E00441096 /* SKWSegmentedControlWindowProxy.h in Headers */,
+				4764B48408B7835E00441096 /* SKWSegmentedControl.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2583,6 +2762,10 @@
 				4739EFB30856991200405FD3 /* Local.h in Headers */,
 				4739EFB40856991200405FD3 /* IconFamily.h in Headers */,
 				4739EFB50856991200405FD3 /* NSString+CarbonFSSpecCreation.h in Headers */,
+				470E56D608BE3E1F00BDF3CD /* TinAlias.h in Headers */,
+				470E56D708BE3E1F00BDF3CD /* TinFSFork.h in Headers */,
+				470E56D808BE3E1F00BDF3CD /* TinFSRefItem.h in Headers */,
+				470E56D908BE3E1F00BDF3CD /* TinWatcher.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3143,6 +3326,8 @@
 				47494C4007EC6B4200B34D53 /* CDOutlineView.m in Sources */,
 				47494C4207EC6B4200B34D53 /* CDListView.m in Sources */,
 				47FD45340801EAEE00716715 /* UKPrefsPanel.m in Sources */,
+				4764B48108B7835E00441096 /* SKWSegmentedControl.m in Sources */,
+				4764B48208B7835E00441096 /* SKWSegmentedControlWindowProxy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3187,6 +3372,7 @@
 				4739EFB70856991200405FD3 /* Local.m in Sources */,
 				4739EFB80856991200405FD3 /* NSString+CarbonFSSpecCreation.m in Sources */,
 				4739EFB90856991200405FD3 /* IconFamily.m in Sources */,
+				470E56D508BE3E1E00BDF3CD /* MacOSXForkerIO.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

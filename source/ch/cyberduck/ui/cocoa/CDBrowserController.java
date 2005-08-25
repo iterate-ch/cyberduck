@@ -2031,7 +2031,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
         log.debug("mount:" + host);
         if(this.isMounted()) {
             if(this.session.getHost().getURL().equals(host.getURL())) {
-                Path home = PathFactory.createPath(session, host.getDefaultPath());
+                Path home = PathFactory.createPath(session, "/");
+                if(host.hasReasonableDefaultPath()) {
+                    home = PathFactory.createPath(session, host.getDefaultPath());
+                }
                 home.attributes.setType(Path.DIRECTORY_TYPE);
                 home.list(true, this.getEncoding(), this.getFileComparator(), this.getFileFilter());
                 return session;
