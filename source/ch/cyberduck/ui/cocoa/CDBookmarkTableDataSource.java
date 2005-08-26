@@ -241,7 +241,7 @@ public class CDBookmarkTableDataSource extends Collection {
      * The files dragged from the favorits drawer to the Finder --> bookmark files
      */
     private Host[] promisedDragBookmarks;
-    private java.io.File[] promisedDragBookmarksFileDestination;
+    private File[] promisedDragBookmarksFileDestination;
 
     /**
      * Invoked by tableView after it has been determined that a drag should begin, but before the drag has been started.
@@ -256,7 +256,7 @@ public class CDBookmarkTableDataSource extends Collection {
         log.debug("tableViewWriteRowsToPasteboard:" + rows);
         if (rows.count() > 0) {
             this.promisedDragBookmarks = new Host[rows.count()];
-            this.promisedDragBookmarksFileDestination = new java.io.File[rows.count()];
+            this.promisedDragBookmarksFileDestination = new File[rows.count()];
             NSMutableArray promisedDragBookmarksAsDictionary = new NSMutableArray();
             for (int i = 0; i < rows.count(); i++) {
                 promisedDragBookmarks[i] = (Host) this.get(((Integer) rows.objectAtIndex(i)).intValue());
@@ -290,7 +290,7 @@ public class CDBookmarkTableDataSource extends Collection {
         NSMutableArray promisedDragNames = new NSMutableArray();
         for (int i = 0; i < promisedDragBookmarks.length; i++) {
             try {
-                promisedDragBookmarksFileDestination[i] = new java.io.File(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"),
+                promisedDragBookmarksFileDestination[i] = new File(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"),
                         promisedDragBookmarks[i].getNickname() + ".duck");
                 this.exportBookmark(promisedDragBookmarks[i], promisedDragBookmarksFileDestination[i]);
                 promisedDragNames.addObject(promisedDragBookmarks[i].getNickname() + ".duck");
@@ -331,7 +331,7 @@ public class CDBookmarkTableDataSource extends Collection {
      * Saves this collection of bookmarks in to a file to the users's application support directory
      * in a plist xml format
      */
-    public void save(java.io.File f) {
+    public void save(File f) {
         if (Preferences.instance().getBoolean("favorites.save")) {
             try {
                 NSMutableArray list = new NSMutableArray();
@@ -369,7 +369,7 @@ public class CDBookmarkTableDataSource extends Collection {
     /**
      * Deserialize all the bookmarks saved previously in the users's application support directory
      */
-    public void load(java.io.File f) {
+    public void load(File f) {
         if (f.exists()) {
             log.info("Found Bookmarks file: " + f.toString());
             NSData plistData = new NSData(f);
@@ -399,7 +399,7 @@ public class CDBookmarkTableDataSource extends Collection {
         }
     }
 
-    public Host importBookmark(java.io.File file) {
+    public Host importBookmark(File file) {
         log.info("Importing bookmark from " + file);
         NSData plistData = new NSData(file);
         String[] errorString = new String[]{null};
@@ -421,7 +421,7 @@ public class CDBookmarkTableDataSource extends Collection {
         return null;
     }
 
-    public void exportBookmark(Host bookmark, java.io.File file) {
+    public void exportBookmark(Host bookmark, File file) {
         try {
             log.info("Exporting bookmark " + bookmark + " to " + file);
             NSMutableData collection = new NSMutableData();

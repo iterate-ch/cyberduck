@@ -2013,12 +2013,20 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		this.reloadData();
         session.addObserver(transcript = new CDTranscriptController(this.logView));
         this.window().setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername() + "@" + host.getHostname());
-        File bookmark = new File(HISTORY_FOLDER + "/" + host.getHostname() + ".duck");
-        CDBookmarkTableDataSource.instance().exportBookmark(host, bookmark);
-        this.window().setRepresentedFilename(bookmark.getAbsolutePath());
+        CDBookmarkTableDataSource.instance().exportBookmark(host, this.getRepresentedFile());
+        if(this.getRepresentedFile().exists()) {
+            this.window().setRepresentedFilename(this.getRepresentedFile().getAbsolutePath());
+        }
         session.addObserver((Observer) this);
         this.getFocus();
         return this.session;
+    }
+
+    private File getRepresentedFile() {
+        if(this.hasSession()) {
+            return new File(HISTORY_FOLDER, this.session.getHost().getHostname() + ".duck");
+        }
+        return null;
     }
 
     private Session session;
@@ -2047,7 +2055,23 @@ public class CDBrowserController extends CDWindowController implements Observer 
             this.init(host);
             new Thread("Session") {
                 public void run() {
+                    Observer observer;
+                    session.addObserver(observer = new Observer() {
+                        public void update(Observable o, Object arg) {
+                            if (arg instanceof Message) {
+                                final Message msg = (Message) arg;
+                                if (msg.getTitle().equals(Message.ERROR)) {
+                                    File bookmark = getRepresentedFile();
+                                    if(bookmark.exists()) {
+                                        bookmark.delete();
+                                    }
+                                    window().setRepresentedFilename(""); //can't send null
+                                }
+                            }
+                        }
+                    });
                     session.mount(encoding, getFileComparator(), getFileFilter());
+                    session.deleteObserver(observer);
                 }
             }.start();
             return this.session;
