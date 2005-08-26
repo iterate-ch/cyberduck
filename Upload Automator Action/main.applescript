@@ -19,29 +19,20 @@
 on run {input, parameters}
 	if input is not {} then
 		if the class of the input is list then
-			set theServer to (server of parameters) as string
+			set theServer to (Hostname of parameters) as string
 			if username is in parameters then
 				set theUser to (username of parameters) as string
 			else
 				set theUser to "anonymous" as string
 			end if
 			if password is in parameters then
-				set thePassword to (|password| of parameters) as string
+				set thePassword to (|Password| of parameters) as string
 			else
 				set thePassword to "" as string
 			end if
-			set theProtocolIndex to (protocol of parameters) as integer
-			if (theProtocolIndex is equal to 0) then
-				set theProtocol to "ftp" as string
-			else if (theProtocolIndex is equal to 1) then
-				set theProtocol to "ftps" as string
-			else if (theProtocolIndex is equal to 2) then
-				set theProtocol to "sftp" as string
-			else
-				set theProtocol to "ftp" as string
-			end if
+			set theProtocol to (|Protocol| of parameters) as string
 			if path is in parameters then
-				set thePath to (|path| of parameters) as string
+				set thePath to (|Path| of parameters) as string
 			else
 				set thePath to "" as string
 			end if

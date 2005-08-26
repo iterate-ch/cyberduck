@@ -60,6 +60,8 @@
 		089C167EFE841241C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		089C167FFE841241C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		4736E98808BF50230085EA56 /* CDDownloadScriptAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDDownloadScriptAction.h; sourceTree = "<group>"; };
+		4736E98908BF50230085EA56 /* CDDownloadScriptAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDDownloadScriptAction.m; sourceTree = "<group>"; };
 		47E4BA0208AB51240049A0CB /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/main.nib; sourceTree = "<group>"; };
 		47EFFC8408AAB0EF00719B3A /* Cyberduck.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.sdef; name = Cyberduck.sdef; path = ../Cyberduck.sdef; sourceTree = SOURCE_ROOT; };
 		65081C3A067A9A0C006247A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -85,6 +87,7 @@
 		089C166AFE841209C02AAC07 /* Automator Action */ = {
 			isa = PBXGroup;
 			children = (
+				4736E98108BF4FFE0085EA56 /* Sources */,
 				65AABA0F056A9AD1006CE269 /* Scripts */,
 				089C167CFE841241C02AAC07 /* Resources */,
 				089C1671FE841209C02AAC07 /* Frameworks and Libraries */,
@@ -138,6 +141,15 @@
 				65081C3B067A9A0C006247A1 /* Download files.action */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		4736E98108BF4FFE0085EA56 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				4736E98808BF50230085EA56 /* CDDownloadScriptAction.h */,
+				4736E98908BF50230085EA56 /* CDDownloadScriptAction.m */,
+			);
+			name = Sources;
 			sourceTree = "<group>";
 		};
 		65AABA0F056A9AD1006CE269 /* Scripts */ = {

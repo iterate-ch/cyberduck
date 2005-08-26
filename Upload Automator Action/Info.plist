@@ -21,15 +21,15 @@
 	<true/>
 	<key>AMDefaultParameters</key>
 	<dict>
-		<key>password</key>
+		<key>Password</key>
 		<string></string>
-		<key>path</key>
+		<key>Path</key>
 		<string></string>
-		<key>protocol</key>
-		<integer>0</integer>
-		<key>server</key>
+		<key>Protocol</key>
+		<string>ftp</string>
+		<key>Hostname</key>
 		<string></string>
-		<key>username</key>
+		<key>Username</key>
 		<string>anonymous</string>
 	</dict>
 	<key>AMKeywords</key>
@@ -77,6 +77,6 @@
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>NSPrincipalClass</key>
-	<string>AMAppleScriptAction</string>
+	<string>CDUploadAMAppleScriptAction</string>
 </dict>
 </plist>

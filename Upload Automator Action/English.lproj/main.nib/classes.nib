@@ -18,6 +18,19 @@
             OUTLETS = {view = NSView; }; 
             SUPERCLASS = AMAction; 
         }, 
+        {CLASS = CDBookmarkStore; LANGUAGE = ObjC; SUPERCLASS = NSMutableArray; }, 
+        {
+            CLASS = CDController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {bookmarks = NSMutableArray; }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            CLASS = CDUploadScriptAction; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {bookmarkPopupButton = NSPopUpButton; }; 
+            SUPERCLASS = AMAppleScriptAction; 
+        }, 
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }
     ); 
     IBVersion = 1; 
