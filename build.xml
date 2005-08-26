@@ -231,6 +231,7 @@
 			<fileset dir="${build.classes}">
 				<include name="**/*.dylib"/>
 				<include name="ch/cyberduck/core/**/*.class"/>
+				<include name="glguerin/**/*.class"/>
 			</fileset>
 		</jar>
 		<jar jarfile="${build}/j2ssh.jar"

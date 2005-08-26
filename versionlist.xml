@@ -15,6 +15,7 @@
 - [Bugfix] Caching issue with multiple connections to the same host
 - [Bugfix] When moving to the parent directory the previous working directory is always selected
 - [Bugfix] Selected files are always remembered when refreshing the browsing list
+- [Bugfix] Remove custom icon and resource fork after download
 
 2.5b4
 - [Feature] Updated navigation bar interface elements
