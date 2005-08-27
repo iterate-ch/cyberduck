@@ -1,0 +1,127 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Mac OS X (vers 12 April 2005), see www.w3.org" />
+
+  <title>Cyberduck Help</title>
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta http-equiv="Content-type" content=
+  "text/html; charset=utf-8" />
+  <link href="../css/style.css" rel="stylesheet" media="all" type=
+  "text/css" />
+<style type="text/css">
+/*<![CDATA[*/
+ p.c1 {font-weight: bold}
+/*]]>*/
+</style>
+</head>
+
+<body>
+  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr height="28">
+      <td height="28" width="3"></td>
+
+      <td height="28" valign="top">
+        <p class="bold"><a href="../Cyberduck%20Help.html">Cyberduck
+        Help</a></p>
+      </td>
+    </tr>
+  </table>
+
+  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr align="left" valign="top">
+      <td width="3"></td>
+
+      <td width="120">
+        <p class="bold"><span class="bold">Known Problems</span></p>
+      </td>
+
+      <td rowspan="3" background="../images/vertline2.gif" valign=
+      "middle" width="24"></td>
+
+      <td rowspan="3" valign="middle" width="7"></td>
+    </tr>
+
+    <tr align="left" height="18" valign="top">
+      <td height="18" width="3"></td>
+
+      <td height="18" width="120"></td>
+
+      <td colspan="3" height="18"></td>
+    </tr>
+
+    <tr align="left" valign="top">
+      <td width="3"></td>
+
+      <td width="120"></td>
+
+      <td colspan="3">
+        <p class="bold">The application doesn't launch; it just
+        bounces a few times in the dock.</p>
+
+        <p>Make sure to install the latest Java Update available in
+        Software Update.</p>
+
+        <p class="bold">My preferred editor isn't supported.</p>
+
+        <p>An editor must support the ODB external editor protocol
+        to be added.</p>
+
+        <p class="bold">Special characters such as Umlaute aren't
+        displayed correctly in the browser.</p>
+
+        <p>Try to change the character encoding used. See 'View'
+        &gt; 'Encoding'.</p>
+
+        <p class="bold">The folder size isn't displayed
+        correctly.</p>
+
+        <p>This is not the size of its content but the size of the
+        folder itself.</p>
+
+        <p class="bold">When listing a directory on a FTP server I
+        get the error message in response to the 'LIST -a' command:
+        550 Directory not found.</p>
+
+        <p>Uncheck the option 'FTP &gt; Send LIST -a command' in
+        the Preferences.</p>
+
+        <p class="bold">The server does only allow one single
+        connection; I can't transfer any files!</p>
+
+        <p>Limit the maximum number of simultaneous to a server to
+        one in the 'Advanced' tab in the Preferences.</p>
+
+        <p class="bold">The connection to the server frequently times
+        out; I want it to stay it alive if at all possible!</p>
+
+        <p>You can force Cyberduck to send a no operation command
+        at a given time interval. See the 'Advanced' tab in the
+        Preferences.</p>
+
+        <p class="bold">I don't want to synchronize files if only
+        e.g. the minutes differ in the timestamp!</p>
+
+        <p>You can configure Cberduck to ignore certain values when
+        comparing the modification date of files. Open a
+        Terminal.app and type:</p><code>defaults write
+        ch.sudo.cyberduck queue.sync.ignore.second
+        true</code><br />
+        <code>defaults write ch.sudo.cyberduck
+        queue.sync.ignore.minute true</code><br />
+        <code>defaults write ch.sudo.cyberduck
+        queue.sync.ignore.hour false</code><br />
+
+        <p>By default, milliseconds and seconds are ignored.</p>
+
+        <p class="bold">If you know of any other problems, please
+        report them to <a href=
+        "mailto:feedback@cyberduck.ch">feedback@cyberduck.ch</a></p>
+
+        <p>Thanks.</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
