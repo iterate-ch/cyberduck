@@ -1,0 +1,41 @@
+/*APD CSS Task Table Style 1.0h */
+
+body {
+	background-color: #ffffff; 
+	font-family: "Lucida Grande", "Gill Sans", Tahoma, sans-serif;
+	margin-left:30px;
+	margin-right:30px;
+	margin-top: 30px; 
+	margin-bottom: 30px; 
+}
+
+p {
+	font-size: 9pt;
+	text-decoration: none 
+}
+
+p.bold {
+	font-weight: bold; 
+}
+	
+i {
+	font-family: "Lucida Grande", "Gill Sans", Tahoma, sans-serif;
+}
+
+a {
+	color: #0066cc;
+	text-decoration: none
+}
+	
+a:hover  {
+	text-decoration: underline
+}
+	
+h2  { 
+	font-size: 14px; 
+	font-weight: bold; 
+}
+
+h1 { 
+	font-size: 12pt; 
+}
