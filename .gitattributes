@@ -283,6 +283,7 @@ es.lproj/IDisk.strings svneol=native#unset
 es.lproj/Info.nib/keyedobjects.nib -text
 es.lproj/Info.strings svneol=native#unset
 es.lproj/InfoPlist.strings svneol=native#unset
+es.lproj/Localizable.strings svneol=native#unset
 es.lproj/Login.nib/keyedobjects.nib -text
 es.lproj/Login.strings svneol=native#unset
 es.lproj/Main.nib/keyedobjects.nib -text
