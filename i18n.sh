@@ -93,6 +93,23 @@ status() {
 	fi;
 }
 
+index() {
+	if [ "$language" = "all" ] ; then
+	{
+		for lproj in `ls . | grep lproj`; do
+			language=$lproj;
+			echo "*** Indexing Help of $language Localization...";
+			/Developer/Applications/Utilities/Help\ Indexer.app/Contents/MacOS/Help\ Indexer $language/Cyberduck\ Help/ -ShowProgress YES -RemoteRoot http://cyberduck.ch/help/`basename $language .lproj`/ -PreferNetworkFiles YES -TigerIndexing YES
+		done;
+	}
+	else
+	{
+		echo "*** Status of $language Localization...";
+		/Developer/Applications/Utilities/Help\ Indexer.app/Contents/MacOS/Help\ Indexer $language/Cyberduck\ Help/ -ShowProgress YES -RemoteRoot http://cyberduck.ch/help/`basename $language .lproj`/ -PreferNetworkFiles YES -TigerIndexing YES
+	}
+	fi;
+}
+
 nib() {
     updateNibFromStrings;
     udpateStringsFromNib;
@@ -225,7 +242,13 @@ while [ "$1" != "" ] # When there are arguments...
 				update;
 				echo "*** DONE. ***";
 				exit 0;
-			;; 
+			;;
+			--index )
+				echo "Indexing Help Book Pages...";
+				index;
+				echo "*** DONE. ***";
+				exit 0;
+			;;
 			-o | --open)
 				echo "Opening localization .strings files...";
 				open;
