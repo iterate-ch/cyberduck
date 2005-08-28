@@ -115,7 +115,7 @@
 		</exec>
 		-->
 		<exec executable="./buildDMG.pl" spawn="false">
-		    <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor} -buildDir ${build} -compressionLevel 9 -volSize 25 ${app.bundle} ${app.name}\ FAQ.rtfd ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.html  AppleScript\ Samples"/>
+		    <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor} -buildDir ${build} -compressionLevel 9 -volSize 25 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.html  AppleScript\ Samples"/>
 		</exec>
 		<exec executable="gpg" spawn="false">
 			<arg line="-a -o ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.sig --detach-sig ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"/>
