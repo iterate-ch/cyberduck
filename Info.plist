@@ -42,6 +42,10 @@
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>Cyberduck</string>
+	<key>CFBundleHelpBookFolder</key>
+	<string>Cyberduck Help</string>
+	<key>CFBundleHelpBookName</key>
+	<string>Cyberduck Help</string>
 	<key>CFBundleGetInfoString</key>
 	<string>Cyberduck *version*</string>
 	<key>CFBundleIconFile</key>
