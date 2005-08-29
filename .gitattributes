@@ -903,6 +903,7 @@ ru.lproj/IDisk.strings svneol=native#unset
 ru.lproj/Info.nib/keyedobjects.nib -text
 ru.lproj/Info.strings svneol=native#unset
 ru.lproj/InfoPlist.strings svneol=native#unset
+ru.lproj/Localizable.strings svneol=native#unset
 ru.lproj/Login.nib/keyedobjects.nib -text
 ru.lproj/Login.strings svneol=native#unset
 ru.lproj/Main.nib/keyedobjects.nib -text
