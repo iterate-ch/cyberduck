@@ -38,7 +38,9 @@ public class Cache extends HashMap {
     }
 
     public void invalidate(Path path) {
-        this.get(path).getAttributes().put(AttributedList.INVALID, Boolean.TRUE);
+        if(this.containsKey(path)) {
+			this.get(path).getAttributes().put(AttributedList.INVALID, Boolean.TRUE);
+        }
     }
 
     /**
@@ -46,7 +48,7 @@ public class Cache extends HashMap {
      * @return true if the file listing of the given path has been changed since caching
      */
     public boolean isInvalid(Path path) {
-        if(this.exists(path)) {
+        if(this.containsKey(path)) {
             return this.get(path).getAttributes().get(AttributedList.INVALID).equals(Boolean.TRUE);
         }
         return false;
@@ -59,10 +61,6 @@ public class Cache extends HashMap {
      */
     public AttributedList get(Path path) {
         return (AttributedList)super.get(path.getAbsolute());
-    }
-
-    public boolean exists(Path path) {
-        return this.get(path) != null;
     }
 
     /**

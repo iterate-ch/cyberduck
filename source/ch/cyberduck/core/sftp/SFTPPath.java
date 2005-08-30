@@ -99,7 +99,7 @@ public class SFTPPath extends Path {
             if(notifyObservers) {
                 session.addPathToHistory(this);
             }
-            if (refresh || !session.cache().exists(this) || session.cache().isInvalid(this)) {
+            if (refresh || !session.cache().containsKey(this) || session.cache().isInvalid(this)) {
                 AttributedList files = null;
                 if(session.cache().isInvalid(this)) {
                     files = new AttributedList(session.cache().get(this).getAttributes());
