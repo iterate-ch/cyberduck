@@ -162,13 +162,9 @@ public class SFTPSession extends Session {
 		properties.setPrefCSComp(Preferences.instance().getProperty("ssh.compression"));
 		if(Proxy.isSOCKSProxyEnabled()) {
 			log.info("Using SOCKS Proxy");
-			properties.setTransportProvider(SshConnectionProperties.USE_SOCKS5_PROXY); //todo V4?
+			properties.setTransportProvider(SshConnectionProperties.USE_SOCKS4_PROXY);
 			properties.setProxyHost(Proxy.getSOCKSProxyHost());
 			properties.setProxyPort(Proxy.getSOCKSProxyPort());
-			if(Proxy.isSOCKSAuthenticationEnabled()) {
-				properties.setProxyUsername(Proxy.getSOCKSProxyUser());
-				properties.setProxyPassword(Proxy.getSOCKSProxyPassword());
-			}
 		}
 		SSH.connect(properties, this.getHostKeyVerificationController());
 		if(SSH.isConnected()) {

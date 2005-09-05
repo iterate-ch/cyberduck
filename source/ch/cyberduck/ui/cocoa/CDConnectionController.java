@@ -47,9 +47,9 @@ public class CDConnectionController extends CDWindowController {
 		this.bookmarksPopup = bookmarksPopup;
 		this.bookmarksPopup.setImage(NSImage.imageNamed("bookmarks.tiff"));
 		this.bookmarksPopup.setToolTip(NSBundle.localizedString("Bookmarks", ""));
-		Iterator i = CDBookmarkTableDataSource.instance().iterator();
-		while(i.hasNext()) {
-			bookmarksPopup.addItem(i.next().toString());
+		Iterator iter = CDBookmarkTableDataSource.instance().iterator();
+		while(iter.hasNext()) {
+			bookmarksPopup.addItem(iter.next().toString());
 		}
 		this.bookmarksPopup.setTarget(this);
 		this.bookmarksPopup.setAction(new NSSelector("bookmarksPopupSelectionChanged", new Class[]{Object.class}));
@@ -91,7 +91,6 @@ public class CDConnectionController extends CDWindowController {
 		this.bookmarkSelectionDidChange((Host)history.get(index));
 	}
 	
-	private Rendezvous rendezvous;
 	private Observer observer;
 	private NSPopUpButton rendezvousPopup;
 	
@@ -109,8 +108,7 @@ public class CDConnectionController extends CDWindowController {
 		this.rendezvousPopup.setToolTip("Bonjour");
 		this.rendezvousPopup.setTarget(this);
 		this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionDidChange", new Class[]{Object.class}));
-		this.rendezvous = Rendezvous.instance();
-		this.rendezvous.addObserver(this.observer = new Observer() {
+		Rendezvous.instance().addObserver(this.observer = new Observer() {
 			public void update(final Observable o, final Object arg) {
 				log.debug("update:"+o+","+arg);
 				CDConnectionController.this.invoke(new Runnable() {
@@ -130,14 +128,14 @@ public class CDConnectionController extends CDWindowController {
 				});
 			}
 		});
-		String[] cachedServices = this.rendezvous.getServices();
+		String[] cachedServices = Rendezvous.instance().getServices();
 		for(int i = 0; i < cachedServices.length; i++) {
 			this.addItemToRendezvousPopup(cachedServices[i]);
 		}
 	}
 
 	public void rendezvousSelectionDidChange(Object sender) {
-		this.bookmarkSelectionDidChange((Host)rendezvous.getService(rendezvousPopup.titleOfSelectedItem()));
+		this.bookmarkSelectionDidChange((Host)Rendezvous.instance().getService(rendezvousPopup.titleOfSelectedItem()));
 	}
 
 	private NSPopUpButton protocolPopup;
@@ -173,21 +171,21 @@ public class CDConnectionController extends CDWindowController {
 	}
 
 	private NSComboBox hostPopup;
-	private Object quickConnectDataSource;
+	private Object hostPopupDataSource;
 
 	public void setHostPopup(NSComboBox hostPopup) {
 		this.hostPopup = hostPopup;
 		this.hostPopup.setTarget(this);
 		this.hostPopup.setAction(new NSSelector("hostSelectionDidChange", new Class[]{Object.class}));
 		this.hostPopup.setUsesDataSource(true);
-		this.hostPopup.setDataSource(this.quickConnectDataSource = new Object() {
+		this.hostPopup.setDataSource(this.hostPopupDataSource = new Object() {
 			public int numberOfItemsInComboBox(NSComboBox combo) {
 				return CDBookmarkTableDataSource.instance().size();
 			}
 
 			public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
 				if(row < this.numberOfItemsInComboBox(combo)) {
-					return ((Host)CDBookmarkTableDataSource.instance().get(row)).getHostname();
+                    return ((Host) CDBookmarkTableDataSource.instance().get(row)).getHostname();
 				}
 				return null;
 			}
@@ -228,6 +226,20 @@ public class CDConnectionController extends CDWindowController {
 
 	public void setPortField(NSTextField portField) {
 		this.portField = portField;
+	}
+
+	public void portFieldTextDidChange(Object sender) {
+		if(null == this.portField.stringValue() || this.portField.stringValue().equals("")) {
+			if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
+				this.portField.setStringValue(""+Session.SSH_PORT);
+			}
+			if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
+				this.portField.setStringValue(""+Session.FTP_PORT);
+			}
+			if(protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
+				this.portField.setStringValue(""+Session.FTP_PORT);
+			}
+		}
 	}
 
 	private NSTextField usernameField;
@@ -394,6 +406,7 @@ public class CDConnectionController extends CDWindowController {
 
 	public void windowWillClose(NSNotification notification) {
 		NSNotificationCenter.defaultCenter().removeObserver(this);
+        Rendezvous.instance().deleteObserver(this.observer);
 		instances.removeObject(this);
 	}
 
@@ -401,37 +414,41 @@ public class CDConnectionController extends CDWindowController {
         super.awakeFromNib();
 
 		this.window().setReleasedWhenClosed(true);
-		
+
 		// Notify the updateURLLabel() method if the user types.
         //ControlTextDidChangeNotification
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("updateURLLabel", new Class[]{Object.class}),
                 NSControl.ControlTextDidChangeNotification,
-                hostPopup);
+                this.hostPopup);
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("hostFieldTextDidChange", new Class[]{Object.class}),
                 NSControl.ControlTextDidChangeNotification,
-                hostPopup);
+                this.hostPopup);
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("updateURLLabel", new Class[]{Object.class}),
                 NSControl.ControlTextDidChangeNotification,
-                pathField);
+                this.pathField);
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("updateURLLabel", new Class[]{Object.class}),
                 NSControl.ControlTextDidChangeNotification,
-                portField);
+                this.portField);
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("portFieldTextDidChange", new Class[]{Object.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.portField);
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("updateURLLabel", new Class[]{Object.class}),
                 NSControl.ControlTextDidChangeNotification,
-                usernameField);
+                this.usernameField);
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
                 NSControl.ControlTextDidEndEditingNotification,
-                hostPopup);
+                this.hostPopup);
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
                 NSControl.ControlTextDidEndEditingNotification,
-                usernameField);
+                this.usernameField);
 
         this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
         if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP)) {
@@ -457,7 +474,7 @@ public class CDConnectionController extends CDWindowController {
 	public void getPasswordFromKeychain(Object sender) {
 		if(hostPopup.stringValue() != null && !hostPopup.stringValue().equals("") &&
 		    usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {
-			String protocol = null;
+			String protocol = Preferences.instance().getProperty("connection.protocol.default");
 			if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
 				protocol = Session.SFTP;
 			}
@@ -467,14 +484,7 @@ public class CDConnectionController extends CDWindowController {
             else if(protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
                 protocol = Session.FTP_TLS;
             }
-			else {
-				protocol = Preferences.instance().getProperty("connection.protocol.default");
-			}
-			Login l = new Login(new Host(protocol,
-										 hostPopup.stringValue(), 
-										 Integer.parseInt(portField.stringValue())), 
-								usernameField.stringValue(), 
-								null);
+			Login l = new Login(hostPopup.stringValue(), protocol, usernameField.stringValue(), null);
 			String passFromKeychain = l.getInternetPasswordFromKeychain();
 			if(null == passFromKeychain || passFromKeychain.equals("")) {
 				passFromKeychain = l.getPasswordFromKeychain(); //legacy support
@@ -484,7 +494,7 @@ public class CDConnectionController extends CDWindowController {
 				this.passField.setStringValue(passFromKeychain);
 			}
 			else {
-				log.info("Password for "+usernameField.stringValue()+" NOT found in Keychain");
+				log.info("Password for "+usernameField.stringValue()+" *not* found in Keychain");
 				this.passField.setStringValue("");
 			}
 		}
@@ -537,8 +547,6 @@ public class CDConnectionController extends CDWindowController {
 
     public void connectionSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
-        NSNotificationCenter.defaultCenter().removeObserver(this);
-        this.rendezvous.deleteObserver(this.observer);
         switch(returncode) {
             case (NSAlertPanel.DefaultReturn):
                 Host host = null;

@@ -1063,7 +1063,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public void bookmarkTableRowDoubleClicked(Object sender) {
         log.debug("bookmarkTableRowDoubleClicked");
         if (this.bookmarkTable.selectedRow() != -1) {
-            Host h = (Host) bookmarkModel.get(bookmarkTable.selectedRow());
+            Host h = (Host) this.bookmarkModel.get(bookmarkTable.selectedRow());
             this.mount(h, h.getEncoding());
         }
     }
@@ -1154,7 +1154,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         log.debug("quickConnectSelectionChanged");
         String input = ((NSControl) sender).stringValue();
         try {
-            for (Iterator iter = bookmarkModel.iterator(); iter.hasNext();) {
+            for (Iterator iter = this.bookmarkModel.iterator(); iter.hasNext();) {
                 Host h = (Host) iter.next();
                 if (h.getNickname().equals(input)) {
                     this.mount(h);
@@ -1220,7 +1220,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public void editBookmarkButtonClicked(Object sender) {
         this.bookmarkDrawer.open();
         CDBookmarkController controller = new CDBookmarkController(bookmarkTable,
-                (Host) bookmarkModel.get(bookmarkTable.selectedRow()));
+                (Host) this.bookmarkModel.get(bookmarkTable.selectedRow()));
         controller.window().makeKeyAndOrderFront(null);
     }
 
@@ -1246,8 +1246,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
         this.bookmarkModel.add(item);
         this.bookmarkTable.reloadData();
-        this.bookmarkTable.selectRow(bookmarkModel.lastIndexOf(item), false);
-        this.bookmarkTable.scrollRowToVisible(bookmarkModel.lastIndexOf(item));
+        this.bookmarkTable.selectRow(this.bookmarkModel.lastIndexOf(item), false);
+        this.bookmarkTable.scrollRowToVisible(this.bookmarkModel.lastIndexOf(item));
         CDBookmarkController controller = new CDBookmarkController(bookmarkTable, item);
         controller.window().makeKeyAndOrderFront(null);
     }
@@ -1276,7 +1276,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     NSBundle.localizedString("Cancel", ""),
                     null)) {
                 case NSAlertPanel.DefaultReturn:
-                    bookmarkModel.remove(i - j);
+                    this.bookmarkModel.remove(i - j);
                     j++;
                     break;
                 case NSAlertPanel.AlternateReturn:
@@ -1859,13 +1859,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
 	}
 
-    private CDWindowController connectionController;
-
     public void connectButtonClicked(Object sender) {
         log.debug("connectButtonClicked");
-        if(null == connectionController) {
-            connectionController = new CDConnectionController(this);
-        }
+		CDWindowController connectionController = new CDConnectionController(this);
         this.beginSheet(connectionController.window(), connectionController,
                 new NSSelector("connectionSheetDidEnd", new Class[]{NSWindow.class, int.class, Object.class}),
                 null);
@@ -2013,7 +2009,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		this.reloadData();
         session.addObserver(transcript = new CDTranscriptController(this.logView));
         this.window().setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername() + "@" + host.getHostname());
-        CDBookmarkTableDataSource.instance().exportBookmark(host, this.getRepresentedFile());
+        this.bookmarkModel.exportBookmark(host, this.getRepresentedFile());
         if(this.getRepresentedFile().exists()) {
             this.window().setRepresentedFilename(this.getRepresentedFile().getAbsolutePath());
         }

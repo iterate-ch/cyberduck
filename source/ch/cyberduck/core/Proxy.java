@@ -46,17 +46,5 @@ public class Proxy {
 
 	public static native int getSOCKSProxyPort();
 
-	public static boolean isSOCKSAuthenticationEnabled() {
-		Login l = new Login(new Host("socks", getSOCKSProxyHost(), getSOCKSProxyPort()),
-		    getSOCKSProxyUser(), null);
-		return l.getInternetPasswordFromKeychain() != null;
-	}
-
 	public static native String getSOCKSProxyUser();
-
-	public static String getSOCKSProxyPassword() {
-		Login l = new Login(new Host("socks", getSOCKSProxyHost(), getSOCKSProxyPort()),
-		    getSOCKSProxyUser(), null);
-		return l.getInternetPasswordFromKeychain();
-	};
 }

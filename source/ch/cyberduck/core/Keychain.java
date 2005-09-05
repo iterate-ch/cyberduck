@@ -54,13 +54,13 @@ public class Keychain {
 		}
 	}
 
-	public native String getInternetPasswordFromKeychain(String protocol, String serviceName, int port, String user);
+	public native String getInternetPasswordFromKeychain(String protocol, String serviceName, String user);
 
 	public native String getPasswordFromKeychain(String serviceName, String user);
 
 	public native void addPasswordToKeychain(String serviceName, String user, String password);
 
-	public native void addInternetPasswordToKeychain(String protocol, String serviceName, int port, String user, String password);
+	public native void addInternetPasswordToKeychain(String protocol, String serviceName, String user, String password);
 
 	public native boolean hasCertificate(byte[] certificate);
 
