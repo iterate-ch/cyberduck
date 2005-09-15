@@ -378,10 +378,10 @@ public class CDQueueController extends CDWindowController {
 			item.setAction(new NSSelector("deleteButtonClicked", new Class[]{Object.class}));
 			return item;
 		}
-		if(itemIdentifier.equals("Clear")) {
-			item.setLabel(NSBundle.localizedString("Clear", ""));
-			item.setPaletteLabel(NSBundle.localizedString("Clear", ""));
-			item.setToolTip(NSBundle.localizedString("Clear", ""));
+		if(itemIdentifier.equals("Clean Up")) {
+			item.setLabel(NSBundle.localizedString("Clean Up", ""));
+			item.setPaletteLabel(NSBundle.localizedString("Clean Up", ""));
+			item.setToolTip(NSBundle.localizedString("Clean Up", ""));
 			item.setImage(NSImage.imageNamed("cleanAll.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("clearButtonClicked", new Class[]{Object.class}));
@@ -565,7 +565,7 @@ public class CDQueueController extends CDWindowController {
 			"Reload",
 			"Stop",
 			"Remove",
-			"Clear",
+			"Clean Up",
 			NSToolbarItem.FlexibleSpaceItemIdentifier,
 			"Open",
 			"Show"
@@ -578,7 +578,7 @@ public class CDQueueController extends CDWindowController {
 			"Reload",
 			"Stop",
 			"Remove",
-			"Clear",
+			"Clean Up",
 			"Show",
 			"Open",
 			NSToolbarItem.CustomizeToolbarItemIdentifier,
@@ -635,7 +635,7 @@ public class CDQueueController extends CDWindowController {
 		if(identifier.equals("Open") || identifier.equals("openButtonClicked:")) {
 			return this.queueTable.numberOfSelectedRows() == 1;
 		}
-		if(identifier.equals("Clear")) {
+		if(identifier.equals("Clean Up")) {
 			return this.queueTable.numberOfRows() > 0;
 		}
 		if(identifier.equals("Remove") || identifier.equals("deleteButtonClicked:")) {
