@@ -119,6 +119,9 @@ public class FTPSession extends Session {
             log.info("Using SOCKS Proxy");
             FTPClient.initSOCKS(Proxy.getSOCKSProxyPort(), Proxy.getSOCKSProxyHost());
         }
+		else {
+			FTPClient.clearSOCKS();
+		}
         this.FTP.setConnectMode(this.host.getFTPConnectMode());
         this.log(Message.PROGRESS, NSBundle.localizedString("FTP connection opened", "Status", ""));
         this.login();
