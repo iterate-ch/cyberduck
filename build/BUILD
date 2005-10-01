@@ -15,6 +15,9 @@ You need to install the Java Developer Tools from http://connect.apple.com (Free
 - Jakarta Ant
 	You need the ant executable (or a symlink to) in /usr/bin/ant.
 
+- jUnit (http://junit.org)
+	Copy junit.jar to <ANT_HOME>/lib/junit.jar
+
 - xcodebuild and make
 	Included with the developer tools. 
 
