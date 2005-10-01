@@ -19,7 +19,7 @@ You need to install the Java Developer Tools from http://connect.apple.com (Free
 	Copy junit.jar to <ANT_HOME>/lib/junit.jar
 
 - xcodebuild and make
-	Included with the developer tools. 
+	Included with the developer tools. You need v2.1 or later and the Universal SDK.
 
 - Growl.framework
 	You need to have the Growl.framework in <CYBERDUCK_HOME>/build (unzip Growl.framework.zip)
