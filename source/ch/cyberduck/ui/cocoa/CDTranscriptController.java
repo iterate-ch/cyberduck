@@ -61,16 +61,8 @@ public class CDTranscriptController extends CDController implements Observer {
             final Message msg = (Message) arg;
             if (msg.getTitle().equals(Message.TRANSCRIPT)) {
                 log.info(msg.getContent());
-//                this.invoke(new Runnable() {
-//                    public void run() {
-                        // Replaces the characters in aRange with aString. For a rich text object, the text of aString is assigned the
-                        // formatting attributes of the first character of the text it replaces, or of the character immediately
-                        // before aRange if the range's length is 0. If the range's location is 0, the formatting
-                        // attributes of the first character in the receiver are used.
-                        textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0),
-                                new NSAttributedString(msg.getContent()+"\n", FIXED_WITH_FONT_ATTRIBUTES));
-//                    }
-//                });
+                textView.textStorage().replaceCharactersInRange(new NSRange(textView.textStorage().length(), 0),
+                        new NSAttributedString(msg.getContent()+"\n", FIXED_WITH_FONT_ATTRIBUTES));
             }
         }
     }
