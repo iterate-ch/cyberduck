@@ -73,7 +73,11 @@ public class CDTableCell extends NSCell {
 		PARAGRAPH_STYLE_RIGHT_ALIGNMENT.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
 	}
 
-	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
+    public void editWithFrameInView(NSRect nsRect, NSView nsView, NSText nsText, Object object, NSEvent nsEvent) {
+        super.editWithFrameInView(nsRect, nsView, nsText, object, nsEvent);
+    }
+
+    public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawInteriorWithFrameInView(cellFrame, controlView);
 		this.highlighted = this.isHighlighted() && !this.highlightColorWithFrameInView(cellFrame, controlView).equals(NSColor.secondarySelectedControlColor());
 
@@ -167,4 +171,5 @@ public class CDTableCell extends NSCell {
 		    NSAttributedString.FontAttributeName,
 		    NSAttributedString.ForegroundColorAttributeName,
 		    NSAttributedString.ParagraphStyleAttributeName});
+
 }

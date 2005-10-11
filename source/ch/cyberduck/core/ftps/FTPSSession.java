@@ -88,14 +88,11 @@ public class FTPSSession extends FTPSession {
         this.FTP.setStrictReturnCodes(true);
         if (Proxy.isSOCKSProxyEnabled()) {
             log.info("Using SOCKS Proxy");
-            FTPClient.initSOCKS(Proxy.getSOCKSProxyPort(),
-                    Proxy.getSOCKSProxyHost());
-            if (Proxy.isSOCKSAuthenticationEnabled()) {
-                log.info("Using SOCKS Proxy Authentication");
-                FTPClient.initSOCKSAuthentication(Proxy.getSOCKSProxyUser(),
-                        Proxy.getSOCKSProxyPassword());
-            }
+            FTPClient.initSOCKS(Proxy.getSOCKSProxyPort(), Proxy.getSOCKSProxyHost());
         }
+		else {
+			FTPClient.clearSOCKS();
+		}
         this.FTP.setConnectMode(this.host.getFTPConnectMode());
         this.log(Message.PROGRESS, NSBundle.localizedString("FTP connection opened", "Status", ""));
         ((FTPSClient) this.FTP).auth();

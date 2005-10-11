@@ -33,7 +33,6 @@ public class Login {
 
 	private String serviceName;
 	private String protocol;
-	private int port;
 	private String user;
 	private transient String pass;
 	private String privateKeyFile;
@@ -56,27 +55,18 @@ public class Login {
 
 	public String getInternetPasswordFromKeychain() {
         int pool = NSAutoreleasePool.push();
+		log.info("Fetching password from Keychain for:"+this.getUsername());
 		String password =  Keychain.instance().getInternetPasswordFromKeychain(this.protocol,
-                this.serviceName, this.port, this.getUsername());
+                this.serviceName, this.getUsername());
         NSAutoreleasePool.pop(pool);
         return password;
 	}
-	
 	
 	public void addInternetPasswordToKeychain() {
 		if(this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
             int pool = NSAutoreleasePool.push();
 			Keychain.instance().addInternetPasswordToKeychain(this.protocol,
-                    this.serviceName, this.port, this.getUsername(), this.getPassword());
-            NSAutoreleasePool.pop(pool);
-		}
-	}
-	
-	
-	public void addPasswordToKeychain() {
-		if(this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
-            int pool = NSAutoreleasePool.push();
-			Keychain.instance().addPasswordToKeychain(this.serviceName, this.getUsername(), this.getPassword());
+                    this.serviceName, this.getUsername(), this.getPassword());
             NSAutoreleasePool.pop(pool);
 		}
 	}
@@ -89,27 +79,23 @@ public class Login {
 	}
 	
 	/**
-	 * @param h The service to use when looking up the password in the keychain
+	 * @param hostname The service to use when looking up the password in the keychain
 	 * @param user        Login with this username
 	 * @param pass        Passphrase
 	 */
-	public Login(Host h, String user, String pass) {
-		this(h,
-		    user,
-		    pass,
-		    false);
+	public Login(String hostname, String protocol, String user, String pass) {
+		this(hostname, protocol, user, pass, false);
 	}
 
 	/**
-	 * @param h             The serviceName to use when looking up the password in the keychain
+	 * @param hostname             The serviceName to use when looking up the password in the keychain
 	 * @param user                    Login with this username
 	 * @param pass                    Passphrase
 	 * @param shouldBeAddedToKeychain if the credential should be added to the keychain uppon successful login
 	 */
-	public Login(Host h, String user, String pass, boolean shouldBeAddedToKeychain) {
-		this.serviceName = h.getHostname();
-		this.protocol = h.getProtocol();
-		this.port = h.getPort();
+	public Login(String hostname, String protocol, String user, String pass, boolean shouldBeAddedToKeychain) {
+		this.serviceName = hostname;
+		this.protocol = protocol;
 		this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
 		this.init(user, pass);
 	}

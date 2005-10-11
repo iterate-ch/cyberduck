@@ -319,7 +319,7 @@ public class Host {
 	}
 
 	public void setCredentials(String username, String password, boolean addToKeychain) {
-		this.setCredentials(new Login(this, username, password, addToKeychain));
+		this.setCredentials(new Login(this.getHostname(), this.getProtocol(), username, password, addToKeychain));
 	}
 
 	public Login getCredentials() {
@@ -377,8 +377,9 @@ public class Host {
 	 */
 	public void setPort(int port) {
 	    this.port = port;
-        if(-1 == port)
+        if(-1 == port) {
             port = Host.getDefaultPort(this.getProtocol());
+		}
 	}
 
 	public int getPort() {

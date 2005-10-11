@@ -37,52 +37,43 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Proxy_isSOCKSProxyEnabled(JNIE
 JNIEXPORT jint JNICALL Java_ch_cyberduck_core_Proxy_getSOCKSProxyPort(JNIEnv *env, 
 																	  jobject this)
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	NSNumber *port = [Proxy getSOCKSProxyPort];
-	[pool release];
-	return [port intValue];
+	return [[Proxy getSOCKSProxyPort] intValue];
 }
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getSOCKSProxyHost(JNIEnv *env, 
 																		 jobject this)
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	NSString * host = [Proxy getSOCKSProxyHost];
-	[pool release];
-	return convertToJString(env, host);
+	return convertToJString(env, [Proxy getSOCKSProxyHost]);
 }
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getSOCKSProxyUser(JNIEnv *env, 
 																		 jobject this) {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	NSString *user = [Proxy getSOCKSProxyUser];
-	[pool release];
-	return convertToJString(env, user);
+	return convertToJString(env, [Proxy getSOCKSProxyUser]);
 }
 
 @implementation Proxy
 
-//+ (BOOL)usePassiveFTP
-//{
-//	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-//	return [[proxies objectForKey:(NSString *)kSCPropNetProxiesFTPPassive] boolValue];
-//}
-
 + (BOOL)isSOCKSProxyEnabled
 {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
+	[pool release];
 	return [[proxies objectForKey:(NSString *)kSCPropNetProxiesSOCKSEnable] boolValue];
 }
 
 + (NSString *)getSOCKSProxyHost
 {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
+	[pool release];
 	return [proxies objectForKey:(NSString *)kSCPropNetProxiesSOCKSProxy];
 }
 
 + (NSNumber *)getSOCKSProxyPort
 {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
+	[pool release];
 	return [proxies objectForKey:(NSNumber *)kSCPropNetProxiesSOCKSPort];
 }
 

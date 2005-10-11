@@ -30,36 +30,23 @@ import java.util.*;
  * @version $Id$
  */
 public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
-
     private static Logger log = Logger.getLogger(CDBrowserOutlineViewModel.class);
-
-    private static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
-    private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
-    private static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
     public CDBrowserOutlineViewModel(CDBrowserController controller) {
         super(controller);
     }
 
-    public void outlineViewItemDidExpand(NSNotification notification) {
-        Path p = (Path) notification.userInfo().allValues().lastObject();
-        p.getSession().cache().setExpanded(p, true);
-    }
-
-    public void outlineViewItemDidCollapse(NSNotification notification) {
-        Path p = (Path) notification.userInfo().allValues().lastObject();
-        p.getSession().cache().setExpanded(p, false);
-    }
-
-    public boolean outlineViewShouldEditTableColumn(NSOutlineView outlineView,
-                                                    NSTableColumn tableColumn, Object item) {
-        return false;
-    }
-
-    public int indexOf(NSTableView tableView, Path p) {
+    public int indexOf(NSView tableView, Path p) {
         //bug: the rowForItem method does not use p.equals() therefore only returns a valid value
         //if the exact reference is passed
         return ((NSOutlineView)tableView).rowForItem(p);
+    }
+
+    public boolean outlineViewIsItemExpandable(NSOutlineView outlineView, Path item) {
+        if (null == item) {
+            item = controller.workdir();
+        }
+        return item.attributes.isDirectory();
     }
 
     public int outlineViewNumberOfChildrenOfItem(NSOutlineView outlineView, Path item) {
@@ -73,45 +60,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
             }
         }
         return 0;
-    }
-
-    public boolean outlineViewIsItemExpandable(NSOutlineView outlineView, Path item) {
-        if (null == item) {
-            item = controller.workdir();
-        }
-        return item.attributes.isDirectory();
-    }
-
-    public void outlineViewWillDisplayCell(NSOutlineView outlineView, Object cell,
-                                           NSTableColumn tableColumn, Path item) {
-        String identifier = (String) tableColumn.identifier();
-        if (identifier.equals("FILENAME")) {
-            NSImage icon;
-            if (item.attributes.isSymbolicLink()) {
-                icon = SYMLINK_ICON;
-            }
-            else if (item.attributes.isDirectory()) {
-                icon = FOLDER_ICON;
-            }
-            else if (item.attributes.isFile()) {
-                icon = CDIconCache.instance().get(item.getExtension());
-            }
-            else {
-                icon = NOT_FOUND_ICON;
-            }
-            icon.setSize(new NSSize(16f, 16f));
-            ((CDOutlineCell) cell).setIcon(icon);
-            ((CDOutlineCell) cell).setAttributedStringValue(new NSAttributedString(item.getName(),
-                    CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY));
-        }
-        if (cell instanceof NSTextFieldCell) {
-            if (this.controller.isConnected()) {
-                ((NSTextFieldCell) cell).setTextColor(NSColor.controlTextColor());
-            }
-            else {
-                ((NSTextFieldCell) cell).setTextColor(NSColor.disabledControlTextColor());
-            }
-        }
     }
 
     /**
@@ -129,28 +77,38 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         return null;
     }
 
+    public void outlineViewSetObjectValueForItem(NSOutlineView outlineView, Object value,
+                                                 NSTableColumn tableColumn, Path p) {
+        String identifier = (String) tableColumn.identifier();
+        if (identifier.equals(FILENAME_COLUMN)) {
+            if(!p.getName().equals(value)) {
+                p.rename(value.toString());
+            }
+        }
+    }
+
     public Object outlineViewObjectValueForItem(NSOutlineView outlineView, NSTableColumn tableColumn, Path item) {
         if (null != item) {
             String identifier = (String) tableColumn.identifier();
-            if (identifier.equals("FILENAME")) {
+            if (identifier.equals(FILENAME_COLUMN)) {
                 return new NSAttributedString(item.getName(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
             }
             if (identifier.equals("TYPEAHEAD")) {
                 return item.getName();
             }
-            if (identifier.equals("SIZE")) {
+            if (identifier.equals(SIZE_COLUMN)) {
                 return new NSAttributedString(Status.getSizeAsString(item.attributes.getSize()),
                         CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
             }
-            if (identifier.equals("MODIFIED")) {
+            if (identifier.equals(MODIFIED_COLUMN)) {
                 return new NSGregorianDate((double) item.attributes.getTimestamp().getTime() / 1000,
                         NSDate.DateFor1970);
             }
-            if (identifier.equals("OWNER")) {
+            if (identifier.equals(OWNER_COLUMN)) {
                 return new NSAttributedString(item.attributes.getOwner(),
                         CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
             }
-            if (identifier.equals("PERMISSIONS")) {
+            if (identifier.equals(PERMISSIONS_COLUMN)) {
                 return new NSAttributedString(item.attributes.getPermission().toString(),
                         CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
             }
@@ -238,7 +196,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
                 Queue q = Queue.createQueue(dict);
                 for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                     Path p = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
-                    p.rename(destination.getAbsolute() + "/" + p.getName());
+                    p.rename(destination.getAbsolute() +Path.DELIMITER+ p.getName());
                 }
                 destination.invalidate();
                 NSRunLoop.currentRunLoop().addTimerForMode(new NSTimer(0.1f, controller,
@@ -304,14 +262,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes(null, null);
     }
 
-    public int draggingSourceOperationMaskForLocal(boolean local) {
-        log.debug("draggingSourceOperationMaskForLocal:" + local);
-        if (local) {
-            return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
-        }
-        return NSDraggingInfo.DragOperationCopy;
-    }
-
     /**
      * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
      *         This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
@@ -340,16 +290,5 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
             }
         }
         return promisedDragNames;
-    }
-
-    public String outlineViewToolTipForCell(NSOutlineView ov, NSCell cell, NSMutableRect rect, NSTableColumn tc,
-                                            Object item, NSPoint mouseLocation) {
-        if (item instanceof Path) {
-            Path p = (Path)item;
-            return p.getAbsolute() + "\n"
-                    + Status.getSizeAsString(p.attributes.getSize()) + "\n"
-                    + p.attributes.getTimestampAsString();
-        }
-        return null;
     }
 }

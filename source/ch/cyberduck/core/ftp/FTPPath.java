@@ -119,7 +119,7 @@ public class FTPPath extends Path {
             if (notifyObservers) {
                 session.addPathToHistory(this);
             }
-            if (refresh || !session.cache().exists(this) || session.cache().isInvalid(this)) {
+            if (refresh || !session.cache().containsKey(this) || session.cache().isInvalid(this)) {
                 AttributedList files;
                 if(session.cache().isInvalid(this)) {
                     files = new AttributedList(session.cache().get(this).getAttributes());
@@ -265,7 +265,7 @@ public class FTPPath extends Path {
                     session.log(Message.PROGRESS, NSBundle.localizedString("Deleting", "Status", "")+" "+this.getName());
                     session.FTP.delete(this.getName());
                 }
-                else if (this.attributes.isDirectory()) {
+                else if (this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
                     List files = this.list(true, false);
                     if(files != null) {
                         java.util.Iterator iterator = files.iterator();

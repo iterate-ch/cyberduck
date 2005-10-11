@@ -49,7 +49,7 @@ public class CDBrowserCell extends NSBrowserCell {
     protected CDBrowserCell(NSCoder decoder, long token) {
         super(decoder, token);
     }
-	
+
     protected void encodeWithCoder(NSCoder encoder) {
         super.encodeWithCoder(encoder);
     }
@@ -80,8 +80,7 @@ public class CDBrowserCell extends NSBrowserCell {
 	public void setPath(Path path) {
 		this.path = path;
 		this.setLeaf(path.attributes.isFile());
-		//this.setEnabled(path.attributes.isReadable());
-		this.setAttributedStringValue(new NSAttributedString(this.path.getName(), 
+		this.setAttributedStringValue(new NSAttributedString(this.path.getName(),
 															 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
 		NSImage image;
 		if (path.attributes.isSymbolicLink()) {
@@ -100,37 +99,49 @@ public class CDBrowserCell extends NSBrowserCell {
 		this.setIcon(image);
 	}
 	
-	protected static final float HEIGHT = 17f;
+	protected static final float HEIGHT = 19f;
 
-	public void drawWithFrameInView(NSRect cellFrame, NSView controlView) {
+    public void editWithFrameInView(NSRect rect, NSView controlView, NSText text, Object object, NSEvent event) {
+        if(controlView instanceof NSMatrix) {
+            ((NSMatrix)controlView).sendAction();
+        }
+        super.editWithFrameInView(rect, controlView, text, object, event);
+    }
+
+    public void drawWithFrameInView(NSRect cellFrame, NSView controlView) {
 		super.drawWithFrameInView(new NSRect(cellFrame.x(), cellFrame.y(), 
 											 cellFrame.width(), CDBrowserCell.HEIGHT), controlView);
 	}
 	
 	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 		if(this.icon() != null) {
-			cellFrame = new NSRect(cellFrame.x(), cellFrame.y(), 
-								   cellFrame.width(), CDBrowserCell.HEIGHT);
-			NSRect iconRect = new NSRect(cellFrame.x(), 
-										 cellFrame.y(), 
-										 this.icon().size().width()+4,
-										 CDBrowserCell.HEIGHT);
-			
-			NSRect textRect = new NSRect(cellFrame.x()+2+this.icon().size().width()+2,
-										 cellFrame.y(),
-										 cellFrame.width()-2-this.icon().size().width()-2,
-										 CDBrowserCell.HEIGHT);
-			if(controlView.isFlipped())
-				this.icon().compositeToPoint(new NSPoint(iconRect.x()+2,
+            cellFrame = new NSRect(cellFrame.x(), cellFrame.y(),
+                    cellFrame.width(), CDBrowserCell.HEIGHT);
+            NSRect iconRect = new NSRect(cellFrame.x(), cellFrame.y(),
+                    this.icon().size().width()+4,
+                    CDBrowserCell.HEIGHT);
+            NSRect textRect = new NSRect(cellFrame.x()+4+this.icon().size().width()+4,
+                    cellFrame.y(),
+                    cellFrame.width()-4-this.icon().size().width()-4,
+                    CDBrowserCell.HEIGHT);
+            super.drawInteriorWithFrameInView(textRect,
+                    controlView);
+            if(this.isHighlighted()) {
+                NSRect selectionRect = new NSRect(cellFrame.x(), cellFrame.y(),
+                        this.icon().size().width()+4+4, CDBrowserCell.HEIGHT);
+                NSColor background = this.highlightColorInView(controlView); background.set();
+                NSBezierPath.fillRect(selectionRect);
+            }
+            if(controlView.isFlipped()) {
+				this.icon().compositeToPoint(new NSPoint(iconRect.x()+4,
 														 iconRect.y()+(iconRect.size().height()+this.icon().size().height())/2),
 											 NSImage.CompositeSourceOver);
-			else 
-				this.icon().compositeToPoint(new NSPoint(iconRect.x()+2,
+            }
+            else {
+				this.icon().compositeToPoint(new NSPoint(iconRect.x()+4,
 														 iconRect.y()+(iconRect.size().height()-this.icon().size().height())/2),
 											 NSImage.CompositeSourceOver);
-			super.drawInteriorWithFrameInView(textRect,
-											  controlView);
+            }
 		}
-		else super.drawInteriorWithFrameInView(cellFrame, controlView);
 	}
 }

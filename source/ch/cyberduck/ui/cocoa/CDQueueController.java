@@ -43,7 +43,19 @@ public class CDQueueController extends CDWindowController {
 
 	private NSToolbar toolbar;
 
-	// ----------------------------------------------------------
+    public void awakeFromNib() {
+        super.awakeFromNib();
+
+        this.toolbar = new NSToolbar("Queue Toolbar");
+        this.toolbar.setDelegate(this);
+        this.toolbar.setAllowsUserCustomization(true);
+        this.toolbar.setAutosavesConfiguration(true);
+        this.window().setDelegate(this);
+        this.window().setReleasedWhenClosed(false);
+        this.window().setToolbar(toolbar);
+    }
+
+    // ----------------------------------------------------------
 	// Outlets
 	// ----------------------------------------------------------
 	
@@ -120,11 +132,11 @@ public class CDQueueController extends CDWindowController {
 	}
 
 	public void windowDidBecomeKey(NSNotification notification) {
-		this.tableViewSelectionChange();
+        this.updateTableViewSelection();
 	}
 
 	public void windowDidResignKey(NSNotification notification) {
-		this.tableViewSelectionChange();
+        this.updateTableViewSelection();
 	}
 
 	public void windowWillClose(NSNotification notification) {
@@ -133,13 +145,46 @@ public class CDQueueController extends CDWindowController {
 
 	private CDQueueTableDataSource queueModel;
 	private NSTableView queueTable; // IBOutlet
+    private CDTableDelegate delegate;
 
-	public void setQueueTable(NSTableView queueTable) {
+    public void setQueueTable(NSTableView queueTable) {
 		this.queueTable = queueTable;
-		this.queueTable.setTarget(this);
-		this.queueTable.setDoubleAction(new NSSelector("queueTableRowDoubleClicked", new Class[]{Object.class}));
+
 		this.queueTable.setDataSource(this.queueModel = CDQueueTableDataSource.instance());
-		this.queueTable.setDelegate(this);
+		this.queueTable.setDelegate(this.delegate = new CDAbstractTableDelegate() {
+            public void enterKeyPressed(Object sender) {
+                if(CDQueueController.this.queueTable.selectedRow() != -1) {
+                    Queue item = (Queue)queueModel.get(CDQueueController.this.queueTable.selectedRow());
+                    if(!item.isRunning()) {
+                        reloadButtonClicked(sender);
+                    }
+                }
+            }
+
+            public void deleteKeyPressed(Object sender) {
+                deleteButtonClicked(sender);
+            }
+
+            public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
+
+            }
+
+            public String tableViewToolTipForCell(NSTableView tableView, NSCell cell, NSMutableRect rect,
+                                                  NSTableColumn tc, int row, NSPoint mouseLocation) {
+                if(row < queueModel.numberOfRowsInTableView(tableView)) {
+                    queueModel.get(row).toString();
+                }
+                return null;
+            }
+
+            public void tableViewSelectionIsChanging(NSNotification aNotification) {
+                updateTableViewSelection();
+            }
+
+            public void tableViewSelectionDidChange(NSNotification aNotification) {
+                updateTableViewSelection();
+            }
+        });
 		// receive drag events from types
 		// in fact we are not interested in file promises, but because the browser model can only initiate
 		// a drag with tableView.dragPromisedFilesOfTypes(), we listens for those events
@@ -148,6 +193,7 @@ public class CDQueueController extends CDWindowController {
 			"QueuePBoardType",
 			NSPasteboard.StringPboardType,
 			NSPasteboard.FilesPromisePboardType}));
+
 		this.queueTable.setRowHeight(50f);
         NSSelector setResizableMaskSelector
                 = new NSSelector("setResizingMask", new Class[]{int.class});
@@ -157,7 +203,6 @@ public class CDQueueController extends CDWindowController {
 			c.setMinWidth(36f);
 			c.setWidth(36f);
 			c.setMaxWidth(36f);
-			c.setEditable(false);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
@@ -174,7 +219,6 @@ public class CDQueueController extends CDWindowController {
 			c.setMinWidth(80f);
 			c.setWidth(300f);
 			c.setMaxWidth(1000f);
-			c.setEditable(false);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
@@ -194,49 +238,46 @@ public class CDQueueController extends CDWindowController {
 		this.queueTable.sizeToFit();
 	}
 
-	private void tableViewSelectionChange() {
-		boolean key = this.window().isKeyWindow();
-		for(int i = 0; i < this.queueModel.size(); i++) {
-			this.queueModel.getController(i).setHighlighted(this.queueTable.isRowSelected(i) && key);
-		}
-		this.toolbar.validateVisibleItems();
-		if(this.queueTable.selectedRow() != -1) {
-			Queue q = (Queue)this.queueModel.get(this.queueTable.selectedRow());
-			if(q.numberOfRoots() == 1) {
-				this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()+"/"+q.getRoot().getAbsolute(),
-				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-				this.localField.setAttributedStringValue(new NSAttributedString(q.getRoot().getLocal().getAbsolute(),
-				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-			}
-			else {
-				this.urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL(),
-				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-				this.localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiple files", ""),
-				    //				    +" ("+q.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
-				    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-			}
-		}
-		else {
-			this.urlField.setStringValue("");
-			this.localField.setStringValue("");
-		}
-	}
+    private void updateTableViewSelection() {
+        boolean key = window().isKeyWindow();
+        for(int i = 0; i < queueModel.size(); i++) {
+            queueModel.getController(i).setHighlighted(queueTable.isRowSelected(i) && key);
+        }
+        toolbar.validateVisibleItems();
+        if(queueTable.selectedRow() != -1) {
+            Queue q = (Queue)queueModel.get(queueTable.selectedRow());
+            if(q.numberOfRoots() == 1) {
+                urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()
+                        +Path.DELIMITER+q.getRoot().getAbsolute(),
+                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                localField.setAttributedStringValue(new NSAttributedString(q.getRoot().getLocal().getAbsolute(),
+                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+            }
+            else {
+                urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL(),
+                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiple files", ""),
+                    //				    +" ("+q.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
+                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+            }
+        }
+        else {
+            urlField.setStringValue("");
+            localField.setStringValue("");
+        }
+    }
 
-	public void tableViewSelectionIsChanging(NSNotification notification) {
-		this.tableViewSelectionChange();
-	}
+    // ----------------------------------------------------------
+	//
+	// ----------------------------------------------------------
 
-	public void tableViewSelectionDidChange(NSNotification notification) {
-		this.tableViewSelectionChange();
-	}
-
-	private void reloadQueueTable() {
+    private void reloadQueueTable() {
 		this.queueTable.deselectAll(null);
 		while(this.queueTable.subviews().count() > 0) {
 			((NSView)this.queueTable.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
 		}
 		this.queueTable.reloadData();
-		this.tableViewSelectionChange();
+        this.updateTableViewSelection();
 	}
 
 	public void removeItem(Queue queue) {
@@ -306,18 +347,6 @@ public class CDQueueController extends CDWindowController {
 		return this.window() != null && this.window().isVisible();
 	}
 
-	public void awakeFromNib() {
-        super.awakeFromNib();
-
-		this.toolbar = new NSToolbar("Queue Toolbar");
-		this.toolbar.setDelegate(this);
-		this.toolbar.setAllowsUserCustomization(true);
-		this.toolbar.setAutosavesConfiguration(true);
-        this.window().setDelegate(this);
-		this.window().setReleasedWhenClosed(false);
-		this.window().setToolbar(toolbar);
-	}
-
 	// ----------------------------------------------------------
 	// Toolbar Delegate
 	// ----------------------------------------------------------
@@ -378,10 +407,10 @@ public class CDQueueController extends CDWindowController {
 			item.setAction(new NSSelector("deleteButtonClicked", new Class[]{Object.class}));
 			return item;
 		}
-		if(itemIdentifier.equals("Clear")) {
-			item.setLabel(NSBundle.localizedString("Clear", ""));
-			item.setPaletteLabel(NSBundle.localizedString("Clear", ""));
-			item.setToolTip(NSBundle.localizedString("Clear", ""));
+		if(itemIdentifier.equals("Clean Up")) {
+			item.setLabel(NSBundle.localizedString("Clean Up", ""));
+			item.setPaletteLabel(NSBundle.localizedString("Clean Up", ""));
+			item.setToolTip(NSBundle.localizedString("Clean Up", ""));
 			item.setImage(NSImage.imageNamed("cleanAll.tiff"));
 			item.setTarget(this);
 			item.setAction(new NSSelector("clearButtonClicked", new Class[]{Object.class}));
@@ -390,18 +419,6 @@ public class CDQueueController extends CDWindowController {
 		// itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
 		// Returning null will inform the toolbar this kind of item is not supported.
 		return null;
-	}
-
-	public void queueTableRowDoubleClicked(Object sender) {
-		if(this.queueTable.selectedRow() != -1) {
-			Queue item = (Queue)this.queueModel.get(this.queueTable.selectedRow());
-			if(item.isRunning()) {
-//				this.stopButtonClicked(sender);
-			}
-			else {
-				this.reloadButtonClicked(sender);
-			}
-		}
 	}
 
 	public void paste(Object sender) {
@@ -464,7 +481,7 @@ public class CDQueueController extends CDWindowController {
 		}
 	}
 
-	public synchronized void openButtonClicked(Object sender) {
+	public void openButtonClicked(Object sender) {
 		if(this.queueTable.selectedRow() != -1) {
 			Queue q = (Queue)this.queueModel.get(this.queueTable.selectedRow());
 			Path f = q.getRoot();
@@ -494,7 +511,7 @@ public class CDQueueController extends CDWindowController {
 		}
 	}
 
-	public synchronized void revealButtonClicked(Object sender) {
+	public void revealButtonClicked(Object sender) {
 		if(this.queueTable.selectedRow() != -1) {
 			Queue q = (Queue)this.queueModel.get(this.queueTable.selectedRow());
 			Path f = q.getRoot();
@@ -524,16 +541,6 @@ public class CDQueueController extends CDWindowController {
 		}
 	}
 
-	public void enterKeyPressed(Object sender) {
-        log.debug("enterKeyPressed:" + sender);
-		this.queueTableRowDoubleClicked(sender);
-    }
-
-	public void deleteKeyPressed(Object sender) {
-        log.debug("deleteKeyPressed:" + sender);
-		this.deleteButtonClicked(sender);
-	}
-
 	public void deleteButtonClicked(Object sender) {
 		NSEnumerator iterator = queueTable.selectedRowEnumerator();
 		int j = 0;
@@ -559,13 +566,17 @@ public class CDQueueController extends CDWindowController {
 		this.reloadQueueTable();
 	}
 
-	public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
+    // ----------------------------------------------------------
+	// Toolbar Validation
+	// ----------------------------------------------------------
+
+    public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
 		return new NSArray(new Object[]{
 			"Resume",
 			"Reload",
 			"Stop",
 			"Remove",
-			"Clear",
+			"Clean Up",
 			NSToolbarItem.FlexibleSpaceItemIdentifier,
 			"Open",
 			"Show"
@@ -578,7 +589,7 @@ public class CDQueueController extends CDWindowController {
 			"Reload",
 			"Stop",
 			"Remove",
-			"Clear",
+			"Clean Up",
 			"Show",
 			"Open",
 			NSToolbarItem.CustomizeToolbarItemIdentifier,
@@ -635,7 +646,7 @@ public class CDQueueController extends CDWindowController {
 		if(identifier.equals("Open") || identifier.equals("openButtonClicked:")) {
 			return this.queueTable.numberOfSelectedRows() == 1;
 		}
-		if(identifier.equals("Clear")) {
+		if(identifier.equals("Clean Up")) {
 			return this.queueTable.numberOfRows() > 0;
 		}
 		if(identifier.equals("Remove") || identifier.equals("deleteButtonClicked:")) {

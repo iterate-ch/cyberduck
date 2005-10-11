@@ -54,10 +54,6 @@ public class CDQueueTableDataSource extends Collection {
 		this.load();
 	}
 
-	public void sort(NSTableColumn tableColumn, final boolean ascending) {
-		//
-	}
-	
 	public int numberOfRowsInTableView(NSTableView tableView) {
 		return this.size();
 	}
@@ -78,15 +74,6 @@ public class CDQueueTableDataSource extends Collection {
 		}
 		return null;
 	}
-
-    public String tableViewToolTipForCell(NSTableView tableView, NSCell cell, NSMutableRect rect,
-                                                   NSTableColumn tc, int row, NSPoint mouseLocation) {
-        if(row < numberOfRowsInTableView(tableView)) {
-            this.get(row).toString();
-        }
-        return null;
-    }
-
 
 	// ----------------------------------------------------------
 	// Drop methods
@@ -169,8 +156,8 @@ public class CDQueueTableDataSource extends Collection {
 		}
 		return false;
 	}
-	
-	// ----------------------------------------------------------
+
+    // ----------------------------------------------------------
 	//	Data Manipulation
 	// ----------------------------------------------------------
 

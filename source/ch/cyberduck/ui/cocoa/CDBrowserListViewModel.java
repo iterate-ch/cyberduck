@@ -46,27 +46,22 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
         return 0;
     }
 
-	public void tableViewWillDisplayCell(NSTableView tableView, Object cell, NSTableColumn tableColumn, int row) {
-		if(cell instanceof NSTextFieldCell) {
-            if(this.controller.isConnected()) {
-                ((NSTextFieldCell)cell).setTextColor(NSColor.controlTextColor());
+	public void tableViewSetObjectValueForLocation(NSTableView view, Object value, NSTableColumn tableColumn, int row) {
+        String identifier = (String) tableColumn.identifier();
+        if (identifier.equals(FILENAME_COLUMN)) {
+            Path p = (Path) this.childs(this.controller.workdir()).get(row);
+            if(!p.getName().equals(value)) {
+                p.rename(value.toString());
             }
-            else {
-                ((NSTextFieldCell)cell).setTextColor(NSColor.disabledControlTextColor());
-            }
-		}
-	}
-	
-	public boolean tableViewShouldEditLocation(NSTableView tableview, NSTableColumn tableColumn, int row) {
-		return false;
-	}
-	
+        }
+    }
+
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
         List childs = this.childs(this.controller.workdir());
         if (row < childs.size()) {
             String identifier = (String) tableColumn.identifier();
             Path p = (Path) childs.get(row);
-            if (identifier.equals("TYPE")) {
+            if (identifier.equals(TYPE_COLUMN)) {
                 NSImage icon;
                 if (p.attributes.isSymbolicLink()) {
                     icon = SYMLINK_ICON;
@@ -83,23 +78,23 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
                 icon.setSize(new NSSize(16f, 16f));
                 return icon;
             }
-            if (identifier.equals("FILENAME")) {
+            if (identifier.equals(FILENAME_COLUMN)) {
                 return new NSAttributedString(p.getName(), CDTableCell. TABLE_CELL_PARAGRAPH_DICTIONARY);
             }
             if (identifier.equals("TYPEAHEAD")) {
                 return p.getName();
             }
-            if (identifier.equals("SIZE")) {
+            if (identifier.equals(SIZE_COLUMN)) {
                 return new NSAttributedString(Status.getSizeAsString(p.attributes.getSize()), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
             }
-            if (identifier.equals("MODIFIED")) {
+            if (identifier.equals(MODIFIED_COLUMN)) {
                 return new NSGregorianDate((double) p.attributes.getTimestamp().getTime() / 1000,
                         NSDate.DateFor1970);
             }
-            if (identifier.equals("OWNER")) {
+            if (identifier.equals(OWNER_COLUMN)) {
                 return new NSAttributedString(p.attributes.getOwner(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
             }
-            if (identifier.equals("PERMISSIONS")) {
+            if (identifier.equals(PERMISSIONS_COLUMN)) {
                 return new NSAttributedString(p.attributes.getPermission().toString(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
@@ -184,10 +179,10 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
                         Queue q = Queue.createQueue(dict);
                         for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                             Path p = PathFactory.createPath(selected.getSession(), ((Path) iter.next()).getAbsolute());
-							p.rename(selected.getAbsolute()+"/"+p.getName());
+							p.rename(selected.getAbsolute()+Path.DELIMITER+p.getName());
                         }
                         this.controller.workdir().list(true, this.controller.getEncoding(),
-                                controller.getFileComparator(), controller.getFileFilter());
+                                controller.getComparator(), controller.getFileFilter());
                     }
                 }
 				return true;
@@ -261,13 +256,6 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
         NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes(null, null);
     }
 
-    public int draggingSourceOperationMaskForLocal(boolean local) {
-        log.debug("draggingSourceOperationMaskForLocal:" + local);
-        if (local)
-            return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
-        return NSDraggingInfo.DragOperationCopy;
-    }
-
     /**
      * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
      *         This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
@@ -300,16 +288,5 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
             }
         }
         return promisedDragNames;
-    }
-
-    public String tableViewToolTipForCell(NSTableView tableView, NSCell cell, NSMutableRect rect,
-                                                   NSTableColumn tc, int row, NSPoint mouseLocation) {
-        if (row < this.childs(this.controller.workdir()).size()) {
-            Path p = (Path) this.childs(this.controller.workdir()).get(row);
-            return p.getAbsolute() + "\n"
-                    + Status.getSizeAsString(p.attributes.getSize()) + "\n"
-                    + p.attributes.getTimestampAsString();
-        }
-        return null;
     }
 }

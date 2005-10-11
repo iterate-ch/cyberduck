@@ -219,11 +219,33 @@ public abstract class CDValidatorController extends CDWindowController implement
 	}
 
 	protected NSTableView fileTableView; // IBOutlet
+    private CDTableDelegate fileTableViewDelegate;
 
-	public void setFileTableView(NSTableView fileTableView) {
+    public void setFileTableView(NSTableView fileTableView) {
 		this.fileTableView = fileTableView;
 		this.fileTableView.setDataSource(this);
-		this.fileTableView.setDelegate(this);
+		this.fileTableView.setDelegate(this.fileTableViewDelegate = new CDAbstractTableDelegate() {
+
+            public String tableViewToolTipForCell(NSTableView tableView, NSCell cell, NSMutableRect rect,
+                                                  NSTableColumn tc, int row, NSPoint mouseLocation) {
+                if(row < numberOfRowsInTableView(tableView)) {
+                    return workList.get(row).toString();
+                }
+                return null;
+            }
+
+            public void enterKeyPressed(Object sender) {
+
+            }
+
+            public void deleteKeyPressed(Object sender) {
+
+            }
+
+            public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
+                //
+            }
+        });
 		this.fileTableView.setRowHeight(17f);
         // selection properties
         this.fileTableView.setAllowsMultipleSelection(true);
@@ -536,12 +558,4 @@ public abstract class CDValidatorController extends CDWindowController implement
 	public int numberOfRowsInTableView(NSTableView tableView) {
 		return this.workList.size();
 	}
-
-    public String tableViewToolTipForCell(NSTableView tableView, NSCell cell, NSMutableRect rect,
-                                                   NSTableColumn tc, int row, NSPoint mouseLocation) {
-        if(row < numberOfRowsInTableView(tableView)) {
-            return this.workList.get(row).toString();
-        }
-        return null;
-    }
 }

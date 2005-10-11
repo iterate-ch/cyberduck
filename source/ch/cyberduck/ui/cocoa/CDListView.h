@@ -19,6 +19,12 @@
 #import <Cocoa/Cocoa.h>
 
 @interface CDListView : NSTableView {
+
+@private
+	BOOL mBrowserWasDoubleClicked;
+	int mBrowserEditingColumn;
+	int mBrowserEditingRow;
+	
 	NSMutableString *select_string;
 	NSTimer *select_timer;
 }

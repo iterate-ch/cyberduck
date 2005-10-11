@@ -89,9 +89,9 @@ public class CDDuplicateFileController extends CDFileController {
 		p.upload();
 		List l = null;
 		if(filename.charAt(0) == '.')
-			l = workdir.list(true, controller.getEncoding(), controller.getFileComparator(), controller.getFileFilter());
+			l = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
 		else 
-			l = workdir.list(true, controller.getEncoding(), controller.getFileComparator(), controller.getFileFilter());
+			l = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
 		if(l.contains(p))
 			return (Path)l.get(l.indexOf(p));
 		return null;

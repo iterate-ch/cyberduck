@@ -1,5 +1,7 @@
+package ch.cyberduck.ui.cocoa;
+
 /*
- *  Copyright (c) 2005 Whitney Young. All rights reserved.
+ *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -16,17 +18,17 @@
  *  dkocher@cyberduck.ch
  */
 
-#import <Cocoa/Cocoa.h>
+import java.util.Comparator;
 
-@interface CDOutlineView : NSOutlineView {
+/**
+ * @version $Id$
+ */
+public interface CDTableDelegate {
+    public void enterKeyPressed(Object sender);
 
-@private
-	BOOL mBrowserWasDoubleClicked;
-	int mBrowserEditingColumn;
-	int mBrowserEditingRow;
+    public void deleteKeyPressed(Object sender);
 
-	NSMutableString *select_string;
-	NSTimer *select_timer;
+    public boolean isSortedAscending();
+
+    public Comparator getSortingComparator();
 }
-
-@end

@@ -99,13 +99,21 @@ index() {
 		for lproj in `ls . | grep lproj`; do
 			language=$lproj;
 			echo "*** Indexing Help of $language Localization...";
-			/Developer/Applications/Utilities/Help\ Indexer.app/Contents/MacOS/Help\ Indexer $language/Cyberduck\ Help/ -ShowProgress YES -RemoteRoot http://cyberduck.ch/help/`basename $language .lproj`/ -PreferNetworkFiles YES -TigerIndexing YES
+			cp -R $language/Cyberduck\ Help/ $language/Cyberduck\ Help.bak/
+			find $language/Cyberduck\ Help/ -type d -name CVS -print0 | xargs -0 rm -rf
+			/Developer/Applications/Utilities/Help\ Indexer.app/Contents/MacOS/Help\ Indexer $language/Cyberduck\ Help/ -PantherIndexing YES -ShowProgress YES -RemoteRoot http://cyberduck.ch/help/`basename $language .lproj`/ -PreferNetworkFiles YES -TigerIndexing YES
+			mv $language/Cyberduck\ Help.bak/CVS $language/Cyberduck\ Help/
+			rm -rf $language/Cyberduck\ Help.bak/
 		done;
 	}
 	else
 	{
-		echo "*** Status of $language Localization...";
-		/Developer/Applications/Utilities/Help\ Indexer.app/Contents/MacOS/Help\ Indexer $language/Cyberduck\ Help/ -ShowProgress YES -RemoteRoot http://cyberduck.ch/help/`basename $language .lproj`/ -PreferNetworkFiles YES -TigerIndexing YES
+		echo "*** Indexing Help of $language Localization...";
+		cp -R $language/Cyberduck\ Help/ $language/Cyberduck\ Help.bak/
+		find $language/Cyberduck\ Help/ -type d -name CVS -print0 | xargs -0 rm -rf
+		/Developer/Applications/Utilities/Help\ Indexer.app/Contents/MacOS/Help\ Indexer $language/Cyberduck\ Help/ -PantherIndexing YES -ShowProgress YES -RemoteRoot http://cyberduck.ch/help/`basename $language .lproj`/ -PreferNetworkFiles YES -TigerIndexing YES
+		mv $language/Cyberduck\ Help.bak/CVS $language/Cyberduck\ Help/
+		rm -rf $language/Cyberduck\ Help.bak/
 	}
 	fi;
 }

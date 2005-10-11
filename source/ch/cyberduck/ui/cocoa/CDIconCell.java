@@ -21,6 +21,8 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.application.NSText;
+import com.apple.cocoa.application.NSEvent;
 import com.apple.cocoa.foundation.NSCoder;
 import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRect;
@@ -70,13 +72,16 @@ public class CDIconCell extends CDTableCell {
 		notFoundIcon.setSize(new NSSize(32f, 32f));
 	}
 
-	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
+    public void editWithFrameInView(NSRect nsRect, NSView nsView, NSText nsText, Object object, NSEvent nsEvent) {
+        super.editWithFrameInView(nsRect, nsView, nsText, object, nsEvent);
+    }
+
+    public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
 		if(queue != null) {
 			NSPoint cellPoint = cellFrame.origin();
-			NSSize cellSize = cellFrame.size();
 
 			// drawing file icon
-			NSImage fileIcon = null;
+			NSImage fileIcon = notFoundIcon;
 			NSImage arrowIcon = null;
 
 			if(queue instanceof DownloadQueue) {
@@ -100,15 +105,9 @@ public class CDIconCell extends CDTableCell {
 						if(queue.getRoot().getLocal().exists()) {
 							fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getRoot().getExtension());
 						}
-						else {
-							fileIcon = notFoundIcon;
-						}
 					}
 					else if(queue.getRoot().getLocal().isDirectory()) {
 						fileIcon = folderIcon;
-					}
-					else {
-						fileIcon = notFoundIcon;
 					}
 				}
 				else {

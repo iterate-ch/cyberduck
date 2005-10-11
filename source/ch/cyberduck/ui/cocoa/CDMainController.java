@@ -544,10 +544,28 @@ public class CDMainController extends CDController {
 		File f = new File(filename);
 		if(f.exists()) {
 			log.info("Found file: "+f.toString());
-			Host host = CDBookmarkTableDataSource.instance().importBookmark(f);
-			if(host != null) {
-				this.newDocument().mount(host);
-				return true;
+			if (f.getAbsolutePath().endsWith(".duck")) {
+				Host host = CDBookmarkTableDataSource.instance().importBookmark(f);
+				if(host != null) {
+					this.newDocument().mount(host);
+					return true;
+				}
+			}
+			else {
+				NSArray windows = NSApplication.sharedApplication().windows();
+				int count = windows.count();
+				while(0 != count--) {
+					NSWindow window = (NSWindow)windows.objectAtIndex(count);
+					CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+					if(null != controller) {
+						Path workdir = controller.workdir();
+						Queue q = new UploadQueue(controller);
+						Session session = workdir.getSession().copy();
+						q.addRoot(PathFactory.createPath(session, workdir.getAbsolute(), new Local(f.getAbsolutePath())));
+						CDQueueController.instance().startItem(q);
+						break;
+					}
+				}
 			}
 		}
 		return false;

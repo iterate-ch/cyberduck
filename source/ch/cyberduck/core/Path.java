@@ -47,6 +47,8 @@ public abstract class Path {
 	public static final int DIRECTORY_TYPE = 2;
 	public static final int SYMBOLIC_LINK_TYPE = 4;
 
+    public static final String DELIMITER = "/";
+
     protected void finalize() throws Throwable {
         log.debug("finalize > "+this.toString());
         super.finalize();
@@ -141,7 +143,7 @@ public abstract class Path {
 			this.setPath(parent+name);
 		}
 		else {
-			this.setPath(parent+"/"+name);
+			this.setPath(parent+DELIMITER+name);
 		}
 	}
 
@@ -174,7 +176,7 @@ public abstract class Path {
                 this.parent.attributes.setType(Path.DIRECTORY_TYPE);
 			}
 			else {//if (index == 0) //parent is root
-                this.parent = PathFactory.createPath(this.getSession(), "/");
+                this.parent = PathFactory.createPath(this.getSession(), DELIMITER);
                 this.parent.attributes.setType(Path.DIRECTORY_TYPE);
 			}
 		}
@@ -253,7 +255,7 @@ public abstract class Path {
 	 * @return true if this paths points to '/'
 	 */
 	public boolean isRoot() {
-		return this.getAbsolute().equals("/") || this.getAbsolute().indexOf('/') == -1;
+		return this.getAbsolute().equals(DELIMITER) || this.getAbsolute().indexOf('/') == -1;
 	}
 
 	/**
@@ -261,7 +263,7 @@ public abstract class Path {
 	 */
 	public String getName() {
         if(this.isRoot()) {
-            return "/";
+            return DELIMITER;
         }
 		String abs = this.getAbsolute();
 		int index = abs.lastIndexOf('/');

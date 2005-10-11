@@ -28,6 +28,11 @@
 
 - (void)awakeFromNib
 {
+	[self setTarget:self];
+	[self setAction:@selector(handleBrowserClick:)];
+	[self setDoubleAction:@selector(handleBrowserDoubleClick:)];
+	
+	// browser typeahead selection
 	select_string = [[NSMutableString alloc] init];
 	select_timer = nil;
 }
@@ -44,21 +49,76 @@
 	[super dealloc];
 }
 
+- (void)handleBrowserClick:(id)sender {
+	NSPoint where = [self convertPoint:[[NSApp currentEvent] locationInWindow] fromView:nil];
+	int row = [self rowAtPoint:where];
+	int col = [self columnAtPoint:where];
+	if(row >= 0 && col >= 0) {
+		NSTableColumn *column = [[self tableColumns] objectAtIndex:col];
+		if([[self delegate] respondsToSelector:@selector(isColumnEditable:)]) {
+			if([[self delegate] isColumnEditable:column]) {
+				mBrowserEditingColumn = col;
+				mBrowserEditingRow = row;
+				NSValue *wrappedMouseLocation = [NSValue valueWithPoint:[NSEvent mouseLocation]];
+				[self performSelector:@selector(handleBrowserClickOffloaded:) withObject:wrappedMouseLocation afterDelay:0.5];
+			}
+		}
+		else {
+			NSLog(@"WARN: Tableview delegate does not respond to isColumnEditable:");
+		}
+	}
+}
+
+- (void)handleBrowserClickOffloaded:(NSValue *)inWrappedMouseLocation {
+	// UI: mouse must not have ben moved since first click, and must not have been double-clicked
+	if((!mBrowserWasDoubleClicked) && (NSEqualPoints([inWrappedMouseLocation pointValue], [NSEvent mouseLocation])) ) {
+		if(mBrowserEditingRow == [self selectedRow])
+			[self editColumn:mBrowserEditingColumn row:mBrowserEditingRow withEvent:nil select:YES];
+	}
+	mBrowserWasDoubleClicked = NO;
+}
+
+- (void)handleBrowserDoubleClick:(id)sender {
+	mBrowserWasDoubleClicked = YES;
+    if([self clickedRow] != -1) { // make sure double click was not in table header
+		if ([[self delegate] respondsToSelector:@selector(enterKeyPressed:)]) {
+			[[self delegate] performSelector:@selector(enterKeyPressed:) withObject:self];
+		}
+	}
+	mBrowserWasDoubleClicked = NO;
+}
+
 - (BOOL)shouldCollapseAutoExpandedItemsForDeposited:(BOOL)deposited
 {
 	return !deposited;
 }
 
+// make return and tab only end editing, and not cause other cells to edit
+// Taken from http://borkware.com/quickies/one?topic=NSTableView
+- (void) textDidEndEditing: (NSNotification *) notification
+{
+    int textMovement = [[[notification userInfo] valueForKey:@"NSTextMovement"] intValue];
+    if (textMovement == NSReturnTextMovement || textMovement == NSTabTextMovement || textMovement == NSBacktabTextMovement) {
+        NSMutableDictionary *newInfo;
+        newInfo = [NSMutableDictionary dictionaryWithDictionary: [notification userInfo]];
+        [newInfo setObject: [NSNumber numberWithInt: NSIllegalTextMovement] forKey: @"NSTextMovement"];
+        notification = [NSNotification notificationWithName: [notification name]
+													 object: [notification object]
+												   userInfo: newInfo];
+		[super textDidEndEditing: notification];
+		[[self window] makeFirstResponder:self];
+    }
+	else {
+		[super textDidEndEditing: notification];
+	}
+}
+
 // Taken from http://www.cocoadev.com/index.pl?RightClickSelectInTableView
 - (NSMenu *) menuForEvent:(NSEvent *) event 
 {
-	NSPoint where;
-	int row = -1, col = -1;
-	
-	where = [self convertPoint:[event locationInWindow] fromView:nil];
-	row = [self rowAtPoint:where];
-	col = [self columnAtPoint:where];
-	
+	NSPoint where = [self convertPoint:[event locationInWindow] fromView:nil];
+	int row = [self rowAtPoint:where];
+	int col = [self columnAtPoint:where];
 	if(row >= 0) {
 		NSTableColumn *column = nil;
 		if(col >= 0) {
@@ -79,22 +139,36 @@
 
 - (void)keyDown:(NSEvent *)event
 {
-	NSString *str = [event characters];
-	char key = [str length] ? [str characterAtIndex:0] : '\0';
+	NSString *str = [event charactersIgnoringModifiers];
+	unichar key = [str length] ? [str characterAtIndex:0] : '\0';
 
 	if (key == NSCarriageReturnCharacter || key == NSEnterCharacter) {
-        if ([[self target] respondsToSelector:@selector(enterKeyPressed:)]) {
-            [[self target] performSelector:@selector(enterKeyPressed:) withObject:self];
-            return;
+        if ([[self delegate] respondsToSelector:@selector(enterKeyPressed:)]) {
+            [[self delegate] performSelector:@selector(enterKeyPressed:) withObject:self];
         }
+		return;
     } 
-	else if (key == NSDeleteCharacter) {
-        if ([[self target] respondsToSelector:@selector(deleteKeyPressed:)]) {
-            [[self target] performSelector:@selector(deleteKeyPressed:) withObject:self];
-            return;
+	else if (key == NSDeleteFunctionKey || key == NSDeleteCharacter || key == NSBackspaceCharacter) {
+        if ([[self delegate] respondsToSelector:@selector(deleteKeyPressed:)]) {
+            [[self delegate] performSelector:@selector(deleteKeyPressed:) withObject:self];
         }
-    }
-	
+		return;
+	} 
+	else if (key == NSLeftArrowFunctionKey) { //left
+		id 	object = [self itemAtRow:[self selectedRow]];
+		if (object && [self isExpandable:object] && [self isItemExpanded:object]) {
+			[self collapseItem:object];
+		}
+		return;
+	}
+	else if (key == NSRightArrowFunctionKey) { //right
+		id 	object = [self itemAtRow:[self selectedRow]];
+		if (object && [self isExpandable:object] && ![self isItemExpanded:object]) {
+			[self expandItem:object];
+		}
+		return;
+	}
+		
 	if ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] && 
 		(![[NSCharacterSet controlCharacterSet] characterIsMember:key])) {
 		

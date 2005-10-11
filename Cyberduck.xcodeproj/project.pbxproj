@@ -52,11 +52,7 @@
 		4739EFAB0856990900405FD3 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479982AF05F54B1600F81519 /* Carbon.framework */; };
 		4739EFAC0856990900405FD3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C761EA06A88D7600B464FF /* SystemConfiguration.framework */; };
 		4739EFB30856991200405FD3 /* Local.h in Headers */ = {isa = PBXBuildFile; fileRef = 475D187C0805E24B00166B8A /* Local.h */; };
-		4739EFB40856991200405FD3 /* IconFamily.h in Headers */ = {isa = PBXBuildFile; fileRef = 475D187E0805E24B00166B8A /* IconFamily.h */; };
-		4739EFB50856991200405FD3 /* NSString+CarbonFSSpecCreation.h in Headers */ = {isa = PBXBuildFile; fileRef = 475D189E0805E2FD00166B8A /* NSString+CarbonFSSpecCreation.h */; };
 		4739EFB70856991200405FD3 /* Local.m in Sources */ = {isa = PBXBuildFile; fileRef = 475D187B0805E24B00166B8A /* Local.m */; };
-		4739EFB80856991200405FD3 /* NSString+CarbonFSSpecCreation.m in Sources */ = {isa = PBXBuildFile; fileRef = 475D189F0805E2FD00166B8A /* NSString+CarbonFSSpecCreation.m */; };
-		4739EFB90856991200405FD3 /* IconFamily.m in Sources */ = {isa = PBXBuildFile; fileRef = 475D187D0805E24B00166B8A /* IconFamily.m */; };
 		4739EFBB0856991200405FD3 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		4739EFBC0856991200405FD3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		4739EFBD0856991200405FD3 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479982AF05F54B1600F81519 /* Carbon.framework */; };
@@ -135,6 +131,11 @@
 		475D17C00805D54C00166B8A /* download2.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B60805D54C00166B8A /* download2.icns */; };
 		475D17C10805D54C00166B8A /* download1.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B70805D54C00166B8A /* download1.icns */; };
 		475D17C20805D54C00166B8A /* download4.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B80805D54C00166B8A /* download4.icns */; };
+		47649C8508E5614A00207DC9 /* SmartCrashReportsInstall.h in Headers */ = {isa = PBXBuildFile; fileRef = 47649C8308E5614A00207DC9 /* SmartCrashReportsInstall.h */; };
+		47649E0908E563C500207DC9 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47983764072AD73700FA3CDB /* Security.framework */; };
+		47649E4508E563D000207DC9 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 476DEBE10629C6FB005EF4B1 /* CoreFoundation.framework */; };
+		47649EDD08E563D600207DC9 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479982AF05F54B1600F81519 /* Carbon.framework */; };
+		4764A09C08E565EC00207DC9 /* SmartCrashReportsInstall.o in Frameworks */ = {isa = PBXBuildFile; fileRef = 4764A09B08E565EC00207DC9 /* SmartCrashReportsInstall.o */; };
 		4764B48108B7835E00441096 /* SKWSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 4764B47D08B7835E00441096 /* SKWSegmentedControl.m */; };
 		4764B48208B7835E00441096 /* SKWSegmentedControlWindowProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4764B47E08B7835E00441096 /* SKWSegmentedControlWindowProxy.m */; };
 		4764B48308B7835E00441096 /* SKWSegmentedControlWindowProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4764B47F08B7835E00441096 /* SKWSegmentedControlWindowProxy.h */; };
@@ -282,7 +283,6 @@
 /* Begin PBXFileReference section */
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = SOURCE_ROOT; };
-		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		47026427087DC91C008837FD /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/IDisk.strings; sourceTree = "<group>"; };
 		4702642B087DC92C008837FD /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/IDisk.strings; sourceTree = "<group>"; };
@@ -1130,10 +1130,8 @@
 		475D17B80805D54C00166B8A /* download4.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download4.icns; sourceTree = "<group>"; };
 		475D187B0805E24B00166B8A /* Local.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Local.m; sourceTree = "<group>"; };
 		475D187C0805E24B00166B8A /* Local.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Local.h; path = source/ch/cyberduck/core/Local.h; sourceTree = SOURCE_ROOT; };
-		475D187D0805E24B00166B8A /* IconFamily.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IconFamily.m; sourceTree = "<group>"; };
-		475D187E0805E24B00166B8A /* IconFamily.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IconFamily.h; sourceTree = "<group>"; };
-		475D189E0805E2FD00166B8A /* NSString+CarbonFSSpecCreation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+CarbonFSSpecCreation.h"; sourceTree = "<group>"; };
-		475D189F0805E2FD00166B8A /* NSString+CarbonFSSpecCreation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+CarbonFSSpecCreation.m"; sourceTree = "<group>"; };
+		47649C8308E5614A00207DC9 /* SmartCrashReportsInstall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartCrashReportsInstall.h; sourceTree = "<group>"; };
+		4764A09B08E565EC00207DC9 /* SmartCrashReportsInstall.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; name = SmartCrashReportsInstall.o; path = source/com/unsanity/smartcrashreports/SmartCrashReportsInstall.o; sourceTree = "<group>"; };
 		4764B47D08B7835E00441096 /* SKWSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControl.m; sourceTree = "<group>"; };
 		4764B47E08B7835E00441096 /* SKWSegmentedControlWindowProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControlWindowProxy.m; sourceTree = "<group>"; };
 		4764B47F08B7835E00441096 /* SKWSegmentedControlWindowProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControlWindowProxy.h; sourceTree = "<group>"; };
@@ -1431,6 +1429,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				471D2C5205A2505500675163 /* Cocoa.framework in Frameworks */,
+				47649E0908E563C500207DC9 /* Security.framework in Frameworks */,
+				47649E4508E563D000207DC9 /* CoreFoundation.framework in Frameworks */,
+				47649EDD08E563D600207DC9 /* Carbon.framework in Frameworks */,
+				4764A09C08E565EC00207DC9 /* SmartCrashReportsInstall.o in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1526,6 +1528,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4764A09B08E565EC00207DC9 /* SmartCrashReportsInstall.o */,
 				47DC7F4308694B5A00B9DD7D /* DotMacKit.framework */,
 				4739F03D08569B5E00405FD3 /* Growl.framework */,
 				4739EFFB08569A8100405FD3 /* Keychain.framework */,
@@ -1536,7 +1539,6 @@
 				4725BE0A05D2E27000C7CCBD /* JavaVM.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
-				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1762,10 +1764,6 @@
 				47685DD80759706B00C744E1 /* Local.java */,
 				475D187C0805E24B00166B8A /* Local.h */,
 				475D187B0805E24B00166B8A /* Local.m */,
-				475D189E0805E2FD00166B8A /* NSString+CarbonFSSpecCreation.h */,
-				475D189F0805E2FD00166B8A /* NSString+CarbonFSSpecCreation.m */,
-				475D187E0805E24B00166B8A /* IconFamily.h */,
-				475D187D0805E24B00166B8A /* IconFamily.m */,
 				474152EB06C4F08A00AC0BD2 /* Login.java */,
 				47729074080D5957007126E4 /* Keychain.java */,
 				47983749072AD67800FA3CDB /* Keychain.h */,
@@ -1856,6 +1854,7 @@
 		4741532B06C4F08A00AC0BD2 /* com */ = {
 			isa = PBXGroup;
 			children = (
+				47649C8108E5614A00207DC9 /* unsanity */,
 				4741532C06C4F08A00AC0BD2 /* enterprisedt */,
 				4741533806C4F08A00AC0BD2 /* sshtools */,
 			);
@@ -2481,6 +2480,22 @@
 			name = bookmark;
 			sourceTree = "<group>";
 		};
+		47649C8108E5614A00207DC9 /* unsanity */ = {
+			isa = PBXGroup;
+			children = (
+				47649C8208E5614A00207DC9 /* smartcrashreports */,
+			);
+			path = unsanity;
+			sourceTree = "<group>";
+		};
+		47649C8208E5614A00207DC9 /* smartcrashreports */ = {
+			isa = PBXGroup;
+			children = (
+				47649C8308E5614A00207DC9 /* SmartCrashReportsInstall.h */,
+			);
+			path = smartcrashreports;
+			sourceTree = "<group>";
+		};
 		479815EA0728DCA000FA3CDB /* growl */ = {
 			isa = PBXGroup;
 			children = (
@@ -2736,6 +2751,7 @@
 				47494C4107EC6B4200B34D53 /* CDOutlineView.h in Headers */,
 				47494C4307EC6B4200B34D53 /* CDListView.h in Headers */,
 				47FD45330801EAEE00716715 /* UKPrefsPanel.h in Headers */,
+				47649C8508E5614A00207DC9 /* SmartCrashReportsInstall.h in Headers */,
 				4764B48308B7835E00441096 /* SKWSegmentedControlWindowProxy.h in Headers */,
 				4764B48408B7835E00441096 /* SKWSegmentedControl.h in Headers */,
 			);
@@ -2781,8 +2797,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4739EFB30856991200405FD3 /* Local.h in Headers */,
-				4739EFB40856991200405FD3 /* IconFamily.h in Headers */,
-				4739EFB50856991200405FD3 /* NSString+CarbonFSSpecCreation.h in Headers */,
 				470E56D608BE3E1F00BDF3CD /* TinAlias.h in Headers */,
 				470E56D708BE3E1F00BDF3CD /* TinFSFork.h in Headers */,
 				470E56D808BE3E1F00BDF3CD /* TinFSRefItem.h in Headers */,
@@ -3391,8 +3405,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4739EFB70856991200405FD3 /* Local.m in Sources */,
-				4739EFB80856991200405FD3 /* NSString+CarbonFSSpecCreation.m in Sources */,
-				4739EFB90856991200405FD3 /* IconFamily.m in Sources */,
 				470E56D508BE3E1E00BDF3CD /* MacOSXForkerIO.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4232,7 +4244,10 @@
 		4716D8B70877533B00938886 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = ppc;
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				COPY_PHASE_STRIP = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -4398,10 +4413,7 @@
 		47D286C70855740C008142CF /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = ppc;
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/build\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -4412,7 +4424,7 @@
 				JAVA_COMPILER_TARGET_VM_VERSION = 1.4;
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = "-lz";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = Cyberduck;
 				SECTORDER_FLAGS = "";

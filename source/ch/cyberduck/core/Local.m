@@ -22,7 +22,6 @@
 #import <Carbon/Carbon.h>
 #import <CoreServices/CoreServices.h>
 #import <Cocoa/Cocoa.h>
-#import <IconFamily.h>
 
 // Simple utility to convert java strings to NSStrings
 NSString *convertToNSString(JNIEnv *env, jstring javaString)
@@ -52,10 +51,6 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromExtension(JNIEnv 
 	if([workspace respondsToSelector:@selector(setIcon:forFile:options:)]) {
 		[workspace setIcon:image forFile:convertToNSString(env, path) options:NSExcludeQuickDrawElementsIconCreationOption];
 	}
-	else {
-		id iconFamily = [IconFamily iconFamilyWithThumbnailsOfImage:image];
-		[iconFamily setAsCustomIconForFile:convertToNSString(env, path)];
-	}
 	[pool release];
 }
 
@@ -66,20 +61,5 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromFile(JNIEnv *env,
 	if([workspace respondsToSelector:@selector(setIcon:forFile:options:)]) {
 		[workspace setIcon:[NSImage imageNamed:convertToNSString(env, icon)] forFile:convertToNSString(env, path) options:NSExcludeQuickDrawElementsIconCreationOption];
 	}
-	else {
-		id iconFamily = [IconFamily iconFamilyWithThumbnailsOfImage:[NSImage imageNamed:convertToNSString(env, icon)]];
-		[iconFamily setAsCustomIconForFile:convertToNSString(env, path)];
-	}
 	[pool release];
 }
-
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_removeCustomIcon(JNIEnv *env, jobject this, jstring path)
-{
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	[IconFamily removeCustomIconFromFile:convertToNSString(env, path)];
-	[pool release];
-}
-
-
-
-

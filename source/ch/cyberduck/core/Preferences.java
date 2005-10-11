@@ -109,7 +109,9 @@ public abstract class Preferences {
 		defaults.put("browser.charset.encoding", "UTF-8");
 		defaults.put("browser.doubleclick.edit", "false");
 
-		defaults.put("editor.name", "SubEthaEdit");
+        defaults.put("browser.closeDrawer", "false");
+
+        defaults.put("editor.name", "SubEthaEdit");
 		defaults.put("editor.bundleIdentifier", "de.codingmonkeys.SubEthaEdit");
         defaults.put("editor.disabledFiles", "pdf ps exe bin jpeg jpg jp2 gif tif ico icns tiff bmp pict sgi tga png psd " +
                 "hqx sea dmg zip sit tar gz tgz bz2 avi qtl bom pax pgp" +

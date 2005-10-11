@@ -1,5 +1,5 @@
-[WORK_IN_PROGRESS] Automator Actions
-[WORK_IN_PROGRESS] SSH shell access (using Send Command...)
+[2.6] Automator Actions
+[2.6] SSH shell access (using Send Command...)
 [????] Group bookmarks (Outline View)
 [????] Calculate folder sizes
 [????] Selecting remote server timezone in synchronization dialog
@@ -21,3 +21,4 @@
 [????] Replace FTP api com.enterprisedt with org.apache.commons.net.ftp
 [????] Exclusion lists for synchronization (e.g. skip CVS dirs)
 [????] Outline view in synchronization dialog
+[????] Transfer throttling

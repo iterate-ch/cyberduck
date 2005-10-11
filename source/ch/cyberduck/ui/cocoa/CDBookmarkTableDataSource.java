@@ -33,7 +33,6 @@ import ch.cyberduck.core.*;
  * @version $Id$
  */
 public class CDBookmarkTableDataSource extends Collection {
-
     private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 
     private static final File BOOKMARKS_FILE_USER
@@ -66,22 +65,6 @@ public class CDBookmarkTableDataSource extends Collection {
             instance = new CDBookmarkTableDataSource();
         }
         return instance;
-    }
-
-    public void sort(NSTableColumn tableColumn, final boolean ascending) {
-        if (tableColumn.identifier().equals("BOOKMARK")) {
-            Collections.sort(this,
-                    new Comparator() {
-                        public int compare(Object o1, Object o2) {
-                            Host h1 = (Host) o1;
-                            Host h2 = (Host) o2;
-                            if (ascending) {
-                                return h1.getHostname().compareToIgnoreCase(h2.getHostname());
-                            }
-                            return -h1.getHostname().compareToIgnoreCase(h2.getHostname());
-                        }
-                    });
-        }
     }
 
     private static final NSImage DOCUMENT_ICON;

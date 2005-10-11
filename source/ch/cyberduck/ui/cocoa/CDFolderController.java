@@ -106,9 +106,9 @@ public class CDFolderController extends CDWindowController {
 		folder.mkdir(false);
 		List l = null;
 		if(filename.charAt(0) == '.')
-			l = workdir.list(true, controller.getEncoding(), controller.getFileComparator(), controller.getFileFilter());
+			l = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
 		else 
-			l = workdir.list(true, controller.getEncoding(), controller.getFileComparator(), controller.getFileFilter());
+			l = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
 		if(l.contains(folder))
 			return (Path)l.get(l.indexOf(folder));
 		return null;

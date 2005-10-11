@@ -47,7 +47,7 @@ public class AttributedList implements List {
     protected static final String HIDDEN = "HIDDEN";
 
     //file listing has changed
-    protected static final String INVALID = "INVALID";
+    public static final String INVALID = "INVALID";
 
 
     private Attributes attributes;
