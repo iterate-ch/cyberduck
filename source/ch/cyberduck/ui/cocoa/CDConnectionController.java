@@ -472,33 +472,35 @@ public class CDConnectionController extends CDWindowController {
 	 * is avaialble for this hostname
 	 */
 	public void getPasswordFromKeychain(Object sender) {
-		if(hostPopup.stringValue() != null && !hostPopup.stringValue().equals("") &&
-		    usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {
-			String protocol = Preferences.instance().getProperty("connection.protocol.default");
-			if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
-				protocol = Session.SFTP;
-			}
-			else if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
-				protocol = Session.FTP;
-			}
-            else if(protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
-                protocol = Session.FTP_TLS;
+        if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
+            if(hostPopup.stringValue() != null && !hostPopup.stringValue().equals("") &&
+                    usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {
+                String protocol = Preferences.instance().getProperty("connection.protocol.default");
+                if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
+                    protocol = Session.SFTP;
+                }
+                else if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
+                    protocol = Session.FTP;
+                }
+                else if(protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
+                    protocol = Session.FTP_TLS;
+                }
+                Login l = new Login(hostPopup.stringValue(), protocol, usernameField.stringValue(), null);
+                String passFromKeychain = l.getInternetPasswordFromKeychain();
+                if(null == passFromKeychain || passFromKeychain.equals("")) {
+                    passFromKeychain = l.getPasswordFromKeychain(); //legacy support
+                }
+                if(passFromKeychain != null && !passFromKeychain.equals("")) {
+                    log.info("Password for "+usernameField.stringValue()+" found in Keychain");
+                    this.passField.setStringValue(passFromKeychain);
+                }
+                else {
+                    log.info("Password for "+usernameField.stringValue()+" *not* found in Keychain");
+                    this.passField.setStringValue("");
+                }
             }
-			Login l = new Login(hostPopup.stringValue(), protocol, usernameField.stringValue(), null);
-			String passFromKeychain = l.getInternetPasswordFromKeychain();
-			if(null == passFromKeychain || passFromKeychain.equals("")) {
-				passFromKeychain = l.getPasswordFromKeychain(); //legacy support
-			}
-			if(passFromKeychain != null && !passFromKeychain.equals("")) {
-				log.info("Password for "+usernameField.stringValue()+" found in Keychain");
-				this.passField.setStringValue(passFromKeychain);
-			}
-			else {
-				log.info("Password for "+usernameField.stringValue()+" *not* found in Keychain");
-				this.passField.setStringValue("");
-			}
-		}
-	}
+        }
+    }
 
 	private void bookmarkSelectionDidChange(Host selectedItem) {
         if(selectedItem.getProtocol().equals(Session.FTP)) {

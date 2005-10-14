@@ -558,13 +558,15 @@ public class CDMainController extends CDController {
 					NSWindow window = (NSWindow)windows.objectAtIndex(count);
 					CDBrowserController controller = CDBrowserController.controllerForWindow(window);
 					if(null != controller) {
-						Path workdir = controller.workdir();
-						Queue q = new UploadQueue(controller);
-						Session session = workdir.getSession().copy();
-						q.addRoot(PathFactory.createPath(session, workdir.getAbsolute(), new Local(f.getAbsolutePath())));
-						CDQueueController.instance().startItem(q);
-						break;
-					}
+                        if(controller.isMounted()) {
+                            Path workdir = controller.workdir();
+                            Queue q = new UploadQueue(controller);
+                            Session session = workdir.getSession().copy();
+                            q.addRoot(PathFactory.createPath(session, workdir.getAbsolute(), new Local(f.getAbsolutePath())));
+                            CDQueueController.instance().startItem(q);
+                            break;
+                        }
+                    }
 				}
 			}
 		}

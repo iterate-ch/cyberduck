@@ -64,6 +64,13 @@ public class Local extends File {
         super(NSPathUtilities.stringByExpandingTildeInPath(path));
     }
 
+    public boolean createNewFile() throws IOException {
+        if(super.createNewFile()) {
+            this.setProgress(0);
+        }
+        return false;
+    }
+
     /**
      * @return the extension if any
      */
@@ -94,6 +101,7 @@ public class Local extends File {
 
     private void removeResourceFork() {
         try {
+            this.removeCustomIcon();
             FileForker forker = new MacOSXForker();
             forker.usePathname(new Pathname(this.getAbsoluteFile()));
             forker.makeForkOutputStream(true, false).close();
@@ -111,6 +119,12 @@ public class Local extends File {
      * @param icon the absolute path to the image file to use as an icon
      */
     public native void setIconFromFile(String path, String icon);
+
+    public void removeCustomIcon() {
+        this.removeCustomIcon(this.getAbsolute());
+    }
+
+    public native void removeCustomIcon(String path);
 
     public Permission getPermission() {
         NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);

@@ -19,10 +19,34 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Status;
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+
+import com.apple.cocoa.application.NSAlertPanel;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSBox;
+import com.apple.cocoa.application.NSButton;
+import com.apple.cocoa.application.NSCell;
+import com.apple.cocoa.application.NSControl;
+import com.apple.cocoa.application.NSImage;
+import com.apple.cocoa.application.NSImageView;
+import com.apple.cocoa.application.NSTextField;
+import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSDate;
+import com.apple.cocoa.foundation.NSFormatter;
+import com.apple.cocoa.foundation.NSGregorianDate;
+import com.apple.cocoa.foundation.NSGregorianDateFormatter;
+import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSNotification;
+import com.apple.cocoa.foundation.NSNotificationCenter;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSSize;
+import com.apple.cocoa.foundation.NSUserDefaults;
+
 import org.apache.log4j.Logger;
 
 import java.util.Iterator;
@@ -175,7 +199,7 @@ public class CDInfoController extends CDWindowController {
 	}
 
 	private void init() {
-		if(this.files.size() > 0) {
+		if(this.numberOfFiles() > 0) {
 			Path file = (Path)this.files.get(0);
 			this.filenameField.setStringValue(this.numberOfFiles() > 1 ? "("+NSBundle.localizedString("Multiple files", "")+")" :
 			                                  file.getName());
@@ -329,33 +353,36 @@ public class CDInfoController extends CDWindowController {
 
 	private int numberOfFiles() {
 		return files.size();
-	}
-	
-	public void filenameInputDidEndEditing(NSNotification sender) {
-		final Path file = (Path)this.files.get(0);
-		if(!this.filenameField.stringValue().equals(file.getName())) {
-			if(this.filenameField.stringValue().indexOf('/') == -1) {
-				file.rename(file.getParent().getAbsolute()+Path.DELIMITER+this.filenameField.stringValue());
-                controller.workdir().list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
-			}
-			else if(filenameField.stringValue().length() == 0) {
-				this.filenameField.setStringValue(file.getName());
-			}
-			else {
-				NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-				    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-				    null, //alternative button
-				    null, //other button
-				    this.window(), //docWindow
-				    null, //modalDelegate
-				    null, //didEndSelector
-				    null, // dismiss selector
-				    null, // context
-				    NSBundle.localizedString("Invalid character in filename.", "") // message
-				);
-			}
-		}
-	}
+    }
+
+    public void filenameInputDidEndEditing(NSNotification sender) {
+        if(this.numberOfFiles() == 1) {
+            final Path file = (Path)this.files.get(0);
+            if(!this.filenameField.stringValue().equals(file.getName())) {
+                if(this.filenameField.stringValue().indexOf('/') == -1) {
+                    controller.renamePath(file, PathFactory.createPath(file.getSession(), file.getParent().getAbsolute(),
+                            this.filenameField.stringValue()).getAbsolute());
+                    controller.workdir().list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
+                }
+                else if(filenameField.stringValue().length() == 0) {
+                    this.filenameField.setStringValue(file.getName());
+                }
+                else {
+                    NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                            NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+                            null, //alternative button
+                            null, //other button
+                            this.window(), //docWindow
+                            null, //modalDelegate
+                            null, //didEndSelector
+                            null, // dismiss selector
+                            null, // context
+                            NSBundle.localizedString("Invalid character in filename.", "") // message
+                    );
+                }
+            }
+        }
+    }
 
     private Permission getPermissionFromSelection() {
         boolean[][] p = new boolean[3][3];

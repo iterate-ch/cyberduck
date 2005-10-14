@@ -18,16 +18,98 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.DownloadQueue;
+import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.HiddenFilesFilter;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Message;
+import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.Status;
+import ch.cyberduck.core.SyncQueue;
+import ch.cyberduck.core.UploadQueue;
 import ch.cyberduck.ui.cocoa.odb.Editor;
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+
+import com.apple.cocoa.application.NSAlertPanel;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSBrowser;
+import com.apple.cocoa.application.NSButton;
+import com.apple.cocoa.application.NSCell;
+import com.apple.cocoa.application.NSColor;
+import com.apple.cocoa.application.NSComboBox;
+import com.apple.cocoa.application.NSControl;
+import com.apple.cocoa.application.NSDrawer;
+import com.apple.cocoa.application.NSEvent;
+import com.apple.cocoa.application.NSImage;
+import com.apple.cocoa.application.NSImageCell;
+import com.apple.cocoa.application.NSImageView;
+import com.apple.cocoa.application.NSMenu;
+import com.apple.cocoa.application.NSMenuItem;
+import com.apple.cocoa.application.NSOpenPanel;
+import com.apple.cocoa.application.NSOutlineView;
+import com.apple.cocoa.application.NSPanel;
+import com.apple.cocoa.application.NSPasteboard;
+import com.apple.cocoa.application.NSPopUpButton;
+import com.apple.cocoa.application.NSProgressIndicator;
+import com.apple.cocoa.application.NSSavePanel;
+import com.apple.cocoa.application.NSSegmentedCell;
+import com.apple.cocoa.application.NSSegmentedControl;
+import com.apple.cocoa.application.NSTabView;
+import com.apple.cocoa.application.NSTableColumn;
+import com.apple.cocoa.application.NSTableView;
+import com.apple.cocoa.application.NSText;
+import com.apple.cocoa.application.NSTextField;
+import com.apple.cocoa.application.NSTextFieldCell;
+import com.apple.cocoa.application.NSTextView;
+import com.apple.cocoa.application.NSToolbar;
+import com.apple.cocoa.application.NSToolbarItem;
+import com.apple.cocoa.application.NSView;
+import com.apple.cocoa.application.NSWindow;
+import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSData;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSEnumerator;
+import com.apple.cocoa.foundation.NSGregorianDateFormatter;
+import com.apple.cocoa.foundation.NSIndexSet;
+import com.apple.cocoa.foundation.NSIndexSpecifier;
+import com.apple.cocoa.foundation.NSKeyValue;
+import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSMutableData;
+import com.apple.cocoa.foundation.NSMutableRect;
+import com.apple.cocoa.foundation.NSNotification;
+import com.apple.cocoa.foundation.NSNotificationCenter;
+import com.apple.cocoa.foundation.NSObject;
+import com.apple.cocoa.foundation.NSPathUtilities;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSPropertyListSerialization;
+import com.apple.cocoa.foundation.NSRect;
+import com.apple.cocoa.foundation.NSScriptClassDescription;
+import com.apple.cocoa.foundation.NSScriptCommand;
+import com.apple.cocoa.foundation.NSScriptObjectSpecifier;
+import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSSize;
+import com.apple.cocoa.foundation.NSUserDefaults;
+
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.StringTokenizer;
 
 /**
  * @version $Id$
@@ -617,12 +699,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 this.statusLabel.display();
             }
             else if (msg.getTitle().equals(Message.REFRESH)) {
-                if(msg.getContent() != null) {
-                    this.reloadDirectory(((Path)msg.getContent()).copy(this.workdir().getSession()));
-                }
-                else {
-                    this.reloadDirectory(this.workdir());
-                }
+                this.reloadPath(this.workdir());
             }
             else if (msg.getTitle().equals(Message.OPEN)) {
                 progressIndicator.startAnimation(this);
@@ -732,10 +809,13 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.searchField.setNextKeyView(this.getSelectedBrowserView());
     }
 
-    private class CDAbstractBrowserTableDelegate extends CDAbstractTableDelegate {
+    private class AbstractBrowserTableDelegate extends CDAbstractTableDelegate {
 
         public boolean isColumnEditable(NSTableColumn tableColumn) {
-            return tableColumn.identifier().equals(CDBrowserTableDataSource.FILENAME_COLUMN);
+            if(Preferences.instance().getBoolean("browser.editable")) {
+                return tableColumn.identifier().equals(CDBrowserTableDataSource.FILENAME_COLUMN);
+            }
+            return false;
         }
 
         public void enterKeyPressed(Object sender) {
@@ -799,36 +879,38 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     this.browserOutlineView);
         }
         this.browserOutlineView.setDataSource(this.browserOutlineModel = new CDBrowserOutlineViewModel(this));
-        this.browserOutlineView.setDelegate(this.browserOutlineViewDelegate = new CDAbstractBrowserTableDelegate() {
+        this.browserOutlineView.setDelegate(this.browserOutlineViewDelegate = new AbstractBrowserTableDelegate() {
 
             public void outlineViewWillDisplayCell(NSOutlineView outlineView, Object cell,
                                                    NSTableColumn tableColumn, Path item) {
                 String identifier = (String) tableColumn.identifier();
-                if (identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
-                    NSImage icon;
-                    if (item.attributes.isSymbolicLink()) {
-                        icon = CDBrowserTableDataSource.SYMLINK_ICON;
+                if(item != null) {
+                    if (identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
+                        NSImage icon;
+                        if (item.attributes.isSymbolicLink()) {
+                            icon = CDBrowserTableDataSource.SYMLINK_ICON;
+                        }
+                        else if (item.attributes.isDirectory()) {
+                            icon = CDBrowserTableDataSource.FOLDER_ICON;
+                        }
+                        else if (item.attributes.isFile()) {
+                            icon = CDIconCache.instance().get(item.getExtension());
+                        }
+                        else {
+                            icon = CDBrowserTableDataSource.NOT_FOUND_ICON;
+                        }
+                        icon.setSize(new NSSize(16f, 16f));
+                        ((CDOutlineCell) cell).setIcon(icon);
+                        ((CDOutlineCell) cell).setAttributedStringValue(new NSAttributedString(item.getName(),
+                                CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY));
                     }
-                    else if (item.attributes.isDirectory()) {
-                        icon = CDBrowserTableDataSource.FOLDER_ICON;
-                    }
-                    else if (item.attributes.isFile()) {
-                        icon = CDIconCache.instance().get(item.getExtension());
-                    }
-                    else {
-                        icon = CDBrowserTableDataSource.NOT_FOUND_ICON;
-                    }
-                    icon.setSize(new NSSize(16f, 16f));
-                    ((CDOutlineCell) cell).setIcon(icon);
-                    ((CDOutlineCell) cell).setAttributedStringValue(new NSAttributedString(item.getName(),
-                            CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY));
-                }
-                if (cell instanceof NSTextFieldCell) {
-                    if (CDBrowserController.this.isConnected()) {
-                        ((NSTextFieldCell) cell).setTextColor(NSColor.controlTextColor());
-                    }
-                    else {
-                        ((NSTextFieldCell) cell).setTextColor(NSColor.disabledControlTextColor());
+                    if (cell instanceof NSTextFieldCell) {
+                        if (CDBrowserController.this.isConnected()) {
+                            ((NSTextFieldCell) cell).setTextColor(NSColor.controlTextColor());
+                        }
+                        else {
+                            ((NSTextFieldCell) cell).setTextColor(NSColor.disabledControlTextColor());
+                        }
                     }
                 }
             }
@@ -921,7 +1003,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     this.browserListView);
         }
         this.browserListView.setDataSource(this.browserListModel = new CDBrowserListViewModel(this));
-        this.browserListView.setDelegate(this.browserListViewDelegate = new CDAbstractBrowserTableDelegate() {
+        this.browserListView.setDelegate(this.browserListViewDelegate = new AbstractBrowserTableDelegate() {
 
             public void tableViewWillDisplayCell(NSTableView tableView, Object cell, NSTableColumn tableColumn, int row) {
                 if(cell instanceof NSTextFieldCell) {
@@ -1688,11 +1770,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void reloadButtonClicked(Object sender) {
-        log.debug("reloadButtonClicked");
-        this.reloadDirectory(this.workdir());
+        this.reloadPath(this.workdir());
     }
 
-    private void reloadDirectory(Path directory) {
+    protected void reloadPath(Path directory) {
+        log.debug("reloadPath:"+directory);
         if (this.isMounted()) {
             List selected = this.getSelectedPaths();
             this.deselectAll();
@@ -1712,8 +1794,34 @@ public class CDBrowserController extends CDWindowController implements Observer 
             }
 		}
 	}
-	
-	public void editButtonContextMenuClicked(Object sender) {
+
+//    protected void renamePath(Path path, String name) {
+//        if(PathFactory.createPath(path.getSession(), name).exists()) {
+//            this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Replace", "Alert sheet title"), //title
+//                    NSBundle.localizedString("A file with the same name already exists. Do you want to replace the existing file?", ""),
+//                    NSBundle.localizedString("Overwrite", "Alert sheet default button"), // defaultbutton
+//                    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
+//                    null //other button
+//            ),
+//                    this,
+//                    new NSSelector("renameSheetDidEnd",
+//                            new Class[]{ NSWindow.class, int.class, Object.class }),
+//                    null
+//            );// end selector
+//        }
+//        else {
+//            path.rename(name);
+//        }
+//    }
+//
+//    public void renameSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+//        sheet.orderOut(null);
+//        if (returncode == NSAlertPanel.DefaultReturn) {
+////            path.rename(name);
+//        }
+//    }
+
+    public void editButtonContextMenuClicked(Object sender) {
 		this.editButtonClicked(sender);
 	}
 		

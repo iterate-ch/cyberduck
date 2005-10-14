@@ -109,6 +109,7 @@ public abstract class Preferences {
 		defaults.put("browser.charset.encoding", "UTF-8");
 		defaults.put("browser.doubleclick.edit", "false");
 
+        defaults.put("browser.editable", "false");
         defaults.put("browser.closeDrawer", "false");
 
         defaults.put("editor.name", "SubEthaEdit");
