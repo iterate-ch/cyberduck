@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSPathUtilities;
@@ -87,13 +88,19 @@ public class CDDuplicateFileController extends CDFileController {
 		p.download();
 		p.setPath(workdir.getAbsolute(), filename);
 		p.upload();
-		List l = null;
-		if(filename.charAt(0) == '.')
-			l = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
-		else 
-			l = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
-		if(l.contains(p))
-			return (Path)l.get(l.indexOf(p));
-		return null;
+		List listing = null;
+		if(filename.charAt(0) == '.') {
+            listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), new NullFilter());
+        }
+        else {
+			listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
+        }
+        if(null == listing) {
+            return null;
+        }
+        if(listing.contains(p)) {
+			return (Path)listing.get(listing.indexOf(p));
+        }
+        return null;
 	}	
 }

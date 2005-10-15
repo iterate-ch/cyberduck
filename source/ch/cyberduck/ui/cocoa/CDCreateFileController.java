@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
@@ -85,16 +86,21 @@ public class CDCreateFileController extends CDFileController {
 				file.getLocal().delete();
 			}
 			catch(java.io.IOException e) {
-				log.error(e.getMessage());
-			}
-		}
-		List l = null;
-		if(filename.charAt(0) == '.')
-			l = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
-		else 
-			l = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
-		if(l.contains(file))
-			return (Path)l.get(l.indexOf(file));
-		return null;
-	}	
+                log.error(e.getMessage());
+            }
+        }
+        List listing = null;
+        if(filename.charAt(0) == '.') {
+            listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), new NullFilter());
+        }
+        else {
+            listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
+        }
+        if(null == listing) {
+            return null;
+        }
+        if(listing.contains(file))
+            return (Path)listing.get(listing.indexOf(file));
+        return null;
+    }
 }

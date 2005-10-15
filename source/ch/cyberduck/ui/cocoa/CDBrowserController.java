@@ -1605,6 +1605,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		this.deselectAll();
         Path previous = this.workdir();
         List listing = this.workdir().getParent().list(false, this.getEncoding(), this.getComparator(), this.getFileFilter());
+        if(null == listing) {
+            return;
+        }
         if(listing.contains(previous)) {
             this.selectRow((Path)listing.get(listing.indexOf(previous)), false);
         }
@@ -1779,6 +1782,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
             List selected = this.getSelectedPaths();
             this.deselectAll();
             List listing = directory.list(true, this.getEncoding(), this.getComparator(), this.getFileFilter());
+            if(null == listing) {
+                return;
+            }
             for(Iterator iter = selected.iterator(); iter.hasNext(); ) {
                 Path p = (Path)iter.next();
                 if(listing.contains(p)) {
@@ -2311,7 +2317,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
             if(this.session.getHost().getURL().equals(host.getURL())) {
                 Path home = PathFactory.createPath(session, Path.DELIMITER);
                 if(host.hasReasonableDefaultPath()) {
-                    home = PathFactory.createPath(session, host.getDefaultPath());
+                    if(host.getDefaultPath().charAt(0) != '/') {
+                        home = PathFactory.createPath(session, home.getAbsolute(), host.getDefaultPath());
+                    }
+                    else {
+                        home = PathFactory.createPath(session, host.getDefaultPath());
+                    }
                 }
                 home.attributes.setType(Path.DIRECTORY_TYPE);
                 home.list(true, this.getEncoding(), this.getComparator(), this.getFileFilter());

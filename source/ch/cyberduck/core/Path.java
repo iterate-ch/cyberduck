@@ -197,12 +197,12 @@ public abstract class Path {
 		this.getSession().cache().invalidate(this);
     }
 
-    protected List list(boolean reload, boolean notifyObservers) {
+    protected AttributedList list(boolean reload, boolean notifyObservers) {
 		return this.list(reload, Preferences.instance().getProperty("browser.charset.encoding"),
                 notifyObservers, new NullComparator(), new NullFilter());
     }
 
-    public List list(boolean reload, String encoding, Comparator comparator, Filter filter) {
+    public AttributedList list(boolean reload, String encoding, Comparator comparator, Filter filter) {
 		return this.list(reload, encoding, true, comparator, filter);
 	}
 
@@ -441,9 +441,10 @@ public abstract class Path {
             return true;
         }
 		List listing = this.getParent().list(false, false);
-		if(null == listing)
+		if(null == listing) {
 			return false;
-		return listing.contains(this);
+        }
+        return listing.contains(this);
 	}
 
 	public boolean equals(Object other) {

@@ -33,6 +33,9 @@ import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Preferences;
 
+/**
+ * @version $Id$
+ */
 public abstract class AbstractX509TrustManager implements X509TrustManager {
     private static Logger log = Logger.getLogger(AbstractX509TrustManager.class);
 

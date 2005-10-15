@@ -30,6 +30,7 @@ import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
 import com.sshtools.j2ssh.transport.TransportProtocol;
+import com.sshtools.j2ssh.transport.IgnoreHostKeyVerification;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
 
 import com.apple.cocoa.foundation.NSAutoreleasePool;
@@ -114,10 +115,10 @@ public class SFTPSession extends Session {
 	}
 
     public void sendCommand(String command) { 
-		//todo shell support
+		//todo
     }
 
-	private HostKeyVerification hostKeyVerification;
+	private HostKeyVerification hostKeyVerification = new IgnoreHostKeyVerification();
 
 	public void setHostKeyVerificationController(HostKeyVerification h) {
 		this.hostKeyVerification = h;

@@ -20,6 +20,8 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.NullFilter;
+
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableArray;
@@ -104,13 +106,19 @@ public class CDFolderController extends CDWindowController {
 	public Path create(Path workdir, String filename) {
 		Path folder = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
 		folder.mkdir(false);
-		List l = null;
-		if(filename.charAt(0) == '.')
-			l = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
-		else 
-			l = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
-		if(l.contains(folder))
-			return (Path)l.get(l.indexOf(folder));
-		return null;
+		List listing = null;
+		if(filename.charAt(0) == '.') {
+			listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), new NullFilter());
+        }
+        else {
+			listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
+        }
+        if(null == listing) {
+            return null;
+        }
+        if(listing.contains(folder)) {
+			return (Path)listing.get(listing.indexOf(folder));
+        }
+        return null;
 	}
 }

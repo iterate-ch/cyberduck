@@ -314,16 +314,16 @@ public abstract class CDBrowserTableDataSource {
                 try {
                     this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
                             this.promisedDragPaths[i].getName()));
-                    this.promisedDragPaths[i].getLocal().createNewFile();
+//                    this.promisedDragPaths[i].getLocal().createNewFile();
                     q.addRoot(this.promisedDragPaths[i]);
                     promisedDragNames.addObject(this.promisedDragPaths[i].getName());
                 }
                 catch (UnsupportedEncodingException e) {
                     log.error(e.getMessage());
                 }
-                catch(IOException e) {
-                    log.error(e.getMessage());
-                }
+//                catch(IOException e) {
+//                    log.error(e.getMessage());
+//                }
             }
             if (q.numberOfRoots() > 0) {
                 CDQueueController.instance().startItem(q);

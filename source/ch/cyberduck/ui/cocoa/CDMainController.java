@@ -62,7 +62,6 @@ public class CDMainController extends CDController {
 	private NSWindow donationSheet; // IBOutlet
 
 	public void setDonationSheet(NSWindow donationSheet) {
-		log.debug("setDonationSheet");
 		this.donationSheet = donationSheet;
 	}
 
@@ -388,7 +387,8 @@ public class CDMainController extends CDController {
 						}
 					}
 					else {
-						log.info(propertyListFromXMLData.toString());
+                        if(log.isInfoEnabled())
+                            log.info(propertyListFromXMLData.toString());
 						NSDictionary entries = (NSDictionary)propertyListFromXMLData;
 						String latestVersionNumber = (String)entries.objectForKey("version");
 						log.info("Latest version:"+latestVersionNumber);
@@ -480,7 +480,6 @@ public class CDMainController extends CDController {
 	}
 
 	public void closeUpdateSheet(NSButton sender) {
-		log.debug("closeUpdateSheet");
 		updateSheet.close();
 		if(sender.tag() == NSAlertPanel.DefaultReturn) {
 			try {
@@ -493,7 +492,6 @@ public class CDMainController extends CDController {
 	}
 
 	public void closeDonationSheet(NSButton sender) {
-		log.debug("closeDonationSheet");
 		donationSheet.close();
 		Preferences.instance().setProperty("donate", neverShowDonationCheckbox.state() == NSCell.OffState);
 		if(sender.tag() == NSAlertPanel.DefaultReturn) {
@@ -597,7 +595,8 @@ public class CDMainController extends CDController {
 	public void applicationDidFinishLaunching(NSNotification notification) {
 		Growl.instance().register();
 		log.info("Running Java "+System.getProperty("java.version"));
-		log.info("Available localizations:"+NSBundle.mainBundle().localizations());
+        if(log.isInfoEnabled())
+            log.info("Available localizations:"+NSBundle.mainBundle().localizations());
 		if(Preferences.instance().getBoolean("queue.openByDefault")) {
 			this.showTransferQueueClicked(null);
 		}

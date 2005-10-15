@@ -228,7 +228,7 @@ public class Host {
 				String portString;
 				if(input.indexOf('/', begin) != -1) {
 					portString = input.substring(begin, input.indexOf('/', begin));
-					begin += portString.length()+1;
+					begin += portString.length();
 					path = input.substring(begin, input.length());
 				}
 				else {
@@ -243,7 +243,7 @@ public class Host {
 		else if(input.indexOf('/', begin) != -1) {
 			cut = input.indexOf('/', begin);
 			hostname = input.substring(begin, cut);
-			begin += hostname.length()+1;
+			begin += hostname.length();
 			path = input.substring(begin, input.length());
 		}
 		Host h = new Host(protocol,
@@ -378,7 +378,7 @@ public class Host {
 	public void setPort(int port) {
 	    this.port = port;
         if(-1 == port) {
-            port = Host.getDefaultPort(this.getProtocol());
+            this.port = Host.getDefaultPort(this.getProtocol());
 		}
 	}
 

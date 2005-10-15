@@ -36,7 +36,11 @@ public class Login {
 	private String user;
 	private transient String pass;
 	private String privateKeyFile;
-	private LoginController controller;
+	private LoginController controller = new LoginController() {
+        public Login promptUser(Login login, String explanation) {
+            return login;
+        }
+    };
 	private boolean shouldBeAddedToKeychain;
 
 	/**
