@@ -106,13 +106,8 @@ public class CDFolderController extends CDWindowController {
 	public Path create(Path workdir, String filename) {
 		Path folder = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
 		folder.mkdir(false);
-		List listing = null;
-		if(filename.charAt(0) == '.') {
-			listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), new NullFilter());
-        }
-        else {
-			listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
-        }
+        controller.setShowHiddenFiles(filename.charAt(0) == '.');
+        List listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
         if(null == listing) {
             return null;
         }

@@ -18,6 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+/**
+ * @version $Id$
+ */
 public interface Filter {
 	public boolean accept(Path file);
 }

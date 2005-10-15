@@ -88,13 +88,8 @@ public class CDDuplicateFileController extends CDFileController {
 		p.download();
 		p.setPath(workdir.getAbsolute(), filename);
 		p.upload();
-		List listing = null;
-		if(filename.charAt(0) == '.') {
-            listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), new NullFilter());
-        }
-        else {
-			listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
-        }
+        controller.setShowHiddenFiles(filename.charAt(0) == '.');
+        List listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
         if(null == listing) {
             return null;
         }

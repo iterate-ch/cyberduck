@@ -89,13 +89,8 @@ public class CDCreateFileController extends CDFileController {
                 log.error(e.getMessage());
             }
         }
-        List listing = null;
-        if(filename.charAt(0) == '.') {
-            listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), new NullFilter());
-        }
-        else {
-            listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
-        }
+        controller.setShowHiddenFiles(filename.charAt(0) == '.');
+        List listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
         if(null == listing) {
             return null;
         }
