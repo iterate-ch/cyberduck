@@ -918,14 +918,14 @@ public class CDBrowserController extends CDWindowController implements Observer 
             public void outlineViewItemDidExpand(NSNotification notification) {
                 Path p = (Path) notification.userInfo().allValues().lastObject();
                 p.getSession().cache().setExpanded(p, true);
-                this.infoLabel.setStringValue(this.browserOutlineView.numberOfRows() + " " +
+                infoLabel.setStringValue(CDBrowserController.this.browserOutlineView.numberOfRows() + " " +
                         NSBundle.localizedString("files", ""));
             }
 
             public void outlineViewItemDidCollapse(NSNotification notification) {
                 Path p = (Path) notification.userInfo().allValues().lastObject();
                 p.getSession().cache().setExpanded(p, false);
-                this.infoLabel.setStringValue(this.browserOutlineView.numberOfRows() + " " +
+                infoLabel.setStringValue(CDBrowserController.this.browserOutlineView.numberOfRows() + " " +
                         NSBundle.localizedString("files", ""));
             }
 
