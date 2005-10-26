@@ -100,6 +100,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
      * @param row  The proposed child location.
      */
     public int outlineViewValidateDrop(NSOutlineView outlineView, NSDraggingInfo info, Path destination, int row) {
+		outlineView.setDropItemAndDropChildIndex(destination, NSOutlineView.DropOnItemIndex);
         return super.validateDrop(outlineView, destination, row, info);
     }
 
