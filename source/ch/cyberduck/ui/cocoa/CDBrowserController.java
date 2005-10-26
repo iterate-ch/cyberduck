@@ -527,14 +527,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
         if(this.isMounted()) {
             switch(this.browserSwitchView.selectedSegment()) {
                 case LIST_VIEW: {
+                    this.browserListView.reloadData();
                     this.infoLabel.setStringValue(this.browserListView.numberOfRows() + " " +
                             NSBundle.localizedString("files", ""));
-                    this.browserListView.reloadData();
                     break;
                 }
                 case OUTLINE_VIEW: {
-                    this.infoLabel.setStringValue(this.browserOutlineView.numberOfRows() + " " +
-                            NSBundle.localizedString("files", ""));
                     this.browserOutlineView.reloadData();
                     for(int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
                         Path p = (Path)this.browserOutlineView.itemAtRow(i);
@@ -544,11 +542,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
                             }
                         }
                     }
+                    this.infoLabel.setStringValue(this.browserOutlineView.numberOfRows() + " " +
+                            NSBundle.localizedString("files", ""));
                     break;
                 }
                 case COLUMN_VIEW: {
-                    this.infoLabel.setStringValue(this.browserColumnView.matrixInColumn(this.browserColumnView.lastVisibleColumn()).numberOfRows() + " " +
-                            NSBundle.localizedString("files", ""));
                     this.browserColumnView.setPath(this.workdir().getAbsolute());
                     for(int col = 0; col < this.browserColumnView.numberOfVisibleColumns(); col++) {
                         if(this.workdir().getAbsolute().equals(
@@ -556,6 +554,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
                             this.browserColumnView.reloadColumn(col);
                         }
                     }
+                    this.infoLabel.setStringValue(this.browserColumnView.matrixInColumn(this.browserColumnView.lastVisibleColumn()).numberOfRows() + " " +
+                            NSBundle.localizedString("files", ""));
                 }
             }
         }
