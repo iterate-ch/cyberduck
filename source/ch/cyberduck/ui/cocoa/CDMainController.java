@@ -335,7 +335,17 @@ public class CDMainController extends CDController {
 	}
 
 	public void helpMenuClicked(Object sender) {
-		NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().pathForResource("Help", "rtfd")).toString());
+		try {
+			String locale = "en";
+			NSArray preferredLocalizations = NSBundle.preferredLocalizations(NSBundle.mainBundle().localizations());
+			if(preferredLocalizations.count() > 0) {
+				locale = (String)preferredLocalizations.objectAtIndex(0);
+			}
+			NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.help")+locale+"/"));
+		}
+		catch(java.net.MalformedURLException e) {
+			log.error(e.getMessage());
+		}
 	}
 
 	public void faqMenuClicked(Object sender) {
