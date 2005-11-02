@@ -8,6 +8,13 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] Rename files inline in browser view
 - [Feature] Dragging files to application icon will upload to frontmost browser
 _ [Feature] Universal Binary (ppc/intel)
+- [Feature] Using Unsanity Crash Reporter
+- [Feature] Printing browser view
+- [Bugfix] Child items not refreshed properly in outline view when uploading
+- [Bugfix] Dragging files to the Finder.app places them at the dropped position
+- [Bugfix] Always selecting parent directory when dragging to outline view
+- [Bugfix| Updated application and document icons
+- [Bugfix] Number of files in browser window not displayed correctly
 - [Bugfix] Don't recurse into directories when deleting symbolic links
 - [Bugfix] Updated application and document icon
 - [Bugfix] Overwriting group writable files
