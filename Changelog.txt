@@ -5,9 +5,8 @@ Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
 2.5.1
-- [Feature] Rename files inline in browser view
 - [Feature] Dragging files to application icon will upload to frontmost browser
-_ [Feature] Universal Binary (ppc/intel)
+_ [Feature] Universal Binary
 - [Feature] Using Unsanity Crash Reporter
 - [Feature] Printing browser view
 - [Bugfix] Child items not refreshed properly in outline view when uploading
