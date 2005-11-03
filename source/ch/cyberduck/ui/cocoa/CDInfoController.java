@@ -347,7 +347,7 @@ public class CDInfoController extends CDWindowController {
 	}
 
 	public void windowWillClose(NSNotification notification) {
-		this.filenameField.cell().endEditing(filenameField.currentEditor());
+//		this.filenameField.cell().endEditing(filenameField.currentEditor());
 		NSNotificationCenter.defaultCenter().removeObserver(this);
 	}
 
@@ -360,10 +360,8 @@ public class CDInfoController extends CDWindowController {
             final Path file = (Path)this.files.get(0);
             if(!this.filenameField.stringValue().equals(file.getName())) {
                 if(this.filenameField.stringValue().indexOf('/') == -1) {
-                    file.rename(PathFactory.createPath(file.getSession(), file.getParent().getAbsolute(),
+                    controller.renamePath(file, PathFactory.createPath(file.getSession(), file.getParent().getAbsolute(),
                             this.filenameField.stringValue()).getAbsolute());
-//                    controller.renamePath(file, PathFactory.createPath(file.getSession(), file.getParent().getAbsolute(),
-//                            this.filenameField.stringValue()).getAbsolute());
                     controller.workdir().list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
                 }
                 else if(filenameField.stringValue().length() == 0) {

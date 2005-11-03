@@ -62,7 +62,7 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
 	}
 	
 	protected boolean isExisting(Path p) {
-		return p.getLocal().exists();
+		return p.getLocal().exists() && p.getLocal().getSize() > 0;
 	}
 	
 	protected boolean validateDirectory(Path path) {

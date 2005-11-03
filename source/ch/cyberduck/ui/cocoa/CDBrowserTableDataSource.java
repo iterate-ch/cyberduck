@@ -92,7 +92,15 @@ public abstract class CDBrowserTableDataSource {
         return this.childs(controller.workdir()).contains(p);
     }
 
-
+    public void setObjectValueForItem(Path item, Object value, String identifier) {
+        log.debug("setObjectValueForItem:"+item);
+        if (identifier.equals(FILENAME_COLUMN)) {
+            if(!item.getName().equals(value)) {
+                controller.renamePath(item, controller.workdir()+Path.DELIMITER+value.toString());
+            }
+        }
+    }
+	
     public Object objectValueForItem(Path item, String identifier) {
         if (null != item) {
             if (identifier.equals(TYPE_COLUMN)) {
@@ -139,15 +147,6 @@ public abstract class CDBrowserTableDataSource {
         return null;
     }
 
-    public void setObjectValueForItem(Path item, Object value, String identifier) {
-        log.debug("setObjectValueForItem:"+item);
-//        if (identifier.equals(FILENAME_COLUMN)) {
-//            if(!item.getName().equals(value)) {
-//                controller.renamePath(item, controller.workdir()+Path.DELIMITER+value.toString());
-//            }
-//        }
-    }
-
     // ----------------------------------------------------------
     //	NSDraggingSource
     // ----------------------------------------------------------
@@ -191,15 +190,11 @@ public abstract class CDBrowserTableDataSource {
                 NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                 Queue q = Queue.createQueue(dict);
                 for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                    Path p = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
-                    p.rename(destination.getAbsolute() +Path.DELIMITER+ p.getName());
+                    Path item = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
+                    controller.renamePath(item, destination.getAbsolute()+Path.DELIMITER+item.getName());
                 }
                 destination.invalidate();
-                NSRunLoop.currentRunLoop().addTimerForMode(new NSTimer(0.1f, controller,
-                               new NSSelector("reloadData", new Class[]{}),
-                               null,
-                               false),
-                   NSRunLoop.DefaultRunLoopMode);
+                controller.reloadPath(controller.workdir());
             }
             return true;
         }
@@ -254,9 +249,8 @@ public abstract class CDBrowserTableDataSource {
                 // The fileTypes argument is the list of fileTypes being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
                 NSMutableArray fileTypes = new NSMutableArray();
                 Queue q = new DownloadQueue();
-                Session session = controller.workdir().getSession().copy();
                 for (int i = 0; i < items.count(); i++) {
-                    promisedDragPaths[i] = ((Path) items.objectAtIndex(i)).copy(session);
+                    promisedDragPaths[i] = ((Path) items.objectAtIndex(i));
                     if (promisedDragPaths[i].attributes.isFile()) {
                         if (promisedDragPaths[i].getExtension() != null) {
                             fileTypes.addObject(promisedDragPaths[i].getExtension());
@@ -314,16 +308,16 @@ public abstract class CDBrowserTableDataSource {
                 try {
                     this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
                             this.promisedDragPaths[i].getName()));
-//                    this.promisedDragPaths[i].getLocal().createNewFile();
+                    this.promisedDragPaths[i].getLocal().createNewFile();
                     q.addRoot(this.promisedDragPaths[i]);
                     promisedDragNames.addObject(this.promisedDragPaths[i].getName());
                 }
                 catch (UnsupportedEncodingException e) {
                     log.error(e.getMessage());
                 }
-//                catch(IOException e) {
-//                    log.error(e.getMessage());
-//                }
+                catch(IOException e) {
+                    log.error(e.getMessage());
+                }
             }
             if (q.numberOfRoots() > 0) {
                 CDQueueController.instance().startItem(q);

@@ -141,12 +141,9 @@ public class CDBrowserMatrix extends NSMatrix {
                         if (selected.attributes.isDirectory()) {
                             Queue q = Queue.createQueue(dict);
                             for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                                Path p = PathFactory.createPath(selected.getSession(), ((Path) iter.next()).getAbsolute());
-                                p.rename(selected.getAbsolute()+Path.DELIMITER+p.getName());
+                                Path p = (Path) iter.next();
+//                                controller.renamePath(selected.getAbsolute()+Path.DELIMITER+p.getName());
                             }
-                            //todo
-//                            this.controller.workdir().list(true, this.controller.getEncoding(),
-//                                    controller.getFileComparator(), controller.getFileFilter());
                         }
                     }
                     return true;

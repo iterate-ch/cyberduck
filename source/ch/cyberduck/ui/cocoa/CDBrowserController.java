@@ -72,6 +72,7 @@ import com.apple.cocoa.application.NSToolbarItem;
 import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.application.NSPrintOperation;
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSBundle;
@@ -103,6 +104,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -156,7 +158,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public Object handleMountScriptCommand(NSScriptCommand command) {
         log.debug("handleMountScriptCommand:" + command);
         NSDictionary args = command.evaluatedArguments();
-        Host host = null;
+        Host host;
         Object portObj = args.objectForKey("Port");
         if (portObj != null) {
             Object protocolObj = args.objectForKey("Protocol");
@@ -1805,31 +1807,36 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
 	}
 
-//    protected void renamePath(Path path, String name) {
-//        if(PathFactory.createPath(path.getSession(), name).exists()) {
-//            this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Replace", "Alert sheet title"), //title
-//                    NSBundle.localizedString("A file with the same name already exists. Do you want to replace the existing file?", ""),
-//                    NSBundle.localizedString("Overwrite", "Alert sheet default button"), // defaultbutton
-//                    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
-//                    null //other button
-//            ),
-//                    this,
-//                    new NSSelector("renameSheetDidEnd",
-//                            new Class[]{ NSWindow.class, int.class, Object.class }),
-//                    null
-//            );// end selector
-//        }
-//        else {
-//            path.rename(name);
-//        }
-//    }
-//
-//    public void renameSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-//        sheet.orderOut(null);
-//        if (returncode == NSAlertPanel.DefaultReturn) {
-////            path.rename(name);
-//        }
-//    }
+    protected void renamePath(Path path, String absolute) {
+        if(PathFactory.createPath(workdir.getSession(), absolute).exists()) {
+            this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Replace", "Alert sheet title"), //title
+                    NSBundle.localizedString("A file with the same absolute already exists. Do you want to replace the existing file?", ""),
+                    NSBundle.localizedString("Overwrite", "Alert sheet default button"), // defaultbutton
+                    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
+                    null //other button
+            ),
+                    this,
+                    new NSSelector("renameSheetDidEnd",
+                            new Class[]{ NSWindow.class, int.class, Object.class }),
+                    Arrays.asList(new Object[]{path, absolute})
+            );// end selector
+        }
+        else {
+            path.rename(absolute);
+        }
+    }
+
+    public void renameSheetDidEnd(NSWindow sheet, int returncode, Object contextObject) {
+        sheet.orderOut(null);
+        if (returncode == NSAlertPanel.DefaultReturn) {
+			if(contextObject instanceof List) {
+				List context = (List)contextObject;
+				Path path = (Path)context.get(0);
+				String name = (String)context.get(1);
+				path.rename(name);
+			}
+        }
+    }
 
     public void editButtonContextMenuClicked(Object sender) {
 		this.editButtonClicked(sender);
@@ -2009,7 +2016,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void saveAsPanelDidEnd(NSSavePanel sheet, int returncode, Object contextInfo) {
         if (returncode == NSAlertPanel.DefaultReturn) {
-			String filename = null;
+			String filename;
 			if ((filename = sheet.filename()) != null) {
 				Path path = (Path) contextInfo;
 				path.setLocal(new Local(filename));
@@ -2203,14 +2210,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     Queue q = Queue.createQueue(dict);
                     Path workdir = this.workdir();
                     for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                        Path p = (Path) iter.next();
-                        PathFactory.createPath(workdir.getSession(), p.getAbsolute()).rename(workdir.getAbsolute() + Path.DELIMITER + p.getName());
-                        p.getParent().invalidate();
+                        Path item = PathFactory.createPath(workdir().getSession(), ((Path) iter.next()).getAbsolute());
+                        this.renamePath(item, workdir.getAbsolute() + Path.DELIMITER + item.getName());
                     }
                 }
                 pboard.setPropertyListForType(null, "PathPBoardType");
-				workdir.list(true, this.getEncoding(), this.getComparator(), this.getFileFilter());
-                this.reloadData();
+                this.reloadPath(workdir);
             }
         }
     }
@@ -2235,11 +2240,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		
     public void cut(Object sender) {
         if (this.getSelectionCount() > 0) {
-            Session session = this.session.copy();
             Queue q = new DownloadQueue();
 			for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext(); ) {
-				Path path = (Path)i.next();
-                q.addRoot(path.copy(session));
+                q.addRoot((Path)i.next());
             }
             // Writing data for private use when the item gets dragged to the transfer queue.
             NSPasteboard pathPBoard = NSPasteboard.pasteboardWithName("PathPBoard");
@@ -2446,6 +2449,19 @@ public class CDBrowserController extends CDWindowController implements Observer 
         return null;
     }
 
+    public void printDocument(Object sender) {
+        NSPrintOperation op = NSPrintOperation.printOperationWithView(this.getSelectedBrowserView());
+        op.runModalOperation(this.window(), this,
+                new NSSelector("printOperationDidRun",
+                        new Class[]{NSPrintOperation.class, boolean.class, Object.class}), null);
+    }
+
+    public void printOperationDidRun(NSPrintOperation printOperation, boolean success, Object contextInfo) {
+        if(success) {
+
+        }
+    }
+
     // ----------------------------------------------------------
     // Window delegate methods
     // ----------------------------------------------------------
@@ -2591,6 +2607,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     private boolean validateItem(String identifier) {
+        if(identifier.equals("New Connection")) {
+            return true;
+        }
         if (identifier.equals("copy:")) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
@@ -2671,16 +2690,19 @@ public class CDBrowserController extends CDWindowController implements Observer 
             return this.isMounted() && !this.workdir().isRoot();
         }
         if (identifier.equals("backButtonClicked:")) {
-            return this.isMounted() && this.workdir().getSession().getBackHistory().length > 1;
+            return this.isMounted() && session.getBackHistory().length > 1;
         }
         if (identifier.equals("forwardButtonClicked:")) {
-            return this.isMounted() && this.workdir().getSession().getForwardHistory().length > 0;
+            return this.isMounted() && session.getForwardHistory().length > 0;
         }
         if (identifier.equals("copyURLButtonClicked:")) {
             return this.isMounted();
         }
         if (identifier.equals("Disconnect") || identifier.equals("disconnectButtonClicked:")) {
             return this.isMounted() && this.isConnected();
+        }
+        if (identifier.equals("printDocument:")) {
+            return this.isMounted();
         }
         return true; // by default everything is enabled
     }
@@ -2708,9 +2730,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
     // ----------------------------------------------------------
 
     public boolean validateToolbarItem(NSToolbarItem item) {
-        this.navigationButton.setEnabled(this.isMounted() && this.workdir().getSession().getBackHistory().length > 1,
+        this.navigationButton.setEnabled(this.isMounted() && session.getBackHistory().length > 1,
                 NAVIGATION_LEFT_SEGMENT_BUTTON);
-        this.navigationButton.setEnabled(this.isMounted() && this.workdir().getSession().getForwardHistory().length > 0,
+        this.navigationButton.setEnabled(this.isMounted() && session.getForwardHistory().length > 0,
                 NAVIGATION_RIGHT_SEGMENT_BUTTON);
         this.upButton.setEnabled(this.isMounted() && !this.workdir().isRoot(),
                 NAVIGATION_UP_SEGMENT_BUTTON);
@@ -2724,6 +2746,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     Preferences.instance().getProperty("editor.bundleIdentifier"));
             if (editorPath != null) {
                 item.setImage(NSWorkspace.sharedWorkspace().iconForFile(editorPath));
+
             }
             else {
                 item.setImage(NSImage.imageNamed("pencil.tiff"));

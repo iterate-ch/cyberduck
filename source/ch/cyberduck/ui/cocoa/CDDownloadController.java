@@ -75,7 +75,6 @@ public class CDDownloadController extends CDWindowController {
 		log.debug("downloadButtonClicked");
 		try {
 			Host host = Host.parse(urlField.stringValue());
-			Session session = SessionFactory.createSession(host);
 			String file = host.getDefaultPath();
 			if(file.length() > 1) {
 				Path path = PathFactory.createPath(SessionFactory.createSession(host), file);

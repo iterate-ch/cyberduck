@@ -104,7 +104,6 @@ public abstract class CDValidatorController extends CDWindowController implement
 			this.statusIndicator.stopAnimation(null);
 			this.setEnabled(true);
             this.fireDataChanged();
-			this.infoLabel.setStringValue(this.workList.size()+" "+NSBundle.localizedString("files", ""));
 			this.windowController.waitForSheetEnd();
 		}
 		return !this.isCanceled();
@@ -453,6 +452,7 @@ public abstract class CDValidatorController extends CDWindowController implement
 	protected void fireDataChanged() {
 		if(this.hasPrompt()) {
             this.fileTableView.reloadData();
+            this.infoLabel.setStringValue(this.workList.size()+" "+NSBundle.localizedString("files", ""));
 		}
 	}
 	

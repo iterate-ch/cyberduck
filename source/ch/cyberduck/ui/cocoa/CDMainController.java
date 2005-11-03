@@ -542,8 +542,8 @@ public class CDMainController extends CDController {
         CDDotMacController controller = new CDDotMacController();
         controller.uploadBookmarks();
     }
-
-	// ----------------------------------------------------------
+    
+    // ----------------------------------------------------------
 	// Application delegate methods
 	// ----------------------------------------------------------
 
