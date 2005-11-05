@@ -178,7 +178,6 @@ public abstract class CDBrowserTableDataSource {
             if (q.numberOfRoots() > 0) {
                 CDQueueController.instance().startItem(q);
             }
-            destination.invalidate();
             return true;
         }
         NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
@@ -193,7 +192,6 @@ public abstract class CDBrowserTableDataSource {
                     Path item = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
                     controller.renamePath(item, destination.getAbsolute()+Path.DELIMITER+item.getName());
                 }
-                destination.invalidate();
                 controller.reloadPath(controller.workdir());
             }
             return true;

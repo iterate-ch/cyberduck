@@ -36,69 +36,8 @@ import ch.cyberduck.core.SyncQueue;
 import ch.cyberduck.core.UploadQueue;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
-import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSBrowser;
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSCell;
-import com.apple.cocoa.application.NSColor;
-import com.apple.cocoa.application.NSComboBox;
-import com.apple.cocoa.application.NSControl;
-import com.apple.cocoa.application.NSDrawer;
-import com.apple.cocoa.application.NSEvent;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSImageCell;
-import com.apple.cocoa.application.NSImageView;
-import com.apple.cocoa.application.NSMenu;
-import com.apple.cocoa.application.NSMenuItem;
-import com.apple.cocoa.application.NSOpenPanel;
-import com.apple.cocoa.application.NSOutlineView;
-import com.apple.cocoa.application.NSPanel;
-import com.apple.cocoa.application.NSPasteboard;
-import com.apple.cocoa.application.NSPopUpButton;
-import com.apple.cocoa.application.NSProgressIndicator;
-import com.apple.cocoa.application.NSSavePanel;
-import com.apple.cocoa.application.NSSegmentedCell;
-import com.apple.cocoa.application.NSSegmentedControl;
-import com.apple.cocoa.application.NSTabView;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.application.NSText;
-import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.application.NSTextFieldCell;
-import com.apple.cocoa.application.NSTextView;
-import com.apple.cocoa.application.NSToolbar;
-import com.apple.cocoa.application.NSToolbarItem;
-import com.apple.cocoa.application.NSView;
-import com.apple.cocoa.application.NSWindow;
-import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.application.NSPrintOperation;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSData;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSEnumerator;
-import com.apple.cocoa.foundation.NSGregorianDateFormatter;
-import com.apple.cocoa.foundation.NSIndexSet;
-import com.apple.cocoa.foundation.NSIndexSpecifier;
-import com.apple.cocoa.foundation.NSKeyValue;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSMutableData;
-import com.apple.cocoa.foundation.NSMutableRect;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSNotificationCenter;
-import com.apple.cocoa.foundation.NSObject;
-import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSPoint;
-import com.apple.cocoa.foundation.NSPropertyListSerialization;
-import com.apple.cocoa.foundation.NSRect;
-import com.apple.cocoa.foundation.NSScriptClassDescription;
-import com.apple.cocoa.foundation.NSScriptCommand;
-import com.apple.cocoa.foundation.NSScriptObjectSpecifier;
-import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSSize;
-import com.apple.cocoa.foundation.NSUserDefaults;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -2276,8 +2215,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
     }
 
-    private Observer transcript;
+	private static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)}, new Object[]{NSAttributedString.FontAttributeName});
 
+	private Observer transcript = null;
+	
     private Session init(Host host) {
         if(this.hasSession()) {
             this.session.deleteObserver((Observer) this);
@@ -2294,7 +2235,17 @@ public class CDBrowserController extends CDWindowController implements Observer 
         host.setLoginController(new CDLoginController(this));
         this.setWorkdir(null);
 		this.reloadData();
-        session.addObserver(transcript = new CDTranscriptController(this.logView));
+        session.addObserver(this.transcript = new Observer() {
+			public void update(final Observable o, final Object arg) {
+				if (arg instanceof Message) {
+					final Message msg = (Message) arg;
+					if (msg.getTitle().equals(Message.TRANSCRIPT)) {
+						logView.textStorage().appendAttributedString(
+								new NSAttributedString(msg.getContent()+"\n", FIXED_WITH_FONT_ATTRIBUTES));
+					}
+				}
+			}
+		});
         this.window().setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername() + "@" + host.getHostname());
         this.bookmarkModel.exportBookmark(host, this.getRepresentedFile());
         if(this.getRepresentedFile().exists()) {
