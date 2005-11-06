@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		47026428087DC91C008837FD /* IDisk.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47026426087DC91C008837FD /* IDisk.strings */; };
+		470D337E091CE51100E33C50 /* AIAutoScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 470D337C091CE51100E33C50 /* AIAutoScrollView.m */; };
+		470D337F091CE51100E33C50 /* AIAutoScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 470D337D091CE51100E33C50 /* AIAutoScrollView.h */; };
 		470E56D508BE3E1E00BDF3CD /* MacOSXForkerIO.c in Sources */ = {isa = PBXBuildFile; fileRef = 470E56D008BE3E1E00BDF3CD /* MacOSXForkerIO.c */; };
 		470E56D608BE3E1F00BDF3CD /* TinAlias.h in Headers */ = {isa = PBXBuildFile; fileRef = 470E56D108BE3E1E00BDF3CD /* TinAlias.h */; };
 		470E56D708BE3E1F00BDF3CD /* TinFSFork.h in Headers */ = {isa = PBXBuildFile; fileRef = 470E56D208BE3E1E00BDF3CD /* TinFSFork.h */; };
@@ -135,7 +137,6 @@
 		47649E0908E563C500207DC9 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47983764072AD73700FA3CDB /* Security.framework */; };
 		47649E4508E563D000207DC9 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 476DEBE10629C6FB005EF4B1 /* CoreFoundation.framework */; };
 		47649EDD08E563D600207DC9 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479982AF05F54B1600F81519 /* Carbon.framework */; };
-		4764A09C08E565EC00207DC9 /* SmartCrashReportsInstall.o in Frameworks */ = {isa = PBXBuildFile; fileRef = 4764A09B08E565EC00207DC9 /* SmartCrashReportsInstall.o */; };
 		4764B48108B7835E00441096 /* SKWSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 4764B47D08B7835E00441096 /* SKWSegmentedControl.m */; };
 		4764B48208B7835E00441096 /* SKWSegmentedControlWindowProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4764B47E08B7835E00441096 /* SKWSegmentedControlWindowProxy.m */; };
 		4764B48308B7835E00441096 /* SKWSegmentedControlWindowProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4764B47F08B7835E00441096 /* SKWSegmentedControlWindowProxy.h */; };
@@ -165,6 +166,10 @@
 		47ED8CCB08813F9200314985 /* bookmark16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47ED8CC908813F9200314985 /* bookmark16.tiff */; };
 		47ED8CCC08813F9200314985 /* bookmark40.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47ED8CCA08813F9200314985 /* bookmark40.tiff */; };
 		47EEBC680808362700BE95E7 /* ftp-tls.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47EEBC670808362700BE95E7 /* ftp-tls.tiff */; };
+		47EF997209006EF500D4B4FF /* NSString+CarbonFSSpecCreation.m in Sources */ = {isa = PBXBuildFile; fileRef = 47EF996E09006EF500D4B4FF /* NSString+CarbonFSSpecCreation.m */; };
+		47EF997309006EF500D4B4FF /* NSString+CarbonFSSpecCreation.h in Headers */ = {isa = PBXBuildFile; fileRef = 47EF996F09006EF500D4B4FF /* NSString+CarbonFSSpecCreation.h */; };
+		47EF997409006EF500D4B4FF /* IconFamily.m in Sources */ = {isa = PBXBuildFile; fileRef = 47EF997009006EF500D4B4FF /* IconFamily.m */; };
+		47EF997509006EF500D4B4FF /* IconFamily.h in Headers */ = {isa = PBXBuildFile; fileRef = 47EF997109006EF500D4B4FF /* IconFamily.h */; };
 		47F0B701087ACD0B00439978 /* Growl.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B6FE087ACD0300439978 /* Growl.strings */; };
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
 		47FD44A70801DCE200716715 /* queue.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FD44A60801DCE200716715 /* queue.tiff */; };
@@ -307,6 +312,8 @@
 		47026440087DC98B008837FD /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/IDisk.strings; sourceTree = "<group>"; };
 		47026441087DC98E008837FD /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/IDisk.strings; sourceTree = "<group>"; };
 		470B45BF0766162000E73D07 /* CDInfoController.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CDInfoController.java; sourceTree = "<group>"; };
+		470D337C091CE51100E33C50 /* AIAutoScrollView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = AIAutoScrollView.m; sourceTree = "<group>"; };
+		470D337D091CE51100E33C50 /* AIAutoScrollView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AIAutoScrollView.h; sourceTree = "<group>"; };
 		470E56D008BE3E1E00BDF3CD /* MacOSXForkerIO.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MacOSXForkerIO.c; sourceTree = "<group>"; };
 		470E56D108BE3E1E00BDF3CD /* TinAlias.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinAlias.h; sourceTree = "<group>"; };
 		470E56D208BE3E1E00BDF3CD /* TinFSFork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinFSFork.h; sourceTree = "<group>"; };
@@ -1131,7 +1138,6 @@
 		475D187B0805E24B00166B8A /* Local.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Local.m; sourceTree = "<group>"; };
 		475D187C0805E24B00166B8A /* Local.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Local.h; path = source/ch/cyberduck/core/Local.h; sourceTree = SOURCE_ROOT; };
 		47649C8308E5614A00207DC9 /* SmartCrashReportsInstall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartCrashReportsInstall.h; sourceTree = "<group>"; };
-		4764A09B08E565EC00207DC9 /* SmartCrashReportsInstall.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; name = SmartCrashReportsInstall.o; path = source/com/unsanity/smartcrashreports/SmartCrashReportsInstall.o; sourceTree = "<group>"; };
 		4764B47D08B7835E00441096 /* SKWSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControl.m; sourceTree = "<group>"; };
 		4764B47E08B7835E00441096 /* SKWSegmentedControlWindowProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControlWindowProxy.m; sourceTree = "<group>"; };
 		4764B47F08B7835E00441096 /* SKWSegmentedControlWindowProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControlWindowProxy.h; sourceTree = "<group>"; };
@@ -1350,6 +1356,10 @@
 		47ED8CC908813F9200314985 /* bookmark16.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = bookmark16.tiff; sourceTree = "<group>"; };
 		47ED8CCA08813F9200314985 /* bookmark40.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = bookmark40.tiff; sourceTree = "<group>"; };
 		47EEBC670808362700BE95E7 /* ftp-tls.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "ftp-tls.tiff"; sourceTree = "<group>"; };
+		47EF996E09006EF500D4B4FF /* NSString+CarbonFSSpecCreation.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = "NSString+CarbonFSSpecCreation.m"; sourceTree = "<group>"; };
+		47EF996F09006EF500D4B4FF /* NSString+CarbonFSSpecCreation.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = "NSString+CarbonFSSpecCreation.h"; sourceTree = "<group>"; };
+		47EF997009006EF500D4B4FF /* IconFamily.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = IconFamily.m; sourceTree = "<group>"; };
+		47EF997109006EF500D4B4FF /* IconFamily.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IconFamily.h; sourceTree = "<group>"; };
 		47F0B70A087ACD3300439978 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Growl.strings; sourceTree = "<group>"; };
 		47F0B70B087ACD3800439978 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Growl.strings; sourceTree = "<group>"; };
 		47F0B70C087ACD3D00439978 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Growl.strings; sourceTree = "<group>"; };
@@ -1432,7 +1442,6 @@
 				47649E0908E563C500207DC9 /* Security.framework in Frameworks */,
 				47649E4508E563D000207DC9 /* CoreFoundation.framework in Frameworks */,
 				47649EDD08E563D600207DC9 /* Carbon.framework in Frameworks */,
-				4764A09C08E565EC00207DC9 /* SmartCrashReportsInstall.o in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1528,7 +1537,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				4764A09B08E565EC00207DC9 /* SmartCrashReportsInstall.o */,
 				47DC7F4308694B5A00B9DD7D /* DotMacKit.framework */,
 				4739F03D08569B5E00405FD3 /* Growl.framework */,
 				4739EFFB08569A8100405FD3 /* Keychain.framework */,
@@ -1551,6 +1559,10 @@
 				470E56D208BE3E1E00BDF3CD /* TinFSFork.h */,
 				470E56D308BE3E1E00BDF3CD /* TinFSRefItem.h */,
 				470E56D408BE3E1E00BDF3CD /* TinWatcher.h */,
+				47EF996E09006EF500D4B4FF /* NSString+CarbonFSSpecCreation.m */,
+				47EF996F09006EF500D4B4FF /* NSString+CarbonFSSpecCreation.h */,
+				47EF997009006EF500D4B4FF /* IconFamily.m */,
+				47EF997109006EF500D4B4FF /* IconFamily.h */,
 			);
 			path = forker;
 			sourceTree = "<group>";
@@ -2509,8 +2521,10 @@
 		4798434E072B0DAA00FA3CDB /* view */ = {
 			isa = PBXGroup;
 			children = (
-				4764B48008B7835E00441096 /* SKWSegmentedControl.h */,
+				470D337C091CE51100E33C50 /* AIAutoScrollView.m */,
+				470D337D091CE51100E33C50 /* AIAutoScrollView.h */,
 				4764B47D08B7835E00441096 /* SKWSegmentedControl.m */,
+				4764B48008B7835E00441096 /* SKWSegmentedControl.h */,
 				4764B47F08B7835E00441096 /* SKWSegmentedControlWindowProxy.h */,
 				4764B47E08B7835E00441096 /* SKWSegmentedControlWindowProxy.m */,
 				4741531A06C4F08A00AC0BD2 /* CDTableCell.java */,
@@ -2754,6 +2768,7 @@
 				47649C8508E5614A00207DC9 /* SmartCrashReportsInstall.h in Headers */,
 				4764B48308B7835E00441096 /* SKWSegmentedControlWindowProxy.h in Headers */,
 				4764B48408B7835E00441096 /* SKWSegmentedControl.h in Headers */,
+				470D337F091CE51100E33C50 /* AIAutoScrollView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2801,6 +2816,8 @@
 				470E56D708BE3E1F00BDF3CD /* TinFSFork.h in Headers */,
 				470E56D808BE3E1F00BDF3CD /* TinFSRefItem.h in Headers */,
 				470E56D908BE3E1F00BDF3CD /* TinWatcher.h in Headers */,
+				47EF997309006EF500D4B4FF /* NSString+CarbonFSSpecCreation.h in Headers */,
+				47EF997509006EF500D4B4FF /* IconFamily.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3363,6 +3380,7 @@
 				47FD45340801EAEE00716715 /* UKPrefsPanel.m in Sources */,
 				4764B48108B7835E00441096 /* SKWSegmentedControl.m in Sources */,
 				4764B48208B7835E00441096 /* SKWSegmentedControlWindowProxy.m in Sources */,
+				470D337E091CE51100E33C50 /* AIAutoScrollView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3406,6 +3424,8 @@
 			files = (
 				4739EFB70856991200405FD3 /* Local.m in Sources */,
 				470E56D508BE3E1E00BDF3CD /* MacOSXForkerIO.c in Sources */,
+				47EF997209006EF500D4B4FF /* NSString+CarbonFSSpecCreation.m in Sources */,
+				47EF997409006EF500D4B4FF /* IconFamily.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4413,7 +4433,10 @@
 		47D286C70855740C008142CF /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = ppc;
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/build\"";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
