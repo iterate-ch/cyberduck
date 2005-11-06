@@ -20,6 +20,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import "SmartCrashReportsInstall.h"
 
 int main(int argc, char *argv[])
 {
