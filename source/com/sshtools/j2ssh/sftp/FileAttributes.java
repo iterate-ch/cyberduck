@@ -452,18 +452,10 @@ public class FileAttributes {
         return extended;
     }
 
-    /**
-     * @param flag
-     * @return
-     */
     public boolean isFlagSet(int flag) {
         return ((flags & flag) == flag);
     }
 
-    /**
-     * @return
-     * @throws IOException
-     */
     public byte[] toByteArray() throws IOException {
         ByteArrayWriter baw = new ByteArrayWriter();
 

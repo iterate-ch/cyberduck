@@ -531,7 +531,7 @@ public class FTPClient {
 
 		// Can get a 200 (ok) or 202 (not impl). Some
 		// FTP servers return 502 (not impl)
-		String[] validCodes = {"200", "202", "502"};
+		String[] validCodes = {"200", "202", "250", "502"};
 		lastValidReply = control.validateReply(reply, validCodes);
 
 		// return true or false? 200 is ok, 202/502 not
@@ -862,8 +862,8 @@ public class FTPClient {
 		// listed in quotes, if we can find it. Otherwise
 		// just return the whole reply string
 		String text = lastValidReply.getReplyText();
-		int start = text.indexOf('"');
-		int end = text.lastIndexOf('"');
+        int start = text.indexOf('"');
+        int end = text.indexOf('"', start+1);
 		if(start >= 0 && end > start)
 			return text.substring(start+1, end);
 		else
@@ -936,22 +936,8 @@ public class FTPClient {
 		this.checkConnection(true);
 
 		FTPReply reply = control.sendCommand("SYST");
-		lastValidReply = control.validateReply(reply, "215");
-		return lastValidReply.getReplyText();
-	}
-
-	/**
-	 * Get the help text for the specified command
-	 *
-	 * @param command name of the command to get help on
-	 * @return help text from the server for the supplied command
-	 */
-	public String help(String command) throws IOException, FTPException {
-		this.checkConnection(true);
-
-		FTPReply reply = control.sendCommand("HELP "+command);
-		String[] validCodes = {"211", "214"};
-		lastValidReply = control.validateReply(reply, validCodes);
+        String[] validCodes = {"200", "213", "215"};
+        lastValidReply = control.validateReply(reply, validCodes);
 		return lastValidReply.getReplyText();
 	}
 

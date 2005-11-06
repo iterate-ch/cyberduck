@@ -23,14 +23,14 @@ import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
-import javax.swing.*;
+import org.apache.log4j.Logger;
+
+import javax.swing.Timer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
-
-import org.apache.log4j.Logger;
 
 /**
  * @version $Id$

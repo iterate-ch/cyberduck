@@ -794,7 +794,6 @@ public class SftpSubsystemClient extends SubsystemChannel {
 			}
 
 			SubsystemMessage reply = messageStore.getMessage(requestId);
-			log.info("Received response");
 
 			if(reply instanceof SshFxpStatus) {
 				SshFxpStatus status = (SshFxpStatus)reply;

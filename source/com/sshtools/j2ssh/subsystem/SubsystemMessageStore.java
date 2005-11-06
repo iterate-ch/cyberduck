@@ -102,9 +102,11 @@ public class SubsystemMessageStore {
 
 			return;
 		}
-		catch(IllegalAccessException iae) {
-		}
-		catch(InstantiationException ie) {
+		catch(IllegalAccessException e) {
+            log.error(e.getMessage());
+        }
+		catch(InstantiationException e) {
+            log.error(e.getMessage());
 		}
 
 		throw new InvalidMessageException("Could not instantiate message class");
@@ -144,6 +146,7 @@ public class SubsystemMessageStore {
 				}
 			}
 			catch(InterruptedException e) {
+                log.error(e.getMessage());
 			}
 		}
 
@@ -167,16 +170,10 @@ public class SubsystemMessageStore {
 		registeredMessages.put(new Integer(messageId), implementor);
 	}
 
-	/**
-	 * @return
-	 */
 	public OpenClosedState getState() {
 		return state;
 	}
 
-	/**
-	 *
-	 */
 	public synchronized void close() {
 		state.setValue(OpenClosedState.CLOSED);
 		notifyAll();

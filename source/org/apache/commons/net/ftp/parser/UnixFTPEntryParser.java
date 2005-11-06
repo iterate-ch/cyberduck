@@ -36,7 +36,7 @@ import ch.cyberduck.core.Permission;
  */
 public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
 
-	/**
+    /**
 	 * months abbreviations looked for by this parser.  Also used
 	 * to determine which month is matched by the parser
 	 */

@@ -18,14 +18,14 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.LoginController;
+
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
-import java.net.MalformedURLException;
-
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.ui.LoginController;
+import java.net.MalformedURLException;
 
 public class Host {
 	private static Logger log = Logger.getLogger(Host.class);

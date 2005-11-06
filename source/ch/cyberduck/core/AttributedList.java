@@ -18,17 +18,17 @@ package ch.cyberduck.core;
 *  dkocher@cyberduck.ch
 */
 
-import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSMutableArray;
 
-import java.util.Set;
-import java.util.HashSet;
+import java.lang.reflect.Array;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
-import java.lang.reflect.Array;
+import java.util.Set;
 
 /**
  * Facade for com.apple.cocoa.foundation.NSMutableArray

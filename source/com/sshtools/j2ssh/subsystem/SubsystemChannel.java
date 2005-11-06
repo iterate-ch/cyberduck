@@ -173,7 +173,7 @@ public abstract class SubsystemChannel extends Channel {
 	public boolean startSubsystem() throws IOException {
 		log.info("Starting "+name+" subsystem");
 
-		ByteArrayWriter baw = new ByteArrayWriter();
+		ByteArrayWriter baw = new ByteArrayWriter(encoding);
 		baw.writeString(name);
 
 		return connection.sendChannelRequest(this, "subsystem", true,

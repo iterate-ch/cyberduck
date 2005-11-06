@@ -49,14 +49,8 @@ public abstract class SubsystemMessage {
 		this.type = type;
 	}
 
-	/**
-	 * @return
-	 */
 	public abstract String getMessageName();
 
-	/**
-	 * @return
-	 */
 	public int getMessageType() {
 		return type;
 	}

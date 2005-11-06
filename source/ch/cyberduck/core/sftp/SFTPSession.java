@@ -21,28 +21,38 @@ package ch.cyberduck.core.sftp;
 import com.sshtools.j2ssh.SshClient;
 import com.sshtools.j2ssh.SshEventAdapter;
 import com.sshtools.j2ssh.SshException;
-import com.sshtools.j2ssh.authentication.*;
+import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
+import com.sshtools.j2ssh.authentication.KBIAuthenticationClient;
+import com.sshtools.j2ssh.authentication.KBIPrompt;
+import com.sshtools.j2ssh.authentication.KBIRequestHandler;
+import com.sshtools.j2ssh.authentication.PasswordAuthenticationClient;
+import com.sshtools.j2ssh.authentication.PublicKeyAuthenticationClient;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
 import com.sshtools.j2ssh.connection.Channel;
 import com.sshtools.j2ssh.connection.ChannelEventAdapter;
-import com.sshtools.j2ssh.io.IOStreamConnector;
-import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
-import com.sshtools.j2ssh.transport.TransportProtocol;
 import com.sshtools.j2ssh.transport.IgnoreHostKeyVerification;
+import com.sshtools.j2ssh.transport.TransportProtocol;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
+
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Keychain;
+import ch.cyberduck.core.Login;
+import ch.cyberduck.core.Message;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Proxy;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 
 import com.apple.cocoa.foundation.NSAutoreleasePool;
 import com.apple.cocoa.foundation.NSBundle;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.ByteArrayInputStream;
-
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.*;
+import java.io.IOException;
 
 /**
  * Opens a connection to the remote server via sftp protocol

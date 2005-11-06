@@ -34,5 +34,4 @@ public interface FTPFileEntryParserFactory {
 	 * @return the FTPFileEntryParser created.
 	 */
 	public FTPFileEntryParser createFileEntryParser(String key) throws IOException;
-	;
 }
