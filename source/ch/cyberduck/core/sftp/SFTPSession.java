@@ -73,7 +73,7 @@ public class SFTPSession extends Session {
         return true;
     }
 
-	public void close() {
+	public synchronized void close() {
 		try {
 			if(this.SFTP != null) {
 				this.log(Message.PROGRESS, NSBundle.localizedString("Disconnecting...", "Status", ""));
@@ -128,7 +128,7 @@ public class SFTPSession extends Session {
 		return this.hostKeyVerification;
 	}
 		
-	public void connect(String encoding) throws IOException {
+	public synchronized void connect(String encoding) throws IOException {
 		this.log(Message.PROGRESS, NSBundle.localizedString("Opening SSH connection to", "Status", "")+" "+host.getIp()+"...");
 		this.setConnected();
 		this.log(Message.TRANSCRIPT, "=====================================");

@@ -154,7 +154,8 @@ public abstract class Path {
         else {
             this.path = p;
         }
-	}
+        this.parent = null;
+    }
 
 	public abstract void reset();
 
@@ -238,9 +239,9 @@ public abstract class Path {
 	public abstract void mkdir(boolean recursive);
 
 	/**
-	 * @param newFilename Must be an absolute path
+	 * @param name Must be an absolute path
 	 */
-	public abstract void rename(String newFilename);
+	public abstract void rename(String name);
 
 	public abstract void changeOwner(String owner, boolean recursive);
 	

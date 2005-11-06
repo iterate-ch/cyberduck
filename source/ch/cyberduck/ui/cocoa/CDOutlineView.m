@@ -250,7 +250,10 @@
 						event:(NSEvent *)dragEvent 
 			  dragImageOffset:(NSPointPointer)dragImageOffset 
 {
-	return [[NSImage alloc] initByReferencingFile: @"transparent.tiff"];
+	NSImage *img = [[NSImage alloc] initByReferencingFile: @"transparent.tiff"];
+	[img setCacheMode:NSImageCacheNever];
+	return img;
+
 }
 
 - (NSImage *)dragImageForRowsWithIndexes:(NSIndexSet *)dragRows 

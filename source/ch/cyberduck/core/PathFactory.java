@@ -41,27 +41,27 @@ public abstract class PathFactory {
 		factories.put(protocol, f);
 	}
 
-	public static final Path createPath(Session session) {
+	public static Path createPath(Session session) {
 		loadClass(session.getHost().getProtocol());
 		return ((PathFactory)factories.get(session.getHost().getProtocol())).create(session);
 	}
 
-	public static final Path createPath(Session session, String parent, String name) {
+	public static Path createPath(Session session, String parent, String name) {
 		loadClass(session.getHost().getProtocol());
 		return ((PathFactory)factories.get(session.getHost().getProtocol())).create(session, parent, name);
 	}
 
-	public static final Path createPath(Session session, String path) {
+	public static Path createPath(Session session, String path) {
 		loadClass(session.getHost().getProtocol());
 		return ((PathFactory)factories.get(session.getHost().getProtocol())).create(session, path);
 	}
 
-	public static final Path createPath(Session session, String path, Local file) {
+	public static Path createPath(Session session, String path, Local file) {
 		loadClass(session.getHost().getProtocol());
 		return ((PathFactory)factories.get(session.getHost().getProtocol())).create(session, path, file);
 	}
 
-	public static final Path createPath(Session session, NSDictionary dict) {
+	public static Path createPath(Session session, NSDictionary dict) {
 		loadClass(session.getHost().getProtocol());
 		return ((PathFactory)factories.get(session.getHost().getProtocol())).create(session, dict);
 	}
@@ -71,9 +71,6 @@ public abstract class PathFactory {
 			try {
 				// Load dynamically
 				Class.forName("ch.cyberduck.core."+id+"."+id.toUpperCase()+"Path");
-//				Class.forName("ch.cyberduck.core."+id+"."
-//							  +Preferences.instance().getProperty(id+".implementation")
-//							  +"."+id.toUpperCase()+"Path");
 			}
 			catch(ClassNotFoundException e) {
 				throw new RuntimeException("No class for type: "+id);

@@ -85,6 +85,7 @@ public abstract class Preferences {
 		defaults.put("website.update", "http://update.cyberduck.ch/");
 		defaults.put("website.home", "http://cyberduck.ch/");
 		defaults.put("website.forum", "http://cyberduck.ch/forum/");
+		defaults.put("website.help", "http://cyberduck.ch/help/");
 
 		defaults.put("update.check", "true");
 

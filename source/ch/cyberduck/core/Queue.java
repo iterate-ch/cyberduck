@@ -51,8 +51,6 @@ public abstract class Queue extends Observable {
     private boolean running;
     private boolean canceled;
 
-    private Validator validator;
-    
     /**
      * Creating an empty queue containing no items. Items have to be added later
      * using the <code>addRoot</code> method.
@@ -84,9 +82,10 @@ public abstract class Queue extends Observable {
                 case Queue.KIND_SYNC:
                     q = new SyncQueue();
                     break;
-                default:
-                    throw new IllegalArgumentException("Unknown queue");
             }
+        }
+        if(null == q) {
+            throw new IllegalArgumentException("Unknown queue");
         }
         Object hostObj = dict.objectForKey("Host");
         if (hostObj != null) {
@@ -255,7 +254,7 @@ public abstract class Queue extends Observable {
         this.getSession().check();
 
         if (!headless) {
-            this.validator = ValidatorFactory.createValidator(this.getClass());
+            Validator validator = ValidatorFactory.createValidator(this.getClass());
             List childs = this.getChilds();
             if (!this.isCanceled()) {
                 if (validator.validate(childs, resumeRequested)) {

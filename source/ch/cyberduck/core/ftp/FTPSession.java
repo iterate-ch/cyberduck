@@ -60,7 +60,7 @@ public class FTPSession extends Session {
 		return false;
 	}
 	
-    public void close() {
+    public synchronized void close() {
         try {
             if (this.FTP != null) {
                 this.log(Message.PROGRESS, NSBundle.localizedString("Disconnecting...", "Status", ""));
@@ -96,7 +96,7 @@ public class FTPSession extends Session {
         }
     }
 
-    public void connect(String encoding) throws IOException, FTPException {
+    public synchronized void connect(String encoding) throws IOException, FTPException {
         this.log(Message.PROGRESS, NSBundle.localizedString("Opening FTP connection to", "Status", "")+" "+host.getIp()+"...");
         this.setConnected();
         this.log(Message.TRANSCRIPT, "=====================================");

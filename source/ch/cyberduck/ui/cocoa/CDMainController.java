@@ -26,7 +26,17 @@ import java.util.*;
 
 import org.apache.log4j.BasicConfigurator;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Message;
+import ch.cyberduck.core.Rendezvous;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.UploadQueue;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Version;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 /**
@@ -208,9 +218,7 @@ public class CDMainController extends CDController {
         private File[] listFiles() {
             File[] files = HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
                 public boolean accept(File dir, String name) {
-                    if(name.endsWith(".duck"))
-                        return true;
-                    return false;
+                    return name.endsWith(".duck");
                 }
             });
             Arrays.sort(files, new Comparator() {
@@ -551,7 +559,6 @@ public class CDMainController extends CDController {
 		log.debug("applicationOpenFile:"+filename);
 		File f = new File(filename);
 		if(f.exists()) {
-			log.info("Found file: "+f.toString());
 			if (f.getAbsolutePath().endsWith(".duck")) {
 				Host host = CDBookmarkTableDataSource.instance().importBookmark(f);
 				if(host != null) {
@@ -779,28 +786,28 @@ public class CDMainController extends CDController {
 
 	// ----------------------------------------------------------
 
-	private String readVersionInfo() {
-		if(VERSION_FILE.exists()) {
-			NSData plistData = new NSData(VERSION_FILE);
-			String[] errorString = new String[]{null};
-			Object propertyListFromXMLData =
-			    NSPropertyListSerialization.propertyListFromData(plistData,
-			        NSPropertyListSerialization.PropertyListImmutable,
-			        new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-			        errorString);
-			if(errorString[0] != null) {
-				log.error("Problem reading version file: "+errorString[0]);
-			}
-			else {
-				log.debug("Successfully read version info: "+propertyListFromXMLData);
-			}
-			if(propertyListFromXMLData instanceof NSDictionary) {
-				NSDictionary dict = (NSDictionary)propertyListFromXMLData;
-				return (String)dict.objectForKey("Version");
-			}
-		}
-		return null;
-	}
+//	private String readVersionInfo() {
+//		if(VERSION_FILE.exists()) {
+//			NSData plistData = new NSData(VERSION_FILE);
+//			String[] errorString = new String[]{null};
+//			Object propertyListFromXMLData =
+//			    NSPropertyListSerialization.propertyListFromData(plistData,
+//			        NSPropertyListSerialization.PropertyListImmutable,
+//			        new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
+//			        errorString);
+//			if(errorString[0] != null) {
+//				log.error("Problem reading version file: "+errorString[0]);
+//			}
+//			else {
+//				log.debug("Successfully read version info: "+propertyListFromXMLData);
+//			}
+//			if(propertyListFromXMLData instanceof NSDictionary) {
+//				NSDictionary dict = (NSDictionary)propertyListFromXMLData;
+//				return (String)dict.objectForKey("Version");
+//			}
+//		}
+//		return null;
+//	}
 
 	private void saveVersionInfo() {
 		try {
