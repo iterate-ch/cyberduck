@@ -1746,8 +1746,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
 		}
 	}
 
-    protected void renamePath(Path path, String absolute) {
-        if(PathFactory.createPath(workdir.getSession(), absolute).exists()) {
+    protected void renamePath(Path path, String parent, String name) {
+        Path p = PathFactory.createPath(workdir.getSession(), parent, name);
+        if(p.exists()) {
             this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Replace", "Alert sheet title"), //title
                     NSBundle.localizedString("A file with the same absolute already exists. Do you want to replace the existing file?", ""),
                     NSBundle.localizedString("Overwrite", "Alert sheet default button"), // defaultbutton
@@ -1757,11 +1758,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     this,
                     new NSSelector("renameSheetDidEnd",
                             new Class[]{ NSWindow.class, int.class, Object.class }),
-                    Arrays.asList(new Object[]{path, absolute})
+                    Arrays.asList(new Object[]{path, p.getAbsolute()})
             );// end selector
         }
         else {
-            path.rename(absolute);
+            path.rename(p.getAbsolute());
         }
     }
 
@@ -2150,7 +2151,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     Path workdir = this.workdir();
                     for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                         Path item = PathFactory.createPath(workdir().getSession(), ((Path) iter.next()).getAbsolute());
-                        this.renamePath(item, workdir.getAbsolute() + Path.DELIMITER + item.getName());
+                        this.renamePath(item, workdir.getAbsolute(), item.getName());
                     }
                 }
                 pboard.setPropertyListForType(null, "PathPBoardType");
@@ -2240,6 +2241,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 				if (arg instanceof Message) {
 					final Message msg = (Message) arg;
 					if (msg.getTitle().equals(Message.TRANSCRIPT)) {
+						log.info(msg.getContent());
 						logView.textStorage().appendAttributedString(
 								new NSAttributedString(msg.getContent()+"\n", FIXED_WITH_FONT_ATTRIBUTES));
 					}

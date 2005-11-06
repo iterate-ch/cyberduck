@@ -96,7 +96,7 @@ public abstract class CDBrowserTableDataSource {
         log.debug("setObjectValueForItem:"+item);
         if (identifier.equals(FILENAME_COLUMN)) {
             if(!item.getName().equals(value)) {
-                controller.renamePath(item, controller.workdir()+Path.DELIMITER+value.toString());
+                controller.renamePath(item, controller.workdir().getAbsolute(), value.toString());
             }
         }
     }
@@ -190,7 +190,7 @@ public abstract class CDBrowserTableDataSource {
                 Queue q = Queue.createQueue(dict);
                 for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                     Path item = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
-                    controller.renamePath(item, destination.getAbsolute()+Path.DELIMITER+item.getName());
+                    controller.renamePath(item, destination.getAbsolute(), item.getName());
                 }
                 controller.reloadPath(controller.workdir());
             }
