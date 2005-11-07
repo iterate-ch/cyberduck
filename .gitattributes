@@ -361,6 +361,7 @@ fr.lproj/IDisk.strings svneol=native#unset
 fr.lproj/Info.nib/keyedobjects.nib -text
 fr.lproj/Info.strings svneol=native#unset
 fr.lproj/InfoPlist.strings svneol=native#unset
+fr.lproj/Localizable.strings svneol=native#unset
 fr.lproj/Login.nib/keyedobjects.nib -text
 fr.lproj/Login.strings svneol=native#unset
 fr.lproj/Main.nib/keyedobjects.nib -text
@@ -903,6 +904,7 @@ ru.lproj/IDisk.strings svneol=native#unset
 ru.lproj/Info.nib/keyedobjects.nib -text
 ru.lproj/Info.strings svneol=native#unset
 ru.lproj/InfoPlist.strings svneol=native#unset
+ru.lproj/Localizable.strings svneol=native#unset
 ru.lproj/Login.nib/keyedobjects.nib -text
 ru.lproj/Login.strings svneol=native#unset
 ru.lproj/Main.nib/keyedobjects.nib -text
