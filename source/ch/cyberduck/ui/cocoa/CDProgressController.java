@@ -18,92 +18,106 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
-
-import java.util.Observable;
-import java.util.Observer;
-
-import org.apache.log4j.Logger;
-
 import ch.cyberduck.core.DownloadQueue;
 import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Queue;
 
+import com.apple.cocoa.application.NSAlertPanel;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSButton;
+import com.apple.cocoa.application.NSColor;
+import com.apple.cocoa.application.NSMutableParagraphStyle;
+import com.apple.cocoa.application.NSParagraphStyle;
+import com.apple.cocoa.application.NSProgressIndicator;
+import com.apple.cocoa.application.NSTextField;
+import com.apple.cocoa.application.NSView;
+import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSRunLoop;
+import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSTimer;
+
+import org.apache.log4j.Logger;
+
+import java.util.Observable;
+import java.util.Observer;
+
 /**
  * @version $Id$
  */
 public class CDProgressController extends CDController implements Observer {
-	private static Logger log = Logger.getLogger(CDProgressController.class);
+    private static Logger log = Logger.getLogger(CDProgressController.class);
 
-	private String statusText = "";
-	private StringBuffer errorText;
+    private String statusText = "";
+    private StringBuffer errorText;
 
-	private NSTimer progressTimer;
+    private NSTimer progressTimer;
 
-	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
-	private static NSMutableParagraphStyle lineBreakByTruncatingTailParagraph = new NSMutableParagraphStyle();
+    private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
+    private static NSMutableParagraphStyle lineBreakByTruncatingTailParagraph = new NSMutableParagraphStyle();
 
-	static {
-		lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
-		lineBreakByTruncatingTailParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
-	}
+    static {
+        lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
+        lineBreakByTruncatingTailParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
+    }
 
-	private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
-	    new Object[]{NSAttributedString.ParagraphStyleAttributeName});
-	private static final NSDictionary TRUNCATE_TAIL_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingTailParagraph},
-	    new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+    private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
+            new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+    private static final NSDictionary TRUNCATE_TAIL_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingTailParagraph},
+            new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
-	private Queue queue;
+    private Queue queue;
 
-	public CDProgressController(Queue queue) {
-		this.queue = queue;
-		if(!NSApplication.loadNibNamed("Progress", this)) {
-			log.fatal("Couldn't load Progress.nib");
-		}
-	}
+    public CDProgressController(Queue queue) {
+        this.queue = queue;
+        if (!NSApplication.loadNibNamed("Progress", this)) {
+            log.fatal("Couldn't load Progress.nib");
+        }
+    }
 
-	public void init() {
-		this.queue.addObserver(this);
-		this.queue.getSession().addObserver(this);
-	}
+    public void init() {
+        this.queue.addObserver(this);
+        this.queue.getSession().addObserver(this);
+    }
 
-	public void awakeFromNib() {
+    public void awakeFromNib() {
         super.awakeFromNib();
 
-		this.filenameField.setAttributedStringValue(new NSAttributedString(this.queue.getName(),
-		    TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
-		this.updateProgressfield();
-	}
+        this.filenameField.setAttributedStringValue(new NSAttributedString(this.queue.getName(),
+                TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
+        this.updateProgressfield();
+    }
 
-	public void update(final Observable o, final Object arg) {
-		if(arg instanceof Message) {
-			final Message msg = (Message)arg;
-			if(msg.getTitle().equals(Message.PROGRESS)) {
-				statusText = (String)msg.getContent();
+    public void update(final Observable o, final Object arg) {
+        if (arg instanceof Message) {
+            final Message msg = (Message) arg;
+            if (msg.getTitle().equals(Message.PROGRESS)) {
+                statusText = (String) msg.getContent();
                 this.invoke(new Runnable() {
                     public void run() {
                         updateProgressfield();
                     }
                 });
-			}
-			else if(msg.getTitle().equals(Message.ERROR)) {
+            }
+            else if (msg.getTitle().equals(Message.ERROR)) {
                 this.invoke(new Runnable() {
                     public void run() {
                         int l = errorText.toString().split("\n").length;
-                        if(l == 10) {
+                        if (l == 10) {
                             errorText.append("\n- (...)");
                         }
-                        if(l < 10)  {
-                            errorText.append("\n"+msg.getContent());
+                        if (l < 10) {
+                            errorText.append("\n" + msg.getContent());
                         }
                         alertIcon.setHidden(false);
                     }
                 });
-			}
-			else if(msg.getTitle().equals(Message.QUEUE_START)) {
-				log.debug("------------- QUEUE_START");
+            }
+            else if (msg.getTitle().equals(Message.QUEUE_START)) {
+                log.debug("------------- QUEUE_START");
                 this.invoke(new Runnable() {
                     public void run() {
                         progressBar.setHidden(false);
@@ -121,8 +135,8 @@ public class CDProgressController extends CDController implements Observer {
                                 NSRunLoop.DefaultRunLoopMode);
                     }
                 });
-			}
-            else if(msg.getTitle().equals(Message.QUEUE_STOP)) {
+            }
+            else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
                 log.debug("------------- QUEUE_STOP");
                 this.invoke(new Runnable() {
                     public void run() {
@@ -131,143 +145,143 @@ public class CDProgressController extends CDController implements Observer {
                         progressBar.setIndeterminate(true);
                         progressBar.stopAnimation(null);
                         progressBar.setHidden(true);
-                        if(queue.isComplete() && !queue.isCanceled()) {
-                            if(queue instanceof DownloadQueue) {
-                                if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
+                        if (queue.isComplete() && !queue.isCanceled()) {
+                            if (queue instanceof DownloadQueue) {
+                                if (Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
                                     boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
-                                    log.info("Success opening file:"+success);
+                                    log.info("Success opening file:" + success);
                                 }
                             }
-                            if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
+                            if (Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
                                 CDQueueController.instance().removeItem(queue);
                             }
                         }
                     }
                 });
-				this.queue.deleteObserver(this);
-				this.queue.getSession().deleteObserver(this);
-			}
-		}
-	}
+                this.queue.deleteObserver(this);
+                this.queue.getSession().deleteObserver(this);
+            }
+        }
+    }
 
-	public void update(NSTimer t) {
-		this.updateProgressbar();
-		this.updateProgressfield();
-	}
-		
-	private void updateProgressbar() {
-		if(queue.isInitialized()) {
-			if(queue.getSize() != -1) {
-				this.progressBar.setIndeterminate(false);
-				this.progressBar.setMinValue(0);
-				this.progressBar.setMaxValue(queue.getSize());
-				this.progressBar.setDoubleValue(queue.getCurrent());
-			}
-		}
-		else if(queue.isRunning()) {
-			this.progressBar.setIndeterminate(true);
-		}
-	}
+    public void update(NSTimer t) {
+        this.updateProgressbar();
+        this.updateProgressfield();
+    }
 
-	private void updateProgressfield() {
-		this.progressField.setAttributedStringValue(new NSAttributedString(this.getProgressText(),
-		    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-	}
+    private void updateProgressbar() {
+        if (queue.isInitialized()) {
+            if (queue.getSize() != -1) {
+                this.progressBar.setIndeterminate(false);
+                this.progressBar.setMinValue(0);
+                this.progressBar.setMaxValue(queue.getSize());
+                this.progressBar.setDoubleValue(queue.getCurrent());
+            }
+        }
+        else if (queue.isRunning()) {
+            this.progressBar.setIndeterminate(true);
+        }
+    }
 
-	private String getProgressText() {
-		if(this.queue.isRunning()) {
-			return this.queue.getCurrentAsString()
-			+" "+NSBundle.localizedString("of", "1.2MB of 3.4MB")+" "+this.queue.getSizeAsString()
-			+" "+this.queue.getSpeedAsString()+" "+this.statusText;
-		}
-		return this.queue.getCurrentAsString()
-		+" "+NSBundle.localizedString("of", "1.2MB of 3.4MB")+" "+this.queue.getSizeAsString()+"  "+this.statusText;
-	}
+    private void updateProgressfield() {
+        this.progressField.setAttributedStringValue(new NSAttributedString(this.getProgressText(),
+                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+    }
 
-	private String getErrorText() {
-		return this.errorText.toString();
-	}
+    private String getProgressText() {
+        if (this.queue.isRunning()) {
+            return this.queue.getCurrentAsString()
+                    + " " + NSBundle.localizedString("of", "1.2MB of 3.4MB") + " " + this.queue.getSizeAsString()
+                    + " " + this.queue.getSpeedAsString() + " " + this.statusText;
+        }
+        return this.queue.getCurrentAsString()
+                + " " + NSBundle.localizedString("of", "1.2MB of 3.4MB") + " " + this.queue.getSizeAsString() + "  " + this.statusText;
+    }
 
-	public Queue getQueue() {
-		return this.queue;
-	}
+    private String getErrorText() {
+        return this.errorText.toString();
+    }
 
-	public void alertButtonClicked(NSButton sender) {
-		CDQueueController.instance().beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"),
-		    this.getErrorText(), // message
-		    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-		    null, //alternative button
-		    null //other button
-		));
-	}
+    public Queue getQueue() {
+        return this.queue;
+    }
 
-	private boolean highlighted;
+    public void alertButtonClicked(NSButton sender) {
+        CDQueueController.instance().beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"),
+                this.getErrorText(), // message
+                NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+                null, //alternative button
+                null //other button
+        ));
+    }
 
-	public void setHighlighted(boolean highlighted) {
-		this.highlighted = highlighted;
-		if(highlighted) {
-			this.filenameField.setTextColor(NSColor.whiteColor());
-			this.progressField.setTextColor(NSColor.whiteColor());
-		}
-		else {
-			this.filenameField.setTextColor(NSColor.blackColor());
-			this.progressField.setTextColor(NSColor.darkGrayColor());
-		}
-	}
+    private boolean highlighted;
 
-	public boolean isHighlighted() {
-		return this.highlighted;
-	}
-	
-	// ----------------------------------------------------------
-	// Outlets
-	// ----------------------------------------------------------
-	
-	private NSTextField filenameField; // IBOutlet
+    public void setHighlighted(boolean highlighted) {
+        this.highlighted = highlighted;
+        if (highlighted) {
+            this.filenameField.setTextColor(NSColor.whiteColor());
+            this.progressField.setTextColor(NSColor.whiteColor());
+        }
+        else {
+            this.filenameField.setTextColor(NSColor.blackColor());
+            this.progressField.setTextColor(NSColor.darkGrayColor());
+        }
+    }
 
-	public void setFilenameField(NSTextField filenameField) {
-		this.filenameField = filenameField;
-		this.filenameField.setEditable(false);
-		this.filenameField.setSelectable(false);
-		this.filenameField.setTextColor(NSColor.blackColor());
-	}
+    public boolean isHighlighted() {
+        return this.highlighted;
+    }
 
-	private NSTextField progressField; // IBOutlet
+    // ----------------------------------------------------------
+    // Outlets
+    // ----------------------------------------------------------
 
-	public void setProgressField(NSTextField progressField) {
-		this.progressField = progressField;
-		this.progressField.setEditable(false);
-		this.progressField.setSelectable(false);
-		this.progressField.setTextColor(NSColor.darkGrayColor());
-	}
+    private NSTextField filenameField; // IBOutlet
 
-	private NSProgressIndicator progressBar; // IBOutlet
+    public void setFilenameField(NSTextField filenameField) {
+        this.filenameField = filenameField;
+        this.filenameField.setEditable(false);
+        this.filenameField.setSelectable(false);
+        this.filenameField.setTextColor(NSColor.blackColor());
+    }
 
-	public void setProgressBar(NSProgressIndicator progressBar) {
-		this.progressBar = progressBar;
-		this.progressBar.setDisplayedWhenStopped(false);
-		this.progressBar.setControlTint(NSProgressIndicator.BlueControlTint);
-		this.progressBar.setControlSize(NSProgressIndicator.SmallControlSize);
-		this.progressBar.setStyle(NSProgressIndicator.ProgressIndicatorBarStyle);
-		this.progressBar.setUsesThreadedAnimation(true);
-	}
+    private NSTextField progressField; // IBOutlet
 
-	private NSButton alertIcon; // IBOutlet
+    public void setProgressField(NSTextField progressField) {
+        this.progressField = progressField;
+        this.progressField.setEditable(false);
+        this.progressField.setSelectable(false);
+        this.progressField.setTextColor(NSColor.darkGrayColor());
+    }
 
-	public void setAlertIcon(NSButton alertIcon) {
-		this.alertIcon = alertIcon;
-		this.alertIcon.setHidden(true);
-		this.alertIcon.setTarget(this);
-		this.alertIcon.setAction(new NSSelector("alertButtonClicked", new Class[]{Object.class}));
-	}
+    private NSProgressIndicator progressBar; // IBOutlet
 
-	private NSView progressView; // IBOutlet
+    public void setProgressBar(NSProgressIndicator progressBar) {
+        this.progressBar = progressBar;
+        this.progressBar.setDisplayedWhenStopped(false);
+        this.progressBar.setControlTint(NSProgressIndicator.BlueControlTint);
+        this.progressBar.setControlSize(NSProgressIndicator.SmallControlSize);
+        this.progressBar.setStyle(NSProgressIndicator.ProgressIndicatorBarStyle);
+        this.progressBar.setUsesThreadedAnimation(true);
+    }
 
-	public void setProgressSubview(NSView progressView) {
-		this.progressView = progressView;
-	}
+    private NSButton alertIcon; // IBOutlet
 
-	public NSView view() {
-		return this.progressView;
-	}
+    public void setAlertIcon(NSButton alertIcon) {
+        this.alertIcon = alertIcon;
+        this.alertIcon.setHidden(true);
+        this.alertIcon.setTarget(this);
+        this.alertIcon.setAction(new NSSelector("alertButtonClicked", new Class[]{Object.class}));
+    }
+
+    private NSView progressView; // IBOutlet
+
+    public void setProgressSubview(NSView progressView) {
+        this.progressView = progressView;
+    }
+
+    public NSView view() {
+        return this.progressView;
+    }
 }

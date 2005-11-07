@@ -18,72 +18,72 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSApplication;
-
-import org.apache.log4j.Logger;
-
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UploadQueue;
 import ch.cyberduck.core.Validator;
 import ch.cyberduck.core.ValidatorFactory;
 
+import com.apple.cocoa.application.NSApplication;
+
+import org.apache.log4j.Logger;
+
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDUploadQueueValidatorController extends CDValidatorController {
 
-	private static Logger log = Logger.getLogger(CDUploadQueueValidatorController.class);
-	
-	static {
-		ValidatorFactory.addFactory(UploadQueue.class, new Factory());
-	}
-	
-	private static class Factory extends ValidatorFactory {
-		protected Validator create() {
-			return new CDUploadQueueValidatorController(CDQueueController.instance());
-		}
-	}
-	
-	private CDUploadQueueValidatorController(CDWindowController windowController) {
-		super(windowController);
-	}
-	
-	protected void load() {
-		if(!NSApplication.loadNibNamed("Validator", this)) {
-			log.fatal("Couldn't load Validator.nib");
-		}
-		this.setEnabled(false);
-	}
-	
-	protected boolean isExisting(Path p) {
-		return p.exists();
-	}
+    private static Logger log = Logger.getLogger(CDUploadQueueValidatorController.class);
 
-	protected boolean validateDirectory(Path p) {
-		if(!p.getRemote().exists()) {
+    static {
+        ValidatorFactory.addFactory(UploadQueue.class, new Factory());
+    }
+
+    private static class Factory extends ValidatorFactory {
+        protected Validator create() {
+            return new CDUploadQueueValidatorController(CDQueueController.instance());
+        }
+    }
+
+    private CDUploadQueueValidatorController(CDWindowController windowController) {
+        super(windowController);
+    }
+
+    protected void load() {
+        if (!NSApplication.loadNibNamed("Validator", this)) {
+            log.fatal("Couldn't load Validator.nib");
+        }
+        this.setEnabled(false);
+    }
+
+    protected boolean isExisting(Path p) {
+        return p.exists();
+    }
+
+    protected boolean validateDirectory(Path p) {
+        if (!p.getRemote().exists()) {
             //Directory does not exist yet; include so it will be created on the server
-			return true;
-		}
-		//Directory already exists; do not include as this would throw "file already exists"
-		return false;
-	}
-	
-	protected void adjustFilename(Path path) {
-		String parent = path.getParent().getAbsolute();
-		String filename = path.getName();
-		String proposal = filename;
-		int no = 0;
-		int index = filename.lastIndexOf(".");
-		do {
-			path.setPath(parent, proposal);
-			no++;
-			if(index != -1) {
-				proposal = filename.substring(0, index)+"-"+no+filename.substring(index);
-			}
-			else {
-				proposal = filename+"-"+no;
-			}
-		}
-		while(path.exists());
-	}
+            return true;
+        }
+        //Directory already exists; do not include as this would throw "file already exists"
+        return false;
+    }
+
+    protected void adjustFilename(Path path) {
+        String parent = path.getParent().getAbsolute();
+        String filename = path.getName();
+        String proposal = filename;
+        int no = 0;
+        int index = filename.lastIndexOf(".");
+        do {
+            path.setPath(parent, proposal);
+            no++;
+            if (index != -1) {
+                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
+            }
+            else {
+                proposal = filename + "-" + no;
+            }
+        }
+        while (path.exists());
+    }
 }

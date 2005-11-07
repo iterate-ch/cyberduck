@@ -18,7 +18,17 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
+import ch.cyberduck.core.Login;
+import ch.cyberduck.ui.LoginController;
+
+import com.apple.cocoa.application.NSAlertPanel;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSButton;
+import com.apple.cocoa.application.NSCell;
+import com.apple.cocoa.application.NSControl;
+import com.apple.cocoa.application.NSSecureTextField;
+import com.apple.cocoa.application.NSTextField;
+import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSNotificationCenter;
@@ -26,126 +36,123 @@ import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Login;
-import ch.cyberduck.ui.LoginController;
-
 /**
  * @version $Id$
  */
 public class CDLoginController extends CDWindowController implements LoginController {
-	private static Logger log = Logger.getLogger(CDLoginController.class);
+    private static Logger log = Logger.getLogger(CDLoginController.class);
 
-	private static NSMutableArray instances = new NSMutableArray();
+    private static NSMutableArray instances = new NSMutableArray();
 
-	public void awakeFromNib() {
+    public void awakeFromNib() {
         super.awakeFromNib();
 
-		this.window().setReleasedWhenClosed(false);
-	}
-	
-	// ----------------------------------------------------------
-	// Outlets
-	// ----------------------------------------------------------
+        this.window().setReleasedWhenClosed(false);
+    }
 
-	private NSTextField userField; // IBOutlet
+    // ----------------------------------------------------------
+    // Outlets
+    // ----------------------------------------------------------
 
-	public void setUserField(NSTextField userField) {
-		this.userField = userField;
-		NSNotificationCenter.defaultCenter().addObserver(this,
-		    new NSSelector("userFieldDidChange", new Class[]{NSNotification.class}),
-		    NSControl.ControlTextDidChangeNotification,
-		    this.userField);
-	}
+    private NSTextField userField; // IBOutlet
 
-	public void userFieldDidChange(Object sender) {
-		log.debug("userFieldDidChange");
-		if(null == userField.objectValue() || userField.objectValue().equals("")) {
-			log.warn("Value of username textfield is null");
-		}
-	}
+    public void setUserField(NSTextField userField) {
+        this.userField = userField;
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("userFieldDidChange", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.userField);
+    }
 
-	private NSTextField textField; // IBOutlet
+    public void userFieldDidChange(Object sender) {
+        log.debug("userFieldDidChange");
+        if (null == userField.objectValue() || userField.objectValue().equals("")) {
+            log.warn("Value of username textfield is null");
+        }
+    }
 
-	public void setTextField(NSTextField textField) {
-		this.textField = textField;
-	}
+    private NSTextField textField; // IBOutlet
 
-	private NSSecureTextField passField; // IBOutlet
+    public void setTextField(NSTextField textField) {
+        this.textField = textField;
+    }
 
-	public void setPassField(NSSecureTextField passField) {
-		this.passField = passField;
-		NSNotificationCenter.defaultCenter().addObserver(this,
-		    new NSSelector("passFieldDidChange", new Class[]{NSNotification.class}),
-		    NSControl.ControlTextDidChangeNotification,
-		    this.passField);
-	}
+    private NSSecureTextField passField; // IBOutlet
 
-	public void passFieldDidChange(Object sender) {
-		log.debug("passFieldDidChange");
-		if(null == passField.objectValue() || passField.objectValue().equals("")) {
-			log.warn("Value of password textfield is null");
-		}
-	}
+    public void setPassField(NSSecureTextField passField) {
+        this.passField = passField;
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("passFieldDidChange", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.passField);
+    }
 
-	private NSButton keychainCheckbox;
+    public void passFieldDidChange(Object sender) {
+        log.debug("passFieldDidChange");
+        if (null == passField.objectValue() || passField.objectValue().equals("")) {
+            log.warn("Value of password textfield is null");
+        }
+    }
 
-	public void setKeychainCheckbox(NSButton keychainCheckbox) {
-		this.keychainCheckbox = keychainCheckbox;
-		this.keychainCheckbox.setState(NSCell.OffState);
-	}
+    private NSButton keychainCheckbox;
 
-	private CDWindowController windowController;
+    public void setKeychainCheckbox(NSButton keychainCheckbox) {
+        this.keychainCheckbox = keychainCheckbox;
+        this.keychainCheckbox.setState(NSCell.OffState);
+    }
 
-	public CDLoginController(CDWindowController windowController) {
-		instances.addObject(this);
-		this.windowController = windowController;
-		if(!NSApplication.loadNibNamed("Login", this)) {
-			log.fatal("Couldn't load Login.nib");
-		}
-	}
+    private CDWindowController windowController;
 
-	public void windowWillClose(NSNotification notification) {
-		instances.removeObject(this);
-		NSNotificationCenter.defaultCenter().removeObserver(this);
-	}
+    public CDLoginController(CDWindowController windowController) {
+        instances.addObject(this);
+        this.windowController = windowController;
+        if (!NSApplication.loadNibNamed("Login", this)) {
+            log.fatal("Couldn't load Login.nib");
+        }
+    }
 
-	private Login login;
+    public void windowWillClose(NSNotification notification) {
+        instances.removeObject(this);
+        NSNotificationCenter.defaultCenter().removeObserver(this);
+    }
 
-	public Login promptUser(final Login login, final String message) {
-		this.login = login;
-		this.textField.setStringValue(message);
-		this.userField.setStringValue(login.getUsername());
+    private Login login;
+
+    public Login promptUser(final Login login, final String message) {
+        this.login = login;
+        this.textField.setStringValue(message);
+        this.userField.setStringValue(login.getUsername());
         this.passField.setStringValue("");
-		this.windowController.beginSheet(this.window(),
-										 this,
-										 new NSSelector
-										 ("loginSheetDidEnd",
-										  new Class[]
-										  {
-											  NSWindow.class, int.class, Object.class
-										  }), // end selector
-										 null);
-	    this.windowController.waitForSheetEnd();
-		return this.login;
-	}
+        this.windowController.beginSheet(this.window(),
+                this,
+                new NSSelector
+                        ("loginSheetDidEnd",
+                                new Class[]
+                                        {
+                                                NSWindow.class, int.class, Object.class
+                                        }), // end selector
+                null);
+        this.windowController.waitForSheetEnd();
+        return this.login;
+    }
 
     public void closeSheet(NSButton sender) {
         this.windowController.endSheet(this.window(), sender.tag());
     }
 
-	public void loginSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+    public void loginSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
-        String user = (String)userField.objectValue();
-        String pass = (String)passField.objectValue();
-		if(null == user || user.equals("")) {
-			log.warn("Value of username textfield is null");
+        String user = (String) userField.objectValue();
+        String pass = (String) passField.objectValue();
+        if (null == user || user.equals("")) {
+            log.warn("Value of username textfield is null");
             user = "";
-		}
-		if(null == pass || pass.equals("")) {
-			log.warn("Value of password textfield is null");
+        }
+        if (null == pass || pass.equals("")) {
+            log.warn("Value of password textfield is null");
             pass = "";
-		}
-        switch(returncode) {
+        }
+        switch (returncode) {
             case (NSAlertPanel.DefaultReturn):
                 log.info("Updating login credentials...");
                 this.login.setTryAgain(true);
@@ -158,5 +165,5 @@ public class CDLoginController extends CDWindowController implements LoginContro
                 this.login.setTryAgain(false);
                 break;
         }
-	}
+    }
 }

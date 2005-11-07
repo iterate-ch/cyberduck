@@ -26,49 +26,49 @@ import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRect;
 
 public class CDOutlineCell extends NSTextFieldCell {
-	
-	public CDOutlineCell() {
-		super();
-	}
-	
-	protected CDOutlineCell(NSCoder decoder, long token) {
-		super(decoder, token);
-	}
-	
-	protected void encodeWithCoder(NSCoder encoder) {
-		super.encodeWithCoder(encoder);
-	}
-	
-	private NSImage icon;
-	
-	public void setIcon(NSImage icon) {
-		this.icon = icon;
-	}
-	
-	public NSImage icon() {
-		return this.icon;
-	}
-	
-	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
-		if(this.icon() != null) {
-			if(controlView.isFlipped()) {
-				this.icon().compositeToPoint(new NSPoint(cellFrame.origin().x()+3,
-														 cellFrame.origin().y()+(cellFrame.size().height()+this.icon().size().height())/2),
-											 NSImage.CompositeSourceOver);
-			}
-			else {
-				this.icon().compositeToPoint(new NSPoint(cellFrame.origin().x()+3,
-														 cellFrame.origin().y()+(cellFrame.size().height()-this.icon().size().height())/2),
-											 NSImage.CompositeSourceOver);
-			}
-			super.drawInteriorWithFrameInView(new NSRect(cellFrame.origin().x()+6+this.icon().size().width(),
-														 cellFrame.origin().y(),
-														 cellFrame.width()-6-this.icon().size().width(),
-														 cellFrame.height()),
-											  controlView);
-		}
-		else {
-			super.drawInteriorWithFrameInView(cellFrame, controlView);
-		}
-	}
+
+    public CDOutlineCell() {
+        super();
+    }
+
+    protected CDOutlineCell(NSCoder decoder, long token) {
+        super(decoder, token);
+    }
+
+    protected void encodeWithCoder(NSCoder encoder) {
+        super.encodeWithCoder(encoder);
+    }
+
+    private NSImage icon;
+
+    public void setIcon(NSImage icon) {
+        this.icon = icon;
+    }
+
+    public NSImage icon() {
+        return this.icon;
+    }
+
+    public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
+        if (this.icon() != null) {
+            if (controlView.isFlipped()) {
+                this.icon().compositeToPoint(new NSPoint(cellFrame.origin().x() + 3,
+                        cellFrame.origin().y() + (cellFrame.size().height() + this.icon().size().height()) / 2),
+                        NSImage.CompositeSourceOver);
+            }
+            else {
+                this.icon().compositeToPoint(new NSPoint(cellFrame.origin().x() + 3,
+                        cellFrame.origin().y() + (cellFrame.size().height() - this.icon().size().height()) / 2),
+                        NSImage.CompositeSourceOver);
+            }
+            super.drawInteriorWithFrameInView(new NSRect(cellFrame.origin().x() + 6 + this.icon().size().width(),
+                    cellFrame.origin().y(),
+                    cellFrame.width() - 6 - this.icon().size().width(),
+                    cellFrame.height()),
+                    controlView);
+        }
+        else {
+            super.drawInteriorWithFrameInView(cellFrame, controlView);
+        }
+    }
 }

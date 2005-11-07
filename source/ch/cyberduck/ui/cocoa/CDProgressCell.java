@@ -27,30 +27,30 @@ import com.apple.cocoa.foundation.NSRect;
  */
 public class CDProgressCell extends CDTableCell {
 
-	public CDProgressCell() {
-		super();
-	}
+    public CDProgressCell() {
+        super();
+    }
 
-	protected CDProgressCell(NSCoder decoder, long token) {
-		super(decoder, token);
-	}
+    protected CDProgressCell(NSCoder decoder, long token) {
+        super(decoder, token);
+    }
 
-	protected void encodeWithCoder(NSCoder encoder) {
-		super.encodeWithCoder(encoder);
-	}
+    protected void encodeWithCoder(NSCoder encoder) {
+        super.encodeWithCoder(encoder);
+    }
 
-	private NSView subview;
+    private NSView subview;
 
-	public void setObjectValue(Object subview) {
-		this.subview = (NSView)subview;
-	}
+    public void setObjectValue(Object subview) {
+        this.subview = (NSView) subview;
+    }
 
-	public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
-		if(this.subview != null) {
-			this.subview.setFrame(cellFrame);
-			if(this.subview.superview() != controlView) {
-				controlView.addSubview(this.subview);
-			}
-		}
-	}
+    public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
+        if (this.subview != null) {
+            this.subview.setFrame(cellFrame);
+            if (this.subview.superview() != controlView) {
+                controlView.addSubview(this.subview);
+            }
+        }
+    }
 }

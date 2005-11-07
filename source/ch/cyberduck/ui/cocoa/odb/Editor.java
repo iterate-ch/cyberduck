@@ -18,20 +18,20 @@ package ch.cyberduck.ui.cocoa.odb;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.UploadQueue;
+
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSSelector;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.UploadQueue;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -66,7 +66,7 @@ public class Editor {
         while (editorNames.hasNext()) {
             String editor = (String) editorNames.next();
             String identifier = (String) editorIdentifiers.next();
-            if(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier) != null) {
+            if (NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier) != null) {
                 INSTALLED_EDITORS.put(editor, identifier);
             }
         }

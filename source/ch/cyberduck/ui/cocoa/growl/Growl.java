@@ -23,36 +23,36 @@ import com.apple.cocoa.foundation.NSBundle;
 import org.apache.log4j.Logger;
 
 public class Growl {
-	private static Logger log = Logger.getLogger(Growl.class);
+    private static Logger log = Logger.getLogger(Growl.class);
 
-	static {
-		try {
-			NSBundle bundle = NSBundle.mainBundle();
-			String lib = bundle.resourcePath()+"/Java/"+"libGrowl.dylib";
-			log.info("Locating libGrowl.dylib at '"+lib+"'");
-			System.load(lib);
-		}
-		catch(UnsatisfiedLinkError e) {
-			log.error("Could not load the Growl library:"+e.getMessage());
-		}
-	}
+    static {
+        try {
+            NSBundle bundle = NSBundle.mainBundle();
+            String lib = bundle.resourcePath() + "/Java/" + "libGrowl.dylib";
+            log.info("Locating libGrowl.dylib at '" + lib + "'");
+            System.load(lib);
+        }
+        catch (UnsatisfiedLinkError e) {
+            log.error("Could not load the Growl library:" + e.getMessage());
+        }
+    }
 
-	private static Growl instance;
+    private static Growl instance;
 
-	private Growl() {
-		//
-	}
+    private Growl() {
+        //
+    }
 
-	public static Growl instance() {
-		if(instance == null) {
-			instance = new Growl();
-		}
-		return instance;
-	}
+    public static Growl instance() {
+        if (instance == null) {
+            instance = new Growl();
+        }
+        return instance;
+    }
 
-	public native void register();
+    public native void register();
 
-	public native void notify(String title, String description);
+    public native void notify(String title, String description);
 
-	public native void notifyWithImage(String title, String description, String image);
+    public native void notifyWithImage(String title, String description, String image);
 }

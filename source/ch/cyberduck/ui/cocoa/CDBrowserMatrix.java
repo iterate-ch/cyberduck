@@ -18,17 +18,37 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import ch.cyberduck.core.DownloadQueue;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Status;
+import ch.cyberduck.core.UploadQueue;
+
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSCell;
+import com.apple.cocoa.application.NSDraggingInfo;
+import com.apple.cocoa.application.NSEvent;
+import com.apple.cocoa.application.NSImage;
+import com.apple.cocoa.application.NSMatrix;
+import com.apple.cocoa.application.NSPasteboard;
+import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSDate;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSPathUtilities;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSRect;
+import com.apple.cocoa.foundation.NSSize;
 
 import org.apache.log4j.Logger;
-
-import ch.cyberduck.core.*;
 
 import java.util.Iterator;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDBrowserMatrix extends NSMatrix {
     private static Logger log = Logger.getLogger(CDBrowserMatrix.class);
@@ -54,9 +74,9 @@ public class CDBrowserMatrix extends NSMatrix {
 
     private void init() {
         this.registerForDraggedTypes(new NSArray(new Object[]{
-            "QueuePboardType",
-            NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
-            NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as QueuePboardType
+                "QueuePboardType",
+                NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
+                NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as QueuePboardType
         ));
         this.setCellSize(new NSSize(super.cellSize().width(), CDBrowserCell.HEIGHT));
     }
@@ -69,7 +89,7 @@ public class CDBrowserMatrix extends NSMatrix {
         return NSSize.ZeroSize;
     }
 
-    public int draggingEntered (NSDraggingInfo info) {
+    public int draggingEntered(NSDraggingInfo info) {
         return this.draggingEnteredOrUpdated(info);
     }
 
@@ -80,13 +100,13 @@ public class CDBrowserMatrix extends NSMatrix {
     private int draggingEnteredOrUpdated(NSDraggingInfo info) {
         this.deselectAllCells();
         NSPoint location = this.convertPointFromView(this.window().mouseLocationOutsideOfEventStream(),
-                                                     null);
+                null);
         int row = this.rowForPoint(location);
         int col = this.columnForPoint(location);
-        if(this.cellAtLocation(row, col) != null) {
-            CDBrowserCell cell = (CDBrowserCell)this.cellAtLocation(row, col);
+        if (this.cellAtLocation(row, col) != null) {
+            CDBrowserCell cell = (CDBrowserCell) this.cellAtLocation(row, col);
             Path selected = cell.getPath();
-            if(selected.attributes.isDirectory()) {
+            if (selected.attributes.isDirectory()) {
                 this.selectCellAtLocation(row, col);
                 return NSDraggingInfo.DragOperationCopy;
             }
@@ -109,10 +129,11 @@ public class CDBrowserMatrix extends NSMatrix {
     public boolean performDragOperation(NSDraggingInfo info) {
         log.debug("performDragOperation");
         NSPoint location = this.convertPointFromView(this.window().mouseLocationOutsideOfEventStream(),
-                                                     null);
-        int row = this.rowForPoint(location); int col = this.columnForPoint(location);
-        if(this.cellAtLocation(row, col) != null) {
-            CDBrowserCell cell = (CDBrowserCell)this.cellAtLocation(row, col);
+                null);
+        int row = this.rowForPoint(location);
+        int col = this.columnForPoint(location);
+        if (this.cellAtLocation(row, col) != null) {
+            CDBrowserCell cell = (CDBrowserCell) this.cellAtLocation(row, col);
             Path selected = cell.getPath();
             NSPasteboard infoPboard = info.draggingPasteboard();
             if (infoPboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
@@ -120,10 +141,10 @@ public class CDBrowserMatrix extends NSMatrix {
                 Queue q = new UploadQueue(); //todo set browser as observer
                 Session session = selected.getSession().copy();
                 for (int i = 0; i < filesList.count(); i++) {
-                    log.debug("Filename:"+filesList.objectAtIndex(i));
+                    log.debug("Filename:" + filesList.objectAtIndex(i));
                     Path p = PathFactory.createPath(session,
-                                                    selected.getAbsolute(),
-                                                    new Local((String) filesList.objectAtIndex(i)));
+                            selected.getAbsolute(),
+                            new Local((String) filesList.objectAtIndex(i)));
                     q.addRoot(p);
                 }
                 if (q.numberOfRoots() > 0) {
@@ -159,26 +180,26 @@ public class CDBrowserMatrix extends NSMatrix {
     private Path[] promisedDragPaths;
 
     public void mouseDown(NSEvent event) {
-        if(event.clickCount() == 1) {
+        if (event.clickCount() == 1) {
             NSEvent next = NSApplication.sharedApplication().nextEventMatchingMask(NSEvent.LeftMouseUpMask | NSEvent.LeftMouseDraggedMask,
-                                                                                   (NSDate)NSDate.distantFuture(), //why does this declare Object?
-                                                                                   NSApplication.EventTrackingRunLoopMode,
-                                                                                   false); //remove event from queue
-            if(next.type() == NSEvent.LeftMouseDragged) {
+                    (NSDate) NSDate.distantFuture(), //why does this declare Object?
+                    NSApplication.EventTrackingRunLoopMode,
+                    false); //remove event from queue
+            if (next.type() == NSEvent.LeftMouseDragged) {
                 NSPoint location = this.convertPointFromView(event.locationInWindow(), null);
                 int row = this.rowForPoint(location);
                 int col = this.columnForPoint(location);
                 NSMutableArray fileTypes = new NSMutableArray();
-                if(this.cellAtLocation(row, col) != null) {
-                    if(this.selectedCells() != null) {
+                if (this.cellAtLocation(row, col) != null) {
+                    if (this.selectedCells() != null) {
                         Queue q = new DownloadQueue();
                         Session session = null;
                         NSArray selectedCells = this.selectedCells();
                         java.util.Enumeration iterator = selectedCells.objectEnumerator();
                         this.promisedDragPaths = new Path[selectedCells.count()];
                         for (int i = 0; iterator.hasMoreElements(); i++) {
-                            Path p = ((CDBrowserCell)iterator.nextElement()).getPath();
-                            if(null == session) {
+                            Path p = ((CDBrowserCell) iterator.nextElement()).getPath();
+                            if (null == session) {
                                 session = p.getSession().copy();
                             }
                             promisedDragPaths[i] = p.copy(session);
@@ -257,8 +278,8 @@ public class CDBrowserMatrix extends NSMatrix {
     }
 
     public String toolTip(NSCell cell) {
-        if(cell instanceof CDBrowserCell) {
-            Path p = ((CDBrowserCell)cell).getPath();
+        if (cell instanceof CDBrowserCell) {
+            Path p = ((CDBrowserCell) cell).getPath();
             return p.getAbsolute() + "\n"
                     + Status.getSizeAsString(p.attributes.getSize()) + "\n"
                     + p.attributes.getTimestampAsString();

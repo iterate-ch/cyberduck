@@ -22,8 +22,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.ui.cocoa.odb.Editor;
+
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSPanel;
@@ -32,7 +32,7 @@ import com.apple.cocoa.foundation.NSPathUtilities;
 import java.util.List;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDCreateFileController extends CDFileController {
 
@@ -40,62 +40,62 @@ public class CDCreateFileController extends CDFileController {
 
     public CDCreateFileController(CDBrowserController controller) {
         this.controller = controller;
-        if(!NSApplication.loadNibNamed("File", this)) {
-			log.fatal("Couldn't load File.nib");
-		}
-	}
-	
+        if (!NSApplication.loadNibNamed("File", this)) {
+            log.fatal("Couldn't load File.nib");
+        }
+    }
+
     public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
-		Path workdir = (Path)contextInfo;
-		switch(returncode) {
-			case (NSAlertPanel.DefaultReturn): //Create
-				this.create(workdir, filenameField.stringValue());
-				break;
-			case (NSAlertPanel.OtherReturn): //Edit
-				Path path = this.create(workdir, filenameField.stringValue());
-				if(path != null) {
-					Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
-					editor.open(path);
-				}
-					break;
-			case (NSAlertPanel.AlternateReturn): //Cancel
-				break;
-		}
-	}
-	
-	protected Path create(Path workdir, String filename) {
-		Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), new Local(NSPathUtilities.temporaryDirectory(), filename));
-		if(!file.getRemote().exists()) {
-			try {
-				String proposal;
-				int no = 0;
-				int index = filename.lastIndexOf(".");
-				while(file.getLocal().exists()) {
-					no++;
-					if(index != -1) {
-						proposal = filename.substring(0, index)+"-"+no+filename.substring(index);
-					}
-					else {
-						proposal = filename+"-"+no;
-					}
-					file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
-				}
-				file.getLocal().createNewFile();
-				file.upload();
-				file.getLocal().delete();
-			}
-			catch(java.io.IOException e) {
+        Path workdir = (Path) contextInfo;
+        switch (returncode) {
+            case (NSAlertPanel.DefaultReturn): //Create
+                this.create(workdir, filenameField.stringValue());
+                break;
+            case (NSAlertPanel.OtherReturn): //Edit
+                Path path = this.create(workdir, filenameField.stringValue());
+                if (path != null) {
+                    Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
+                    editor.open(path);
+                }
+                break;
+            case (NSAlertPanel.AlternateReturn): //Cancel
+                break;
+        }
+    }
+
+    protected Path create(Path workdir, String filename) {
+        Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), new Local(NSPathUtilities.temporaryDirectory(), filename));
+        if (!file.getRemote().exists()) {
+            try {
+                String proposal;
+                int no = 0;
+                int index = filename.lastIndexOf(".");
+                while (file.getLocal().exists()) {
+                    no++;
+                    if (index != -1) {
+                        proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
+                    }
+                    else {
+                        proposal = filename + "-" + no;
+                    }
+                    file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
+                }
+                file.getLocal().createNewFile();
+                file.upload();
+                file.getLocal().delete();
+            }
+            catch (java.io.IOException e) {
                 log.error(e.getMessage());
             }
         }
         controller.setShowHiddenFiles(filename.charAt(0) == '.');
         List listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
-        if(null == listing) {
+        if (null == listing) {
             return null;
         }
-        if(listing.contains(file))
-            return (Path)listing.get(listing.indexOf(file));
+        if (listing.contains(file))
+            return (Path) listing.get(listing.indexOf(file));
         return null;
     }
 }

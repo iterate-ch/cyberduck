@@ -41,7 +41,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
     public int indexOf(NSView tableView, Path p) {
         //bug: the rowForItem method does not use p.equals() therefore only returns a valid value
         //if the exact reference is passed
-        return ((NSOutlineView)tableView).rowForItem(p);
+        return ((NSOutlineView) tableView).rowForItem(p);
     }
 
     public boolean outlineViewIsItemExpandable(NSOutlineView outlineView, Path item) {
@@ -93,14 +93,13 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
     // ----------------------------------------------------------
 
     /**
-     *
      * @param outlineView
      * @param info
-     * @param destination  The proposed parent
-     * @param row  The proposed child location.
+     * @param destination The proposed parent
+     * @param row         The proposed child location.
      */
     public int outlineViewValidateDrop(NSOutlineView outlineView, NSDraggingInfo info, Path destination, int row) {
-		outlineView.setDropItemAndDropChildIndex(destination, NSOutlineView.DropOnItemIndex);
+        outlineView.setDropItemAndDropChildIndex(destination, NSOutlineView.DropOnItemIndex);
         return super.validateDrop(outlineView, destination, row, info);
     }
 

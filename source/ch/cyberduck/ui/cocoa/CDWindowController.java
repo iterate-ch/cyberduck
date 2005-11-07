@@ -18,8 +18,18 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSModalSession;
+import com.apple.cocoa.application.NSMutableParagraphStyle;
+import com.apple.cocoa.application.NSParagraphStyle;
+import com.apple.cocoa.application.NSWindow;
+import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSNotification;
+import com.apple.cocoa.foundation.NSNotificationCenter;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
 
@@ -27,75 +37,75 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public abstract class CDWindowController extends CDController {
-	protected static Logger log = Logger.getLogger(CDWindowController.class);
+    protected static Logger log = Logger.getLogger(CDWindowController.class);
 
-	private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
-	
-	static {
-		lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
-	}
-	
-	protected static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
-																	  new Object[]{NSAttributedString.ParagraphStyleAttributeName});
-	
-	private NSWindow window; // IBOutlet
+    private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
 
-	public void setWindow(NSWindow window) {
-		this.window = window;
-		(NSNotificationCenter.defaultCenter()).addObserver(this,
-														   new NSSelector("windowWillClose", new Class[]{NSNotification.class}),
-														   NSWindow.WindowWillCloseNotification,
-														   this.window);
-	}
+    static {
+        lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
+    }
 
-	public NSWindow window() {
-		return this.window;
-	}
+    protected static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
+            new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
-	public boolean windowShouldClose(NSWindow sender) {
-		return true;
-	}
+    private NSWindow window; // IBOutlet
 
-	public abstract void windowWillClose(NSNotification notification);
-	
-	public void cascade() {
-		NSArray windows = NSApplication.sharedApplication().windows();
-		int count = windows.count();
-		if(count != 0) {
-			while(0 != count--) {
-				NSWindow window = (NSWindow)windows.objectAtIndex(count);
-				NSPoint origin = window.frame().origin();
-				origin = new NSPoint(origin.x(), origin.y()+window.frame().size().height());
-				this.window().setFrameTopLeftPoint(this.window().cascadeTopLeftFromPoint(origin));
-				break;
-			}
-		}
+    public void setWindow(NSWindow window) {
+        this.window = window;
+        (NSNotificationCenter.defaultCenter()).addObserver(this,
+                new NSSelector("windowWillClose", new Class[]{NSNotification.class}),
+                NSWindow.WindowWillCloseNotification,
+                this.window);
+    }
+
+    public NSWindow window() {
+        return this.window;
+    }
+
+    public boolean windowShouldClose(NSWindow sender) {
+        return true;
+    }
+
+    public abstract void windowWillClose(NSNotification notification);
+
+    public void cascade() {
+        NSArray windows = NSApplication.sharedApplication().windows();
+        int count = windows.count();
+        if (count != 0) {
+            while (0 != count--) {
+                NSWindow window = (NSWindow) windows.objectAtIndex(count);
+                NSPoint origin = window.frame().origin();
+                origin = new NSPoint(origin.x(), origin.y() + window.frame().size().height());
+                this.window().setFrameTopLeftPoint(this.window().cascadeTopLeftFromPoint(origin));
+                break;
+            }
+        }
     }
 
     public void endSheet(NSWindow sheet, int tag) {
         log.debug("endSheet");
-        if(modalSession != null) {
+        if (modalSession != null) {
             NSApplication.sharedApplication().endModalSession(modalSession);
             modalSession = null;
         }
         NSApplication.sharedApplication().endSheet(sheet, tag);
-        synchronized(this) {
+        synchronized (this) {
             this.notifyAll();
         }
     }
 
     public void waitForSheetEnd() {
         log.debug("waitForSheetEnd");
-        synchronized(this) {
-            while(this.hasSheet()) {
+        synchronized (this) {
+            while (this.hasSheet()) {
                 try {
-                    if(Thread.currentThread().getName().equals("main")
-                    || Thread.currentThread().getName().equals("AWT-AppKit")) {
+                    if (Thread.currentThread().getName().equals("main")
+                            || Thread.currentThread().getName().equals("AWT-AppKit")) {
                         log.warn("Waiting on main thread; will run modal!");
                         NSApplication app = NSApplication.sharedApplication();
                         modalSession = NSApplication.sharedApplication().beginModalSessionForWindow(
                                 this.window().attachedSheet());
-                        while(this.hasSheet()) {
+                        while (this.hasSheet()) {
                             app.runModalSession(modalSession);
                         }
                         return;
@@ -104,7 +114,7 @@ public abstract class CDWindowController extends CDController {
                     this.wait();
                     log.debug("Awakened:waitForSheetEnd");
                 }
-                catch(InterruptedException e) {
+                catch (InterruptedException e) {
                     log.error(e.getMessage());
                 }
             }
@@ -120,15 +130,15 @@ public abstract class CDWindowController extends CDController {
         this.beginSheet(sheet, this, new NSSelector
                 ("sheetWithoutTargetDidEnd",
                         new Class[]
-                        {
-                            NSWindow.class, int.class, Object.class
-                        }), null); // end selector);
+                                {
+                                        NSWindow.class, int.class, Object.class
+                                }), null); // end selector);
     }
 
     public void beginSheet(final NSWindow sheet, final Object delegate, final NSSelector endSelector, final Object contextInfo) {
-        log.debug("beginSheet:"+sheet);
-        synchronized(this) {
-            if(!this.window().isKeyWindow()) {
+        log.debug("beginSheet:" + sheet);
+        synchronized (this) {
+            if (!this.window().isKeyWindow()) {
                 this.window.makeKeyAndOrderFront(null);
             }
             this.waitForSheetEnd();
@@ -145,7 +155,7 @@ public abstract class CDWindowController extends CDController {
 
     private NSModalSession modalSession = null;
 
-	public boolean hasSheet() {
-		return this.window().attachedSheet() != null;
-	}
+    public boolean hasSheet() {
+        return this.window().attachedSheet() != null;
+    }
 }

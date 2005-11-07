@@ -18,77 +18,81 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DownloadQueue;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Validator;
+import ch.cyberduck.core.ValidatorFactory;
+
 import com.apple.cocoa.application.NSApplication;
+
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
-import ch.cyberduck.core.*;
-
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDDownloadQueueValidatorController extends CDValidatorController {
-	private static Logger log = Logger.getLogger(CDDownloadQueueValidatorController.class);
-	
-	static {
-		ValidatorFactory.addFactory(DownloadQueue.class, new Factory());
-	}
-	
-	private static class Factory extends ValidatorFactory {
-		protected Validator create() {
-			return new CDDownloadQueueValidatorController(CDQueueController.instance());
-		}
-	}
-	
-	private CDDownloadQueueValidatorController(CDWindowController windowController) {
-		super(windowController);
-	}
-	
-	protected void load() {
-		if(!NSApplication.loadNibNamed("Validator", this)) {
-			log.fatal("Couldn't load Validator.nib");
-		}
-		this.setEnabled(false);
-	}
-	
-	public List getResult() {
-		List result = new ArrayList();
-		result.addAll(this.validatedList);
-		result.addAll(this.workList);
-		return result;
-	}
-	
-	protected boolean isExisting(Path p) {
-		return p.getLocal().exists() && p.getLocal().getSize() > 0;
-	}
-	
-	protected boolean validateDirectory(Path path) {
-		if(!path.getLocal().exists()) {
-			//Include the directory as it has to be created before we can download any childs
-			return true;
-		}
-		return false;
-	}
-	
-	protected void adjustFilename(Path path) {
-		String parent = path.getLocal().getParent();
-		String filename = path.getLocal().getName();
-		String proposal = filename;
-		int no = 0;
-		int index = filename.lastIndexOf(".");
-		do {
-			path.setLocal(new Local(parent, proposal));
-			no++;
-			if(index != -1) {
-				proposal = filename.substring(0, index)+"-"+no+filename.substring(index);
-			}
-			else {
-				proposal = filename+"-"+no;
-			}
-		}
-		while(path.getLocal().exists());
-	}
+    private static Logger log = Logger.getLogger(CDDownloadQueueValidatorController.class);
+
+    static {
+        ValidatorFactory.addFactory(DownloadQueue.class, new Factory());
+    }
+
+    private static class Factory extends ValidatorFactory {
+        protected Validator create() {
+            return new CDDownloadQueueValidatorController(CDQueueController.instance());
+        }
+    }
+
+    private CDDownloadQueueValidatorController(CDWindowController windowController) {
+        super(windowController);
+    }
+
+    protected void load() {
+        if (!NSApplication.loadNibNamed("Validator", this)) {
+            log.fatal("Couldn't load Validator.nib");
+        }
+        this.setEnabled(false);
+    }
+
+    public List getResult() {
+        List result = new ArrayList();
+        result.addAll(this.validatedList);
+        result.addAll(this.workList);
+        return result;
+    }
+
+    protected boolean isExisting(Path p) {
+        return p.getLocal().exists() && p.getLocal().getSize() > 0;
+    }
+
+    protected boolean validateDirectory(Path path) {
+        if (!path.getLocal().exists()) {
+            //Include the directory as it has to be created before we can download any childs
+            return true;
+        }
+        return false;
+    }
+
+    protected void adjustFilename(Path path) {
+        String parent = path.getLocal().getParent();
+        String filename = path.getLocal().getName();
+        String proposal = filename;
+        int no = 0;
+        int index = filename.lastIndexOf(".");
+        do {
+            path.setLocal(new Local(parent, proposal));
+            no++;
+            if (index != -1) {
+                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
+            }
+            else {
+                proposal = filename + "-" + no;
+            }
+        }
+        while (path.getLocal().exists());
+    }
 }

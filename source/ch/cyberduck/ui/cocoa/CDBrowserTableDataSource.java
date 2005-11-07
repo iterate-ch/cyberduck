@@ -44,10 +44,7 @@ import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRect;
-import com.apple.cocoa.foundation.NSRunLoop;
-import com.apple.cocoa.foundation.NSSelector;
 import com.apple.cocoa.foundation.NSSize;
-import com.apple.cocoa.foundation.NSTimer;
 
 import org.apache.log4j.Logger;
 
@@ -93,14 +90,14 @@ public abstract class CDBrowserTableDataSource {
     }
 
     public void setObjectValueForItem(Path item, Object value, String identifier) {
-        log.debug("setObjectValueForItem:"+item);
+        log.debug("setObjectValueForItem:" + item);
         if (identifier.equals(FILENAME_COLUMN)) {
-            if(!item.getName().equals(value)) {
+            if (!item.getName().equals(value)) {
                 controller.renamePath(item, controller.workdir().getAbsolute(), value.toString());
             }
         }
     }
-	
+
     public Object objectValueForItem(Path item, String identifier) {
         if (null != item) {
             if (identifier.equals(TYPE_COLUMN)) {
@@ -163,7 +160,7 @@ public abstract class CDBrowserTableDataSource {
     }
 
     public boolean acceptDrop(NSTableView view, Path destination, NSDraggingInfo info) {
-        log.debug("acceptDrop:"+destination);
+        log.debug("acceptDrop:" + destination);
         NSPasteboard infoPboard = info.draggingPasteboard();
         if (infoPboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
             NSArray filesList = (NSArray) infoPboard.propertyListForType(NSPasteboard.FilenamesPboardType);
@@ -293,10 +290,10 @@ public abstract class CDBrowserTableDataSource {
 
     /**
      * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-     * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
-     * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
-     * you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
-     * blocking the destination application.
+     *         This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
+     *         Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
+     *         you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
+     *         blocking the destination application.
      */
     public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
@@ -314,7 +311,7 @@ public abstract class CDBrowserTableDataSource {
                 catch (UnsupportedEncodingException e) {
                     log.error(e.getMessage());
                 }
-                catch(IOException e) {
+                catch (IOException e) {
                     log.error(e.getMessage());
                 }
             }

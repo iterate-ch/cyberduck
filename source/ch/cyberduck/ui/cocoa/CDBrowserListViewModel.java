@@ -45,9 +45,9 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
         return 0;
     }
 
-	public void tableViewSetObjectValueForLocation(NSTableView view, Object value, NSTableColumn tableColumn, int row) {
+    public void tableViewSetObjectValueForLocation(NSTableView view, Object value, NSTableColumn tableColumn, int row) {
         if (controller.isMounted()) {
-            super.setObjectValueForItem((Path) this.childs(this.controller.workdir()).get(row), value, (String)tableColumn.identifier());
+            super.setObjectValueForItem((Path) this.childs(this.controller.workdir()).get(row), value, (String) tableColumn.identifier());
         }
     }
 
@@ -55,7 +55,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
         if (controller.isMounted()) {
             List childs = this.childs(this.controller.workdir());
             if (row < childs.size()) {
-                return super.objectValueForItem((Path)childs.get(row), (String) tableColumn.identifier());
+                return super.objectValueForItem((Path) childs.get(row), (String) tableColumn.identifier());
             }
         }
         return null;
@@ -68,8 +68,8 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
     public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
         if (controller.isMounted()) {
             Path destination = controller.workdir();
-            if (row != -1  && row < tableView.numberOfRows()) {
-                destination = ((Path)this.childs(this.controller.workdir()).get(row));
+            if (row != -1 && row < tableView.numberOfRows()) {
+                destination = ((Path) this.childs(this.controller.workdir()).get(row));
             }
             return super.validateDrop(tableView, destination, row, info);
         }
@@ -80,13 +80,12 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
         if (controller.isMounted()) {
             Path destination = controller.workdir();
             if (row != -1 && row < tableView.numberOfRows()) {
-                destination = ((Path)this.childs(this.controller.workdir()).get(row));
+                destination = ((Path) this.childs(this.controller.workdir()).get(row));
             }
             return super.acceptDrop(tableView, destination, info);
         }
         return false;
     }
-
 
     // ----------------------------------------------------------
     // Drag methods

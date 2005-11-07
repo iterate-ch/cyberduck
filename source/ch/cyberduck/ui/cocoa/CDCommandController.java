@@ -18,14 +18,25 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import ch.cyberduck.core.Message;
+import ch.cyberduck.core.Session;
+
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSButton;
+import com.apple.cocoa.application.NSFont;
+import com.apple.cocoa.application.NSLayoutManager;
+import com.apple.cocoa.application.NSPanel;
+import com.apple.cocoa.application.NSTextContainer;
+import com.apple.cocoa.application.NSTextField;
+import com.apple.cocoa.application.NSTextView;
+import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSNotification;
+import com.apple.cocoa.foundation.NSRange;
 
 import java.util.Observable;
 import java.util.Observer;
-
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.Session;
 
 /**
  * @version $Id$
@@ -72,7 +83,7 @@ public class CDCommandController extends CDWindowController implements Observer 
         instances.addObject(this);
         this.session = session;
         this.session.addObserver(this);
-        if(!NSApplication.loadNibNamed("Command", this)) {
+        if (!NSApplication.loadNibNamed("Command", this)) {
             log.fatal("Couldn't load Command.nib");
         }
     }

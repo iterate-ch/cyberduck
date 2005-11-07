@@ -27,24 +27,24 @@ import java.util.HashMap;
  * @version $Id$
  */
 public class CDIconCache extends HashMap {
-	private static CDIconCache instance;
+    private static CDIconCache instance;
 
-	public static CDIconCache instance() {
-		if(null == instance) {
-			instance = new CDIconCache();
-		}
-		return instance;
-	}
+    public static CDIconCache instance() {
+        if (null == instance) {
+            instance = new CDIconCache();
+        }
+        return instance;
+    }
 
-	public void put(String extension, NSImage image) {
-		super.put(extension, image);
-	}
+    public void put(String extension, NSImage image) {
+        super.put(extension, image);
+    }
 
-	public NSImage get(String key) {
-		NSImage img = (NSImage)super.get(key);
-		if(null == img) {
-			this.put(key, img = NSWorkspace.sharedWorkspace().iconForFileType(key));
-		}
-		return img;
-	}
+    public NSImage get(String key) {
+        NSImage img = (NSImage) super.get(key);
+        if (null == img) {
+            this.put(key, img = NSWorkspace.sharedWorkspace().iconForFileType(key));
+        }
+        return img;
+    }
 }

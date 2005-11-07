@@ -22,79 +22,84 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.ui.cocoa.odb.Editor;
-import com.apple.cocoa.application.*;
+
+import com.apple.cocoa.application.NSAlertPanel;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSImage;
+import com.apple.cocoa.application.NSImageView;
+import com.apple.cocoa.application.NSPanel;
+import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSSize;
 
 import java.util.List;
 
 /**
-* @version $Id$
+ * @version $Id$
  */
 public class CDDuplicateFileController extends CDFileController {
-	
-	private NSImageView iconView;
-	
-	public void setIconView(NSImageView iconView) {
-		this.iconView = iconView;
-	}
+
+    private NSImageView iconView;
+
+    public void setIconView(NSImageView iconView) {
+        this.iconView = iconView;
+    }
 
     private CDBrowserController controller;
 
     public CDDuplicateFileController(CDBrowserController controller) {
         this.controller = controller;
-        if(!NSApplication.loadNibNamed("Duplicate", this)) {
-			log.fatal("Couldn't load Duplicate.nib");
-		}
-	}
-	
-	public void awakeFromNib() {
+        if (!NSApplication.loadNibNamed("Duplicate", this)) {
+            log.fatal("Couldn't load Duplicate.nib");
+        }
+    }
+
+    public void awakeFromNib() {
         super.awakeFromNib();
-		NSImage icon = NSWorkspace.sharedWorkspace().iconForFileType(controller.getSelectedPath().getExtension());
+        NSImage icon = NSWorkspace.sharedWorkspace().iconForFileType(controller.getSelectedPath().getExtension());
         icon.setScalesWhenResized(true);
-		icon.setSize(new NSSize(64f, 64f));
-		this.iconView.setImage(icon);
-		this.filenameField.setStringValue(controller.getSelectedPath().getName()+"-Copy");
-		this.window().setReleasedWhenClosed(true);
-	}
-	
+        icon.setSize(new NSSize(64f, 64f));
+        this.iconView.setImage(icon);
+        this.filenameField.setStringValue(controller.getSelectedPath().getName() + "-Copy");
+        this.window().setReleasedWhenClosed(true);
+    }
+
     public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
-		Path workdir = (Path)contextInfo;
-		switch(returncode) {
-			case (NSAlertPanel.DefaultReturn): //Duplicate
-				this.duplicate(workdir, filenameField.stringValue());
-				break;
-			case (NSAlertPanel.OtherReturn): //Edit
-				Path path = this.duplicate(workdir, filenameField.stringValue());
-				if(path != null) {
-                    Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
-					editor.open(path);
-				}
+        Path workdir = (Path) contextInfo;
+        switch (returncode) {
+            case (NSAlertPanel.DefaultReturn): //Duplicate
+                this.duplicate(workdir, filenameField.stringValue());
                 break;
-			case (NSAlertPanel.AlternateReturn): //Cancel
-				break;
-		}
-	}
-	
-	protected Path duplicate(Path workdir, String filename) {
-		Path p = PathFactory.createPath(workdir.getSession(), 
-										workdir.getAbsolute(), 
-										new Local(NSPathUtilities.temporaryDirectory(), 
-												  controller.getSelectedPath().getName()));
-		p.download();
-		p.setPath(workdir.getAbsolute(), filename);
-		p.upload();
+            case (NSAlertPanel.OtherReturn): //Edit
+                Path path = this.duplicate(workdir, filenameField.stringValue());
+                if (path != null) {
+                    Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
+                    editor.open(path);
+                }
+                break;
+            case (NSAlertPanel.AlternateReturn): //Cancel
+                break;
+        }
+    }
+
+    protected Path duplicate(Path workdir, String filename) {
+        Path p = PathFactory.createPath(workdir.getSession(),
+                workdir.getAbsolute(),
+                new Local(NSPathUtilities.temporaryDirectory(),
+                        controller.getSelectedPath().getName()));
+        p.download();
+        p.setPath(workdir.getAbsolute(), filename);
+        p.upload();
         controller.setShowHiddenFiles(filename.charAt(0) == '.');
         List listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
-        if(null == listing) {
+        if (null == listing) {
             return null;
         }
-        if(listing.contains(p)) {
-			return (Path)listing.get(listing.indexOf(p));
+        if (listing.contains(p)) {
+            return (Path) listing.get(listing.indexOf(p));
         }
         return null;
-	}	
+    }
 }

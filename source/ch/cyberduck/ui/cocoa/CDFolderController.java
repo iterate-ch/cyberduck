@@ -20,12 +20,16 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.NullFilter;
 
-import com.apple.cocoa.application.*;
+import com.apple.cocoa.application.NSAlertPanel;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSButton;
+import com.apple.cocoa.application.NSPanel;
+import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
+
 import org.apache.log4j.Logger;
 
 import java.util.List;
@@ -34,86 +38,86 @@ import java.util.List;
  * @version $Id$
  */
 public class CDFolderController extends CDWindowController {
-	private static Logger log = Logger.getLogger(CDFolderController.class);
+    private static Logger log = Logger.getLogger(CDFolderController.class);
 
-	private static NSMutableArray instances = new NSMutableArray();
+    private static NSMutableArray instances = new NSMutableArray();
 
-	private NSTextField folderField; //IBOutlet
+    private NSTextField folderField; //IBOutlet
 
-	public void setFolderField(NSTextField folderField) {
-		this.folderField = folderField;
-	}
+    public void setFolderField(NSTextField folderField) {
+        this.folderField = folderField;
+    }
 
     private CDBrowserController controller;
-    
+
     public CDFolderController(CDBrowserController controller) {
         this.controller = controller;
         instances.addObject(this);
-		if(!NSApplication.loadNibNamed("Folder", this)) {
-			log.fatal("Couldn't load Folder.nib");
-		}
-	}
+        if (!NSApplication.loadNibNamed("Folder", this)) {
+            log.fatal("Couldn't load Folder.nib");
+        }
+    }
 
-	public void awakeFromNib() {
+    public void awakeFromNib() {
         super.awakeFromNib();
 
-		this.window().setReleasedWhenClosed(true);
-	}
+        this.window().setReleasedWhenClosed(true);
+    }
 
-	public void windowWillClose(NSNotification notification) {
-		instances.removeObject(this);
-	}
+    public void windowWillClose(NSNotification notification) {
+        instances.removeObject(this);
+    }
 
-	public void createButtonClicked(NSButton sender) {
-		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-		if(folderField.stringValue().indexOf('/') != -1) {
-			NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-			    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-			    null, //alternative button
-			    null, //other button
-			    this.window(), //docWindow
-			    null, //modalDelegate
-			    null, //didEndSelector
-			    null, // dismiss selector
-			    null, // context
-			    NSBundle.localizedString("Invalid character in folder name.", "") // message
-			);
-		}
-		else if(folderField.stringValue().length() == 0) {
-			//
-		}
-		else {
-			this.endSheet(this.window(), sender.tag());
-		}
-	}
+    public void createButtonClicked(NSButton sender) {
+        // Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
+        if (folderField.stringValue().indexOf('/') != -1) {
+            NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+                    null, //alternative button
+                    null, //other button
+                    this.window(), //docWindow
+                    null, //modalDelegate
+                    null, //didEndSelector
+                    null, // dismiss selector
+                    null, // context
+                    NSBundle.localizedString("Invalid character in folder name.", "") // message
+            );
+        }
+        else if (folderField.stringValue().length() == 0) {
+            //
+        }
+        else {
+            this.endSheet(this.window(), sender.tag());
+        }
+    }
 
-	public void cancelButtonClicked(NSButton sender) {
-		this.endSheet(this.window(), sender.tag());
-	}
+    public void cancelButtonClicked(NSButton sender) {
+        this.endSheet(this.window(), sender.tag());
+    }
 
     public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
-		switch(returncode) {
-			case (NSAlertPanel.DefaultReturn):
-				Path workdir = (Path)contextInfo;
-				this.create(workdir, folderField.stringValue());
-				break;
-			case (NSAlertPanel.AlternateReturn):
-				break;
-		}
-	}
-	
-	public Path create(Path workdir, String filename) {
-		Path folder = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
-		folder.mkdir(false);
+        switch (returncode) {
+            case (NSAlertPanel.DefaultReturn):
+                Path workdir = (Path) contextInfo;
+                this.create(workdir, folderField.stringValue());
+                break;
+            case (NSAlertPanel.AlternateReturn):
+                break;
+        }
+    }
+
+    public Path create(Path workdir, String filename) {
+        Path folder = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
+        folder.mkdir(false);
         controller.setShowHiddenFiles(filename.charAt(0) == '.');
         List listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
-        if(null == listing) {
+        if (null == listing) {
             return null;
         }
-        if(listing.contains(folder)) {
-			return (Path)listing.get(listing.indexOf(folder));
+        if (listing.contains(folder)) {
+            return (Path) listing.get(listing.indexOf(folder));
         }
         return null;
-	}
+    }
 }

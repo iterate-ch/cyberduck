@@ -31,57 +31,57 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public abstract class CDFileController extends CDWindowController {
-	protected static Logger log = Logger.getLogger(CDFileController.class);
+    protected static Logger log = Logger.getLogger(CDFileController.class);
 
-	private static NSMutableArray instances = new NSMutableArray();
+    private static NSMutableArray instances = new NSMutableArray();
 
-	protected NSTextField filenameField; //IBOutlet
+    protected NSTextField filenameField; //IBOutlet
 
-	public void setFilenameField(NSTextField filenameField) {
-		this.filenameField = filenameField;
-	}
+    public void setFilenameField(NSTextField filenameField) {
+        this.filenameField = filenameField;
+    }
 
-	public void awakeFromNib() {
+    public void awakeFromNib() {
         super.awakeFromNib();
-		this.window().setReleasedWhenClosed(true);
-	}
+        this.window().setReleasedWhenClosed(true);
+    }
 
-	public CDFileController() {
-		instances.addObject(this);
-	}
+    public CDFileController() {
+        instances.addObject(this);
+    }
 
-	public void windowWillClose(NSNotification notification) {
-		instances.removeObject(this);
-	}
+    public void windowWillClose(NSNotification notification) {
+        instances.removeObject(this);
+    }
 
     public void editButtonClicked(NSButton sender) {
         this.createButtonClicked(sender);
     }
 
-	public void createButtonClicked(NSButton sender) {
-		// Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-		if(filenameField.stringValue().indexOf('/') != -1) {
-			NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
-			    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-			    null, //alternative button
-			    null, //other button
-			    this.window(), //docWindow
-			    null, //modalDelegate
-			    null, //didEndSelector
-			    null, // dismiss selector
-			    null, // context
-			    NSBundle.localizedString("Invalid character in filename.", "") // message
-			);
-		}
-		else if(filenameField.stringValue().length() == 0) {
-			//
-		}
-		else {
-			this.endSheet(this.window(), sender.tag());
-		}
-	}
+    public void createButtonClicked(NSButton sender) {
+        // Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
+        if (filenameField.stringValue().indexOf('/') != -1) {
+            NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+                    null, //alternative button
+                    null, //other button
+                    this.window(), //docWindow
+                    null, //modalDelegate
+                    null, //didEndSelector
+                    null, // dismiss selector
+                    null, // context
+                    NSBundle.localizedString("Invalid character in filename.", "") // message
+            );
+        }
+        else if (filenameField.stringValue().length() == 0) {
+            //
+        }
+        else {
+            this.endSheet(this.window(), sender.tag());
+        }
+    }
 
-	public void cancelButtonClicked(NSButton sender) {
-		this.endSheet(this.window(), sender.tag());
-	}
+    public void cancelButtonClicked(NSButton sender) {
+        this.endSheet(this.window(), sender.tag());
+    }
 }
