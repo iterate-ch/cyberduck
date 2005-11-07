@@ -18,16 +18,38 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.UploadQueue;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.Comparator;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSDraggingInfo;
+import com.apple.cocoa.application.NSEvent;
+import com.apple.cocoa.application.NSImage;
+import com.apple.cocoa.application.NSPasteboard;
+import com.apple.cocoa.application.NSTableColumn;
+import com.apple.cocoa.application.NSTableView;
+import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSData;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSMutableData;
+import com.apple.cocoa.foundation.NSPathUtilities;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSPropertyListSerialization;
+import com.apple.cocoa.foundation.NSRect;
+import com.apple.cocoa.foundation.NSSize;
 
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.*;
+import java.io.File;
 
 /**
  * @version $Id$
@@ -154,7 +176,7 @@ public class CDBookmarkTableDataSource extends Collection {
                         index = tableView.numberOfRows();
                     }
                     Host bookmark = this.importBookmark(new File(filename));
-                    if(bookmark != null) {
+                    if (bookmark != null) {
                         //parsing succeeded
                         this.add(index, bookmark);
                         tableView.reloadData();

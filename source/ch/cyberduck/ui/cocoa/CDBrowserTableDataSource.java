@@ -247,8 +247,9 @@ public abstract class CDBrowserTableDataSource {
                 // The fileTypes argument is the list of fileTypes being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
                 NSMutableArray fileTypes = new NSMutableArray();
                 Queue q = new DownloadQueue();
+                Session session = controller.workdir().getSession().copy();
                 for (int i = 0; i < items.count(); i++) {
-                    promisedDragPaths[i] = ((Path) items.objectAtIndex(i));
+                    promisedDragPaths[i] = ((Path) items.objectAtIndex(i)).copy(session);
                     if (promisedDragPaths[i].attributes.isFile()) {
                         if (promisedDragPaths[i].getExtension() != null) {
                             fileTypes.addObject(promisedDragPaths[i].getExtension());

@@ -35,11 +35,11 @@ public class Codec {
      * The length of the new String is a function of the charset, and hence may not be equal to the length of the byte array.
      */
     public static String decode(byte[] text, String encoding) {
-        if(null != encoding) {
+        if (null != encoding) {
             try {
                 return new String(text, encoding);
             }
-            catch(java.io.UnsupportedEncodingException e) {
+            catch (java.io.UnsupportedEncodingException e) {
                 log.error(e.getMessage());
             }
         }
@@ -54,11 +54,11 @@ public class Codec {
      * @param encoding The desired encoding
      */
     public static byte[] encode(String text, String encoding) {
-        if(null != encoding) {
+        if (null != encoding) {
             try {
                 return text.getBytes(encoding);
             }
-            catch(java.io.UnsupportedEncodingException e) {
+            catch (java.io.UnsupportedEncodingException e) {
                 log.error(e.getMessage());
             }
         }

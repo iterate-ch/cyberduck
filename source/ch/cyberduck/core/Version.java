@@ -32,7 +32,7 @@ public class Version implements Comparable {
     }
 
     /**
-        * parses major string in the form major[.minor[.subrevision[extension]]]
+     * parses major string in the form major[.minor[.subrevision[extension]]]
      * into this instance.
      */
     private void parse(String version_string) {
@@ -43,23 +43,23 @@ public class Version implements Comparable {
         int pos = 0;
         int startpos = 0;
         int endpos = version_string.length();
-        while ( (pos < endpos) && Character.isDigit(version_string.charAt(pos))) {
+        while ((pos < endpos) && Character.isDigit(version_string.charAt(pos))) {
             pos++;
         }
-        major = Integer.parseInt(version_string.substring(startpos,pos));
-        if ((pos < endpos) && version_string.charAt(pos)=='.') {
+        major = Integer.parseInt(version_string.substring(startpos, pos));
+        if ((pos < endpos) && version_string.charAt(pos) == '.') {
             startpos = ++pos;
-            while ( (pos < endpos) && Character.isDigit(version_string.charAt(pos))) {
+            while ((pos < endpos) && Character.isDigit(version_string.charAt(pos))) {
                 pos++;
             }
-            minor = Integer.parseInt(version_string.substring(startpos,pos));
+            minor = Integer.parseInt(version_string.substring(startpos, pos));
         }
-        if ((pos < endpos) && version_string.charAt(pos)=='.') {
+        if ((pos < endpos) && version_string.charAt(pos) == '.') {
             startpos = ++pos;
-            while ( (pos < endpos) && Character.isDigit(version_string.charAt(pos))) {
+            while ((pos < endpos) && Character.isDigit(version_string.charAt(pos))) {
                 pos++;
             }
-            revision = Integer.parseInt(version_string.substring(startpos,pos));
+            revision = Integer.parseInt(version_string.substring(startpos, pos));
         }
         if (pos < endpos) {
             suffix = version_string.substring(pos);
@@ -81,8 +81,9 @@ public class Version implements Comparable {
     }
 
     /**
-        * Compares with other major. Does not take extension into account,
+     * Compares with other major. Does not take extension into account,
      * as there is no reliable way to order them.
+     *
      * @return <0 if this is older major that other,
      *         0 if its same major,
      *         >0 if it's newer major than other
@@ -90,16 +91,16 @@ public class Version implements Comparable {
     public int compareTo(Object o) {
         if (null == o)
             throw new NullPointerException();
-        if(o  instanceof Version) {
-            Version other = (Version)o;
+        if (o instanceof Version) {
+            Version other = (Version) o;
             if (this.major < other.major) return -1;
             if (this.major > other.major) return 1;
             if (this.minor < other.minor) return -1;
             if (this.minor > other.minor) return 1;
             if (this.revision < other.revision) return -1;
             if (this.revision > other.revision) return 1;
-            if("".equals(this.suffix)) return 1;
-            if("".equals(other.suffix)) return -1;
+            if ("".equals(this.suffix)) return 1;
+            if ("".equals(other.suffix)) return -1;
             return this.suffix.compareToIgnoreCase(other.suffix);
         }
         throw new IllegalArgumentException();

@@ -18,15 +18,21 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
+import com.enterprisedt.net.ftp.FTPActiveDataSocket;
+import com.enterprisedt.net.ftp.FTPControlSocket;
+import com.enterprisedt.net.ftp.FTPDataSocket;
+import com.enterprisedt.net.ftp.FTPException;
+import com.enterprisedt.net.ftp.FTPMessageListener;
+import com.enterprisedt.net.ftp.FTPPassiveDataSocket;
+import com.enterprisedt.net.ftp.FTPReply;
+
+import ch.cyberduck.core.Preferences;
+
 import javax.net.ssl.HandshakeCompletedEvent;
 import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.net.InetAddress;
-
-import com.enterprisedt.net.ftp.*;
-
-import ch.cyberduck.core.Preferences;
 
 /**
  * @version $Id$
@@ -66,9 +72,9 @@ public class FTPSControlSocket extends FTPControlSocket {
     }
 
     protected FTPDataSocket createDataSocketActive()
-        throws IOException, FTPException {
+            throws IOException, FTPException {
 
-        if(useDataConnectionSecurity) {
+        if (useDataConnectionSecurity) {
             // use any available port
             FTPDataSocket socket = new FTPActiveDataSocket(
                     new SSLProtocolSocketFactory(trustManager).createServerSocket(0));
@@ -77,7 +83,7 @@ public class FTPSControlSocket extends FTPControlSocket {
             InetAddress localhost = controlSock.getLocalAddress();
 
             // send the PORT command to the server
-            this.setDataPort(localhost, (short)socket.getLocalPort());
+            this.setDataPort(localhost, (short) socket.getLocalPort());
 
             return socket;
         }
@@ -86,7 +92,7 @@ public class FTPSControlSocket extends FTPControlSocket {
 
 
     protected FTPDataSocket createDataSocketPASV() throws IOException, FTPException {
-        if(useDataConnectionSecurity) {
+        if (useDataConnectionSecurity) {
             // PASSIVE command - tells the server to listen for
             // a connection attempt rather than initiating it
             FTPReply replyObj = sendCommand("PASV");
@@ -112,16 +118,16 @@ public class FTPSControlSocket extends FTPControlSocket {
 
             // assemble the IP address
             // we try connecting, so we don't bother checking digits etc
-            String ipAddress = parts[0]+"."+parts[1]+"."+
-                    parts[2]+"."+parts[3];
+            String ipAddress = parts[0] + "." + parts[1] + "." +
+                    parts[2] + "." + parts[3];
 
             // assemble the port number
-            int port = (parts[4]<<8)+parts[5];
+            int port = (parts[4] << 8) + parts[5];
 
             // create the socket
             return new FTPPassiveDataSocket(
                     new SSLProtocolSocketFactory(trustManager).createSocket(ipAddress, port));
         }
         return super.createDataSocketPASV();
-	}
+    }
 }

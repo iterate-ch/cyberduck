@@ -33,7 +33,7 @@ public class Cache extends HashMap {
     public Cache() {
         super();
     }
-	
+
     public boolean containsKey(Path path) {
         return super.containsKey(path.getAbsolute());
     }
@@ -43,8 +43,8 @@ public class Cache extends HashMap {
     }
 
     public void invalidate(Path path) {
-        if(this.containsKey(path)) {
-			this.get(path).getAttributes().put(AttributedList.INVALID, Boolean.TRUE);
+        if (this.containsKey(path)) {
+            this.get(path).getAttributes().put(AttributedList.INVALID, Boolean.TRUE);
         }
     }
 
@@ -53,51 +53,49 @@ public class Cache extends HashMap {
      * @return true if the file listing of the given path has been changed since caching
      */
     public boolean isInvalid(Path path) {
-        if(this.containsKey(path)) {
+        if (this.containsKey(path)) {
             return this.get(path).getAttributes().get(AttributedList.INVALID).equals(Boolean.TRUE);
         }
         return false;
     }
 
     /**
-     *
      * @param path
      * @return null if no cached file listing is available
      */
     public AttributedList get(Path path) {
-        return (AttributedList)super.get(path.getAbsolute());
+        return (AttributedList) super.get(path.getAbsolute());
     }
 
     /**
-     *
      * @param path
      * @param comparator
      * @param filter
      * @return null if no cached file listing is available
      */
     public AttributedList get(Path path, Comparator comparator, Filter filter) {
-        AttributedList childs = (AttributedList)super.get(path.getAbsolute());
-        if(null == childs) {
+        AttributedList childs = (AttributedList) super.get(path.getAbsolute());
+        if (null == childs) {
             return childs;
         }
         boolean needsSorting = !childs.getAttributes().get(AttributedList.COMPARATOR).equals(comparator);
         boolean needsFiltering = !childs.getAttributes().get(AttributedList.FILTER).equals(filter);
-        if(needsSorting) {
+        if (needsSorting) {
             //do not sort when the list has not been filtered yet
-            if(!needsFiltering) {
+            if (!needsFiltering) {
                 Collections.sort(childs, comparator);
             }
             //saving last sorting comparator
             childs.getAttributes().put(AttributedList.COMPARATOR, comparator);
         }
-        if(needsFiltering) {
+        if (needsFiltering) {
             //add previously hidden files to childs
-            childs.addAll((Set)childs.getAttributes().get(AttributedList.HIDDEN));
+            childs.addAll((Set) childs.getAttributes().get(AttributedList.HIDDEN));
             //clear the previously set of hidden files
-            ((Set)childs.getAttributes().get(AttributedList.HIDDEN)).clear();
-            for(Iterator i = childs.iterator(); i.hasNext(); ) {
-                Path child = (Path)i.next();
-                if(!filter.accept(child)) {
+            ((Set) childs.getAttributes().get(AttributedList.HIDDEN)).clear();
+            for (Iterator i = childs.iterator(); i.hasNext();) {
+                Path child = (Path) i.next();
+                if (!filter.accept(child)) {
                     //child not accepted by filter; add to cached hidden files
                     childs.getAttributes().addHidden(child);
                     //remove hidden file from current file listing
@@ -113,41 +111,40 @@ public class Cache extends HashMap {
     }
 
     public Object put(Path path, List childs) {
-		return super.put(path.getAbsolute(), new AttributedList(childs));
-	}
+        return super.put(path.getAbsolute(), new AttributedList(childs));
+    }
 
     /**
-     *
-     * @param path ch.cyberduck.core.Path
+     * @param path   ch.cyberduck.core.Path
      * @param childs java.util.List
      */
     public Object put(Object path, Object childs) {
-        return this.put((Path)path, (List)childs);
+        return this.put((Path) path, (List) childs);
     }
 
     /**
      * Memorize the given path to be expaned in outline view
-     * @param path Must be a directory
+     *
+     * @param path     Must be a directory
      * @param expanded
-     * @see ch.cyberduck.core.Attributes#isDirectory()
+     * @see Attributes#isDirectory()
      */
     public void setExpanded(Path path, boolean expanded) {
-        if(path.attributes.isDirectory()) {
-            if(this.containsKey(path)) {
+        if (path.attributes.isDirectory()) {
+            if (this.containsKey(path)) {
                 this.get(path).getAttributes().setExpanded(expanded);
             }
         }
     }
 
     /**
-     *
      * @param path Must be a directory
      * @return true if the given path should be expanded in outline view
-     * @see ch.cyberduck.core.Attributes#isDirectory()
+     * @see Attributes#isDirectory()
      */
     public boolean isExpanded(Path path) {
-        if(path.attributes.isDirectory()) {
-            if(this.containsKey(path)) {
+        if (path.attributes.isDirectory()) {
+            if (this.containsKey(path)) {
                 return this.get(path).getAttributes().isExpanded();
             }
         }

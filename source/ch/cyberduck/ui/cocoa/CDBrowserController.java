@@ -2241,7 +2241,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 				if (arg instanceof Message) {
 					final Message msg = (Message) arg;
 					if (msg.getTitle().equals(Message.TRANSCRIPT)) {
-						log.info(msg.getContent());
 						logView.textStorage().appendAttributedString(
 								new NSAttributedString(msg.getContent()+"\n", FIXED_WITH_FONT_ATTRIBUTES));
 					}
@@ -2601,7 +2600,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             return false;
 		}
         if(identifier.equals("sendCustomCommandClicked:")) {
-            return this.isConnected();
+           return (this.session instanceof ch.cyberduck.core.ftp.FTPSession) && this.isConnected();
         }
         if (identifier.equals("gotoButtonClicked:")) {
             return this.isMounted();
@@ -2716,9 +2715,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
             item.setToolTip(NSBundle.localizedString("Switch Browser View", "Toolbar item tooltip"));
             item.setView(this.browserSwitchView);
             NSMenuItem viewMenu = new NSMenuItem();
-			viewMenu.setTitle(NSBundle.localizedString("View", "Toolbar item"));
+				viewMenu.setTitle(NSBundle.localizedString("View", "Toolbar item"));
             NSMenu viewSubmenu = new NSMenu();
-			viewSubmenu.addItem(new NSMenuItem(NSBundle.localizedString("List", "Toolbar item"),
+				viewSubmenu.addItem(new NSMenuItem(NSBundle.localizedString("List", "Toolbar item"),
 											   new NSSelector("browserSwitchClicked", new Class[]{Object.class}),
 											   ""));
 			viewSubmenu.itemWithTitle(NSBundle.localizedString("List", "Toolbar item")).setTag(0);
@@ -2726,10 +2725,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
 											   new NSSelector("browserSwitchClicked", new Class[]{Object.class}),
 											   ""));
 			viewSubmenu.itemWithTitle(NSBundle.localizedString("Outline", "Toolbar item")).setTag(1);
-			viewSubmenu.addItem(new NSMenuItem(NSBundle.localizedString("Column", "Toolbar item"),
-											   new NSSelector("browserSwitchClicked", new Class[]{Object.class}),
-											   ""));
-			viewSubmenu.itemWithTitle(NSBundle.localizedString("Column", "Toolbar item")).setTag(2);
+//			viewSubmenu.addItem(new NSMenuItem(NSBundle.localizedString("Column", "Toolbar item"),
+//											   new NSSelector("browserSwitchClicked", new Class[]{Object.class}),
+//											   ""));
+//			viewSubmenu.itemWithTitle(NSBundle.localizedString("Column", "Toolbar item")).setTag(2);
             viewMenu.setSubmenu(viewSubmenu);
             item.setMenuFormRepresentation(viewMenu);
 			item.setMinSize(this.browserSwitchView.frame().size());

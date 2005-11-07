@@ -51,7 +51,7 @@
 
 - (void)_initAutoScrollView
 {
-    autoScrollToBottom = YES;
+    autoScrollToBottom = NO;
 	inAutoScrollToBottom = NO;
     autoHideScrollBar = NO;
 	passKeysToDocumentView = NO;
@@ -62,6 +62,7 @@
 	shouldDrawFocusRing = NO;
 	
     [self setAutoHideScrollBar:YES];
+	 [self setAutoScrollToBottom:YES];
 }
 
 - (void)dealloc

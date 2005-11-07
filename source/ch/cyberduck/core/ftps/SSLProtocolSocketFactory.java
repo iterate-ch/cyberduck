@@ -29,6 +29,8 @@ package ch.cyberduck.core.ftps;
  *
  */
 
+import org.apache.log4j.Logger;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -37,8 +39,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
-import org.apache.log4j.Logger;
 
 public class SSLProtocolSocketFactory implements SecureProtocolSocketFactory {
     private static Logger log = Logger.getLogger(SSLProtocolSocketFactory.class);

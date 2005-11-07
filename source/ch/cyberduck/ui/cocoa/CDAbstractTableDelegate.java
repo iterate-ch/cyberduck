@@ -18,16 +18,17 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.application.NSOutlineView;
-
-import java.util.Comparator;
-
+import ch.cyberduck.core.BrowserComparator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.BrowserComparator;
+
+import com.apple.cocoa.application.NSOutlineView;
+import com.apple.cocoa.application.NSTableColumn;
+import com.apple.cocoa.application.NSTableView;
+
 import org.apache.log4j.Logger;
+
+import java.util.Comparator;
 
 /**
  * @version $Id$

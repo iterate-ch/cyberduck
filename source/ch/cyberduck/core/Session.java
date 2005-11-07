@@ -19,248 +19,253 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.ui.cocoa.growl.Growl;
+
 import com.apple.cocoa.foundation.NSBundle;
+
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Observable;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @version $Id$
  */
 public abstract class Session extends Observable {
-	private static Logger log = Logger.getLogger(Session.class);
+    private static Logger log = Logger.getLogger(Session.class);
 
-	public static final String SFTP = "sftp";
-	public static final String FTP = "ftp";
-	public static final String FTP_TLS = "ftps";
+    public static final String SFTP = "sftp";
+    public static final String FTP = "ftp";
+    public static final String FTP_TLS = "ftps";
 
     public static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer Protocol)", "");
     public static final String FTP_TLS_STRING = NSBundle.localizedString("FTP-SSL (FTP over TLS/SSL)", "");
     public static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
 
-	/**
-	 * Default port for ftp
-	 */
-	public static final int FTP_PORT = 21;
+    /**
+     * Default port for ftp
+     */
+    public static final int FTP_PORT = 21;
 
-	/**
-	 * Default port for ssh
-	 */
-	public static final int SSH_PORT = 22;
+    /**
+     * Default port for ssh
+     */
+    public static final int SSH_PORT = 22;
 
-	/**
-	 * Encapsulating all the information of the remote host
-	 */
-	protected Host host = null;
+    /**
+     * Encapsulating all the information of the remote host
+     */
+    protected Host host = null;
 
     protected Cache cache = null;
 
-	private List backHistory = new ArrayList();
+    private List backHistory = new ArrayList();
 
     private List forwardHistory = new ArrayList();
 
-	private boolean connected;
+    private boolean connected;
 
-	private boolean authenticated;
+    private boolean authenticated;
 
-	public Session copy() {
-		Session s = SessionFactory.createSession(this.host);
-        s.cache = this.cache();
-        return s;
+    public Session copy() {
+        return SessionFactory.createSession(this.host);
     }
 
-	protected Session(Host h) {
-		log.debug("Session("+h+")");
-		this.host = h;
-	}
+    protected Session(Host h) {
+        log.debug("Session(" + h + ")");
+        this.host = h;
+    }
 
-	public void callObservers(Object arg) {
-		this.setChanged();
-		this.notifyObservers(arg);
-	}
+    public void callObservers(Object arg) {
+        this.setChanged();
+        this.notifyObservers(arg);
+    }
 
-	/**
-		* Assert that the connection to the remote host is still alive. Open connection if needed.
-	 *
-	 * @throws IOException The connection to the remote host failed.
-	 * @see Host
-	 */
-	public abstract void check() throws IOException;
-	
-	/**
-	 * @return true if the control channel is either tunneled using TLS or SSH
-	 */
-	public abstract boolean isSecure();
-	
-	/**
-	 * Connect to the remote Host
-	 * The protocol specific implementation has to  be coded in the subclasses.
-	 *
-	 * @see Host
-	 */
-	public abstract void connect(String encoding) throws IOException;
+    /**
+     * Assert that the connection to the remote host is still alive. Open connection if needed.
+     *
+     * @throws IOException The connection to the remote host failed.
+     * @see Host
+     */
+    public abstract void check() throws IOException;
 
-	public synchronized void connect() throws IOException {
-		this.connect(this.host.getEncoding());
-	}
+    /**
+     * @return true if the control channel is either tunneled using TLS or SSH
+     */
+    public abstract boolean isSecure();
 
-	/**
-	 * Connect to the remote host and mount the home directory
-	 */
-	public synchronized void mount(String encoding, Comparator comparator, Filter filter) {
-		this.log(Message.PROGRESS, NSBundle.localizedString("Mounting", "Status", "")+" "+host.getHostname()+"...");
-		try {
-			this.check();
-			Path home;
-			if(host.hasReasonableDefaultPath()) {
-				if(host.getDefaultPath().charAt(0) != '/') {
-					home = PathFactory.createPath(this, workdir().getAbsolute(), host.getDefaultPath());
-					home.attributes.setType(Path.DIRECTORY_TYPE);
-				}
-				else {
-					home = PathFactory.createPath(this, host.getDefaultPath());
-					home.attributes.setType(Path.DIRECTORY_TYPE);
-				}
-				if(null == home.list(true, encoding, comparator, filter)) {
-					// the default path does not exist
-					home = workdir();
-					home.list(true, encoding, comparator, filter);
-				}
-			}
-			else {
-				home = workdir();
-				home.list(true, encoding, comparator, filter);
-			}
-			Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl", "Growl Notification"),
-									host.getHostname());
-		}
-		catch(IOException e) {
-            this.log(Message.ERROR, "IO "+NSBundle.localizedString("Error", "")+": "+e.getMessage());
-			Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
-									host.getHostname());
-			this.close();
-		}
-	}
+    /**
+     * Connect to the remote Host
+     * The protocol specific implementation has to  be coded in the subclasses.
+     *
+     * @see Host
+     */
+    public abstract void connect(String encoding) throws IOException;
 
-	/**
-	 * Close the connecion to the remote host.
-	 * The protocol specific implementation has to  be coded in the subclasses.
-	 *
-	 * @see Host
-	 */
-	public abstract void close();
+    public synchronized void connect() throws IOException {
+        this.connect(this.host.getEncoding());
+    }
 
-	public void recycle() throws IOException {
-		log.info("Recycling session");
-		this.close();
-		this.connect();
-	}
+    /**
+     * Connect to the remote host and mount the home directory
+     */
+    public synchronized void mount(String encoding, Comparator comparator, Filter filter) {
+        this.log(Message.PROGRESS, NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname() + "...");
+        try {
+            this.check();
+            Path home;
+            if (host.hasReasonableDefaultPath()) {
+                if (host.getDefaultPath().charAt(0) != '/') {
+                    home = PathFactory.createPath(this, workdir().getAbsolute(), host.getDefaultPath());
+                    home.attributes.setType(Path.DIRECTORY_TYPE);
+                }
+                else {
+                    home = PathFactory.createPath(this, host.getDefaultPath());
+                    home.attributes.setType(Path.DIRECTORY_TYPE);
+                }
+                if (null == home.list(true, encoding, comparator, filter)) {
+                    // the default path does not exist
+                    home = workdir();
+                    home.list(true, encoding, comparator, filter);
+                }
+            }
+            else {
+                home = workdir();
+                home.list(true, encoding, comparator, filter);
+            }
+            Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl", "Growl Notification"),
+                    host.getHostname());
+        }
+        catch (IOException e) {
+            this.log(Message.ERROR, "IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+            Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
+                    host.getHostname());
+            this.close();
+        }
+    }
 
-	public Host getHost() {
-		return this.host;
-	}
+    /**
+     * Close the connecion to the remote host.
+     * The protocol specific implementation has to  be coded in the subclasses.
+     *
+     * @see Host
+     */
+    public abstract void close();
 
-	/**
-	 * @return The current working directory (pwd)
-	 */
-	public abstract Path workdir();
+    public void recycle() throws IOException {
+        log.info("Recycling session");
+        this.close();
+        this.connect();
+    }
 
-	public abstract void noop() throws IOException;
+    public Host getHost() {
+        return this.host;
+    }
 
-	public abstract void interrupt();
+    /**
+     * @return The current working directory (pwd)
+     */
+    public abstract Path workdir();
+
+    public abstract void noop() throws IOException;
+
+    public abstract void interrupt();
 
     public abstract void sendCommand(String command);
 
-	/**
-	 * @return boolean True if the session has not yet been closed.
-	 */
-	public boolean isConnected() {
-		return this.connected;
-	}
+    /**
+     * @return boolean True if the session has not yet been closed.
+     */
+    public boolean isConnected() {
+        return this.connected;
+    }
 
-	public boolean isAuthenticated() {
-		return this.authenticated;
-	}
+    public boolean isAuthenticated() {
+        return this.authenticated;
+    }
 
-	private Timer keepAliveTimer = null;
+    private Timer keepAliveTimer = null;
 
-	public synchronized void setConnected() throws IOException {
-		log.debug("setConnected");
-		SessionPool.instance().add(this, Preferences.instance().getBoolean("connection.pool.force"));
-		this.callObservers(new Message(Message.OPEN, null));
-		this.connected = true;
-	}
+    public synchronized void setConnected() throws IOException {
+        log.debug("setConnected");
+        SessionPool.instance().add(this, Preferences.instance().getBoolean("connection.pool.force"));
+        this.callObservers(new Message(Message.OPEN, null));
+        this.connected = true;
+    }
 
-	public synchronized void setAuthenticated() {
-		this.authenticated = true;
-		if(Preferences.instance().getBoolean("connection.keepalive")) {
-			this.keepAliveTimer = new Timer();
-			this.keepAliveTimer.scheduleAtFixedRate(new KeepAliveTask(),
-			    Preferences.instance().getInteger("connection.keepalive.interval"),
-			    Preferences.instance().getInteger("connection.keepalive.interval"));
-		}
-	}
+    public synchronized void setAuthenticated() {
+        this.authenticated = true;
+        if (Preferences.instance().getBoolean("connection.keepalive")) {
+            this.keepAliveTimer = new Timer();
+            this.keepAliveTimer.scheduleAtFixedRate(new KeepAliveTask(),
+                    Preferences.instance().getInteger("connection.keepalive.interval"),
+                    Preferences.instance().getInteger("connection.keepalive.interval"));
+        }
+    }
 
-	public synchronized void setClosed() {
-		log.debug("setClosed");
-		this.connected = false;
-		this.callObservers(new Message(Message.CLOSE, null));
-		if(Preferences.instance().getBoolean("connection.keepalive") && this.keepAliveTimer != null) {
-			this.keepAliveTimer.cancel();
-		}
-		this.release();
-	}
+    public synchronized void setClosed() {
+        log.debug("setClosed");
+        this.connected = false;
+        this.callObservers(new Message(Message.CLOSE, null));
+        if (Preferences.instance().getBoolean("connection.keepalive") && this.keepAliveTimer != null) {
+            this.keepAliveTimer.cancel();
+        }
+        this.release();
+    }
 
-	private void release() {
-		SessionPool.instance().release(this);
-	}
+    private void release() {
+        SessionPool.instance().release(this);
+    }
 
-	private class KeepAliveTask extends TimerTask {
-		public void run() {
-			try {
-				Session.this.noop();
-			}
-			catch(IOException e) {
-				log.error(e.getMessage());
-				this.cancel();
-			}
-		}
-	}
+    private class KeepAliveTask extends TimerTask {
+        public void run() {
+            try {
+                Session.this.noop();
+            }
+            catch (IOException e) {
+                log.error(e.getMessage());
+                this.cancel();
+            }
+        }
+    }
 
-	public void addPathToHistory(Path p) {
-		if(backHistory.size() > 0) {
-			if(!p.equals(backHistory.get(backHistory.size()-1))) {
-				this.backHistory.add(p);
-			}
-		}
-		else {
-			this.backHistory.add(p);
-		}
-	}
+    public void addPathToHistory(Path p) {
+        if (backHistory.size() > 0) {
+            if (!p.equals(backHistory.get(backHistory.size() - 1))) {
+                this.backHistory.add(p);
+            }
+        }
+        else {
+            this.backHistory.add(p);
+        }
+    }
 
-	public Path getPreviousPath() {
-		int size = this.backHistory.size();
-		if(size > 1) {
-            this.forwardHistory.add(this.backHistory.get(size-1));
-            Path p = (Path)this.backHistory.get(size-2);
-			//delete the fetched path - otherwise we produce a loop
-			this.backHistory.remove(size-1);
-			this.backHistory.remove(size-2);
-			return p;
-		}
-		else if(1 == size) {
-            this.forwardHistory.add(this.backHistory.get(size-1));
-			return (Path)this.backHistory.get(size-1);
-		}
-		return null;
-	}
+    public Path getPreviousPath() {
+        int size = this.backHistory.size();
+        if (size > 1) {
+            this.forwardHistory.add(this.backHistory.get(size - 1));
+            Path p = (Path) this.backHistory.get(size - 2);
+            //delete the fetched path - otherwise we produce a loop
+            this.backHistory.remove(size - 1);
+            this.backHistory.remove(size - 2);
+            return p;
+        }
+        else if (1 == size) {
+            this.forwardHistory.add(this.backHistory.get(size - 1));
+            return (Path) this.backHistory.get(size - 1);
+        }
+        return null;
+    }
 
     public Path getForwardPath() {
         int size = this.forwardHistory.size();
-        if(size > 0) {
-            Path p = (Path)this.forwardHistory.get(size-1);
-            this.forwardHistory.remove(size-1);
+        if (size > 0) {
+            Path p = (Path) this.forwardHistory.get(size - 1);
+            this.forwardHistory.remove(size - 1);
             return p;
         }
         return null;
@@ -268,21 +273,21 @@ public abstract class Session extends Observable {
 
 
     public Path[] getBackHistory() {
-        return (Path[])this.backHistory.toArray(new Path[this.backHistory.size()]);
+        return (Path[]) this.backHistory.toArray(new Path[this.backHistory.size()]);
     }
 
     public Path[] getForwardHistory() {
-        return (Path[])this.forwardHistory.toArray(new Path[this.forwardHistory.size()]);
+        return (Path[]) this.forwardHistory.toArray(new Path[this.forwardHistory.size()]);
     }
 
     public Cache cache() {
-		if(null == this.cache) {
+        if (null == this.cache) {
             this.cache = new Cache();
-		}
-		return this.cache;
-	}
+        }
+        return this.cache;
+    }
 
-	public void log(String title, String message) {
+    public void log(String title, String message) {
         this.callObservers(new Message(title, message));
-	}
+    }
 }

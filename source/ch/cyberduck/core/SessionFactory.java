@@ -23,29 +23,29 @@ import java.util.Map;
 
 public abstract class SessionFactory {
 
-	private static Map factories = new HashMap();
+    private static Map factories = new HashMap();
 
-	protected abstract Session create(Host h);
+    protected abstract Session create(Host h);
 
-	public static void addFactory(String protocol, SessionFactory f) {
-		factories.put(protocol, f);
-	}
+    public static void addFactory(String protocol, SessionFactory f) {
+        factories.put(protocol, f);
+    }
 
-	public static final Session createSession(Host h) {
-		String id = h.getProtocol();
-		if(!factories.containsKey(id)) {
-			try {
-				// Load dynamically
-				Class.forName("ch.cyberduck.core."+id+"."+id.toUpperCase()+"Session");
-			}
-			catch(ClassNotFoundException e) {
-				throw new RuntimeException("No class for type: "+id);
-			}
-			// See if it was put in:
-			if(!factories.containsKey(id)) {
-				throw new RuntimeException("No class for type: "+id);
-			}
-		}
-		return ((SessionFactory)factories.get(id)).create(h);
-	}
+    public static final Session createSession(Host h) {
+        String id = h.getProtocol();
+        if (!factories.containsKey(id)) {
+            try {
+                // Load dynamically
+                Class.forName("ch.cyberduck.core." + id + "." + id.toUpperCase() + "Session");
+            }
+            catch (ClassNotFoundException e) {
+                throw new RuntimeException("No class for type: " + id);
+            }
+            // See if it was put in:
+            if (!factories.containsKey(id)) {
+                throw new RuntimeException("No class for type: " + id);
+            }
+        }
+        return ((SessionFactory) factories.get(id)).create(h);
+    }
 }

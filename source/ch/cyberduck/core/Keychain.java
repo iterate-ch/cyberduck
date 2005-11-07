@@ -26,43 +26,43 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class Keychain {
-	private static Logger log = Logger.getLogger(Keychain.class);
+    private static Logger log = Logger.getLogger(Keychain.class);
 
-	private static Keychain instance;
-	
-	private Keychain() {
-		//
-	}
-	
-	public static Keychain instance() {
-		if(instance == null) {
-			instance = new Keychain();
-		}
-		return instance;
-	}
-	
-	static {
-		// Ensure native keychain library is loaded
-		try {
-			NSBundle bundle = NSBundle.mainBundle();
-			String lib = bundle.resourcePath()+"/Java/"+"libKeychain.dylib";
-			log.info("Locating libKeychain.dylib at '"+lib+"'");
-			System.load(lib);
-		}
-		catch(UnsatisfiedLinkError e) {
-			log.error("Could not load the libKeychain.dylib library:"+e.getMessage());
-		}
-	}
+    private static Keychain instance;
 
-	public native String getInternetPasswordFromKeychain(String protocol, String serviceName, String user);
+    private Keychain() {
+        //
+    }
 
-	public native String getPasswordFromKeychain(String serviceName, String user);
+    public static Keychain instance() {
+        if (instance == null) {
+            instance = new Keychain();
+        }
+        return instance;
+    }
 
-	public native void addPasswordToKeychain(String serviceName, String user, String password);
+    static {
+        // Ensure native keychain library is loaded
+        try {
+            NSBundle bundle = NSBundle.mainBundle();
+            String lib = bundle.resourcePath() + "/Java/" + "libKeychain.dylib";
+            log.info("Locating libKeychain.dylib at '" + lib + "'");
+            System.load(lib);
+        }
+        catch (UnsatisfiedLinkError e) {
+            log.error("Could not load the libKeychain.dylib library:" + e.getMessage());
+        }
+    }
 
-	public native void addInternetPasswordToKeychain(String protocol, String serviceName, String user, String password);
+    public native String getInternetPasswordFromKeychain(String protocol, String serviceName, String user);
 
-	public native boolean hasCertificate(byte[] certificate);
+    public native String getPasswordFromKeychain(String serviceName, String user);
 
-	public native void addCertificateToKeychain(byte[] certificate);
+    public native void addPasswordToKeychain(String serviceName, String user, String password);
+
+    public native void addInternetPasswordToKeychain(String protocol, String serviceName, String user, String password);
+
+    public native boolean hasCertificate(byte[] certificate);
+
+    public native void addCertificateToKeychain(byte[] certificate);
 }

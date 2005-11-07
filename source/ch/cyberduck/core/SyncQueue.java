@@ -18,143 +18,143 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.growl.Growl;
+
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observer;
-import java.util.ArrayList;
-
-import ch.cyberduck.ui.cocoa.growl.Growl;
 
 /**
  * @version $Id$
  */
 public class SyncQueue extends Queue {
 
-	/**
-	 * The observer to notify when an upload is complete
-	 */
-	private Observer callback;
+    /**
+     * The observer to notify when an upload is complete
+     */
+    private Observer callback;
 
-	public SyncQueue() {
-		//
-	}
+    public SyncQueue() {
+        //
+    }
 
-	public SyncQueue(Path root) {
-		super(root);
-	}
-		
-	public SyncQueue(Path root, Observer callback) {
-		super(root);
-		this.callback = callback;
-	}
+    public SyncQueue(Path root) {
+        super(root);
+    }
 
-	public SyncQueue(java.util.Observer callback) {
-		this.callback = callback;
-	}
+    public SyncQueue(Path root, Observer callback) {
+        super(root);
+        this.callback = callback;
+    }
 
-	public NSMutableDictionary getAsDictionary() {
-		NSMutableDictionary dict = super.getAsDictionary();
-		dict.setObjectForKey(String.valueOf(Queue.KIND_SYNC), "Kind");
-		return dict;
-	}
+    public SyncQueue(java.util.Observer callback) {
+        this.callback = callback;
+    }
+
+    public NSMutableDictionary getAsDictionary() {
+        NSMutableDictionary dict = super.getAsDictionary();
+        dict.setObjectForKey(String.valueOf(Queue.KIND_SYNC), "Kind");
+        return dict;
+    }
 
     public String getName() {
-        return NSBundle.localizedString("Synchronize", "")+" "+this.getRoot().getAbsolute()+" "
-                +NSBundle.localizedString("with", "")+" "+this.getRoot().getLocal().getName();
+        return NSBundle.localizedString("Synchronize", "") + " " + this.getRoot().getAbsolute() + " "
+                + NSBundle.localizedString("with", "") + " " + this.getRoot().getLocal().getName();
     }
 
     protected void finish(boolean headless) {
-		super.finish(headless);
-		if(this.isComplete() && !this.isCanceled()) {
-			this.callObservers(new Message(Message.PROGRESS, NSBundle.localizedString("Synchronization complete",
-																					  "Growl", "Growl Notification")));
-			this.callObservers(new Message(Message.QUEUE_STOP));
-			Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
-															 "Growl", "Growl Notification"),
-									this.getName());
-			if(callback != null) {
-				callback.update(null, new Message(Message.REFRESH));
-			}
-		}
-		else {
-			this.callObservers(new Message(Message.QUEUE_STOP));
-		}
-	}
+        super.finish(headless);
+        if (this.isComplete() && !this.isCanceled()) {
+            this.callObservers(new Message(Message.PROGRESS, NSBundle.localizedString("Synchronization complete",
+                    "Growl", "Growl Notification")));
+            this.callObservers(new Message(Message.QUEUE_STOP));
+            Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
+                    "Growl", "Growl Notification"),
+                    this.getName());
+            if (callback != null) {
+                callback.update(null, new Message(Message.REFRESH));
+            }
+        }
+        else {
+            this.callObservers(new Message(Message.QUEUE_STOP));
+        }
+    }
 
-	private void addLocalChilds(List childs, Path p) {
-		if(!this.isCanceled()) {
-			if(p.getLocal().exists()) {// && p.getLocal().canRead()) {
-				if(!childs.contains(p)) {
-					childs.add(p);
-				}
-				if(p.attributes.isDirectory()) {
-                    if(!p.getRemote().exists()) {
+    private void addLocalChilds(List childs, Path p) {
+        if (!this.isCanceled()) {
+            if (p.getLocal().exists()) {// && p.getLocal().canRead()) {
+                if (!childs.contains(p)) {
+                    childs.add(p);
+                }
+                if (p.attributes.isDirectory()) {
+                    if (!p.getRemote().exists()) {
                         //hack
                         p.getSession().cache().put(p, new ArrayList());
                     }
-					File[] files = p.getLocal().listFiles();
-					for(int i = 0; i < files.length; i++) {
-						Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(),
+                    File[] files = p.getLocal().listFiles();
+                    for (int i = 0; i < files.length; i++) {
+                        Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(),
                                 new Local(files[i].getAbsolutePath()));
-						if(!child.getName().equals(".DS_Store")) {
-							this.addLocalChilds(childs, child);
-						}
-					}
-				}
-			}
-		}
-	}
+                        if (!child.getName().equals(".DS_Store")) {
+                            this.addLocalChilds(childs, child);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-	private void addRemoteChilds(List childs, Path p) {
-		if(!this.isCanceled()) {
-			if(p.getRemote().exists()) {
-				if(!childs.contains(p)) {
-					childs.add(p);
-				}
-				if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
-					p.attributes.setSize(0);
-					for(Iterator i = p.list(false, false).iterator(); i.hasNext();) {
-						Path child = (Path)i.next();
-						child.setLocal(new Local(p.getLocal(), child.getName()));
-						this.addRemoteChilds(childs, child);
-					}
-				}
-			}
-		}
-	}
+    private void addRemoteChilds(List childs, Path p) {
+        if (!this.isCanceled()) {
+            if (p.getRemote().exists()) {
+                if (!childs.contains(p)) {
+                    childs.add(p);
+                }
+                if (p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
+                    p.attributes.setSize(0);
+                    for (Iterator i = p.list(false, false).iterator(); i.hasNext();) {
+                        Path child = (Path) i.next();
+                        child.setLocal(new Local(p.getLocal(), child.getName()));
+                        this.addRemoteChilds(childs, child);
+                    }
+                }
+            }
+        }
+    }
 
-	protected List getChilds(List childs, Path root) {
-		this.addRemoteChilds(childs, root);
-		this.addLocalChilds(childs, root);
-		return childs;
-	}
+    protected List getChilds(List childs, Path root) {
+        this.addRemoteChilds(childs, root);
+        this.addLocalChilds(childs, root);
+        return childs;
+    }
 
-	protected void reset() {
-		this.size = 0;
-		for(Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
-			Path path = ((Path)iter.next());
-			if(path.getRemote().exists() && path.getLocal().exists()) {
-				if(path.getLocal().getTimestampAsCalendar().before(path.attributes.getTimestampAsCalendar())) {
-					this.size += path.getRemote().attributes.getSize();
-				}
-				if(path.getLocal().getTimestampAsCalendar().after(path.attributes.getTimestampAsCalendar())) {
-					this.size += path.getLocal().getSize();
-				}
-			}
-			else if(path.getRemote().exists()) {
-				this.size += path.getRemote().attributes.getSize();
-			}
-			else if(path.getLocal().exists()) {
-				this.size += path.getLocal().getSize();
-			}
-		}
-	}
+    protected void reset() {
+        this.size = 0;
+        for (Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
+            Path path = ((Path) iter.next());
+            if (path.getRemote().exists() && path.getLocal().exists()) {
+                if (path.getLocal().getTimestampAsCalendar().before(path.attributes.getTimestampAsCalendar())) {
+                    this.size += path.getRemote().attributes.getSize();
+                }
+                if (path.getLocal().getTimestampAsCalendar().after(path.attributes.getTimestampAsCalendar())) {
+                    this.size += path.getLocal().getSize();
+                }
+            }
+            else if (path.getRemote().exists()) {
+                this.size += path.getRemote().attributes.getSize();
+            }
+            else if (path.getLocal().exists()) {
+                this.size += path.getLocal().getSize();
+            }
+        }
+    }
 
-	protected void process(Path p) {
-		p.sync();
-	}
+    protected void process(Path p) {
+        p.sync();
+    }
 }

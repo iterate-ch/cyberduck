@@ -25,9 +25,9 @@ import java.util.Comparator;
  */
 public class NullComparator implements Comparator {
 
-	public int compare(Object x, Object y) {
-		return 0;
-	}
+    public int compare(Object x, Object y) {
+        return 0;
+    }
 
     public boolean equals(Object object) {
         return object instanceof NullComparator;

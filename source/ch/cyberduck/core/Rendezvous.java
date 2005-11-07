@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
@@ -27,83 +29,81 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class Rendezvous extends Observable implements ServiceListener {
-	private static Logger log = Logger.getLogger(Rendezvous.class);
+    private static Logger log = Logger.getLogger(Rendezvous.class);
 
-	private static final String[] serviceTypes = new String[]{
-		"_sftp._tcp.local.",
-		"_ssh._tcp.local.",
-		"_ftp._tcp.local."
-	};
+    private static final String[] serviceTypes = new String[]{
+            "_sftp._tcp.local.",
+            "_ssh._tcp.local.",
+            "_ftp._tcp.local."
+    };
 
-	private Map services;
-	private JmDNS jmDNS;
+    private Map services;
+    private JmDNS jmDNS;
 
-	private static Rendezvous instance;
-	
-	public static Rendezvous instance() {
-		if(null == instance) {
-			instance = new Rendezvous();
-		}
-		return instance;
-	}
-	
-	private Rendezvous() {
-		log.debug("Rendezvous");
-		this.services = new HashMap();
-	}
+    private static Rendezvous instance;
 
-	public void init() {
-		log.debug("init");
-		new Thread("Rendezvous") {
-			public void run() {
-				try {
-					Rendezvous.this.jmDNS = new JmDNS(java.net.InetAddress.getLocalHost());
-					for(int i = 0; i < serviceTypes.length; i++) {
-						log.info("Adding Rendezvous service listener for "+serviceTypes[i]);
-						Rendezvous.this.jmDNS.addServiceListener(serviceTypes[i], Rendezvous.this);
-					}
-				}
-				catch(IOException e) {
-					log.error(e.getMessage());
-					Rendezvous.this.quit();
-				}
-			}
-		}.start();
-	}
+    public static Rendezvous instance() {
+        if (null == instance) {
+            instance = new Rendezvous();
+        }
+        return instance;
+    }
 
-	public void quit() {
-		log.info("Removing Rendezvous service listener");
-		if(this.jmDNS != null) {
-            for(int i = 0; i < serviceTypes.length; i++) {
-                log.info("Removing Rendezvous service listener for "+serviceTypes[i]);
+    private Rendezvous() {
+        log.debug("Rendezvous");
+        this.services = new HashMap();
+    }
+
+    public void init() {
+        log.debug("init");
+        new Thread("Rendezvous") {
+            public void run() {
+                try {
+                    Rendezvous.this.jmDNS = new JmDNS(java.net.InetAddress.getLocalHost());
+                    for (int i = 0; i < serviceTypes.length; i++) {
+                        log.info("Adding Rendezvous service listener for " + serviceTypes[i]);
+                        Rendezvous.this.jmDNS.addServiceListener(serviceTypes[i], Rendezvous.this);
+                    }
+                }
+                catch (IOException e) {
+                    log.error(e.getMessage());
+                    Rendezvous.this.quit();
+                }
+            }
+        }.start();
+    }
+
+    public void quit() {
+        log.info("Removing Rendezvous service listener");
+        if (this.jmDNS != null) {
+            for (int i = 0; i < serviceTypes.length; i++) {
+                log.info("Removing Rendezvous service listener for " + serviceTypes[i]);
                 Rendezvous.this.jmDNS.removeServiceListener(serviceTypes[i], Rendezvous.this);
             }
-		}
-	}
+        }
+    }
 
-	public void callObservers(Message arg) {
-		if(log.isDebugEnabled()) {
-			log.debug("callObservers:"+arg);
-			log.debug(this.countObservers()+" observer(s) known.");
-		}
-		this.setChanged();
-		this.notifyObservers(arg);
-	}
+    public void callObservers(Message arg) {
+        if (log.isDebugEnabled()) {
+            log.debug("callObservers:" + arg);
+            log.debug(this.countObservers() + " observer(s) known.");
+        }
+        this.setChanged();
+        this.notifyObservers(arg);
+    }
 
-	public Host getService(String key) {
-		log.debug("getService:"+key);
-		return (Host)services.get(key);
-	}
-	
-	public String[] getServices() {
-		return (String[])this.services.keySet().toArray(new String[]{});
-	}
+    public Host getService(String key) {
+        log.debug("getService:" + key);
+        return (Host) services.get(key);
+    }
+
+    public String[] getServices() {
+        return (String[]) this.services.keySet().toArray(new String[]{});
+    }
 
     /**
      * This method is called when jmDNS discovers a service
@@ -111,7 +111,7 @@ public class Rendezvous extends Observable implements ServiceListener {
      * now request the service information.
      */
     public void serviceAdded(ServiceEvent event) {
-        log.debug("serviceAdded:"+event.getName()+","+event.getType());
+        log.debug("serviceAdded:" + event.getName() + "," + event.getType());
         this.jmDNS.requestServiceInfo(event.getType(), event.getName());
     }
 
@@ -119,10 +119,10 @@ public class Rendezvous extends Observable implements ServiceListener {
      * This method is called when a service is no longer available.
      */
     public void serviceRemoved(ServiceEvent event) {
-        log.debug("serviceRemoved:"+event.getName());
+        log.debug("serviceRemoved:" + event.getName());
         ServiceInfo info = event.getInfo();
-        if(info != null) {
-            String identifier = info.getServer()+" ("+Host.getDefaultProtocol(info.getPort()).toUpperCase()+")";
+        if (info != null) {
+            String identifier = info.getServer() + " (" + Host.getDefaultProtocol(info.getPort()).toUpperCase() + ")";
             this.services.remove(identifier);
             this.callObservers(new Message(Message.RENDEZVOUS_REMOVE, event.getName()));
         }
@@ -134,24 +134,24 @@ public class Rendezvous extends Observable implements ServiceListener {
      * port, and path properties found in the ServiceInfo record.
      */
     public void serviceResolved(ServiceEvent event) {
-        log.debug("serviceResolved:"+event.getName()+","+event.getType());
-		if(event.getInfo() != null) {
-			log.info("Rendezvous Service Name:"+event.getInfo().getName());
-			log.info("Rendezvous Server Name:"+event.getInfo().getServer());
+        log.debug("serviceResolved:" + event.getName() + "," + event.getType());
+        if (event.getInfo() != null) {
+            log.info("Rendezvous Service Name:" + event.getInfo().getName());
+            log.info("Rendezvous Server Name:" + event.getInfo().getServer());
 
-			Host h = new Host(event.getInfo().getServer(), event.getInfo().getPort());
-			h.setCredentials(Preferences.instance().getProperty("connection.login.name"), null);
-			if(h.getProtocol().equals(Session.FTP)) {
-				h.setCredentials(null, null); //use anonymous login for FTP
-			}
+            Host h = new Host(event.getInfo().getServer(), event.getInfo().getPort());
+            h.setCredentials(Preferences.instance().getProperty("connection.login.name"), null);
+            if (h.getProtocol().equals(Session.FTP)) {
+                h.setCredentials(null, null); //use anonymous login for FTP
+            }
 
-			String identifier = event.getInfo().getServer()+" ("+Host.getDefaultProtocol(event.getInfo().getPort()).toUpperCase()+")";
+            String identifier = event.getInfo().getServer() + " (" + Host.getDefaultProtocol(event.getInfo().getPort()).toUpperCase() + ")";
 
-			this.services.put(identifier, h);
-			this.callObservers(new Message(Message.RENDEZVOUS_ADD, identifier));
-		}
-		else {
-			log.error("Failed to resolve "+event.getName()+" with type "+event.getType());
-		}
+            this.services.put(identifier, h);
+            this.callObservers(new Message(Message.RENDEZVOUS_ADD, identifier));
+        }
+        else {
+            log.error("Failed to resolve " + event.getName() + " with type " + event.getType());
+        }
     }
 }

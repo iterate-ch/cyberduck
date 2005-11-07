@@ -18,15 +18,16 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
-import java.io.IOException;
-import java.net.InetAddress;
-
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPMessageListener;
-import org.apache.log4j.Logger;
 
 import ch.cyberduck.core.Preferences;
+
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.net.InetAddress;
 
 /**
  * @version $Id$
@@ -42,7 +43,6 @@ public class FTPSClient extends FTPClient {
     }
 
     /**
-     *
      * @throws IOException
      * @throws FTPException
      */
@@ -69,11 +69,11 @@ public class FTPSClient extends FTPClient {
             lastValidReply = control.validateReply(control.sendCommand("PROT "
                     + Preferences.instance().getProperty("ftp.tls.datachannel")), "200");
         }
-        catch(FTPException e) {
-            log.warn("No data channel security: "+e.getMessage());
+        catch (FTPException e) {
+            log.warn("No data channel security: " + e.getMessage());
             ((FTPSControlSocket) this.control).setUseDataConnectionSecurity(false);
-            if(Preferences.instance().getBoolean("ftp.tls.datachannel.failOnError")) {
-                throw new IOException("The data channel could not be secured: "+e.getMessage());
+            if (Preferences.instance().getBoolean("ftp.tls.datachannel.failOnError")) {
+                throw new IOException("The data channel could not be secured: " + e.getMessage());
             }
         }
     }

@@ -22,7 +22,7 @@ package ch.cyberduck.core;
  * @version $Id$
  */
 public class NullFilter implements Filter {
-	public boolean accept(Path file) {
-		return true;
-	}
+    public boolean accept(Path file) {
+        return true;
+    }
 }

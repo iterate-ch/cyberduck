@@ -18,14 +18,21 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSDate;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSFormatter;
+import com.apple.cocoa.foundation.NSGregorianDate;
+import com.apple.cocoa.foundation.NSGregorianDateFormatter;
+import com.apple.cocoa.foundation.NSMutableDictionary;
+import com.apple.cocoa.foundation.NSUserDefaults;
+
+import org.apache.log4j.Logger;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Observable;
 import java.util.TimeZone;
-
-import org.apache.log4j.Logger;
 
 /**
  * Attributes of a remote directory or file.
@@ -116,10 +123,10 @@ public class Attributes extends Observable {
 
     private static final NSGregorianDateFormatter longDateFormatter
             = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(
-                    NSUserDefaults.TimeDateFormatString), false);
+            NSUserDefaults.TimeDateFormatString), false);
     private static final NSGregorianDateFormatter shortDateFormatter
             = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(
-                    NSUserDefaults.ShortTimeDateFormatString), false);
+            NSUserDefaults.ShortTimeDateFormatString), false);
 
     /**
      * @return the modification date of this file

@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.growl.Growl;
+
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
@@ -26,93 +28,91 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observer;
 
-import ch.cyberduck.ui.cocoa.growl.Growl;
-
 /**
  * @version $Id$
  */
 public class UploadQueue extends Queue {
 
-	/**
-	 * The observer to notify when an upload is complete
-	 */
-	private Observer callback;
+    /**
+     * The observer to notify when an upload is complete
+     */
+    private Observer callback;
 
-	public UploadQueue() {
-		//
-	}
+    public UploadQueue() {
+        //
+    }
 
-	public UploadQueue(Path root) {
-		super(root);
-	}
-	
-	public UploadQueue(Path root, Observer callback) {
-		super(root);
-		this.callback = callback;
-	}
+    public UploadQueue(Path root) {
+        super(root);
+    }
 
-	public UploadQueue(java.util.Observer callback) {
-		this.callback = callback;
-	}
+    public UploadQueue(Path root, Observer callback) {
+        super(root);
+        this.callback = callback;
+    }
 
-	public NSMutableDictionary getAsDictionary() {
-		NSMutableDictionary dict = super.getAsDictionary();
-		dict.setObjectForKey(String.valueOf(Queue.KIND_UPLOAD), "Kind");
-		return dict;
-	}
+    public UploadQueue(java.util.Observer callback) {
+        this.callback = callback;
+    }
+
+    public NSMutableDictionary getAsDictionary() {
+        NSMutableDictionary dict = super.getAsDictionary();
+        dict.setObjectForKey(String.valueOf(Queue.KIND_UPLOAD), "Kind");
+        return dict;
+    }
 
     protected void finish(boolean headless) {
-		super.finish(headless);
-		if(this.isComplete() && !this.isCanceled()) {
-			this.callObservers(new Message(Message.PROGRESS, NSBundle.localizedString("Upload complete",
-																					  "Growl", "Growl Notification")));
-			this.callObservers(new Message(Message.QUEUE_STOP));
-			Growl.instance().notify(NSBundle.localizedString("Upload complete",
-															 "Growl", "Growl Notification"),
-									this.getName());
-			if(callback != null) {
-				callback.update(null, new Message(Message.REFRESH));
-			}
-		}
-		else {
-			this.callObservers(new Message(Message.QUEUE_STOP));
-		}
-	}
-	
-	protected List getChilds(List childs, Path p) {
-		if(!this.isCanceled()) {
-			if(p.getLocal().exists()) {// && p.getLocal().canRead()) {
-				childs.add(p);
-				if(p.attributes.isDirectory()) {
-                    if(!p.getRemote().exists()) {
+        super.finish(headless);
+        if (this.isComplete() && !this.isCanceled()) {
+            this.callObservers(new Message(Message.PROGRESS, NSBundle.localizedString("Upload complete",
+                    "Growl", "Growl Notification")));
+            this.callObservers(new Message(Message.QUEUE_STOP));
+            Growl.instance().notify(NSBundle.localizedString("Upload complete",
+                    "Growl", "Growl Notification"),
+                    this.getName());
+            if (callback != null) {
+                callback.update(null, new Message(Message.REFRESH));
+            }
+        }
+        else {
+            this.callObservers(new Message(Message.QUEUE_STOP));
+        }
+    }
+
+    protected List getChilds(List childs, Path p) {
+        if (!this.isCanceled()) {
+            if (p.getLocal().exists()) {// && p.getLocal().canRead()) {
+                childs.add(p);
+                if (p.attributes.isDirectory()) {
+                    if (!p.getRemote().exists()) {
                         //hack
                         p.getSession().cache().put(p, new ArrayList());
                     }
-					p.attributes.setSize(0);
-					File[] files = p.getLocal().listFiles();
-					for(int i = 0; i < files.length; i++) {
-						if(files[i].canRead()) {
-							Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
-							// users complaining about .DS_Store files getting uploaded. It should be apple fixing their crappy file system, but whatever.
-							if(!child.getName().equals(".DS_Store")) {
-								this.getChilds(childs, child);
-							}
-						}
-					}
-				}
-			}
-		}
-		return childs;
-	}
+                    p.attributes.setSize(0);
+                    File[] files = p.getLocal().listFiles();
+                    for (int i = 0; i < files.length; i++) {
+                        if (files[i].canRead()) {
+                            Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
+                            // users complaining about .DS_Store files getting uploaded. It should be apple fixing their crappy file system, but whatever.
+                            if (!child.getName().equals(".DS_Store")) {
+                                this.getChilds(childs, child);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return childs;
+    }
 
-	protected void reset() {
-		this.size = 0;
-		for(java.util.Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
-			this.size += ((Path)iter.next()).getLocal().getSize();
-		}
-	}
+    protected void reset() {
+        this.size = 0;
+        for (java.util.Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
+            this.size += ((Path) iter.next()).getLocal().getSize();
+        }
+    }
 
-	protected void process(Path p) {
-		p.upload();
-	}
+    protected void process(Path p) {
+        p.upload();
+    }
 }

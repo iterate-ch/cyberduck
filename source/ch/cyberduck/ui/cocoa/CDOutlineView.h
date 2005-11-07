@@ -29,4 +29,6 @@
 	NSTimer *select_timer;
 }
 
+- (void)handleBrowserClick:(id)sender;
+
 @end

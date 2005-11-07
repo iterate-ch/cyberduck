@@ -36,9 +36,9 @@ public abstract class BrowserComparator implements Comparator {
     }
 
     public boolean equals(Object object) {
-        if(object instanceof BrowserComparator) {
-            BrowserComparator other = (BrowserComparator)object;
-            if(other.toString().equals(this.toString())) {
+        if (object instanceof BrowserComparator) {
+            BrowserComparator other = (BrowserComparator) object;
+            if (other.toString().equals(this.toString())) {
                 return other.isAscending() == this.isAscending();
             }
         }

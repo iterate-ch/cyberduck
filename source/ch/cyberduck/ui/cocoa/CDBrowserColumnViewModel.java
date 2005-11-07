@@ -18,16 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.NullComparator;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+
 import com.apple.cocoa.application.NSBrowser;
 import com.apple.cocoa.application.NSBrowserCell;
 import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSTextFieldCell;
-import com.apple.cocoa.application.NSColor;
 import com.apple.cocoa.foundation.NSNotification;
-
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.NullComparator;
 
 import java.util.Comparator;
 
@@ -61,18 +59,18 @@ public class CDBrowserColumnViewModel extends CDBrowserTableDataSource implement
     }
 
     public int browserNumberOfRowsInColumn(NSBrowser sender, int col) {
-        if(controller.isMounted()) {
+        if (controller.isMounted()) {
             return this.childs(PathFactory.createPath(controller.workdir().getSession(),
-                                                     this.pathOfColumn(sender, col))).size();
+                    this.pathOfColumn(sender, col))).size();
         }
         return 0;
     }
 
     public void browserWillDisplayCell(NSBrowser sender, NSBrowserCell cell, int row, int col) {
-        if(cell instanceof CDBrowserCell) {
-            Path path = (Path)this.childs(PathFactory.createPath(controller.workdir().getSession(),
-                                                                this.pathOfColumn(sender, col))).get(row);
-            ((CDBrowserCell)cell).setPath(path);
+        if (cell instanceof CDBrowserCell) {
+            Path path = (Path) this.childs(PathFactory.createPath(controller.workdir().getSession(),
+                    this.pathOfColumn(sender, col))).get(row);
+            ((CDBrowserCell) cell).setPath(path);
         }
 //        if (cell instanceof NSTextFieldCell) {
 //            if (CDBrowserController.this.isConnected()) {
@@ -89,7 +87,7 @@ public class CDBrowserColumnViewModel extends CDBrowserTableDataSource implement
     }
 
     public String pathOfColumn(NSBrowser sender, int column) {
-        if(0 == column) {
+        if (0 == column) {
             return Path.DELIMITER;
         }
         //Returns a string representing the path from the first column up to, but not including, the column at index column.

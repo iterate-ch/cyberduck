@@ -35,7 +35,7 @@ public class Collection extends ArrayList {
     }
 
     public int lastIndexOf(Object elem) {
-        for (int i = this.size()-1; i >= 0; i--) {
+        for (int i = this.size() - 1; i >= 0; i--) {
             if (this.get(i).equals(elem))
                 return i;
         }

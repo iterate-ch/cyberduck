@@ -20,9 +20,9 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.NSBundle;
 
-import java.math.BigDecimal;
-
 import org.apache.log4j.Logger;
+
+import java.math.BigDecimal;
 
 /**
  * The Status class is the model of a download's status.

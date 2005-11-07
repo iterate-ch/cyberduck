@@ -25,12 +25,13 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import org.apache.log4j.Logger;
 
-import javax.swing.Timer;
+import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
+import java.util.Observer;
 
 /**
  * @version $Id$
@@ -84,7 +85,7 @@ public abstract class Queue extends Observable {
                     break;
             }
         }
-        if(null == q) {
+        if (null == q) {
             throw new IllegalArgumentException("Unknown queue");
         }
         Object hostObj = dict.objectForKey("Host");
@@ -169,7 +170,7 @@ public abstract class Queue extends Observable {
 
     public List getChilds() {
         List childs = new ArrayList();
-        for (Iterator rootIter = this.getRoots().iterator(); rootIter.hasNext() && !this.isCanceled(); ) {
+        for (Iterator rootIter = this.getRoots().iterator(); rootIter.hasNext() && !this.isCanceled();) {
             this.getChilds(childs, (Path) rootIter.next());
         }
         return childs;
@@ -186,7 +187,8 @@ public abstract class Queue extends Observable {
 
     /**
      * Process the queue. All files will be downloaded/uploaded/synced rerspectively.
-     * @param resume The user requested to resume the transfer
+     *
+     * @param resume   The user requested to resume the transfer
      * @param headless
      */
     public void process(boolean resume, boolean headless) {
@@ -213,12 +215,14 @@ public abstract class Queue extends Observable {
         }
     }
 
+    private Observer transcript = null;
+
     private boolean init(boolean resumeRequested, boolean headless)
             throws IOException {
         this.canceled = false;
         this.running = true;
         this.jobs = null;
-        if(!headless) {
+        if (!headless) {
             this.progress = new Timer(500,
                     new java.awt.event.ActionListener() {
                         int i = 0;
@@ -251,6 +255,17 @@ public abstract class Queue extends Observable {
         }
         this.callObservers(new Message(Message.QUEUE_START));
 
+        this.getSession().addObserver(this.transcript = new Observer() {
+            public void update(final Observable o, final Object arg) {
+                if (arg instanceof Message) {
+                    final Message msg = (Message) arg;
+                    if (msg.getTitle().equals(Message.TRANSCRIPT)) {
+                        log.info(msg.getContent());
+                    }
+                }
+            }
+        });
+
         this.getSession().check();
 
         if (!headless) {
@@ -272,10 +287,11 @@ public abstract class Queue extends Observable {
 
     protected void finish(boolean headless) {
         this.running = false;
-        if(!headless) {
+        if (!headless) {
             this.progress.stop();
             this.getRoot().getSession().close();
         }
+        this.getSession().deleteObserver(this.transcript);
     }
 
     public void cancel() {

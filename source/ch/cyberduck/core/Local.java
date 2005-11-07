@@ -18,19 +18,27 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import glguerin.io.FileForker;
+import glguerin.io.Pathname;
+import glguerin.io.imp.mac.macosx.MacOSXForker;
+
 import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSDate;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSFormatter;
+import com.apple.cocoa.foundation.NSGregorianDate;
+import com.apple.cocoa.foundation.NSGregorianDateFormatter;
+import com.apple.cocoa.foundation.NSPathUtilities;
+import com.apple.cocoa.foundation.NSUserDefaults;
+
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
-
-import org.apache.log4j.Logger;
-import glguerin.io.FileForker;
-import glguerin.io.Pathname;
-import glguerin.io.imp.mac.macosx.MacOSXForker;
 
 /**
  * A path is a local directory or file.
@@ -43,12 +51,12 @@ public class Local extends File {
     static {
         try {
             NSBundle bundle = NSBundle.mainBundle();
-            String lib = bundle.resourcePath()+"/Java/"+"libLocal.dylib";
-            log.info("Locating libLocal.dylib at '"+lib+"'");
+            String lib = bundle.resourcePath() + "/Java/" + "libLocal.dylib";
+            log.info("Locating libLocal.dylib at '" + lib + "'");
             System.load(lib);
         }
-        catch(UnsatisfiedLinkError e) {
-            log.error("Could not load the alias resolving library:"+e.getMessage());
+        catch (UnsatisfiedLinkError e) {
+            log.error("Could not load the alias resolving library:" + e.getMessage());
         }
     }
 
@@ -65,7 +73,7 @@ public class Local extends File {
     }
 
     public boolean createNewFile() throws IOException {
-        if(super.createNewFile()) {
+        if (super.createNewFile()) {
             this.setProgress(0);
         }
         return false;
@@ -77,8 +85,8 @@ public class Local extends File {
     public String getExtension() {
         String name = this.getName();
         int index = name.lastIndexOf(".");
-        if(index != -1) {
-            return name.substring(index+1, name.length());
+        if (index != -1) {
+            return name.substring(index + 1, name.length());
         }
         return null;
     }
@@ -88,12 +96,12 @@ public class Local extends File {
     }
 
     public void setProgress(int progress) {
-        if(Preferences.instance().getBoolean("queue.download.updateIcon")) {
-            if(-1 == progress) {
+        if (Preferences.instance().getBoolean("queue.download.updateIcon")) {
+            if (-1 == progress) {
                 this.removeResourceFork();
             }
             else {
-                this.setIconFromFile(this.getAbsolute(), "download"+progress+".icns");
+                this.setIconFromFile(this.getAbsolute(), "download" + progress + ".icns");
             }
             NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
         }
@@ -106,8 +114,8 @@ public class Local extends File {
             forker.usePathname(new Pathname(this.getAbsoluteFile()));
             forker.makeForkOutputStream(true, false).close();
         }
-        catch(IOException e) {
-            log.error("Failed to remove resource fork from file:"+e.getMessage());
+        catch (IOException e) {
+            log.error("Failed to remove resource fork from file:" + e.getMessage());
         }
     }
 
@@ -128,41 +136,41 @@ public class Local extends File {
 
     public Permission getPermission() {
         NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
-        return new Permission(((Integer)fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions)).intValue());
+        return new Permission(((Integer) fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions)).intValue());
     }
 
     public void setPermission(Permission p) {
         boolean success = NSPathUtilities.setFileAttributes(this.getAbsolutePath(),
-            new NSDictionary(new Integer(p.getDecimalCode()),
-                NSPathUtilities.FilePosixPermissions));
-        log.debug("Setting permissions on local file suceeded:"+success);
+                new NSDictionary(new Integer(p.getDecimalCode()),
+                        NSPathUtilities.FilePosixPermissions));
+        log.debug("Setting permissions on local file suceeded:" + success);
     }
 
     public Calendar getTimestampAsCalendar() {
         Calendar c = Calendar.getInstance(TimeZone.getDefault());
         c.setTime(this.getTimestamp());
-        if(Preferences.instance().getBoolean("queue.sync.ignore.millisecond"))
+        if (Preferences.instance().getBoolean("queue.sync.ignore.millisecond"))
             c.clear(Calendar.MILLISECOND);
-        if(Preferences.instance().getBoolean("queue.sync.ignore.second"))
+        if (Preferences.instance().getBoolean("queue.sync.ignore.second"))
             c.clear(Calendar.SECOND);
-        if(Preferences.instance().getBoolean("queue.sync.ignore.minute"))
+        if (Preferences.instance().getBoolean("queue.sync.ignore.minute"))
             c.clear(Calendar.MINUTE);
-        if(Preferences.instance().getBoolean("queue.sync.ignore.hour"))
+        if (Preferences.instance().getBoolean("queue.sync.ignore.hour"))
             c.clear(Calendar.HOUR);
         return c;
     }
 
-    private static final NSGregorianDateFormatter longDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
-    private static final NSGregorianDateFormatter shortDateFormatter = new NSGregorianDateFormatter((String)NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString), false);
+    private static final NSGregorianDateFormatter longDateFormatter = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
+    private static final NSGregorianDateFormatter shortDateFormatter = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString), false);
 
     /**
      * @return the modification date of this file
      */
     public String getTimestampAsString() {
         try {
-            return longDateFormatter.stringForObjectValue(new NSGregorianDate((double)this.getTimestamp().getTime()/1000, NSDate.DateFor1970));
+            return longDateFormatter.stringForObjectValue(new NSGregorianDate((double) this.getTimestamp().getTime() / 1000, NSDate.DateFor1970));
         }
-        catch(NSFormatter.FormattingException e) {
+        catch (NSFormatter.FormattingException e) {
             e.printStackTrace();
         }
         return null;
@@ -170,9 +178,9 @@ public class Local extends File {
 
     public String getTimestampAsShortString() {
         try {
-            return shortDateFormatter.stringForObjectValue(new NSGregorianDate((double)this.getTimestamp().getTime()/1000, NSDate.DateFor1970));
+            return shortDateFormatter.stringForObjectValue(new NSGregorianDate((double) this.getTimestamp().getTime() / 1000, NSDate.DateFor1970));
         }
-        catch(NSFormatter.FormattingException e) {
+        catch (NSFormatter.FormattingException e) {
             e.printStackTrace();
         }
         return null;
@@ -183,15 +191,15 @@ public class Local extends File {
     }
 
     public long getSize() {
-        if(this.isDirectory()) {
+        if (this.isDirectory()) {
             return 0;
-		}
+        }
         return super.length();
     }
 
     public boolean equals(Object other) {
-        if(other instanceof Local) {
-            return this.getAbsolutePath().equals(((Local)other).getAbsolutePath());// && this.attributes.getTimestamp().equals(((Local)other).attributes.getTimestamp());
+        if (other instanceof Local) {
+            return this.getAbsolutePath().equals(((Local) other).getAbsolutePath());// && this.attributes.getTimestamp().equals(((Local)other).attributes.getTimestamp());
         }
         return false;
     }

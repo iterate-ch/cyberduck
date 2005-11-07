@@ -18,41 +18,41 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
 public abstract class ValidatorFactory {
-	private static Logger log = Logger.getLogger(ValidatorFactory.class);
+    private static Logger log = Logger.getLogger(ValidatorFactory.class);
 
-	private static Map factories = new HashMap();
+    private static Map factories = new HashMap();
 
-	protected abstract Validator create();
+    protected abstract Validator create();
 
-	public static void addFactory(Class clazz, ValidatorFactory factory) {
-		factories.put(clazz, factory);
-	}
+    public static void addFactory(Class clazz, ValidatorFactory factory) {
+        factories.put(clazz, factory);
+    }
 
-	public static final Validator createValidator(Class clazz) {
-		log.debug("createValidator:"+clazz.getName());
-		if(!factories.containsKey(clazz)) {
-			try {
-				// Load dynamically
-				String clazzname = clazz.getName().substring(clazz.getName().lastIndexOf(".")+1);
-				Class.forName("ch.cyberduck.ui.cocoa.CD"+clazzname+"ValidatorController");
-			}
-			catch(ClassNotFoundException e) {
-				throw new RuntimeException("No validator for queue of type: "+clazz.getName());
-			}
-			// See if it was put in:
-			if(!factories.containsKey(clazz)) {
-				throw new RuntimeException("No validator for queue of type: "+clazz.getName());
-			}
-		}
-		return ((ValidatorFactory)factories.get(clazz)).create();
-	}
+    public static final Validator createValidator(Class clazz) {
+        log.debug("createValidator:" + clazz.getName());
+        if (!factories.containsKey(clazz)) {
+            try {
+                // Load dynamically
+                String clazzname = clazz.getName().substring(clazz.getName().lastIndexOf(".") + 1);
+                Class.forName("ch.cyberduck.ui.cocoa.CD" + clazzname + "ValidatorController");
+            }
+            catch (ClassNotFoundException e) {
+                throw new RuntimeException("No validator for queue of type: " + clazz.getName());
+            }
+            // See if it was put in:
+            if (!factories.containsKey(clazz)) {
+                throw new RuntimeException("No validator for queue of type: " + clazz.getName());
+            }
+        }
+        return ((ValidatorFactory) factories.get(clazz)).create();
+    }
 }

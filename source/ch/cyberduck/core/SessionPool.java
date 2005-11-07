@@ -20,12 +20,12 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.NSBundle;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
-
-import org.apache.log4j.Logger;
 
 /**
  * A pool to limit the concurrent connections to a remote host.
@@ -33,81 +33,81 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class SessionPool extends Hashtable {
-	private static Logger log = Logger.getLogger(SessionPool.class);
+    private static Logger log = Logger.getLogger(SessionPool.class);
 
-	private static SessionPool instance;
+    private static SessionPool instance;
 
-	private SessionPool() {
-		//
-	}
+    private SessionPool() {
+        //
+    }
 
-	public static SessionPool instance() {
-		if(null == instance) {
-			instance = new SessionPool();
-		}
-		return instance;
-	}
+    public static SessionPool instance() {
+        if (null == instance) {
+            instance = new SessionPool();
+        }
+        return instance;
+    }
 
-	/**
-	 * @return The number of free slots in the connection pool for @param h
-	 */
-	public synchronized int getSize(Host h) {
-		String key = h.getURL();
-		if(this.containsKey(key))
-			return Preferences.instance().getInteger("connection.pool.max")-((List)this.get(key)).size();
-		return Preferences.instance().getInteger("connection.pool.max");
-	}
+    /**
+     * @return The number of free slots in the connection pool for @param h
+     */
+    public synchronized int getSize(Host h) {
+        String key = h.getURL();
+        if (this.containsKey(key))
+            return Preferences.instance().getInteger("connection.pool.max") - ((List) this.get(key)).size();
+        return Preferences.instance().getInteger("connection.pool.max");
+    }
 
-	public synchronized void add(Session session) throws IOException {
-		this.add(session, false);
-	}
+    public synchronized void add(Session session) throws IOException {
+        this.add(session, false);
+    }
 
-	/**
-	 * Adding a session to the connection pool of the remote host. This method
-	 * will block until the session has been added to the pool; e.g if the size
-	 * of the pool is less than the maximum pool size defined in the preferences.
-	 *
-	 * @throws IOException If the timeout to wait for a place in the pool has exceeded.
-	 */
-	public synchronized void add(Session session, boolean force) throws IOException {
-		String key = session.getHost().getURL();
-		List connections = null;
-		if(this.containsKey(key)) {
-			connections = (List)this.get(key);
-			while(connections.size() >= Preferences.instance().getInteger("connection.pool.max")) {
-				try {
-					if(force) {
-						((Session)connections.get(connections.size()-1)).close();
-					}
-					else {
-						session.log(Message.PROGRESS, NSBundle.localizedString("Maximum allowed connections exceeded. Waiting...",
+    /**
+     * Adding a session to the connection pool of the remote host. This method
+     * will block until the session has been added to the pool; e.g if the size
+     * of the pool is less than the maximum pool size defined in the preferences.
+     *
+     * @throws IOException If the timeout to wait for a place in the pool has exceeded.
+     */
+    public synchronized void add(Session session, boolean force) throws IOException {
+        String key = session.getHost().getURL();
+        List connections = null;
+        if (this.containsKey(key)) {
+            connections = (List) this.get(key);
+            while (connections.size() >= Preferences.instance().getInteger("connection.pool.max")) {
+                try {
+                    if (force) {
+                        ((Session) connections.get(connections.size() - 1)).close();
+                    }
+                    else {
+                        session.log(Message.PROGRESS, NSBundle.localizedString("Maximum allowed connections exceeded. Waiting...",
                                 "Status", ""));
-						this.wait(Preferences.instance().getInteger("connection.pool.timeout")*1000);
-					}
-				}
-				catch(InterruptedException ignored) {
-					//
-				}
-				if(connections.size() >= Preferences.instance().getInteger("connection.pool.max")) {
-					// not awakened by another session but because of the timeout
-					//I gave up after waiting for "+Preferences.instance().getProperty("connection.pool.timeout")+" seconds
-					throw new IOException(NSBundle.localizedString("Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences.", ""));
-				}
-			}
-		}
-		else {
-			connections = new Vector();
-		}
-		connections.add(session);
-		this.put(key, connections);
-	}
+                        this.wait(Preferences.instance().getInteger("connection.pool.timeout") * 1000);
+                    }
+                }
+                catch (InterruptedException ignored) {
+                    //
+                }
+                if (connections.size() >= Preferences.instance().getInteger("connection.pool.max")) {
+                    // not awakened by another session but because of the timeout
+                    //I gave up after waiting for "+Preferences.instance().getProperty("connection.pool.timeout")+" seconds
+                    throw new IOException(NSBundle.localizedString("Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences.", ""));
+                }
+            }
+        }
+        else {
+            connections = new Vector();
+        }
+        connections.add(session);
+        this.put(key, connections);
+    }
 
-	public synchronized void release(Session session) {
-		log.debug("release:"+session);
-		String key = session.getHost().getURL();
-		if(this.containsKey(key)) {
-			((List)this.get(key)).remove(session);
-			this.notifyAll();
-		}
-	}
+    public synchronized void release(Session session) {
+        log.debug("release:" + session);
+        String key = session.getHost().getURL();
+        if (this.containsKey(key)) {
+            ((List) this.get(key)).remove(session);
+            this.notifyAll();
+        }
+    }
 }

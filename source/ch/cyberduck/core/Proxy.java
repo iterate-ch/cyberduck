@@ -26,25 +26,25 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class Proxy {
-	private static Logger log = Logger.getLogger(Proxy.class);
+    private static Logger log = Logger.getLogger(Proxy.class);
 
-	static {
-		try {
-			NSBundle bundle = NSBundle.mainBundle();
-			String lib = bundle.resourcePath()+"/Java/"+"libProxy.dylib";
-			log.info("Locating libProxy.dylib at '"+lib+"'");
-			System.load(lib);
-		}
-		catch(UnsatisfiedLinkError e) {
-			log.error("Could not load the libProxy.dylib library:"+e.getMessage());
-		}
-	}
+    static {
+        try {
+            NSBundle bundle = NSBundle.mainBundle();
+            String lib = bundle.resourcePath() + "/Java/" + "libProxy.dylib";
+            log.info("Locating libProxy.dylib at '" + lib + "'");
+            System.load(lib);
+        }
+        catch (UnsatisfiedLinkError e) {
+            log.error("Could not load the libProxy.dylib library:" + e.getMessage());
+        }
+    }
 
-	public static native boolean isSOCKSProxyEnabled();
+    public static native boolean isSOCKSProxyEnabled();
 
-	public static native String getSOCKSProxyHost();
+    public static native String getSOCKSProxyHost();
 
-	public static native int getSOCKSProxyPort();
+    public static native int getSOCKSProxyPort();
 
-	public static native String getSOCKSProxyUser();
+    public static native String getSOCKSProxyUser();
 }

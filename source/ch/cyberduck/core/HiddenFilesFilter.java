@@ -19,7 +19,7 @@ package ch.cyberduck.core;
  */
 
 public class HiddenFilesFilter implements Filter {
-	public boolean accept(Path file) {
-		return !(file.getName().charAt(0) == '.');
-	}
+    public boolean accept(Path file) {
+        return !(file.getName().charAt(0) == '.');
+    }
 }

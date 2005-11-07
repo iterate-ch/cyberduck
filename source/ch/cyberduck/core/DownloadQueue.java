@@ -18,71 +18,71 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.growl.Growl;
+
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.util.Iterator;
 import java.util.List;
 
-import ch.cyberduck.ui.cocoa.growl.Growl;
-
 /**
  * @version $Id$
  */
 public class DownloadQueue extends Queue {
 
-	public DownloadQueue() {
-		super();
-	}
-	
-	public DownloadQueue(Path root) {
-		super(root);
-	}
-	
-	public NSMutableDictionary getAsDictionary() {
-		NSMutableDictionary dict = super.getAsDictionary();
-		dict.setObjectForKey(String.valueOf(Queue.KIND_DOWNLOAD), "Kind");
-		return dict;
-	}
+    public DownloadQueue() {
+        super();
+    }
+
+    public DownloadQueue(Path root) {
+        super(root);
+    }
+
+    public NSMutableDictionary getAsDictionary() {
+        NSMutableDictionary dict = super.getAsDictionary();
+        dict.setObjectForKey(String.valueOf(Queue.KIND_DOWNLOAD), "Kind");
+        return dict;
+    }
 
     protected void finish(boolean headless) {
-		super.finish(headless);
-		if(this.isComplete() && !this.isCanceled()) {
-			this.callObservers(new Message(Message.PROGRESS, NSBundle.localizedString("Download complete",
-																					  "Growl", "Growl Notification")));
-			this.callObservers(new Message(Message.QUEUE_STOP));
-			Growl.instance().notify(NSBundle.localizedString("Download complete",
-															 "Growl", "Growl Notification"),
-									this.getName());
-		}
-		else {
-			this.callObservers(new Message(Message.QUEUE_STOP));
-		}
-	}
-	
-	protected List getChilds(List childs, Path p) {
-		if(!this.isCanceled()) {
-			childs.add(p);
-			if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
-				p.attributes.setSize(0);
-				for(Iterator i = p.list(false, false).iterator(); i.hasNext();) {
-					Path child = (Path)i.next();
-					child.setLocal(new Local(p.getLocal(), child.getName()));
-					this.getChilds(childs, child);
-				}
-			}
-		}
-		return childs;
-	}
+        super.finish(headless);
+        if (this.isComplete() && !this.isCanceled()) {
+            this.callObservers(new Message(Message.PROGRESS, NSBundle.localizedString("Download complete",
+                    "Growl", "Growl Notification")));
+            this.callObservers(new Message(Message.QUEUE_STOP));
+            Growl.instance().notify(NSBundle.localizedString("Download complete",
+                    "Growl", "Growl Notification"),
+                    this.getName());
+        }
+        else {
+            this.callObservers(new Message(Message.QUEUE_STOP));
+        }
+    }
 
-	protected void reset() {
-		this.size = 0;
-		for(Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
-			this.size += ((Path)iter.next()).attributes.getSize();
-		}
-	}
+    protected List getChilds(List childs, Path p) {
+        if (!this.isCanceled()) {
+            childs.add(p);
+            if (p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
+                p.attributes.setSize(0);
+                for (Iterator i = p.list(false, false).iterator(); i.hasNext();) {
+                    Path child = (Path) i.next();
+                    child.setLocal(new Local(p.getLocal(), child.getName()));
+                    this.getChilds(childs, child);
+                }
+            }
+        }
+        return childs;
+    }
 
-	protected void process(Path p) {
-		p.download();
-	}
+    protected void reset() {
+        this.size = 0;
+        for (Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
+            this.size += ((Path) iter.next()).attributes.getSize();
+        }
+    }
+
+    protected void process(Path p) {
+        p.download();
+    }
 }

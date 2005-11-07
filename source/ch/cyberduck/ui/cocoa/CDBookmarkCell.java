@@ -18,14 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+
 import com.apple.cocoa.application.NSGraphics;
 import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSCoder;
 import com.apple.cocoa.foundation.NSRect;
-
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
 
 /**
  * @version $Id$
@@ -47,19 +47,19 @@ public class CDBookmarkCell extends CDTableCell {
     }
 
     public void setObjectValue(Object bookmark) {
-        this.bookmark = (Host)bookmark;
+        this.bookmark = (Host) bookmark;
     }
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
         super.drawInteriorWithFrameInView(cellFrame, controlView);
-        if(bookmark != null) {
+        if (bookmark != null) {
             NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getNickname(), boldFont),
-                new NSRect(cellFrame.origin().x(), cellFrame.origin().y()+1, cellFrame.size().width()-5, cellFrame.size().height()));
+                    new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 1, cellFrame.size().width() - 5, cellFrame.size().height()));
             NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getCredentials().getUsername(), tinyFont),
-                new NSRect(cellFrame.origin().x(), cellFrame.origin().y()+14, cellFrame.size().width()-5, cellFrame.size().height()));
-            NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getProtocol()+"://"+bookmark.getHostname()+
-                    Path.DELIMITER+bookmark.getDefaultPath(), tinyFont),
-                new NSRect(cellFrame.origin().x(), cellFrame.origin().y()+27, cellFrame.size().width()-5, cellFrame.size().height()));
+                    new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 14, cellFrame.size().width() - 5, cellFrame.size().height()));
+            NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getProtocol() + "://" + bookmark.getHostname() +
+                    Path.DELIMITER + bookmark.getDefaultPath(), tinyFont),
+                    new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 27, cellFrame.size().width() - 5, cellFrame.size().height()));
         }
     }
 }

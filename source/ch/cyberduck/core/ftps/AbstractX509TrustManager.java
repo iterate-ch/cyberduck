@@ -18,6 +18,10 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Preferences;
+
+import org.apache.log4j.Logger;
+
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
@@ -28,10 +32,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Vector;
-
-import org.apache.log4j.Logger;
-
-import ch.cyberduck.core.Preferences;
 
 /**
  * @version $Id$
@@ -54,7 +54,7 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
     protected List acceptedCertificates = new Vector();
 
     private X509TrustManager standardTrustManager = null;
-    
+
     protected void init(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
         TrustManagerFactory factory = TrustManagerFactory.getInstance("SunX509");
         factory.init(keystore);
@@ -67,7 +67,7 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
 
     public void checkClientTrusted(X509Certificate[] x509Certificates, String authType)
             throws CertificateException {
-        if(Preferences.instance().getBoolean("ftp.tls.acceptAnyCertificate")) {
+        if (Preferences.instance().getBoolean("ftp.tls.acceptAnyCertificate")) {
             log.warn("Certificate not verified!");
             return;
         }
@@ -76,7 +76,7 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
 
     public void checkServerTrusted(X509Certificate[] x509Certificates, String authType)
             throws CertificateException {
-        if(Preferences.instance().getBoolean("ftp.tls.acceptAnyCertificate")) {
+        if (Preferences.instance().getBoolean("ftp.tls.acceptAnyCertificate")) {
             log.warn("Certificate not verified!");
             return;
         }

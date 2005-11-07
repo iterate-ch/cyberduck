@@ -17,53 +17,58 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DownloadQueue;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.SessionFactory;
+
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.foundation.NSScriptCommand;
 import com.apple.cocoa.foundation.NSScriptCommandDescription;
 
-import java.io.IOException;
-
 import org.apache.log4j.Logger;
 
-import ch.cyberduck.core.*;
+import java.io.IOException;
 
 /**
  * @version $Id$
  */
 public class CDApplescriptabilityController extends NSScriptCommand {
-	private static Logger log = Logger.getLogger(CDApplescriptabilityController.class);
+    private static Logger log = Logger.getLogger(CDApplescriptabilityController.class);
 
-	public CDApplescriptabilityController(NSScriptCommandDescription commandDescription) {
-		super(commandDescription);
-	}
+    public CDApplescriptabilityController(NSScriptCommandDescription commandDescription) {
+        super(commandDescription);
+    }
 
-	public Object performDefaultImplementation() {
-		log.debug("performDefaultImplementation");
-		String arg = (String)this.directParameter();
-		if(null == arg) {
-			return ((CDMainController)NSApplication.sharedApplication().delegate()).newDocument();
-		}
-		log.debug("Received URL from Apple Event:"+arg);
-		try {
-			Host h = Host.parse(arg);
-			if(h.getDefaultPath().length() > 1) {
-				Path p = PathFactory.createPath(SessionFactory.createSession(h), h.getDefaultPath());
-				try {
-					p.cwdir();
-				}
-				catch(IOException e) {
-					Queue q = new DownloadQueue();
-					q.addRoot(p);
-					CDQueueController.instance().startItem(q);
-					return null;
-				}
-			}
-			CDBrowserController doc = ((CDMainController)NSApplication.sharedApplication().delegate()).newDocument();
-			doc.mount(h);
-		}
-		catch(java.net.MalformedURLException e) {
-			log.error(e.getMessage());
-		}
-		return null;
-	}
+    public Object performDefaultImplementation() {
+        log.debug("performDefaultImplementation");
+        String arg = (String) this.directParameter();
+        if (null == arg) {
+            return ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
+        }
+        log.debug("Received URL from Apple Event:" + arg);
+        try {
+            Host h = Host.parse(arg);
+            if (h.getDefaultPath().length() > 1) {
+                Path p = PathFactory.createPath(SessionFactory.createSession(h), h.getDefaultPath());
+                try {
+                    p.cwdir();
+                }
+                catch (IOException e) {
+                    Queue q = new DownloadQueue();
+                    q.addRoot(p);
+                    CDQueueController.instance().startItem(q);
+                    return null;
+                }
+            }
+            CDBrowserController doc = ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
+            doc.mount(h);
+        }
+        catch (java.net.MalformedURLException e) {
+            log.error(e.getMessage());
+        }
+        return null;
+    }
 }
