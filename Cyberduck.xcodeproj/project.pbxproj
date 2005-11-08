@@ -133,7 +133,6 @@
 		475D17C00805D54C00166B8A /* download2.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B60805D54C00166B8A /* download2.icns */; };
 		475D17C10805D54C00166B8A /* download1.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B70805D54C00166B8A /* download1.icns */; };
 		475D17C20805D54C00166B8A /* download4.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B80805D54C00166B8A /* download4.icns */; };
-		47649C8508E5614A00207DC9 /* SmartCrashReportsInstall.h in Headers */ = {isa = PBXBuildFile; fileRef = 47649C8308E5614A00207DC9 /* SmartCrashReportsInstall.h */; };
 		47649E0908E563C500207DC9 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47983764072AD73700FA3CDB /* Security.framework */; };
 		47649E4508E563D000207DC9 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 476DEBE10629C6FB005EF4B1 /* CoreFoundation.framework */; };
 		47649EDD08E563D600207DC9 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479982AF05F54B1600F81519 /* Carbon.framework */; };
@@ -155,7 +154,6 @@
 		47A61DCA076C854A00B535D6 /* generic-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A61DC9076C854A00B535D6 /* generic-document.icns */; };
 		47C261A90859014400765C4A /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739F03D08569B5E00405FD3 /* Growl.framework */; };
 		47C261AA0859014400765C4A /* Keychain.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EFFB08569A8100405FD3 /* Keychain.framework */; };
-		47C894D808C1EC4000D806B3 /* Cyberduck Help in Resources */ = {isa = PBXBuildFile; fileRef = 47C894D308C1EC4000D806B3 /* Cyberduck Help */; };
 		47CD32A10751163400B82A2B /* plus.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CD32A00751163400B82A2B /* plus.tiff */; };
 		47CD9C720739349200E9379E /* Sync.nib in Resources */ = {isa = PBXBuildFile; fileRef = 47CD9C700739349200E9379E /* Sync.nib */; };
 		47CDAAAB073B081900E9379E /* sync32.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CDAAAA073B081900E9379E /* sync32.tiff */; };
@@ -1137,7 +1135,6 @@
 		475D17B80805D54C00166B8A /* download4.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download4.icns; sourceTree = "<group>"; };
 		475D187B0805E24B00166B8A /* Local.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Local.m; sourceTree = "<group>"; };
 		475D187C0805E24B00166B8A /* Local.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Local.h; path = source/ch/cyberduck/core/Local.h; sourceTree = SOURCE_ROOT; };
-		47649C8308E5614A00207DC9 /* SmartCrashReportsInstall.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartCrashReportsInstall.h; sourceTree = "<group>"; };
 		4764B47D08B7835E00441096 /* SKWSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControl.m; sourceTree = "<group>"; };
 		4764B47E08B7835E00441096 /* SKWSegmentedControlWindowProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControlWindowProxy.m; sourceTree = "<group>"; };
 		4764B47F08B7835E00441096 /* SKWSegmentedControlWindowProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControlWindowProxy.h; sourceTree = "<group>"; };
@@ -1302,28 +1299,6 @@
 		47C75B7B06A5A36900B464FF /* EPLFEntryParserTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = EPLFEntryParserTest.java; sourceTree = "<group>"; };
 		47C75B8606A5A37500B464FF /* FTPPasvResponseTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPPasvResponseTest.java; sourceTree = "<group>"; };
 		47C761EA06A88D7600B464FF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<absolute>"; };
-		47C894D408C1EC4000D806B3 /* en */ = {isa = PBXFileReference; lastKnownFileType = folder; name = en; path = "en.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C894D908C1EC4900D806B3 /* de */ = {isa = PBXFileReference; lastKnownFileType = folder; name = de; path = "de.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8952208C1EC7F00D806B3 /* ca */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ca; path = "ca.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8952608C1EC8700D806B3 /* cs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = cs; path = "cs.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8952A08C1EC9000D806B3 /* da */ = {isa = PBXFileReference; lastKnownFileType = folder; name = da; path = "da.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8952E08C1EC9C00D806B3 /* es */ = {isa = PBXFileReference; lastKnownFileType = folder; name = es; path = "es.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8953208C1ECA500D806B3 /* fi */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fi; path = "fi.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8953608C1ECB300D806B3 /* fr */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fr; path = "fr.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8953A08C1ECBC00D806B3 /* hu */ = {isa = PBXFileReference; lastKnownFileType = folder; name = hu; path = "hu.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8953E08C1ECC800D806B3 /* id */ = {isa = PBXFileReference; lastKnownFileType = folder; name = id; path = "id.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8954208C1ECDC00D806B3 /* it */ = {isa = PBXFileReference; lastKnownFileType = folder; name = it; path = "it.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8954608C1ECE600D806B3 /* ja */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ja; path = "ja.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8954A08C1ECEE00D806B3 /* ko */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ko; path = "ko.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8954E08C1ECFB00D806B3 /* nl */ = {isa = PBXFileReference; lastKnownFileType = folder; name = nl; path = "nl.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8955208C1ED0300D806B3 /* no */ = {isa = PBXFileReference; lastKnownFileType = folder; name = no; path = "no.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8955608C1ED0A00D806B3 /* pl */ = {isa = PBXFileReference; lastKnownFileType = folder; name = pl; path = "pl.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8955A08C1ED1B00D806B3 /* pt */ = {isa = PBXFileReference; lastKnownFileType = folder; name = pt; path = "pt.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8955E08C1ED2400D806B3 /* ru */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ru; path = "ru.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8956208C1ED3100D806B3 /* sk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sk; path = "sk.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8956608C1ED3B00D806B3 /* sv */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sv; path = "sv.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8956A08C1ED4600D806B3 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = folder; name = zh_CN; path = "zh_CN.lproj/Cyberduck Help"; sourceTree = "<group>"; };
-		47C8956E08C1ED4E00D806B3 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = folder; name = zh_TW; path = "zh_TW.lproj/Cyberduck Help"; sourceTree = "<group>"; };
 		47CD32A00751163400B82A2B /* plus.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = plus.tiff; sourceTree = "<group>"; };
 		47CD99760738DE8900E9379E /* SyncQueue.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SyncQueue.java; sourceTree = "<group>"; };
 		47CD99E50738F74B00E9379E /* UploadQueue.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = UploadQueue.java; sourceTree = "<group>"; };
@@ -1866,7 +1841,6 @@
 		4741532B06C4F08A00AC0BD2 /* com */ = {
 			isa = PBXGroup;
 			children = (
-				47649C8108E5614A00207DC9 /* unsanity */,
 				4741532C06C4F08A00AC0BD2 /* enterprisedt */,
 				4741533806C4F08A00AC0BD2 /* sshtools */,
 			);
@@ -2355,7 +2329,6 @@
 		4741639206C4F58D00AC0BD2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				47C894D308C1EC4000D806B3 /* Cyberduck Help */,
 				4741639D06C4F5FB00AC0BD2 /* Credits.html */,
 				47026426087DC91C008837FD /* IDisk.strings */,
 				4741686906C6BA9400AC0BD2 /* Localizable.strings */,
@@ -2490,22 +2463,6 @@
 				4741530606C4F08A00AC0BD2 /* CDBookmarkTableDataSource.java */,
 			);
 			name = bookmark;
-			sourceTree = "<group>";
-		};
-		47649C8108E5614A00207DC9 /* unsanity */ = {
-			isa = PBXGroup;
-			children = (
-				47649C8208E5614A00207DC9 /* smartcrashreports */,
-			);
-			path = unsanity;
-			sourceTree = "<group>";
-		};
-		47649C8208E5614A00207DC9 /* smartcrashreports */ = {
-			isa = PBXGroup;
-			children = (
-				47649C8308E5614A00207DC9 /* SmartCrashReportsInstall.h */,
-			);
-			path = smartcrashreports;
 			sourceTree = "<group>";
 		};
 		479815EA0728DCA000FA3CDB /* growl */ = {
@@ -2765,7 +2722,6 @@
 				47494C4107EC6B4200B34D53 /* CDOutlineView.h in Headers */,
 				47494C4307EC6B4200B34D53 /* CDListView.h in Headers */,
 				47FD45330801EAEE00716715 /* UKPrefsPanel.h in Headers */,
-				47649C8508E5614A00207DC9 /* SmartCrashReportsInstall.h in Headers */,
 				4764B48308B7835E00441096 /* SKWSegmentedControlWindowProxy.h in Headers */,
 				4764B48408B7835E00441096 /* SKWSegmentedControl.h in Headers */,
 				470D337F091CE51100E33C50 /* AIAutoScrollView.h in Headers */,
@@ -3310,7 +3266,6 @@
 				47ED8CCB08813F9200314985 /* bookmark16.tiff in Resources */,
 				47ED8CCC08813F9200314985 /* bookmark40.tiff in Resources */,
 				478B71F0089FEB4E003B512A /* arrowRightBlack16.tiff in Resources */,
-				47C894D808C1EC4000D806B3 /* Cyberduck Help in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4140,35 +4095,6 @@
 				47C4E7FA0879EBCE007A1D39 /* ca */,
 			);
 			name = Progress.nib;
-			sourceTree = "<group>";
-		};
-		47C894D308C1EC4000D806B3 /* Cyberduck Help */ = {
-			isa = PBXVariantGroup;
-			children = (
-				47C894D408C1EC4000D806B3 /* en */,
-				47C894D908C1EC4900D806B3 /* de */,
-				47C8952208C1EC7F00D806B3 /* ca */,
-				47C8952608C1EC8700D806B3 /* cs */,
-				47C8952A08C1EC9000D806B3 /* da */,
-				47C8952E08C1EC9C00D806B3 /* es */,
-				47C8953208C1ECA500D806B3 /* fi */,
-				47C8953608C1ECB300D806B3 /* fr */,
-				47C8953A08C1ECBC00D806B3 /* hu */,
-				47C8953E08C1ECC800D806B3 /* id */,
-				47C8954208C1ECDC00D806B3 /* it */,
-				47C8954608C1ECE600D806B3 /* ja */,
-				47C8954A08C1ECEE00D806B3 /* ko */,
-				47C8954E08C1ECFB00D806B3 /* nl */,
-				47C8955208C1ED0300D806B3 /* no */,
-				47C8955608C1ED0A00D806B3 /* pl */,
-				47C8955A08C1ED1B00D806B3 /* pt */,
-				47C8955E08C1ED2400D806B3 /* ru */,
-				47C8956208C1ED3100D806B3 /* sk */,
-				47C8956608C1ED3B00D806B3 /* sv */,
-				47C8956A08C1ED4600D806B3 /* zh_CN */,
-				47C8956E08C1ED4E00D806B3 /* zh_TW */,
-			);
-			name = "Cyberduck Help";
 			sourceTree = "<group>";
 		};
 		47CD9C700739349200E9379E /* Sync.nib */ = {

@@ -3,11 +3,24 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.5</string>
+	<string>2.5.1</string>
 	<key>file</key>
-	<string>Cyberduck-2.5.dmg</string>
+	<string>Cyberduck-2.5.1.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.5.1
+- [Feature] Dragging files to application icon will upload to frontmost browser
+_ [Feature] Universal Binary
+- [Feature] Printing browser view
+- [Bugfix] Child items not refreshed properly in outline view
+- [Bugfix] Warning before overwrite when moving or renaming files
+- [Bugfix] Dragging files to the Finder.app places them at the dropped position
+- [Bugfix] Always selecting parent directory as drop target when dragging to outline view
+- [Bugfix| Updated application and document icon
+- [Bugfix] Number of files in browser window not displayed correctly
+- [Bugfix] Don't recurse into directories when deleting symbolic links
+- [Bugfix] Overwriting group writable files
+
 2.5
 - [Feature] Graphical interface refinements
 - [Bugfix] Caching issue with multiple connections to the same host
