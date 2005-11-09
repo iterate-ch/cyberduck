@@ -35,7 +35,7 @@ public class LoginTest extends TestCase {
 	
 	public void testLoginReasonable() {
 		try {
-			Login login = new Login(new Host("example.net", 21), 
+			Login login = new Login("example.net", "ftp",
 									"dkocher", 
 									"changeme");
 			assertTrue(login.hasReasonableValues());
@@ -45,7 +45,7 @@ public class LoginTest extends TestCase {
 	
 	public void testLoginWithoutUsername() {
 		try {
-			Login login = new Login(new Host("example.net", 21),
+            Login login = new Login("example.net", "ftp",
 									null,
 									Preferences.instance().getProperty("ftp.anonymous.pass"));
 			assertTrue(login.hasReasonableValues());
@@ -55,8 +55,8 @@ public class LoginTest extends TestCase {
 	
 	public void testLoginWithoutPass() {
 		try {
-			Login login = new Login(new Host("example.net", 21),
-									"dkocher", 
+            Login login = new Login("example.net", "ftp",
+									"dkocher",
 									null);
 			assertFalse(login.hasReasonableValues());
 		}
@@ -65,8 +65,8 @@ public class LoginTest extends TestCase {
 	
 	public void testLoginAnonymous1() {
 		try {
-			Login login = new Login(new Host("example.net", 21), 
-									Preferences.instance().getProperty("ftp.anonymous.name"), 
+            Login login = new Login("example.net", "ftp",
+									Preferences.instance().getProperty("ftp.anonymous.name"),
 									Preferences.instance().getProperty("ftp.anonymous.pass"));
 			assertTrue(login.hasReasonableValues());
 		}
@@ -75,8 +75,8 @@ public class LoginTest extends TestCase {
 	
 	public void testLoginAnonymous2() {
 		try {
-			Login login = new Login(new Host("example.net", 21), 
-									Preferences.instance().getProperty("ftp.anonymous.name"), 
+            Login login = new Login("example.net", "ftp",
+									Preferences.instance().getProperty("ftp.anonymous.name"),
 									null);
 			assertTrue(login.hasReasonableValues());
 		}
@@ -85,7 +85,7 @@ public class LoginTest extends TestCase {
 	
 	public void testLoginAnonymous3() {
 		try {
-			Login login = new Login(new Host("example.net", 21), 
+            Login login = new Login("example.net", "ftp",
 									"user:pass", 
 									null);
 			assertTrue(login.hasReasonableValues());

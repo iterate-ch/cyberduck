@@ -9,6 +9,16 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>*</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>NSFilenamesPboardType</string>
+			<key>CFBundleTypeRole</key>
+			<string>None</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>duck</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
@@ -103,5 +113,9 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>SmartCrashReports_CompanyName</key>
+	<string>Cyberduck</string>
+	<key>SmartCrashReports_EmailTicket</key>
+	<string>SCR-0F8F2475E9</string>
 </dict>
 </plist>
