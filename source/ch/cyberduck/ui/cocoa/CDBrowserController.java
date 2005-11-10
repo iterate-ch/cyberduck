@@ -1777,6 +1777,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     break;
                 }
                 case OUTLINE_VIEW: {
+                    this.workdir().invalidate();
                     for (int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
                         Path p = (Path) this.browserOutlineView.itemAtRow(i);
                         if (p.attributes.isDirectory()) {
