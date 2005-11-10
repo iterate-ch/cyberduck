@@ -89,13 +89,11 @@ public class CDCreateFileController extends CDFileController {
                 log.error(e.getMessage());
             }
         }
-        controller.setShowHiddenFiles(filename.charAt(0) == '.');
-        List listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
-        if (null == listing) {
-            return null;
+        if(file.exists()) {
+            controller.setShowHiddenFiles(filename.charAt(0) == '.');
+            controller.reloadData();
+            return file;
         }
-        if (listing.contains(file))
-            return (Path) listing.get(listing.indexOf(file));
         return null;
     }
 }

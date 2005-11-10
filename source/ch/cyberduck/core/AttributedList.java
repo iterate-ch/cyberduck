@@ -43,7 +43,6 @@ public class AttributedList implements List {
     protected static final String FILTER = "FILTER";
     protected static final String COMPARATOR = "COMPARATOR";
 
-    protected static final String EXPANDED = "EXPANDED";
     protected static final String HIDDEN = "HIDDEN";
 
     //file listing has changed
@@ -89,7 +88,6 @@ public class AttributedList implements List {
             this.put(FILTER, new NullFilter());
             this.put(COMPARATOR, new NullComparator());
             this.put(HIDDEN, new HashSet());
-            this.put(EXPANDED, Boolean.FALSE);
             this.put(INVALID, Boolean.FALSE);
         }
 
@@ -97,16 +95,7 @@ public class AttributedList implements List {
             this.put(COMPARATOR, comparator);
             this.put(FILTER, filter);
             this.put(HIDDEN, new java.util.HashSet());
-            this.put(EXPANDED, Boolean.FALSE);
             this.put(INVALID, Boolean.FALSE);
-        }
-
-        public void setExpanded(boolean expanded) {
-            this.put(EXPANDED, Boolean.valueOf(expanded));
-        }
-
-        public boolean isExpanded() {
-            return this.get(EXPANDED).equals(Boolean.TRUE);
         }
 
         public void addHidden(Path child) {

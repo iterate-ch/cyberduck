@@ -34,26 +34,12 @@ import java.util.Observer;
  */
 public class SyncQueue extends Queue {
 
-    /**
-     * The observer to notify when an upload is complete
-     */
-    private Observer callback;
-
     public SyncQueue() {
-        //
+        super();
     }
 
     public SyncQueue(Path root) {
         super(root);
-    }
-
-    public SyncQueue(Path root, Observer callback) {
-        super(root);
-        this.callback = callback;
-    }
-
-    public SyncQueue(java.util.Observer callback) {
-        this.callback = callback;
     }
 
     public NSMutableDictionary getAsDictionary() {
@@ -70,19 +56,14 @@ public class SyncQueue extends Queue {
     protected void finish(boolean headless) {
         super.finish(headless);
         if (this.isComplete() && !this.isCanceled()) {
-            this.callObservers(new Message(Message.PROGRESS, NSBundle.localizedString("Synchronization complete",
-                    "Growl", "Growl Notification")));
-            this.callObservers(new Message(Message.QUEUE_STOP));
-            Growl.instance().notify(NSBundle.localizedString("Synchronization complete",
-                    "Growl", "Growl Notification"),
+            this.callObservers(new Message(Message.PROGRESS,
+                    NSBundle.localizedString("Synchronization complete", "Growl", "Growl Notification")));
+
+            Growl.instance().notify(
+                    NSBundle.localizedString("Synchronization complete", "Growl", "Growl Notification"),
                     this.getName());
-            if (callback != null) {
-                callback.update(null, new Message(Message.REFRESH));
-            }
         }
-        else {
-            this.callObservers(new Message(Message.QUEUE_STOP));
-        }
+        this.callObservers(new Message(Message.QUEUE_STOP));
     }
 
     private void addLocalChilds(List childs, Path p) {

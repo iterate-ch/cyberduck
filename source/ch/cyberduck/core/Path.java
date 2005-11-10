@@ -451,6 +451,10 @@ public abstract class Path {
         return listing.contains(this);
     }
 
+    public int hashCode() {
+        return this.getAbsolute().hashCode();
+    }
+
     public boolean equals(Object other) {
         if (other instanceof Path) {
             return this.getAbsolute().equals(((Path) other).getAbsolute());

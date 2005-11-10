@@ -44,6 +44,10 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         return ((NSOutlineView) tableView).rowForItem(p);
     }
 
+    public boolean contains(NSView tableView, Path p) {
+        return this.indexOf(tableView, p) != -1;
+    }
+
     public boolean outlineViewIsItemExpandable(NSOutlineView outlineView, Path item) {
         if (null == item) {
             item = controller.workdir();

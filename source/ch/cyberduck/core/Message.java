@@ -39,7 +39,6 @@ public class Message {
     // connection state of file
     public static final String START = "START";
     public static final String STOP = "STOP";
-    public static final String REFRESH = "REFRESH";
 
     public static final String QUEUE_START = "QUEUE_START";
     public static final String QUEUE_STOP = "QUEUE_STOP";

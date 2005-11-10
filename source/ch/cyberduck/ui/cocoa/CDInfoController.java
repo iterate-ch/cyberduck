@@ -360,7 +360,6 @@ public class CDInfoController extends CDWindowController {
             if (!this.filenameField.stringValue().equals(file.getName())) {
                 if (this.filenameField.stringValue().indexOf('/') == -1) {
                     controller.renamePath(file, file.getParent().getAbsolute(), this.filenameField.stringValue());
-                    controller.workdir().list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
                 }
                 else if (filenameField.stringValue().length() == 0) {
                     this.filenameField.setStringValue(file.getName());
@@ -418,6 +417,6 @@ public class CDInfoController extends CDWindowController {
             f.changePermissions(permission,
                     this.recursiveCheckbox.state() == NSCell.OnState);
         }
-        controller.workdir().list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
+        controller.reloadData();
     }
 }
