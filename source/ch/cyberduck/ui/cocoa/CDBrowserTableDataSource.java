@@ -27,6 +27,7 @@ import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.Status;
 import ch.cyberduck.core.UploadQueue;
+import ch.cyberduck.core.Message;
 
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSDraggingInfo;
@@ -52,6 +53,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.Observer;
+import java.util.Observable;
 
 /**
  * @version $Id$
@@ -63,12 +65,12 @@ public abstract class CDBrowserTableDataSource {
     protected static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
     protected static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
-    protected static final String TYPE_COLUMN = "TYPE";
-    protected static final String FILENAME_COLUMN = "FILENAME";
-    protected static final String SIZE_COLUMN = "SIZE";
-    protected static final String MODIFIED_COLUMN = "MODIFIED";
-    protected static final String OWNER_COLUMN = "OWNER";
-    protected static final String PERMISSIONS_COLUMN = "PERMISSIONS";
+    public static final String TYPE_COLUMN = "TYPE";
+    public static final String FILENAME_COLUMN = "FILENAME";
+    public static final String SIZE_COLUMN = "SIZE";
+    public static final String MODIFIED_COLUMN = "MODIFIED";
+    public static final String OWNER_COLUMN = "OWNER";
+    public static final String PERMISSIONS_COLUMN = "PERMISSIONS";
 
     protected AttributedList childs(Path path) {
         return path.list(false, controller.getEncoding(), false,
@@ -85,7 +87,7 @@ public abstract class CDBrowserTableDataSource {
         return this.childs(controller.workdir()).indexOf(p);
     }
 
-    public boolean contains(Path p) {
+    public boolean contains(NSView tableView, Path p) {
         return this.childs(controller.workdir()).contains(p);
     }
 
@@ -164,7 +166,7 @@ public abstract class CDBrowserTableDataSource {
         NSPasteboard infoPboard = info.draggingPasteboard();
         if (infoPboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
             NSArray filesList = (NSArray) infoPboard.propertyListForType(NSPasteboard.FilenamesPboardType);
-            Queue q = new UploadQueue((Observer) controller);
+            final Queue q = new UploadQueue();
             Session session = controller.workdir().getSession().copy();
             for (int i = 0; i < filesList.count(); i++) {
                 Path p = PathFactory.createPath(session,
@@ -174,6 +176,17 @@ public abstract class CDBrowserTableDataSource {
             }
             if (q.numberOfRoots() > 0) {
                 CDQueueController.instance().startItem(q);
+                q.addObserver(new Observer() {
+                    public void update(Observable observable, Object arg) {
+                        Message msg = (Message) arg;
+                        if (msg.getTitle().equals(Message.QUEUE_STOP)) {
+                            if(controller.isMounted()) {
+                                controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
+                                controller.reloadData();
+                            }
+                        }
+                    }
+                });
             }
             return true;
         }
@@ -189,7 +202,6 @@ public abstract class CDBrowserTableDataSource {
                     Path item = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
                     controller.renamePath(item, destination.getAbsolute(), item.getName());
                 }
-                controller.reloadPath(controller.workdir());
             }
             return true;
         }

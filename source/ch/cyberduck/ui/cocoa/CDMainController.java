@@ -602,11 +602,22 @@ public class CDMainController extends CDController {
                 int count = windows.count();
                 while (0 != count--) {
                     NSWindow window = (NSWindow) windows.objectAtIndex(count);
-                    CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+                    final CDBrowserController controller = CDBrowserController.controllerForWindow(window);
                     if (null != controller) {
                         if (controller.isMounted()) {
                             Path workdir = controller.workdir();
-                            Queue q = new UploadQueue(controller);
+                            final Queue q = new UploadQueue();
+                            q.addObserver(new Observer() {
+                                public void update(Observable observable, Object arg) {
+                                    Message msg = (Message) arg;
+                                    if (msg.getTitle().equals(Message.QUEUE_STOP)) {
+                                        if(controller.isMounted()) {
+                                            controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
+                                            controller.reloadData();
+                                        }
+                                    }
+                                }
+                            });
                             Session session = workdir.getSession().copy();
                             q.addRoot(PathFactory.createPath(session, workdir.getAbsolute(), new Local(f.getAbsolutePath())));
                             CDQueueController.instance().startItem(q);

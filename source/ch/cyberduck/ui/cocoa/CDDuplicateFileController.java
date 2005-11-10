@@ -33,8 +33,6 @@ import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSSize;
 
-import java.util.List;
-
 /**
  * @version $Id$
  */
@@ -85,20 +83,17 @@ public class CDDuplicateFileController extends CDFileController {
     }
 
     protected Path duplicate(Path workdir, String filename) {
-        Path p = PathFactory.createPath(workdir.getSession(),
+        Path file = PathFactory.createPath(workdir.getSession(),
                 workdir.getAbsolute(),
                 new Local(NSPathUtilities.temporaryDirectory(),
                         controller.getSelectedPath().getName()));
-        p.download();
-        p.setPath(workdir.getAbsolute(), filename);
-        p.upload();
-        controller.setShowHiddenFiles(filename.charAt(0) == '.');
-        List listing = workdir.list(true, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
-        if (null == listing) {
-            return null;
-        }
-        if (listing.contains(p)) {
-            return (Path) listing.get(listing.indexOf(p));
+        file.download();
+        file.setPath(workdir.getAbsolute(), filename);
+        file.upload();
+        if(file.exists()) {
+            controller.setShowHiddenFiles(filename.charAt(0) == '.');
+            controller.reloadData();
+            return file;
         }
         return null;
     }

@@ -339,7 +339,7 @@ public class CDQueueController extends CDWindowController {
                             int row = queueTable.selectedRow();
                             reloadQueueTable();
                             queueTable.selectRow(row, false);
-                            if (Preferences.instance().getBoolean("queue.orderBackOnTransfer")) {
+                            if (Preferences.instance().getBoolean("queue.orderBackOnStop")) {
                                 window().close();
                             }
                         }
@@ -348,11 +348,12 @@ public class CDQueueController extends CDWindowController {
                 }
             }
         });
-        if (Preferences.instance().getBoolean("queue.orderFrontOnTransfer")) {
+        if (Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
             this.window().makeKeyAndOrderFront(null);
         }
         if (queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
-            ((ch.cyberduck.core.sftp.SFTPSession) queue.getSession()).setHostKeyVerificationController(new CDHostKeyController(this));
+            ((ch.cyberduck.core.sftp.SFTPSession) queue.getSession()).setHostKeyVerificationController(
+                    new CDHostKeyController(this));
         }
         if (queue.getSession() instanceof ch.cyberduck.core.ftps.FTPSSession) {
             ((ch.cyberduck.core.ftps.FTPSSession) queue.getSession()).setTrustManager(

@@ -525,24 +525,29 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.window().makeFirstResponder(this.getSelectedBrowserView());
     }
 
-    private void reloadData() {
+    protected void reloadData() {
         log.debug("reloadData");
         if (this.isMounted()) {
+            List selected = this.getSelectedPaths();
+            this.deselectAll();
             switch (this.browserSwitchView.selectedSegment()) {
                 case LIST_VIEW: {
                     this.browserListView.reloadData();
                     this.infoLabel.setStringValue(this.browserListView.numberOfRows() + " " +
                             NSBundle.localizedString("files", ""));
+                    //selection handling
+                    for (Iterator iter = selected.iterator(); iter.hasNext();) {
+                        this.selectRow((Path) iter.next(), true);
+                    }
                     break;
                 }
                 case OUTLINE_VIEW: {
                     this.browserOutlineView.reloadData();
                     for (int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
                         Path p = (Path) this.browserOutlineView.itemAtRow(i);
-                        if (p.attributes.isDirectory()) {
-                            if (p.getSession().cache().isExpanded(p)) {
-                                this.browserOutlineView.expandItem(p);
-                            }
+                        //selection handling
+                        if(selected.contains(p)) {
+                            this.selectRow(p, true);
                         }
                     }
                     this.infoLabel.setStringValue(this.browserOutlineView.numberOfRows() + " " +
@@ -569,7 +574,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     private void selectRow(Path path, boolean expand) {
         log.debug("selectRow:" + path);
-        if (this.getSelectedBrowserModel().contains(path)) {
+        if (this.getSelectedBrowserModel().contains(this.getSelectedBrowserView(), path)) {
             this.selectRow(this.getSelectedBrowserModel().indexOf(this.getSelectedBrowserView(), path), expand);
         }
     }
@@ -700,9 +705,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 this.statusLabel.setAttributedStringValue(new NSAttributedString((String) msg.getContent(),
                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                 this.statusLabel.display();
-            }
-            else if (msg.getTitle().equals(Message.REFRESH)) {
-                this.reloadPath(this.workdir());
             }
             else if (msg.getTitle().equals(Message.OPEN)) {
                 progressIndicator.startAnimation(this);
@@ -919,15 +921,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
             }
 
             public void outlineViewItemDidExpand(NSNotification notification) {
-                Path p = (Path) notification.userInfo().allValues().lastObject();
-                p.getSession().cache().setExpanded(p, true);
                 infoLabel.setStringValue(CDBrowserController.this.browserOutlineView.numberOfRows() + " " +
                         NSBundle.localizedString("files", ""));
             }
 
             public void outlineViewItemDidCollapse(NSNotification notification) {
-                Path p = (Path) notification.userInfo().allValues().lastObject();
-                p.getSession().cache().setExpanded(p, false);
                 infoLabel.setStringValue(CDBrowserController.this.browserOutlineView.numberOfRows() + " " +
                         NSBundle.localizedString("files", ""));
             }
@@ -1102,9 +1100,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
         // Make the browser user our custom browser cell.
         this.browserColumnView.setNewCellClass(CDBrowserCell.class);
         this.browserColumnView.setNewMatrixClass(CDBrowserMatrix.class);
-//        for(int i = 0; i < this.browserColumnView.maxVisibleColumns(); i++) {
-//            this.browserColumnView.matrixInColumn(i).setDelegate(this.browserColumnModel);
-//        }
     }
 
     public void browserColumnViewRowClicked(Object sender) {
@@ -1632,11 +1627,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.pathPopupButton.setTarget(this);
         this.pathPopupButton.setAction(new NSSelector("pathPopupSelectionChanged",
                 new Class[]{Object.class}));
-        // receive drag events from types
-//        this.pathPopupButton.registerForDraggedTypes(new NSArray(new Object[]{
-//            NSPasteboard.FilenamesPboardType //accept files dragged from the Finder for uploading
-//        }
-//        ));
     }
 
     public void pathPopupSelectionChanged(Object sender) {
@@ -1780,31 +1770,25 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void reloadButtonClicked(Object sender) {
-        this.reloadPath(this.workdir());
-    }
-
-    protected void reloadPath(Path directory) {
-        log.debug("reloadPath:" + directory);
         if (this.isMounted()) {
-            List selected = this.getSelectedPaths();
-            this.deselectAll();
-            List listing = directory.list(true, this.getEncoding(), this.getComparator(), this.getFileFilter());
-            if (null == listing) {
-                return;
-            }
-            for (Iterator iter = selected.iterator(); iter.hasNext();) {
-                Path p = (Path) iter.next();
-                if (listing.contains(p)) {
-                    //path is in current working directory; pass new reference
-                    if (listing.contains(p)) {
-                        this.selectRow((Path) listing.get(listing.indexOf(p)), true);
+            switch (this.browserSwitchView.selectedSegment()) {
+                case LIST_VIEW: {
+                    this.workdir().invalidate();
+                    break;
+                }
+                case OUTLINE_VIEW: {
+                    for (int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
+                        Path p = (Path) this.browserOutlineView.itemAtRow(i);
+                        if (p.attributes.isDirectory()) {
+                            if (this.browserOutlineView.isItemExpanded(p)) {
+                                p.invalidate();
+                            }
+                        }
                     }
-                }
-                else {
-                    //path is in child; old reference is still valid
-                    this.selectRow(p, true);
+                    break;
                 }
             }
+            this.reloadData();
         }
     }
 
@@ -1825,6 +1809,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
         else {
             path.rename(p.getAbsolute());
+            this.reloadData();
         }
     }
 
@@ -1836,6 +1821,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 Path path = (Path) context.get(0);
                 String name = (String) context.get(1);
                 path.rename(name);
+                this.reloadData();
             }
         }
     }
@@ -2064,7 +2050,18 @@ public class CDBrowserController extends CDWindowController implements Observer 
             Path selection = (Path) contextInfo;
             if (sheet.filenames().count() > 0) {
                 selection.setLocal(new Local((String) sheet.filenames().lastObject()));
-                Queue q = new SyncQueue((Observer) this);
+                final Queue q = new SyncQueue();
+                q.addObserver(new Observer() {
+                    public void update(Observable observable, Object arg) {
+                        Message msg = (Message) arg;
+                        if (msg.getTitle().equals(Message.QUEUE_STOP)) {
+                            if(isMounted()) {
+                                workdir().getSession().cache().invalidate(q.getRoot().getParent());
+                                reloadData();
+                            }
+                        }
+                    }
+                });
                 q.addRoot(selection);
                 CDQueueController.instance().startItem(q);
             }
@@ -2108,7 +2105,18 @@ public class CDBrowserController extends CDWindowController implements Observer 
             // selected files on the local filesystem
             NSArray selected = sheet.filenames();
             java.util.Enumeration iterator = selected.objectEnumerator();
-            Queue q = new UploadQueue((Observer) this);
+            final Queue q = new UploadQueue();
+            q.addObserver(new Observer() {
+                public void update(Observable observable, Object arg) {
+                    Message msg = (Message) arg;
+                    if (msg.getTitle().equals(Message.QUEUE_STOP)) {
+                        if(isMounted()) {
+                            workdir().getSession().cache().invalidate(q.getRoot().getParent());
+                            reloadData();
+                        }
+                    }
+                }
+            });
             Session session = workdir.getSession().copy();
             while (iterator.hasMoreElements()) {
                 q.addRoot(PathFactory.createPath(session,
@@ -2214,7 +2222,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     }
                 }
                 pboard.setPropertyListForType(null, "PathPBoardType");
-                this.reloadPath(workdir);
+//                this.reloadPath(workdir);
             }
         }
     }
@@ -2262,7 +2270,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         return this.workdir;
     }
 
-    private void setWorkdir(Path workdir) {
+    protected void setWorkdir(Path workdir) {
         this.workdir = workdir;
         this.pathPopupItems.clear();
         this.pathPopupButton.removeAllItems();
