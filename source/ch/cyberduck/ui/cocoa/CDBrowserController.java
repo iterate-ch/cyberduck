@@ -2683,7 +2683,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             return this.isMounted();
         }
         if (identifier.equals("Duplicate File") || identifier.equals("duplicateFileButtonClicked:")) {
-            return this.isMounted() && this.getSelectionCount() > 0;
+            return this.isMounted() && this.getSelectionCount() > 0 && this.getSelectedPath().attributes.isFile();
         }
         if (identifier.equals("Delete") || identifier.equals("deleteFileButtonClicked:")) {
             return this.isMounted() && this.getSelectionCount() > 0;
