@@ -526,7 +526,14 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     protected void reloadData() {
-        log.debug("reloadData");
+        if (!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit")) {
+            this.invoke(new Runnable() {
+                public void run() {
+                    reloadData();
+                }
+            });
+            return;
+        }
         if (this.isMounted()) {
             List selected = this.getSelectedPaths();
             this.deselectAll();
