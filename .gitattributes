@@ -816,6 +816,7 @@ pl.lproj/Info.nib/keyedobjects.nib -text
 pl.lproj/Info.strings svneol=native#unset
 pl.lproj/InfoPlist.strings svneol=native#unset
 pl.lproj/License.txt svneol=native#unset
+pl.lproj/Localizable.strings svneol=native#unset
 pl.lproj/Login.nib/keyedobjects.nib -text
 pl.lproj/Login.strings svneol=native#unset
 pl.lproj/Main.nib/keyedobjects.nib -text
