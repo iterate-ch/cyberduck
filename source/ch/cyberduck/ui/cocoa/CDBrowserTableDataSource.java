@@ -38,6 +38,7 @@ import com.apple.cocoa.application.NSTableView;
 import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDate;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSGregorianDate;
@@ -130,8 +131,11 @@ public abstract class CDBrowserTableDataSource {
                         CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
             }
             if (identifier.equals(MODIFIED_COLUMN)) {
-                return new NSGregorianDate((double) item.attributes.getTimestamp().getTime() / 1000,
+			        	if (item.attributes.getTimestamp() != null) {
+							return new NSGregorianDate((double) item.attributes.getTimestamp().getTime() / 1000,
                         NSDate.DateFor1970);
+						}
+						return NSBundle.localizedString("Unknown", "");
             }
             if (identifier.equals(OWNER_COLUMN)) {
                 return new NSAttributedString(item.attributes.getOwner(),
