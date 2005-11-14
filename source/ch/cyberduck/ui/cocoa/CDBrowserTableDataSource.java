@@ -320,7 +320,10 @@ public abstract class CDBrowserTableDataSource {
                 try {
                     this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
                             this.promisedDragPaths[i].getName()));
-                    this.promisedDragPaths[i].getLocal().createNewFile();
+						  if(this.promisedDragPaths[i].attributes.isFile())
+	                     this.promisedDragPaths[i].getLocal().createNewFile();
+						  if(this.promisedDragPaths[i].attributes.isDirectory())
+                        this.promisedDragPaths[i].getLocal().mkdir();
                     q.addRoot(this.promisedDragPaths[i]);
                     promisedDragNames.addObject(this.promisedDragPaths[i].getName());
                 }
