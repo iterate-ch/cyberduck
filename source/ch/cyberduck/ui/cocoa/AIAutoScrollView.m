@@ -26,12 +26,10 @@
 
 /*
  A subclass of NSScrollView that:
-
-    - Automatically scrolls to bottom on new content
-    - Automatically hides & shows the vertical scroller depending on content height (including on 10.2)
+	- Automatically scrolls to bottom on new content
+	- Automatically hides & shows the vertical scroller depending on content height (including on 10.2)
 	- Shows a focus ring even if the contained view would not normally show one (an NSTextView, for example)
  */
-
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
@@ -51,18 +49,11 @@
 
 - (void)_initAutoScrollView
 {
-    autoScrollToBottom = NO;
 	inAutoScrollToBottom = NO;
-    autoHideScrollBar = NO;
-	passKeysToDocumentView = NO;
-	
-	//Focus ring
-	alwaysDrawFocusRingIfFocused = NO;
-	lastResp = nil;
-	shouldDrawFocusRing = NO;
-	
-    [self setAutoHideScrollBar:YES];
-	 [self setAutoScrollToBottom:YES];
+	[self setPassKeysToDocumentView:NO];
+	[self setAlwaysDrawFocusRingIfFocused:NO];
+	[self setAutoHideScrollBar:YES];
+	[self setAutoScrollToBottom:YES];
 }
 
 - (void)dealloc

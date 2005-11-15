@@ -2259,6 +2259,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 }
             }
         });
+        this.logView.textStorage().appendAttributedString(
+                new NSAttributedString(
+                        "Cyberduck "+(String)NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString"),
+                        FIXED_WITH_FONT_ATTRIBUTES));
         this.window().setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername() + "@" + host.getHostname());
         this.bookmarkModel.exportBookmark(host, this.getRepresentedFile());
         if (this.getRepresentedFile().exists()) {
