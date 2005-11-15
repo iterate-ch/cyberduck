@@ -262,7 +262,7 @@ public abstract class Path {
     }
 
     public boolean isChild(Path p) {
-        for (Path parent = this.getParent(); !parent.isRoot(); parent = this.getParent()) {
+        for (Path parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
             if (parent.equals(p)) {
                 return true;
             }

@@ -231,7 +231,7 @@ public abstract class CDBrowserTableDataSource {
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                     Queue q = Queue.createQueue(dict);
                     for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                        Path item = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
+								Path item = (Path) iter.next();
                         if (destination.equals(item)) {
                             return NSDraggingInfo.DragOperationNone;
                         }
