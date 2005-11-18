@@ -135,7 +135,7 @@
 - (void)keyDown:(NSEvent *)event
 {
 	NSString *str = [event characters];
-	char key = [str length] ? [str characterAtIndex:0] : '\0';
+	unichar key = [str length] ? [str characterAtIndex:0] : '\0';
 
 	if (key == NSCarriageReturnCharacter || key == NSEnterCharacter) {
         if ([[self delegate] respondsToSelector:@selector(enterKeyPressed:)]) {
