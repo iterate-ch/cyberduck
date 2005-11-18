@@ -1122,12 +1122,12 @@ public class CDPreferencesController extends CDWindowController {
         this.bringQueueToFrontCheckbox = bringQueueToFrontCheckbox;
         this.bringQueueToFrontCheckbox.setTarget(this);
         this.bringQueueToFrontCheckbox.setAction(new NSSelector("bringQueueToFrontCheckboxClicked", new Class[]{NSButton.class}));
-        this.bringQueueToFrontCheckbox.setState(Preferences.instance().getBoolean("queue.orderFrontOnTransfer") ? NSCell.OnState : NSCell.OffState);
+        this.bringQueueToFrontCheckbox.setState(Preferences.instance().getBoolean("queue.orderFrontOnStart") ? NSCell.OnState : NSCell.OffState);
     }
 
     public void bringQueueToFrontCheckboxClicked(NSButton sender) {
         boolean enabled = sender.state() == NSCell.OnState;
-        Preferences.instance().setProperty("queue.orderFrontOnTransfer", enabled);
+        Preferences.instance().setProperty("queue.orderFrontOnStart", enabled);
     }
 
     private NSButton removeFromQueueCheckbox; //IBOutlet

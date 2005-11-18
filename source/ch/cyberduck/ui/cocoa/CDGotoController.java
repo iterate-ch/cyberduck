@@ -130,6 +130,7 @@ public class CDGotoController extends CDWindowController {
         else {
             dir.setPath(filename);
         }
-        dir.list(false, controller.getEncoding(), controller.getComparator(), controller.getFileFilter());
+        controller.setWorkdir(dir);
+        controller.reloadData();
     }
 }

@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.CDBrowserController;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableDictionary;
@@ -33,26 +34,12 @@ import java.util.Observer;
  */
 public class UploadQueue extends Queue {
 
-    /**
-     * The observer to notify when an upload is complete
-     */
-    private Observer callback;
-
     public UploadQueue() {
-        //
+        super();
     }
 
     public UploadQueue(Path root) {
         super(root);
-    }
-
-    public UploadQueue(Path root, Observer callback) {
-        super(root);
-        this.callback = callback;
-    }
-
-    public UploadQueue(java.util.Observer callback) {
-        this.callback = callback;
     }
 
     public NSMutableDictionary getAsDictionary() {
@@ -64,19 +51,13 @@ public class UploadQueue extends Queue {
     protected void finish(boolean headless) {
         super.finish(headless);
         if (this.isComplete() && !this.isCanceled()) {
-            this.callObservers(new Message(Message.PROGRESS, NSBundle.localizedString("Upload complete",
-                    "Growl", "Growl Notification")));
-            this.callObservers(new Message(Message.QUEUE_STOP));
-            Growl.instance().notify(NSBundle.localizedString("Upload complete",
-                    "Growl", "Growl Notification"),
+            this.callObservers(new Message(Message.PROGRESS,
+                    NSBundle.localizedString("Upload complete", "Growl", "Growl Notification")));
+            Growl.instance().notify(
+                    NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"),
                     this.getName());
-            if (callback != null) {
-                callback.update(null, new Message(Message.REFRESH));
-            }
         }
-        else {
-            this.callObservers(new Message(Message.QUEUE_STOP));
-        }
+        this.callObservers(new Message(Message.QUEUE_STOP));
     }
 
     protected List getChilds(List childs, Path p) {

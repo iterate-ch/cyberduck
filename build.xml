@@ -117,9 +117,10 @@
 		<exec executable="./buildDMG.pl" spawn="false">
 		    <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor} -buildDir ${build} -compressionLevel 9 -volSize 25 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.html  AppleScript\ Samples"/>
 		</exec>
-		<exec executable="gpg" spawn="false">
-			<arg line="-a -o ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.sig --detach-sig ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"/>
-		</exec>
+		<antcall target="sign"/>
+	</target>
+
+	<target name="sign">
 		<exec executable="md5sum" spawn="false" output="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.md5">
 			<arg line="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"/>
 		</exec>

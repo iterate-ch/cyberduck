@@ -69,7 +69,10 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
         if (controller.isMounted()) {
             Path destination = controller.workdir();
             if (row != -1 && row < tableView.numberOfRows()) {
-                destination = ((Path) this.childs(this.controller.workdir()).get(row));
+                Path p = ((Path) this.childs(this.controller.workdir()).get(row));
+                if(p.attributes.isDirectory()) {
+                    destination = p;
+                }
             }
             return super.validateDrop(tableView, destination, row, info);
         }

@@ -121,33 +121,4 @@ public class Cache extends HashMap {
     public Object put(Object path, Object childs) {
         return this.put((Path) path, (List) childs);
     }
-
-    /**
-     * Memorize the given path to be expaned in outline view
-     *
-     * @param path     Must be a directory
-     * @param expanded
-     * @see Attributes#isDirectory()
-     */
-    public void setExpanded(Path path, boolean expanded) {
-        if (path.attributes.isDirectory()) {
-            if (this.containsKey(path)) {
-                this.get(path).getAttributes().setExpanded(expanded);
-            }
-        }
-    }
-
-    /**
-     * @param path Must be a directory
-     * @return true if the given path should be expanded in outline view
-     * @see Attributes#isDirectory()
-     */
-    public boolean isExpanded(Path path) {
-        if (path.attributes.isDirectory()) {
-            if (this.containsKey(path)) {
-                return this.get(path).getAttributes().isExpanded();
-            }
-        }
-        return false;
-    }
 }

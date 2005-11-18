@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DownloadQueue;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Queue;
@@ -51,6 +52,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
+import java.util.Observable;
 import java.util.Observer;
 
 /**
@@ -63,12 +65,12 @@ public abstract class CDBrowserTableDataSource {
     protected static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
     protected static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
-    protected static final String TYPE_COLUMN = "TYPE";
-    protected static final String FILENAME_COLUMN = "FILENAME";
-    protected static final String SIZE_COLUMN = "SIZE";
-    protected static final String MODIFIED_COLUMN = "MODIFIED";
-    protected static final String OWNER_COLUMN = "OWNER";
-    protected static final String PERMISSIONS_COLUMN = "PERMISSIONS";
+    public static final String TYPE_COLUMN = "TYPE";
+    public static final String FILENAME_COLUMN = "FILENAME";
+    public static final String SIZE_COLUMN = "SIZE";
+    public static final String MODIFIED_COLUMN = "MODIFIED";
+    public static final String OWNER_COLUMN = "OWNER";
+    public static final String PERMISSIONS_COLUMN = "PERMISSIONS";
 
     protected AttributedList childs(Path path) {
         return path.list(false, controller.getEncoding(), false,
@@ -85,7 +87,7 @@ public abstract class CDBrowserTableDataSource {
         return this.childs(controller.workdir()).indexOf(p);
     }
 
-    public boolean contains(Path p) {
+    public boolean contains(NSView tableView, Path p) {
         return this.childs(controller.workdir()).contains(p);
     }
 
@@ -128,8 +130,11 @@ public abstract class CDBrowserTableDataSource {
                         CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
             }
             if (identifier.equals(MODIFIED_COLUMN)) {
-                return new NSGregorianDate((double) item.attributes.getTimestamp().getTime() / 1000,
-                        NSDate.DateFor1970);
+                if (item.attributes.getTimestamp() != null) {
+                    return new NSGregorianDate((double) item.attributes.getTimestamp().getTime() / 1000,
+                            NSDate.DateFor1970);
+                }
+                return null;
             }
             if (identifier.equals(OWNER_COLUMN)) {
                 return new NSAttributedString(item.attributes.getOwner(),
@@ -164,7 +169,7 @@ public abstract class CDBrowserTableDataSource {
         NSPasteboard infoPboard = info.draggingPasteboard();
         if (infoPboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
             NSArray filesList = (NSArray) infoPboard.propertyListForType(NSPasteboard.FilenamesPboardType);
-            Queue q = new UploadQueue((Observer) controller);
+            final Queue q = new UploadQueue();
             Session session = controller.workdir().getSession().copy();
             for (int i = 0; i < filesList.count(); i++) {
                 Path p = PathFactory.createPath(session,
@@ -174,6 +179,17 @@ public abstract class CDBrowserTableDataSource {
             }
             if (q.numberOfRoots() > 0) {
                 CDQueueController.instance().startItem(q);
+                q.addObserver(new Observer() {
+                    public void update(Observable observable, Object arg) {
+                        Message msg = (Message) arg;
+                        if (msg.getTitle().equals(Message.QUEUE_STOP)) {
+                            if (controller.isMounted()) {
+                                controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
+                                controller.reloadData();
+                            }
+                        }
+                    }
+                });
             }
             return true;
         }
@@ -189,7 +205,6 @@ public abstract class CDBrowserTableDataSource {
                     Path item = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
                     controller.renamePath(item, destination.getAbsolute(), item.getName());
                 }
-                controller.reloadPath(controller.workdir());
             }
             return true;
         }
@@ -200,10 +215,6 @@ public abstract class CDBrowserTableDataSource {
     public int validateDrop(NSTableView view, Path destination, int row, NSDraggingInfo info) {
         if (controller.isMounted()) {
             if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-                if (null == destination) {
-                    view.setDropRowAndDropOperation(-1, NSTableView.DropOn);
-                    return NSDraggingInfo.DragOperationCopy;
-                }
                 if (destination.equals(controller.workdir())) {
                     view.setDropRowAndDropOperation(-1, NSTableView.DropOn);
                     return NSDraggingInfo.DragOperationCopy;
@@ -215,9 +226,22 @@ public abstract class CDBrowserTableDataSource {
             }
             NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
             if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-                if (null == destination) {
-                    view.setDropRowAndDropOperation(-1, NSTableView.DropOn);
-                    return NSDraggingInfo.DragOperationMove;
+                NSArray elements = (NSArray) pboard.propertyListForType("QueuePBoardType");
+                for (int i = 0; i < elements.count(); i++) {
+                    NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+                    Queue q = Queue.createQueue(dict);
+                    for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
+								Path item = (Path) iter.next();
+                        if (destination.equals(item)) {
+                            return NSDraggingInfo.DragOperationNone;
+                        }
+                        if (item.attributes.isDirectory() && destination.isChild(item)) {
+                            return NSDraggingInfo.DragOperationNone;
+                        }
+                        if (item.getParent().equals(destination)) {
+                            return NSDraggingInfo.DragOperationNone;
+                        }
+                    }
                 }
                 if (destination.equals(controller.workdir())) {
                     view.setDropRowAndDropOperation(-1, NSTableView.DropOn);
@@ -302,9 +326,7 @@ public abstract class CDBrowserTableDataSource {
             Queue q = new DownloadQueue();
             for (int i = 0; i < this.promisedDragPaths.length; i++) {
                 try {
-                    this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
-                            this.promisedDragPaths[i].getName()));
-                    this.promisedDragPaths[i].getLocal().createNewFile();
+                    this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"), this.promisedDragPaths[i].getName()));
                     q.addRoot(this.promisedDragPaths[i]);
                     promisedDragNames.addObject(this.promisedDragPaths[i].getName());
                 }
@@ -313,6 +335,19 @@ public abstract class CDBrowserTableDataSource {
                 }
                 catch (IOException e) {
                     log.error(e.getMessage());
+                }
+            }
+            if (q.numberOfRoots() == 1) {
+                if (q.getRoot().attributes.isFile()) {
+                    try {
+                        q.getRoot().getLocal().createNewFile();
+                    }
+                    catch (IOException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+                if (q.getRoot().attributes.isDirectory()) {
+                    q.getRoot().getLocal().mkdir();
                 }
             }
             if (q.numberOfRoots() > 0) {
