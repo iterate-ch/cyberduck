@@ -1,24 +1,8 @@
-[2.6] Automator Actions
-[2.6] SSH shell access (using Send Command...)
-[????] Group bookmarks (Outline View)
-[????] Calculate folder sizes
 [????] Selecting remote server timezone in synchronization dialog
 [????] Drag and drop in browser column view
-[????] Corner view in browser tables to show/hide particular columns
-[????] Change permissions by octal value (text input field)
-[????] Drag to the path popup in the browser window to upload files
-[????] Attach menu to back button (navigation history)
 [????] Server to Server Transfers (FXP)
-[????] SFTP protocol version 4 (support for SSH_FILEXFER_ATTR_OWNERGROUP)
 [????] SSH Agent Authentication
 [????] Kerberos (GSSAPI) Authentication
 [????] SSH verbose logging
 [????] CFNetworkDiagnostics
-[????] Prevent computing going to sleep when file transfer is in progress
 [????] Dock status icon
-[????] Estimated time left for file transfers
-[????] Indicate secure connection in browser window
-[????] Replace FTP api com.enterprisedt with org.apache.commons.net.ftp
-[????] Exclusion lists for synchronization (e.g. skip CVS dirs)
-[????] Outline view in synchronization dialog
-[????] Transfer throttling

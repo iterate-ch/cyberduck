@@ -526,6 +526,14 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     protected void reloadData() {
+       if (!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit")) {
+           this.invoke(new Runnable() {
+               public void run() {
+                   reloadData();
+               }
+           });
+           return;
+       }
         log.debug("reloadData");
         if (this.isMounted()) {
             List selected = this.getSelectedPaths();
@@ -1777,6 +1785,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     break;
                 }
                 case OUTLINE_VIEW: {
+                    this.workdir().invalidate();
                     for (int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
                         Path p = (Path) this.browserOutlineView.itemAtRow(i);
                         if (p.attributes.isDirectory()) {
@@ -2682,7 +2691,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
             return this.isMounted();
         }
         if (identifier.equals("Duplicate File") || identifier.equals("duplicateFileButtonClicked:")) {
-            return this.isMounted() && this.getSelectionCount() > 0;
+            return this.isMounted() && this.getSelectionCount() > 0 && this.getSelectedPath().attributes.isFile();
         }
         if (identifier.equals("Delete") || identifier.equals("deleteFileButtonClicked:")) {
             return this.isMounted() && this.getSelectionCount() > 0;

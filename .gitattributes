@@ -24,7 +24,6 @@ ca.lproj/Command.nib/keyedobjects.nib -text
 ca.lproj/Command.strings svneol=native#unset
 ca.lproj/Connection.nib/keyedobjects.nib -text
 ca.lproj/Connection.strings svneol=native#unset
-ca.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 ca.lproj/Donate.nib/keyedobjects.nib -text
 ca.lproj/Donate.strings svneol=native#unset
 ca.lproj/Download.nib/keyedobjects.nib -text
@@ -69,7 +68,6 @@ cs.lproj/Command.nib/keyedobjects.nib -text
 cs.lproj/Command.strings svneol=native#unset
 cs.lproj/Connection.nib/keyedobjects.nib -text
 cs.lproj/Connection.strings svneol=native#unset
-cs.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 cs.lproj/Donate.nib/keyedobjects.nib -text
 cs.lproj/Donate.strings svneol=native#unset
 cs.lproj/Download.nib/keyedobjects.nib -text
@@ -104,6 +102,50 @@ cs.lproj/Update.nib/keyedobjects.nib -text
 cs.lproj/Update.strings svneol=native#unset
 cs.lproj/Validator.nib/keyedobjects.nib -text
 cs.lproj/Validator.strings svneol=native#unset
+cy.lproj/Bookmark.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Bookmark.strings svneol=native#unset
+cy.lproj/Browser.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Browser.strings svneol=native#unset
+cy.lproj/Certificate.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Certificate.strings svneol=native#unset
+cy.lproj/Command.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Command.strings svneol=native#unset
+cy.lproj/Connection.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Connection.strings svneol=native#unset
+cy.lproj/Donate.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Donate.strings svneol=native#unset
+cy.lproj/Download.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Download.strings svneol=native#unset
+cy.lproj/Duplicate.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Duplicate.strings svneol=native#unset
+cy.lproj/File.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/File.strings svneol=native#unset
+cy.lproj/Folder.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Folder.strings svneol=native#unset
+cy.lproj/Goto.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Goto.strings svneol=native#unset
+cy.lproj/Growl.strings svneol=native#unset
+cy.lproj/IDisk.strings svneol=native#unset
+cy.lproj/Info.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Info.strings svneol=native#unset
+cy.lproj/InfoPlist.strings svneol=native#unset
+cy.lproj/Localizable.strings svneol=native#unset
+cy.lproj/Login.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Login.strings svneol=native#unset
+cy.lproj/Main.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Main.strings svneol=native#unset
+cy.lproj/Preferences.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Preferences.strings svneol=native#unset
+cy.lproj/Progress.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Queue.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Queue.strings svneol=native#unset
+cy.lproj/Status.strings svneol=native#unset
+cy.lproj/Sync.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Sync.strings svneol=native#unset
+cy.lproj/Update.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Update.strings svneol=native#unset
+cy.lproj/Validator.nib/keyedobjects.nib svneol=native#unset
+cy.lproj/Validator.strings svneol=native#unset
 /cyberduck-application.icns svneol=native#unset
 /cyberduck-application.psd -text
 /cyberduck-document.icns svneol=native#unset
@@ -118,7 +160,6 @@ da.lproj/Command.nib/keyedobjects.nib -text
 da.lproj/Command.strings svneol=native#unset
 da.lproj/Connection.nib/keyedobjects.nib -text
 da.lproj/Connection.strings svneol=native#unset
-da.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 da.lproj/Donate.nib/keyedobjects.nib -text
 da.lproj/Donate.strings svneol=native#unset
 da.lproj/Download.nib/keyedobjects.nib -text
@@ -163,7 +204,6 @@ de.lproj/Command.nib/keyedobjects.nib -text
 de.lproj/Command.strings svneol=native#unset
 de.lproj/Connection.nib/keyedobjects.nib -text
 de.lproj/Connection.strings svneol=native#unset
-de.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 de.lproj/Donate.nib/keyedobjects.nib -text
 de.lproj/Donate.strings svneol=native#unset
 de.lproj/Download.nib/keyedobjects.nib -text
@@ -208,7 +248,6 @@ en.lproj/Command.nib/keyedobjects.nib -text
 en.lproj/Command.strings svneol=native#unset
 en.lproj/Connection.nib/keyedobjects.nib -text
 en.lproj/Connection.strings svneol=native#unset
-en.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 en.lproj/Donate.nib/keyedobjects.nib -text
 en.lproj/Donate.strings svneol=native#unset
 en.lproj/Download.nib/keyedobjects.nib -text
@@ -253,7 +292,6 @@ es.lproj/Command.nib/keyedobjects.nib -text
 es.lproj/Command.strings svneol=native#unset
 es.lproj/Connection.nib/keyedobjects.nib -text
 es.lproj/Connection.strings svneol=native#unset
-es.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 es.lproj/Donate.nib/keyedobjects.nib -text
 es.lproj/Donate.strings svneol=native#unset
 es.lproj/Download.nib/keyedobjects.nib -text
@@ -298,7 +336,6 @@ fi.lproj/Command.nib/keyedobjects.nib -text
 fi.lproj/Command.strings svneol=native#unset
 fi.lproj/Connection.nib/keyedobjects.nib -text
 fi.lproj/Connection.strings svneol=native#unset
-fi.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 fi.lproj/Donate.nib/keyedobjects.nib -text
 fi.lproj/Donate.strings svneol=native#unset
 fi.lproj/Download.nib/keyedobjects.nib -text
@@ -343,7 +380,6 @@ fr.lproj/Command.nib/keyedobjects.nib -text
 fr.lproj/Command.strings svneol=native#unset
 fr.lproj/Connection.nib/keyedobjects.nib -text
 fr.lproj/Connection.strings svneol=native#unset
-fr.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 fr.lproj/Donate.nib/keyedobjects.nib -text
 fr.lproj/Donate.strings svneol=native#unset
 fr.lproj/Download.nib/keyedobjects.nib -text
@@ -390,7 +426,6 @@ hu.lproj/Command.nib/keyedobjects.nib -text
 hu.lproj/Command.strings svneol=native#unset
 hu.lproj/Connection.nib/keyedobjects.nib -text
 hu.lproj/Connection.strings svneol=native#unset
-hu.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 hu.lproj/Donate.nib/keyedobjects.nib -text
 hu.lproj/Donate.strings svneol=native#unset
 hu.lproj/Download.nib/keyedobjects.nib -text
@@ -433,7 +468,6 @@ id.lproj/Command.nib/keyedobjects.nib -text
 id.lproj/Command.strings svneol=native#unset
 id.lproj/Connection.nib/keyedobjects.nib -text
 id.lproj/Connection.strings svneol=native#unset
-id.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 id.lproj/Donate.nib/keyedobjects.nib -text
 id.lproj/Donate.strings svneol=native#unset
 id.lproj/Download.nib/keyedobjects.nib -text
@@ -565,7 +599,6 @@ it.lproj/Command.nib/keyedobjects.nib -text
 it.lproj/Command.strings svneol=native#unset
 it.lproj/Connection.nib/keyedobjects.nib -text
 it.lproj/Connection.strings svneol=native#unset
-it.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 it.lproj/Donate.nib/keyedobjects.nib -text
 it.lproj/Donate.strings svneol=native#unset
 it.lproj/Download.nib/keyedobjects.nib -text
@@ -610,7 +643,6 @@ ja.lproj/Command.nib/keyedobjects.nib -text
 ja.lproj/Command.strings svneol=native#unset
 ja.lproj/Connection.nib/keyedobjects.nib -text
 ja.lproj/Connection.strings svneol=native#unset
-ja.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 ja.lproj/Donate.nib/keyedobjects.nib -text
 ja.lproj/Donate.strings svneol=native#unset
 ja.lproj/Download.nib/keyedobjects.nib -text
@@ -656,7 +688,6 @@ ko.lproj/Command.nib/keyedobjects.nib -text
 ko.lproj/Command.strings svneol=native#unset
 ko.lproj/Connection.nib/keyedobjects.nib -text
 ko.lproj/Connection.strings svneol=native#unset
-ko.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 ko.lproj/Donate.nib/keyedobjects.nib -text
 ko.lproj/Donate.strings svneol=native#unset
 ko.lproj/Download.nib/keyedobjects.nib -text
@@ -706,7 +737,6 @@ nl.lproj/Command.nib/keyedobjects.nib -text
 nl.lproj/Command.strings svneol=native#unset
 nl.lproj/Connection.nib/keyedobjects.nib -text
 nl.lproj/Connection.strings svneol=native#unset
-nl.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 nl.lproj/Donate.nib/keyedobjects.nib -text
 nl.lproj/Donate.strings svneol=native#unset
 nl.lproj/Download.nib/keyedobjects.nib -text
@@ -751,7 +781,6 @@ no.lproj/Command.nib/keyedobjects.nib -text
 no.lproj/Command.strings svneol=native#unset
 no.lproj/Connection.nib/keyedobjects.nib -text
 no.lproj/Connection.strings svneol=native#unset
-no.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 no.lproj/Donate.nib/keyedobjects.nib -text
 no.lproj/Donate.strings svneol=native#unset
 no.lproj/Download.nib/keyedobjects.nib -text
@@ -797,7 +826,6 @@ pl.lproj/Command.nib/keyedobjects.nib -text
 pl.lproj/Command.strings svneol=native#unset
 pl.lproj/Connection.nib/keyedobjects.nib -text
 pl.lproj/Connection.strings svneol=native#unset
-pl.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 pl.lproj/Donate.nib/keyedobjects.nib -text
 pl.lproj/Donate.strings svneol=native#unset
 pl.lproj/Download.nib/keyedobjects.nib -text
@@ -842,7 +870,6 @@ pt.lproj/Command.nib/keyedobjects.nib -text
 pt.lproj/Command.strings svneol=native#unset
 pt.lproj/Connection.nib/keyedobjects.nib -text
 pt.lproj/Connection.strings svneol=native#unset
-pt.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 pt.lproj/Donate.nib/keyedobjects.nib -text
 pt.lproj/Donate.strings svneol=native#unset
 pt.lproj/Download.nib/keyedobjects.nib -text
@@ -886,7 +913,6 @@ ru.lproj/Command.nib/keyedobjects.nib -text
 ru.lproj/Command.strings svneol=native#unset
 ru.lproj/Connection.nib/keyedobjects.nib -text
 ru.lproj/Connection.strings svneol=native#unset
-ru.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 ru.lproj/Donate.nib/keyedobjects.nib -text
 ru.lproj/Donate.strings svneol=native#unset
 ru.lproj/Download.nib/keyedobjects.nib -text
@@ -931,7 +957,6 @@ sk.lproj/Command.nib/keyedobjects.nib -text
 sk.lproj/Command.strings svneol=native#unset
 sk.lproj/Connection.nib/keyedobjects.nib -text
 sk.lproj/Connection.strings svneol=native#unset
-sk.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 sk.lproj/Donate.nib/keyedobjects.nib -text
 sk.lproj/Donate.strings svneol=native#unset
 sk.lproj/Download.nib/keyedobjects.nib -text
@@ -980,7 +1005,6 @@ sv.lproj/Command.nib/keyedobjects.nib -text
 sv.lproj/Command.strings svneol=native#unset
 sv.lproj/Connection.nib/keyedobjects.nib -text
 sv.lproj/Connection.strings svneol=native#unset
-sv.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 sv.lproj/Donate.nib/keyedobjects.nib -text
 sv.lproj/Donate.strings svneol=native#unset
 sv.lproj/Download.nib/keyedobjects.nib -text
@@ -1025,7 +1049,6 @@ zh_CN.lproj/Command.nib/keyedobjects.nib -text
 zh_CN.lproj/Command.strings svneol=native#unset
 zh_CN.lproj/Connection.nib/keyedobjects.nib -text
 zh_CN.lproj/Connection.strings svneol=native#unset
-zh_CN.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 zh_CN.lproj/Donate.nib/keyedobjects.nib -text
 zh_CN.lproj/Donate.strings svneol=native#unset
 zh_CN.lproj/Download.nib/keyedobjects.nib -text
@@ -1070,7 +1093,6 @@ zh_TW.lproj/Command.nib/keyedobjects.nib -text
 zh_TW.lproj/Command.strings svneol=native#unset
 zh_TW.lproj/Connection.nib/keyedobjects.nib -text
 zh_TW.lproj/Connection.strings svneol=native#unset
-zh_TW.lproj/Cyberduck[!!-~]Help/Cyberduck[!!-~]Help.helpindex -text
 zh_TW.lproj/Donate.nib/keyedobjects.nib -text
 zh_TW.lproj/Donate.strings svneol=native#unset
 zh_TW.lproj/Download.nib/keyedobjects.nib -text

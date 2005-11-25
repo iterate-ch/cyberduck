@@ -4205,6 +4205,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				PREBINDING = NO;
 				PRODUCT_NAME = libDotMac;
 				WARNING_CFLAGS = (
@@ -4234,6 +4235,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				PREBINDING = NO;
 				PRODUCT_NAME = libKeychain;
 				WARNING_CFLAGS = (
@@ -4262,6 +4264,7 @@
 					source/ch/cyberduck/core,
 				);
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				PREBINDING = NO;
 				PRODUCT_NAME = libODBEdit;
 				REZ_EXECUTABLE = YES;
@@ -4288,6 +4291,7 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				PREBINDING = NO;
 				PRODUCT_NAME = libGrowl;
 				REZ_EXECUTABLE = YES;
@@ -4316,6 +4320,7 @@
 					source/ch/cyberduck/core,
 				);
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				PREBINDING = NO;
 				PRODUCT_NAME = libProxy;
 				REZ_EXECUTABLE = YES;
@@ -4344,6 +4349,7 @@
 					source/ch/cyberduck/core,
 				);
 				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
 				PREBINDING = NO;
 				PRODUCT_NAME = libLocal;
 				REZ_EXECUTABLE = YES;

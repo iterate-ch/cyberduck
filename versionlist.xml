@@ -10,7 +10,7 @@
         <string>Changelog:
 2.5.1
 - [Feature] Dragging files to application icon will upload to frontmost browser
-_ [Feature] Universal Binary
+- [Feature] Universal Binary
 - [Feature] Printing browser view
 - [Bugfix] Child items not refreshed properly in outline view
 - [Bugfix] Warning before overwrite when moving or renaming files
