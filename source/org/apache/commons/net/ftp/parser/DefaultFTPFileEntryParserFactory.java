@@ -80,7 +80,11 @@ public class DefaultFTPFileEntryParserFactory implements FTPFileEntryParserFacto
 	}
 
 	private FTPFileEntryParser createNetwareFTPEntryParser() {
-		return new NetwareFTPEntryParser();
+		return new CompositeFileEntryParser(new FTPFileEntryParser[]
+		{
+			new NetwareFTPEntryParser(),
+			new UnixFTPEntryParser()
+		});
 	}
 
 	private FTPFileEntryParser createVMSVersioningFTPEntryParser() {

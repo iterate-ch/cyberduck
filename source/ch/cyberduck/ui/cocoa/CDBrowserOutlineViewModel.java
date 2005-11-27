@@ -104,7 +104,13 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
      */
     public int outlineViewValidateDrop(NSOutlineView outlineView, NSDraggingInfo info, Path destination, int row) {
         outlineView.setDropItemAndDropChildIndex(destination, NSOutlineView.DropOnItemIndex);
-        return super.validateDrop(outlineView, destination, row, info);
+        if (controller.isMounted()) {
+            if (null == destination) {
+                destination = controller.workdir();
+            }
+            return super.validateDrop(outlineView, destination, row, info);
+        }
+        return NSDraggingInfo.DragOperationNone;
     }
 
     public boolean outlineViewAcceptDrop(NSOutlineView outlineView, NSDraggingInfo info, Path destination, int row) {

@@ -261,6 +261,15 @@ public abstract class Path {
         return this.getAbsolute().equals(DELIMITER) || this.getAbsolute().indexOf('/') == -1;
     }
 
+    public boolean isChild(Path p) {
+        for (Path parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
+            if (parent.equals(p)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * @return the path relative to its parent directory
      */
@@ -464,5 +473,5 @@ public abstract class Path {
 
     public String toString() {
         return this.getAbsolute();
-	}
+    }
 }

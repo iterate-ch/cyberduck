@@ -38,8 +38,8 @@ public class FTPTimestampParserImpl implements FTPTimestampParser {
      * The only constructor for this class.
      */
     public FTPTimestampParserImpl() {
-        setDefaultDateFormat(DEFAULT_SDF);
-        setRecentDateFormat(DEFAULT_RECENT_SDF);
+        setDefaultDateFormat(DEFAULT_DATE_FORMAT);
+        setRecentDateFormat(DEFAULT_RECENT_DATE_FORMAT);
     }
 
     /**

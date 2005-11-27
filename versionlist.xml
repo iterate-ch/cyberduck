@@ -3,11 +3,15 @@
 <plist version="1.0">
     <dict>
 	<key>version</key>
-	<string>2.5.1</string>
+	<string>2.5.2</string>
 	<key>file</key>
-	<string>Cyberduck-2.5.1.dmg</string>
+	<string>Cyberduck-2.5.2.dmg</string>
 	<key>comment</key>
         <string>Changelog:
+2.5.2
+- [Bugfix] Spinning beachball of death when connecting on some systems
+- [Bugfix] Better validating drop targets in browser
+
 2.5.1
 - [Feature] Dragging files to application icon will upload to frontmost browser
 - [Feature] Universal Binary

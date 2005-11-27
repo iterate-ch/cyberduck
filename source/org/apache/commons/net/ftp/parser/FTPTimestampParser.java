@@ -25,24 +25,12 @@ import java.util.Calendar;
  */
 public interface FTPTimestampParser {
 
-    static final String DEFAULT_DATE_FORMAT
+    public static final String DEFAULT_DATE_FORMAT
 		= "MMM d yyyy"; //Nov 9 2001
 
-    static final String DEFAULT_RECENT_DATE_FORMAT
-		= "MMM d HH:mm"; //Nov 9 20:06
+    public static final String DEFAULT_RECENT_DATE_FORMAT
+		= "MM-dd-yy HH:mm"; //Nov 9 20:06
 
-    static final String NUMERIC_DATE_FORMAT
-		= "yyyy-MM-dd HH:mm"; //2001-11-09 20:06
-
-    /**
-	 * the default default date format. 
-	 */
-	public static final String DEFAULT_SDF = DEFAULT_DATE_FORMAT;
-	/**
-	 * the default recent date format. 
-	 */
-	public static final String DEFAULT_RECENT_SDF = DEFAULT_RECENT_DATE_FORMAT;
-	
 	/**
 	 * Parses the supplied datestamp parameter.  This parameter typically would 
 	 * have been pulled from a longer FTP listing via the regular expression 
