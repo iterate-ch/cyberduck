@@ -613,7 +613,7 @@ public class CDMainController extends CDController {
                                     if (msg.getTitle().equals(Message.QUEUE_STOP)) {
                                         if(controller.isMounted()) {
                                             controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
-                                            controller.reloadData();
+                                            controller.reloadData(true);
                                         }
                                     }
                                 }

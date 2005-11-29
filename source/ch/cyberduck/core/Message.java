@@ -30,7 +30,6 @@ public class Message {
     public static final String TRANSCRIPT = "TRANSCRIPT";
     public static final String PROGRESS = "PROGRESS";
     public static final String ERROR = "ERROR";
-    public static final String DATA = "DATA";
 
     // connection state of host
     public static final String OPEN = "OPEN";

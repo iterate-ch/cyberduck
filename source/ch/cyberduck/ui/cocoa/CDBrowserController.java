@@ -129,7 +129,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
         if (userObj != null) {
             host.setCredentials((String) args.objectForKey("Username"), (String) args.objectForKey("Password"));
         }
-        this.init(host).mount(this.getEncoding(), this.getComparator(), this.getFileFilter());
+        Session session = this.init(host);
+        this.setWorkdir(session.mount());
         return null;
     }
 
@@ -237,7 +238,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"));
             path.delete();
-            this.workdir().list(true, encoding, this.getComparator(), this.getFileFilter());
+            this.reloadData();
         }
         return null;
     }
@@ -464,37 +465,25 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     protected void reloadData() {
-        if (!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit")) {
-            this.invoke(new Runnable() {
-                public void run() {
-                    reloadData();
-                }
-            });
-            return;
-        }
+        this.reloadData(false);
+    }
+
+    protected void reloadData(boolean preserveSelection) {
         if (this.isMounted()) {
-            List selected = this.getSelectedPaths();
+            List selected = null;
+            if(preserveSelection) {
+                selected = this.getSelectedPaths();
+            }
             this.deselectAll();
             switch (this.browserSwitchView.selectedSegment()) {
                 case LIST_VIEW: {
                     this.browserListView.reloadData();
                     this.infoLabel.setStringValue(this.browserListView.numberOfRows() + " " +
                             NSBundle.localizedString("files", ""));
-                    //selection handling
-                    for (Iterator iter = selected.iterator(); iter.hasNext();) {
-                        this.selectRow((Path) iter.next(), true);
-                    }
                     break;
                 }
                 case OUTLINE_VIEW: {
                     this.browserOutlineView.reloadData();
-                    for (int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
-                        Path p = (Path) this.browserOutlineView.itemAtRow(i);
-                        //selection handling
-                        if(selected.contains(p)) {
-                            this.selectRow(p, true);
-                        }
-                    }
                     this.infoLabel.setStringValue(this.browserOutlineView.numberOfRows() + " " +
                             NSBundle.localizedString("files", ""));
                     break;
@@ -510,6 +499,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     this.infoLabel.setStringValue(this.browserColumnView.matrixInColumn(this.browserColumnView.lastVisibleColumn()).numberOfRows() + " " +
                             NSBundle.localizedString("files", ""));
                 }
+            }
+            if(preserveSelection) {
+                this.setSelectedPaths(selected);
             }
         }
         else {
@@ -534,6 +526,31 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 this.browserOutlineView.selectRow(row, expand);
             }
             case COLUMN_VIEW: {
+            }
+        }
+    }
+
+    protected void setSelectedPaths(List selected) {
+        switch (this.browserSwitchView.selectedSegment()) {
+            case LIST_VIEW: {
+                //selection handling
+                for (Iterator iter = selected.iterator(); iter.hasNext();) {
+                    this.selectRow((Path) iter.next(), true);
+                }
+                break;
+            }
+            case OUTLINE_VIEW: {
+                for (int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
+                    Path p = (Path) this.browserOutlineView.itemAtRow(i);
+                    //selection handling
+                    if(selected.contains(p)) {
+                        this.selectRow(p, true);
+                    }
+                }
+                break;
+            }
+            case COLUMN_VIEW: {
+                break;
             }
         }
     }
@@ -624,10 +641,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 }
             });
             return;
-        }
-        if (arg instanceof Path) {
-            this.setWorkdir((Path) arg);
-            this.reloadData();
         }
         else if (arg instanceof Message) {
             final Message msg = (Message) arg;
@@ -753,7 +766,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
             Preferences.instance().setProperty("browser.view", ((NSSegmentedControl) sender).selectedSegment());
         }
         this.reloadData();
-        this.getFocus();
         this.quickConnectPopup.setNextKeyView(this.getSelectedBrowserView());
         this.searchField.setNextKeyView(this.getSelectedBrowserView());
     }
@@ -767,8 +779,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
             return false;
         }
 
-        public void enterKeyPressed(Object sender) {
+        public void tableRowDoubleClicked(Object sender) {
             CDBrowserController.this.insideButtonClicked(sender);
+        }
+
+        public void enterKeyPressed(Object sender) {
+            ;
         }
 
         public void deleteKeyPressed(Object sender) {
@@ -829,6 +845,13 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
         this.browserOutlineView.setDataSource(this.browserOutlineModel = new CDBrowserOutlineViewModel(this));
         this.browserOutlineView.setDelegate(this.browserOutlineViewDelegate = new AbstractBrowserTableDelegate() {
+
+            public void enterKeyPressed(Object sender) {
+                CDBrowserController.this.browserOutlineView.editLocation(
+                        CDBrowserController.this.browserOutlineView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
+                        CDBrowserController.this.browserOutlineView.selectedRow(),
+                        null, true);
+            }
 
             public void outlineViewWillDisplayCell(NSOutlineView outlineView, Object cell,
                                                    NSTableColumn tableColumn, Path item) {
@@ -954,6 +977,13 @@ public class CDBrowserController extends CDWindowController implements Observer 
         this.browserListView.setDataSource(this.browserListModel = new CDBrowserListViewModel(this));
         this.browserListView.setDelegate(this.browserListViewDelegate = new AbstractBrowserTableDelegate() {
 
+            public void enterKeyPressed(Object sender) {
+                CDBrowserController.this.browserListView.editLocation(
+                        CDBrowserController.this.browserListView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
+                        CDBrowserController.this.browserListView.selectedRow(),
+                        null, true);
+            }
+
             public void tableViewWillDisplayCell(NSTableView tableView, Object cell, NSTableColumn tableColumn, int row) {
                 if (cell instanceof NSTextFieldCell) {
                     if (CDBrowserController.this.isConnected()) {
@@ -1049,7 +1079,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public void browserColumnViewRowClicked(Object sender) {
         Path selected = this.getSelectedPath(); //last row selected
         if (selected.attributes.isDirectory()) {
-            selected.list(false, this.getEncoding(), this.getComparator(), this.getFileFilter());
+            this.setWorkdir(selected);
         }
         if (selected.attributes.isFile()) {
             this.setWorkdir(selected.getParent());
@@ -1183,13 +1213,16 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
         this.bookmarkTable.setDataSource(this.bookmarkModel = CDBookmarkTableDataSource.instance());
         this.bookmarkTable.setDelegate(this.bookmarkTableDelegate = new CDAbstractTableDelegate() {
+
+            public void tableRowDoubleClicked(Object sender) {
+                CDBrowserController.this.bookmarkTableRowDoubleClicked(sender);
+            }
+
             public void enterKeyPressed(Object sender) {
-                log.debug("enterKeyPressed:" + sender);
                 CDBrowserController.this.bookmarkTableRowDoubleClicked(sender);
             }
 
             public void deleteKeyPressed(Object sender) {
-                log.debug("enterKeyPressed:" + sender);
                 CDBrowserController.this.deleteBookmarkButtonClicked(sender);
             }
 
@@ -1409,7 +1442,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                         }
                     };
                 }
-                this.reloadData();
+                this.reloadData(true);
             }
         }
     }
@@ -1527,15 +1560,15 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void backButtonClicked(Object sender) {
-        log.debug("backButtonClicked");
-        this.deselectAll();
-        this.session.getPreviousPath().list(false, this.getEncoding(), this.getComparator(), this.getFileFilter());
+        Path selected = this.session.getPreviousPath();
+        if(selected != null)
+            this.setWorkdir(selected);
     }
 
     public void forwardButtonClicked(Object sender) {
-        log.debug("forwardButtonClicked");
-        this.deselectAll();
-        this.session.getForwardPath().list(false, this.getEncoding(), this.getComparator(), this.getFileFilter());
+        Path selected = this.session.getForwardPath();
+        if(selected != null)
+            this.setWorkdir(selected);
     }
 
     private NSSegmentedControl upButton; // IBOutlet
@@ -1547,16 +1580,18 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void upButtonClicked(Object sender) {
-        log.debug("upButtonClicked");
-        this.deselectAll();
         Path previous = this.workdir();
-        List listing = this.workdir().getParent().list(false, this.getEncoding(), this.getComparator(), this.getFileFilter());
-        if (null == listing) {
-            return;
-        }
-        if (listing.contains(previous)) {
-            this.selectRow((Path) listing.get(listing.indexOf(previous)), false);
-        }
+        Path selected = this.workdir().getParent();
+        if(selected != null)
+            this.setWorkdir(selected);
+        //TODO
+//        List listing = this.workdir().getParent().list(false, this.getEncoding(), this.getComparator(), this.getFileFilter());
+//        if (null == listing) {
+//            return;
+//        }
+//        if (listing.contains(previous)) {
+//            this.selectRow((Path) listing.get(listing.indexOf(previous)), false);
+//       }
     }
 
     private static final NSImage DISK_ICON = NSImage.imageNamed("disk.tiff");
@@ -1574,9 +1609,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void pathPopupSelectionChanged(Object sender) {
-        Path p = (Path) pathPopupItems.get(pathPopupButton.indexOfSelectedItem());
-        this.deselectAll();
-        p.list(false, this.getEncoding(), this.getComparator(), this.getFileFilter());
+        Path selected = (Path) pathPopupItems.get(pathPopupButton.indexOfSelectedItem());
+        if(selected != null)
+            this.setWorkdir(selected);
     }
 
     private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
@@ -1733,7 +1768,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     break;
                 }
             }
-            this.reloadData();
+            this.reloadData(true);
         }
     }
 
@@ -1923,7 +1958,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     p = (Path) i.next();
                     p.delete();
                 }
-                this.workdir().list(true, encoding, this.getComparator(), this.getFileFilter());
+                this.reloadData();
             }
         }
     }
@@ -2002,7 +2037,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                         if (msg.getTitle().equals(Message.QUEUE_STOP)) {
                             if(isMounted()) {
                                 workdir().getSession().cache().invalidate(q.getRoot().getParent());
-                                reloadData();
+                                reloadData(true);
                             }
                         }
                     }
@@ -2057,7 +2092,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     if (msg.getTitle().equals(Message.QUEUE_STOP)) {
                         if(isMounted()) {
                             workdir().getSession().cache().invalidate(q.getRoot().getParent());
-                            reloadData();
+                            reloadData(true);
                         }
                     }
                 }
@@ -2078,8 +2113,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         if (this.getSelectionCount() > 0) {
             Path selected = this.getSelectedPath(); //last row selected
             if (selected.attributes.isDirectory()) {
-                this.deselectAll();
-                selected.list(false, this.getEncoding(), this.getComparator(), this.getFileFilter());
+                this.setWorkdir(selected);
             }
             else if (selected.attributes.isFile() || this.getSelectionCount() > 1) {
                 if (Preferences.instance().getBoolean("browser.doubleclick.edit")) {
@@ -2118,8 +2152,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 item.setState(NSCell.OnState);
             }
             if (this.isMounted()) {
-                this.deselectAll();
-                this.workdir().list(false, this.getEncoding(), this.getComparator(), this.getFileFilter());
+                this.reloadData(true);
             }
         }
     }
@@ -2216,19 +2249,36 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     protected void setWorkdir(Path workdir) {
-        this.workdir = workdir;
-        this.pathPopupItems.clear();
-        this.pathPopupButton.removeAllItems();
-        if (this.isMounted()) {
-            this.addPathToPopup(workdir);
-            for (Path p = workdir; !p.isRoot();) {
+        if(null == workdir) {
+            this.workdir = null;
+            this.pathPopupItems.clear();
+            this.pathPopupButton.removeAllItems();
+            this.reloadData();
+            return;
+        }
+        if(workdir.attributes.isDirectory()) {
+				try {
+					workdir.cwdir();
+				}
+				catch(IOException e) {
+					return;
+				}
+            this.workdir = workdir;
+            this.session.addPathToHistory(this.workdir);
+            this.pathPopupItems.clear();
+            this.pathPopupButton.removeAllItems();
+            this.addPathToPopup(this.workdir);
+            for (Path p = this.workdir; !p.isRoot();) {
                 p = p.getParent();
                 this.addPathToPopup(p);
             }
+            this.reloadData();
         }
     }
 
-    private static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)}, new Object[]{NSAttributedString.FontAttributeName});
+    private static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES
+            = new NSDictionary(new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)},
+            new Object[]{NSAttributedString.FontAttributeName});
 
     private Observer transcript = null;
 
@@ -2239,7 +2289,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
         this.session = SessionFactory.createSession(host);
         if (this.session instanceof ch.cyberduck.core.sftp.SFTPSession) {
-            ((ch.cyberduck.core.sftp.SFTPSession) this.session).setHostKeyVerificationController(new CDHostKeyController(this));
+            ((ch.cyberduck.core.sftp.SFTPSession) this.session).setHostKeyVerificationController(
+                    new CDHostKeyController(this));
         }
         if (this.session instanceof ch.cyberduck.core.ftps.FTPSSession) {
             ((ch.cyberduck.core.ftps.FTPSSession) this.session).setTrustManager(
@@ -2247,7 +2298,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
         host.setLoginController(new CDLoginController(this));
         this.setWorkdir(null);
-        this.reloadData();
         session.addObserver(this.transcript = new Observer() {
             public void update(final Observable o, final Object arg) {
                 if (arg instanceof Message) {
@@ -2263,7 +2313,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 new NSAttributedString(
                         "Cyberduck "+(String)NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString"),
                         FIXED_WITH_FONT_ATTRIBUTES));
-        this.window().setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername() + "@" + host.getHostname());
+        this.window().setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername()
+                + "@" + host.getHostname());
         this.bookmarkModel.exportBookmark(host, this.getRepresentedFile());
         if (this.getRepresentedFile().exists()) {
             this.window().setRepresentedFilename(this.getRepresentedFile().getAbsolutePath());
@@ -2286,7 +2337,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         return this.mount(host, this.getEncoding());
     }
 
-    public Session mount(Host host, final String encoding) {
+    public Session mount(final Host host, final String encoding) {
         log.debug("mount:" + host);
         if (this.isMounted()) {
             if (this.session.getHost().getURL().equals(host.getURL())) {
@@ -2300,7 +2351,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                     }
                 }
                 home.attributes.setType(Path.DIRECTORY_TYPE);
-                home.list(true, this.getEncoding(), this.getComparator(), this.getFileFilter());
+                this.setWorkdir(home);
                 return session;
             }
         }
@@ -2326,7 +2377,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                             }
                         }
                     });
-                    session.mount(encoding, getComparator(), getFileFilter());
+                    setWorkdir(session.mount());
                     session.deleteObserver(observer);
                 }
             }.start();

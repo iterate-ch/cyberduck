@@ -84,29 +84,33 @@ public class SFTPSession extends Session {
     }
 
     public synchronized void close() {
-        try {
-            if (this.SFTP != null) {
-                this.log(Message.PROGRESS, NSBundle.localizedString("Disconnecting...", "Status", ""));
-                this.SFTP.close();
-                this.host.getCredentials().setPassword(null);
-                this.SFTP = null;
+        new Thread() {
+            public void run() {
+                try {
+                    if (SFTP != null) {
+                        log(Message.PROGRESS, NSBundle.localizedString("Disconnecting...", "Status", ""));
+                        SFTP.close();
+                        host.getCredentials().setPassword(null);
+                        SFTP = null;
+                    }
+                    if (SSH != null) {
+                        log(Message.PROGRESS, NSBundle.localizedString("Closing SSH Session Channel", "Status", ""));
+                        SSH.disconnect();
+                        SSH = null;
+                    }
+                }
+                catch (SshException e) {
+                    log.error("SSH Error: " + e.getMessage());
+                }
+                catch (IOException e) {
+                    log.error("IO Error: " + e.getMessage());
+                }
+                finally {
+                    log(Message.PROGRESS, NSBundle.localizedString("Disconnected", "Status", ""));
+                    setClosed();
+                }
             }
-            if (this.SSH != null) {
-                this.log(Message.PROGRESS, NSBundle.localizedString("Closing SSH Session Channel", "Status", ""));
-                this.SSH.disconnect();
-                this.SSH = null;
-            }
-        }
-        catch (SshException e) {
-            log.error("SSH Error: " + e.getMessage());
-        }
-        catch (IOException e) {
-            log.error("IO Error: " + e.getMessage());
-        }
-        finally {
-            this.log(Message.PROGRESS, NSBundle.localizedString("Disconnected", "Status", ""));
-            this.setClosed();
-        }
+        }.start();
     }
 
     public void interrupt() {

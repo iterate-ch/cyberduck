@@ -60,8 +60,7 @@ public class CDGotoController extends CDWindowController {
             private List directories = new ArrayList();
 
             {
-                for (Iterator i = controller.workdir().list(false, controller.getEncoding(),
-                        controller.getComparator(), controller.getFileFilter()).iterator(); i.hasNext();) {
+                for (Iterator i = controller.workdir().list(false).iterator(); i.hasNext();) {
                     Path p = (Path) i.next();
                     if (p.attributes.isDirectory()) {
                         directories.add(p.getName());
@@ -131,6 +130,5 @@ public class CDGotoController extends CDWindowController {
             dir.setPath(filename);
         }
         controller.setWorkdir(dir);
-        controller.reloadData();
     }
 }

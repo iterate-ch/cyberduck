@@ -145,7 +145,7 @@ public abstract class Preferences {
         /**
          * Enable inline editing in browser
          */
-        defaults.put("browser.editable", "false");
+        defaults.put("browser.editable", "true");
         /**
          * Close bookmark drawer upon opening a connection
          */

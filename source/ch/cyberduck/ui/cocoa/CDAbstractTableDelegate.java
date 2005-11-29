@@ -101,6 +101,9 @@ public abstract class CDAbstractTableDelegate implements CDTableDelegate {
         this.tableColumnClicked(view, tableColumn);
     }
 
+    public abstract void tableRowDoubleClicked(Object sender);
+
+
     // ----------------------------------------------------------
     // Sorting
     // ----------------------------------------------------------

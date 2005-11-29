@@ -29,7 +29,7 @@
 - (void)awakeFromNib
 {
 	[self setTarget:self];
-	[self setAction:@selector(handleBrowserClick:)];
+	// [self setAction:@selector(handleBrowserClick:)];
 	[self setDoubleAction:@selector(handleBrowserDoubleClick:)];
 	
 	// browser typeahead selection
@@ -56,7 +56,7 @@
 	if(row >= 0 && col >= 0) {
 		NSTableColumn *column = [[self tableColumns] objectAtIndex:col];
 		if([[self delegate] respondsToSelector:@selector(isColumnEditable:)]) {
-			if([[self delegate] isColumnEditable:column]) {
+			if([[self delegate] performSelector:@selector(isColumnEditable:) withObject:column]) {
 				mBrowserEditingColumn = col;
 				mBrowserEditingRow = row;
 				NSValue *wrappedMouseLocation = [NSValue valueWithPoint:[NSEvent mouseLocation]];
@@ -81,8 +81,8 @@
 - (void)handleBrowserDoubleClick:(id)sender {
 	mBrowserWasDoubleClicked = YES;
     if([self clickedRow] != -1) { // make sure double click was not in table header
-		if ([[self delegate] respondsToSelector:@selector(enterKeyPressed:)]) {
-			[[self delegate] performSelector:@selector(enterKeyPressed:) withObject:self];
+		if ([[self delegate] respondsToSelector:@selector(tableRowDoubleClicked:)]) {
+			[[self delegate] performSelector:@selector(tableRowDoubleClicked:) withObject:self];
 		}
 	}
 	mBrowserWasDoubleClicked = NO;

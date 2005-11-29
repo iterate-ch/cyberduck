@@ -18,34 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DownloadQueue;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.Status;
-import ch.cyberduck.core.UploadQueue;
+import ch.cyberduck.core.*;
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSDraggingInfo;
-import com.apple.cocoa.application.NSEvent;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSPasteboard;
-import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.application.NSView;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSDate;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSGregorianDate;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSPoint;
-import com.apple.cocoa.foundation.NSRect;
-import com.apple.cocoa.foundation.NSSize;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -54,6 +30,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -73,7 +50,7 @@ public abstract class CDBrowserTableDataSource {
     public static final String PERMISSIONS_COLUMN = "PERMISSIONS";
 
     protected AttributedList childs(Path path) {
-        return path.list(false, controller.getEncoding(), false,
+        return path.list(false, controller.getEncoding(),
                 controller.getComparator(), controller.getFileFilter());
     }
 
@@ -95,7 +72,7 @@ public abstract class CDBrowserTableDataSource {
         log.debug("setObjectValueForItem:" + item);
         if (identifier.equals(FILENAME_COLUMN)) {
             if (!item.getName().equals(value)) {
-                controller.renamePath(item, controller.workdir().getAbsolute(), value.toString());
+                controller.renamePath(item, item.getParent().getAbsolute(), value.toString());
             }
         }
     }
@@ -185,7 +162,7 @@ public abstract class CDBrowserTableDataSource {
                         if (msg.getTitle().equals(Message.QUEUE_STOP)) {
                             if (controller.isMounted()) {
                                 controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
-                                controller.reloadData();
+                                controller.reloadData(true);
                             }
                         }
                     }
@@ -231,7 +208,7 @@ public abstract class CDBrowserTableDataSource {
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                     Queue q = Queue.createQueue(dict);
                     for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-								Path item = (Path) iter.next();
+                                Path item = (Path) iter.next();
                         if (destination.equals(item)) {
                             return NSDraggingInfo.DragOperationNone;
                         }
