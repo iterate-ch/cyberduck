@@ -102,9 +102,9 @@ cs.lproj/Update.nib/keyedobjects.nib -text
 cs.lproj/Update.strings svneol=native#unset
 cs.lproj/Validator.nib/keyedobjects.nib -text
 cs.lproj/Validator.strings svneol=native#unset
-/cyberduck-application.icns svneol=native#unset
+/cyberduck-application.icns -text
 /cyberduck-application.psd -text
-/cyberduck-document.icns svneol=native#unset
+/cyberduck-document.icns -text
 /cyberduck-document.psd -text
 da.lproj/Bookmark.nib/keyedobjects.nib -text
 da.lproj/Bookmark.strings svneol=native#unset
