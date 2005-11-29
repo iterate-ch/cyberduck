@@ -1581,17 +1581,8 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public void upButtonClicked(Object sender) {
         Path previous = this.workdir();
-        Path selected = this.workdir().getParent();
-        if(selected != null)
-            this.setWorkdir(selected);
-        //TODO
-//        List listing = this.workdir().getParent().list(false, this.getEncoding(), this.getComparator(), this.getFileFilter());
-//        if (null == listing) {
-//            return;
-//        }
-//        if (listing.contains(previous)) {
-//            this.selectRow((Path) listing.get(listing.indexOf(previous)), false);
-//       }
+        this.setWorkdir(this.workdir().getParent());
+        this.selectRow(previous, false);
     }
 
     private static final NSImage DISK_ICON = NSImage.imageNamed("disk.tiff");
