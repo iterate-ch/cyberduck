@@ -355,7 +355,8 @@ public class CDBookmarkTableDataSource extends Collection {
                 }
 
                 if (collection.writeToURL(f.toURL(), true)) {
-                    log.info("Bookmarks sucessfully saved to :" + f.toString());
+                    if(log.isInfoEnabled())
+                        log.info("Bookmarks sucessfully saved to :" + f.toString());
                 }
                 else {
                     log.error("Error saving Bookmarks to :" + f.toString());
@@ -388,7 +389,8 @@ public class CDBookmarkTableDataSource extends Collection {
                 log.error("Problem reading bookmark file: " + errorString[0]);
             }
             else {
-                log.debug("Successfully read Bookmarks: " + propertyListFromXMLData);
+                if(log.isDebugEnabled())
+                    log.debug("Successfully read Bookmarks: " + propertyListFromXMLData);
             }
             if (propertyListFromXMLData instanceof NSArray) {
                 NSArray entries = (NSArray) propertyListFromXMLData;
@@ -417,7 +419,8 @@ public class CDBookmarkTableDataSource extends Collection {
             log.error("Problem reading bookmark file: " + errorString[0]);
         }
         else {
-            log.debug("Successfully read bookmark file: " + propertyListFromXMLData);
+            if(log.isDebugEnabled())
+                log.debug("Successfully read bookmark file: " + propertyListFromXMLData);
         }
         if (propertyListFromXMLData instanceof NSDictionary) {
             return new Host((NSDictionary) propertyListFromXMLData);

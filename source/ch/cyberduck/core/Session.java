@@ -119,14 +119,8 @@ public abstract class Session extends Observable {
             this.check();
             Path home;
             if (host.hasReasonableDefaultPath()) {
-                if (host.getDefaultPath().charAt(0) != '/') {
-                    home = PathFactory.createPath(this, workdir().getAbsolute(), host.getDefaultPath());
-                    home.attributes.setType(Path.DIRECTORY_TYPE);
-                }
-                else {
-                    home = PathFactory.createPath(this, host.getDefaultPath());
-                    home.attributes.setType(Path.DIRECTORY_TYPE);
-                }
+                home = PathFactory.createPath(this, host.getDefaultPath());
+                home.attributes.setType(Path.DIRECTORY_TYPE);
                 if (null == home.list(true)) {
                     // the default path does not exist
                     home = workdir();
@@ -190,14 +184,14 @@ public abstract class Session extends Observable {
 
     private Timer keepAliveTimer = null;
 
-    public synchronized void setConnected() throws IOException {
+    public void setConnected() throws IOException {
         log.debug("setConnected");
         SessionPool.instance().add(this, Preferences.instance().getBoolean("connection.pool.force"));
         this.callObservers(new Message(Message.OPEN, null));
         this.connected = true;
     }
 
-    public synchronized void setAuthenticated() {
+    public void setAuthenticated() {
         this.authenticated = true;
         if (Preferences.instance().getBoolean("connection.keepalive")) {
             this.keepAliveTimer = new Timer();
@@ -207,7 +201,7 @@ public abstract class Session extends Observable {
         }
     }
 
-    public synchronized void setClosed() {
+    public void setClosed() {
         log.debug("setClosed");
         this.connected = false;
         this.callObservers(new Message(Message.CLOSE, null));
@@ -215,6 +209,7 @@ public abstract class Session extends Observable {
             this.keepAliveTimer.cancel();
         }
         this.release();
+        log(Message.PROGRESS, NSBundle.localizedString("Disconnected", "Status", ""));
     }
 
     private void release() {

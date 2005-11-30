@@ -380,7 +380,8 @@ public class CDMainController extends CDController {
             if (preferredLocalizations.count() > 0) {
                 locale = (String) preferredLocalizations.objectAtIndex(0);
             }
-            NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.help") + locale + "/"));
+            NSWorkspace.sharedWorkspace().openURL(
+                    new java.net.URL(Preferences.instance().getProperty("website.help") + locale + "/"));
         }
         catch (java.net.MalformedURLException e) {
             log.error(e.getMessage());
@@ -388,11 +389,13 @@ public class CDMainController extends CDController {
     }
 
     public void faqMenuClicked(Object sender) {
-        NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().pathForResource("Cyberduck FAQ", "rtfd")).toString());
+        NSWorkspace.sharedWorkspace().openFile(
+                new File(NSBundle.mainBundle().pathForResource("Cyberduck FAQ", "rtfd")).toString());
     }
 
     public void licenseMenuClicked(Object sender) {
-        NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().pathForResource("License", "txt")).toString());
+        NSWorkspace.sharedWorkspace().openFile(
+                new File(NSBundle.mainBundle().pathForResource("License", "txt")).toString());
     }
 
     public void updateMenuClicked(Object sender) {
@@ -400,7 +403,7 @@ public class CDMainController extends CDController {
     }
 
     public void checkForUpdate(final boolean verbose) {
-        new Thread() {
+        new Thread("Update") {
             public void run() {
                 try {
                     int pool = NSAutoreleasePool.push();

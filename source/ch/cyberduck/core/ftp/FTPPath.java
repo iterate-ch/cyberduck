@@ -170,20 +170,8 @@ public class FTPPath extends Path {
 
     public void cwdir() throws IOException {
         synchronized (session) {
-            try {
-                session.check();
-                session.FTP.chdir(this.getAbsolute());
-                session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
-            }
-            catch (FTPException e) {
-                session.log(Message.ERROR, "FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
-                throw e;
-            }
-            catch (IOException e) {
-                session.log(Message.ERROR, "IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
-                session.close();
-                throw e;
-            }
+            session.check();
+            session.FTP.chdir(this.getAbsolute());
         }
     }
 

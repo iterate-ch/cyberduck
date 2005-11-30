@@ -181,20 +181,8 @@ public class SFTPPath extends Path {
 
     public void cwdir() throws IOException {
         synchronized (session) {
-            try {
-                session.check();
-                session.SFTP.openDirectory(this.getAbsolute());
-                session.log(Message.STOP, NSBundle.localizedString("Idle", "Status", ""));
-            }
-            catch (SshException e) {
-                session.log(Message.ERROR, "SSH " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
-                throw e;
-            }
-            catch (IOException e) {
-                session.log(Message.ERROR, "IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
-                session.close();
-                throw e;
-            }
+            session.check();
+            session.SFTP.openDirectory(this.getAbsolute());
         }
     }
 
