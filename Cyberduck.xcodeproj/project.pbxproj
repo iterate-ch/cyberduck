@@ -904,8 +904,6 @@
 		4741653D06C4FC3F00AC0BD2 /* add.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = add.tiff; sourceTree = "<group>"; };
 		4741653E06C4FC3F00AC0BD2 /* addPressed.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = addPressed.tiff; sourceTree = "<group>"; };
 		4741653F06C4FC3F00AC0BD2 /* alert.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = alert.tiff; sourceTree = "<group>"; };
-		4741654006C4FC3F00AC0BD2 /* arrowDown.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowDown.tiff; sourceTree = "<group>"; };
-		4741654106C4FC3F00AC0BD2 /* arrowUp.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowUp.tiff; sourceTree = "<group>"; };
 		4741654406C4FC3F00AC0BD2 /* bookmarks.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = bookmarks.tiff; sourceTree = "<group>"; };
 		4741654606C4FC3F00AC0BD2 /* clean.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = clean.tiff; sourceTree = "<group>"; };
 		4741654706C4FC3F00AC0BD2 /* cleanAll.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = cleanAll.tiff; sourceTree = "<group>"; };
