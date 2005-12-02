@@ -832,7 +832,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void browserSwitchClicked(Object sender) {
-        log.debug("browserSwitchClicked");
         if (sender instanceof NSMenuItem) {
             this.browserSwitchView.setSelected(((NSMenuItem) sender).tag());
             this.browserTabView.selectTabViewItemAtIndex(((NSMenuItem) sender).tag());
@@ -1196,7 +1195,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     protected void _updateBrowserColumns(NSTableView table) {
-        log.debug("_updateBrowserColumns");
         table.removeTableColumn(table.tableColumnWithIdentifier("SIZE"));
         NSSelector setResizableMaskSelector
                 = new NSSelector("setResizingMask", new Class[]{int.class});
@@ -1379,13 +1377,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void bookmarkSelectionDidChange(NSNotification notification) {
-        log.debug("bookmarkSelectionDidChange");
         editBookmarkButton.setEnabled(bookmarkTable.numberOfSelectedRows() == 1);
         deleteBookmarkButton.setEnabled(bookmarkTable.selectedRow() != -1);
     }
 
     public void bookmarkTableRowDoubleClicked(Object sender) {
-        log.debug("bookmarkTableRowDoubleClicked");
         Host h = (Host) this.bookmarkModel.get(bookmarkTable.selectedRow());
         this.mount(h, h.getEncoding());
         if (Preferences.instance().getBoolean("browser.closeDrawer")) {
@@ -1476,7 +1472,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void quickConnectSelectionChanged(Object sender) {
-        log.debug("quickConnectSelectionChanged");
         String input = ((NSControl) sender).stringValue();
         try {
             for (Iterator iter = this.bookmarkModel.iterator(); iter.hasNext();) {
@@ -1884,7 +1879,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void editButtonClicked(Object sender) {
-        log.debug("editButtonClicked");
         for (Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
             Path selected = (Path) i.next();
             if (this.isEditable(selected)) {
@@ -1904,7 +1898,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void gotoButtonClicked(Object sender) {
-        log.debug("gotoButtonClicked");
         CDGotoController controller = new CDGotoController(this);
         this.beginSheet(controller.window(), //sheet
                 controller, //modal delegate
@@ -1914,7 +1907,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void createFileButtonClicked(Object sender) {
-        log.debug("createFileButtonClicked:");
         CDFileController controller = new CDCreateFileController(this);
         this.beginSheet(controller.window(), //sheet
                 controller, //modal delegate
@@ -1945,7 +1937,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
 
     public void createFolderButtonClicked(Object sender) {
-        log.debug("createFolderButtonClicked");
         CDFolderController controller = new CDFolderController(this);
         this.beginSheet(controller.window(), //sheet
                 controller, //modal delegate
@@ -1957,7 +1948,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
     private CDInfoController inspector = null;
 
     public void infoButtonClicked(Object sender) {
-        log.debug("infoButtonClicked");
         if (this.getSelectionCount() > 0) {
             List files = this.getSelectedPaths();
             if (Preferences.instance().getBoolean("browser.info.isInspector")) {
@@ -1976,7 +1966,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void deleteFileButtonClicked(Object sender) {
-        log.debug("deleteFileButtonClicked:" + sender);
         List files = new ArrayList();
         StringBuffer alertText = new StringBuffer(NSBundle.localizedString("Really delete the following files? This cannot be undone.", "Confirm deleting files."));
         if (sender instanceof Path) {
@@ -2069,7 +2058,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void syncButtonClicked(Object sender) {
-        log.debug("syncButtonClicked");
         Path selection;
         if (this.getSelectionCount() == 1 &&
                 this.getSelectedPath().attributes.isDirectory()) {
@@ -2134,7 +2122,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
     private String lastSelectedUploadDirectory = null;
 
     public void uploadButtonClicked(Object sender) {
-        log.debug("uploadButtonClicked");
         NSOpenPanel panel = NSOpenPanel.openPanel();
         panel.setCanChooseDirectories(true);
         panel.setCanCreateDirectories(false);
@@ -2182,7 +2169,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void insideButtonClicked(Object sender) {
-        log.debug("insideButtonClicked");
         if (this.getSelectionCount() > 0) {
             Path selected = this.getSelectedPath(); //last row selected
             if (selected.attributes.isDirectory()) {
@@ -2200,7 +2186,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void connectButtonClicked(Object sender) {
-        log.debug("connectButtonClicked");
         CDWindowController connectionController = new CDConnectionController(this);
         this.beginSheet(connectionController.window(), connectionController,
                 new NSSelector("connectionSheetDidEnd", new Class[]{NSWindow.class, int.class, Object.class}),
@@ -2255,12 +2240,10 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void paste(Object sender) {
-        log.debug("paste");
-        NSPasteboard pboard = NSPasteboard.pasteboardWithName("PathPBoard");
-        if (pboard.availableTypeFromArray(new NSArray("PathPBoardType")) != null) {
-            Object o = pboard.propertyListForType("PathPBoardType");// get the data from paste board
+        NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+        if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+            Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
             if (o != null) {
-                this.deselectAll();
                 NSArray elements = (NSArray) o;
                 for (int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
@@ -2271,13 +2254,44 @@ public class CDBrowserController extends CDWindowController implements Observer 
                         this.renamePath(item, workdir.getAbsolute(), item.getName());
                     }
                 }
-                pboard.setPropertyListForType(null, "PathPBoardType");
+                pboard.setPropertyListForType(null, "QueuePBoardType");
+            }
+        }
+    }
+
+    public void pasteFromFinder(Object sender) {
+        NSPasteboard pboard = NSPasteboard.generalPasteboard();
+        if (pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+            Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
+            if (o != null) {
+                NSArray elements = (NSArray) o;
+                final Queue q = new UploadQueue();
+                Session session = this.workdir().getSession().copy();
+                for (int i = 0; i < elements.count(); i++) {
+                    Path p = PathFactory.createPath(session,
+                            workdir().getAbsolute(),
+                            new Local((String) elements.objectAtIndex(i)));
+                    q.addRoot(p);
+                }
+                if (q.numberOfRoots() > 0) {
+                    CDQueueController.instance().startItem(q);
+                    q.addObserver(new Observer() {
+                        public void update(Observable observable, Object arg) {
+                            Message msg = (Message) arg;
+                            if (msg.getTitle().equals(Message.QUEUE_STOP)) {
+                                if (isMounted()) {
+                                    workdir().getSession().cache().invalidate(q.getRoot().getParent());
+                                    reloadData(true);
+                                }
+                            }
+                        }
+                    });
+                }
             }
         }
     }
 
     public void copyURLButtonClicked(Object sender) {
-        log.debug("copyURLButtonClicked");
         Host h = this.session.getHost();
         StringBuffer url = new StringBuffer(h.getURL());
         if (this.getSelectionCount() > 0) {
@@ -2287,7 +2301,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
         else {
             url.append(this.workdir().getAbsolute());
         }
-        NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
+        NSPasteboard pboard = NSPasteboard.generalPasteboard();
         pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
         if (!pboard.setStringForType(url.toString(), NSPasteboard.StringPboardType)) {
             log.error("Error writing URL to NSPasteboard.StringPboardType.");
@@ -2301,13 +2315,13 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 q.addRoot((Path) i.next());
             }
             // Writing data for private use when the item gets dragged to the transfer queue.
-            NSPasteboard pathPBoard = NSPasteboard.pasteboardWithName("PathPBoard");
-            pathPBoard.declareTypes(new NSArray("PathPBoardType"), null);
-            if (pathPBoard.setPropertyListForType(new NSArray(q.getAsDictionary()), "PathPBoardType")) {
-                log.debug("PathPBoardType data sucessfully written to pasteboard");
+            NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+            queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
+            if (queuePboard.setPropertyListForType(new NSArray(q.getAsDictionary()), "QueuePBoardType")) {
+                log.debug("QueuePBoardType data sucessfully written to pasteboard");
             }
             Path p = this.getSelectedPath();
-            NSPasteboard pboard = NSPasteboard.pasteboardWithName(NSPasteboard.GeneralPboard);
+            NSPasteboard pboard = NSPasteboard.generalPasteboard();
             pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
             if (!pboard.setStringForType(p.getAbsolute(), NSPasteboard.StringPboardType)) {
                 log.error("Error writing absolute path of selected item to NSPasteboard.StringPboardType.");
@@ -2606,27 +2620,56 @@ public class CDBrowserController extends CDWindowController implements Observer 
 
     public boolean validateMenuItem(NSMenuItem item) {
         String identifier = item.action().name();
-        if (item.action().name().equals("paste:")) {
+        if (item.action().name().equals("pasteFromFinder:")) {
+            boolean valid = false;
             if (this.isMounted()) {
-                NSPasteboard pboard = NSPasteboard.pasteboardWithName("PathPBoard");
-                if (pboard.availableTypeFromArray(new NSArray("PathPBoardType")) != null
-                        && pboard.propertyListForType("PathPBoardType") != null) {
-                    NSArray elements = (NSArray) pboard.propertyListForType("PathPBoardType");
-                    for (int i = 0; i < elements.count(); i++) {
-                        NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                        Queue q = Queue.createQueue(dict);
-                        if (q.numberOfRoots() == 1)
-                            item.setTitle(NSBundle.localizedString("Paste", "Menu item") + " \"" + q.getRoot().getName() + "\"");
+                if (NSPasteboard.generalPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+                    Object o = NSPasteboard.generalPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
+                    if (o != null) {
+                        NSArray elements = (NSArray) o;
+                        if(elements.count() == 1) {
+                            item.setTitle(NSBundle.localizedString("Paste", "Menu item") + " \""
+                                    + (String) elements.objectAtIndex(0) + "\"");
+                        }
                         else {
-                            item.setTitle(NSBundle.localizedString("Paste", "Menu item")
-                                    + " " + q.numberOfRoots() + " " +
+                            item.setTitle(NSBundle.localizedString("Paste", "Menu item") + " " +
+                                    elements.count() + " " +
                                     NSBundle.localizedString("files", ""));
+                        }
+                        valid = true;
+                    }
+                }
+            }
+            if(!valid) {
+                item.setTitle(NSBundle.localizedString("Paste from Finder", "Menu item"));
+            }
+        }
+        if (item.action().name().equals("paste:")) {
+            boolean valid = false;
+            if (this.isMounted()) {
+                NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+                if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+                    Object o = pboard.propertyListForType("QueuePBoardType");
+                    if (o != null) {
+                        NSArray elements = (NSArray) o;
+                        for (int i = 0; i < elements.count(); i++) {
+                            NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+                            Queue q = Queue.createQueue(dict);
+                            if (q.numberOfRoots() == 1)
+                                item.setTitle(NSBundle.localizedString("Paste", "Menu item") + " \""
+                                        + q.getRoot().getName() + "\"");
+                            else {
+                                item.setTitle(NSBundle.localizedString("Paste", "Menu item")
+                                        + " " + q.numberOfRoots() + " " +
+                                        NSBundle.localizedString("files", ""));
+                            }
+                            valid = true;
                         }
                     }
                 }
-                else {
-                    item.setTitle(NSBundle.localizedString("Paste", "Menu item"));
-                }
+            }
+            if(!valid) {
+                item.setTitle(NSBundle.localizedString("Paste", "Menu item"));
             }
         }
         if (identifier.equals("cut:")) {
@@ -2693,11 +2736,29 @@ public class CDBrowserController extends CDWindowController implements Observer 
         if (identifier.equals("cut:")) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
+        if (identifier.equals("pasteFromFinder:")) {
+            if(this.isMounted()) {
+                NSPasteboard pboard = NSPasteboard.generalPasteboard();
+                if (pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+                    Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
+                    if (o != null) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
         if (identifier.equals("paste:")) {
-            NSPasteboard pboard = NSPasteboard.pasteboardWithName("PathPBoard");
-            return this.isMounted()
-                    && pboard.availableTypeFromArray(new NSArray("PathPBoardType")) != null
-                    && pboard.propertyListForType("PathPBoardType") != null;
+            if(this.isMounted()) {
+                NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+                if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+                    Object o = pboard.propertyListForType("QueuePBoardType");
+                    if (o != null) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
         if (identifier.equals("showHiddenFilesClicked:")) {
             return true;

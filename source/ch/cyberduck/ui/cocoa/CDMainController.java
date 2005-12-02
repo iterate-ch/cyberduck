@@ -373,6 +373,16 @@ public class CDMainController extends CDController {
         }
     }
 
+    public void bugreportMenuClicked(Object sender) {
+        try {
+            NSWorkspace.sharedWorkspace().openURL(
+                    new java.net.URL(Preferences.instance().getProperty("website.bug")));
+        }
+        catch (java.net.MalformedURLException e) {
+            log.error(e.getMessage());
+        }
+    }
+
     public void helpMenuClicked(Object sender) {
         try {
             String locale = "en";

@@ -122,20 +122,22 @@ public class CDBookmarkTableDataSource extends Collection {
     // ----------------------------------------------------------
 
     public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int index, int operation) {
-        log.debug("tableViewValidateDrop:" + index);
         if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-            NSArray filesList = (NSArray) info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
-            for (int i = 0; i < filesList.count(); i++) {
-                String file = (String) filesList.objectAtIndex(i);
-                if (file.indexOf(".duck") != -1) {
+            Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
+            if(o != null) {
+                NSArray elements = (NSArray) o;
+                for (int i = 0; i < elements.count(); i++) {
+                    String file = (String) elements.objectAtIndex(i);
+                    if (file.indexOf(".duck") != -1) {
 //allow file drags if bookmark file even if list is empty
+                        return NSDraggingInfo.DragOperationCopy;
+                    }
+                }
+                if (index > -1 && index < tableView.numberOfRows()) {
+//only allow other files if there is at least one bookmark
+                    tableView.setDropRowAndDropOperation(index, NSTableView.DropOn);
                     return NSDraggingInfo.DragOperationCopy;
                 }
-            }
-            if (index > -1 && index < tableView.numberOfRows()) {
-//only allow other files if there is at least one bookmark
-                tableView.setDropRowAndDropOperation(index, NSTableView.DropOn);
-                return NSDraggingInfo.DragOperationCopy;
             }
         }
         if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilesPromisePboardType)) != null) {

@@ -143,47 +143,49 @@ public abstract class CDBrowserTableDataSource {
 
     public boolean acceptDrop(NSTableView view, Path destination, NSDraggingInfo info) {
         log.debug("acceptDrop:" + destination);
-        NSPasteboard infoPboard = info.draggingPasteboard();
-        if (infoPboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-            NSArray filesList = (NSArray) infoPboard.propertyListForType(NSPasteboard.FilenamesPboardType);
-            final Queue q = new UploadQueue();
-            Session session = controller.workdir().getSession().copy();
-            for (int i = 0; i < filesList.count(); i++) {
-                Path p = PathFactory.createPath(session,
-                        destination.getAbsolute(),
-                        new Local((String) filesList.objectAtIndex(i)));
-                q.addRoot(p);
-            }
-            if (q.numberOfRoots() > 0) {
-                CDQueueController.instance().startItem(q);
-                q.addObserver(new Observer() {
-                    public void update(Observable observable, Object arg) {
-                        Message msg = (Message) arg;
-                        if (msg.getTitle().equals(Message.QUEUE_STOP)) {
-                            if (controller.isMounted()) {
-                                controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
-                                controller.reloadData(true);
+        if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+            Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
+            if (o != null) {
+                NSArray elements = (NSArray) o;
+                final Queue q = new UploadQueue();
+                Session session = controller.workdir().getSession().copy();
+                for (int i = 0; i < elements.count(); i++) {
+                    Path p = PathFactory.createPath(session,
+                            destination.getAbsolute(),
+                            new Local((String) elements.objectAtIndex(i)));
+                    q.addRoot(p);
+                }
+                if (q.numberOfRoots() > 0) {
+                    CDQueueController.instance().startItem(q);
+                    q.addObserver(new Observer() {
+                        public void update(Observable observable, Object arg) {
+                            Message msg = (Message) arg;
+                            if (msg.getTitle().equals(Message.QUEUE_STOP)) {
+                                if (controller.isMounted()) {
+                                    controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
+                                    controller.reloadData(true);
+                                }
                             }
                         }
-                    }
-                });
-            }
-            return true;
-        }
-        NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-        log.debug("availableTypeFromArray:QueuePBoardType: " + pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
-        if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-            view.deselectAll(null);
-            NSArray elements = (NSArray) pboard.propertyListForType("QueuePBoardType");
-            for (int i = 0; i < elements.count(); i++) {
-                NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                Queue q = Queue.createQueue(dict);
-                for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                    Path item = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
-                    controller.renamePath(item, destination.getAbsolute(), item.getName());
+                    });
                 }
             }
             return true;
+        }
+        if (NSPasteboard.pasteboardWithName("QueuePBoard").availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+            Object o = NSPasteboard.pasteboardWithName("QueuePBoard").propertyListForType("QueuePBoardType");
+            if (o != null) {
+                NSArray elements = (NSArray) o;
+                for (int i = 0; i < elements.count(); i++) {
+                    NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+                    Queue q = Queue.createQueue(dict);
+                    for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
+                        Path item = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
+                        controller.renamePath(item, destination.getAbsolute(), item.getName());
+                    }
+                }
+                return true;
+            }
         }
         return false;
 
