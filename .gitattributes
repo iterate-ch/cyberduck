@@ -723,7 +723,6 @@ ko.lproj/Update.strings svneol=native#unset
 ko.lproj/Validator.nib/keyedobjects.nib -text
 ko.lproj/Validator.strings svneol=native#unset
 lib/ext/junit.jar -text
-lib/jmdns.jar -text
 lib/log4j.jar svneol=native#unset
 lib/logging.jar -text
 lib/oro.jar -text
