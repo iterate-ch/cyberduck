@@ -417,6 +417,6 @@ public class CDInfoController extends CDWindowController {
             f.changePermissions(permission,
                     this.recursiveCheckbox.state() == NSCell.OnState);
         }
-        controller.reloadData();
+        controller.reloadData(true);
     }
 }

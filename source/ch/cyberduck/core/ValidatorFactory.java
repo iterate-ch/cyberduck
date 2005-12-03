@@ -37,7 +37,7 @@ public abstract class ValidatorFactory {
         factories.put(clazz, factory);
     }
 
-    public static final Validator createValidator(Class clazz) {
+    public static Validator createValidator(Class clazz) {
         log.debug("createValidator:" + clazz.getName());
         if (!factories.containsKey(clazz)) {
             try {

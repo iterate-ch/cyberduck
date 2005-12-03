@@ -68,17 +68,17 @@ public class Status {
         if (size < MEGA) {
             return new BigDecimal(size).divide(new BigDecimal(KILO),
                     1,
-                    BigDecimal.ROUND_HALF_UP).toString() + "kB";
+                    BigDecimal.ROUND_FLOOR).toString() + "kB";
         }
         if (size < GIGA) {
             return new BigDecimal(size).divide(new BigDecimal(MEGA),
                     1,
-                    BigDecimal.ROUND_HALF_UP).toString() + "MB";
+                    BigDecimal.ROUND_FLOOR).toString() + "MB";
         }
         else {
             return new BigDecimal(size).divide(new BigDecimal(GIGA),
                     1,
-                    BigDecimal.ROUND_HALF_UP).toString() + "GB";
+                    BigDecimal.ROUND_FLOOR).toString() + "GB";
         }
     }
 
@@ -91,8 +91,8 @@ public class Status {
         return this.complete;
     }
 
-    public void setCanceled(boolean b) {
-        canceled = b;
+    public void setCanceled() {
+        canceled = true;
     }
 
     public boolean isCanceled() {

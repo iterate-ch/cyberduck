@@ -354,10 +354,14 @@ public class Permission {
         return read + write + execute;
     }
 
+    public int hashCode() {
+        return this.getOctalCode().hashCode();
+    }
+
     public boolean equals(Object o) {
         if ((o != null) && (o instanceof Permission)) {
             Permission other = (Permission) o;
-            return this.getOctalCode() == other.getOctalCode();
+            return this.getOctalCode().equals(other.getOctalCode());
         }
         return false;
     }

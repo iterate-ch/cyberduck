@@ -122,20 +122,22 @@ public class CDBookmarkTableDataSource extends Collection {
     // ----------------------------------------------------------
 
     public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int index, int operation) {
-        log.debug("tableViewValidateDrop:" + index);
         if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-            NSArray filesList = (NSArray) info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
-            for (int i = 0; i < filesList.count(); i++) {
-                String file = (String) filesList.objectAtIndex(i);
-                if (file.indexOf(".duck") != -1) {
+            Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
+            if(o != null) {
+                NSArray elements = (NSArray) o;
+                for (int i = 0; i < elements.count(); i++) {
+                    String file = (String) elements.objectAtIndex(i);
+                    if (file.indexOf(".duck") != -1) {
 //allow file drags if bookmark file even if list is empty
+                        return NSDraggingInfo.DragOperationCopy;
+                    }
+                }
+                if (index > -1 && index < tableView.numberOfRows()) {
+//only allow other files if there is at least one bookmark
+                    tableView.setDropRowAndDropOperation(index, NSTableView.DropOn);
                     return NSDraggingInfo.DragOperationCopy;
                 }
-            }
-            if (index > -1 && index < tableView.numberOfRows()) {
-//only allow other files if there is at least one bookmark
-                tableView.setDropRowAndDropOperation(index, NSTableView.DropOn);
-                return NSDraggingInfo.DragOperationCopy;
             }
         }
         if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilesPromisePboardType)) != null) {
@@ -355,7 +357,8 @@ public class CDBookmarkTableDataSource extends Collection {
                 }
 
                 if (collection.writeToURL(f.toURL(), true)) {
-                    log.info("Bookmarks sucessfully saved to :" + f.toString());
+                    if(log.isInfoEnabled())
+                        log.info("Bookmarks sucessfully saved to :" + f.toString());
                 }
                 else {
                     log.error("Error saving Bookmarks to :" + f.toString());
@@ -386,9 +389,7 @@ public class CDBookmarkTableDataSource extends Collection {
                             errorString);
             if (errorString[0] != null) {
                 log.error("Problem reading bookmark file: " + errorString[0]);
-            }
-            else {
-                log.debug("Successfully read Bookmarks: " + propertyListFromXMLData);
+                return;
             }
             if (propertyListFromXMLData instanceof NSArray) {
                 NSArray entries = (NSArray) propertyListFromXMLData;
@@ -415,9 +416,7 @@ public class CDBookmarkTableDataSource extends Collection {
                         errorString);
         if (errorString[0] != null) {
             log.error("Problem reading bookmark file: " + errorString[0]);
-        }
-        else {
-            log.debug("Successfully read bookmark file: " + propertyListFromXMLData);
+            return null;
         }
         if (propertyListFromXMLData instanceof NSDictionary) {
             return new Host((NSDictionary) propertyListFromXMLData);

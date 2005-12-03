@@ -258,17 +258,28 @@ public class Host {
     // ----------------------------------------------------------
 
     public void setDefaultPath(String defaultpath) {
-        if (null == defaultpath || defaultpath.equals("~"))
-            defaultpath = "";
         this.defaultpath = defaultpath;
     }
 
+    /**
+     *
+     * @return empty string if no default path is set
+     */
     public String getDefaultPath() {
-        return this.defaultpath;
+        if(null == this.defaultpath) {
+            return "";
+        }
+        if(this.defaultpath.equals("")) {
+            return "";
+        }
+        if(this.defaultpath.charAt(0) == '/') {
+            return this.defaultpath;
+        }
+        return Path.DELIMITER+this.defaultpath;
     }
 
     public boolean hasReasonableDefaultPath() {
-        return this.defaultpath != null && !this.defaultpath.equals("");
+        return this.getDefaultPath() != null && !this.getDefaultPath().equals("");
     }
 
     protected static String getDefaultProtocol(int port) {

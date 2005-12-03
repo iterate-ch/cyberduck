@@ -51,7 +51,7 @@ public class FTPSControlSocket extends FTPControlSocket {
         this.trustManager = trustManager;
     }
 
-    protected void startHandshake() throws IOException, FTPException {
+    protected void startHandshake() throws IOException {
         // This constructor can be used when tunneling SSL through a proxy or when negotiating the use of SSL over an existing socket. The host and port refer to the logical peer destination. This socket is configured using the socket options established for this factory.
         this.controlSock = new SSLProtocolSocketFactory(this.trustManager).createSocket(this.getSocket(),
                 this.getSocket().getInetAddress().getHostName(),

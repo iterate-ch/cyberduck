@@ -501,8 +501,8 @@ id.lproj/Update.nib/keyedobjects.nib -text
 id.lproj/Update.strings svneol=native#unset
 id.lproj/Validator.nib/keyedobjects.nib -text
 id.lproj/Validator.strings svneol=native#unset
-img/add.tiff svneol=native#unset
-img/addPressed.tiff svneol=native#unset
+img/add.tiff -text svneol=native#application/octet-stream
+img/addPressed.tiff -text
 img/advanced.tiff -text
 img/alert.tiff -text
 img/arrowDown.tiff -text
@@ -557,7 +557,7 @@ img/gear.tiff -text
 img/general.tiff -text
 img/history.tiff -text
 img/idisk.tiff -text
-img/info.tiff svneol=native#unset
+img/info.tiff -text
 img/list.tiff -text
 img/locked.tiff -text
 img/login.tiff -text
@@ -582,7 +582,7 @@ img/sftp.tiff -text
 img/statusGreen.tiff -text
 img/statusRed.tiff -text
 img/statusYellow.tiff -text
-img/stop.tiff svneol=native#unset
+img/stop.tiff -text
 img/stop16.tiff -text
 img/symlink.tiff -text
 img/sync32.tiff -text

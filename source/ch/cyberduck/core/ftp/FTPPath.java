@@ -129,11 +129,8 @@ public class FTPPath extends Path {
         return this.session;
     }
 
-    public AttributedList list(boolean refresh, String encoding, boolean notifyObservers, Comparator comparator, Filter filter) {
+    public AttributedList list(boolean refresh, String encoding, Comparator comparator, Filter filter) {
         synchronized (session) {
-            if (notifyObservers) {
-                session.addPathToHistory(this);
-            }
             if (refresh || !session.cache().containsKey(this) || session.cache().isInvalid(this)) {
                 AttributedList files;
                 if (session.cache().isInvalid(this)) {
@@ -166,9 +163,6 @@ public class FTPPath extends Path {
                     session.close();
                     return null;
                 }
-            }
-            if (notifyObservers) {
-                session.callObservers(this);
             }
             return session.cache().get(this, comparator, filter);
         }
@@ -281,7 +275,7 @@ public class FTPPath extends Path {
                     session.FTP.delete(this.getName());
                 }
                 else if (this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
-                    List files = this.list(true, false);
+                    List files = this.list(true);
                     if (files != null) {
                         java.util.Iterator iterator = files.iterator();
                         Path file;
@@ -326,7 +320,7 @@ public class FTPPath extends Path {
                     session.log(Message.PROGRESS, "Changing owner to " + this.attributes.getOwner() + " on " + this.getName()); //todo localize
                     session.FTP.site(command + " " + owner + " " + this.getAbsolute());
                     if (recursive) {
-                        List files = this.list(false, false);
+                        List files = this.list(false);
                         Iterator iterator = files.iterator();
                         while (iterator.hasNext()) {
                             ((Path) iterator.next()).changeOwner(owner, recursive);
@@ -359,7 +353,7 @@ public class FTPPath extends Path {
                     session.log(Message.PROGRESS, "Changing group to " + this.attributes.getGroup() + " on " + this.getName()); //todo localize
                     session.FTP.site(command + " " + group + " " + this.getAbsolute());
                     if (recursive) {
-                        List files = this.list(false, false);
+                        List files = this.list(false);
                         java.util.Iterator iterator = files.iterator();
                         while (iterator.hasNext()) {
                             ((Path) iterator.next()).changeGroup(group, recursive);
@@ -393,7 +387,7 @@ public class FTPPath extends Path {
                     session.log(Message.PROGRESS, "Changing permission to " + perm.getOctalCode() + " on " + this.getName()); //todo localize
                     session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getAbsolute());
                     if (recursive) {
-                        List files = this.list(false, false);
+                        List files = this.list(false);
                         java.util.Iterator iterator = files.iterator();
                         while (iterator.hasNext()) {
                             ((Path) iterator.next()).changePermissions(perm, recursive);

@@ -25,6 +25,7 @@ import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Rendezvous;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Path;
 
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
@@ -561,7 +562,9 @@ public class CDConnectionController extends CDWindowController {
         if (protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
             protocol = Session.FTP_TLS + "://";
         }
-        urlLabel.setStringValue(protocol + usernameField.stringValue() + "@" + hostPopup.stringValue() + ":" + portField.stringValue() + "/" + pathField.stringValue());
+        urlLabel.setStringValue(protocol + usernameField.stringValue()
+                + "@" + hostPopup.stringValue() + ":" + portField.stringValue()
+                + Path.DELIMITER + pathField.stringValue());
     }
 
     public void closeSheet(NSButton sender) {

@@ -33,6 +33,8 @@ import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSSize;
 
+import java.util.List;
+
 /**
  * @version $Id$
  */
@@ -92,7 +94,7 @@ public class CDDuplicateFileController extends CDFileController {
         file.upload();
         if(file.exists()) {
             controller.setShowHiddenFiles(filename.charAt(0) == '.');
-            controller.reloadData();
+            controller.reloadData(true);
             return file;
         }
         return null;

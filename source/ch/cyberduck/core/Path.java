@@ -199,13 +199,9 @@ public abstract class Path {
         this.getSession().cache().invalidate(this);
     }
 
-    protected AttributedList list(boolean reload, boolean notifyObservers) {
+    public AttributedList list(boolean reload) {
         return this.list(reload, Preferences.instance().getProperty("browser.charset.encoding"),
-                notifyObservers, new NullComparator(), new NullFilter());
-    }
-
-    public AttributedList list(boolean reload, String encoding, Comparator comparator, Filter filter) {
-        return this.list(reload, encoding, true, comparator, filter);
+                new NullComparator(), new NullFilter());
     }
 
     /**
@@ -213,12 +209,11 @@ public abstract class Path {
      *
      * @param reload          Discard any cached entries
      * @param encoding        The character encoding to decode the filenames with
-     * @param notifyObservers call all observers afterwards
      * @param comparator      The comparator to sort the listing with
      * @param filter          The filter to exlude certain files
      * @return null if there is an error, otherwise a list with 0-n <code>Path</code> references
      */
-    public abstract AttributedList list(boolean reload, String encoding, boolean notifyObservers, Comparator comparator, Filter filter);
+    public abstract AttributedList list(boolean reload, String encoding, Comparator comparator, Filter filter);
 
     /**
      * Remove this file from the remote host. Does not affect any corresponding local file
@@ -453,7 +448,7 @@ public abstract class Path {
         if (this.isRoot()) {
             return true;
         }
-        List listing = this.getParent().list(false, false);
+        List listing = this.getParent().list(false);
         if (null == listing) {
             return false;
         }

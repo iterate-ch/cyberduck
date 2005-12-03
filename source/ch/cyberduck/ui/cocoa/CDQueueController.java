@@ -174,13 +174,9 @@ public class CDQueueController extends CDWindowController {
 
         this.queueTable.setDataSource(this.queueModel = CDQueueTableDataSource.instance());
         this.queueTable.setDelegate(this.delegate = new CDAbstractTableDelegate() {
+
             public void enterKeyPressed(Object sender) {
-                if (CDQueueController.this.queueTable.selectedRow() != -1) {
-                    Queue item = (Queue) queueModel.get(CDQueueController.this.queueTable.selectedRow());
-                    if (!item.isRunning()) {
-                        reloadButtonClicked(sender);
-                    }
-                }
+                this.tableRowDoubleClicked(sender);
             }
 
             public void deleteKeyPressed(Object sender) {
@@ -188,7 +184,16 @@ public class CDQueueController extends CDWindowController {
             }
 
             public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
+                ;
+            }
 
+            public void tableRowDoubleClicked(Object sender) {
+                if (CDQueueController.this.queueTable.selectedRow() != -1) {
+                    Queue item = (Queue) queueModel.get(CDQueueController.this.queueTable.selectedRow());
+                    if (!item.isRunning()) {
+                        reloadButtonClicked(sender);
+                    }
+                }
             }
 
             public String tableViewToolTipForCell(NSTableView tableView, NSCell cell, NSMutableRect rect,
@@ -360,7 +365,7 @@ public class CDQueueController extends CDWindowController {
                     new CDX509TrustManagerController(this));
         }
         queue.getHost().setLoginController(new CDLoginController(this));
-        new Thread("Session") {
+        new Thread() {
             public void run() {
                 queue.process(resumeRequested, false);
             }

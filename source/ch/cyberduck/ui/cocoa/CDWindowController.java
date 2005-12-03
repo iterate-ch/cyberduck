@@ -45,10 +45,13 @@ public abstract class CDWindowController extends CDController {
         lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
     }
 
-    protected static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
+    protected static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(
+            new Object[]{lineBreakByTruncatingMiddleParagraph},
             new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
     private NSWindow window; // IBOutlet
+
+    private final Object lock = new Object();
 
     public void setWindow(NSWindow window) {
         this.window = window;
@@ -89,14 +92,14 @@ public abstract class CDWindowController extends CDController {
             modalSession = null;
         }
         NSApplication.sharedApplication().endSheet(sheet, tag);
-        synchronized (this) {
-            this.notifyAll();
+        synchronized (lock) {
+            lock.notify();
         }
     }
 
     public void waitForSheetEnd() {
         log.debug("waitForSheetEnd");
-        synchronized (this) {
+        synchronized (lock) {
             while (this.hasSheet()) {
                 try {
                     if (Thread.currentThread().getName().equals("main")
@@ -111,7 +114,7 @@ public abstract class CDWindowController extends CDController {
                         return;
                     }
                     log.debug("Sleeping:waitForSheetEnd...");
-                    this.wait();
+                    lock.wait();
                     log.debug("Awakened:waitForSheetEnd");
                 }
                 catch (InterruptedException e) {
@@ -135,9 +138,10 @@ public abstract class CDWindowController extends CDController {
                                 }), null); // end selector);
     }
 
-    public void beginSheet(final NSWindow sheet, final Object delegate, final NSSelector endSelector, final Object contextInfo) {
+    public void beginSheet(final NSWindow sheet, final Object delegate,
+                           final NSSelector endSelector, final Object contextInfo) {
         log.debug("beginSheet:" + sheet);
-        synchronized (this) {
+        synchronized (lock) {
             if (!this.window().isKeyWindow()) {
                 this.window.makeKeyAndOrderFront(null);
             }
@@ -149,7 +153,7 @@ public abstract class CDWindowController extends CDController {
                     endSelector, // did end selector
                     contextInfo); //contextInfo
             sheet.makeKeyAndOrderFront(null);
-            this.notifyAll();
+            lock.notify();
         }
     }
 

@@ -18,31 +18,49 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.dnssd.BrowseListener;
+import com.apple.dnssd.DNSSD;
+import com.apple.dnssd.DNSSDException;
+import com.apple.dnssd.DNSSDService;
+import com.apple.dnssd.ResolveListener;
+import com.apple.dnssd.TXTRecord;
+
 import org.apache.log4j.Logger;
 
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceEvent;
-import javax.jmdns.ServiceInfo;
-import javax.jmdns.ServiceListener;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Iterator;
 
 /**
  * @version $Id$
  */
-public class Rendezvous extends Observable implements ServiceListener {
+public class Rendezvous extends Observable
+        implements BrowseListener, ResolveListener {
+
     private static Logger log = Logger.getLogger(Rendezvous.class);
 
+    static {
+        // Ensure native keychain library is loaded
+        try {
+            NSBundle bundle = NSBundle.mainBundle();
+            String lib = bundle.resourcePath() + "/Java/" + "libDNSSD.dylib";
+            log.info("Locating libDNSSD.dylib at '" + lib + "'");
+            System.load(lib);
+        }
+        catch (UnsatisfiedLinkError e) {
+            log.error("Could not load the libDNSSD.dylib library:" + e.getMessage());
+        }
+    }
+
     private static final String[] serviceTypes = new String[]{
-            "_sftp._tcp.local.",
-            "_ssh._tcp.local.",
-            "_ftp._tcp.local."
+            "_sftp._tcp.",
+            "_ssh._tcp.",
+            "_ftp._tcp."
     };
 
     private Map services;
-    private JmDNS jmDNS;
 
     private static Rendezvous instance;
 
@@ -60,31 +78,26 @@ public class Rendezvous extends Observable implements ServiceListener {
 
     public void init() {
         log.debug("init");
-        new Thread("Rendezvous") {
-            public void run() {
-                try {
-                    Rendezvous.this.jmDNS = new JmDNS(java.net.InetAddress.getLocalHost());
-                    for (int i = 0; i < serviceTypes.length; i++) {
-                        log.info("Adding Rendezvous service listener for " + serviceTypes[i]);
-                        Rendezvous.this.jmDNS.addServiceListener(serviceTypes[i], Rendezvous.this);
-                    }
-                }
-                catch (IOException e) {
-                    log.error(e.getMessage());
-                    Rendezvous.this.quit();
-                }
+        try {
+            for (int i = 0; i < serviceTypes.length; i++) {
+                String protocol = serviceTypes[i];
+                log.info("Adding Rendezvous service listener for " + protocol);
+                DNSSD.browse(protocol, Rendezvous.this);
             }
-        }.start();
+        }
+        catch (DNSSDException e) {
+            log.error(e.getMessage());
+            Rendezvous.this.quit();
+        }
     }
 
     public void quit() {
         log.info("Removing Rendezvous service listener");
-        if (this.jmDNS != null) {
-            for (int i = 0; i < serviceTypes.length; i++) {
-                log.info("Removing Rendezvous service listener for " + serviceTypes[i]);
-                Rendezvous.this.jmDNS.removeServiceListener(serviceTypes[i], Rendezvous.this);
-            }
+        for(Iterator iter = this.services.keySet().iterator(); iter.hasNext(); ) {
+            String identifier = (String)iter.next();
+            this.callObservers(new Message(Message.RENDEZVOUS_REMOVE, identifier));
         }
+        this.services.clear();
     }
 
     public void callObservers(Message arg) {
@@ -105,53 +118,45 @@ public class Rendezvous extends Observable implements ServiceListener {
         return (String[]) this.services.keySet().toArray(new String[]{});
     }
 
-    /**
-     * This method is called when jmDNS discovers a service
-     * for the first time. Only its name and type are known. We can
-     * now request the service information.
-     */
-    public void serviceAdded(ServiceEvent event) {
-        log.debug("serviceAdded:" + event.getName() + "," + event.getType());
-        this.jmDNS.requestServiceInfo(event.getType(), event.getName());
-    }
-
-    /**
-     * This method is called when a service is no longer available.
-     */
-    public void serviceRemoved(ServiceEvent event) {
-        log.debug("serviceRemoved:" + event.getName());
-        ServiceInfo info = event.getInfo();
-        if (info != null) {
-            String identifier = info.getServer() + " (" + Host.getDefaultProtocol(info.getPort()).toUpperCase() + ")";
-            this.services.remove(identifier);
-            this.callObservers(new Message(Message.RENDEZVOUS_REMOVE, event.getName()));
+    public void serviceFound(DNSSDService browser, int flags, int ifIndex, String servicename,
+                             String regType, String domain) {
+        log.debug("serviceFound:" + servicename);
+        try {
+            DNSSD.resolve(flags, ifIndex, servicename, regType, domain, Rendezvous.this);
+        }
+        catch (DNSSDException e) {
+            log.error(e.getMessage());
         }
     }
 
-    /**
-     * This method is called when the ServiceInfo record is resolved.
-     * The ServiceInfo.getURL() constructs an http url given the addres,
-     * port, and path properties found in the ServiceInfo record.
-     */
-    public void serviceResolved(ServiceEvent event) {
-        log.debug("serviceResolved:" + event.getName() + "," + event.getType());
-        if (event.getInfo() != null) {
-            log.info("Rendezvous Service Name:" + event.getInfo().getName());
-            log.info("Rendezvous Server Name:" + event.getInfo().getServer());
-
-            Host h = new Host(event.getInfo().getServer(), event.getInfo().getPort());
-            h.setCredentials(Preferences.instance().getProperty("connection.login.name"), null);
-            if (h.getProtocol().equals(Session.FTP)) {
-                h.setCredentials(null, null); //use anonymous login for FTP
-            }
-
-            String identifier = event.getInfo().getServer() + " (" + Host.getDefaultProtocol(event.getInfo().getPort()).toUpperCase() + ")";
-
-            this.services.put(identifier, h);
-            this.callObservers(new Message(Message.RENDEZVOUS_ADD, identifier));
+    public void serviceLost(DNSSDService browser, int flags, int ifIndex, String serviceName,
+                            String regType, String domain) {
+        log.debug("serviceLost:" + serviceName);
+        try {
+            String identifier = DNSSD.constructFullName(serviceName, regType, domain);
+            if(null == this.services.remove(identifier))
+                return;
+            this.callObservers(new Message(Message.RENDEZVOUS_REMOVE, identifier));
         }
-        else {
-            log.error("Failed to resolve " + event.getName() + " with type " + event.getType());
+        catch (DNSSDException e) {
+            log.error(e.getMessage());
         }
+    }
+
+    public void operationFailed(DNSSDService resolver, int errorCode) {
+        log.debug("operationFailed:" + errorCode);
+        resolver.stop();
+    }
+
+    public void serviceResolved(DNSSDService resolver, int flags, int ifIndex,
+                                String fullname, String hostname, int port, TXTRecord txtRecord) {
+        log.debug("serviceResolved:" + hostname);
+        Host h = new Host(hostname, port);
+        h.setCredentials(Preferences.instance().getProperty("connection.login.name"), null);
+        if (h.getProtocol().equals(Session.FTP)) {
+            h.setCredentials(null, null); //use anonymous login for FTP
+        }
+        if(null == this.services.put(fullname, h))
+            this.callObservers(new Message(Message.RENDEZVOUS_ADD, fullname));
     }
 }

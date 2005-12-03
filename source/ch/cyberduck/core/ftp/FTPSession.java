@@ -69,13 +69,12 @@ public class FTPSession extends Session {
         return false;
     }
 
-    public synchronized void close() {
+    public void close() {
         try {
-            if (this.FTP != null) {
-                this.log(Message.PROGRESS, NSBundle.localizedString("Disconnecting...", "Status", ""));
-                this.FTP.quit();
-                this.host.getCredentials().setPassword(null);
-                this.FTP = null;
+            if (FTP != null) {
+                FTP.quit();
+                host.getCredentials().setPassword(null);
+                FTP = null;
             }
         }
         catch (FTPException e) {
@@ -85,7 +84,6 @@ public class FTPSession extends Session {
             log.error("IO Error: " + e.getMessage());
         }
         finally {
-            this.log(Message.PROGRESS, NSBundle.localizedString("Disconnected", "Status", ""));
             this.setClosed();
         }
     }

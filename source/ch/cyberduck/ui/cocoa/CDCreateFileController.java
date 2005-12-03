@@ -91,7 +91,7 @@ public class CDCreateFileController extends CDFileController {
         }
         if(file.exists()) {
             controller.setShowHiddenFiles(filename.charAt(0) == '.');
-            controller.reloadData();
+            controller.reloadData(true);
             return file;
         }
         return null;

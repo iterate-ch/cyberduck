@@ -31,7 +31,7 @@ public abstract class SessionFactory {
         factories.put(protocol, f);
     }
 
-    public static final Session createSession(Host h) {
+    public static Session createSession(Host h) {
         String id = h.getProtocol();
         if (!factories.containsKey(id)) {
             try {

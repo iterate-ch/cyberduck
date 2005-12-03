@@ -85,16 +85,14 @@ public class SFTPSession extends Session {
 
     public synchronized void close() {
         try {
-            if (this.SFTP != null) {
-                this.log(Message.PROGRESS, NSBundle.localizedString("Disconnecting...", "Status", ""));
-                this.SFTP.close();
-                this.host.getCredentials().setPassword(null);
-                this.SFTP = null;
+            if (SFTP != null) {
+                SFTP.close();
+                host.getCredentials().setPassword(null);
+                SFTP = null;
             }
-            if (this.SSH != null) {
-                this.log(Message.PROGRESS, NSBundle.localizedString("Closing SSH Session Channel", "Status", ""));
-                this.SSH.disconnect();
-                this.SSH = null;
+            if (SSH != null) {
+                SSH.disconnect();
+                SSH = null;
             }
         }
         catch (SshException e) {
@@ -104,7 +102,6 @@ public class SFTPSession extends Session {
             log.error("IO Error: " + e.getMessage());
         }
         finally {
-            this.log(Message.PROGRESS, NSBundle.localizedString("Disconnected", "Status", ""));
             this.setClosed();
         }
     }

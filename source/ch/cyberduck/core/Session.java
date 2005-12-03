@@ -106,45 +106,41 @@ public abstract class Session extends Observable {
      */
     public abstract void connect(String encoding) throws IOException;
 
-    public synchronized void connect() throws IOException {
+    public void connect() throws IOException {
         this.connect(this.host.getEncoding());
     }
 
     /**
      * Connect to the remote host and mount the home directory
      */
-    public synchronized void mount(String encoding, Comparator comparator, Filter filter) {
-        this.log(Message.PROGRESS, NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname() + "...");
-        try {
-            this.check();
-            Path home;
-            if (host.hasReasonableDefaultPath()) {
-                if (host.getDefaultPath().charAt(0) != '/') {
-                    home = PathFactory.createPath(this, workdir().getAbsolute(), host.getDefaultPath());
-                    home.attributes.setType(Path.DIRECTORY_TYPE);
-                }
-                else {
+    public Path mount() {
+        synchronized(this) {
+            this.log(Message.PROGRESS, NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname() + "...");
+            try {
+                this.check();
+                Path home;
+                if (host.hasReasonableDefaultPath()) {
                     home = PathFactory.createPath(this, host.getDefaultPath());
                     home.attributes.setType(Path.DIRECTORY_TYPE);
+                    if (null == home.list(true)) {
+                        // the default path does not exist
+                        home = workdir();
+                    }
                 }
-                if (null == home.list(true, encoding, comparator, filter)) {
-                    // the default path does not exist
+                else {
                     home = workdir();
-                    home.list(true, encoding, comparator, filter);
                 }
+                Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl", "Growl Notification"),
+                        host.getHostname());
+                return home;
             }
-            else {
-                home = workdir();
-                home.list(true, encoding, comparator, filter);
+            catch (IOException e) {
+                this.log(Message.ERROR, "IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
+                        host.getHostname());
+                this.close();
             }
-            Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl", "Growl Notification"),
-                    host.getHostname());
-        }
-        catch (IOException e) {
-            this.log(Message.ERROR, "IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
-            Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
-                    host.getHostname());
-            this.close();
+            return null;
         }
     }
 
@@ -190,14 +186,14 @@ public abstract class Session extends Observable {
 
     private Timer keepAliveTimer = null;
 
-    public synchronized void setConnected() throws IOException {
+    public void setConnected() throws IOException {
         log.debug("setConnected");
         SessionPool.instance().add(this, Preferences.instance().getBoolean("connection.pool.force"));
         this.callObservers(new Message(Message.OPEN, null));
         this.connected = true;
     }
 
-    public synchronized void setAuthenticated() {
+    public void setAuthenticated() {
         this.authenticated = true;
         if (Preferences.instance().getBoolean("connection.keepalive")) {
             this.keepAliveTimer = new Timer();
@@ -207,7 +203,7 @@ public abstract class Session extends Observable {
         }
     }
 
-    public synchronized void setClosed() {
+    public void setClosed() {
         log.debug("setClosed");
         this.connected = false;
         this.callObservers(new Message(Message.CLOSE, null));
@@ -215,6 +211,7 @@ public abstract class Session extends Observable {
             this.keepAliveTimer.cancel();
         }
         this.release();
+        log(Message.PROGRESS, NSBundle.localizedString("Disconnected", "Status", ""));
     }
 
     private void release() {

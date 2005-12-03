@@ -69,6 +69,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @version $Id$
@@ -311,7 +313,7 @@ public class CDMainController extends CDController {
     }
 
     private class RendezvousMenuDelegate extends NSObject implements Observer {
-        private Map items = new HashMap();
+        private Map hosts = new HashMap();
 
         public RendezvousMenuDelegate(Rendezvous rendezvous) {
             log.debug("RendezvousMenuDelegate");
@@ -323,22 +325,22 @@ public class CDMainController extends CDController {
             if (o instanceof Rendezvous) {
                 if (arg instanceof Message) {
                     Message msg = (Message) arg;
-                    Host host = rendezvous.getService((String) msg.getContent());
+                    String identifier = (String)msg.getContent();
                     if (msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
-                        Growl.instance().notifyWithImage("Bonjour", (String) msg.getContent(), "rendezvous.icns");
-                        items.put(msg.getContent(),
-                                host);
+                        Growl.instance().notifyWithImage("Bonjour", identifier, "rendezvous.icns");
+                        hosts.put(Rendezvous.instance().getService(identifier).getNickname(),
+                                identifier);
                     }
                     if (msg.getTitle().equals(Message.RENDEZVOUS_REMOVE)) {
-                        items.remove(msg.getContent());
+                        hosts.remove(identifier);
                     }
                 }
             }
         }
 
         public int numberOfItemsInMenu(NSMenu menu) {
-            if (items.size() > 0) {
-                return items.size();
+            if (hosts.size() > 0) {
+                return hosts.size();
             }
             return 1;
         }
@@ -352,14 +354,14 @@ public class CDMainController extends CDController {
          * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
          */
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
-            if (items.size() == 0) {
+            if (hosts.size() == 0) {
                 sender.setTitle(NSBundle.localizedString("No Bonjour services available", ""));
                 sender.setEnabled(false);
                 return !shouldCancel;
             }
             else {
-                Host h = (Host) items.values().toArray()[index];
-                sender.setTitle(h.getNickname());
+                String title = ((String)this.hosts.keySet().toArray(new String[]{})[index]);
+                sender.setTitle(title);
                 sender.setTarget(this);
                 sender.setEnabled(true);
                 sender.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
@@ -369,7 +371,18 @@ public class CDMainController extends CDController {
 
         public void rendezvousMenuClicked(NSMenuItem sender) {
             CDBrowserController controller = CDMainController.this.newDocument();
-            controller.mount((Host) items.get(sender.title()));
+            String identifier = (String)hosts.get(sender.title());
+            controller.mount(Rendezvous.instance().getService(identifier));
+        }
+    }
+
+    public void bugreportMenuClicked(Object sender) {
+        try {
+            NSWorkspace.sharedWorkspace().openURL(
+                    new java.net.URL(Preferences.instance().getProperty("website.bug")));
+        }
+        catch (java.net.MalformedURLException e) {
+            log.error(e.getMessage());
         }
     }
 
@@ -380,7 +393,8 @@ public class CDMainController extends CDController {
             if (preferredLocalizations.count() > 0) {
                 locale = (String) preferredLocalizations.objectAtIndex(0);
             }
-            NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.help") + locale + "/"));
+            NSWorkspace.sharedWorkspace().openURL(
+                    new java.net.URL(Preferences.instance().getProperty("website.help") + locale + "/"));
         }
         catch (java.net.MalformedURLException e) {
             log.error(e.getMessage());
@@ -388,11 +402,13 @@ public class CDMainController extends CDController {
     }
 
     public void faqMenuClicked(Object sender) {
-        NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().pathForResource("Cyberduck FAQ", "rtfd")).toString());
+        NSWorkspace.sharedWorkspace().openFile(
+                new File(NSBundle.mainBundle().pathForResource("Cyberduck FAQ", "rtfd")).toString());
     }
 
     public void licenseMenuClicked(Object sender) {
-        NSWorkspace.sharedWorkspace().openFile(new File(NSBundle.mainBundle().pathForResource("License", "txt")).toString());
+        NSWorkspace.sharedWorkspace().openFile(
+                new File(NSBundle.mainBundle().pathForResource("License", "txt")).toString());
     }
 
     public void updateMenuClicked(Object sender) {
@@ -400,7 +416,7 @@ public class CDMainController extends CDController {
     }
 
     public void checkForUpdate(final boolean verbose) {
-        new Thread() {
+        new Thread("Update") {
             public void run() {
                 try {
                     int pool = NSAutoreleasePool.push();
@@ -613,7 +629,7 @@ public class CDMainController extends CDController {
                                     if (msg.getTitle().equals(Message.QUEUE_STOP)) {
                                         if(controller.isMounted()) {
                                             controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
-                                            controller.reloadData();
+                                            controller.reloadData(true);
                                         }
                                     }
                                 }

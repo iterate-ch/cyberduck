@@ -259,15 +259,19 @@ public abstract class CDValidatorController extends CDWindowController implement
             }
 
             public void enterKeyPressed(Object sender) {
-
+                ;
             }
 
             public void deleteKeyPressed(Object sender) {
-
+                ;
             }
 
             public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
-                //
+                ;
+            }
+
+            public void tableRowDoubleClicked(Object sender) {
+                ;
             }
         });
         this.fileTableView.setRowHeight(17f);

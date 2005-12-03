@@ -97,6 +97,7 @@ public abstract class Preferences {
         defaults.put("website.home", "http://cyberduck.ch/");
         defaults.put("website.forum", "http://cyberduck.ch/forum/");
         defaults.put("website.help", "http://cyberduck.ch/help/");
+        defaults.put("website.bug", "http://trac.cyberduck.ch/newticket/");
 
         /**
          * Check for newer version on application launch in background thread
@@ -145,7 +146,7 @@ public abstract class Preferences {
         /**
          * Enable inline editing in browser
          */
-        defaults.put("browser.editable", "false");
+        defaults.put("browser.editable", "true");
         /**
          * Close bookmark drawer upon opening a connection
          */

@@ -197,6 +197,10 @@ public class Local extends File {
         return super.length();
     }
 
+    public int hashCode() {
+        return this.getAbsolutePath().hashCode();
+    }
+
     public boolean equals(Object other) {
         if (other instanceof Local) {
             return this.getAbsolutePath().equals(((Local) other).getAbsolutePath());// && this.attributes.getTimestamp().equals(((Local)other).attributes.getTimestamp());
