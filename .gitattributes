@@ -146,9 +146,9 @@ cy.lproj/Update.nib/keyedobjects.nib svneol=native#unset
 cy.lproj/Update.strings svneol=native#unset
 cy.lproj/Validator.nib/keyedobjects.nib svneol=native#unset
 cy.lproj/Validator.strings svneol=native#unset
-/cyberduck-application.icns svneol=native#unset
+/cyberduck-application.icns -text svneol=unset#image/icns
 /cyberduck-application.psd -text
-/cyberduck-document.icns svneol=native#unset
+/cyberduck-document.icns -text svneol=unset#image/icns
 /cyberduck-document.psd -text
 da.lproj/Bookmark.nib/keyedobjects.nib -text
 da.lproj/Bookmark.strings svneol=native#unset
