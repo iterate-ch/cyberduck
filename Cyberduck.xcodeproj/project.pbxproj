@@ -81,8 +81,6 @@
 		474165B306C4FC4000AC0BD2 /* add.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4741653D06C4FC3F00AC0BD2 /* add.tiff */; };
 		474165B406C4FC4000AC0BD2 /* addPressed.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4741653E06C4FC3F00AC0BD2 /* addPressed.tiff */; };
 		474165B506C4FC4000AC0BD2 /* alert.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4741653F06C4FC3F00AC0BD2 /* alert.tiff */; };
-		474165B606C4FC4000AC0BD2 /* arrowDown.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4741654006C4FC3F00AC0BD2 /* arrowDown.tiff */; };
-		474165B706C4FC4000AC0BD2 /* arrowUp.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4741654106C4FC3F00AC0BD2 /* arrowUp.tiff */; };
 		474165BA06C4FC4000AC0BD2 /* bookmarks.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4741654406C4FC3F00AC0BD2 /* bookmarks.tiff */; };
 		474165BC06C4FC4000AC0BD2 /* clean.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4741654606C4FC3F00AC0BD2 /* clean.tiff */; };
 		474165BD06C4FC4000AC0BD2 /* cleanAll.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4741654706C4FC3F00AC0BD2 /* cleanAll.tiff */; };
@@ -150,6 +148,9 @@
 		478B71F0089FEB4E003B512A /* arrowRightBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 478B71EF089FEB4E003B512A /* arrowRightBlack16.tiff */; };
 		479734DB077B735A0027370F /* arrowLeftBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479734D9077B735A0027370F /* arrowLeftBlack16.tiff */; };
 		4798363E072AC0FA00FA3CDB /* Progress.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4798363C072AC0FA00FA3CDB /* Progress.nib */; };
+		479909B70940B062004AD6F7 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
+		47990A7A0940B0D2004AD6F7 /* JNISupport.c in Sources */ = {isa = PBXBuildFile; fileRef = 47990A730940B0A2004AD6F7 /* JNISupport.c */; };
+		47990C0B0940B2E6004AD6F7 /* DNSSD.h in Headers */ = {isa = PBXBuildFile; fileRef = 47990C0A0940B2E6004AD6F7 /* DNSSD.h */; };
 		479D64A70752257400FE6086 /* arrowUpBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479D64A50752257400FE6086 /* arrowUpBlack16.tiff */; };
 		47A61DCA076C854A00B535D6 /* generic-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A61DC9076C854A00B535D6 /* generic-document.icns */; };
 		47C261A90859014400765C4A /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739F03D08569B5E00405FD3 /* Growl.framework */; };
@@ -244,6 +245,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 4739EFB10856991200405FD3;
 			remoteInfo = libLocal;
+		};
+		47990C010940B28B004AD6F7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 479909A80940B062004AD6F7 /* libDNSSD */;
+			remoteInfo = libDNSSD;
 		};
 		47CD9C4F0739339B00E9379E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -904,8 +912,6 @@
 		4741653D06C4FC3F00AC0BD2 /* add.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = add.tiff; sourceTree = "<group>"; };
 		4741653E06C4FC3F00AC0BD2 /* addPressed.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = addPressed.tiff; sourceTree = "<group>"; };
 		4741653F06C4FC3F00AC0BD2 /* alert.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = alert.tiff; sourceTree = "<group>"; };
-		4741654006C4FC3F00AC0BD2 /* arrowDown.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowDown.tiff; sourceTree = "<group>"; };
-		4741654106C4FC3F00AC0BD2 /* arrowUp.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowUp.tiff; sourceTree = "<group>"; };
 		4741654406C4FC3F00AC0BD2 /* bookmarks.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = bookmarks.tiff; sourceTree = "<group>"; };
 		4741654606C4FC3F00AC0BD2 /* clean.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = clean.tiff; sourceTree = "<group>"; };
 		4741654706C4FC3F00AC0BD2 /* cleanAll.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = cleanAll.tiff; sourceTree = "<group>"; };
@@ -1224,6 +1230,21 @@
 		4798373F072AD66D00FA3CDB /* Keychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Keychain.m; sourceTree = "<group>"; };
 		47983749072AD67800FA3CDB /* Keychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Keychain.h; sourceTree = "<group>"; };
 		47983764072AD73700FA3CDB /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
+		479909BD0940B062004AD6F7 /* libDNSSD.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libDNSSD.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		47990A6B0940B0A2004AD6F7 /* BaseListener.java */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.java; path = BaseListener.java; sourceTree = "<group>"; };
+		47990A6C0940B0A2004AD6F7 /* BrowseListener.java */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.java; path = BrowseListener.java; sourceTree = "<group>"; };
+		47990A6D0940B0A2004AD6F7 /* DNSRecord.java */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.java; path = DNSRecord.java; sourceTree = "<group>"; };
+		47990A6E0940B0A2004AD6F7 /* DNSSD.java */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.java; path = DNSSD.java; sourceTree = "<group>"; };
+		47990A6F0940B0A2004AD6F7 /* DNSSDException.java */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.java; path = DNSSDException.java; sourceTree = "<group>"; };
+		47990A700940B0A2004AD6F7 /* DNSSDRegistration.java */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.java; path = DNSSDRegistration.java; sourceTree = "<group>"; };
+		47990A710940B0A2004AD6F7 /* DNSSDService.java */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.java; path = DNSSDService.java; sourceTree = "<group>"; };
+		47990A720940B0A2004AD6F7 /* DomainListener.java */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.java; path = DomainListener.java; sourceTree = "<group>"; };
+		47990A730940B0A2004AD6F7 /* JNISupport.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = JNISupport.c; sourceTree = "<group>"; };
+		47990A740940B0A2004AD6F7 /* QueryListener.java */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.java; path = QueryListener.java; sourceTree = "<group>"; };
+		47990A750940B0A2004AD6F7 /* RegisterListener.java */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.java; path = RegisterListener.java; sourceTree = "<group>"; };
+		47990A760940B0A2004AD6F7 /* ResolveListener.java */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.java; path = ResolveListener.java; sourceTree = "<group>"; };
+		47990A770940B0A2004AD6F7 /* TXTRecord.java */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.java; path = TXTRecord.java; sourceTree = "<group>"; };
+		47990C0A0940B2E6004AD6F7 /* DNSSD.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = DNSSD.h; sourceTree = "<group>"; };
 		479982AF05F54B1600F81519 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		479AE0DE0767A17900F7178B /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Progress.nib; sourceTree = "<group>"; };
 		479D170F0792BFFE006F8896 /* SFTPSession.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SFTPSession.java; sourceTree = "<group>"; };
@@ -1472,6 +1493,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		479909B60940B062004AD6F7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				479909B70940B062004AD6F7 /* JavaVM.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -1485,6 +1514,7 @@
 				4739EFB00856990900405FD3 /* libProxy.dylib */,
 				4739EFC10856991300405FD3 /* libLocal.dylib */,
 				4716D8B80877533B00938886 /* libDotMac.dylib */,
+				479909BD0940B062004AD6F7 /* libDNSSD.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1841,6 +1871,7 @@
 		4741532B06C4F08A00AC0BD2 /* com */ = {
 			isa = PBXGroup;
 			children = (
+				47990A690940B0A2004AD6F7 /* apple */,
 				4741532C06C4F08A00AC0BD2 /* enterprisedt */,
 				4741533806C4F08A00AC0BD2 /* sshtools */,
 			);
@@ -2406,8 +2437,6 @@
 				4741653D06C4FC3F00AC0BD2 /* add.tiff */,
 				4741653E06C4FC3F00AC0BD2 /* addPressed.tiff */,
 				4741653F06C4FC3F00AC0BD2 /* alert.tiff */,
-				4741654006C4FC3F00AC0BD2 /* arrowDown.tiff */,
-				4741654106C4FC3F00AC0BD2 /* arrowUp.tiff */,
 				4741654406C4FC3F00AC0BD2 /* bookmarks.tiff */,
 				4741654606C4FC3F00AC0BD2 /* clean.tiff */,
 				4741654706C4FC3F00AC0BD2 /* cleanAll.tiff */,
@@ -2505,6 +2534,35 @@
 				4741530B06C4F08A00AC0BD2 /* CDApplescriptabilityController.java */,
 			);
 			name = applescript;
+			sourceTree = "<group>";
+		};
+		47990A690940B0A2004AD6F7 /* apple */ = {
+			isa = PBXGroup;
+			children = (
+				47990A6A0940B0A2004AD6F7 /* dnssd */,
+			);
+			path = apple;
+			sourceTree = "<group>";
+		};
+		47990A6A0940B0A2004AD6F7 /* dnssd */ = {
+			isa = PBXGroup;
+			children = (
+				47990A6B0940B0A2004AD6F7 /* BaseListener.java */,
+				47990A6F0940B0A2004AD6F7 /* DNSSDException.java */,
+				47990A6C0940B0A2004AD6F7 /* BrowseListener.java */,
+				47990A6D0940B0A2004AD6F7 /* DNSRecord.java */,
+				47990A6E0940B0A2004AD6F7 /* DNSSD.java */,
+				47990C0A0940B2E6004AD6F7 /* DNSSD.h */,
+				47990A700940B0A2004AD6F7 /* DNSSDRegistration.java */,
+				47990A710940B0A2004AD6F7 /* DNSSDService.java */,
+				47990A720940B0A2004AD6F7 /* DomainListener.java */,
+				47990A730940B0A2004AD6F7 /* JNISupport.c */,
+				47990A740940B0A2004AD6F7 /* QueryListener.java */,
+				47990A750940B0A2004AD6F7 /* RegisterListener.java */,
+				47990A760940B0A2004AD6F7 /* ResolveListener.java */,
+				47990A770940B0A2004AD6F7 /* TXTRecord.java */,
+			);
+			path = dnssd;
 			sourceTree = "<group>";
 		};
 		47C75B7506A5A36900B464FF /* org */ = {
@@ -2777,6 +2835,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		479909A90940B062004AD6F7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47990C0B0940B2E6004AD6F7 /* DNSSD.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXLegacyTarget section */
@@ -2807,6 +2873,7 @@
 				4716E2AD0877F0C300938886 /* PBXTargetDependency */,
 				47F0B756087ACF5500439978 /* PBXTargetDependency */,
 				47F0B758087ACF5800439978 /* PBXTargetDependency */,
+				47990C020940B28B004AD6F7 /* PBXTargetDependency */,
 			);
 			name = build;
 			passBuildSettingsInEnvironment = 1;
@@ -3094,6 +3161,42 @@
 			productReference = 4739EFC10856991300405FD3 /* libLocal.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
+		479909A80940B062004AD6F7 /* libDNSSD */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 479909BB0940B062004AD6F7 /* Build configuration list for PBXNativeTarget "libDNSSD" */;
+			buildPhases = (
+				479909A90940B062004AD6F7 /* Headers */,
+				479909B10940B062004AD6F7 /* Sources */,
+				479909B60940B062004AD6F7 /* Frameworks */,
+				479909BA0940B062004AD6F7 /* Rez */,
+			);
+			buildRules = (
+			);
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				HEADER_SEARCH_PATHS = (
+					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers",
+					source/ch/cyberduck/core,
+				);
+				LIBRARY_STYLE = DYNAMIC;
+				PREBINDING = NO;
+				PRODUCT_NAME = libLocal.jnilib;
+				REZ_EXECUTABLE = YES;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+			};
+			dependencies = (
+			);
+			name = libDNSSD;
+			productInstallPath = /usr/local/lib;
+			productName = keychainLib;
+			productReference = 479909BD0940B062004AD6F7 /* libDNSSD.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -3149,6 +3252,7 @@
 				4739EFA30856990900405FD3 /* libProxy */,
 				4739EFB10856991200405FD3 /* libLocal */,
 				4716D8AC0877533B00938886 /* libDotMac */,
+				479909A80940B062004AD6F7 /* libDNSSD */,
 			);
 		};
 /* End PBXProject section */
@@ -3180,8 +3284,6 @@
 				474165B306C4FC4000AC0BD2 /* add.tiff in Resources */,
 				474165B406C4FC4000AC0BD2 /* addPressed.tiff in Resources */,
 				474165B506C4FC4000AC0BD2 /* alert.tiff in Resources */,
-				474165B606C4FC4000AC0BD2 /* arrowDown.tiff in Resources */,
-				474165B706C4FC4000AC0BD2 /* arrowUp.tiff in Resources */,
 				474165BA06C4FC4000AC0BD2 /* bookmarks.tiff in Resources */,
 				474165BC06C4FC4000AC0BD2 /* clean.tiff in Resources */,
 				474165BD06C4FC4000AC0BD2 /* cleanAll.tiff in Resources */,
@@ -3314,6 +3416,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		479909BA0940B062004AD6F7 /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -3384,6 +3493,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		479909B10940B062004AD6F7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47990A7A0940B0D2004AD6F7 /* JNISupport.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -3411,6 +3528,11 @@
 			isa = PBXTargetDependency;
 			target = 4739EFB10856991200405FD3 /* libLocal */;
 			targetProxy = 4739F06108569C0A00405FD3 /* PBXContainerItemProxy */;
+		};
+		47990C020940B28B004AD6F7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 479909A80940B062004AD6F7 /* libDNSSD */;
+			targetProxy = 47990C010940B28B004AD6F7 /* PBXContainerItemProxy */;
 		};
 		47CD9C500739339B00E9379E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4362,6 +4484,35 @@
 			};
 			name = Deployment;
 		};
+		479909BC0940B062004AD6F7 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				COPY_PHASE_STRIP = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers",
+					source/ch/cyberduck/core,
+				);
+				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
+				PREBINDING = NO;
+				PRODUCT_NAME = libDNSSD;
+				REZ_EXECUTABLE = YES;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
 		47D286C70855740C008142CF /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4491,6 +4642,14 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4739EFC00856991200405FD3 /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
+		479909BB0940B062004AD6F7 /* Build configuration list for PBXNativeTarget "libDNSSD" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				479909BC0940B062004AD6F7 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
