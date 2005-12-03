@@ -501,7 +501,8 @@ id.lproj/Update.nib/keyedobjects.nib -text
 id.lproj/Update.strings svneol=native#unset
 id.lproj/Validator.nib/keyedobjects.nib -text
 id.lproj/Validator.strings svneol=native#unset
-img/add.tiff -text svneol=native#application/octet-stream
+img/add.tiff -text svneol=unset#image/tiff
+img/addPressed.tiff -text svneol=unset#image/tiff
 img/advanced.tiff -text
 img/alert.tiff -text
 img/arrowDown.tiff -text
