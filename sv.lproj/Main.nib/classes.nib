@@ -21,6 +21,7 @@
                 gotoButtonClicked = id; 
                 infoButtonClicked = id; 
                 insideButtonClicked = id; 
+                pasteFromFinder = id; 
                 reloadButtonClicked = id; 
                 sendCustomCommandClicked = id; 
                 showHiddenFilesClicked = id; 
@@ -37,6 +38,7 @@
         }, 
         {
             ACTIONS = {
+                bugreportMenuClicked = id; 
                 donateMenuClicked = id; 
                 downloadBookmarksFromDotMacClicked = id; 
                 faqMenuClicked = id; 
