@@ -2334,6 +2334,9 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     protected void setWorkdir(Path path) {
+        if(!this.hasSession()) {
+            path = null;
+        }
         if (null == path) {
             this.workdir = null;
             this.pathPopupItems.clear();

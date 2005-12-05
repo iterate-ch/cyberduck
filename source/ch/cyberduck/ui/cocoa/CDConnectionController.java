@@ -21,11 +21,11 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Login;
-import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Rendezvous;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.RendezvousListener;
 
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
@@ -52,8 +52,6 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * @version $Id$
@@ -95,9 +93,7 @@ public class CDConnectionController extends CDWindowController {
         this.historyPopup.setToolTip(NSBundle.localizedString("History", ""));
         File[] files = HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
             public boolean accept(File dir, String name) {
-                if (name.endsWith(".duck"))
-                    return true;
-                return false;
+                return name.endsWith(".duck");
             }
         });
         this.history = new Collection();
@@ -115,7 +111,6 @@ public class CDConnectionController extends CDWindowController {
         this.bookmarkSelectionDidChange((Host) history.get(index));
     }
 
-    private Observer observer;
     private NSPopUpButton rendezvousPopup;
 
     private void addItemToRendezvousPopup(String item) {
@@ -126,40 +121,39 @@ public class CDConnectionController extends CDWindowController {
         this.rendezvousPopup.removeItemWithTitle(item);
     }
 
+    private RendezvousListener rendezvousListener;
+
     public void setRendezvousPopup(NSPopUpButton rendezvousPopup) {
         this.rendezvousPopup = rendezvousPopup;
         this.rendezvousPopup.setImage(NSImage.imageNamed("rendezvous16.tiff"));
         this.rendezvousPopup.setToolTip("Bonjour");
         this.rendezvousPopup.setTarget(this);
         this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionDidChange", new Class[]{Object.class}));
-        Rendezvous.instance().addObserver(this.observer = new Observer() {
-            public void update(final Observable o, final Object arg) {
-                log.debug("update:" + o + "," + arg);
-                CDConnectionController.this.invoke(new Runnable() {
+        Rendezvous.instance().addListener(rendezvousListener = new RendezvousListener() {
+            public void serviceResolved(final String servicename) {
+                invoke(new Runnable() {
                     public void run() {
-                        if (o instanceof Rendezvous) {
-                            if (arg instanceof Message) {
-                                Message msg = (Message) arg;
-                                if (msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
-                                    addItemToRendezvousPopup((String) msg.getContent());
-                                }
-                                if (msg.getTitle().equals(Message.RENDEZVOUS_REMOVE)) {
-                                    removeItemFromRendezvousPopup((String) msg.getContent());
-                                }
-                            }
-                        }
+                        addItemToRendezvousPopup(Rendezvous.instance().getDisplayedName(servicename));
+                    }
+                });
+            }
+
+            public void serviceLost(final String servicename) {
+                invoke(new Runnable() {
+                    public void run() {
+                        removeItemFromRendezvousPopup(Rendezvous.instance().getDisplayedName(servicename));
                     }
                 });
             }
         });
-        String[] cachedServices = Rendezvous.instance().getServices();
-        for (int i = 0; i < cachedServices.length; i++) {
-            this.addItemToRendezvousPopup(cachedServices[i]);
+        for(Iterator iter = Rendezvous.instance().getServices().iterator(); iter.hasNext(); ) {
+            this.addItemToRendezvousPopup(Rendezvous.instance().getDisplayedName((String)iter.next()));
         }
     }
 
     public void rendezvousSelectionDidChange(Object sender) {
-        this.bookmarkSelectionDidChange((Host) Rendezvous.instance().getService(rendezvousPopup.titleOfSelectedItem()));
+        this.bookmarkSelectionDidChange((Host) Rendezvous.instance().getServiceWithDisplayedName(
+                rendezvousPopup.titleOfSelectedItem()));
     }
 
     private NSPopUpButton protocolPopup;
@@ -428,7 +422,7 @@ public class CDConnectionController extends CDWindowController {
 
     public void windowWillClose(NSNotification notification) {
         NSNotificationCenter.defaultCenter().removeObserver(this);
-        Rendezvous.instance().deleteObserver(this.observer);
+        Rendezvous.instance().removeListener(this.rendezvousListener);
         instances.removeObject(this);
     }
 

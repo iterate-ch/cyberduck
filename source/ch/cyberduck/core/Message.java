@@ -42,10 +42,6 @@ public class Message {
     public static final String QUEUE_START = "QUEUE_START";
     public static final String QUEUE_STOP = "QUEUE_STOP";
 
-    public static final String RENDEZVOUS_ADD = "RENDEZVOUS_ADD";
-    public static final String RENDEZVOUS_REMOVE = "RENDEZVOUS_REMOVE";
-
-
     private String title;
     private Object content;
 

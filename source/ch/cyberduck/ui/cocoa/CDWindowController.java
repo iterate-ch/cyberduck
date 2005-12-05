@@ -93,7 +93,7 @@ public abstract class CDWindowController extends CDController {
         }
         NSApplication.sharedApplication().endSheet(sheet, tag);
         synchronized (lock) {
-            lock.notify();
+            lock.notifyAll();
         }
     }
 
@@ -153,7 +153,7 @@ public abstract class CDWindowController extends CDController {
                     endSelector, // did end selector
                     contextInfo); //contextInfo
             sheet.makeKeyAndOrderFront(null);
-            lock.notify();
+            lock.notifyAll();
         }
     }
 

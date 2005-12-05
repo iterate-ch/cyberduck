@@ -29,6 +29,7 @@ import ch.cyberduck.core.Rendezvous;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UploadQueue;
 import ch.cyberduck.core.Version;
+import ch.cyberduck.core.RendezvousListener;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.application.NSAlertPanel;
@@ -69,8 +70,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * @version $Id$
@@ -166,7 +165,6 @@ public class CDMainController extends CDController {
     private NSObject rendezvousMenuDelegate;
     private NSMenu historyMenu;
     private NSObject historyMenuDelegate;
-    private Rendezvous rendezvous;
 
     public void setBookmarkMenu(NSMenu bookmarkMenu) {
         this.bookmarkMenu = bookmarkMenu;
@@ -176,8 +174,7 @@ public class CDMainController extends CDController {
         this.historyMenu.setAutoenablesItems(false);
         this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
         this.historyMenu.setDelegate(this.historyMenuDelegate = new HistoryMenuDelegate());
-        this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = new RendezvousMenuDelegate(
-                this.rendezvous = Rendezvous.instance()));
+        this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = new RendezvousMenuDelegate());
         this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("History", "")).setAction(
                 new NSSelector("historyMenuClicked", new Class[]{NSMenuItem.class})
         );
@@ -246,7 +243,7 @@ public class CDMainController extends CDController {
 
     private class HistoryMenuDelegate extends NSObject {
 
-        private Host[] cache = null;
+        private Map cache = new HashMap();
 
         private File[] listFiles() {
             File[] files = HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
@@ -272,27 +269,28 @@ public class CDMainController extends CDController {
 
         public int numberOfItemsInMenu(NSMenu menu) {
             File[] files = this.listFiles();
-            if (null == cache || cache.length != files.length) {
-                cache = new Host[files.length];
+            if (cache.size() != files.length) {
+                cache.clear();
                 for (int i = 0; i < files.length; i++) {
-                    cache[i] = CDBookmarkTableDataSource.instance().importBookmark(files[i]);
+                    Host h = CDBookmarkTableDataSource.instance().importBookmark(files[i]);
+                    cache.put(h.getNickname(), h);
                 }
             }
-            if (files.length > 0) {
-                return files.length;
+            if (cache.size() > 0) {
+                return cache.size();
             }
             return 1;
         }
 
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
-            if (cache.length == 0) {
+            if (cache.size() == 0) {
                 sender.setTitle(NSBundle.localizedString("No recently connected servers available", ""));
                 sender.setImage(null);
                 sender.setEnabled(false);
                 return false;
             }
-            Host h = cache[index];
-            sender.setTitle(h.toString());
+            Host h = ((Host[])cache.values().toArray(new Host[]{}))[index];
+            sender.setTitle(h.getNickname());
             sender.setTarget(this);
             sender.setEnabled(true);
             sender.setImage(NSImage.imageNamed("bookmark16.tiff"));
@@ -301,46 +299,21 @@ public class CDMainController extends CDController {
         }
 
         public void historyMenuItemClicked(NSMenuItem sender) {
-            File[] items = this.listFiles();
-            for (int i = 0; i < items.length; i++) {
-                Host h = CDBookmarkTableDataSource.instance().importBookmark(items[i]);
-                if (h.equals(sender.title())) {
-                    CDBrowserController controller = CDMainController.this.newDocument();
-                    controller.mount(h);
-                }
-            }
+            CDBrowserController controller = CDMainController.this.newDocument();
+            controller.mount((Host)cache.get(sender.title()));
         }
     }
 
-    private class RendezvousMenuDelegate extends NSObject implements Observer {
-        private Map hosts = new HashMap();
+    private class RendezvousMenuDelegate extends NSObject {
 
-        public RendezvousMenuDelegate(Rendezvous rendezvous) {
+        public RendezvousMenuDelegate() {
             log.debug("RendezvousMenuDelegate");
-            rendezvous.addObserver(this);
-        }
-
-        public void update(final Observable o, final Object arg) {
-            log.debug("update:" + o + "," + arg);
-            if (o instanceof Rendezvous) {
-                if (arg instanceof Message) {
-                    Message msg = (Message) arg;
-                    String identifier = (String)msg.getContent();
-                    if (msg.getTitle().equals(Message.RENDEZVOUS_ADD)) {
-                        Growl.instance().notifyWithImage("Bonjour", identifier, "rendezvous.icns");
-                        hosts.put(Rendezvous.instance().getService(identifier).getNickname(),
-                                identifier);
-                    }
-                    if (msg.getTitle().equals(Message.RENDEZVOUS_REMOVE)) {
-                        hosts.remove(identifier);
-                    }
-                }
-            }
         }
 
         public int numberOfItemsInMenu(NSMenu menu) {
-            if (hosts.size() > 0) {
-                return hosts.size();
+            int n = Rendezvous.instance().numberOfServices();
+            if (n > 0) {
+                return n;
             }
             return 1;
         }
@@ -354,13 +327,13 @@ public class CDMainController extends CDController {
          * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
          */
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
-            if (hosts.size() == 0) {
+            if (Rendezvous.instance().numberOfServices() == 0) {
                 sender.setTitle(NSBundle.localizedString("No Bonjour services available", ""));
                 sender.setEnabled(false);
                 return !shouldCancel;
             }
             else {
-                String title = ((String)this.hosts.keySet().toArray(new String[]{})[index]);
+                String title = Rendezvous.instance().getDisplayedName(index);
                 sender.setTitle(title);
                 sender.setTarget(this);
                 sender.setEnabled(true);
@@ -370,9 +343,12 @@ public class CDMainController extends CDController {
         }
 
         public void rendezvousMenuClicked(NSMenuItem sender) {
+            Host host = Rendezvous.instance().getServiceWithDisplayedName(sender.title());
+            if(null == host) {
+                return;
+            }
             CDBrowserController controller = CDMainController.this.newDocument();
-            String identifier = (String)hosts.get(sender.title());
-            controller.mount(Rendezvous.instance().getService(identifier));
+            controller.mount(host);
         }
     }
 
@@ -689,13 +665,23 @@ public class CDMainController extends CDController {
         if (Preferences.instance().getBoolean("update.check")) {
             this.checkForUpdate(false);
         }
-        this.rendezvous.init();
+        Rendezvous.instance().addListener(new RendezvousListener() {
+            public void serviceResolved(String identifier) {
+                Growl.instance().notifyWithImage("Bonjour", Rendezvous.instance().getDisplayedName(identifier),
+                        "rendezvous.icns");
+            }
+
+            public void serviceLost(String servicename) {
+                ;
+            }
+        });
+        Rendezvous.instance().init();
     }
 
     public void applicationShouldSleep(Object o) {
         log.debug("applicationShouldSleep");
         //Stopping rendezvous service discovery
-        this.rendezvous.quit();
+        Rendezvous.instance().quit();
         //halt all transfers
         CDQueueController.instance().stopAllButtonClicked(null);
         //close all browsing connections
@@ -709,11 +695,6 @@ public class CDMainController extends CDController {
                 controller.unmount();
             }
         }
-    }
-
-    public void applicationShouldWake(Object o) {
-        log.debug("applicationShouldWake");
-        this.rendezvous.init();
     }
 
     public int applicationShouldTerminate(NSApplication app) {
@@ -758,10 +739,8 @@ public class CDMainController extends CDController {
     public void applicationWillTerminate(NSNotification notification) {
         log.debug("applicationWillTerminate");
         NSNotificationCenter.defaultCenter().removeObserver(this);
-        //stoppping worker thread
-        //this.threadWorkerTimer.invalidate();
         //Terminating rendezvous discovery
-        this.rendezvous.quit();
+        Rendezvous.instance().quit();
         //Writing major info
         this.saveVersionInfo();
         //Writing usage info

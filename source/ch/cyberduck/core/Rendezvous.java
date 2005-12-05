@@ -30,13 +30,14 @@ import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Iterator;
+import java.util.Vector;
+import java.util.List;
 
 /**
  * @version $Id$
  */
-public class Rendezvous extends Observable
+public class Rendezvous
         implements BrowseListener, ResolveListener {
 
     private static Logger log = Logger.getLogger(Rendezvous.class);
@@ -92,30 +93,69 @@ public class Rendezvous extends Observable
     }
 
     public void quit() {
-        log.info("Removing Rendezvous service listener");
-        for(Iterator iter = this.services.keySet().iterator(); iter.hasNext(); ) {
-            String identifier = (String)iter.next();
-            this.callObservers(new Message(Message.RENDEZVOUS_REMOVE, identifier));
+//        this.services.clear();
+    }
+
+    private Vector listeners = new Vector();
+
+    private RendezvousListener notifier = new RendezvousListener() {
+
+        public void serviceResolved(String servicename) {
+            for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
+                ((RendezvousListener)iter.next()).serviceResolved(servicename);
+            }
         }
-        this.services.clear();
-    }
 
-    public void callObservers(Message arg) {
-        if (log.isDebugEnabled()) {
-            log.debug("callObservers:" + arg);
-            log.debug(this.countObservers() + " observer(s) known.");
+        public void serviceLost(String servicename) {
+            for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
+                ((RendezvousListener)iter.next()).serviceLost(servicename);
+            }
         }
-        this.setChanged();
-        this.notifyObservers(arg);
+    };
+
+    public void addListener(RendezvousListener listener) {
+        listeners.add(listener);
     }
 
-    public Host getService(String key) {
-        log.debug("getService:" + key);
-        return (Host) services.get(key);
+    public void removeListener(RendezvousListener listener) {
+        listeners.remove(listener);
     }
 
-    public String[] getServices() {
-        return (String[]) this.services.keySet().toArray(new String[]{});
+    public java.util.Collection getServices() {
+        return services.keySet();
+    }
+
+    public Host getServiceWithIdentifier(String identifier) {
+        log.debug("getService:" + identifier);
+        return (Host) services.get(identifier);
+    }
+
+    public Host getServiceWithDisplayedName(String displayedName) {
+        for(Iterator iter = services.values().iterator(); iter.hasNext(); ) {
+            Host h = (Host)iter.next();
+            if(h.getNickname().equals(displayedName)) {
+                return h;
+            }
+        }
+        log.warn("No identifier for displayed name:"+displayedName);
+        return null;
+    }
+
+    public int numberOfServices() {
+        return services.size();
+    }
+
+    public String getDisplayedName(int index) {
+        if(index < this.numberOfServices())
+            return ((Host[])services.values().toArray(new Host[]{}))[index].getNickname();
+        return NSBundle.localizedString("Unknown", "");
+    }
+
+    public String getDisplayedName(String identifier) {
+        Object o = services.get(identifier);
+        if(null == o)
+            return NSBundle.localizedString("Unknown", "");
+        return ((Host)o).getNickname();
     }
 
     public void serviceFound(DNSSDService browser, int flags, int ifIndex, String servicename,
@@ -136,7 +176,7 @@ public class Rendezvous extends Observable
             String identifier = DNSSD.constructFullName(serviceName, regType, domain);
             if(null == this.services.remove(identifier))
                 return;
-            this.callObservers(new Message(Message.RENDEZVOUS_REMOVE, identifier));
+            notifier.serviceLost(identifier);
         }
         catch (DNSSDException e) {
             log.error(e.getMessage());
@@ -151,12 +191,13 @@ public class Rendezvous extends Observable
     public void serviceResolved(DNSSDService resolver, int flags, int ifIndex,
                                 String fullname, String hostname, int port, TXTRecord txtRecord) {
         log.debug("serviceResolved:" + hostname);
-        Host h = new Host(hostname, port);
-        h.setCredentials(Preferences.instance().getProperty("connection.login.name"), null);
-        if (h.getProtocol().equals(Session.FTP)) {
-            h.setCredentials(null, null); //use anonymous login for FTP
+        Host host = new Host(hostname, port);
+        host.setCredentials(Preferences.instance().getProperty("connection.login.name"), null);
+        if (host.getProtocol().equals(Session.FTP)) {
+            host.setCredentials(null, null); //use anonymous login for FTP
         }
-        if(null == this.services.put(fullname, h))
-            this.callObservers(new Message(Message.RENDEZVOUS_ADD, fullname));
+        if(null == this.services.put(fullname, host)) {
+            this.notifier.serviceResolved(fullname);
+        }
     }
 }
