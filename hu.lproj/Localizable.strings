@@ -233,6 +233,9 @@
 /* Menu item */
 "Paste" = "Beilleszt";
 
+/* Menu item */
+"Paste from Finder" = "Paste from Finder";
+
 /* A column in the browser */
 "Permissions" = "Engedélyek";
 

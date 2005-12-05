@@ -233,6 +233,9 @@
 /* Menu item */
 "Paste" = "Sisipkan";
 
+/* Menu item */
+"Paste from Finder" = "Paste from Finder";
+
 /* A column in the browser */
 "Permissions" = "Hak Akses";
 
