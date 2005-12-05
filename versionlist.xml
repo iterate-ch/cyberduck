@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-    <dict>
-	<key>version</key>
-	<string>2.5.3</string>
-	<key>file</key>
-	<string>Cyberduck-2.5.3.dmg</string>
-	<key>comment</key>
-        <string>Changelog:
+   <dict>
+      <key>version</key>
+      <string>2.5.3</string>
+      <key>file</key>
+      <string>Cyberduck-2.5.3.dmg</string>
+      <key>comment</key>
+      <string>Changelog:
 2.5.3
 - [Feature] Inline rename files in browser (Return key invokes editing)
 - [Feature] Paste files copied in Finder.app (Upload)
-- [Feature] Comes with Unsanity Crash Reporter
+- [Feature] Includes Unsanity Crash Reporter
 - [Bugfix] Renaming files in expanded tree of outline view bogus
 - [Bugfix] Change to invalid directories not catched
 - [Bugfix] Second login attempt always fails (SFTP)
@@ -93,5 +93,5 @@ _ [Feature] Universal Binary
 - [Feature] UTF-8 is now used as the default character encoding
 - [Feature] Edit with non-default editor using the browser context menu
         </string>
-    </dict>
+   </dict>
 </plist>
