@@ -152,7 +152,7 @@ public class SFTPSession extends Session {
                 }
 
                 public void onDisconnect(TransportProtocol transport) {
-                    log.debug("onDisconnect");
+                    log.debug(transport.getState().getDisconnectReason());
                 }
             });
             SshConnectionProperties properties = new SshConnectionProperties();
@@ -295,7 +295,9 @@ public class SFTPSession extends Session {
                 throw new SshException("Login as user " + credentials.getUsername() + " canceled."); //todo localize
             }
         }
-        throw new IOException("Login as user " + host.getCredentials().getUsername() + " failed."); //todo localize
+        else {
+            throw new IOException("Login as user " + host.getCredentials().getUsername() + " failed."); //todo localize
+        }
     }
 
     public Path workdir() {

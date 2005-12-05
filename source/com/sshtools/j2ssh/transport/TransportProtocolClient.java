@@ -112,7 +112,7 @@ public class TransportProtocolClient extends TransportProtocolCommon {
             msg = getMessageStore().getMessage(SshMsgServiceAccept.SSH_MSG_SERVICE_ACCEPT);
         }
         catch (InterruptedException ex) {
-            throw new SshException("The thread was interrupted whilst waiting for a transport protocol message");
+            throw new SshException(ex.getMessage());
         }
 
         return;

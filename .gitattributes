@@ -1005,6 +1005,7 @@ source/com/apple/dnssd/QueryListener.java -text
 source/com/apple/dnssd/RegisterListener.java -text
 source/com/apple/dnssd/ResolveListener.java -text
 source/com/apple/dnssd/TXTRecord.java -text
+source/com/unsanity/SmartCrashReportsInstall.o -text
 sv.lproj/Bookmark.nib/keyedobjects.nib -text
 sv.lproj/Bookmark.strings svneol=native#unset
 sv.lproj/Browser.nib/keyedobjects.nib -text

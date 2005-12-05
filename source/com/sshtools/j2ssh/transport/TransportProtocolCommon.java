@@ -124,10 +124,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol, Runn
     //private Map messageNotifications = new HashMap();
 
     // Key exchange lock for accessing the kex init messages
-    private Object kexLock = new Object();
-
-    // Object to synchronize key changing
-    private Object keyLock = new Object();
+    private final Object kexLock = new Object();
 
     // The connected socket
     //private Socket socket;
@@ -950,7 +947,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol, Runn
 
         // Close the input/output streams
         if (messageStore != null) {
-            messageStore.close();
+            messageStore.close(state.getDisconnectReason());
         }
 
         messageStore = null;
@@ -959,6 +956,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol, Runn
             provider.close();
         }
         catch (IOException ioe) {
+            ;
         }
     }
 
@@ -1108,7 +1106,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol, Runn
         state.setValue(TransportProtocolState.DISCONNECTED);
         state.setDisconnectReason(msg.getDescription());
 
-        stop();
+        this.stop();
     }
 
     private void onMsgIgnore(SshMsgIgnore msg) {

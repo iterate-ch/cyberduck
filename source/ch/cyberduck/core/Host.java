@@ -89,7 +89,6 @@ public class Host {
                 this.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
             }
         }
-        log.debug(this.toString());
     }
 
     public NSDictionary getAsDictionary() {
@@ -163,7 +162,6 @@ public class Host {
         this.setNickname(nickname);
         this.setDefaultPath(defaultpath);
         this.setCredentials(null, null);
-        log.debug(this.toString());
     }
 
     /**

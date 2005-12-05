@@ -209,7 +209,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 			}
 		}
 		catch(InterruptedException ex) {
-			throw new IOException("The thread was interrupted");
+            throw new IOException(ex.getMessage());
 		}
 	}
 
@@ -291,7 +291,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 			}
 		}
 		catch(InterruptedException ex) {
-			throw new IOException("The thread was interrupted");
+			throw new IOException(ex.getMessage());
 		}
 	}
 
@@ -335,7 +335,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 			}
 		}
 		catch(InterruptedException ex) {
-			throw new IOException("The thread was interrupted");
+            throw new IOException(ex.getMessage());
 		}
 	}
 
@@ -412,7 +412,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 			}
 		}
 		catch(InterruptedException ex) {
-			throw new IOException("The thread was interrupted");
+            throw new IOException(ex.getMessage());
 		}
 	}
 
@@ -450,7 +450,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 			}
 		}
 		catch(InterruptedException ex) {
-			throw new IOException("The thread was interrupted");
+            throw new IOException(ex.getMessage());
 		}
 	}
 
@@ -504,7 +504,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 			}
 		}
 		catch(InterruptedException ex) {
-			throw new IOException("The thread was interrupted");
+            throw new IOException(ex.getMessage());
 		}
 	}
 
@@ -616,7 +616,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 			}
 		}
 		catch(InterruptedException ex) {
-			throw new IOException("The thread was interrupted");
+            throw new IOException(ex.getMessage());
 		}
 	}
 
@@ -782,7 +782,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 			}
 		}
 		catch(InterruptedException ex) {
-			throw new IOException("The thread was interrupted");
+            throw new IOException(ex.getMessage());
 		}
 	}
 
@@ -808,7 +808,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 			}
 		}
 		catch(InterruptedException ex) {
-			throw new IOException("The thread was interrupted");
+            throw new IOException(ex.getMessage());
 		}
 	}
 

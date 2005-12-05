@@ -406,7 +406,6 @@ public class CDBookmarkTableDataSource extends Collection {
     }
 
     public Host importBookmark(File file) {
-        log.info("Importing bookmark from " + file);
         NSData plistData = new NSData(file);
         String[] errorString = new String[]{null};
         Object propertyListFromXMLData =

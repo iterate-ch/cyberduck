@@ -292,7 +292,7 @@ public abstract class IOChannel extends Channel {
 					break;
 				}
 				catch(InterruptedException ex) {
-					throw new IOException("The thread was interrupted");
+                    throw new IOException(ex.getMessage());
 				}
 			}
 		}

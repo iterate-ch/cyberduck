@@ -189,7 +189,7 @@ public class ConnectionProtocol extends AsyncService {
                 throw new IOException(mse.getMessage());
             }
             catch (InterruptedException ex) {
-                throw new SshException("The thread was interrupted whilst waiting for a connection protocol message");
+                throw new SshException(ex.getMessage());
             }
         }
     }
@@ -388,7 +388,7 @@ public class ConnectionProtocol extends AsyncService {
                 }
             }
             catch (InterruptedException ex) {
-                throw new SshException("The thread was interrupted whilst waiting for a connection protocol message");
+                throw new SshException(ex.getMessage());
             }
         }
 
@@ -481,7 +481,7 @@ public class ConnectionProtocol extends AsyncService {
                 }
             }
             catch (InterruptedException ex) {
-                throw new SshException("The thread was interrupted whilst waiting for a connection protocol message");
+                throw new SshException(ex.getMessage());
             }
         }
 

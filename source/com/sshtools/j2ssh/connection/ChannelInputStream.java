@@ -195,7 +195,7 @@ public class ChannelInputStream extends InputStream {
 			return -1;
 		}
 		catch(InterruptedException ex) {
-			throw new InterruptedIOException("The thread was interrupted whilst waiting for channel data");
+			throw new InterruptedIOException(ex.getMessage());
 		}
 	}
 
@@ -228,7 +228,7 @@ public class ChannelInputStream extends InputStream {
 			return -1;
 		}
 		catch(InterruptedException ex) {
-			throw new InterruptedIOException("The thread was interrupted whilst waiting for channel data");
+            throw new InterruptedIOException(ex.getMessage());
 		}
 	}
 

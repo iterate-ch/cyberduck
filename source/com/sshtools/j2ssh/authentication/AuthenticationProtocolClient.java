@@ -135,7 +135,7 @@ public class AuthenticationProtocolClient
             msg = transport.getMessageStore().getMessage(resultFilter);
         }
         catch (InterruptedException ex) {
-            throw new SshException("The thread was interrupted whilst waiting for an authentication message");
+            throw new SshException(ex.getMessage());
         }
 
         if (msg instanceof SshMsgUserAuthFailure) {
@@ -190,7 +190,7 @@ public class AuthenticationProtocolClient
             return tse.getState();
         }
         catch (InterruptedException ex) {
-            throw new SshException("The thread was interrupted whilst waiting for an authentication message");
+            throw new SshException(ex.getMessage());
         }
     }
 
@@ -238,10 +238,10 @@ public class AuthenticationProtocolClient
             return parseMessage(msg);
         }
         catch (MessageStoreEOFException meof) {
-            throw new AuthenticationProtocolException("Failed to read messages");
+            throw new AuthenticationProtocolException(meof.getMessage());
         }
         catch (InterruptedException ex) {
-            throw new SshException("The thread was interrupted whilst waiting for an authentication message");
+            throw new SshException(ex.getMessage());
         }
     }
 
@@ -310,11 +310,10 @@ public class AuthenticationProtocolClient
         }
         catch (MessageStoreEOFException eof) {
             log.error("Failed to retreive banner becasue the message store is EOF");
-
             return "";
         }
         catch (InterruptedException ex) {
-            throw new SshException("The thread was interrupted whilst waiting for an authentication message");
+            throw new SshException(ex.getMessage());
         }
     }
 }

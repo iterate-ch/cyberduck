@@ -37,7 +37,12 @@ package com.sshtools.j2ssh.transport;
  * @since 0.2.0
  */
 public class MessageStoreEOFException extends TransportProtocolException {
-	/**
+
+    public MessageStoreEOFException(String msg) {
+        super(msg);
+    }
+
+    /**
 	 * <p/>
 	 * Constructs the exception.
 	 * </p>

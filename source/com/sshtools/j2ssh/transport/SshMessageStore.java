@@ -95,7 +95,7 @@ public final class SshMessageStore {
         }
         catch (MessageNotAvailableException e) {
             // This should never happen but throw just in case
-            throw new MessageStoreEOFException();
+            throw new MessageStoreEOFException(e.getMessage());
         }
     }
 
@@ -121,7 +121,7 @@ public final class SshMessageStore {
             MessageStoreEOFException, MessageNotAvailableException,
             InterruptedException {
         if ((messages.size() <= 0) && isClosed) {
-            throw new MessageStoreEOFException();
+            throw new MessageStoreEOFException(disconnectReason);
         }
 
         if (messageIdFilter == null) {
@@ -137,7 +137,7 @@ public final class SshMessageStore {
 
         while ((messages.size() > 0) || !isClosed) {
             // lookup the message
-            msg = lookupMessage(messageIdFilter, true);
+            msg = this.lookupMessage(messageIdFilter, true);
 
             if (msg != null) {
                 return msg;
@@ -157,8 +157,7 @@ public final class SshMessageStore {
             firstPass = false;
 
         }
-
-        throw new MessageStoreEOFException();
+        throw new MessageStoreEOFException(disconnectReason);
     }
 
     /**
@@ -309,6 +308,13 @@ public final class SshMessageStore {
             // Notify the threads
             notifyAll();
         }
+    }
+
+    private String disconnectReason = "";
+
+    public void close(String reason) {
+        this.disconnectReason = reason;
+        this.close();
     }
 
     /**
