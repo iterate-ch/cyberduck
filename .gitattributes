@@ -1082,11 +1082,10 @@ zh_CN.lproj/IDisk.strings -text svneol=native#application/octet-stream
 zh_CN.lproj/Info.nib/keyedobjects.nib -text
 zh_CN.lproj/Info.strings -text svneol=native#application/octet-stream
 zh_CN.lproj/InfoPlist.strings -text svneol=native#application/octet-stream
-zh_CN.lproj/Localizable.strings -text svneol=native#application/octet-stream
+zh_CN.lproj/Localizable.strings -text
 zh_CN.lproj/Login.nib/keyedobjects.nib -text
 zh_CN.lproj/Login.strings -text svneol=native#application/octet-stream
 zh_CN.lproj/Main.nib/keyedobjects.nib -text
-zh_CN.lproj/Main.strings -text svneol=native#application/octet-stream
 zh_CN.lproj/Preferences.nib/keyedobjects.nib -text
 zh_CN.lproj/Preferences.strings -text svneol=native#application/octet-stream
 zh_CN.lproj/Progress.nib/keyedobjects.nib -text
