@@ -1382,10 +1382,12 @@ public class CDBrowserController extends CDWindowController implements Observer 
     }
 
     public void bookmarkTableRowDoubleClicked(Object sender) {
-        Host h = (Host) this.bookmarkModel.get(bookmarkTable.selectedRow());
-        this.mount(h, h.getEncoding());
-        if (Preferences.instance().getBoolean("browser.closeDrawer")) {
-            this.bookmarkDrawer.close();
+        if(bookmarkTable.numberOfSelectedRows() == 1) {
+            Host h = (Host) this.bookmarkModel.get(bookmarkTable.selectedRow());
+            this.mount(h, h.getEncoding());
+            if (Preferences.instance().getBoolean("browser.closeDrawer")) {
+                this.bookmarkDrawer.close();
+           }
         }
     }
 
@@ -2620,7 +2622,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
         NSNotificationCenter.defaultCenter().removeObserver(this);
         if (this.hasSession()) {
             this.session.deleteObserver(this);
-            this.session = null;
         }
         instances.removeObject(this);
     }
