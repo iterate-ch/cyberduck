@@ -957,7 +957,7 @@ sk.lproj/Bookmark.strings -text
 sk.lproj/Browser.nib/keyedobjects.nib -text
 sk.lproj/Browser.strings -text svneol=native#application/octet-stream
 sk.lproj/Certificate.nib/keyedobjects.nib -text
-sk.lproj/Certificate.strings -text svneol=native#application/octet-stream
+sk.lproj/Certificate.strings -text
 sk.lproj/Command.nib/keyedobjects.nib -text
 sk.lproj/Command.strings -text svneol=native#application/octet-stream
 sk.lproj/Connection.nib/keyedobjects.nib -text
