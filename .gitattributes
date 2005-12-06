@@ -961,7 +961,7 @@ sk.lproj/Certificate.strings -text
 sk.lproj/Command.nib/keyedobjects.nib -text
 sk.lproj/Command.strings -text svneol=native#application/octet-stream
 sk.lproj/Connection.nib/keyedobjects.nib -text
-sk.lproj/Connection.strings -text svneol=native#application/octet-stream
+sk.lproj/Connection.strings -text
 sk.lproj/Donate.nib/keyedobjects.nib -text
 sk.lproj/Donate.strings -text svneol=native#application/octet-stream
 sk.lproj/Download.nib/keyedobjects.nib -text
