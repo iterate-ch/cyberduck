@@ -1056,7 +1056,7 @@ sv.lproj/Update.strings -text svneol=native#application/octet-stream
 sv.lproj/Validator.nib/keyedobjects.nib -text
 sv.lproj/Validator.strings -text svneol=native#application/octet-stream
 zh_CN.lproj/Bookmark.nib/keyedobjects.nib -text
-zh_CN.lproj/Bookmark.strings -text svneol=native#application/octet-stream
+zh_CN.lproj/Bookmark.strings -text
 zh_CN.lproj/Browser.nib/keyedobjects.nib -text
 zh_CN.lproj/Browser.strings -text svneol=native#application/octet-stream
 zh_CN.lproj/Certificate.nib/keyedobjects.nib -text
