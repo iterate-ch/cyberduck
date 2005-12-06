@@ -665,7 +665,7 @@ ja.lproj/Localizable.strings -text
 ja.lproj/Login.nib/keyedobjects.nib -text
 ja.lproj/Login.strings svneol=native#unset
 ja.lproj/Main.nib/keyedobjects.nib -text
-ja.lproj/Main.strings svneol=native#unset
+ja.lproj/Main.strings -text
 ja.lproj/Preferences.nib/keyedobjects.nib -text
 ja.lproj/Preferences.strings svneol=native#unset
 ja.lproj/Progress.nib/keyedobjects.nib -text
