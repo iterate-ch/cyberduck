@@ -953,7 +953,7 @@ ru.lproj/Update.strings -text svneol=native#application/octet-stream
 ru.lproj/Validator.nib/keyedobjects.nib -text
 ru.lproj/Validator.strings -text svneol=native#application/octet-stream
 sk.lproj/Bookmark.nib/keyedobjects.nib -text
-sk.lproj/Bookmark.strings -text svneol=native#application/octet-stream
+sk.lproj/Bookmark.strings -text
 sk.lproj/Browser.nib/keyedobjects.nib -text
 sk.lproj/Browser.strings -text svneol=native#application/octet-stream
 sk.lproj/Certificate.nib/keyedobjects.nib -text
