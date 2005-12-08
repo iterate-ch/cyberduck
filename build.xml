@@ -1,7 +1,6 @@
 <!--
  *  Simple Ant (http://jakarta.apache.org/ant) build script for Cyberduck
  *
- *  $Header$
  *  $Revision$
  *  $Date$
  *
@@ -128,11 +127,6 @@
 
 	<target name="scp">
 		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"
-		       todir="dkocher@icu.unizh.ch:./public_html/cyberduck/" 
-		       keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
-		       passphrase="">
-		</scp>
-		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.sig"
 		       todir="dkocher@icu.unizh.ch:./public_html/cyberduck/" 
 		       keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
 		       passphrase="">
