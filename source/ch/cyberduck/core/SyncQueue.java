@@ -27,7 +27,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Observer;
 
 /**
  * @version $Id$
@@ -56,14 +55,13 @@ public class SyncQueue extends Queue {
     protected void finish(boolean headless) {
         super.finish(headless);
         if (this.isComplete() && !this.isCanceled()) {
-            this.callObservers(new Message(Message.PROGRESS,
-                    NSBundle.localizedString("Synchronization complete", "Growl", "Growl Notification")));
-
+            this.getSession().message(
+                    NSBundle.localizedString("Synchronization complete", "Growl", "Growl Notification"));
             Growl.instance().notify(
                     NSBundle.localizedString("Synchronization complete", "Growl", "Growl Notification"),
                     this.getName());
         }
-        this.callObservers(new Message(Message.QUEUE_STOP));
+        this.queueStopped();
     }
 
     private void addLocalChilds(List childs, Path p) {

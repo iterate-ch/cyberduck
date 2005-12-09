@@ -18,40 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.QueueListener;
 
-import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSCell;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSMenuItem;
-import com.apple.cocoa.application.NSPasteboard;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.application.NSToolbar;
-import com.apple.cocoa.application.NSToolbarItem;
-import com.apple.cocoa.application.NSView;
-import com.apple.cocoa.application.NSWindow;
-import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSEnumerator;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSMutableRect;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSPoint;
-import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
-
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * @version $Id$
@@ -327,30 +302,28 @@ public class CDQueueController extends CDWindowController {
     }
 
     private void startItem(final Queue queue, final boolean resumeRequested) {
-        queue.addObserver(new Observer() {
-            public void update(final Observable o, final Object arg) {
-                Message msg = (Message) arg;
-                if (msg.getTitle().equals(Message.QUEUE_START)) {
-                    CDQueueController.this.invoke(new Runnable() {
-                        public void run() {
-                            toolbar.validateVisibleItems();
+        queue.addListener(new QueueListener() {
+            public void queueStarted() {
+                CDQueueController.this.invoke(new Runnable() {
+                    public void run() {
+                        toolbar.validateVisibleItems();
+                    }
+                });
+            }
+
+            public void queueStopped() {
+                CDQueueController.this.invoke(new Runnable() {
+                    public void run() {
+                        toolbar.validateVisibleItems();
+                        int row = queueTable.selectedRow();
+                        reloadQueueTable();
+                        queueTable.selectRow(row, false);
+                        if (Preferences.instance().getBoolean("queue.orderBackOnStop")) {
+                            window().close();
                         }
-                    });
-                }
-                if (msg.getTitle().equals(Message.QUEUE_STOP)) {
-                    CDQueueController.this.invoke(new Runnable() {
-                        public void run() {
-                            toolbar.validateVisibleItems();
-                            int row = queueTable.selectedRow();
-                            reloadQueueTable();
-                            queueTable.selectRow(row, false);
-                            if (Preferences.instance().getBoolean("queue.orderBackOnStop")) {
-                                window().close();
-                            }
-                        }
-                    });
-                    o.deleteObserver(this);
-                }
+                    }
+                });
+                queue.removeListener(this);
             }
         });
         if (Preferences.instance().getBoolean("queue.orderFrontOnStart")) {

@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
@@ -30,6 +29,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UploadQueue;
 import ch.cyberduck.core.Version;
 import ch.cyberduck.core.RendezvousListener;
+import ch.cyberduck.core.QueueListener;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.application.NSAlertPanel;
@@ -68,8 +68,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * @version $Id$
@@ -599,15 +597,16 @@ public class CDMainController extends CDController {
                         if (controller.isMounted()) {
                             Path workdir = controller.workdir();
                             final Queue q = new UploadQueue();
-                            q.addObserver(new Observer() {
-                                public void update(Observable observable, Object arg) {
-                                    Message msg = (Message) arg;
-                                    if (msg.getTitle().equals(Message.QUEUE_STOP)) {
-                                        if(controller.isMounted()) {
-                                            controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
-                                            controller.reloadData(true);
-                                        }
+                            q.addListener(new QueueListener() {
+                                public void queueStarted() {
+                                }
+
+                                public void queueStopped() {
+                                    if(controller.isMounted()) {
+                                        controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
+                                        controller.reloadData(true);
                                     }
+                                    q.removeListener(this);
                                 }
                             });
                             Session session = workdir.getSession().copy();

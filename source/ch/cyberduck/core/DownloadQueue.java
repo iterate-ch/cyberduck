@@ -48,13 +48,13 @@ public class DownloadQueue extends Queue {
     protected void finish(boolean headless) {
         super.finish(headless);
         if (this.isComplete() && !this.isCanceled()) {
-            this.callObservers(new Message(Message.PROGRESS,
-                    NSBundle.localizedString("Download complete", "Growl", "Growl Notification")));
+            this.getSession().message(
+                    NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
             Growl.instance().notify(
                     NSBundle.localizedString("Download complete", "Growl", "Growl Notification"),
                     this.getName());
         }
-        this.callObservers(new Message(Message.QUEUE_STOP));
+        this.queueStopped();
     }
 
     protected List getChilds(List childs, Path p) {

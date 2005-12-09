@@ -22,12 +22,7 @@ import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPMessageListener;
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Proxy;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.FTPSession;
 
 import com.apple.cocoa.foundation.NSBundle;
@@ -72,41 +67,53 @@ public class FTPSSession extends FTPSession {
 
     private AbstractX509TrustManager trustManager = new IgnoreX509TrustManager();
 
-    public synchronized void connect(String encoding) throws IOException, FTPException {
-        this.log(Message.PROGRESS, NSBundle.localizedString("Opening FTP-TLS connection to", "Status", "") + " " + host.getIp() + "...");
-        this.setConnected();
-        this.log(Message.TRANSCRIPT, "=====================================");
-        this.log(Message.TRANSCRIPT, new java.util.Date().toString());
-        this.log(Message.TRANSCRIPT, host.getIp());
-        this.FTP = new FTPSClient(host.getHostname(),
-                host.getPort(),
-                Preferences.instance().getInteger("connection.timeout"), //timeout
-                encoding, new FTPMessageListener() {
-            public void logCommand(String cmd) {
-                FTPSSession.this.log(Message.TRANSCRIPT, cmd);
-            }
+    public void connect(String encoding) throws IOException, FTPException {
+        try {
+            synchronized(this) {
+                this.setConnected();
+                this.message(NSBundle.localizedString("Opening FTP-TLS connection to", "Status", "") + " " + host.getIp() + "...");
+                this.log("=====================================");
+                this.log(new java.util.Date().toString());
+                this.log(host.getIp());
+                this.FTP = new FTPSClient(host.getHostname(),
+                        host.getPort(),
+                        Preferences.instance().getInteger("connection.timeout"), //timeout
+                        encoding, new FTPMessageListener() {
+                    public void logCommand(String cmd) {
+                        FTPSSession.this.log(cmd);
+                    }
 
-            public void logReply(String reply) {
-                FTPSSession.this.log(Message.TRANSCRIPT, reply);
+                    public void logReply(String reply) {
+                        FTPSSession.this.log(reply);
+                    }
+                },
+                        this.trustManager);
+                this.FTP.setStrictReturnCodes(true);
+                if (Proxy.isSOCKSProxyEnabled()) {
+                    log.info("Using SOCKS Proxy");
+                    FTPClient.initSOCKS(Proxy.getSOCKSProxyPort(), Proxy.getSOCKSProxyHost());
+                }
+                else {
+                    FTPClient.clearSOCKS();
+                }
+                this.FTP.setConnectMode(this.host.getFTPConnectMode());
+                this.connectionDidOpen();
+                this.message(NSBundle.localizedString("FTP connection opened", "Status", ""));
+                ((FTPSClient) this.FTP).auth();
+                this.login();
+                if (Preferences.instance().getBoolean("ftp.sendSystemCommand")) {
+                    this.host.setIdentification(this.FTP.system());
+                }
+                this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.host.getIdentification());
             }
-        },
-                this.trustManager);
-        this.FTP.setStrictReturnCodes(true);
-        if (Proxy.isSOCKSProxyEnabled()) {
-            log.info("Using SOCKS Proxy");
-            FTPClient.initSOCKS(Proxy.getSOCKSProxyPort(), Proxy.getSOCKSProxyHost());
         }
-        else {
-            FTPClient.clearSOCKS();
+        catch (FTPException e) {
+            this.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+            throw e;
         }
-        this.FTP.setConnectMode(this.host.getFTPConnectMode());
-        this.log(Message.PROGRESS, NSBundle.localizedString("FTP connection opened", "Status", ""));
-        ((FTPSClient) this.FTP).auth();
-        this.login();
-        if (Preferences.instance().getBoolean("ftp.sendSystemCommand")) {
-            this.host.setIdentification(this.FTP.system());
+        catch (IOException e) {
+            this.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+            throw e;
         }
-        this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.host.getIdentification());
     }
 }
-	

@@ -19,36 +19,20 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.DownloadQueue;
-import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.QueueListener;
+import ch.cyberduck.core.ProgressListener;
 
-import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSColor;
-import com.apple.cocoa.application.NSMutableParagraphStyle;
-import com.apple.cocoa.application.NSParagraphStyle;
-import com.apple.cocoa.application.NSProgressIndicator;
-import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.application.NSView;
-import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSRunLoop;
-import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSTimer;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
-
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * @version $Id$
  */
-public class CDProgressController extends CDController implements Observer {
+public class CDProgressController extends CDController {
     private static Logger log = Logger.getLogger(CDProgressController.class);
 
     private String statusText = "";
@@ -79,46 +63,11 @@ public class CDProgressController extends CDController implements Observer {
     }
 
     public void init() {
-        this.queue.addObserver(this);
-        this.queue.getSession().addObserver(this);
-    }
+        this.queue.addListener(new QueueListener() {
+            ProgressListener progress;
 
-    public void awakeFromNib() {
-        super.awakeFromNib();
-
-        this.filenameField.setAttributedStringValue(new NSAttributedString(this.queue.getName(),
-                TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
-        this.updateProgressfield();
-    }
-
-    public void update(final Observable o, final Object arg) {
-        if (arg instanceof Message) {
-            final Message msg = (Message) arg;
-            if (msg.getTitle().equals(Message.PROGRESS)) {
-                statusText = (String) msg.getContent();
-                this.invoke(new Runnable() {
-                    public void run() {
-                        updateProgressfield();
-                    }
-                });
-            }
-            else if (msg.getTitle().equals(Message.ERROR)) {
-                this.invoke(new Runnable() {
-                    public void run() {
-                        int l = errorText.toString().split("\n").length;
-                        if (l == 10) {
-                            errorText.append("\n- (...)");
-                        }
-                        if (l < 10) {
-                            errorText.append("\n" + msg.getContent());
-                        }
-                        alertIcon.setHidden(false);
-                    }
-                });
-            }
-            else if (msg.getTitle().equals(Message.QUEUE_START)) {
-                log.debug("------------- QUEUE_START");
-                this.invoke(new Runnable() {
+            public void queueStarted() {
+                invoke(new Runnable() {
                     public void run() {
                         progressBar.setHidden(false);
                         progressBar.setIndeterminate(true);
@@ -135,10 +84,35 @@ public class CDProgressController extends CDController implements Observer {
                                 NSRunLoop.DefaultRunLoopMode);
                     }
                 });
+                queue.getSession().addProgressListener(new ProgressListener() {
+                    public void message(final String message) {
+                        statusText = message;
+                        invoke(new Runnable() {
+                            public void run() {
+                                updateProgressfield();
+                            }
+                        });
+                    }
+
+                    public void error(final String exception) {
+                        invoke(new Runnable() {
+                            public void run() {
+                                int l = errorText.toString().split("\n").length;
+                                if (l == 10) {
+                                    errorText.append("\n- (...)");
+                                }
+                                if (l < 10) {
+                                    errorText.append("\n" + exception);
+                                }
+                                alertIcon.setHidden(false);
+                            }
+                        });
+                    }
+                });
             }
-            else if (msg.getTitle().equals(Message.QUEUE_STOP)) {
-                log.debug("------------- QUEUE_STOP");
-                this.invoke(new Runnable() {
+
+            public void queueStopped() {
+                invoke(new Runnable() {
                     public void run() {
                         progressTimer.invalidate();
                         updateProgressfield();
@@ -158,10 +132,18 @@ public class CDProgressController extends CDController implements Observer {
                         }
                     }
                 });
-                this.queue.deleteObserver(this);
-                this.queue.getSession().deleteObserver(this);
+                queue.removeListener(this);
+                queue.getSession().removeProgressListener(progress);
             }
-        }
+        });
+    }
+
+    public void awakeFromNib() {
+        super.awakeFromNib();
+
+        this.filenameField.setAttributedStringValue(new NSAttributedString(this.queue.getName(),
+                TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
+        this.updateProgressfield();
     }
 
     public void update(NSTimer t) {

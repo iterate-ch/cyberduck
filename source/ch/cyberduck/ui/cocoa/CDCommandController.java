@@ -18,8 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Message;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSButton;
@@ -41,7 +41,7 @@ import java.util.Observer;
 /**
  * @version $Id$
  */
-public class CDCommandController extends CDWindowController implements Observer {
+public class CDCommandController extends CDWindowController implements TranscriptListener {
 
     private static NSMutableArray instances = new NSMutableArray();
 
@@ -82,14 +82,14 @@ public class CDCommandController extends CDWindowController implements Observer 
     public CDCommandController(Session session) {
         instances.addObject(this);
         this.session = session;
-        this.session.addObserver(this);
+        this.session.addTranscriptListener(this);
         if (!NSApplication.loadNibNamed("Command", this)) {
             log.fatal("Couldn't load Command.nib");
         }
     }
 
     public void windowWillClose(NSNotification notification) {
-        session.deleteObserver(this);
+        session.removeTranscriptListener(this);
         instances.removeObject(this);
     }
 
@@ -100,18 +100,13 @@ public class CDCommandController extends CDWindowController implements Observer 
         }
     }
 
-    public void update(final Observable o, final Object arg) {
-        if (arg instanceof Message) {
-            final Message msg = (Message) arg;
-            if (msg.getTitle().equals(Message.TRANSCRIPT)) {
-                this.invoke(new Runnable() {
-                    public void run() {
-                        responseField.textStorage().replaceCharactersInRange(new NSRange(responseField.textStorage().length(), 0),
-                                new NSAttributedString(msg.getContent() + "\n", FIXED_WITH_FONT_ATTRIBUTES));
-                    }
-                });
+    public void log(final String message) {
+        this.invoke(new Runnable() {
+            public void run() {
+                responseField.textStorage().replaceCharactersInRange(new NSRange(responseField.textStorage().length(), 0),
+                        new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
             }
-        }
+        });
     }
 
     public void closeButtonClicked(NSButton sender) {

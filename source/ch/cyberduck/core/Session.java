@@ -27,14 +27,17 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Vector;
+import java.util.Iterator;
 
 /**
  * @version $Id$
  */
-public abstract class Session extends Observable {
+public abstract class Session
+        implements ConnectionListener, ProgressListener, TranscriptListener {
+
     private static Logger log = Logger.getLogger(Session.class);
 
     public static final String SFTP = "sftp";
@@ -79,11 +82,6 @@ public abstract class Session extends Observable {
         this.host = h;
     }
 
-    public void callObservers(Object arg) {
-        this.setChanged();
-        this.notifyObservers(arg);
-    }
-
     /**
      * Assert that the connection to the remote host is still alive. Open connection if needed.
      *
@@ -114,7 +112,7 @@ public abstract class Session extends Observable {
      */
     public Path mount() {
         synchronized(this) {
-            this.log(Message.PROGRESS, NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname() + "...");
+            this.message(NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname() + "...");
             try {
                 this.check();
                 Path home;
@@ -134,7 +132,6 @@ public abstract class Session extends Observable {
                 return home;
             }
             catch (IOException e) {
-                this.log(Message.ERROR, "IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
                         host.getHostname());
                 this.close();
@@ -166,7 +163,7 @@ public abstract class Session extends Observable {
      */
     public abstract Path workdir();
 
-    public abstract void noop() throws IOException;
+    protected abstract void noop() throws IOException;
 
     public abstract void interrupt();
 
@@ -188,7 +185,7 @@ public abstract class Session extends Observable {
     public void setConnected() throws IOException {
         log.debug("setConnected");
         SessionPool.instance().add(this, Preferences.instance().getBoolean("connection.pool.force"));
-        this.callObservers(new Message(Message.OPEN, null));
+        this.connectionWillOpen();
         this.connected = true;
     }
 
@@ -205,16 +202,109 @@ public abstract class Session extends Observable {
     public void setClosed() {
         log.debug("setClosed");
         this.connected = false;
-        this.callObservers(new Message(Message.CLOSE, null));
         if (Preferences.instance().getBoolean("connection.keepalive") && this.keepAliveTimer != null) {
             this.keepAliveTimer.cancel();
         }
         this.release();
-        log(Message.PROGRESS, NSBundle.localizedString("Disconnected", "Status", ""));
+        this.message(NSBundle.localizedString("Disconnected", "Status", ""));
+        this.connectionDidClose();
     }
 
     private void release() {
         SessionPool.instance().release(this);
+    }
+
+    private Vector connectionListners = new Vector();
+
+    public void addConnectionListener(ConnectionListener listener) {
+        connectionListners.add(listener);
+    }
+
+    public void removeConnectionListener(ConnectionListener listener) {
+        connectionListners.remove(listener);
+    }
+
+    public void connectionWillOpen() {
+        ConnectionListener[] l = (ConnectionListener[])connectionListners.toArray(new ConnectionListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].connectionWillOpen();
+        }
+    }
+
+    public void connectionDidOpen() {
+        ConnectionListener[] l = (ConnectionListener[])connectionListners.toArray(new ConnectionListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].connectionDidOpen();
+        }
+    }
+
+    public void connectionWillClose() {
+        ConnectionListener[] l = (ConnectionListener[])connectionListners.toArray(new ConnectionListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].connectionWillClose();
+        }
+    }
+
+    public void connectionDidClose() {
+        ConnectionListener[] l = (ConnectionListener[])connectionListners.toArray(new ConnectionListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].connectionDidClose();
+        }
+    }
+
+    public void activityStarted() {
+        ConnectionListener[] l = (ConnectionListener[])connectionListners.toArray(new ConnectionListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].activityStarted();
+        }
+    }
+
+    public void activityStopped() {
+        ConnectionListener[] l = (ConnectionListener[])connectionListners.toArray(new ConnectionListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].activityStopped();
+        }
+    }
+
+    private Vector transcriptListeners = new Vector();
+
+    public void addTranscriptListener(TranscriptListener listener) {
+        transcriptListeners.add(listener);
+    }
+
+    public void removeTranscriptListener(TranscriptListener listener) {
+        transcriptListeners.remove(listener);
+    }
+
+    public void log(final String message) {
+        TranscriptListener[] l = (TranscriptListener[])transcriptListeners.toArray(new TranscriptListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].log(message);
+        }
+    }
+
+    private Vector progressListeners = new Vector();
+
+    public void addProgressListener(ProgressListener listener) {
+        progressListeners.add(listener);
+    }
+
+    public void removeProgressListener(ProgressListener listener) {
+        progressListeners.remove(listener);
+    }
+
+    public void error(final String message) {
+        ProgressListener[] l = (ProgressListener[])progressListeners.toArray(new ProgressListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].error(message);
+        }
+    }
+
+    public void message(final String message) {
+        ProgressListener[] l = (ProgressListener[])progressListeners.toArray(new ProgressListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].message(message);
+        }
     }
 
     private class KeepAliveTask extends TimerTask {
@@ -281,9 +371,5 @@ public abstract class Session extends Observable {
             this.cache = new Cache();
         }
         return this.cache;
-    }
-
-    public void log(String title, String message) {
-        this.callObservers(new Message(title, message));
     }
 }

@@ -28,9 +28,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.List;
 
 /**
  * @version $Id$
@@ -157,15 +154,16 @@ public abstract class CDBrowserTableDataSource {
                 }
                 if (q.numberOfRoots() > 0) {
                     CDQueueController.instance().startItem(q);
-                    q.addObserver(new Observer() {
-                        public void update(Observable observable, Object arg) {
-                            Message msg = (Message) arg;
-                            if (msg.getTitle().equals(Message.QUEUE_STOP)) {
-                                if (controller.isMounted()) {
-                                    controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
-                                    controller.reloadData(true);
-                                }
+                    q.addListener(new QueueListener() {
+                        public void queueStarted() {
+                        }
+
+                        public void queueStopped() {
+                            if (controller.isMounted()) {
+                                controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
+                                controller.reloadData(true);
                             }
+                            q.removeListener(this);
                         }
                     });
                 }

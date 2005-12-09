@@ -18,106 +18,22 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DownloadQueue;
-import ch.cyberduck.core.Filter;
-import ch.cyberduck.core.HiddenFilesFilter;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Message;
-import ch.cyberduck.core.NullFilter;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.Status;
-import ch.cyberduck.core.SyncQueue;
-import ch.cyberduck.core.UploadQueue;
+import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
-import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSBrowser;
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSCell;
-import com.apple.cocoa.application.NSColor;
-import com.apple.cocoa.application.NSComboBox;
-import com.apple.cocoa.application.NSControl;
-import com.apple.cocoa.application.NSDrawer;
-import com.apple.cocoa.application.NSEvent;
-import com.apple.cocoa.application.NSFont;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSImageCell;
-import com.apple.cocoa.application.NSImageView;
-import com.apple.cocoa.application.NSMenu;
-import com.apple.cocoa.application.NSMenuItem;
-import com.apple.cocoa.application.NSOpenPanel;
-import com.apple.cocoa.application.NSOutlineView;
-import com.apple.cocoa.application.NSPanel;
-import com.apple.cocoa.application.NSPasteboard;
-import com.apple.cocoa.application.NSPopUpButton;
-import com.apple.cocoa.application.NSPrintOperation;
-import com.apple.cocoa.application.NSProgressIndicator;
-import com.apple.cocoa.application.NSSavePanel;
-import com.apple.cocoa.application.NSSegmentedCell;
-import com.apple.cocoa.application.NSSegmentedControl;
-import com.apple.cocoa.application.NSTabView;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.application.NSText;
-import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.application.NSTextFieldCell;
-import com.apple.cocoa.application.NSTextView;
-import com.apple.cocoa.application.NSToolbar;
-import com.apple.cocoa.application.NSToolbarItem;
-import com.apple.cocoa.application.NSView;
-import com.apple.cocoa.application.NSWindow;
-import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSData;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSEnumerator;
-import com.apple.cocoa.foundation.NSGregorianDateFormatter;
-import com.apple.cocoa.foundation.NSIndexSet;
-import com.apple.cocoa.foundation.NSIndexSpecifier;
-import com.apple.cocoa.foundation.NSKeyValue;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSMutableData;
-import com.apple.cocoa.foundation.NSMutableRect;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSNotificationCenter;
-import com.apple.cocoa.foundation.NSObject;
-import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSPoint;
-import com.apple.cocoa.foundation.NSPropertyListSerialization;
-import com.apple.cocoa.foundation.NSRect;
-import com.apple.cocoa.foundation.NSScriptClassDescription;
-import com.apple.cocoa.foundation.NSScriptCommand;
-import com.apple.cocoa.foundation.NSScriptObjectSpecifier;
-import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSSize;
-import com.apple.cocoa.foundation.NSUserDefaults;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * @version $Id$
  */
-public class CDBrowserController extends CDWindowController implements Observer {
+public class CDBrowserController extends CDWindowController {
     private static Logger log = Logger.getLogger(CDBrowserController.class);
 
     private static final File HISTORY_FOLDER = new File(
@@ -705,61 +621,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
             }
             case OUTLINE_VIEW: {
                 this.browserOutlineView.deselectAll(null);
-            }
-        }
-    }
-
-    public void update(final Observable o, final Object arg) {
-        if (!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
-        {
-            this.invoke(new Runnable() {
-                public void run() {
-                    CDBrowserController.this.update(o, arg);
-                }
-            });
-            return;
-        }
-        if (arg instanceof Message) {
-            final Message msg = (Message) arg;
-            if (msg.getTitle().equals(Message.ERROR)) {
-                this.progressIndicator.stopAnimation(this);
-                this.statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
-                this.statusIcon.setNeedsDisplay(true);
-                this.statusLabel.setAttributedStringValue(new NSAttributedString((String) msg.getContent(),
-                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                this.statusLabel.setNeedsDisplay(true);
-                this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
-                        (String) msg.getContent(), // message
-                        NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                        null, //alternative button
-                        null) //other button
-                );
-            }
-            else if (msg.getTitle().equals(Message.PROGRESS)) {
-                this.statusLabel.setAttributedStringValue(new NSAttributedString((String) msg.getContent(),
-                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                this.statusLabel.display();
-            }
-            else if (msg.getTitle().equals(Message.OPEN)) {
-                progressIndicator.startAnimation(this);
-                statusIcon.setImage(null);
-                statusIcon.setNeedsDisplay(true);
-            }
-            else if (msg.getTitle().equals(Message.CLOSE)) {
-                progressIndicator.stopAnimation(this);
-                statusIcon.setImage(null);
-                statusIcon.setNeedsDisplay(true);
-            }
-            else if (msg.getTitle().equals(Message.START)) {
-                statusIcon.setImage(null);
-                statusIcon.setNeedsDisplay(true);
-                progressIndicator.startAnimation(this);
-            }
-            else if (msg.getTitle().equals(Message.STOP)) {
-                progressIndicator.stopAnimation(this);
-                statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "Status", ""),
-                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                this.statusLabel.display();
             }
         }
     }
@@ -2094,15 +1955,16 @@ public class CDBrowserController extends CDWindowController implements Observer 
             if (sheet.filenames().count() > 0) {
                 selection.setLocal(new Local((String) sheet.filenames().lastObject()));
                 final Queue q = new SyncQueue();
-                q.addObserver(new Observer() {
-                    public void update(Observable observable, Object arg) {
-                        Message msg = (Message) arg;
-                        if (msg.getTitle().equals(Message.QUEUE_STOP)) {
-                            if (isMounted()) {
-                                workdir().getSession().cache().invalidate(q.getRoot().getParent());
-                                reloadData(true);
-                            }
+                q.addListener(new QueueListener() {
+                    public void queueStarted() {
+                    }
+
+                    public void queueStopped() {
+                        if (isMounted()) {
+                            workdir().getSession().cache().invalidate(q.getRoot().getParent());
+                            reloadData(true);
                         }
+                        q.removeListener(this);
                     }
                 });
                 q.addRoot(selection);
@@ -2148,15 +2010,16 @@ public class CDBrowserController extends CDWindowController implements Observer 
             NSArray selected = sheet.filenames();
             java.util.Enumeration iterator = selected.objectEnumerator();
             final Queue q = new UploadQueue();
-            q.addObserver(new Observer() {
-                public void update(Observable observable, Object arg) {
-                    Message msg = (Message) arg;
-                    if (msg.getTitle().equals(Message.QUEUE_STOP)) {
-                        if (isMounted()) {
-                            workdir().getSession().cache().invalidate(q.getRoot().getParent());
-                            reloadData(true);
-                        }
+            q.addListener(new QueueListener() {
+                public void queueStarted() {
+                }
+
+                public void queueStopped() {
+                    if (isMounted()) {
+                        workdir().getSession().cache().invalidate(q.getRoot().getParent());
+                        reloadData(true);
                     }
+                    q.removeListener(this);
                 }
             });
             Session session = workdir.getSession().copy();
@@ -2277,15 +2140,16 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 }
                 if (q.numberOfRoots() > 0) {
                     CDQueueController.instance().startItem(q);
-                    q.addObserver(new Observer() {
-                        public void update(Observable observable, Object arg) {
-                            Message msg = (Message) arg;
-                            if (msg.getTitle().equals(Message.QUEUE_STOP)) {
-                                if (isMounted()) {
-                                    workdir().getSession().cache().invalidate(q.getRoot().getParent());
-                                    reloadData(true);
-                                }
+                    q.addListener(new QueueListener() {
+                        public void queueStarted() {
+                        }
+
+                        public void queueStopped() {
+                            if (isMounted()) {
+                                workdir().getSession().cache().invalidate(q.getRoot().getParent());
+                                reloadData(true);
                             }
+                            q.removeListener(this);
                         }
                     });
                 }
@@ -2365,12 +2229,11 @@ public class CDBrowserController extends CDWindowController implements Observer 
             = new NSDictionary(new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)},
             new Object[]{NSAttributedString.FontAttributeName});
 
-    private Observer transcript;
+    private ConnectionListener listener = null;
 
     private Session init(Host host) {
         if (this.hasSession()) {
-            this.session.deleteObserver(this);
-            this.session.deleteObserver(this.transcript);
+            this.session.removeConnectionListener(listener);
         }
         this.session = SessionFactory.createSession(host);
         if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
@@ -2383,17 +2246,6 @@ public class CDBrowserController extends CDWindowController implements Observer 
         }
         host.setLoginController(new CDLoginController(this));
         this.setWorkdir(null);
-        session.addObserver(transcript = new Observer() {
-            public void update(final Observable o, final Object arg) {
-                if (arg instanceof Message) {
-                    final Message msg = (Message) arg;
-                    if (msg.getTitle().equals(Message.TRANSCRIPT)) {
-                        logView.textStorage().appendAttributedString(
-                                new NSAttributedString(msg.getContent() + "\n", FIXED_WITH_FONT_ATTRIBUTES));
-                    }
-                }
-            }
-        });
         this.logView.textStorage().appendAttributedString(
                 new NSAttributedString(
                         "Cyberduck " + NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString"),
@@ -2404,7 +2256,135 @@ public class CDBrowserController extends CDWindowController implements Observer 
         if (this.getRepresentedFile().exists()) {
             this.window().setRepresentedFilename(this.getRepresentedFile().getAbsolutePath());
         }
-        session.addObserver(this);
+        session.addConnectionListener(listener = new ConnectionListener() {
+            TranscriptListener transcript;
+            ProgressListener progress;
+
+            public void connectionWillOpen() {
+                session.addTranscriptListener(transcript = new TranscriptListener() {
+                    public void log(final String message) {
+                        logView.textStorage().appendAttributedString(
+                                new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
+                    }
+                });
+                session.addProgressListener(progress = new ProgressListener() {
+                    public void message(final String msg) {
+                        if (!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
+                        {
+                            invoke(new Runnable() {
+                                public void run() {
+                                    message(msg);
+                                }
+                            });
+                            return;
+                        }
+                        statusLabel.setAttributedStringValue(new NSAttributedString(msg,
+                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                        statusLabel.display();
+                    }
+
+
+                    public void error(final String msg) {
+                        if (!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
+                        {
+                            invoke(new Runnable() {
+                                public void run() {
+                                    error(msg);
+                                }
+                            });
+                            return;
+                        }
+                        progressIndicator.stopAnimation(this);
+                        statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
+                        statusIcon.setNeedsDisplay(true);
+                        statusLabel.setAttributedStringValue(new NSAttributedString(msg,
+                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                        statusLabel.setNeedsDisplay(true);
+                        beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                                msg, // msg
+                                NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+                                null, //alternative button
+                                null) //other button
+                        );
+                    }
+                });
+                progressIndicator.startAnimation(this);
+                statusIcon.setImage(null);
+                statusIcon.setNeedsDisplay(true);
+            }
+
+            public void connectionDidOpen() {
+                if (!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
+                {
+                    invoke(new Runnable() {
+                        public void run() {
+                            connectionDidOpen();
+                        }
+                    });
+                    return;
+                }
+            }
+
+            public void connectionWillClose() {
+                if (!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
+                {
+                    invoke(new Runnable() {
+                        public void run() {
+                            connectionWillClose();
+                        }
+                    });
+                    return;
+                }
+            }
+
+            public void connectionDidClose() {
+                if (!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
+                {
+                    invoke(new Runnable() {
+                        public void run() {
+                            connectionDidClose();
+                        }
+                    });
+                    return;
+                }
+                session.removeTranscriptListener(transcript);
+                session.removeProgressListener(progress);
+                progressIndicator.stopAnimation(this);
+                statusIcon.setImage(null);
+                statusIcon.setNeedsDisplay(true);
+            }
+
+            public void activityStarted() {
+                if (!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
+                {
+                    invoke(new Runnable() {
+                        public void run() {
+                            activityStarted();
+                        }
+                    });
+                    return;
+                }
+                statusIcon.setImage(null);
+                statusIcon.setNeedsDisplay(true);
+                progressIndicator.startAnimation(this);
+            }
+
+            public void activityStopped() {
+                if (!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
+                {
+                    invoke(new Runnable() {
+                        public void run() {
+                            activityStopped();
+                        }
+                    });
+                    return;
+                }
+                progressIndicator.stopAnimation(this);
+                statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "Status", ""),
+                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                statusLabel.display();
+            }
+        });
         this.getFocus();
         return session;
     }
@@ -2445,23 +2425,23 @@ public class CDBrowserController extends CDWindowController implements Observer 
                 new Thread(session.toString()) {
                     public void run() {
                         synchronized(lock){
-                            Observer observer;
-                            session.addObserver(observer = new Observer() {
-                                public void update(Observable o, Object arg) {
-                                    if (arg instanceof Message) {
-                                        final Message msg = (Message) arg;
-                                        if (msg.getTitle().equals(Message.ERROR)) {
-                                            File bookmark = getRepresentedFile();
-                                            if (bookmark.exists()) {
-                                                bookmark.delete();
-                                            }
-                                            window().setRepresentedFilename(""); //can't send null
-                                        }
+                            session.addConnectionListener(new ConnectionListenerAdapter() {
+                                public void error(final String message) {
+                                    File bookmark = getRepresentedFile();
+                                    if (bookmark.exists()) {
+                                        bookmark.delete();
                                     }
+                                    window().setRepresentedFilename(""); //can't send null
+                                }
+                                public void connectionDidOpen() {
+                                    session.removeConnectionListener(this);
+                                }
+
+                                public void connectionDidClose() {
+                                    session.removeConnectionListener(this);
                                 }
                             });
                             setWorkdir(session.mount());
-                            session.deleteObserver(observer);
                         }
                     }
                 }.start();
@@ -2621,7 +2601,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
     public void windowWillClose(NSNotification notification) {
         NSNotificationCenter.defaultCenter().removeObserver(this);
         if (this.hasSession()) {
-            this.session.deleteObserver(this);
+            this.session.removeConnectionListener(this.listener);
         }
         instances.removeObject(this);
     }
@@ -2637,7 +2617,7 @@ public class CDBrowserController extends CDWindowController implements Observer 
                         NSArray elements = (NSArray) o;
                         if(elements.count() == 1) {
                             item.setTitle(NSBundle.localizedString("Paste", "Menu item") + " \""
-                                    + (String) elements.objectAtIndex(0) + "\"");
+                                    + elements.objectAtIndex(0) + "\"");
                         }
                         else {
                             item.setTitle(NSBundle.localizedString("Paste", "Menu item") + " " +

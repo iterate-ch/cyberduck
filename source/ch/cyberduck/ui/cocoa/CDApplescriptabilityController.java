@@ -56,7 +56,12 @@ public class CDApplescriptabilityController extends NSScriptCommand {
                 try {
                     p.cwdir();
                 }
+                catch (java.net.ConnectException e) {
+                    log.error(e.getMessage());
+                    return null;
+                }
                 catch (IOException e) {
+                    log.error(e.getMessage());
                     Queue q = new DownloadQueue();
                     q.addRoot(p);
                     CDQueueController.instance().startItem(q);

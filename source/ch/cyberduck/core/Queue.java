@@ -30,13 +30,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.Vector;
 
 /**
  * @version $Id$
  */
-public abstract class Queue extends Observable {
+public abstract class Queue implements QueueListener {
     protected static Logger log = Logger.getLogger(Queue.class);
 
     //	private Worker worker;
@@ -47,7 +46,7 @@ public abstract class Queue extends Observable {
     private double current = 0;
     private double speed;
 
-    private Timer progress;
+    private Timer progressTimer;
 
     private boolean running;
     private boolean canceled;
@@ -57,11 +56,43 @@ public abstract class Queue extends Observable {
      * using the <code>addRoot</code> method.
      */
     public Queue() {
-        //
+        ;
     }
 
     public Queue(Path root) {
         this.roots.add(root);
+    }
+
+    private Vector queueListeners = new Vector();
+
+    /**
+     *
+     * @param listener
+     */
+    public void addListener(QueueListener listener) {
+        queueListeners.add(listener);
+    }
+
+    /**
+     *
+     * @param listener
+     */
+    public void removeListener(QueueListener listener) {
+        queueListeners.remove(listener);
+    }
+
+    public void queueStarted() {
+        QueueListener[] l = (QueueListener[])queueListeners.toArray(new QueueListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].queueStarted();
+        }
+    }
+
+    public void queueStopped() {
+        QueueListener[] l = (QueueListener[])queueListeners.toArray(new QueueListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].queueStopped();
+        }
     }
 
     public static final int KIND_DOWNLOAD = 0;
@@ -157,17 +188,6 @@ public abstract class Queue extends Observable {
         return name;
     }
 
-    /**
-     * Notify all observers
-     *
-     * @param arg The message to send to the observers
-     * @see ch.cyberduck.core.Message
-     */
-    public void callObservers(Object arg) {
-        this.setChanged();
-        this.notifyObservers(arg);
-    }
-
     public List getChilds() {
         List childs = new ArrayList();
         for (Iterator rootIter = this.getRoots().iterator(); rootIter.hasNext() && !this.isCanceled();) {
@@ -208,22 +228,20 @@ public abstract class Queue extends Observable {
         }
         catch (IOException e) {
             this.canceled = true;
-            this.callObservers(new Message(Message.ERROR, e.getMessage()));
         }
         finally {
             this.finish(headless);
         }
     }
 
-    private Observer transcript = null;
-
     private boolean init(boolean resumeRequested, boolean headless)
             throws IOException {
+
         this.canceled = false;
         this.running = true;
         this.jobs = null;
         if (!headless) {
-            this.progress = new Timer(500,
+            this.progressTimer = new Timer(500,
                     new java.awt.event.ActionListener() {
                         int i = 0;
                         double current;
@@ -251,20 +269,10 @@ public abstract class Queue extends Observable {
 
                         }
                     });
-            this.progress.start();
+            this.progressTimer.start();
         }
-        this.callObservers(new Message(Message.QUEUE_START));
 
-        this.getSession().addObserver(this.transcript = new Observer() {
-            public void update(final Observable o, final Object arg) {
-                if (arg instanceof Message) {
-                    final Message msg = (Message) arg;
-                    if (msg.getTitle().equals(Message.TRANSCRIPT)) {
-                        log.info(msg.getContent());
-                    }
-                }
-            }
-        });
+        this.queueStarted();
 
         this.getSession().check();
 
@@ -288,10 +296,9 @@ public abstract class Queue extends Observable {
     protected void finish(boolean headless) {
         this.running = false;
         if (!headless) {
-            this.progress.stop();
+            this.progressTimer.stop();
             this.getRoot().getSession().close();
         }
-        this.getSession().deleteObserver(this.transcript);
     }
 
     public void cancel() {

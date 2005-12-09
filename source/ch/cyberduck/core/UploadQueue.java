@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.ui.cocoa.growl.Growl;
-import ch.cyberduck.ui.cocoa.CDBrowserController;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableDictionary;
@@ -27,7 +26,6 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observer;
 
 /**
  * @version $Id$
@@ -51,13 +49,13 @@ public class UploadQueue extends Queue {
     protected void finish(boolean headless) {
         super.finish(headless);
         if (this.isComplete() && !this.isCanceled()) {
-            this.callObservers(new Message(Message.PROGRESS,
-                    NSBundle.localizedString("Upload complete", "Growl", "Growl Notification")));
+            this.getSession().message(
+                    NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"));
             Growl.instance().notify(
                     NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"),
                     this.getName());
         }
-        this.callObservers(new Message(Message.QUEUE_STOP));
+        this.queueStopped();
     }
 
     protected List getChilds(List childs, Path p) {

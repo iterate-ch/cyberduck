@@ -18,14 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDate;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSFormatter;
-import com.apple.cocoa.foundation.NSGregorianDate;
-import com.apple.cocoa.foundation.NSGregorianDateFormatter;
-import com.apple.cocoa.foundation.NSMutableDictionary;
-import com.apple.cocoa.foundation.NSUserDefaults;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
