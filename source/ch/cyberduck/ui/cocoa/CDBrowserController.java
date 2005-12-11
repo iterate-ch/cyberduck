@@ -2413,6 +2413,7 @@ public class CDBrowserController extends CDWindowController {
                     if (host.hasReasonableDefaultPath()) {
                         Path home = PathFactory.createPath(session, host.getDefaultPath());
                         home.attributes.setType(Path.DIRECTORY_TYPE);
+								home.invalidate();
                         this.setWorkdir(home);
                         return session;
                     }
