@@ -5,6 +5,8 @@ import com.apple.cocoa.foundation.NSRunLoop;
 import com.apple.cocoa.foundation.NSSelector;
 import com.apple.cocoa.foundation.NSTimer;
 
+import org.apache.log4j.Logger;
+
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -27,6 +29,7 @@ import com.apple.cocoa.foundation.NSTimer;
  * @version $Id$
  */
 public abstract class CDController extends NSObject {
+    private static Logger log = Logger.getLogger(CDController.class);
 
     private NSRunLoop mainRunLoop;
 
@@ -46,5 +49,10 @@ public abstract class CDController extends NSObject {
         Object info = timer.userInfo();
         if (info instanceof Runnable)
             ((Runnable) info).run();
+    }
+
+    protected void finalize() throws java.lang.Throwable {
+        log.debug("finalize:"+this.toString());
+        super.finalize();
     }
 }

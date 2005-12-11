@@ -1720,7 +1720,6 @@ public class CDBrowserController extends CDWindowController {
         }
         else {
             path.rename(p.getAbsolute());
-            this.reloadData(true);
         }
     }
 
@@ -2118,6 +2117,8 @@ public class CDBrowserController extends CDWindowController {
                         Path item = PathFactory.createPath(workdir().getSession(), ((Path) iter.next()).getAbsolute());
                         this.renamePath(item, workdir.getAbsolute(), item.getName());
                     }
+                    workdir.invalidate();
+                    this.reloadData(true);
                 }
                 pboard.setPropertyListForType(null, "QueuePBoardType");
             }

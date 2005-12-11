@@ -50,11 +50,6 @@ public abstract class Path {
 
     public static final String DELIMITER = "/";
 
-    protected void finalize() throws Throwable {
-        log.debug("finalize > " + this.toString());
-        super.finalize();
-    }
-
     /**
      * Deep copies the current path with its attributes but without the status information
      *
@@ -468,5 +463,10 @@ public abstract class Path {
 
     public String toString() {
         return this.getAbsolute();
+    }
+
+    protected void finalize() throws java.lang.Throwable {
+        log.debug("finalize:"+this.toString());
+        super.finalize();
     }
 }

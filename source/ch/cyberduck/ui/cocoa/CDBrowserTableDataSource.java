@@ -70,6 +70,7 @@ public abstract class CDBrowserTableDataSource {
         if (identifier.equals(FILENAME_COLUMN)) {
             if (!item.getName().equals(value)) {
                 controller.renamePath(item, item.getParent().getAbsolute(), value.toString());
+                item.getParent().invalidate();
             }
         }
     }
@@ -182,6 +183,8 @@ public abstract class CDBrowserTableDataSource {
                         controller.renamePath(item, destination.getAbsolute(), item.getName());
                     }
                 }
+                destination.invalidate();
+                controller.reloadData(true);
                 return true;
             }
         }

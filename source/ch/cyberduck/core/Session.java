@@ -372,4 +372,9 @@ public abstract class Session
         }
         return this.cache;
     }
+
+    protected void finalize() throws java.lang.Throwable {
+        log.debug("finalize:"+super.toString());
+        super.finalize();
+    }
 }

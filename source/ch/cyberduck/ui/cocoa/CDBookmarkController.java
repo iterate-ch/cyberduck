@@ -44,7 +44,6 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class CDBookmarkController extends CDWindowController {
-
     private static Logger log = Logger.getLogger(CDBookmarkController.class);
 
     private static NSMutableArray instances = new NSMutableArray();

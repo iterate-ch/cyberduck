@@ -455,4 +455,9 @@ public class Host {
         }
         return this.toString().equals(other.toString());
     }
+
+    protected void finalize() throws java.lang.Throwable {
+        log.debug("finalize:"+super.toString());
+        super.finalize();
+    }
 }

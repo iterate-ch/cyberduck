@@ -202,7 +202,7 @@ public class FTPPath extends Path {
                 session.FTP.rename(this.getAbsolute(), filename);
                 this.getParent().invalidate();
                 this.setPath(filename);
-                this.getParent().invalidate();
+                //this.getParent().invalidate();
                 session.activityStopped();
             }
             catch (FTPException e) {
