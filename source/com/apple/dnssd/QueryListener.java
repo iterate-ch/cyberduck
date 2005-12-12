@@ -32,41 +32,35 @@ First checked in.
  */
 
 
-package	com.apple.dnssd;
+package com.apple.dnssd;
 
 
-/**	A listener that receives results from {@link DNSSD#queryRecord}. */
+/**
+ * A listener that receives results from {@link DNSSD#queryRecord}.
+ */
 
-public interface QueryListener extends BaseListener
-{
-	/** Called when a record query has been completed.<P> 
-
-		@param	query
-					The active query object.
-		<P>
-		@param	flags
-					Possible values are DNSSD.MORE_COMING.
-		<P>
-		@param	ifIndex
-					The interface on which the query was resolved. (The index for a given 
-					interface is determined via the if_nametoindex() family of calls.) 
-		<P>
-		@param	fullName
-					The resource record's full domain name.
-		<P>
-		@param	rrtype
-					The resource record's type (e.g. PTR, SRV, etc) as defined by RFC 1035 and its updates.
-		<P>
-		@param	rrclass
-					The class of the resource record, as defined by RFC 1035 and its updates.
-		<P>
-		@param	rdata
-					The raw rdata of the resource record.
-		<P>
-		@param	ttl
-					The resource record's time to live, in seconds.
-	*/
-	void	queryAnswered( DNSSDService query, int flags, int ifIndex, String fullName, 
-								int rrtype, int rrclass, byte[] rdata, int ttl);
+public interface QueryListener extends BaseListener {
+    /**
+     * Called when a record query has been completed.<P>
+     *
+     * @param    query The active query object.
+     * <p/>
+     * @param    flags Possible values are DNSSD.MORE_COMING.
+     * <p/>
+     * @param    ifIndex The interface on which the query was resolved. (The index for a given
+     * interface is determined via the if_nametoindex() family of calls.)
+     * <p/>
+     * @param    fullName The resource record's full domain name.
+     * <p/>
+     * @param    rrtype The resource record's type (e.g. PTR, SRV, etc) as defined by RFC 1035 and its updates.
+     * <p/>
+     * @param    rrclass The class of the resource record, as defined by RFC 1035 and its updates.
+     * <p/>
+     * @param    rdata The raw rdata of the resource record.
+     * <p/>
+     * @param    ttl The resource record's time to live, in seconds.
+     */
+    void queryAnswered(DNSSDService query, int flags, int ifIndex, String fullName,
+                       int rrtype, int rrclass, byte[] rdata, int ttl);
 }
 

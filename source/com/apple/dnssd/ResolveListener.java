@@ -32,41 +32,37 @@ First checked in.
 */
 
 
-package	com.apple.dnssd;
+package com.apple.dnssd;
 
 
-/**	A listener that receives results from {@link DNSSD#resolve}. */
+/**
+ * A listener that receives results from {@link DNSSD#resolve}.
+ */
 
-public interface ResolveListener extends BaseListener
-{
-	/** Called when a service has been resolved.<P> 
-
-		@param	resolver
-					The active resolver object.
-		<P>
-		@param	flags
-					Currently unused, reserved for future use.
-		<P>
-		@param	fullName
-					The full service domain name, in the form &lt;servicename&gt;.&lt;protocol&gt;.&lt;domain&gt;.
-					(Any literal dots (".") are escaped with a backslash ("\."), and literal
-					backslashes are escaped with a second backslash ("\\"), e.g. a web server
-					named "Dr. Pepper" would have the fullname  "Dr\.\032Pepper._http._tcp.local.").
-					This is the appropriate format to pass to standard system DNS APIs such as 
-					res_query(), or to the special-purpose functions included in this API that
-					take fullname parameters.
-		<P>
-		@param	hostName
-					The target hostname of the machine providing the service.  This name can 
-					be passed to functions like queryRecord() to look up the host's IP address.
-		<P>
-		@param	port
-					The port number on which connections are accepted for this service.
-		<P>
-		@param	txtRecord
-					The service's primary txt record.
-	*/
-	void	serviceResolved( DNSSDService resolver, int flags, int ifIndex, String fullName, 
-								String hostName, int port, TXTRecord txtRecord);
+public interface ResolveListener extends BaseListener {
+    /**
+     * Called when a service has been resolved.<P>
+     *
+     * @param    resolver The active resolver object.
+     * <p/>
+     * @param    flags Currently unused, reserved for future use.
+     * <p/>
+     * @param    fullName The full service domain name, in the form &lt;servicename&gt;.&lt;protocol&gt;.&lt;domain&gt;.
+     * (Any literal dots (".") are escaped with a backslash ("\."), and literal
+     * backslashes are escaped with a second backslash ("\\"), e.g. a web server
+     * named "Dr. Pepper" would have the fullname  "Dr\.\032Pepper._http._tcp.local.").
+     * This is the appropriate format to pass to standard system DNS APIs such as
+     * res_query(), or to the special-purpose functions included in this API that
+     * take fullname parameters.
+     * <p/>
+     * @param    hostName The target hostname of the machine providing the service.  This name can
+     * be passed to functions like queryRecord() to look up the host's IP address.
+     * <p/>
+     * @param    port The port number on which connections are accepted for this service.
+     * <p/>
+     * @param    txtRecord The service's primary txt record.
+     */
+    void serviceResolved(DNSSDService resolver, int flags, int ifIndex, String fullName,
+                         String hostName, int port, TXTRecord txtRecord);
 }
 

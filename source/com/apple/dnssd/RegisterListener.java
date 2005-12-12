@@ -32,34 +32,31 @@ First checked in.
  */
 
 
-package	com.apple.dnssd;
+package com.apple.dnssd;
 
 
-/**	A listener that receives results from {@link DNSSD#register}. */
+/**
+ * A listener that receives results from {@link DNSSD#register}.
+ */
 
-public interface RegisterListener extends BaseListener
-{
-	/** Called when a registration has been completed.<P> 
-
-		@param	registration
-					The active registration.
-		<P>
-		@param	flags
-					Currently unused, reserved for future use.
-		<P>
-		@param	serviceName
-					The service name registered (if the application did not specify a name in 
-					DNSSD.register(), this indicates what name was automatically chosen).
-		<P>
-		@param	regType
-					The type of service registered, as it was passed to DNSSD.register().
-		<P>
-		@param	domain
-					The domain on which the service was registered. If the application did not
-					specify a domain in DNSSD.register(), this is the default domain
-					on which the service was registered.
-	*/
-	void	serviceRegistered( DNSSDRegistration registration, int flags, String serviceName, 
-								String regType, String domain);
+public interface RegisterListener extends BaseListener {
+    /**
+     * Called when a registration has been completed.<P>
+     *
+     * @param    registration The active registration.
+     * <p/>
+     * @param    flags Currently unused, reserved for future use.
+     * <p/>
+     * @param    serviceName The service name registered (if the application did not specify a name in
+     * DNSSD.register(), this indicates what name was automatically chosen).
+     * <p/>
+     * @param    regType The type of service registered, as it was passed to DNSSD.register().
+     * <p/>
+     * @param    domain The domain on which the service was registered. If the application did not
+     * specify a domain in DNSSD.register(), this is the default domain
+     * on which the service was registered.
+     */
+    void serviceRegistered(DNSSDRegistration registration, int flags, String serviceName,
+                           String regType, String domain);
 }
 

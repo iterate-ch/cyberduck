@@ -32,58 +32,49 @@ First checked in.
  */
 
 
-package	com.apple.dnssd;
+package com.apple.dnssd;
 
 
-/**	A listener that receives results from {@link DNSSD#browse}. */
+/**
+ * A listener that receives results from {@link DNSSD#browse}.
+ */
 
-public interface BrowseListener extends BaseListener
-{
-	/** Called to report discovered services.<P> 
+public interface BrowseListener extends BaseListener {
+    /**
+     * Called to report discovered services.<P>
+     *
+     * @param    browser The active browse service.
+     * <p/>
+     * @param    flags Possible values are DNSSD.MORE_COMING.
+     * <p/>
+     * @param    ifIndex The interface on which the service is advertised. This index should be passed
+     * to {@link DNSSD#resolve} when resolving the service.
+     * <p/>
+     * @param    serviceName The service name discovered.
+     * <p/>
+     * @param    regType The registration type, as passed in to DNSSD.browse().
+     * <p/>
+     * @param    domain The domain in which the service was discovered.
+     */
+    void serviceFound(DNSSDService browser, int flags, int ifIndex,
+                      String serviceName, String regType, String domain);
 
-		@param	browser
-					The active browse service.
-		<P>
-		@param	flags
-					Possible values are DNSSD.MORE_COMING.
-		<P>
-		@param	ifIndex
-					The interface on which the service is advertised. This index should be passed 
-					to {@link DNSSD#resolve} when resolving the service.
-		<P>
-		@param	serviceName
-					The service name discovered.
-		<P>
-		@param	regType
-					The registration type, as passed in to DNSSD.browse().
-		<P>
-		@param	domain
-					The domain in which the service was discovered.
-	*/
-	void	serviceFound( DNSSDService browser, int flags, int ifIndex, 
-							String serviceName, String regType, String domain);
-
-	/** Called to report services which have been deregistered.<P> 
-
-		@param	browser
-					The active browse service.
-		<P>
-		@param	flags
-					Possible values are DNSSD.MORE_COMING.
-		<P>
-		@param	ifIndex
-					The interface on which the service is advertised.
-		<P>
-		@param	serviceName
-					The service name which has deregistered.
-		<P>
-		@param	regType
-					The registration type, as passed in to DNSSD.browse().
-		<P>
-		@param	domain
-					The domain in which the service was discovered.
-	*/
-	void	serviceLost( DNSSDService browser, int flags, int ifIndex,
-							String serviceName, String regType, String domain);
+    /**
+     * Called to report services which have been deregistered.<P>
+     *
+     * @param    browser The active browse service.
+     * <p/>
+     * @param    flags Possible values are DNSSD.MORE_COMING.
+     * <p/>
+     * @param    ifIndex The interface on which the service is advertised.
+     * <p/>
+     * @param    serviceName The service name which has deregistered.
+     * <p/>
+     * @param    regType The registration type, as passed in to DNSSD.browse().
+     * <p/>
+     * @param    domain The domain in which the service was discovered.
+     */
+    void serviceLost(DNSSDService browser, int flags, int ifIndex,
+                     String serviceName, String regType, String domain);
 }
 

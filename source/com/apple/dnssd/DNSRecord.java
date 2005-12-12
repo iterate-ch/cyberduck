@@ -33,37 +33,35 @@ First checked in.
  */
 
 
-package	com.apple.dnssd;
+package com.apple.dnssd;
 
 
-/**	
-	Reference to a record returned by {@link DNSSDRegistration#addRecord}.<P> 
+/**
+ * Reference to a record returned by {@link DNSSDRegistration#addRecord}.<P>
+ * <p/>
+ * Note: client is responsible for serializing access to these objects if
+ * they are shared between concurrent threads.
+ */
 
-	Note: client is responsible for serializing access to these objects if 
-	they are shared between concurrent threads.
-*/
+public interface DNSRecord {
+    /**
+     * Update a registered resource record.<P>
+     * The record must either be the primary txt record of a service registered via DNSSD.register(),
+     * or a record added to a registered service via addRecord().<P>
+     *
+     * @param    flags Currently unused, reserved for future use.
+     * <p/>
+     * @param    rData The new rdata to be contained in the updated resource record.
+     * <p/>
+     * @param    ttl The time to live of the updated resource record, in seconds.
+     */
+    void update(int flags, byte[] rData, int ttl)
+            throws DNSSDException;
 
-public interface	DNSRecord
-{
-	/** Update a registered resource record.<P> 
-		The record must either be the primary txt record of a service registered via DNSSD.register(), 
-		or a record added to a registered service via addRecord().<P>
-
-		@param	flags
-					Currently unused, reserved for future use.
-		<P>
-		@param	rData
-					The new rdata to be contained in the updated resource record.
-		<P>
-		@param	ttl
-					The time to live of the updated resource record, in seconds.
-	*/
-	void			update( int flags, byte[] rData, int ttl)
-	throws DNSSDException;
-
-	/** Remove a registered resource record.<P> 
-	*/
-	void			remove()
-	throws DNSSDException;
+    /**
+     * Remove a registered resource record.<P>
+     */
+    void remove()
+            throws DNSSDException;
 }
 

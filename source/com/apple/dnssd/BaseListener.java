@@ -32,21 +32,21 @@ First checked in.
  */
 
 
-package	com.apple.dnssd;
+package com.apple.dnssd;
 
 
-/**	A base class for DNSSD listeners. */
+/**
+ * A base class for DNSSD listeners.
+ */
 
-public interface BaseListener
-{
-	/** Called to report DNSSD operation failures.<P> 
-
-		@param	service
-					The service that encountered the failure.
-		<P>
-		@param	errorCode
-					Indicates the failure that occurred. See {@link DNSSDException} for error codes.
-	*/
-	void	operationFailed( DNSSDService service, int errorCode);
+public interface BaseListener {
+    /**
+     * Called to report DNSSD operation failures.<P>
+     *
+     * @param    service The service that encountered the failure.
+     * <p/>
+     * @param    errorCode Indicates the failure that occurred. See {@link DNSSDException} for error codes.
+     */
+    void operationFailed(DNSSDService service, int errorCode);
 }
 

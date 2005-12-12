@@ -32,22 +32,23 @@ First checked in.
  */
 
 
-package	com.apple.dnssd;
+package com.apple.dnssd;
 
-/**	A tracking object for a service created by {@link DNSSD}. */
+/**
+ * A tracking object for a service created by {@link DNSSD}.
+ */
 
-public interface	DNSSDService
-{
-	/**
-	Halt the active operation and free resources associated with the DNSSDService.<P>
-
-	Any services or records registered with this DNSSDService will be deregistered. Any
-	Browse, Resolve, or Query operations associated with this reference will be terminated.<P>
-
-	Note: if the service was initialized with DNSSD.register(), and an extra resource record was
-	added to the service via {@link DNSSDRegistration#addRecord}, the DNSRecord so created 
-	is invalidated when this method is called - the DNSRecord may not be used afterward.
-	*/
-	void		stop();
+public interface DNSSDService {
+    /**
+     * Halt the active operation and free resources associated with the DNSSDService.<P>
+     * <p/>
+     * Any services or records registered with this DNSSDService will be deregistered. Any
+     * Browse, Resolve, or Query operations associated with this reference will be terminated.<P>
+     * <p/>
+     * Note: if the service was initialized with DNSSD.register(), and an extra resource record was
+     * added to the service via {@link DNSSDRegistration#addRecord}, the DNSRecord so created
+     * is invalidated when this method is called - the DNSRecord may not be used afterward.
+     */
+    void stop();
 } 
 

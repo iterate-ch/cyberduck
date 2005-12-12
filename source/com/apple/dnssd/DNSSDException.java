@@ -31,32 +31,33 @@ First checked in.
 
 */
 
-package	com.apple.dnssd;
+package com.apple.dnssd;
 
 
 /**
-	Used to report various DNS-SD-related error conditions.
-*/
+ * Used to report various DNS-SD-related error conditions.
+ */
 
-abstract public class	DNSSDException extends Exception
-{
-    public static final int		NO_ERROR            =  0;
-    public static final int		UNKNOWN             = -65537;
-    public static final int		NO_SUCH_NAME        = -65538;
-    public static final int		NO_MEMORY           = -65539;
-    public static final int		BAD_PARAM           = -65540;
-    public static final int		BAD_REFERENCE       = -65541;
-    public static final int		BAD_STATE           = -65542;
-    public static final int		BAD_FLAGS           = -65543;
-    public static final int		UNSUPPORTED         = -65544;
-    public static final int		NOT_INITIALIZED     = -65545;
-    public static final int		ALREADY_REGISTERED  = -65547;
-    public static final int		NAME_CONFLICT       = -65548;
-    public static final int		INVALID             = -65549;
-    public static final int		INCOMPATIBLE        = -65551;
-    public static final int		BAD_INTERFACE_INDEX = -65552;
+abstract public class DNSSDException extends Exception {
+    public static final int NO_ERROR = 0;
+    public static final int UNKNOWN = -65537;
+    public static final int NO_SUCH_NAME = -65538;
+    public static final int NO_MEMORY = -65539;
+    public static final int BAD_PARAM = -65540;
+    public static final int BAD_REFERENCE = -65541;
+    public static final int BAD_STATE = -65542;
+    public static final int BAD_FLAGS = -65543;
+    public static final int UNSUPPORTED = -65544;
+    public static final int NOT_INITIALIZED = -65545;
+    public static final int ALREADY_REGISTERED = -65547;
+    public static final int NAME_CONFLICT = -65548;
+    public static final int INVALID = -65549;
+    public static final int INCOMPATIBLE = -65551;
+    public static final int BAD_INTERFACE_INDEX = -65552;
 
-	/** Returns the sub-code that identifies the particular error. */
-	abstract public int			getErrorCode();
+    /**
+     * Returns the sub-code that identifies the particular error.
+     */
+    abstract public int getErrorCode();
 }
 
