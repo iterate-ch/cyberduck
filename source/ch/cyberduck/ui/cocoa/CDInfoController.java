@@ -57,8 +57,6 @@ import java.util.List;
 public class CDInfoController extends CDWindowController {
     private static Logger log = Logger.getLogger(CDInfoController.class);
 
-    private static NSMutableArray instances = new NSMutableArray();
-
     private List files;
 
     // ----------------------------------------------------------
@@ -152,7 +150,6 @@ public class CDInfoController extends CDWindowController {
 
     public CDInfoController(CDBrowserController controller) {
         this.controller = controller;
-        instances.addObject(this);
         if (!NSApplication.loadNibNamed("Info", this)) {
             log.fatal("Couldn't load Info.nib");
         }
@@ -343,11 +340,6 @@ public class CDInfoController extends CDWindowController {
             checkbox.setState(NSCell.MixedState);
         }
         checkbox.setEnabled(true);
-    }
-
-    public void windowWillClose(NSNotification notification) {
-//		this.filenameField.cell().endEditing(filenameField.currentEditor());
-        NSNotificationCenter.defaultCenter().removeObserver(this);
     }
 
     private int numberOfFiles() {

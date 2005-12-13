@@ -29,6 +29,7 @@ import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
+import com.apple.cocoa.foundation.NSNotificationCenter;
 
 import org.apache.log4j.Logger;
 
@@ -40,8 +41,6 @@ import java.util.List;
 public class CDFolderController extends CDWindowController {
     private static Logger log = Logger.getLogger(CDFolderController.class);
 
-    private static NSMutableArray instances = new NSMutableArray();
-
     private NSTextField folderField; //IBOutlet
 
     public void setFolderField(NSTextField folderField) {
@@ -52,20 +51,9 @@ public class CDFolderController extends CDWindowController {
 
     public CDFolderController(CDBrowserController controller) {
         this.controller = controller;
-        instances.addObject(this);
         if (!NSApplication.loadNibNamed("Folder", this)) {
             log.fatal("Couldn't load Folder.nib");
         }
-    }
-
-    public void awakeFromNib() {
-        super.awakeFromNib();
-
-        this.window().setReleasedWhenClosed(true);
-    }
-
-    public void windowWillClose(NSNotification notification) {
-        instances.removeObject(this);
     }
 
     public void createButtonClicked(NSButton sender) {
@@ -105,6 +93,7 @@ public class CDFolderController extends CDWindowController {
             case (NSAlertPanel.AlternateReturn):
                 break;
         }
+        NSNotificationCenter.defaultCenter().removeObserver(this);
     }
 
     public void create(Path workdir, String filename) {

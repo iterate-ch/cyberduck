@@ -33,25 +33,10 @@ import org.apache.log4j.Logger;
 public abstract class CDFileController extends CDWindowController {
     protected static Logger log = Logger.getLogger(CDFileController.class);
 
-    private static NSMutableArray instances = new NSMutableArray();
-
     protected NSTextField filenameField; //IBOutlet
 
     public void setFilenameField(NSTextField filenameField) {
         this.filenameField = filenameField;
-    }
-
-    public void awakeFromNib() {
-        super.awakeFromNib();
-        this.window().setReleasedWhenClosed(true);
-    }
-
-    public CDFileController() {
-        instances.addObject(this);
-    }
-
-    public void windowWillClose(NSNotification notification) {
-        instances.removeObject(this);
     }
 
     public void editButtonClicked(NSButton sender) {

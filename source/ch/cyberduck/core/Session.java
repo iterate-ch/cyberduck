@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
-import java.util.Iterator;
 
 /**
  * @version $Id$

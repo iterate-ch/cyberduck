@@ -29,11 +29,7 @@ import com.apple.cocoa.application.NSPanel;
 import com.apple.cocoa.application.NSTextContainer;
 import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.application.NSTextView;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSRange;
+import com.apple.cocoa.foundation.*;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -42,8 +38,6 @@ import java.util.Observer;
  * @version $Id$
  */
 public class CDCommandController extends CDWindowController implements TranscriptListener {
-
-    private static NSMutableArray instances = new NSMutableArray();
 
     private NSTextField inputField; //IBOutlet
     private NSTextView responseField; //IBOUtltet
@@ -72,25 +66,14 @@ public class CDCommandController extends CDWindowController implements Transcrip
         }
     }
 
-    public void awakeFromNib() {
-        super.awakeFromNib();
-        this.window().setReleasedWhenClosed(true);
-    }
-
     private Session session;
 
     public CDCommandController(Session session) {
-        instances.addObject(this);
         this.session = session;
         this.session.addTranscriptListener(this);
         if (!NSApplication.loadNibNamed("Command", this)) {
             log.fatal("Couldn't load Command.nib");
         }
-    }
-
-    public void windowWillClose(NSNotification notification) {
-        session.removeTranscriptListener(this);
-        instances.removeObject(this);
     }
 
     public void sendButtonClicked(NSButton sender) {
@@ -115,5 +98,7 @@ public class CDCommandController extends CDWindowController implements Transcrip
 
     public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
+        session.removeTranscriptListener(this);
+        NSNotificationCenter.defaultCenter().removeObserver(this);
     }
 }

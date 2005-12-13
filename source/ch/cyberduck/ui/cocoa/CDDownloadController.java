@@ -43,8 +43,6 @@ import java.net.MalformedURLException;
 public class CDDownloadController extends CDWindowController {
     private static Logger log = Logger.getLogger(CDDownloadController.class);
 
-    private static NSMutableArray instances = new NSMutableArray();
-
     private NSTextField urlField;
 
     public void setUrlField(NSTextField urlField) {
@@ -52,7 +50,6 @@ public class CDDownloadController extends CDWindowController {
     }
 
     public CDDownloadController() {
-        instances.addObject(this);
         if (!NSApplication.loadNibNamed("Download", this)) {
             log.fatal("Couldn't load Download.nib");
         }
@@ -61,14 +58,9 @@ public class CDDownloadController extends CDWindowController {
     public void awakeFromNib() {
         super.awakeFromNib();
 
-        this.window().setReleasedWhenClosed(true);
         CDQueueController controller = CDQueueController.instance();
         controller.window().makeKeyAndOrderFront(null);
         controller.beginSheet(this.window());
-    }
-
-    public void windowWillClose(NSNotification notification) {
-        instances.removeObject(this);
     }
 
     public void cancelButtonClicked(Object sender) {

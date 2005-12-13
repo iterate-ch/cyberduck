@@ -32,6 +32,7 @@ import com.apple.cocoa.application.NSPanel;
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSSize;
+import com.apple.cocoa.foundation.NSNotificationCenter;
 
 import java.util.List;
 
@@ -62,7 +63,6 @@ public class CDDuplicateFileController extends CDFileController {
         icon.setSize(new NSSize(64f, 64f));
         this.iconView.setImage(icon);
         this.filenameField.setStringValue(controller.getSelectedPath().getName() + "-Copy");
-        this.window().setReleasedWhenClosed(true);
     }
 
     public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
@@ -82,6 +82,7 @@ public class CDDuplicateFileController extends CDFileController {
             case (NSAlertPanel.AlternateReturn): //Cancel
                 break;
         }
+        NSNotificationCenter.defaultCenter().removeObserver(this);
     }
 
     protected Path duplicate(Path workdir, String filename) {

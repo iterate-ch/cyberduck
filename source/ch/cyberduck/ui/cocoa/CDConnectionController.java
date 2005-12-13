@@ -18,34 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Login;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Rendezvous;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.RendezvousListener;
+import ch.cyberduck.core.*;
 
-import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSCell;
-import com.apple.cocoa.application.NSComboBox;
-import com.apple.cocoa.application.NSControl;
-import com.apple.cocoa.application.NSEvent;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSOpenPanel;
-import com.apple.cocoa.application.NSPopUpButton;
-import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.application.NSWindow;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSNotificationCenter;
-import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -404,8 +380,6 @@ public class CDConnectionController extends CDWindowController {
             this.connectmodePopup.setTitle(CONNECTMODE_PASSIVE);
     }
 
-    private static NSMutableArray instances = new NSMutableArray();
-
     private CDBrowserController browserController;
 
     // ----------------------------------------------------------
@@ -417,19 +391,10 @@ public class CDConnectionController extends CDWindowController {
         if (!NSApplication.loadNibNamed("Connection", this)) {
             log.fatal("Couldn't load Connection.nib");
         }
-        instances.addObject(this);
-    }
-
-    public void windowWillClose(NSNotification notification) {
-        NSNotificationCenter.defaultCenter().removeObserver(this);
-        Rendezvous.instance().removeListener(this.rendezvousListener);
-        instances.removeObject(this);
     }
 
     public void awakeFromNib() {
         super.awakeFromNib();
-
-        this.window().setReleasedWhenClosed(true);
 
         // Notify the updateURLLabel() method if the user types.
         //ControlTextDidChangeNotification
@@ -565,7 +530,7 @@ public class CDConnectionController extends CDWindowController {
         this.endSheet(this.window(), sender.tag());
     }
 
-    public void connectionSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+    public void sheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
         switch (returncode) {
             case (NSAlertPanel.DefaultReturn):
@@ -615,5 +580,7 @@ public class CDConnectionController extends CDWindowController {
                 browserController.setEncoding(encodingPopup.titleOfSelectedItem());
                 browserController.mount(host);
         }
+        Rendezvous.instance().removeListener(this.rendezvousListener);
+        NSNotificationCenter.defaultCenter().removeObserver(this);
     }
 }

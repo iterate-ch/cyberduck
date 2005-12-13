@@ -27,8 +27,6 @@ import ch.cyberduck.core.Preferences;
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
@@ -40,16 +38,10 @@ import org.apache.log4j.Logger;
 public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
     private static Logger log = Logger.getLogger(CDHostKeyController.class);
 
-    private static NSMutableArray instances = new NSMutableArray();
-
     private String host;
     private SshPublicKey publicKey;
 
     private CDWindowController windowController;
-
-    public void windowWillClose(NSNotification notification) {
-        instances.removeObject(this);
-    }
 
     public CDHostKeyController(CDWindowController windowController) {
         this.windowController = windowController;
@@ -65,7 +57,6 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
                     null //other button
             ));
         }
-        instances.addObject(this);
     }
 
     public void onHostKeyMismatch(final String host, final SshPublicKey allowedHostKey, final SshPublicKey actualHostKey) {

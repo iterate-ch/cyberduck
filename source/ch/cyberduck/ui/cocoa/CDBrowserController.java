@@ -44,12 +44,6 @@ public class CDBrowserController extends CDWindowController {
         HISTORY_FOLDER.mkdirs();
     }
 
-    /**
-     * Keep references of controller objects because otherweise they get garbage collected
-     * if not referenced here.
-     */
-    private static NSMutableArray instances = new NSMutableArray();
-
     // ----------------------------------------------------------
     // Applescriptability
     // ----------------------------------------------------------
@@ -307,7 +301,6 @@ public class CDBrowserController extends CDWindowController {
     // ----------------------------------------------------------
 
     public CDBrowserController() {
-        instances.addObject(this);
         if (!NSApplication.loadNibNamed("Browser", this)) {
             log.fatal("Couldn't load Browser.nib");
         }
@@ -399,9 +392,9 @@ public class CDBrowserController extends CDWindowController {
             case OUTLINE_VIEW: {
                 return ((CDTableDelegate) this.browserOutlineView.delegate()).getSortingComparator();
             }
-            case COLUMN_VIEW: {
-                return ((CDTableDelegate) this.browserColumnView.delegate()).getSortingComparator();
-            }
+//            case COLUMN_VIEW: {
+//                return ((CDTableDelegate) this.browserColumnView.delegate()).getSortingComparator();
+//            }
         }
         return null;
     }
@@ -481,20 +474,20 @@ public class CDBrowserController extends CDWindowController {
                     this.infoLabel.setStringValue("");
                 break;
             }
-            case COLUMN_VIEW: {
-                this.browserColumnView.setPath(this.workdir().getAbsolute());
-                for (int col = 0; col < this.browserColumnView.numberOfVisibleColumns(); col++) {
-                    if (this.workdir().getAbsolute().equals(
-                            this.browserColumnModel.pathOfColumn(this.browserColumnView, col))) {
-                        this.browserColumnView.reloadColumn(col);
-                    }
-                }
-                if (this.isMounted())
-                    this.infoLabel.setStringValue(this.browserColumnView.matrixInColumn(this.browserColumnView.lastVisibleColumn()).numberOfRows() + " " +
-                            NSBundle.localizedString("files", ""));
-                else
-                    this.infoLabel.setStringValue("");
-            }
+//            case COLUMN_VIEW: {
+//                this.browserColumnView.setPath(this.workdir().getAbsolute());
+//                for (int col = 0; col < this.browserColumnView.numberOfVisibleColumns(); col++) {
+//                    if (this.workdir().getAbsolute().equals(
+//                            this.browserColumnModel.pathOfColumn(this.browserColumnView, col))) {
+//                        this.browserColumnView.reloadColumn(col);
+//                    }
+//                }
+//                if (this.isMounted())
+//                    this.infoLabel.setStringValue(this.browserColumnView.matrixInColumn(this.browserColumnView.lastVisibleColumn()).numberOfRows() + " " +
+//                            NSBundle.localizedString("files", ""));
+//                else
+//                    this.infoLabel.setStringValue("");
+//            }
         }
         if (preserveSelection) {
             this.setSelectedPaths(selected);
@@ -555,9 +548,9 @@ public class CDBrowserController extends CDWindowController {
             case OUTLINE_VIEW: {
                 return (Path) this.browserOutlineView.itemAtRow(this.browserOutlineView.selectedRow());
             }
-            case COLUMN_VIEW: {
-                return ((CDBrowserCell) this.browserColumnView.selectedCell()).getPath();
-            }
+//            case COLUMN_VIEW: {
+//                return ((CDBrowserCell) this.browserColumnView.selectedCell()).getPath();
+//            }
         }
         return null;
     }
@@ -583,16 +576,16 @@ public class CDBrowserController extends CDWindowController {
                 }
                 return selectedFiles;
             }
-            case COLUMN_VIEW: {
-                List files = new ArrayList();
-                if (this.browserColumnView.selectedCells() != null) {
-                    java.util.Enumeration iterator = this.browserColumnView.selectedCells().objectEnumerator();
-                    while (iterator.hasMoreElements()) {
-                        files.add(((CDBrowserCell) iterator.nextElement()).getPath());
-                    }
-                }
-                return files;
-            }
+//            case COLUMN_VIEW: {
+//                List files = new ArrayList();
+//                if (this.browserColumnView.selectedCells() != null) {
+//                    java.util.Enumeration iterator = this.browserColumnView.selectedCells().objectEnumerator();
+//                    while (iterator.hasMoreElements()) {
+//                        files.add(((CDBrowserCell) iterator.nextElement()).getPath());
+//                    }
+//                }
+//                return files;
+//            }
         }
         return null;
     }
@@ -605,11 +598,11 @@ public class CDBrowserController extends CDWindowController {
             case OUTLINE_VIEW: {
                 return this.browserOutlineView.numberOfSelectedRows();
             }
-            case COLUMN_VIEW: {
-                if (this.browserColumnView.selectedCells() != null) {
-                    return this.browserColumnView.selectedCells().count();
-                }
-            }
+//            case COLUMN_VIEW: {
+//                if (this.browserColumnView.selectedCells() != null) {
+//                    return this.browserColumnView.selectedCells().count();
+//                }
+//            }
         }
         return 0;
     }
@@ -651,9 +644,9 @@ public class CDBrowserController extends CDWindowController {
             case OUTLINE_VIEW: {
                 return this.browserOutlineView;
             }
-            case COLUMN_VIEW: {
-                return this.browserColumnView;
-            }
+//            case COLUMN_VIEW: {
+//                return this.browserColumnView;
+//            }
         }
         return null;
     }
@@ -666,9 +659,9 @@ public class CDBrowserController extends CDWindowController {
             case OUTLINE_VIEW: {
                 return (CDBrowserTableDataSource) this.browserOutlineView.dataSource();
             }
-            case COLUMN_VIEW: {
-                return this.browserColumnModel;
-            }
+//            case COLUMN_VIEW: {
+//                return this.browserColumnModel;
+//            }
         }
         return null;
     }
@@ -992,41 +985,41 @@ public class CDBrowserController extends CDWindowController {
         }
     }
 
-    private CDBrowserColumnViewModel browserColumnModel;
-    private NSBrowser browserColumnView; // IBOutlet
-
-    public void setBrowserColumnView(NSBrowser browserColumnView) {
-        this.browserColumnView = browserColumnView;
-        this.browserColumnView.setTarget(this);
-        this.browserColumnView.setAction(new NSSelector("browserColumnViewRowClicked", new Class[]{Object.class}));
-        this.browserColumnView.setAcceptsArrowKeys(true);
-        this.browserColumnView.setSendsActionOnArrowKeys(true);
-        this.browserColumnView.setMaxVisibleColumns(5);
-        this.browserColumnView.setAllowsEmptySelection(true);
-        this.browserColumnView.setAllowsMultipleSelection(true);
-        this.browserColumnView.setAllowsBranchSelection(true);
-        this.browserColumnView.setPathSeparator(Path.DELIMITER);
-        this.browserColumnView.setReusesColumns(false);
-        this.browserColumnView.setSeparatesColumns(false);
-        this.browserColumnView.setTitled(false);
-        this.browserColumnView.setHasHorizontalScroller(false);
-
-        this.browserColumnView.setDelegate(this.browserColumnModel = new CDBrowserColumnViewModel(this));
-        // Make the browser user our custom browser cell.
-        this.browserColumnView.setNewCellClass(CDBrowserCell.class);
-        this.browserColumnView.setNewMatrixClass(CDBrowserMatrix.class);
-    }
-
-    public void browserColumnViewRowClicked(Object sender) {
-        Path selected = this.getSelectedPath(); //last row selected
-        if (selected.attributes.isDirectory()) {
-            this.setWorkdir(selected);
-        }
-        if (selected.attributes.isFile()) {
-            this.setWorkdir(selected.getParent());
-        }
-        this.browserSelectionDidChange(null);
-    }
+//    private CDBrowserColumnViewModel browserColumnModel;
+//    private NSBrowser browserColumnView; // IBOutlet
+//
+//    public void setBrowserColumnView(NSBrowser browserColumnView) {
+//        this.browserColumnView = browserColumnView;
+//        this.browserColumnView.setTarget(this);
+//        this.browserColumnView.setAction(new NSSelector("browserColumnViewRowClicked", new Class[]{Object.class}));
+//        this.browserColumnView.setAcceptsArrowKeys(true);
+//        this.browserColumnView.setSendsActionOnArrowKeys(true);
+//        this.browserColumnView.setMaxVisibleColumns(5);
+//        this.browserColumnView.setAllowsEmptySelection(true);
+//        this.browserColumnView.setAllowsMultipleSelection(true);
+//        this.browserColumnView.setAllowsBranchSelection(true);
+//        this.browserColumnView.setPathSeparator(Path.DELIMITER);
+//        this.browserColumnView.setReusesColumns(false);
+//        this.browserColumnView.setSeparatesColumns(false);
+//        this.browserColumnView.setTitled(false);
+//        this.browserColumnView.setHasHorizontalScroller(false);
+//
+//        this.browserColumnView.setDelegate(this.browserColumnModel = new CDBrowserColumnViewModel(this));
+//        // Make the browser user our custom browser cell.
+//        this.browserColumnView.setNewCellClass(CDBrowserCell.class);
+//        this.browserColumnView.setNewMatrixClass(CDBrowserMatrix.class);
+//    }
+//
+//    public void browserColumnViewRowClicked(Object sender) {
+//        Path selected = this.getSelectedPath(); //last row selected
+//        if (selected.attributes.isDirectory()) {
+//            this.setWorkdir(selected);
+//        }
+//        if (selected.attributes.isFile()) {
+//            this.setWorkdir(selected.getParent());
+//        }
+//        this.browserSelectionDidChange(null);
+//    }
 
     public void browserSelectionDidChange(NSNotification notification) {
         if (this.inspector != null && this.inspector.window().isVisible()) {
@@ -1253,7 +1246,7 @@ public class CDBrowserController extends CDWindowController {
     }
 
     private NSMenu editMenu;
-    private NSObject editMenuDelegate;
+    private NSObject editMenuDelegate; // NSMenu.Delegate
 
     public void setEditMenu(NSMenu editMenu) {
         this.editMenu = editMenu;
@@ -1312,7 +1305,7 @@ public class CDBrowserController extends CDWindowController {
     }
 
     private NSComboBox quickConnectPopup; // IBOutlet
-    private NSObject quickConnectPopupDataSource;
+    private NSObject quickConnectPopupDataSource; // NSComboBox.DataSource
 
     public void setQuickConnectPopup(NSComboBox quickConnectPopup) {
         this.quickConnectPopup = quickConnectPopup;
@@ -2052,7 +2045,7 @@ public class CDBrowserController extends CDWindowController {
     public void connectButtonClicked(Object sender) {
         CDWindowController connectionController = new CDConnectionController(this);
         this.beginSheet(connectionController.window(), connectionController,
-                new NSSelector("connectionSheetDidEnd", new Class[]{NSWindow.class, int.class, Object.class}),
+                new NSSelector("sheetDidEnd", new Class[]{NSWindow.class, int.class, Object.class}),
                 null);
     }
 
@@ -2601,11 +2594,38 @@ public class CDBrowserController extends CDWindowController {
     }
 
     public void windowWillClose(NSNotification notification) {
-        NSNotificationCenter.defaultCenter().removeObserver(this);
+        super.windowWillClose(notification);
+
         if (this.hasSession()) {
             this.session.removeConnectionListener(this.listener);
         }
-        instances.removeObject(this);
+        this.inspector = null;
+
+        this.bookmarkTable.setDataSource(null);
+        this.bookmarkModel = null;
+        this.bookmarkTable.setDelegate(null);
+        this.bookmarkTableDelegate = null;
+
+
+        this.browserListView.setDataSource(null);
+        this.browserListModel = null;
+        this.browserListView.setDelegate(null);
+        this.browserListViewDelegate = null;
+        this.browserListView = null;
+
+        this.browserOutlineView.setDataSource(null);
+        this.browserOutlineModel = null;
+        this.browserOutlineView.setDelegate(null);
+        this.browserOutlineViewDelegate = null;
+        this.browserOutlineView = null;
+
+        this.editMenu.setDelegate(null);
+        this.editMenuDelegate = null;
+
+        this.browserSwitchView = null;
+        this.browserTabView = null;
+        
+        System.gc();
     }
 
     public boolean validateMenuItem(NSMenuItem item) {

@@ -60,8 +60,6 @@ import java.util.List;
 public abstract class CDValidatorController extends CDWindowController implements Validator {
     private static Logger log = Logger.getLogger(CDValidatorController.class);
 
-    private static NSMutableArray instances = new NSMutableArray();
-
     private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
 
     static {
@@ -76,7 +74,6 @@ public abstract class CDValidatorController extends CDWindowController implement
     public CDValidatorController(CDWindowController windowController) {
         this.windowController = windowController;
         this.load();
-        instances.addObject(this);
     }
 
     protected abstract void load();
@@ -84,7 +81,6 @@ public abstract class CDValidatorController extends CDWindowController implement
     public void awakeFromNib() {
         super.awakeFromNib();
 
-        this.window().setReleasedWhenClosed(true);
         (NSNotificationCenter.defaultCenter()).addObserver(this,
                 new NSSelector("tableViewSelectionDidChange", new Class[]{NSNotification.class}),
                 NSTableView.TableViewSelectionDidChangeNotification,
@@ -431,10 +427,6 @@ public abstract class CDValidatorController extends CDWindowController implement
         this.overwriteButton.setEnabled(enabled);
         this.resumeButton.setEnabled(enabled);
         this.skipButton.setEnabled(enabled);
-    }
-
-    public void windowWillClose(NSNotification notification) {
-        instances.removeObject(this);
     }
 
     public void resumeActionFired(NSButton sender) {

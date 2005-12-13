@@ -46,12 +46,10 @@ public class Editor {
     static {
         SUPPORTED_EDITORS.put("SubEthaEdit", "de.codingmonkeys.SubEthaEdit");
         SUPPORTED_EDITORS.put("BBEdit", "com.barebones.bbedit");
-//		SUPPORTED_EDITORS.put("BBEdit Lite", "com.barebones.bbeditlite");
         SUPPORTED_EDITORS.put("TextWrangler", "com.barebones.textwrangler");
 //		SUPPORTED_EDITORS.put("PageSpinner", "com.optima.PageSpinner");
         SUPPORTED_EDITORS.put("TextMate", "com.macromates.textmate");
         SUPPORTED_EDITORS.put("Tex-Edit Plus", "com.transtex.texeditplus");
-//		SUPPORTED_EDITORS.put("Saskatoon", "net.sf.saskatoon");
         SUPPORTED_EDITORS.put("Jedit X", "jp.co.artman21.JeditX");
         SUPPORTED_EDITORS.put("mi", "mi");
         SUPPORTED_EDITORS.put("Smultron", "org.smultron.Smultron");

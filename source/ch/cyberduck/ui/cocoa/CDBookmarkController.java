@@ -46,8 +46,6 @@ import org.apache.log4j.Logger;
 public class CDBookmarkController extends CDWindowController {
     private static Logger log = Logger.getLogger(CDBookmarkController.class);
 
-    private static NSMutableArray instances = new NSMutableArray();
-
     private Host host;
 
     // ----------------------------------------------------------
@@ -55,8 +53,7 @@ public class CDBookmarkController extends CDWindowController {
     // ----------------------------------------------------------
 
     public void windowWillClose(NSNotification notification) {
-        NSNotificationCenter.defaultCenter().removeObserver(this);
-        instances.removeObject(this);
+        super.windowWillClose(notification);
         CDBookmarkTableDataSource.instance().save();
     }
 
@@ -198,7 +195,6 @@ public class CDBookmarkController extends CDWindowController {
     public CDBookmarkController(NSTableView callback, Host host) {
         this.callback = callback;
         this.host = host;
-        instances.addObject(this);
         if (!NSApplication.loadNibNamed("Bookmark", this)) {
             log.fatal("Couldn't load Bookmark.nib");
         }
@@ -207,7 +203,6 @@ public class CDBookmarkController extends CDWindowController {
     public void awakeFromNib() {
         super.awakeFromNib();
 
-        this.window().setReleasedWhenClosed(true);
         this.cascade();
         this.window().setTitle(this.host.getNickname());
         // Live editing of values

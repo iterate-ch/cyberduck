@@ -23,13 +23,7 @@ import com.apple.cocoa.application.NSModalSession;
 import com.apple.cocoa.application.NSMutableParagraphStyle;
 import com.apple.cocoa.application.NSParagraphStyle;
 import com.apple.cocoa.application.NSWindow;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSNotificationCenter;
-import com.apple.cocoa.foundation.NSPoint;
-import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -55,6 +49,7 @@ public abstract class CDWindowController extends CDController {
 
     public void setWindow(NSWindow window) {
         this.window = window;
+        this.window.setReleasedWhenClosed(true);
         (NSNotificationCenter.defaultCenter()).addObserver(this,
                 new NSSelector("windowWillClose", new Class[]{NSNotification.class}),
                 NSWindow.WindowWillCloseNotification,
@@ -65,11 +60,9 @@ public abstract class CDWindowController extends CDController {
         return this.window;
     }
 
-    public boolean windowShouldClose(NSWindow sender) {
-        return true;
+    public void windowWillClose(NSNotification notification) {
+        NSNotificationCenter.defaultCenter().removeObserver(this);
     }
-
-    public abstract void windowWillClose(NSNotification notification);
 
     public void cascade() {
         NSArray windows = NSApplication.sharedApplication().windows();

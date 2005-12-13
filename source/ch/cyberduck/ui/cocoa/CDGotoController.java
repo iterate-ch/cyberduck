@@ -40,12 +40,8 @@ import java.util.List;
 public class CDGotoController extends CDWindowController {
     private static Logger log = Logger.getLogger(CDGotoController.class);
 
-    private static NSMutableArray instances = new NSMutableArray();
-
     public void awakeFromNib() {
         super.awakeFromNib();
-
-        this.window().setReleasedWhenClosed(true);
         this.folderCombobox.setStringValue(controller.workdir().getAbsolute());
     }
 
@@ -84,15 +80,10 @@ public class CDGotoController extends CDWindowController {
     private CDBrowserController controller;
 
     public CDGotoController(CDBrowserController controller) {
-        instances.addObject(this);
         this.controller = controller;
         if (!NSApplication.loadNibNamed("Goto", this)) {
             log.fatal("Couldn't load Goto.nib");
         }
-    }
-
-    public void windowWillClose(NSNotification notification) {
-        instances.removeObject(this);
     }
 
     public void goButtonClicked(Object sender) {

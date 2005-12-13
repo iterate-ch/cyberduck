@@ -18,48 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.Rendezvous;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.UploadQueue;
-import ch.cyberduck.core.Version;
-import ch.cyberduck.core.RendezvousListener;
-import ch.cyberduck.core.QueueListener;
+import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
-import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSCell;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSMenu;
-import com.apple.cocoa.application.NSMenuItem;
-import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.application.NSTextView;
-import com.apple.cocoa.application.NSWindow;
-import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSAutoreleasePool;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSData;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSKeyValue;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSMutableData;
-import com.apple.cocoa.foundation.NSMutableDictionary;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSNotificationCenter;
-import com.apple.cocoa.foundation.NSObject;
-import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSPropertyListSerialization;
-import com.apple.cocoa.foundation.NSRange;
-import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSSize;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.BasicConfigurator;
 
@@ -287,7 +250,7 @@ public class CDMainController extends CDController {
                 sender.setEnabled(false);
                 return false;
             }
-            Host h = ((Host[])cache.values().toArray(new Host[]{}))[index];
+            Host h = ((Host[]) cache.values().toArray(new Host[]{}))[index];
             sender.setTitle(h.getNickname());
             sender.setTarget(this);
             sender.setEnabled(true);
@@ -298,7 +261,7 @@ public class CDMainController extends CDController {
 
         public void historyMenuItemClicked(NSMenuItem sender) {
             CDBrowserController controller = CDMainController.this.newDocument();
-            controller.mount((Host)cache.get(sender.title()));
+            controller.mount((Host) cache.get(sender.title()));
         }
     }
 
@@ -342,7 +305,7 @@ public class CDMainController extends CDController {
 
         public void rendezvousMenuClicked(NSMenuItem sender) {
             Host host = Rendezvous.instance().getServiceWithDisplayedName(sender.title());
-            if(null == host) {
+            if (null == host) {
                 return;
             }
             CDBrowserController controller = CDMainController.this.newDocument();
@@ -602,7 +565,7 @@ public class CDMainController extends CDController {
                                 }
 
                                 public void queueStopped() {
-                                    if(controller.isMounted()) {
+                                    if (controller.isMounted()) {
                                         controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
                                         controller.reloadData(true);
                                     }

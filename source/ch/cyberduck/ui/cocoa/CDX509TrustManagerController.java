@@ -29,8 +29,6 @@ import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.application.NSTextView;
 import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSAutoreleasePool;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
@@ -47,16 +45,6 @@ import java.security.cert.X509Certificate;
  */
 public class CDX509TrustManagerController extends AbstractX509TrustManager {
     protected static Logger log = Logger.getLogger(CDX509TrustManagerController.class);
-
-    private static NSMutableArray instances = new NSMutableArray();
-
-    public void awakeFromNib() {
-        this.window().setReleasedWhenClosed(false);
-    }
-
-    public void windowWillClose(NSNotification notification) {
-        instances.removeObject(this);
-    }
 
     public void setAlertField(NSTextField alertField) {
         this.alertField = alertField;
@@ -77,22 +65,22 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 
     private NSButton alwaysButton;
 
-    private NSWindow sheet;
+    private NSWindow window;
 
     public void setWindow(NSWindow window) {
-        this.sheet = window;
-        this.sheet.setDelegate(this);
+        this.window = window;
+        this.window.setDelegate(this);
+        this.window.setReleasedWhenClosed(false);
     }
 
     public NSWindow window() {
-        return this.sheet;
+        return this.window;
     }
 
     private CDWindowController windowController;
 
     public CDX509TrustManagerController(CDWindowController windowController) {
         this.windowController = windowController;
-        instances.addObject(this);
         if (!NSApplication.loadNibNamed("Certificate", this)) {
             log.fatal("Couldn't load Certificate.nib");
         }
@@ -125,7 +113,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
                     cert = x509Certificates[0].toString();
                 alertField.setStringValue(e.getMessage());
                 certificateField.setString(cert);
-                this.windowController.beginSheet(this.sheet,
+                this.windowController.beginSheet(this.window,
                         this, //delegate
                         new NSSelector
                                 ("clientCertificateAlertSheetDidEnd",
@@ -173,7 +161,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
                     cert = x509Certificates[0].toString();
                 alertField.setStringValue(e.getMessage());
                 certificateField.setString(cert);
-                this.windowController.beginSheet(sheet,
+                this.windowController.beginSheet(window,
                         this, //delegate
                         new NSSelector
                                 ("serverCertificateAlertSheetDidEnd",

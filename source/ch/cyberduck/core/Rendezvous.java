@@ -62,6 +62,7 @@ public class Rendezvous
     };
 
     private Map services;
+    private Map browsers;
 
     private static Rendezvous instance;
 
@@ -75,6 +76,7 @@ public class Rendezvous
     private Rendezvous() {
         log.debug("Rendezvous");
         this.services = new HashMap();
+        this.browsers = new HashMap();
     }
 
     public void init() {
@@ -83,7 +85,7 @@ public class Rendezvous
             for (int i = 0; i < serviceTypes.length; i++) {
                 String protocol = serviceTypes[i];
                 log.info("Adding Rendezvous service listener for " + protocol);
-                DNSSD.browse(protocol, Rendezvous.this);
+                this.browsers.put(protocol, DNSSD.browse(protocol, Rendezvous.this));
             }
         }
         catch (DNSSDException e) {
@@ -93,22 +95,37 @@ public class Rendezvous
     }
 
     public void quit() {
-//        this.services.clear();
+        for (int i = 0; i < serviceTypes.length; i++) {
+            String protocol = serviceTypes[i];
+            log.info("Removing Rendezvous service listener for " + protocol);
+            Object service = this.browsers.get(protocol);
+            if(null == service)
+                continue;
+            ((DNSSDService)service).stop();
+        }
     }
 
     private Vector listeners = new Vector();
 
     private RendezvousListener notifier = new RendezvousListener() {
 
-        public void serviceResolved(String servicename) {
-            for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
-                ((RendezvousListener)iter.next()).serviceResolved(servicename);
+        public void serviceResolved(final String servicename) {
+            RendezvousListener[] l = null;
+            synchronized(Rendezvous.this) {
+                l = (RendezvousListener[])listeners.toArray(new RendezvousListener[]{});
+            }
+            for(int i = 0; i < l.length; i++) {
+                l[i].serviceResolved(servicename);
             }
         }
 
-        public void serviceLost(String servicename) {
-            for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
-                ((RendezvousListener)iter.next()).serviceLost(servicename);
+        public void serviceLost(final String servicename) {
+            RendezvousListener[] l = null;
+            synchronized(Rendezvous.this) {
+                l = (RendezvousListener[])listeners.toArray(new RendezvousListener[]{});
+            }
+            for(int i = 0; i < l.length; i++) {
+                l[i].serviceLost(servicename);
             }
         }
     };
@@ -174,9 +191,9 @@ public class Rendezvous
         log.debug("serviceLost:" + serviceName);
         try {
             String identifier = DNSSD.constructFullName(serviceName, regType, domain);
+            notifier.serviceLost(identifier);
             if(null == this.services.remove(identifier))
                 return;
-            notifier.serviceLost(identifier);
         }
         catch (DNSSDException e) {
             log.error(e.getMessage());

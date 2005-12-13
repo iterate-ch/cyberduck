@@ -36,8 +36,6 @@ public class CDQueueController extends CDWindowController {
 
     private static CDQueueController instance;
 
-    private static NSMutableArray instances = new NSMutableArray();
-
     private NSToolbar toolbar;
 
     public void awakeFromNib() {
@@ -47,7 +45,7 @@ public class CDQueueController extends CDWindowController {
         this.toolbar.setDelegate(this);
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
-        this.window().setDelegate(this);
+
         this.window().setReleasedWhenClosed(false);
         this.window().setToolbar(toolbar);
     }
@@ -69,7 +67,7 @@ public class CDQueueController extends CDWindowController {
     }
 
     private CDQueueController() {
-        instances.addObject(this);
+        ;
     }
 
     public static CDQueueController instance() {
@@ -137,6 +135,7 @@ public class CDQueueController extends CDWindowController {
     }
 
     public void windowWillClose(NSNotification notification) {
+        super.windowWillClose(notification);
         this.queueModel.save();
     }
 
@@ -486,7 +485,6 @@ public class CDQueueController extends CDWindowController {
     public void openButtonClicked(Object sender) {
         if (this.queueTable.selectedRow() != -1) {
             Queue q = (Queue) this.queueModel.get(this.queueTable.selectedRow());
-            Path f = q.getRoot();
             String file = q.getRoot().getLocal().toString();
             if (!NSWorkspace.sharedWorkspace().openFile(file)) {
                 if (q.isComplete()) {
@@ -516,7 +514,6 @@ public class CDQueueController extends CDWindowController {
     public void revealButtonClicked(Object sender) {
         if (this.queueTable.selectedRow() != -1) {
             Queue q = (Queue) this.queueModel.get(this.queueTable.selectedRow());
-            Path f = q.getRoot();
             String file = q.getRoot().getLocal().toString();
             if (!NSWorkspace.sharedWorkspace().selectFile(file, "")) {
                 if (q.isComplete()) {

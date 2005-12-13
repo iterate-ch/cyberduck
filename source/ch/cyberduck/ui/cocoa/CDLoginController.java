@@ -21,14 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Login;
 import ch.cyberduck.ui.LoginController;
 
-import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSCell;
-import com.apple.cocoa.application.NSControl;
-import com.apple.cocoa.application.NSSecureTextField;
-import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.application.NSWindow;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSNotificationCenter;
@@ -41,14 +34,6 @@ import org.apache.log4j.Logger;
  */
 public class CDLoginController extends CDWindowController implements LoginController {
     private static Logger log = Logger.getLogger(CDLoginController.class);
-
-    private static NSMutableArray instances = new NSMutableArray();
-
-    public void awakeFromNib() {
-        super.awakeFromNib();
-
-        this.window().setReleasedWhenClosed(false);
-    }
 
     // ----------------------------------------------------------
     // Outlets
@@ -104,16 +89,10 @@ public class CDLoginController extends CDWindowController implements LoginContro
     private CDWindowController windowController;
 
     public CDLoginController(CDWindowController windowController) {
-        instances.addObject(this);
         this.windowController = windowController;
         if (!NSApplication.loadNibNamed("Login", this)) {
             log.fatal("Couldn't load Login.nib");
         }
-    }
-
-    public void windowWillClose(NSNotification notification) {
-        instances.removeObject(this);
-        NSNotificationCenter.defaultCenter().removeObserver(this);
     }
 
     private Login login;
@@ -126,7 +105,7 @@ public class CDLoginController extends CDWindowController implements LoginContro
         this.windowController.beginSheet(this.window(),
                 this,
                 new NSSelector
-                        ("loginSheetDidEnd",
+                        ("sheetDidEnd",
                                 new Class[]
                                         {
                                                 NSWindow.class, int.class, Object.class
@@ -140,7 +119,7 @@ public class CDLoginController extends CDWindowController implements LoginContro
         this.windowController.endSheet(this.window(), sender.tag());
     }
 
-    public void loginSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
+    public void sheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
         String user = (String) userField.objectValue();
         String pass = (String) passField.objectValue();
@@ -165,5 +144,6 @@ public class CDLoginController extends CDWindowController implements LoginContro
                 this.login.setTryAgain(false);
                 break;
         }
+        NSNotificationCenter.defaultCenter().removeObserver(this);
     }
 }

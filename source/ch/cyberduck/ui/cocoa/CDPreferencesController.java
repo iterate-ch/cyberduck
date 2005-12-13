@@ -55,8 +55,6 @@ public class CDPreferencesController extends CDWindowController {
 
     private static CDPreferencesController instance;
 
-    private static NSMutableArray instances = new NSMutableArray();
-
     public static CDPreferencesController instance() {
         log.debug("instance");
         if (null == instance) {
@@ -69,7 +67,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     private CDPreferencesController() {
-        instances.addObject(this);
+        ;
     }
 
     private NSTabView tabView;
@@ -115,15 +113,13 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     public void windowWillClose(NSNotification notification) {
-        NSNotificationCenter.defaultCenter().removeObserver(this);
-        instances.removeObject(this);
+        super.windowWillClose(notification);
         instance = null;
     }
 
     public void awakeFromNib() {
         super.awakeFromNib();
 
-        this.window().setReleasedWhenClosed(true);
         NSSelector setShowsToolbarButtonSelector
                 = new NSSelector("setShowsToolbarButton", new Class[]{boolean.class});
         if (setShowsToolbarButtonSelector.implementedByClass(NSWindow.class)) {

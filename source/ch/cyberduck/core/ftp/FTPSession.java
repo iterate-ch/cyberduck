@@ -62,24 +62,23 @@ public class FTPSession extends Session {
     }
 
     public void close() {
-        synchronized(this) {
-            this.connectionWillClose();
-            try {
-                if (FTP != null) {
-                    FTP.quit();
-                    host.getCredentials().setPassword(null);
-                    FTP = null;
-                }
+        //TODO synchronize
+        this.connectionWillClose();
+        try {
+            if (FTP != null) {
+                FTP.quit();
+                host.getCredentials().setPassword(null);
+                FTP = null;
             }
-            catch (FTPException e) {
-                log.error("FTP Error: " + e.getMessage());
-            }
-            catch (IOException e) {
-                log.error("IO Error: " + e.getMessage());
-            }
-            finally {
-                this.setClosed();
-            }
+        }
+        catch (FTPException e) {
+            log.error("FTP Error: " + e.getMessage());
+        }
+        catch (IOException e) {
+            log.error("IO Error: " + e.getMessage());
+        }
+        finally {
+            this.setClosed();
         }
     }
 
