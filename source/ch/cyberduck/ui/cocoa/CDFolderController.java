@@ -94,6 +94,7 @@ public class CDFolderController extends CDWindowController {
                 break;
         }
         NSNotificationCenter.defaultCenter().removeObserver(this);
+        instances.removeObject(this);
     }
 
     public void create(Path workdir, String filename) {

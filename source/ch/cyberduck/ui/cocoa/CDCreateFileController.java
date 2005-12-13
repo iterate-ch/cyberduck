@@ -64,6 +64,7 @@ public class CDCreateFileController extends CDFileController {
                 break;
         }
         NSNotificationCenter.defaultCenter().removeObserver(this);
+        instances.removeObject(this);
     }
 
     protected Path create(Path workdir, String filename) {

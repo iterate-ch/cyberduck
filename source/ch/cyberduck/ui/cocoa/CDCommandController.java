@@ -100,5 +100,6 @@ public class CDCommandController extends CDWindowController implements Transcrip
         sheet.orderOut(null);
         session.removeTranscriptListener(this);
         NSNotificationCenter.defaultCenter().removeObserver(this);
+        instances.removeObject(this);
     }
 }

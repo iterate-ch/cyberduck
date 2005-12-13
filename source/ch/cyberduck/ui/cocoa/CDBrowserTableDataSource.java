@@ -336,10 +336,4 @@ public abstract class CDBrowserTableDataSource {
         }
         return promisedDragNames;
     }
-
-
-    protected void finalize() throws java.lang.Throwable {
-        log.debug("finalize:"+this.toString());
-        super.finalize();
-    }    
 }

@@ -582,5 +582,6 @@ public class CDConnectionController extends CDWindowController {
         }
         Rendezvous.instance().removeListener(this.rendezvousListener);
         NSNotificationCenter.defaultCenter().removeObserver(this);
+        instances.removeObject(this);
     }
 }

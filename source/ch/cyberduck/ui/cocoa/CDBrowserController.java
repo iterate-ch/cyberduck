@@ -630,12 +630,6 @@ public class CDBrowserController extends CDWindowController {
         this.browserTabView = browserTabView;
     }
 
-    private NSTextView logView;
-
-    public void setLogView(NSTextView logView) {
-        this.logView = logView;
-    }
-
     public NSView getSelectedBrowserView() {
         switch (this.browserSwitchView.selectedSegment()) {
             case LIST_VIEW: {
@@ -1598,16 +1592,6 @@ public class CDBrowserController extends CDWindowController {
     // Drawers
     // ----------------------------------------------------------
 
-    private NSDrawer logDrawer; // IBOutlet
-
-    public void setLogDrawer(NSDrawer logDrawer) {
-        this.logDrawer = logDrawer;
-    }
-
-    public void toggleLogDrawer(Object sender) {
-        this.logDrawer.toggle(this);
-    }
-
     private NSDrawer bookmarkDrawer; // IBOutlet
 
     public void setBookmarkDrawer(NSDrawer bookmarkDrawer) {
@@ -2240,10 +2224,6 @@ public class CDBrowserController extends CDWindowController {
         }
         host.setLoginController(new CDLoginController(this));
         this.setWorkdir(null);
-        this.logView.textStorage().appendAttributedString(
-                new NSAttributedString(
-                        "Cyberduck " + NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString"),
-                        FIXED_WITH_FONT_ATTRIBUTES));
         this.window().setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername()
                 + "@" + host.getHostname());
         this.bookmarkModel.exportBookmark(host, this.getRepresentedFile());
@@ -2257,8 +2237,8 @@ public class CDBrowserController extends CDWindowController {
             public void connectionWillOpen() {
                 session.addTranscriptListener(transcript = new TranscriptListener() {
                     public void log(final String message) {
-                        logView.textStorage().appendAttributedString(
-                                new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
+//                        logView.textStorage().appendAttributedString(
+//                                new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
                     }
                 });
                 session.addProgressListener(progress = new ProgressListener() {
@@ -2598,14 +2578,17 @@ public class CDBrowserController extends CDWindowController {
 
         if (this.hasSession()) {
             this.session.removeConnectionListener(this.listener);
+            this.session = null;
         }
         this.inspector = null;
+
+        this.bookmarkDrawer.setDelegate(null);
+        this.bookmarkDrawer = null;
 
         this.bookmarkTable.setDataSource(null);
         this.bookmarkModel = null;
         this.bookmarkTable.setDelegate(null);
         this.bookmarkTableDelegate = null;
-
 
         this.browserListView.setDataSource(null);
         this.browserListModel = null;
@@ -2624,7 +2607,21 @@ public class CDBrowserController extends CDWindowController {
 
         this.browserSwitchView = null;
         this.browserTabView = null;
-        
+
+        this.addBookmarkButton.setTarget(null);
+        this.deleteBookmarkButton.setTarget(null);
+        this.editBookmarkButton.setTarget(null);
+
+        this.navigationButton.setTarget(null);
+        this.upButton.setTarget(null);
+        this.pathPopupButton.setTarget(null);
+        this.encodingPopup.setTarget(null);
+
+        this.quickConnectPopup.setDataSource(null);
+        this.quickConnectPopupDataSource = null;
+        this.quickConnectPopup.setTarget(null);
+        this.quickConnectPopup = null;
+
         System.gc();
     }
 

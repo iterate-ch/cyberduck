@@ -46,6 +46,8 @@ import org.apache.log4j.Logger;
 public class CDBookmarkController extends CDWindowController {
     private static Logger log = Logger.getLogger(CDBookmarkController.class);
 
+    private static NSMutableArray instances = new NSMutableArray();
+
     private Host host;
 
     // ----------------------------------------------------------
@@ -53,8 +55,12 @@ public class CDBookmarkController extends CDWindowController {
     // ----------------------------------------------------------
 
     public void windowWillClose(NSNotification notification) {
-        super.windowWillClose(notification);
-        CDBookmarkTableDataSource.instance().save();
+        try {
+            CDBookmarkTableDataSource.instance().save();
+        }
+        finally {
+            super.windowWillClose(notification);
+        }
     }
 
     private NSPopUpButton protocolPopup; // IBOutlet

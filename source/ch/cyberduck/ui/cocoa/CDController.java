@@ -4,6 +4,7 @@ import com.apple.cocoa.foundation.NSObject;
 import com.apple.cocoa.foundation.NSRunLoop;
 import com.apple.cocoa.foundation.NSSelector;
 import com.apple.cocoa.foundation.NSTimer;
+import com.apple.cocoa.foundation.NSMutableArray;
 
 import org.apache.log4j.Logger;
 
@@ -33,8 +34,11 @@ public abstract class CDController extends NSObject {
 
     private NSRunLoop mainRunLoop;
 
+    protected static NSMutableArray instances = new NSMutableArray();
+
     public void awakeFromNib() {
         mainRunLoop = NSRunLoop.currentRunLoop();
+        instances.addObject(this);
     }
 
     protected synchronized void invoke(Runnable thread) {

@@ -611,8 +611,12 @@ class AppleService implements DNSSDService, Runnable {
     }
 
     public void finalize() throws Throwable {
-        this.stop();
-        super.finalize();
+        try {
+            this.stop();
+        }
+        finally {
+            super.finalize();
+        }
     }
 
     /* The run() method is used internally to schedule an update from another thread */

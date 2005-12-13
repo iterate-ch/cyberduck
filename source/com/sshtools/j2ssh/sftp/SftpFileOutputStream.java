@@ -108,10 +108,15 @@ public class SftpFileOutputStream extends OutputStream {
 
 	/**
 	 * @throws IOException
-	 */
-	protected void finalize() throws IOException {
-		if(file.getHandle() != null) {
-			close();
-		}
-	}
+     */
+    protected void finalize() throws Throwable {
+        try {
+            if(file.getHandle() != null) {
+                close();
+            }
+        }
+        finally {
+            super.finalize();
+        }
+    }
 }

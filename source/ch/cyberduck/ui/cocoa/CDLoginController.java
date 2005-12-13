@@ -35,6 +35,14 @@ import org.apache.log4j.Logger;
 public class CDLoginController extends CDWindowController implements LoginController {
     private static Logger log = Logger.getLogger(CDLoginController.class);
 
+    private static NSMutableArray instances = new NSMutableArray();
+
+    public void awakeFromNib() {
+        super.awakeFromNib();
+        
+        this.window().setReleasedWhenClosed(false);
+    }
+
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
@@ -89,6 +97,7 @@ public class CDLoginController extends CDWindowController implements LoginContro
     private CDWindowController windowController;
 
     public CDLoginController(CDWindowController windowController) {
+        instances.addObject(this);
         this.windowController = windowController;
         if (!NSApplication.loadNibNamed("Login", this)) {
             log.fatal("Couldn't load Login.nib");
@@ -145,5 +154,6 @@ public class CDLoginController extends CDWindowController implements LoginContro
                 break;
         }
         NSNotificationCenter.defaultCenter().removeObserver(this);
+        instances.removeObject(this);
     }
 }

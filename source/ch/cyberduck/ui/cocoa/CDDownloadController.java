@@ -24,13 +24,18 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.ui.cocoa.odb.Editor;
 
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.application.NSTextField;
+import com.apple.cocoa.application.NSPanel;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
+import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSNotificationCenter;
 
 import org.apache.log4j.Logger;
 
@@ -60,16 +65,33 @@ public class CDDownloadController extends CDWindowController {
 
         CDQueueController controller = CDQueueController.instance();
         controller.window().makeKeyAndOrderFront(null);
-        controller.beginSheet(this.window());
+        controller.beginSheet(this.window(), //sheet
+                this, //modal delegate
+                new NSSelector("sheetDidEnd",
+                        new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
+                null); //contextInfo
     }
 
-    public void cancelButtonClicked(Object sender) {
-        log.debug("cancelButtonClicked");
-        CDQueueController.instance().endSheet(this.window(), ((NSButton) sender).tag());
+    public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
+        sheet.orderOut(null);
+        switch (returncode) {
+            case (NSAlertPanel.DefaultReturn): //Download
+                break;
+            case (NSAlertPanel.OtherReturn): //Cancel
+                break;
+            case (NSAlertPanel.AlternateReturn): //Cancel
+                break;
+        }
+        NSNotificationCenter.defaultCenter().removeObserver(this);
+        instances.removeObject(this);
     }
 
-    public void downloadButtonClicked(Object sender) {
-        log.debug("downloadButtonClicked");
+
+    public void cancelButtonClicked(NSButton sender) {
+        this.endSheet(this.window(), sender.tag());
+    }
+
+    public void downloadButtonClicked(NSButton sender) {
         try {
             Host host = Host.parse(urlField.stringValue());
             String file = host.getDefaultPath();
@@ -85,11 +107,11 @@ public class CDDownloadController extends CDWindowController {
                     queue.addRoot(path);
                     CDQueueController.instance().startItem(queue);
                 }
+                this.endSheet(this.window(), sender.tag());
             }
             else {
                 throw new MalformedURLException("URL must contain reference to a file");
             }
-            CDQueueController.instance().endSheet(this.window(), ((NSButton) sender).tag());
         }
         catch (MalformedURLException e) {
             NSAlertPanel.beginCriticalAlertSheet("Error", //title

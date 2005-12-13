@@ -135,8 +135,12 @@ public class CDQueueController extends CDWindowController {
     }
 
     public void windowWillClose(NSNotification notification) {
-        super.windowWillClose(notification);
-        this.queueModel.save();
+        try {
+            this.queueModel.save();
+        }
+        finally {
+            super.windowWillClose(notification);
+        }
     }
 
     private CDQueueTableDataSource queueModel;

@@ -83,6 +83,7 @@ public class CDDuplicateFileController extends CDFileController {
                 break;
         }
         NSNotificationCenter.defaultCenter().removeObserver(this);
+        instances.removeObject(this);
     }
 
     protected Path duplicate(Path workdir, String filename) {
