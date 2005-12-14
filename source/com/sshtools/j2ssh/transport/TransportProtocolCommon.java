@@ -32,14 +32,14 @@ import com.sshtools.j2ssh.transport.kex.SshKeyExchange;
 import com.sshtools.j2ssh.transport.kex.SshKeyExchangeFactory;
 import com.sshtools.j2ssh.util.Hash;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author $author$
@@ -68,7 +68,7 @@ public abstract class TransportProtocolCommon implements TransportProtocol, Runn
 
     /**  */
     private boolean[] completeOnNewKeys = {
-        false};
+            false};
 
     /**  */
     protected HostKeyVerification hosts;
@@ -207,9 +207,9 @@ public abstract class TransportProtocolCommon implements TransportProtocol, Runn
         if (log.isDebugEnabled()) {
             log.debug("Disconnect: " + description);
         }
-
         try {
-
+            if (state.getValue() == TransportProtocolState.DISCONNECTED)
+                return;
             state.setValue(TransportProtocolState.DISCONNECTED);
             state.setDisconnectReason(description);
 
@@ -357,8 +357,8 @@ public abstract class TransportProtocolCommon implements TransportProtocol, Runn
             startBinaryPacketProtocol();
         }
         catch (Throwable e) {
-            if(e instanceof IOException) {
-                state.setLastError((IOException)e);
+            if (e instanceof IOException) {
+                state.setLastError((IOException) e);
                 state.setValue(TransportProtocolState.DISCONNECTED);
             }
         }
@@ -886,40 +886,35 @@ public abstract class TransportProtocolCommon implements TransportProtocol, Runn
             }
 
             switch (msg.getMessageId()) {
-                case SshMsgKexInit.SSH_MSG_KEX_INIT:
-                    {
-                        onMsgKexInit((SshMsgKexInit) msg);
+                case SshMsgKexInit.SSH_MSG_KEX_INIT: {
+                    onMsgKexInit((SshMsgKexInit) msg);
 
-                        break;
-                    }
+                    break;
+                }
 
-                case SshMsgDisconnect.SSH_MSG_DISCONNECT:
-                    {
-                        onMsgDisconnect((SshMsgDisconnect) msg);
+                case SshMsgDisconnect.SSH_MSG_DISCONNECT: {
+                    onMsgDisconnect((SshMsgDisconnect) msg);
 
-                        break;
-                    }
+                    break;
+                }
 
-                case SshMsgIgnore.SSH_MSG_IGNORE:
-                    {
-                        onMsgIgnore((SshMsgIgnore) msg);
+                case SshMsgIgnore.SSH_MSG_IGNORE: {
+                    onMsgIgnore((SshMsgIgnore) msg);
 
-                        break;
-                    }
+                    break;
+                }
 
-                case SshMsgUnimplemented.SSH_MSG_UNIMPLEMENTED:
-                    {
-                        onMsgUnimplemented((SshMsgUnimplemented) msg);
+                case SshMsgUnimplemented.SSH_MSG_UNIMPLEMENTED: {
+                    onMsgUnimplemented((SshMsgUnimplemented) msg);
 
-                        break;
-                    }
+                    break;
+                }
 
-                case SshMsgDebug.SSH_MSG_DEBUG:
-                    {
-                        onMsgDebug((SshMsgDebug) msg);
+                case SshMsgDebug.SSH_MSG_DEBUG: {
+                    onMsgDebug((SshMsgDebug) msg);
 
-                        break;
-                    }
+                    break;
+                }
 
                 default:
                     messageStore.addMessage(msg);
@@ -1227,33 +1222,29 @@ public abstract class TransportProtocolCommon implements TransportProtocol, Runn
                 msg = messageStore.createMessage(msgdata);
 
                 switch (messageId.intValue()) {
-                    case SshMsgDisconnect.SSH_MSG_DISCONNECT:
-                        {
-                            onMsgDisconnect((SshMsgDisconnect) msg);
+                    case SshMsgDisconnect.SSH_MSG_DISCONNECT: {
+                        onMsgDisconnect((SshMsgDisconnect) msg);
 
-                            break;
-                        }
+                        break;
+                    }
 
-                    case SshMsgIgnore.SSH_MSG_IGNORE:
-                        {
-                            onMsgIgnore((SshMsgIgnore) msg);
+                    case SshMsgIgnore.SSH_MSG_IGNORE: {
+                        onMsgIgnore((SshMsgIgnore) msg);
 
-                            break;
-                        }
+                        break;
+                    }
 
-                    case SshMsgUnimplemented.SSH_MSG_UNIMPLEMENTED:
-                        {
-                            onMsgUnimplemented((SshMsgUnimplemented) msg);
+                    case SshMsgUnimplemented.SSH_MSG_UNIMPLEMENTED: {
+                        onMsgUnimplemented((SshMsgUnimplemented) msg);
 
-                            break;
-                        }
+                        break;
+                    }
 
-                    case SshMsgDebug.SSH_MSG_DEBUG:
-                        {
-                            onMsgDebug((SshMsgDebug) msg);
+                    case SshMsgDebug.SSH_MSG_DEBUG: {
+                        onMsgDebug((SshMsgDebug) msg);
 
-                            break;
-                        }
+                        break;
+                    }
 
                     default: // Exception not allowed
                         messageStore.addMessage(msg);

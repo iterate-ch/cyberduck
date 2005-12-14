@@ -43,7 +43,6 @@ public class Rendezvous
     private static Logger log = Logger.getLogger(Rendezvous.class);
 
     static {
-        // Ensure native keychain library is loaded
         try {
             NSBundle bundle = NSBundle.mainBundle();
             String lib = bundle.resourcePath() + "/Java/" + "libDNSSD.dylib";
