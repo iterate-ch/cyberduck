@@ -124,6 +124,9 @@ public class Login {
             if (this.isAnonymousLogin()) {
                 this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
             }
+            else {
+                this.pass = null;
+            }
         }
         else {
             this.pass = p;
