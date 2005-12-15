@@ -153,7 +153,6 @@ public class CDLoginController extends CDWindowController implements LoginContro
                 this.login.setTryAgain(false);
                 break;
         }
-        NSNotificationCenter.defaultCenter().removeObserver(this);
-        instances.removeObject(this);
+        this.release();
     }
 }

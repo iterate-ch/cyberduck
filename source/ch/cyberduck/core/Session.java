@@ -192,7 +192,7 @@ public abstract class Session
         log.debug("setClosed");
         this.connected = false;
         this.message(NSBundle.localizedString("Disconnected", "Status", ""));
-        this.release();
+        this.release();;
 
         this.connectionDidClose();
     }

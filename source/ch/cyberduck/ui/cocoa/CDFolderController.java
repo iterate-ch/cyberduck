@@ -93,8 +93,7 @@ public class CDFolderController extends CDWindowController {
             case (NSAlertPanel.AlternateReturn):
                 break;
         }
-        NSNotificationCenter.defaultCenter().removeObserver(this);
-        instances.removeObject(this);
+        this.release();
     }
 
     public void create(Path workdir, String filename) {

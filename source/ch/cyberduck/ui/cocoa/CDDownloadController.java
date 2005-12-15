@@ -82,8 +82,7 @@ public class CDDownloadController extends CDWindowController {
             case (NSAlertPanel.AlternateReturn): //Cancel
                 break;
         }
-        NSNotificationCenter.defaultCenter().removeObserver(this);
-        instances.removeObject(this);
+        this.release();
     }
 
 

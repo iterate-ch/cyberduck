@@ -5,6 +5,7 @@ import com.apple.cocoa.foundation.NSRunLoop;
 import com.apple.cocoa.foundation.NSSelector;
 import com.apple.cocoa.foundation.NSTimer;
 import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSNotificationCenter;
 
 import org.apache.log4j.Logger;
 
@@ -53,6 +54,11 @@ public abstract class CDController extends NSObject {
         Object info = timer.userInfo();
         if (info instanceof Runnable)
             ((Runnable) info).run();
+    }
+
+    protected void release() {
+        NSNotificationCenter.defaultCenter().removeObserver(this);
+        instances.removeObject(this);
     }
 
     protected void finalize() throws java.lang.Throwable {

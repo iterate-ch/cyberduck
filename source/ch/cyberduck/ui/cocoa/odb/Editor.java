@@ -57,8 +57,6 @@ public class Editor {
         SUPPORTED_EDITORS.put("CSSEdit", "com.macrabbit.cssedit");
         SUPPORTED_EDITORS.put("Tag", "com.talacia.Tag");
 
-        NSSelector absolutePathForAppBundleWithIdentifierSelector =
-                new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
         java.util.Iterator editorNames = SUPPORTED_EDITORS.keySet().iterator();
         java.util.Iterator editorIdentifiers = SUPPORTED_EDITORS.values().iterator();
         while (editorNames.hasNext()) {

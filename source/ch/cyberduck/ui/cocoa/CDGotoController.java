@@ -110,7 +110,7 @@ public class CDGotoController extends CDWindowController {
             case (NSAlertPanel.AlternateReturn):
                 break;
         }
-        instances.removeObject(this);
+        this.release();
     }
 
     protected void gotoFolder(Path workdir, String filename) {

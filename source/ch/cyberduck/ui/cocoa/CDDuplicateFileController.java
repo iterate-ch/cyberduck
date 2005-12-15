@@ -82,8 +82,7 @@ public class CDDuplicateFileController extends CDFileController {
             case (NSAlertPanel.AlternateReturn): //Cancel
                 break;
         }
-        NSNotificationCenter.defaultCenter().removeObserver(this);
-        instances.removeObject(this);
+        this.release();
     }
 
     protected Path duplicate(Path workdir, String filename) {

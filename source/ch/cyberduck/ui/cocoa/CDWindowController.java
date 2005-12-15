@@ -66,8 +66,7 @@ public abstract class CDWindowController extends CDController {
 
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose:"+notification);
-        NSNotificationCenter.defaultCenter().removeObserver(this);
-        instances.removeObject(this);
+        this.release();
     }
 
     public void cascade() {

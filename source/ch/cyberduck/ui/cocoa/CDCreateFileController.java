@@ -63,8 +63,7 @@ public class CDCreateFileController extends CDFileController {
             case (NSAlertPanel.AlternateReturn): //Cancel
                 break;
         }
-        NSNotificationCenter.defaultCenter().removeObserver(this);
-        instances.removeObject(this);
+        this.release();
     }
 
     protected Path create(Path workdir, String filename) {
