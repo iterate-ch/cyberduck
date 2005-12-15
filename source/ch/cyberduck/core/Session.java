@@ -70,8 +70,6 @@ public abstract class Session
 
     private boolean connected;
 
-    private boolean authenticated;
-
     public Session copy() {
         return SessionFactory.createSession(this.host);
     }
