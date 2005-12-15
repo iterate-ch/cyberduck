@@ -2208,7 +2208,7 @@ public class CDBrowserController extends CDWindowController {
 
     private ConnectionListener listener = null;
 
-    private Session init(Host host) {
+    private Session init(final Host host) {
         if (this.hasSession()) {
             this.session.removeConnectionListener(listener);
         }
@@ -2223,8 +2223,7 @@ public class CDBrowserController extends CDWindowController {
         }
         host.setLoginController(new CDLoginController(this));
         this.setWorkdir(null);
-        this.window().setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername()
-                + "@" + host.getHostname());
+        this.window().setTitle(host.getProtocol() + ":" + host.getHostname());
         this.bookmarkModel.exportBookmark(host, this.getRepresentedFile());
         if (this.getRepresentedFile().exists()) {
             this.window().setRepresentedFilename(this.getRepresentedFile().getAbsolutePath());
@@ -2296,6 +2295,9 @@ public class CDBrowserController extends CDWindowController {
                     });
                     return;
                 }
+                window().setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername()
+                        + "@" + host.getHostname());
+                window().setDocumentEdited(true);
             }
 
             public void connectionWillClose() {
@@ -2320,6 +2322,7 @@ public class CDBrowserController extends CDWindowController {
                     });
                     return;
                 }
+                window().setDocumentEdited(false);
                 session.removeTranscriptListener(transcript);
                 session.removeProgressListener(progress);
                 progressIndicator.stopAnimation(this);

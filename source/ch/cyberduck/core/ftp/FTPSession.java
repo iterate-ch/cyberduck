@@ -101,7 +101,7 @@ public class FTPSession extends Session {
     public void connect(String encoding) throws IOException, FTPException {
         try {
             synchronized(this) {
-                this.setConnected();
+                this.retain();
                 this.message(NSBundle.localizedString("Opening FTP connection to", "Status", "") + " " + host.getIp() + "...");
                 this.log("=====================================");
                 this.log(new java.util.Date().toString());
@@ -127,13 +127,13 @@ public class FTPSession extends Session {
                     FTPClient.clearSOCKS();
                 }
                 this.FTP.setConnectMode(this.host.getFTPConnectMode());
-                this.connectionDidOpen();
                 this.message(NSBundle.localizedString("FTP connection opened", "Status", ""));
                 this.login();
                 if (Preferences.instance().getBoolean("ftp.sendSystemCommand")) {
                     this.host.setIdentification(this.FTP.system());
                 }
                 this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.host.getIdentification());
+                this.setConnected();
             }
         }
         catch (FTPException e) {
@@ -154,7 +154,6 @@ public class FTPSession extends Session {
                 this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " " + host.getCredentials().getUsername() + "...");
                 this.FTP.login(credentials.getUsername(), credentials.getPassword());
                 credentials.addInternetPasswordToKeychain();
-                this.setAuthenticated();
                 this.message(NSBundle.localizedString("Login successful", "Status", ""));
             }
             catch (FTPException e) {

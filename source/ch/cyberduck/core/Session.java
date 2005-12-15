@@ -175,41 +175,40 @@ public abstract class Session
         return this.connected;
     }
 
-    public boolean isAuthenticated() {
-        return this.authenticated;
-    }
-
     private Timer keepAliveTimer = null;
 
     public void setConnected() throws IOException {
         log.debug("setConnected");
-        SessionPool.instance().add(this, Preferences.instance().getBoolean("connection.pool.force"));
-        this.connectionWillOpen();
         this.connected = true;
-    }
-
-    public void setAuthenticated() {
-        this.authenticated = true;
         if (Preferences.instance().getBoolean("connection.keepalive")) {
             this.keepAliveTimer = new Timer();
             this.keepAliveTimer.scheduleAtFixedRate(new KeepAliveTask(),
                     Preferences.instance().getInteger("connection.keepalive.interval"),
                     Preferences.instance().getInteger("connection.keepalive.interval"));
         }
+
+        this.connectionDidOpen();
     }
 
     public void setClosed() {
         log.debug("setClosed");
         this.connected = false;
-        if (Preferences.instance().getBoolean("connection.keepalive") && this.keepAliveTimer != null) {
-            this.keepAliveTimer.cancel();
-        }
-        this.release();
         this.message(NSBundle.localizedString("Disconnected", "Status", ""));
+        this.release();
+
         this.connectionDidClose();
     }
 
+    public void retain() throws IOException {
+        SessionPool.instance().add(this, Preferences.instance().getBoolean("connection.pool.force"));
+
+        this.connectionWillOpen();
+    }
+
     private void release() {
+        if (Preferences.instance().getBoolean("connection.keepalive") && this.keepAliveTimer != null) {
+            this.keepAliveTimer.cancel();
+        }
         SessionPool.instance().release(this);
     }
 

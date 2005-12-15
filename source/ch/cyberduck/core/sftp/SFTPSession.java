@@ -127,7 +127,7 @@ public class SFTPSession extends Session {
     public void connect(String encoding) throws IOException {
         try {
             synchronized(this) {
-                this.setConnected();
+                this.retain();
                 this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getIp() + "...");
                 this.log("=====================================");
                 this.log(new java.util.Date().toString());
@@ -167,7 +167,6 @@ public class SFTPSession extends Session {
                 }
                 SSH.connect(properties, this.getHostKeyVerificationController());
                 if (SSH.isConnected()) {
-                    this.connectionDidOpen();
                     this.message(NSBundle.localizedString("SSH connection opened", "Status", ""));
                     String id = SSH.getServerId();
                     this.log(id);
@@ -185,6 +184,7 @@ public class SFTPSession extends Session {
                     }, encoding);
                     this.message(NSBundle.localizedString("SFTP subsystem ready", "Status", ""));
                 }
+                this.setConnected();
             }
         }
         catch (SshException e) {
@@ -270,7 +270,6 @@ public class SFTPSession extends Session {
             if (credentials.usesPublicKeyAuthentication()) {
                 if (AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(credentials)) {
                     this.message(NSBundle.localizedString("Login successful", "Status", ""));
-                    this.setAuthenticated();
                     return;
                 }
             }
@@ -279,7 +278,6 @@ public class SFTPSession extends Session {
                         AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
                     this.message(NSBundle.localizedString("Login successful", "Status", ""));
                     credentials.addInternetPasswordToKeychain();
-                    this.setAuthenticated();
                     return;
                 }
             }
