@@ -49,7 +49,10 @@ public abstract class CDWindowController extends CDController {
 
     public void setWindow(NSWindow window) {
         this.window = window;
-        this.window.setDelegate(this);
+        (NSNotificationCenter.defaultCenter()).addObserver(this,
+                new NSSelector("windowWillClose", new Class[]{NSNotification.class}),
+                NSWindow.WindowWillCloseNotification,
+                this.window);
         this.window.setReleasedWhenClosed(true);
     }
 
@@ -57,10 +60,15 @@ public abstract class CDWindowController extends CDController {
         return this.window;
     }
 
+    public boolean windowShouldClose(NSWindow sender) {
+        return true;
+    }
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose:"+notification);
         NSNotificationCenter.defaultCenter().removeObserver(this);
+        this.window = null;
         instances.removeObject(this);
+        System.gc();
     }
 
     public void cascade() {
