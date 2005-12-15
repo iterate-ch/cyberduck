@@ -121,11 +121,11 @@ public class CDMainController extends CDController {
     }
 
     private NSMenu bookmarkMenu;
-    private NSObject bookmarkMenuDelegate;
+    private BookmarkMenuDelegate bookmarkMenuDelegate;
     private NSMenu rendezvousMenu;
-    private NSObject rendezvousMenuDelegate;
+    private RendezvousMenuDelegate rendezvousMenuDelegate;
     private NSMenu historyMenu;
-    private NSObject historyMenuDelegate;
+    private HistoryMenuDelegate historyMenuDelegate;
 
     public void setBookmarkMenu(NSMenu bookmarkMenu) {
         this.bookmarkMenu = bookmarkMenu;

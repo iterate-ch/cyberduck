@@ -170,9 +170,8 @@ public class SFTPSession extends Session {
                     this.connectionDidOpen();
                     this.message(NSBundle.localizedString("SSH connection opened", "Status", ""));
                     String id = SSH.getServerId();
-                    this.host.setIdentification(id);
                     this.log(id);
-                    log.info(SSH.getAvailableAuthMethods(host.getCredentials().getUsername()));
+                    this.host.setIdentification(id);
                     this.login();
                     this.message(NSBundle.localizedString("Starting SFTP subsystem...", "Status", ""));
                     this.SFTP = SSH.openSftpChannel(new ChannelEventAdapter() {
