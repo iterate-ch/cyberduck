@@ -63,12 +63,11 @@ public abstract class CDWindowController extends CDController {
     public boolean windowShouldClose(NSWindow sender) {
         return true;
     }
+
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose:"+notification);
         NSNotificationCenter.defaultCenter().removeObserver(this);
-        this.window = null;
         instances.removeObject(this);
-        System.gc();
     }
 
     public void cascade() {
