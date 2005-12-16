@@ -2229,16 +2229,9 @@ public class CDBrowserController extends CDWindowController {
             this.window().setRepresentedFilename(this.getRepresentedFile().getAbsolutePath());
         }
         session.addConnectionListener(listener = new ConnectionListener() {
-            TranscriptListener transcript;
             ProgressListener progress;
 
             public void connectionWillOpen() {
-                session.addTranscriptListener(transcript = new TranscriptListener() {
-                    public void log(final String message) {
-//                        logView.textStorage().appendAttributedString(
-//                                new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
-                    }
-                });
                 session.addProgressListener(progress = new ProgressListener() {
                     public void message(final String msg) {
                         if (!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
@@ -2323,7 +2316,6 @@ public class CDBrowserController extends CDWindowController {
                     return;
                 }
                 window().setDocumentEdited(false);
-                session.removeTranscriptListener(transcript);
                 session.removeProgressListener(progress);
                 progressIndicator.stopAnimation(this);
                 statusIcon.setImage(null);

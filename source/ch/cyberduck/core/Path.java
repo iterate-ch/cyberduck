@@ -403,7 +403,7 @@ public abstract class Path {
             else {
                 out.write(chunk, 0, amount);
                 this.status.setCurrent(current += amount);
-                int fraction = (int) (status.getCurrent() * 10 / this.attributes.getSize());
+                int fraction = (int) (status.getCurrent() / this.attributes.getSize() * 10);
                 if ((fraction > step)) {
                     this.getLocal().setProgress(++step);
                 }

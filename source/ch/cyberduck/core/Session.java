@@ -273,6 +273,7 @@ public abstract class Session
     }
 
     public void log(final String message) {
+        log.info(message);
         TranscriptListener[] l = (TranscriptListener[])transcriptListeners.toArray(new TranscriptListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].log(message);
