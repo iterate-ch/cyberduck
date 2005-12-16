@@ -2651,9 +2651,9 @@ public class CDBrowserController extends CDWindowController {
                                     + elements.objectAtIndex(0) + "\"");
                         }
                         else {
-                            item.setTitle(NSBundle.localizedString("Paste", "Menu item") + " " +
+                            item.setTitle(NSBundle.localizedString("Paste from Finder", "Menu item") + " (" +
                                     elements.count() + " " +
-                                    NSBundle.localizedString("files", ""));
+                                    NSBundle.localizedString("files", "") + ")");
                         }
                         valid = true;
                     }
@@ -2679,8 +2679,8 @@ public class CDBrowserController extends CDWindowController {
                                         + q.getRoot().getName() + "\"");
                             else {
                                 item.setTitle(NSBundle.localizedString("Paste", "Menu item")
-                                        + " " + q.numberOfRoots() + " " +
-                                        NSBundle.localizedString("files", ""));
+                                        + " (" + q.numberOfRoots() + " " +
+                                        NSBundle.localizedString("files", "") + ")");
                             }
                             valid = true;
                         }
