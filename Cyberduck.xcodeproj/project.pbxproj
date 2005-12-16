@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		47026428087DC91C008837FD /* IDisk.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47026426087DC91C008837FD /* IDisk.strings */; };
-		470D337E091CE51100E33C50 /* AIAutoScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 470D337C091CE51100E33C50 /* AIAutoScrollView.m */; };
-		470D337F091CE51100E33C50 /* AIAutoScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 470D337D091CE51100E33C50 /* AIAutoScrollView.h */; };
 		470E56D508BE3E1E00BDF3CD /* MacOSXForkerIO.c in Sources */ = {isa = PBXBuildFile; fileRef = 470E56D008BE3E1E00BDF3CD /* MacOSXForkerIO.c */; };
 		470E56D608BE3E1F00BDF3CD /* TinAlias.h in Headers */ = {isa = PBXBuildFile; fileRef = 470E56D108BE3E1E00BDF3CD /* TinAlias.h */; };
 		470E56D708BE3E1F00BDF3CD /* TinFSFork.h in Headers */ = {isa = PBXBuildFile; fileRef = 470E56D208BE3E1E00BDF3CD /* TinFSFork.h */; };
@@ -320,8 +318,6 @@
 		47026440087DC98B008837FD /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/IDisk.strings; sourceTree = "<group>"; };
 		47026441087DC98E008837FD /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/IDisk.strings; sourceTree = "<group>"; };
 		470B45BF0766162000E73D07 /* CDInfoController.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CDInfoController.java; sourceTree = "<group>"; };
-		470D337C091CE51100E33C50 /* AIAutoScrollView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = AIAutoScrollView.m; sourceTree = "<group>"; };
-		470D337D091CE51100E33C50 /* AIAutoScrollView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AIAutoScrollView.h; sourceTree = "<group>"; };
 		470E56D008BE3E1E00BDF3CD /* MacOSXForkerIO.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MacOSXForkerIO.c; sourceTree = "<group>"; };
 		470E56D108BE3E1E00BDF3CD /* TinAlias.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinAlias.h; sourceTree = "<group>"; };
 		470E56D208BE3E1E00BDF3CD /* TinFSFork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinFSFork.h; sourceTree = "<group>"; };
@@ -679,7 +675,6 @@
 		4741545606C4F08B00AC0BD2 /* SimpleASNWriter.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SimpleASNWriter.java; sourceTree = "<group>"; };
 		4741545706C4F08B00AC0BD2 /* StartStopState.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = StartStopState.java; sourceTree = "<group>"; };
 		4741545806C4F08B00AC0BD2 /* State.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = State.java; sourceTree = "<group>"; };
-		4741547E06C4F08B00AC0BD2 /* DefaultFTPFileListParser.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = DefaultFTPFileListParser.java; sourceTree = "<group>"; };
 		4741547F06C4F08B00AC0BD2 /* FTPFileEntryParser.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPFileEntryParser.java; sourceTree = "<group>"; };
 		4741548006C4F08B00AC0BD2 /* FTPFileEntryParserImpl.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPFileEntryParserImpl.java; sourceTree = "<group>"; };
 		4741548206C4F08B00AC0BD2 /* CompositeFileEntryParser.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CompositeFileEntryParser.java; sourceTree = "<group>"; };
@@ -2324,7 +2319,6 @@
 		4741547D06C4F08B00AC0BD2 /* ftp */ = {
 			isa = PBXGroup;
 			children = (
-				4741547E06C4F08B00AC0BD2 /* DefaultFTPFileListParser.java */,
 				4741547F06C4F08B00AC0BD2 /* FTPFileEntryParser.java */,
 				4741548006C4F08B00AC0BD2 /* FTPFileEntryParserImpl.java */,
 				4741548106C4F08B00AC0BD2 /* parser */,
@@ -2522,8 +2516,6 @@
 		4798434E072B0DAA00FA3CDB /* view */ = {
 			isa = PBXGroup;
 			children = (
-				470D337C091CE51100E33C50 /* AIAutoScrollView.m */,
-				470D337D091CE51100E33C50 /* AIAutoScrollView.h */,
 				4764B47D08B7835E00441096 /* SKWSegmentedControl.m */,
 				4764B48008B7835E00441096 /* SKWSegmentedControl.h */,
 				4764B47F08B7835E00441096 /* SKWSegmentedControlWindowProxy.h */,
@@ -2797,7 +2789,6 @@
 				47FD45330801EAEE00716715 /* UKPrefsPanel.h in Headers */,
 				4764B48308B7835E00441096 /* SKWSegmentedControlWindowProxy.h in Headers */,
 				4764B48408B7835E00441096 /* SKWSegmentedControl.h in Headers */,
-				470D337F091CE51100E33C50 /* AIAutoScrollView.h in Headers */,
 				47488FD50944523700FD68D7 /* SmartCrashReportsInstall.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3460,7 +3451,6 @@
 				47FD45340801EAEE00716715 /* UKPrefsPanel.m in Sources */,
 				4764B48108B7835E00441096 /* SKWSegmentedControl.m in Sources */,
 				4764B48208B7835E00441096 /* SKWSegmentedControlWindowProxy.m in Sources */,
-				470D337E091CE51100E33C50 /* AIAutoScrollView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
