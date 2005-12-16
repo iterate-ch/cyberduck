@@ -46,8 +46,6 @@
                 editMenu = NSMenu; 
                 encodingPopup = NSPopUpButton; 
                 infoLabel = NSTextField; 
-                logDrawer = NSDrawer; 
-                logView = NSTextView; 
                 navigationButton = NSSegmentedControl; 
                 pathPopup = NSPopUpButton; 
                 progressIndicator = NSProgressIndicator; 
