@@ -5,7 +5,7 @@
             ACTIONS = {cancelButtonClicked = id; createButtonClicked = id; editButtonClicked = id; }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDFileController"; 
             LANGUAGE = Java; 
-            OUTLETS = {filenameField = NSTextField; window = NSWindow; }; 
+            OUTLETS = {editButton = NSButton; filenameField = NSTextField; window = NSWindow; }; 
             SUPERCLASS = NSObject; 
         }
     ); 
