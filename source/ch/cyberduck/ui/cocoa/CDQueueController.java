@@ -50,6 +50,30 @@ public class CDQueueController extends CDWindowController {
         this.window().setToolbar(toolbar);
     }
 
+    public void setWindow(NSWindow window) {
+        super.setWindow(window);
+        (NSNotificationCenter.defaultCenter()).addObserver(this,
+                new NSSelector("windowDidBecomeKey", new Class[]{NSNotification.class}),
+                NSWindow.WindowDidBecomeKeyNotification,
+                window);
+        (NSNotificationCenter.defaultCenter()).addObserver(this,
+                new NSSelector("windowDidResignKey", new Class[]{NSNotification.class}),
+                NSWindow.WindowDidResignKeyNotification,
+                window);
+    }
+
+    public void windowDidBecomeKey(NSNotification notification) {
+        this.updateTableViewSelection();
+    }
+
+    public void windowDidResignKey(NSNotification notification) {
+        this.updateTableViewSelection();
+    }
+
+    public void windowWillClose(NSNotification notification) {
+        this.queueModel.save();
+    }
+
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
@@ -124,18 +148,6 @@ public class CDQueueController extends CDWindowController {
         if (returncode == NSAlertPanel.AlternateReturn) { //Cancel
             NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
         }
-    }
-
-    public void windowDidBecomeKey(NSNotification notification) {
-        this.updateTableViewSelection();
-    }
-
-    public void windowDidResignKey(NSNotification notification) {
-        this.updateTableViewSelection();
-    }
-
-    public void windowWillClose(NSNotification notification) {
-        this.queueModel.save();
     }
 
     private CDQueueTableDataSource queueModel;
