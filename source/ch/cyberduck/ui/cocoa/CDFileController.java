@@ -18,12 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Preferences;
+
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.application.NSTextField;
+import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSNotification;
 
 import org.apache.log4j.Logger;
 
@@ -37,6 +38,14 @@ public abstract class CDFileController extends CDWindowController {
 
     public void setFilenameField(NSTextField filenameField) {
         this.filenameField = filenameField;
+    }
+
+    private NSButton editButton; //IBOutlet
+
+    public void setEditButton(NSButton editButton) {
+        this.editButton = editButton;
+        this.editButton.setEnabled(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                Preferences.instance().getProperty("editor.bundleIdentifier")) != null);
     }
 
     public void editButtonClicked(NSButton sender) {
