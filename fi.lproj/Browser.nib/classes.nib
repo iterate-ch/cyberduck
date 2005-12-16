@@ -36,7 +36,6 @@
                 addBookmarkButton = NSButton; 
                 bookmarkDrawer = NSDrawer; 
                 bookmarkTable = NSTableView; 
-                browserColumnView = NSBrowser; 
                 browserListView = NSTableView; 
                 browserOutlineView = NSOutlineView; 
                 browserSwitchView = NSSegmentedControl; 
