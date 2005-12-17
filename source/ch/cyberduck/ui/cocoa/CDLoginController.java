@@ -51,7 +51,7 @@ public class CDLoginController extends CDWindowController implements LoginContro
     // ----------------------------------------------------------
 
     public void setWindow(NSWindow window) {
-        super.setWindow(window);
+        this.window = window;
         this.window.setReleasedWhenClosed(false);
     }
 
@@ -149,6 +149,5 @@ public class CDLoginController extends CDWindowController implements LoginContro
                 this.login.setTryAgain(false);
                 break;
         }
-        this.invalidate();
     }
 }

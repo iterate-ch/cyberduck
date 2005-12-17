@@ -113,12 +113,8 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     public void windowWillClose(NSNotification notification) {
-        try {
-            instance = null;
-        }
-        finally {
-            super.windowWillClose(notification);
-        }
+        super.windowWillClose(notification);
+        instance = null;
     }
 
     public void awakeFromNib() {

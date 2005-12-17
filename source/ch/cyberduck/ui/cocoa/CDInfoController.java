@@ -32,6 +32,7 @@ import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSImageView;
 import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDate;
@@ -142,6 +143,11 @@ public class CDInfoController extends CDWindowController {
         this.iconImageView = iconImageView;
     }
 
+    public void setWindow(NSWindow window) {
+        super.setWindow(window);
+        this.window.setReleasedWhenClosed(false);
+    }
+
     // ----------------------------------------------------------
     // Constructors
     // ----------------------------------------------------------
@@ -165,7 +171,6 @@ public class CDInfoController extends CDWindowController {
     public void awakeFromNib() {
         super.awakeFromNib();
 
-        this.window.setReleasedWhenClosed(false);
         if (null == cascadedWindowPoint) {
             cascadedWindowPoint = this.window.cascadeTopLeftFromPoint(this.window.frame().origin());
         }

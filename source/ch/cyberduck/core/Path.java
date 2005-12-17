@@ -464,9 +464,4 @@ public abstract class Path {
     public String toString() {
         return this.getAbsolute();
     }
-
-    protected void finalize() throws java.lang.Throwable {
-        log.debug("finalize:"+this.toString());
-        super.finalize();
-    }
 }
