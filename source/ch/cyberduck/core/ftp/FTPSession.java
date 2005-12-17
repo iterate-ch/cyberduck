@@ -63,6 +63,7 @@ public class FTPSession extends Session {
 
     public void close() {
         synchronized(this) {
+            this.activityStarted();
             this.connectionWillClose();
             try {
                 if (FTP != null) {
@@ -78,6 +79,7 @@ public class FTPSession extends Session {
                 log.error("IO Error: " + e.getMessage());
             }
             finally {
+                this.activityStopped();
                 this.setClosed();
             }
         }

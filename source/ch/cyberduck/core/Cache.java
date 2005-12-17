@@ -121,4 +121,8 @@ public class Cache extends HashMap {
     public Object put(Object path, Object childs) {
         return this.put((Path) path, (List) childs);
     }
+
+    public void clear() {
+        super.clear();
+    }
 }

@@ -31,9 +31,6 @@ import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.application.NSTextView;
 import com.apple.cocoa.foundation.*;
 
-import java.util.Observable;
-import java.util.Observer;
-
 /**
  * @version $Id$
  */
@@ -99,6 +96,6 @@ public class CDCommandController extends CDWindowController implements Transcrip
     public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
         session.removeTranscriptListener(this);
-        this.release();
+        this.invalidate();
     }
 }

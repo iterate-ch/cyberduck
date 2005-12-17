@@ -24,18 +24,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.ui.cocoa.odb.Editor;
 
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.application.NSPanel;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSNotificationCenter;
 
 import org.apache.log4j.Logger;
 
@@ -82,7 +77,7 @@ public class CDDownloadController extends CDWindowController {
             case (NSAlertPanel.AlternateReturn): //Cancel
                 break;
         }
-        this.release();
+        this.invalidate();
     }
 
 

@@ -32,9 +32,6 @@ import com.apple.cocoa.application.NSPanel;
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSSize;
-import com.apple.cocoa.foundation.NSNotificationCenter;
-
-import java.util.List;
 
 /**
  * @version $Id$
@@ -82,7 +79,7 @@ public class CDDuplicateFileController extends CDFileController {
             case (NSAlertPanel.AlternateReturn): //Cancel
                 break;
         }
-        this.release();
+        this.invalidate();
     }
 
     protected Path duplicate(Path workdir, String filename) {

@@ -27,13 +27,8 @@ import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.application.NSPanel;
 import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSNotificationCenter;
 
 import org.apache.log4j.Logger;
-
-import java.util.List;
 
 /**
  * @version $Id$
@@ -93,7 +88,7 @@ public class CDFolderController extends CDWindowController {
             case (NSAlertPanel.AlternateReturn):
                 break;
         }
-        this.release();
+        this.invalidate();
     }
 
     public void create(Path workdir, String filename) {

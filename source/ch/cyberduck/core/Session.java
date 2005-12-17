@@ -98,9 +98,9 @@ public abstract class Session
      *
      * @see Host
      */
-    public abstract void connect(String encoding) throws IOException;
+    protected abstract void connect(String encoding) throws IOException;
 
-    public void connect() throws IOException {
+    protected void connect() throws IOException {
         this.connect(this.host.getEncoding());
     }
 
@@ -192,7 +192,7 @@ public abstract class Session
         log.debug("setClosed");
         this.connected = false;
         this.message(NSBundle.localizedString("Disconnected", "Status", ""));
-        this.release();;
+        this.release();
 
         this.connectionDidClose();
     }
@@ -207,6 +207,7 @@ public abstract class Session
         if (Preferences.instance().getBoolean("connection.keepalive") && this.keepAliveTimer != null) {
             this.keepAliveTimer.cancel();
         }
+//        this.cache.clear();
         SessionPool.instance().release(this);
     }
 

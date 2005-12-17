@@ -581,6 +581,6 @@ public class CDConnectionController extends CDWindowController {
                 browserController.mount(host);
         }
         Rendezvous.instance().removeListener(this.rendezvousListener);
-        this.release();
+        this.invalidate();
     }
 }

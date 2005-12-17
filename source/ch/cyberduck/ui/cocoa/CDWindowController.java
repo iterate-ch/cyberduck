@@ -43,7 +43,7 @@ public abstract class CDWindowController extends CDController {
             new Object[]{lineBreakByTruncatingMiddleParagraph},
             new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
-    private NSWindow window; // IBOutlet
+    protected NSWindow window; // IBOutlet
 
     private final Object lock = new Object();
 
@@ -66,7 +66,12 @@ public abstract class CDWindowController extends CDController {
 
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose:"+notification);
-        this.release();
+        this.invalidate();
+    }
+
+    protected void invalidate() {
+        this.window = null;
+        super.invalidate();
     }
 
     public void cascade() {
@@ -77,7 +82,7 @@ public abstract class CDWindowController extends CDController {
                 NSWindow window = (NSWindow) windows.objectAtIndex(count);
                 NSPoint origin = window.frame().origin();
                 origin = new NSPoint(origin.x(), origin.y() + window.frame().size().height());
-                this.window().setFrameTopLeftPoint(this.window().cascadeTopLeftFromPoint(origin));
+                this.window.setFrameTopLeftPoint(this.window.cascadeTopLeftFromPoint(origin));
                 break;
             }
         }
@@ -105,7 +110,7 @@ public abstract class CDWindowController extends CDController {
                         log.warn("Waiting on main thread; will run modal!");
                         NSApplication app = NSApplication.sharedApplication();
                         modalSession = NSApplication.sharedApplication().beginModalSessionForWindow(
-                                this.window().attachedSheet());
+                                this.window.attachedSheet());
                         while (this.hasSheet()) {
                             app.runModalSession(modalSession);
                         }
@@ -140,13 +145,13 @@ public abstract class CDWindowController extends CDController {
                            final NSSelector endSelector, final Object contextInfo) {
         log.debug("beginSheet:" + sheet);
         synchronized (lock) {
-            if (!this.window().isKeyWindow()) {
+            if (!this.window.isKeyWindow()) {
                 this.window.makeKeyAndOrderFront(null);
             }
             this.waitForSheetEnd();
             NSApplication app = NSApplication.sharedApplication();
             app.beginSheet(sheet, //window
-                    this.window(),
+                    this.window,
                     delegate, //modalDelegate
                     endSelector, // did end selector
                     contextInfo); //contextInfo
@@ -158,6 +163,6 @@ public abstract class CDWindowController extends CDController {
     private NSModalSession modalSession = null;
 
     public boolean hasSheet() {
-        return this.window().attachedSheet() != null;
+        return this.window.attachedSheet() != null;
     }
 }

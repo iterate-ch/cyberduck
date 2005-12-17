@@ -71,6 +71,7 @@ public class SFTPSession extends Session {
 
     public void close() {
         synchronized(this) {
+            this.activityStarted();
             this.connectionWillClose();
             try {
                 if (SFTP != null) {
@@ -90,6 +91,7 @@ public class SFTPSession extends Session {
                 log.error("IO Error: " + e.getMessage());
             }
             finally {
+                this.activityStopped();
                 this.setClosed();
             }
         }

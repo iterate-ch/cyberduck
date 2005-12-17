@@ -109,7 +109,7 @@ public class CDBrowserController extends CDWindowController {
     public Object handleCloseScriptCommand(NSScriptCommand command) {
         log.debug("handleCloseScriptCommand:" + command);
         this.handleDisconnectScriptCommand(command);
-        this.window().close();
+        this.window.close();
         return null;
     }
 
@@ -361,7 +361,7 @@ public class CDBrowserController extends CDWindowController {
         this._updateBrowserColumns(this.browserOutlineView);
 
         // Configure window
-        this.window().setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
+        this.window.setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
         // Drawer states
         if (Preferences.instance().getBoolean("bookmarkDrawer.isOpen")) {
             this.bookmarkDrawer.open();
@@ -371,11 +371,11 @@ public class CDBrowserController extends CDWindowController {
         this.toolbar.setDelegate(this);
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
-        this.window().setToolbar(toolbar);
+        this.window.setToolbar(toolbar);
 
         this.browserSwitchClicked(this.browserSwitchView);
-        this.window().setInitialFirstResponder(this.quickConnectPopup);
-        this.window().makeFirstResponder(this.quickConnectPopup);
+        this.window.setInitialFirstResponder(this.quickConnectPopup);
+        this.window.makeFirstResponder(this.quickConnectPopup);
     }
 
     private String encoding = Preferences.instance().getProperty("browser.charset.encoding");
@@ -433,7 +433,7 @@ public class CDBrowserController extends CDWindowController {
     }
 
     private void getFocus() {
-        this.window().makeFirstResponder(this.getSelectedBrowserView());
+        this.window.makeFirstResponder(this.getSelectedBrowserView());
     }
 
     protected void reloadData() {
@@ -621,6 +621,28 @@ public class CDBrowserController extends CDWindowController {
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
+
+    public void setWindow(NSWindow window) {
+        super.setWindow(window);
+        this.window.setDelegate(this);
+    }
+
+    public void windowWillClose(NSNotification notification) {
+        if (this.bookmarkDrawer.state() == NSDrawer.OpenState || this.bookmarkDrawer.state() == NSDrawer.OpeningState) {
+            this.bookmarkDrawer.close();
+        }
+        if(this.hasSession()) {
+            this.session.cache().clear();
+        }
+        this.setWorkdir(null);
+        this.invalidate();
+    }
+
+    public void setBookmarkView(NSView bookmarkView) {
+        this.bookmarkDrawer = new NSDrawer(bookmarkView.frame().size(), NSRect.MinXEdge);
+        this.bookmarkDrawer.setParentWindow(this.window);
+        this.bookmarkDrawer.setContentView(bookmarkView);
+    }
 
     private NSToolbar toolbar;
 
@@ -1594,22 +1616,18 @@ public class CDBrowserController extends CDWindowController {
 
     private NSDrawer bookmarkDrawer; // IBOutlet
 
-    public void setBookmarkDrawer(NSDrawer bookmarkDrawer) {
-        this.bookmarkDrawer = bookmarkDrawer;
-    }
-
     public void toggleBookmarkDrawer(Object sender) {
         this.bookmarkDrawer.toggle(this);
         Preferences.instance().setProperty("bookmarkDrawer.isOpen", this.bookmarkDrawer.state() == NSDrawer.OpenState || this.bookmarkDrawer.state() == NSDrawer.OpeningState);
         if (this.bookmarkDrawer.state() == NSDrawer.OpenState || this.bookmarkDrawer.state() == NSDrawer.OpeningState) {
-            this.window().makeFirstResponder(this.bookmarkTable);
+            this.window.makeFirstResponder(this.bookmarkTable);
         }
         else {
             if (this.isMounted()) {
                 this.getFocus();
             }
             else {
-                this.window().makeFirstResponder(this.quickConnectPopup);
+                this.window.makeFirstResponder(this.quickConnectPopup);
             }
         }
     }
@@ -1875,7 +1893,7 @@ public class CDBrowserController extends CDWindowController {
             panel.setCanCreateDirectories(true);
             panel.beginSheetForDirectory(null,
                     path.getLocal().getName(),
-                    this.window(),
+                    this.window,
                     this,
                     new NSSelector("saveAsPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}),
                     path);
@@ -1917,7 +1935,7 @@ public class CDBrowserController extends CDWindowController {
         panel.beginSheetForDirectory(null,
                 null,
                 null,
-                this.window(), //parent window
+                this.window, //parent window
                 this,
                 new NSSelector("syncPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}),
                 selection //context info
@@ -1972,7 +1990,7 @@ public class CDBrowserController extends CDWindowController {
                 this.lastSelectedUploadDirectory, //trying to be smart
                 null,
                 null,
-                this.window(),
+                this.window,
                 this,
                 new NSSelector("uploadPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}),
                 null);
@@ -2202,15 +2220,12 @@ public class CDBrowserController extends CDWindowController {
         this.reloadData();
     }
 
-    private static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES
-            = new NSDictionary(new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)},
-            new Object[]{NSAttributedString.FontAttributeName});
-
     private ConnectionListener listener = null;
 
     private Session init(final Host host) {
         if (this.hasSession()) {
             this.session.removeConnectionListener(listener);
+            this.session = null;
         }
         this.session = SessionFactory.createSession(host);
         if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
@@ -2223,10 +2238,10 @@ public class CDBrowserController extends CDWindowController {
         }
         host.setLoginController(new CDLoginController(this));
         this.setWorkdir(null);
-        this.window().setTitle(host.getProtocol() + ":" + host.getHostname());
+        this.window.setTitle(host.getProtocol() + ":" + host.getHostname());
         this.bookmarkModel.exportBookmark(host, this.getRepresentedFile());
         if (this.getRepresentedFile().exists()) {
-            this.window().setRepresentedFilename(this.getRepresentedFile().getAbsolutePath());
+            this.window.setRepresentedFilename(this.getRepresentedFile().getAbsolutePath());
         }
         session.addConnectionListener(listener = new ConnectionListener() {
             ProgressListener progress;
@@ -2273,9 +2288,6 @@ public class CDBrowserController extends CDWindowController {
                         );
                     }
                 });
-                progressIndicator.startAnimation(this);
-                statusIcon.setImage(null);
-                statusIcon.setNeedsDisplay(true);
             }
 
             public void connectionDidOpen() {
@@ -2288,9 +2300,9 @@ public class CDBrowserController extends CDWindowController {
                     });
                     return;
                 }
-                window().setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername()
+                window.setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername()
                         + "@" + host.getHostname());
-                window().setDocumentEdited(true);
+                window.setDocumentEdited(true);
             }
 
             public void connectionWillClose() {
@@ -2315,7 +2327,7 @@ public class CDBrowserController extends CDWindowController {
                     });
                     return;
                 }
-                window().setDocumentEdited(false);
+                window.setDocumentEdited(false);
                 session.removeProgressListener(progress);
                 progressIndicator.stopAnimation(this);
                 statusIcon.setImage(null);
@@ -2499,7 +2511,7 @@ public class CDBrowserController extends CDWindowController {
 
     public void printDocument(Object sender) {
         NSPrintOperation op = NSPrintOperation.printOperationWithView(this.getSelectedBrowserView());
-        op.runModalOperation(this.window(), this,
+        op.runModalOperation(this.window, this,
                 new NSSelector("printOperationDidRun",
                         new Class[]{NSPrintOperation.class, boolean.class, Object.class}), null);
     }
@@ -2549,7 +2561,7 @@ public class CDBrowserController extends CDWindowController {
     public void closeSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
         this.unmountSheetDidEnd(sheet, returncode, contextInfo);
         if (returncode == NSAlertPanel.DefaultReturn) {
-            this.window().close();
+            this.window.close();
         }
         if (returncode == NSAlertPanel.AlternateReturn) {
             //
@@ -2564,76 +2576,6 @@ public class CDBrowserController extends CDWindowController {
         }
         if (returncode == NSAlertPanel.AlternateReturn) { //Cancel
             NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
-        }
-    }
-
-    public void windowWillClose(NSNotification notification) {
-        try {
-            if (this.hasSession()) {
-                this.session.removeConnectionListener(this.listener);
-                this.session = null;
-            }
-            this.inspector = null;
-            NSArray toolbarItems = this.toolbar.items();
-            for (int i = 0; i < toolbarItems.count(); i++) {
-                ((NSToolbarItem)toolbarItems.objectAtIndex(i)).setTarget(null);
-            }
-            this.toolbar = null;
-            this.bookmarkDrawer = null;
-
-            this.bookmarkTable.setDataSource(null);
-            this.bookmarkModel = null;
-            this.bookmarkTable.setDelegate(null);
-            this.bookmarkTableDelegate = null;
-            this.bookmarkTable = null;
-
-            this.browserListView.setDataSource(null);
-            this.browserListModel = null;
-            this.browserListView.setDelegate(null);
-            this.browserListViewDelegate = null;
-            this.browserListView = null;
-
-            this.browserOutlineView.setDataSource(null);
-            this.browserOutlineModel = null;
-            this.browserOutlineView.setDelegate(null);
-            this.browserOutlineViewDelegate = null;
-            this.browserOutlineView = null;
-
-            this.editMenu.setDelegate(null);
-            this.editMenuDelegate = null;
-            this.editMenu = null;
-
-            this.browserSwitchView = null;
-            this.browserTabView = null;
-
-            this.addBookmarkButton.setTarget(null);
-            this.addBookmarkButton = null;
-            this.deleteBookmarkButton.setTarget(null);
-            this.deleteBookmarkButton = null;
-            this.editBookmarkButton.setTarget(null);
-            this.editBookmarkButton = null;
-
-            this.actionPopupButton.setTarget(null);
-            this.actionPopupButton = null;
-
-            this.navigationButton.setTarget(null);
-            this.navigationButton = null;
-            this.upButton.setTarget(null);
-            this.upButton = null;
-            this.pathPopupButton.setTarget(null);
-            this.pathPopupButton = null;
-            this.encodingPopup.setTarget(null);
-            this.encodingPopup =  null;
-
-            this.quickConnectPopup.setDataSource(null);
-            this.quickConnectPopupDataSource = null;
-            this.quickConnectPopup.setTarget(null);
-            this.quickConnectPopup = null;
-
-            this.searchField = null;
-        }
-        finally {
-            super.windowWillClose(notification);
         }
     }
 
@@ -3167,5 +3109,59 @@ public class CDBrowserController extends CDWindowController {
                 NSToolbarItem.SeparatorItemIdentifier,
                 NSToolbarItem.FlexibleSpaceItemIdentifier
         });
+    }
+
+    protected void invalidate() {
+        if (this.hasSession()) {
+            this.session.removeConnectionListener(this.listener);
+            this.session = null;
+            this.workdir = null;
+        }
+        this.toolbar.setDelegate(null);
+//        this.bookmarkDrawer.setDelegate(null);
+//        this.bookmarkDrawer.setParentWindow(null);
+
+        this.bookmarkTable.setDataSource(null);
+        this.bookmarkModel = null;
+        this.bookmarkTable.setDelegate(null);
+        this.bookmarkTableDelegate = null;
+        this.bookmarkTable = null;
+
+        this.browserListView.setDataSource(null);
+        this.browserListModel = null;
+        this.browserListView.setDelegate(null);
+        this.browserListViewDelegate = null;
+        this.browserListView = null;
+
+        this.browserOutlineView.setDataSource(null);
+        this.browserOutlineModel = null;
+        this.browserOutlineView.setDelegate(null);
+        this.browserOutlineViewDelegate = null;
+        this.browserOutlineView = null;
+
+        this.editMenu.setDelegate(null);
+        this.editMenuDelegate = null;
+        this.editMenu = null;
+
+        this.browserSwitchView.setTarget(null);
+        this.browserSwitchView = null;
+        this.browserTabView = null;
+
+        this.addBookmarkButton.setTarget(null);
+        this.deleteBookmarkButton.setTarget(null);
+        this.editBookmarkButton.setTarget(null);
+
+        this.actionPopupButton.setTarget(null);
+
+        this.navigationButton.setTarget(null);
+        this.upButton.setTarget(null);
+        this.pathPopupButton.setTarget(null);
+        this.encodingPopup.setTarget(null);
+
+        this.quickConnectPopup.setDataSource(null);
+        this.quickConnectPopupDataSource = null;
+        this.quickConnectPopup.setTarget(null);
+
+        super.invalidate();
     }
 }

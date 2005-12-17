@@ -144,7 +144,6 @@ public class FTPPath extends Path {
                         }
                     }
                     session.cache().put(this, files);
-                    session.activityStopped();
                 }
                 catch (FTPException e) {
                     session.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -154,6 +153,9 @@ public class FTPPath extends Path {
                     session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                     session.close();
                     return null;
+                }
+                finally {
+                    session.activityStopped();
                 }
             }
             return session.cache().get(this, comparator, filter);
@@ -181,7 +183,6 @@ public class FTPPath extends Path {
                 session.FTP.mkdir(this.getAbsolute());
                 session.cache().put(this, new ArrayList());
                 this.getParent().invalidate();
-                session.activityStopped();
             }
             catch (FTPException e) {
                 session.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -189,6 +190,9 @@ public class FTPPath extends Path {
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 session.close();
+            }
+            finally {
+                session.activityStopped();
             }
         }
     }
@@ -203,7 +207,6 @@ public class FTPPath extends Path {
                 this.getParent().invalidate();
                 this.setPath(filename);
                 //this.getParent().invalidate();
-                session.activityStopped();
             }
             catch (FTPException e) {
                 session.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -211,6 +214,9 @@ public class FTPPath extends Path {
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 session.close();
+            }
+            finally {
+                session.activityStopped();
             }
         }
     }
@@ -287,7 +293,6 @@ public class FTPPath extends Path {
                     }
                 }
                 this.getParent().invalidate();
-                session.activityStopped();
             }
             catch (FTPException e) {
                 session.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -295,6 +300,9 @@ public class FTPPath extends Path {
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 session.close();
+            }
+            finally {
+                session.activityStopped();
             }
         }
     }
@@ -320,7 +328,6 @@ public class FTPPath extends Path {
                     }
                 }
                 this.getParent().invalidate();
-                session.activityStopped();
             }
             catch (FTPException e) {
                 session.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -328,6 +335,9 @@ public class FTPPath extends Path {
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 session.close();
+            }
+            finally {
+                session.activityStopped();
             }
         }
     }
@@ -353,7 +363,6 @@ public class FTPPath extends Path {
                     }
                 }
                 this.getParent().invalidate();
-                session.activityStopped();
             }
             catch (FTPException e) {
                 session.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -361,6 +370,9 @@ public class FTPPath extends Path {
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 session.close();
+            }
+            finally {
+                session.activityStopped();
             }
         }
     }
@@ -387,7 +399,6 @@ public class FTPPath extends Path {
                     }
                 }
                 this.getParent().invalidate();
-                session.activityStopped();
             }
             catch (FTPException e) {
                 session.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -395,6 +406,9 @@ public class FTPPath extends Path {
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 session.close();
+            }
+            finally {
+                session.activityStopped();
             }
         }
     }
@@ -446,7 +460,6 @@ public class FTPPath extends Path {
                 if (this.attributes.isDirectory()) {
                     this.getLocal().mkdirs();
                 }
-                session.activityStopped();
             }
             catch (FTPException e) {
                 session.error("FTP " + NSBundle.localizedString("Error", "") + ": (" + this.getName() + ") " + e.getMessage());
@@ -454,6 +467,9 @@ public class FTPPath extends Path {
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 session.close();
+            }
+            finally {
+                session.activityStopped();
             }
         }
     }
@@ -509,7 +525,6 @@ public class FTPPath extends Path {
                 }
                 session.FTP.abor();
             }
-            session.activityStopped();
         }
         finally {
             try {
@@ -574,7 +589,6 @@ public class FTPPath extends Path {
                 }
                 session.FTP.abor();
             }
-            session.activityStopped();
         }
         finally {
             try {
@@ -652,7 +666,6 @@ public class FTPPath extends Path {
                     }
                 }
                 this.getParent().invalidate();
-                session.activityStopped();
             }
             catch (FTPException e) {
                 session.error("FTP " + NSBundle.localizedString("Error", "") + ": (" + this.getName() + ") " + e.getMessage());
@@ -660,6 +673,9 @@ public class FTPPath extends Path {
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 session.close();
+            }
+            finally {
+                session.activityStopped();
             }
         }
     }
@@ -710,7 +726,6 @@ public class FTPPath extends Path {
                 }
                 session.FTP.abor();
             }
-            session.activityStopped();
         }
         finally {
             try {
@@ -774,7 +789,6 @@ public class FTPPath extends Path {
                 }
                 session.FTP.abor();
             }
-            session.activityStopped();
         }
         finally {
             try {

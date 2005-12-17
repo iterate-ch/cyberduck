@@ -35,10 +35,13 @@ public abstract class CDController extends NSObject {
 
     private NSRunLoop mainRunLoop;
 
-    protected static NSMutableArray instances = new NSMutableArray();
+    protected static NSMutableArray instances;
 
     public void awakeFromNib() {
         mainRunLoop = NSRunLoop.currentRunLoop();
+        if(null == instances) {
+            instances = new NSMutableArray();
+        }
         instances.addObject(this);
     }
 
@@ -46,19 +49,22 @@ public abstract class CDController extends NSObject {
         mainRunLoop.addTimerForMode(new NSTimer(0f, this,
                 new NSSelector("post", new Class[]{NSTimer.class}),
                 thread,
-                false),
+                false //automatically invalidate
+        ),
                 NSRunLoop.DefaultRunLoopMode);
     }
 
     public void post(NSTimer timer) {
         Object info = timer.userInfo();
-        if (info instanceof Runnable)
+        if (info instanceof Runnable) {
             ((Runnable) info).run();
+        }
     }
 
-    protected void release() {
+    protected void invalidate() {
         NSNotificationCenter.defaultCenter().removeObserver(this);
         instances.removeObject(this);
+        System.gc();
     }
 
     protected void finalize() throws java.lang.Throwable {

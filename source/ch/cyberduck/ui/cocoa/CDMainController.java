@@ -700,6 +700,12 @@ public class CDMainController extends CDController {
 
     public void applicationWillTerminate(NSNotification notification) {
         log.debug("applicationWillTerminate");
+        NSApplication app = NSApplication.sharedApplication();
+        NSArray orderedWindows = (NSArray) NSKeyValue.valueForKey(app, "orderedWindows");
+        int c = orderedWindows.count();
+        for (int i = 0; i < c; i++) {
+            NSNotificationCenter.defaultCenter().removeObserver(orderedWindows.objectAtIndex(i));
+        }
         NSNotificationCenter.defaultCenter().removeObserver(this);
         //Terminating rendezvous discovery
         Rendezvous.instance().quit();
@@ -748,10 +754,10 @@ public class CDMainController extends CDController {
         log.debug("orderedTransfers");
         NSApplication app = NSApplication.sharedApplication();
         NSArray orderedWindows = (NSArray) NSKeyValue.valueForKey(app, "orderedWindows");
-        int i, c = orderedWindows.count();
+        int c = orderedWindows.count();
         NSMutableArray orderedDocs = new NSMutableArray();
         Object curDelegate;
-        for (i = 0; i < c; i++) {
+        for (int i = 0; i < c; i++) {
             if (((NSWindow) orderedWindows.objectAtIndex(i)).isVisible()) {
                 curDelegate = ((NSWindow) orderedWindows.objectAtIndex(i)).delegate();
                 if ((curDelegate != null) && (curDelegate instanceof CDQueueController)) {
@@ -769,10 +775,10 @@ public class CDMainController extends CDController {
         log.debug("orderedBrowsers");
         NSApplication app = NSApplication.sharedApplication();
         NSArray orderedWindows = (NSArray) NSKeyValue.valueForKey(app, "orderedWindows");
-        int i, c = orderedWindows.count();
+        int c = orderedWindows.count();
         NSMutableArray orderedDocs = new NSMutableArray();
         Object curDelegate;
-        for (i = 0; i < c; i++) {
+        for (int i = 0; i < c; i++) {
             if (((NSWindow) orderedWindows.objectAtIndex(i)).isVisible()) {
                 curDelegate = ((NSWindow) orderedWindows.objectAtIndex(i)).delegate();
                 if ((curDelegate != null) && (curDelegate instanceof CDBrowserController)) {

@@ -35,17 +35,25 @@ import org.apache.log4j.Logger;
 public class CDLoginController extends CDWindowController implements LoginController {
     private static Logger log = Logger.getLogger(CDLoginController.class);
 
-    private static NSMutableArray instances = new NSMutableArray();
+    private CDWindowController windowController;
 
-    public void awakeFromNib() {
-        super.awakeFromNib();
-        
-        this.window().setReleasedWhenClosed(false);
+    public CDLoginController(CDWindowController windowController) {
+        this.windowController = windowController;
+        if (!NSApplication.loadNibNamed("Login", this)) {
+            log.fatal("Couldn't load Login.nib");
+        }
     }
 
+    private Login login;
+    
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
+
+    public void setWindow(NSWindow window) {
+        super.setWindow(window);
+        this.window.setReleasedWhenClosed(false);
+    }
 
     private NSTextField userField; // IBOutlet
 
@@ -94,24 +102,12 @@ public class CDLoginController extends CDWindowController implements LoginContro
         this.keychainCheckbox.setState(NSCell.OffState);
     }
 
-    private CDWindowController windowController;
-
-    public CDLoginController(CDWindowController windowController) {
-        instances.addObject(this);
-        this.windowController = windowController;
-        if (!NSApplication.loadNibNamed("Login", this)) {
-            log.fatal("Couldn't load Login.nib");
-        }
-    }
-
-    private Login login;
-
     public Login promptUser(final Login login, final String message) {
         this.login = login;
         this.textField.setStringValue(message);
         this.userField.setStringValue(login.getUsername());
         this.passField.setStringValue("");
-        this.windowController.beginSheet(this.window(),
+        this.windowController.beginSheet(this.window,
                 this,
                 new NSSelector
                         ("sheetDidEnd",
@@ -125,7 +121,7 @@ public class CDLoginController extends CDWindowController implements LoginContro
     }
 
     public void closeSheet(NSButton sender) {
-        this.windowController.endSheet(this.window(), sender.tag());
+        this.windowController.endSheet(this.window, sender.tag());
     }
 
     public void sheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
@@ -153,6 +149,6 @@ public class CDLoginController extends CDWindowController implements LoginContro
                 this.login.setTryAgain(false);
                 break;
         }
-        this.release();
+        this.invalidate();
     }
 }

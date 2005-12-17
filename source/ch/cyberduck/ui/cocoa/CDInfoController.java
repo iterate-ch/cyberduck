@@ -165,12 +165,12 @@ public class CDInfoController extends CDWindowController {
     public void awakeFromNib() {
         super.awakeFromNib();
 
-        this.window().setReleasedWhenClosed(false);
+        this.window.setReleasedWhenClosed(false);
         if (null == cascadedWindowPoint) {
-            cascadedWindowPoint = this.window().cascadeTopLeftFromPoint(this.window().frame().origin());
+            cascadedWindowPoint = this.window.cascadeTopLeftFromPoint(this.window.frame().origin());
         }
         else {
-            cascadedWindowPoint = this.window().cascadeTopLeftFromPoint(cascadedWindowPoint);
+            cascadedWindowPoint = this.window.cascadeTopLeftFromPoint(cascadedWindowPoint);
         }
         this.ownerr.setTarget(this);
         this.ownerr.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
@@ -363,7 +363,7 @@ public class CDInfoController extends CDWindowController {
                             NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
                             null, //alternative button
                             null, //other button
-                            this.window(), //docWindow
+                            this.window, //docWindow
                             null, //modalDelegate
                             null, //didEndSelector
                             null, // dismiss selector

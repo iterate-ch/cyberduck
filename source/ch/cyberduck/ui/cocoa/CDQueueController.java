@@ -45,13 +45,12 @@ public class CDQueueController extends CDWindowController {
         this.toolbar.setDelegate(this);
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
-
-        this.window().setReleasedWhenClosed(false);
-        this.window().setToolbar(toolbar);
     }
 
     public void setWindow(NSWindow window) {
         super.setWindow(window);
+        this.window.setReleasedWhenClosed(false);
+        this.window.setToolbar(toolbar);
         (NSNotificationCenter.defaultCenter()).addObserver(this,
                 new NSSelector("windowDidBecomeKey", new Class[]{NSNotification.class}),
                 NSWindow.WindowDidBecomeKeyNotification,
@@ -337,7 +336,7 @@ public class CDQueueController extends CDWindowController {
             }
         });
         if (Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
-            this.window().makeKeyAndOrderFront(null);
+            this.window.makeKeyAndOrderFront(null);
         }
         if (queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
             ((ch.cyberduck.core.sftp.SFTPSession) queue.getSession()).setHostKeyVerificationController(
@@ -356,7 +355,7 @@ public class CDQueueController extends CDWindowController {
     }
 
     public boolean isVisible() {
-        return this.window() != null && this.window().isVisible();
+        return this.window != null && this.window.isVisible();
     }
 
     // ----------------------------------------------------------

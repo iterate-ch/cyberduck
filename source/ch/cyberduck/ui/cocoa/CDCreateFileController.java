@@ -28,9 +28,6 @@ import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSPanel;
 import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSNotificationCenter;
-
-import java.util.List;
 
 /**
  * @version $Id$
@@ -63,7 +60,7 @@ public class CDCreateFileController extends CDFileController {
             case (NSAlertPanel.AlternateReturn): //Cancel
                 break;
         }
-        this.release();
+        this.invalidate();
     }
 
     protected Path create(Path workdir, String filename) {

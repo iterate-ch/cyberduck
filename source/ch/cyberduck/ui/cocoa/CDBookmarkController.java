@@ -46,8 +46,6 @@ import org.apache.log4j.Logger;
 public class CDBookmarkController extends CDWindowController {
     private static Logger log = Logger.getLogger(CDBookmarkController.class);
 
-    private static NSMutableArray instances = new NSMutableArray();
-
     private Host host;
 
     // ----------------------------------------------------------
@@ -210,7 +208,7 @@ public class CDBookmarkController extends CDWindowController {
         super.awakeFromNib();
 
         this.cascade();
-        this.window().setTitle(this.host.getNickname());
+        this.window.setTitle(this.host.getNickname());
         // Live editing of values
         (NSNotificationCenter.defaultCenter()).addObserver(this,
                 new NSSelector("hostInputDidEndEditing", new Class[]{NSNotification.class}),
@@ -321,7 +319,7 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     private void updateFields() {
-        this.window().setTitle(this.host.getNickname());
+        this.window.setTitle(this.host.getNickname());
         this.urlField.setStringValue(this.host.getURL() + host.getDefaultPath());
         this.hostField.setStringValue(this.host.getHostname());
         this.portField.setStringValue("" + this.host.getPort());

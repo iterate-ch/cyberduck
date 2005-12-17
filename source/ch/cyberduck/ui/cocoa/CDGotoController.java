@@ -25,8 +25,6 @@ import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.application.NSComboBox;
 import com.apple.cocoa.application.NSPanel;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSNotification;
 
 import org.apache.log4j.Logger;
 
@@ -110,7 +108,7 @@ public class CDGotoController extends CDWindowController {
             case (NSAlertPanel.AlternateReturn):
                 break;
         }
-        this.release();
+        this.invalidate();
     }
 
     protected void gotoFolder(Path workdir, String filename) {

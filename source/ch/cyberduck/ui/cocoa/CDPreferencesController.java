@@ -127,9 +127,9 @@ public class CDPreferencesController extends CDWindowController {
         NSSelector setShowsToolbarButtonSelector
                 = new NSSelector("setShowsToolbarButton", new Class[]{boolean.class});
         if (setShowsToolbarButtonSelector.implementedByClass(NSWindow.class)) {
-            this.window().setShowsToolbarButton(false);
+            this.window.setShowsToolbarButton(false);
         }
-        this.window().center();
+        this.window.center();
 
         this.transfermodeComboboxClicked(this.transfermodeCombobox);
         {
@@ -831,7 +831,7 @@ public class CDPreferencesController extends CDWindowController {
         panel.setCanChooseFiles(false);
         panel.setCanChooseDirectories(true);
         panel.setAllowsMultipleSelection(false);
-        panel.beginSheetForDirectory(null, null, null, this.window(), this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+        panel.beginSheetForDirectory(null, null, null, this.window, this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
     }
 
     public void openPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
