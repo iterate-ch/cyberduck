@@ -54,7 +54,7 @@ public abstract class CDController extends NSObject {
                 NSRunLoop.DefaultRunLoopMode);
     }
 
-    public void post(NSTimer timer) {
+    protected void post(NSTimer timer) {
         Object info = timer.userInfo();
         if (info instanceof Runnable) {
             ((Runnable) info).run();

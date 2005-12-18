@@ -281,10 +281,4 @@ public abstract class CDAbstractTableDelegate implements CDTableDelegate {
             return CDBrowserTableDataSource.PERMISSIONS_COLUMN;
         }
     }
-
-
-    protected void finalize() throws java.lang.Throwable {
-        log.debug("finalize:"+this.toString());
-        super.finalize();
-    }
 }

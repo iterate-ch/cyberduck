@@ -2450,23 +2450,25 @@ public class CDBrowserController extends CDWindowController {
      * @return True if the unmount process has finished, false if the user has to agree first to close the connection
      */
     public boolean unmount(NSSelector selector, Object context) {
-        log.debug("unmount");
-        if (this.isConnected()) {
-            if (Preferences.instance().getBoolean("browser.confirmDisconnect")) {
-                this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + this.session.getHost().getHostname(), //title
-                        NSBundle.localizedString("The connection will be closed.", "Alert sheet text"), // message
-                        NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
-                        NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
-                        null //other button
-                ),
-                        this,
-                        selector,
-                        context);
-                return false;
+        synchronized(lock) {
+            log.debug("unmount");
+            if (this.isConnected()) {
+                if (Preferences.instance().getBoolean("browser.confirmDisconnect")) {
+                    this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + this.session.getHost().getHostname(), //title
+                            NSBundle.localizedString("The connection will be closed.", "Alert sheet text"), // message
+                            NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
+                            NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
+                            null //other button
+                    ),
+                            this,
+                            selector,
+                            context);
+                    return false;
+                }
+                this.unmount();
             }
-            this.unmount();
+            return true;
         }
-        return true;
     }
 
     public boolean loadDataRepresentation(NSData data, String type) {

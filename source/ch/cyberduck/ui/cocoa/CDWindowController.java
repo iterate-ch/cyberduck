@@ -47,6 +47,13 @@ public abstract class CDWindowController extends CDController {
 
     private final Object lock = new Object();
 
+    protected void post(NSTimer timer) {
+        if(null == this.window) {
+            return;
+        }
+        super.post(timer);
+    }
+
     public void setWindow(NSWindow window) {
         this.window = window;
         (NSNotificationCenter.defaultCenter()).addObserver(this,
