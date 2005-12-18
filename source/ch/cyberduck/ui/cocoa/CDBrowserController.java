@@ -2466,9 +2466,8 @@ public class CDBrowserController extends CDWindowController {
                     return false;
                 }
                 this.unmount();
-            }
-            return true;
-        }
+            }       }
+        return true;
     }
 
     public boolean loadDataRepresentation(NSData data, String type) {
@@ -3117,7 +3116,6 @@ public class CDBrowserController extends CDWindowController {
         if (this.hasSession()) {
             this.session.removeConnectionListener(this.listener);
             this.session = null;
-            this.workdir = null;
         }
         this.toolbar.setDelegate(null);
 //        this.bookmarkDrawer.setDelegate(null);
