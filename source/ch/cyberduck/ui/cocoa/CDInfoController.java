@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Status;
+import ch.cyberduck.core.Preferences;
 
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
@@ -146,6 +147,13 @@ public class CDInfoController extends CDWindowController {
     public void setWindow(NSWindow window) {
         super.setWindow(window);
         this.window.setReleasedWhenClosed(false);
+    }
+
+    public void windowWillClose(NSNotification notification) {
+        if (Preferences.instance().getBoolean("browser.info.isInspector")) {
+            return;
+        }
+        super.windowWillClose(notification);
     }
 
     // ----------------------------------------------------------
