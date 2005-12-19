@@ -9,7 +9,7 @@
       <key>comment</key>
       <string>Changelog:
 2.5.3
-- [Feature] New and much improved Bonjou/Rendezvous implementation
+- [Feature] New and much improved Bonjour/Rendezvous implementation
 - [Feature] Inline rename files in browser (Return key invokes editing)
 - [Feature] Paste files copied in Finder.app (Upload)
 - [Feature] Includes Unsanity Crash Reporter
