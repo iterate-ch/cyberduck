@@ -2228,15 +2228,15 @@ public class CDBrowserController extends CDWindowController {
             this.session = null;
         }
         this.session = SessionFactory.createSession(host);
-        if (session instanceof ch.cyberduck.core.sftp.SFTPSession) {
+        if (this.session instanceof ch.cyberduck.core.sftp.SFTPSession) {
             ((ch.cyberduck.core.sftp.SFTPSession) session).setHostKeyVerificationController(
                     new CDHostKeyController(this));
         }
-        if (session instanceof ch.cyberduck.core.ftps.FTPSSession) {
-            ((ch.cyberduck.core.ftps.FTPSSession) session).setTrustManager(
+        if (this.session instanceof ch.cyberduck.core.ftps.FTPSSession) {
+            ((ch.cyberduck.core.ftps.FTPSSession) this.session).setTrustManager(
                     new CDX509TrustManagerController(this));
         }
-        host.setLoginController(new CDLoginController(this));
+        this.session.setLoginController(new CDLoginController(this));
         this.setWorkdir(null);
         this.window.setTitle(host.getProtocol() + ":" + host.getHostname());
         this.bookmarkModel.exportBookmark(host, this.getRepresentedFile());

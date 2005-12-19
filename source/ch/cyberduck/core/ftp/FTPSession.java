@@ -151,7 +151,7 @@ public class FTPSession extends Session {
     protected void login() throws IOException {
         log.debug("login");
         Login credentials = host.getCredentials();
-        if (credentials.check()) {
+        if (credentials.check(loginController)) {
             try {
                 this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " " + host.getCredentials().getUsername() + "...");
                 this.FTP.login(credentials.getUsername(), credentials.getPassword());
@@ -160,7 +160,9 @@ public class FTPSession extends Session {
             }
             catch (FTPException e) {
                 this.message(NSBundle.localizedString("Login failed", "Status", ""));
-                host.setCredentials(credentials.promptUser("Authentication for user " + credentials.getUsername() + " failed. The server response is: " + e.getMessage()));
+                host.setCredentials(credentials.promptUser("Authentication for user " 
+                        + credentials.getUsername() + " failed. The server response is: " + e.getMessage(),
+                        this.loginController));
                 if (host.getCredentials().tryAgain()) {
                     this.login();
                 }

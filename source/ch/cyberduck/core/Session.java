@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.LoginController;
 
 import com.apple.cocoa.foundation.NSBundle;
 
@@ -103,6 +104,14 @@ public abstract class Session
     protected void connect() throws IOException {
         this.connect(this.host.getEncoding());
     }
+
+    protected LoginController loginController;
+
+    public void setLoginController(LoginController loginController) {
+        this.loginController = loginController;
+    }
+
+    protected abstract void login() throws IOException;
 
     /**
      * Connect to the remote host and mount the home directory

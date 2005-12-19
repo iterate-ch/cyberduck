@@ -346,7 +346,7 @@ public class CDQueueController extends CDWindowController {
             ((ch.cyberduck.core.ftps.FTPSSession) queue.getSession()).setTrustManager(
                     new CDX509TrustManagerController(this));
         }
-        queue.getHost().setLoginController(new CDLoginController(this));
+        queue.getSession().setLoginController(new CDLoginController(this));
         new Thread() {
             public void run() {
                 queue.process(resumeRequested, false);

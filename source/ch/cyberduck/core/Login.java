@@ -35,12 +35,23 @@ public class Login {
     private String user;
     private transient String pass;
     private String privateKeyFile;
-    private LoginController controller = new LoginController() {
-        public Login promptUser(Login login, String explanation) {
-            return login;
-        }
-    };
     private boolean shouldBeAddedToKeychain;
+
+    public String getUsername() {
+        return this.user;
+    }
+
+    public void setUsername(String user) {
+        this.init(user, this.getPassword());
+    }
+
+    public String getPassword() {
+        return this.pass;
+    }
+
+    public void setPassword(String pass) {
+        this.init(this.getUsername(), pass);
+    }
 
     /**
      * Use this to define if passwords should be added to the keychain
@@ -52,10 +63,18 @@ public class Login {
         this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean usesKeychain() {
         return this.shouldBeAddedToKeychain;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getInternetPasswordFromKeychain() {
         int pool = NSAutoreleasePool.push();
         log.info("Fetching password from Keychain for:" + this.getUsername());
@@ -65,6 +84,9 @@ public class Login {
         return password;
     }
 
+    /**
+     *
+     */
     public void addInternetPasswordToKeychain() {
         if (this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
             int pool = NSAutoreleasePool.push();
@@ -74,6 +96,10 @@ public class Login {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPasswordFromKeychain() {
         int pool = NSAutoreleasePool.push();
         String pass = Keychain.instance().getPasswordFromKeychain(this.serviceName, this.getUsername());
@@ -133,6 +159,10 @@ public class Login {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isAnonymousLogin() {
         return this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"));
     }
@@ -158,6 +188,7 @@ public class Login {
 
     /**
      * Checks if both username and password qualify for a possible reasonable login attempt
+     * @return
      */
     public boolean hasReasonableValues() {
         boolean reasonable = false;
@@ -181,11 +212,12 @@ public class Login {
     }
 
     /**
-     * @return true if reasonable values have been found localy or
-     *         in the keychain or the user was prompted to
-     *         for the credentials and new values got entered.
+     *
+     * @param controller
+     * @return true if reasonable values have been found localy or in the keychain or the user
+     * was prompted to for the credentials and new values got entered.
      */
-    public boolean check() {
+    public boolean check(LoginController controller) {
         if (!this.hasReasonableValues()) {
             if (Preferences.instance().getBoolean("connection.login.useKeychain")) {
                 log.info("Searching keychain for password...");
@@ -194,7 +226,8 @@ public class Login {
                     passFromKeychain = this.getPasswordFromKeychain(); //legacy support
                 }
                 if (null == passFromKeychain || passFromKeychain.equals("")) {
-                    return this.promptUser("The username or password does not seem reasonable.").tryAgain();
+                    return this.promptUser("The username or password does not seem reasonable.",
+                            controller).tryAgain();
                 }
                 else {
                     this.pass = passFromKeychain;
@@ -202,7 +235,7 @@ public class Login {
                 }
             }
             else {
-                return this.promptUser("The username or password does not seem reasonable.").tryAgain();
+                return this.promptUser("The username or password does not seem reasonable.", controller).tryAgain();
             }
         }
         return true;
@@ -210,45 +243,35 @@ public class Login {
 
     private boolean tryAgain;
 
+    /**
+     *
+     * @return
+     */
     public boolean tryAgain() {
         return this.tryAgain;
     }
 
+    /**
+     *
+     * @param v
+     */
     public void setTryAgain(boolean v) {
         this.tryAgain = v;
     }
 
     /**
+     *
+     * @param message
+     * @param controller
      * @return true if the user hasn't canceled the login process. If false is returned,
-     *         no more attempts should be made and the connection closed.
-     * @pre controller != null
+     * no more attempts should be made and the connection closed.
      */
-    public Login promptUser(String message) {
+    public Login promptUser(String message, LoginController controller) {
         if (null == controller) {
-            log.warn("No valid password found");
+            log.error("No login controller; returning default credentials!");
             this.setTryAgain(false);
             return this;
         }
-        return this.controller.promptUser(this, message);
+        return controller.promptUser(this, message);
     }
-
-    public String getUsername() {
-        return this.user;
-    }
-
-    public void setUsername(String user) {
-        this.init(user, this.getPassword());
-    }
-
-    public String getPassword() {
-        return this.pass;
-    }
-
-    public void setPassword(String pass) {
-        this.init(this.getUsername(), pass);
-    }
-
-    public void setController(LoginController lc) {
-        this.controller = lc;
-	}
 }

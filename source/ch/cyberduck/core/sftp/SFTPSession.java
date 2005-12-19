@@ -243,7 +243,9 @@ public class SFTPSession extends Session {
             int pool = NSAutoreleasePool.push();
             passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
             if (null == passphrase || passphrase.equals("")) {
-                host.setCredentials(credentials.promptUser("The Private Key is password protected. Enter the passphrase for the key file '" + credentials.getPrivateKeyFile() + "'."));
+                host.setCredentials(credentials.promptUser("The private key is password protected. " +
+                        "Enter the passphrase for the key file '" + credentials.getPrivateKeyFile() + "'.",
+                        this.loginController));  //todo localize
                 if (host.getCredentials().tryAgain()) {
                     passphrase = credentials.getPassword();
                     if (keyFile.isPassphraseProtected()) {
@@ -264,10 +266,10 @@ public class SFTPSession extends Session {
         return SSH.authenticate(pk);
     }
 
-    private void login() throws IOException {
+    protected void login() throws IOException {
         log.debug("login");
         Login credentials = host.getCredentials();
-        if (credentials.check()) {
+        if (credentials.check(this.loginController)) {
             this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " '" + credentials.getUsername() + "'");
             if (credentials.usesPublicKeyAuthentication()) {
                 if (AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(credentials)) {
@@ -284,7 +286,9 @@ public class SFTPSession extends Session {
                 }
             }
             this.message(NSBundle.localizedString("Login failed", "Status", ""));
-            host.setCredentials(credentials.promptUser("Authentication for user " + credentials.getUsername() + " failed.")); //todo localize
+            host.setCredentials(credentials.promptUser("Authentication for user " + credentials.getUsername()
+                    + " failed.",
+                    this.loginController)); //todo localize
             if (host.getCredentials().tryAgain()) {
                 this.login();
             }

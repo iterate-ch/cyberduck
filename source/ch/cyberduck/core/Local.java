@@ -23,14 +23,7 @@ import glguerin.io.Pathname;
 import glguerin.io.imp.mac.macosx.MacOSXForker;
 
 import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDate;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSFormatter;
-import com.apple.cocoa.foundation.NSGregorianDate;
-import com.apple.cocoa.foundation.NSGregorianDateFormatter;
-import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSUserDefaults;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -128,6 +121,9 @@ public class Local extends File {
      */
     public native void setIconFromFile(String path, String icon);
 
+    /**
+     *
+     */
     public void removeCustomIcon() {
         this.removeCustomIcon(this.getAbsolute());
     }
@@ -146,6 +142,10 @@ public class Local extends File {
         log.debug("Setting permissions on local file suceeded:" + success);
     }
 
+    /**
+     *
+     * @return
+     */
     public Calendar getTimestampAsCalendar() {
         Calendar c = Calendar.getInstance(TimeZone.getDefault());
         c.setTime(this.getTimestamp());
@@ -176,6 +176,10 @@ public class Local extends File {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getTimestampAsShortString() {
         try {
             return shortDateFormatter.stringForObjectValue(new NSGregorianDate((double) this.getTimestamp().getTime() / 1000, NSDate.DateFor1970));
@@ -186,6 +190,10 @@ public class Local extends File {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     public Date getTimestamp() {
         return new Date(super.lastModified());
     }

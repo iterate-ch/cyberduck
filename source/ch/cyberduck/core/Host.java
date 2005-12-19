@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.LoginController;
-
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
@@ -394,10 +392,6 @@ public class Host {
 
     public int getPort() {
         return this.port;
-    }
-
-    public void setLoginController(LoginController c) {
-        this.getCredentials().setController(c);
     }
 
     public void setEncoding(String encoding) {

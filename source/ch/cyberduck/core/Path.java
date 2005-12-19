@@ -317,10 +317,6 @@ public abstract class Path {
 
     public abstract void upload();
 
-    // ----------------------------------------------------------
-    // Transfer methods
-    // ----------------------------------------------------------
-
     private boolean skip = false;
 
     public void setSkipped(boolean ignoreTransferRequests) {

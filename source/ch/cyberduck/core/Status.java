@@ -110,6 +110,10 @@ public class Status {
         this.current = current;
     }
 
+    /**
+     *
+     * @param resume
+     */
     public void setResume(boolean resume) {
         log.info("setResume:" + resume);
         this.resume = resume;
@@ -119,6 +123,9 @@ public class Status {
         return this.resume;
     }
 
+    /**
+     *
+     */
     public void reset() {
         log.debug("reset (resume=" + resume + ")");
         this.complete = false;
