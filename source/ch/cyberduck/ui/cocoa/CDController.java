@@ -64,6 +64,7 @@ public abstract class CDController extends NSObject {
     protected void invalidate() {
         NSNotificationCenter.defaultCenter().removeObserver(this);
         instances.removeObject(this);
+        System.gc();
     }
 
     protected void finalize() throws java.lang.Throwable {

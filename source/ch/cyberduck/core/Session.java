@@ -200,7 +200,6 @@ public abstract class Session
     public void setClosed() {
         log.debug("setClosed");
         this.connected = false;
-        this.message(NSBundle.localizedString("Disconnected", "Status", ""));
         this.release();
 
         this.connectionDidClose();
@@ -245,6 +244,7 @@ public abstract class Session
     }
 
     public void connectionWillClose() {
+        this.message(NSBundle.localizedString("Disconnecting...", "Status", ""));
         ConnectionListener[] l = (ConnectionListener[])connectionListners.toArray(new ConnectionListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].connectionWillClose();
@@ -252,6 +252,7 @@ public abstract class Session
     }
 
     public void connectionDidClose() {
+        this.message(NSBundle.localizedString("Disconnected", "Status", ""));
         ConnectionListener[] l = (ConnectionListener[])connectionListners.toArray(new ConnectionListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].connectionDidClose();
