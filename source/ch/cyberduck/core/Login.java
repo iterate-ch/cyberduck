@@ -141,6 +141,7 @@ public class Login {
             if (u.indexOf(':') != -1) {
                 this.user = u.substring(0, u.indexOf(':'));
                 this.pass = u.substring(u.indexOf(':') + 1, u.length());
+                return;
             }
             else {
                 this.user = u;
