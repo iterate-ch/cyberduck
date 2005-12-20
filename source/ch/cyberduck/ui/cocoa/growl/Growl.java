@@ -18,41 +18,44 @@ package ch.cyberduck.ui.cocoa.growl;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
+import ch.cyberduck.core.Preferences;
 
 import org.apache.log4j.Logger;
 
-public class Growl {
+public abstract class Growl {
     private static Logger log = Logger.getLogger(Growl.class);
-
-    static {
-        try {
-            NSBundle bundle = NSBundle.mainBundle();
-            String lib = bundle.resourcePath() + "/Java/" + "libGrowl.dylib";
-            log.info("Locating libGrowl.dylib at '" + lib + "'");
-            System.load(lib);
-        }
-        catch (UnsatisfiedLinkError e) {
-            log.error("Could not load the Growl library:" + e.getMessage());
-        }
-    }
 
     private static Growl instance;
 
-    private Growl() {
+    protected Growl() {
         //
     }
 
     public static Growl instance() {
         if (instance == null) {
-            instance = new Growl();
+            if (Preferences.instance().getBoolean("growl.enable")) {
+                return (instance = new GrowlNative());
+            }
+            return instance = new Growl() {
+                public void register() {
+                    ;
+                }
+
+                public void notify(String title, String description) {
+                    log.info(description);
+                }
+
+                public void notifyWithImage(String title, String description, String image) {
+                    log.info(description);
+                }
+            };
         }
         return instance;
     }
 
-    public native void register();
+    public abstract void register();
 
-    public native void notify(String title, String description);
+    public abstract void notify(String title, String description);
 
-    public native void notifyWithImage(String title, String description, String image);
+    public abstract void notifyWithImage(String title, String description, String image);
 }

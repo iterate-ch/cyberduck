@@ -101,6 +101,8 @@ public abstract class Preferences {
 
         defaults.put("rendezvous.enable", "true");
 
+        defaults.put("growl.enable", "true");
+
         /**
          * Check for newer version on application launch in background thread
          */
