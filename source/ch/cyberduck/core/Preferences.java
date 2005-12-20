@@ -99,6 +99,8 @@ public abstract class Preferences {
         defaults.put("website.help", "http://cyberduck.ch/help/");
         defaults.put("website.bug", "http://trac.cyberduck.ch/newticket/");
 
+        defaults.put("rendezvous.enable", "true");
+
         /**
          * Check for newer version on application launch in background thread
          */

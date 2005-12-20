@@ -73,7 +73,7 @@ public class CDMainController extends CDController {
     public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
         this.neverShowDonationCheckbox = neverShowDonationCheckbox;
         this.neverShowDonationCheckbox.setTarget(this);
-        this.neverShowDonationCheckbox.setState(Preferences.instance().getProperty("donate").equals("false") ? NSCell.OnState : NSCell.OffState);
+        this.neverShowDonationCheckbox.setState(Preferences.instance().getBoolean("donate") ? NSCell.OffState : NSCell.OnState);
     }
 
     private NSButton autoUpdateCheckbox;
@@ -637,13 +637,17 @@ public class CDMainController extends CDController {
                 ;
             }
         });
-        Rendezvous.instance().init();
+        if (Preferences.instance().getBoolean("rendezvous.enable")) {
+            Rendezvous.instance().init();
+        }
     }
 
     public void applicationShouldSleep(Object o) {
         log.debug("applicationShouldSleep");
         //Stopping rendezvous service discovery
-        Rendezvous.instance().quit();
+        if (Preferences.instance().getBoolean("rendezvous.enable")) {
+            Rendezvous.instance().quit();
+        }
         //halt all transfers
         CDQueueController.instance().stopAllButtonClicked(null);
         //close all browsing connections
