@@ -40,17 +40,16 @@ public class CDQueueController extends CDWindowController {
 
     public void awakeFromNib() {
         super.awakeFromNib();
-
         this.toolbar = new NSToolbar("Queue Toolbar");
         this.toolbar.setDelegate(this);
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
+        this.window.setToolbar(toolbar);
     }
 
     public void setWindow(NSWindow window) {
         super.setWindow(window);
         this.window.setReleasedWhenClosed(false);
-        this.window.setToolbar(toolbar);
         (NSNotificationCenter.defaultCenter()).addObserver(this,
                 new NSSelector("windowDidBecomeKey", new Class[]{NSNotification.class}),
                 NSWindow.WindowDidBecomeKeyNotification,
