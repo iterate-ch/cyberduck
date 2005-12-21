@@ -206,30 +206,33 @@ public abstract class CDBrowserTableDataSource {
             }
             NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
             if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-                NSArray elements = (NSArray) pboard.propertyListForType("QueuePBoardType");
-                for (int i = 0; i < elements.count(); i++) {
-                    NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                    Queue q = Queue.createQueue(dict);
-                    for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                                Path item = (Path) iter.next();
-                        if (destination.equals(item)) {
-                            return NSDraggingInfo.DragOperationNone;
-                        }
-                        if (item.attributes.isDirectory() && destination.isChild(item)) {
-                            return NSDraggingInfo.DragOperationNone;
-                        }
-                        if (item.getParent().equals(destination)) {
-                            return NSDraggingInfo.DragOperationNone;
-                        }
-                    }
-                }
-                if (destination.equals(controller.workdir())) {
-                    view.setDropRowAndDropOperation(-1, NSTableView.DropOn);
-                    return NSDraggingInfo.DragOperationMove;
-                }
-                if (destination.attributes.isDirectory()) {
-                    view.setDropRowAndDropOperation(row, NSTableView.DropOn);
-                    return NSDraggingInfo.DragOperationMove;
+                Object o = pboard.propertyListForType("QueuePBoardType");
+                if (o != null) {
+                    NSArray elements = (NSArray) o;
+	                for (int i = 0; i < elements.count(); i++) {
+	                    NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+	                    Queue q = Queue.createQueue(dict);
+	                    for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
+	                                Path item = (Path) iter.next();
+	                        if (destination.equals(item)) {
+	                            return NSDraggingInfo.DragOperationNone;
+	                        }
+	                        if (item.attributes.isDirectory() && destination.isChild(item)) {
+	                            return NSDraggingInfo.DragOperationNone;
+	                        }
+	                        if (item.getParent().equals(destination)) {
+	                            return NSDraggingInfo.DragOperationNone;
+	                        }
+	                    }
+	                }
+	                if (destination.equals(controller.workdir())) {
+	                    view.setDropRowAndDropOperation(-1, NSTableView.DropOn);
+	                    return NSDraggingInfo.DragOperationMove;
+	                }
+	                if (destination.attributes.isDirectory()) {
+	                    view.setDropRowAndDropOperation(row, NSTableView.DropOn);
+	                    return NSDraggingInfo.DragOperationMove;
+	                }
                 }
             }
         }
