@@ -17,8 +17,8 @@
         <option name="WHILE_ON_NEW_LINE" value="true" />
         <option name="CATCH_ON_NEW_LINE" value="true" />
         <option name="FINALLY_ON_NEW_LINE" value="true" />
-        <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="50" />
-        <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="50" />
+        <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="6" />
+        <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="6" />
         <option name="IMPORT_LAYOUT_TABLE">
           <value>
             <package name="" withSubpackages="true" />
