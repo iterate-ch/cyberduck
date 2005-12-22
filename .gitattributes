@@ -91,7 +91,7 @@ cs.lproj/Login.strings -text svneol=native#application/octet-stream
 cs.lproj/Main.nib/keyedobjects.nib -text
 cs.lproj/Main.strings -text
 cs.lproj/Preferences.nib/keyedobjects.nib -text
-cs.lproj/Preferences.strings -text svneol=native#application/octet-stream
+cs.lproj/Preferences.strings -text
 cs.lproj/Progress.nib/keyedobjects.nib -text
 cs.lproj/Queue.nib/keyedobjects.nib -text
 cs.lproj/Queue.strings -text svneol=native#application/octet-stream
