@@ -1153,19 +1153,24 @@ public class CDBrowserController extends CDWindowController {
         this.reloadData();
     }
 
-    public void reloadBookmarks() {
-        this.bookmarkTable.reloadData();
-        this.bookmarkTable.selectRow(this.bookmarkModel.size() - 1, false);
-    }
-
     private CDBookmarkTableDataSource bookmarkModel;
     private NSTableView bookmarkTable; // IBOutlet
     private CDTableDelegate bookmarkTableDelegate;
+    private CollectionListener bookmarkCollectionListener;
 
     public void setBookmarkTable(NSTableView bookmarkTable) {
         this.bookmarkTable = bookmarkTable;
 
         this.bookmarkTable.setDataSource(this.bookmarkModel = CDBookmarkTableDataSource.instance());
+        this.bookmarkModel.addListener(this.bookmarkCollectionListener = new CollectionListener() {
+            public void collectionItemAdded(Object item) {
+                CDBrowserController.this.bookmarkTable.reloadData();
+            }
+
+            public void collectionItemRemoved(Object item) {
+                CDBrowserController.this.bookmarkTable.reloadData();
+            }
+        });
         this.bookmarkTable.setDelegate(this.bookmarkTableDelegate = new CDAbstractTableDelegate() {
 
             public void tableRowDoubleClicked(Object sender) {
@@ -1325,7 +1330,6 @@ public class CDBrowserController extends CDWindowController {
     }
 
     private NSComboBox quickConnectPopup; // IBOutlet
-    private NSObject quickConnectPopupDataSource; // NSComboBox.DataSource
 
     public void setQuickConnectPopup(NSComboBox quickConnectPopup) {
         this.quickConnectPopup = quickConnectPopup;
@@ -1333,21 +1337,23 @@ public class CDBrowserController extends CDWindowController {
         this.quickConnectPopup.setCompletes(true);
         this.quickConnectPopup.setAction(new NSSelector("quickConnectSelectionChanged", new Class[]{Object.class}));
         this.quickConnectPopup.setUsesDataSource(true);
-        this.quickConnectPopup.setDataSource(this.quickConnectPopupDataSource = new NSObject() {
-            public int numberOfItemsInComboBox(NSComboBox combo) {
-                return CDBookmarkTableDataSource.instance().size();
-            }
+        this.quickConnectPopup.setDataSource(CDBookmarkTableDataSource.instance());
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("quickConnectWillPopUp", new Class[]{Object.class}),
+                NSComboBox.ComboBoxWillPopUpNotification,
+                this.quickConnectPopup);
+        this.quickConnectWillPopUp(null);
+    }
 
-            public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
-                if (row < this.numberOfItemsInComboBox(combo)) {
-                    return ((Host) CDBookmarkTableDataSource.instance().get(row)).getNickname();
-                }
-                return null;
-            }
-        });
+    public void quickConnectWillPopUp(NSNotification notification) {
+        int size = CDBookmarkTableDataSource.instance().size();
+        this.quickConnectPopup.setNumberOfVisibleItems(size > 5 ? 5 : size);
     }
 
     public void quickConnectSelectionChanged(Object sender) {
+        if(null == sender) {
+            return;
+        }
         String input = ((NSControl) sender).stringValue();
         try {
             for (Iterator iter = this.bookmarkModel.iterator(); iter.hasNext();) {
@@ -1441,7 +1447,6 @@ public class CDBrowserController extends CDWindowController {
                     Preferences.instance().getInteger("connection.port.default"));
         }
         this.bookmarkModel.add(item);
-        this.bookmarkTable.reloadData();
         this.bookmarkTable.selectRow(this.bookmarkModel.lastIndexOf(item), false);
         this.bookmarkTable.scrollRowToVisible(this.bookmarkModel.lastIndexOf(item));
         CDBookmarkController controller = new CDBookmarkController(bookmarkTable, item);
@@ -1460,11 +1465,19 @@ public class CDBrowserController extends CDWindowController {
 
     public void deleteBookmarkButtonClicked(Object sender) {
         this.bookmarkDrawer.open();
-        NSEnumerator iterator = bookmarkTable.selectedRowEnumerator();
-        int j = 0;
+        NSEnumerator iterator = this.bookmarkTable.selectedRowEnumerator();
+        int[] indexes = new int[this.bookmarkTable.numberOfSelectedRows()];
+        int i = 0;
         while (iterator.hasMoreElements()) {
-            int i = ((Integer) iterator.nextElement()).intValue();
-            Host host = (Host) this.bookmarkModel.get(i - j);
+            indexes[i] = ((Integer) iterator.nextElement()).intValue();
+            i++;
+        }
+        this.bookmarkTable.deselectAll(null);
+        int j = 0;
+        for(i = 0; i < indexes.length; i++) {
+            int row = indexes[i] - j;
+            this.bookmarkTable.selectRow(row, false);
+            Host host = (Host) this.bookmarkModel.get(row);
             switch (NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark", ""),
                     NSBundle.localizedString("Do you want to delete the selected bookmark?", "")
                             + " (" + host.getNickname() + ")",
@@ -1472,14 +1485,14 @@ public class CDBrowserController extends CDWindowController {
                     NSBundle.localizedString("Cancel", ""),
                     null)) {
                 case NSAlertPanel.DefaultReturn:
-                    this.bookmarkModel.remove(i - j);
+                    this.bookmarkModel.remove(row);
                     j++;
                     break;
                 case NSAlertPanel.AlternateReturn:
                     break;
             }
         }
-        this.bookmarkTable.reloadData();
+        this.bookmarkTable.deselectAll(null);
     }
 
     // ----------------------------------------------------------
@@ -3129,6 +3142,7 @@ public class CDBrowserController extends CDWindowController {
         this.bookmarkTable.setDataSource(null);
         this.bookmarkModel = null;
         this.bookmarkTable.setDelegate(null);
+        this.bookmarkModel.removeListener(this.bookmarkCollectionListener);
         this.bookmarkTableDelegate = null;
         this.bookmarkTable = null;
 
@@ -3164,8 +3178,8 @@ public class CDBrowserController extends CDWindowController {
         this.encodingPopup.setTarget(null);
 
         this.quickConnectPopup.setDataSource(null);
-        this.quickConnectPopupDataSource = null;
         this.quickConnectPopup.setTarget(null);
+        this.quickConnectPopup = null;
 
         super.invalidate();
     }

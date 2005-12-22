@@ -95,7 +95,11 @@ public class CDCommandController extends CDWindowController implements Transcrip
 
     public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
         sheet.orderOut(null);
-        session.removeTranscriptListener(this);
         this.invalidate();
+    }
+
+    protected void invalidate() {
+        session.removeTranscriptListener(this);
+        super.invalidate();
     }
 }

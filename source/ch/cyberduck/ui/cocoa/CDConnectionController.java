@@ -28,6 +28,8 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @version $Id$
@@ -41,25 +43,44 @@ public class CDConnectionController extends CDWindowController {
 
     private NSPopUpButton bookmarksPopup;
 
+    private CollectionListener bookmarkCollectionListener;
+
+    private Map bookmarks = new HashMap();
+
     public void setBookmarksPopup(NSPopUpButton bookmarksPopup) {
         this.bookmarksPopup = bookmarksPopup;
         this.bookmarksPopup.setImage(NSImage.imageNamed("bookmarks.tiff"));
         this.bookmarksPopup.setToolTip(NSBundle.localizedString("Bookmarks", ""));
         Iterator iter = CDBookmarkTableDataSource.instance().iterator();
         while (iter.hasNext()) {
-            bookmarksPopup.addItem(iter.next().toString());
+            Host bookmark = (Host)iter.next();
+            bookmarksPopup.addItem(bookmark.getNickname());
+            bookmarks.put(bookmark.getNickname(), bookmark);
         }
+        CDBookmarkTableDataSource.instance().addListener(this.bookmarkCollectionListener = new CollectionListener() {
+            public void collectionItemAdded(Object item) {
+                Host bookmark = (Host)item;
+                CDConnectionController.this.bookmarksPopup.addItem(bookmark.getNickname());
+                bookmarks.put(bookmark.getNickname(), bookmark);
+            }
+
+            public void collectionItemRemoved(Object item) {
+                Host bookmark = (Host)item;
+                CDConnectionController.this.bookmarksPopup.removeItemWithTitle(bookmark.getNickname());
+                bookmarks.remove(bookmark.getNickname());
+            }
+        });
         this.bookmarksPopup.setTarget(this);
         this.bookmarksPopup.setAction(new NSSelector("bookmarksPopupSelectionChanged", new Class[]{Object.class}));
     }
 
-    public void bookmarksPopupSelectionChanged(Object sender) {
-        int index = CDBookmarkTableDataSource.instance().indexOf(bookmarksPopup.titleOfSelectedItem());
-        this.bookmarkSelectionDidChange((Host) CDBookmarkTableDataSource.instance().get(index));
+    public void bookmarksPopupSelectionChanged(NSPopUpButton sender) {
+        this.bookmarkSelectionDidChange((Host)bookmarks.get(sender.titleOfSelectedItem()));
     }
 
     private NSPopUpButton historyPopup;
-    private List history;
+
+    private Map history = new HashMap();
 
     private static final File HISTORY_FOLDER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History"));
 
@@ -72,19 +93,17 @@ public class CDConnectionController extends CDWindowController {
                 return name.endsWith(".duck");
             }
         });
-        this.history = new Collection();
         for (int i = 0; i < files.length; i++) {
             Host h = CDBookmarkTableDataSource.instance().importBookmark(files[i]);
-            history.add(h);
-            historyPopup.addItem(h.toString());
+            historyPopup.addItem(h.getNickname());
+            history.put(h.getNickname(), h);
         }
         this.historyPopup.setTarget(this);
         this.historyPopup.setAction(new NSSelector("historyPopupSelectionChanged", new Class[]{Object.class}));
     }
 
-    public void historyPopupSelectionChanged(Object sender) {
-        int index = history.indexOf(historyPopup.titleOfSelectedItem());
-        this.bookmarkSelectionDidChange((Host) history.get(index));
+    public void historyPopupSelectionChanged(NSPopUpButton sender) {
+        this.bookmarkSelectionDidChange((Host)history.get(sender.titleOfSelectedItem()));
     }
 
     private NSPopUpButton rendezvousPopup;
@@ -105,6 +124,9 @@ public class CDConnectionController extends CDWindowController {
         this.rendezvousPopup.setToolTip("Bonjour");
         this.rendezvousPopup.setTarget(this);
         this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionDidChange", new Class[]{Object.class}));
+        for(Iterator iter = Rendezvous.instance().getServices().iterator(); iter.hasNext(); ) {
+            this.addItemToRendezvousPopup(Rendezvous.instance().getDisplayedName((String)iter.next()));
+        }
         Rendezvous.instance().addListener(rendezvousListener = new RendezvousListener() {
             public void serviceResolved(final String servicename) {
                 invoke(new Runnable() {
@@ -122,9 +144,6 @@ public class CDConnectionController extends CDWindowController {
                 });
             }
         });
-        for(Iterator iter = Rendezvous.instance().getServices().iterator(); iter.hasNext(); ) {
-            this.addItemToRendezvousPopup(Rendezvous.instance().getDisplayedName((String)iter.next()));
-        }
     }
 
     public void rendezvousSelectionDidChange(Object sender) {
@@ -580,7 +599,12 @@ public class CDConnectionController extends CDWindowController {
                 browserController.setEncoding(encodingPopup.titleOfSelectedItem());
                 browserController.mount(host);
         }
-        Rendezvous.instance().removeListener(this.rendezvousListener);
         this.invalidate();
+    }
+
+    protected void invalidate() {
+        CDBookmarkTableDataSource.instance().removeListener(this.bookmarkCollectionListener);
+        Rendezvous.instance().removeListener(this.rendezvousListener);
+        super.invalidate();
     }
 }

@@ -28,14 +28,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.UploadQueue;
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSDraggingInfo;
-import com.apple.cocoa.application.NSEvent;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSPasteboard;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSData;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -95,10 +88,16 @@ public class CDBookmarkTableDataSource extends Collection {
         DOCUMENT_ICON = NSImage.imageNamed("bookmark40.tiff");
     }
 
+    /**
+     * NSTableView.DataSource
+     */
     public int numberOfRowsInTableView(NSTableView tableView) {
         return this.size();
     }
 
+    /**
+     * NSTableView.DataSource
+     */
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
         if (row < this.size()) {
             String identifier = (String) tableColumn.identifier();
@@ -114,6 +113,23 @@ public class CDBookmarkTableDataSource extends Collection {
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
         log.warn("tableViewObjectValueForLocation:return null");
+        return null;
+    }
+
+    /**
+     * NSComboBox.DataSource
+     */
+    public int numberOfItemsInComboBox(NSComboBox combo) {
+        return this.size();
+    }
+
+    /**
+     * NSComboBox.DataSource
+     */
+    public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
+        if (row < this.size()) {
+            return ((Host) this.get(row)).getNickname();
+        }
         return null;
     }
 

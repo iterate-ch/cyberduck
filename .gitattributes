@@ -996,6 +996,7 @@ sk.lproj/Update.nib/keyedobjects.nib -text
 sk.lproj/Update.strings -text svneol=native#application/octet-stream
 sk.lproj/Validator.nib/keyedobjects.nib -text
 sk.lproj/Validator.strings -text svneol=native#application/octet-stream
+source/ch/cyberduck/core/CollectionListener.java -text
 source/ch/cyberduck/ui/cocoa/growl/GrowlNative.java -text
 source/com/apple/dnssd/BaseListener.java -text
 source/com/apple/dnssd/BrowseListener.java -text

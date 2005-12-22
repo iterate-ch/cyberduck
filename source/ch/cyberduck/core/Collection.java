@@ -19,11 +19,12 @@ package ch.cyberduck.core;
  */
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 /**
  * @version $Id$
  */
-public class Collection extends ArrayList {
+public class Collection extends ArrayList implements CollectionListener {
 
     public int indexOf(Object elem) {
         for (int i = 0; i < this.size(); i++) {
@@ -41,4 +42,44 @@ public class Collection extends ArrayList {
         return -1;
     }
 
+    private Vector listeners = new Vector();
+
+    public void addListener(CollectionListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(CollectionListener listener) {
+        listeners.remove(listener);
+    }
+
+    public boolean add(Object object) {
+        super.add(object);
+        this.collectionItemAdded(object);
+        return true;
+    }
+
+    public void add(int row, Object object) {
+        super.add(row, object);
+        this.collectionItemAdded(object);
+    }
+
+    public Object remove(int row) {
+        Object previous = super.remove(row);
+        this.collectionItemRemoved(previous);
+        return previous;
+    }
+
+    public void collectionItemAdded(Object item) {
+        CollectionListener[] l = (CollectionListener[])listeners.toArray(new CollectionListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].collectionItemAdded(item);
+        }
+    }
+
+    public void collectionItemRemoved(Object item) {
+        CollectionListener[] l = (CollectionListener[])listeners.toArray(new CollectionListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].collectionItemRemoved(item);
+        }
+    }
 }

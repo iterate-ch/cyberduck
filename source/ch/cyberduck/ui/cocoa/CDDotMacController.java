@@ -83,31 +83,20 @@ public class CDDotMacController {
                     element = i.nextElement();
                     if (element instanceof NSDictionary) {
                         Host bookmark = new Host((NSDictionary) element);
-                        if (bookmark instanceof Host) {
-                            if (!CDBookmarkTableDataSource.instance().contains(bookmark)) {
-                                int choice = NSAlertPanel.runAlert(((Host) bookmark).getNickname(),
-                                        NSBundle.localizedString("Add this bookmark to your existing bookmarks?", "IDisk", ""),
-                                        NSBundle.localizedString("Add", "IDisk", ""), //default
-                                        NSBundle.localizedString("Cancel", ""), //alternate
-                                        NSBundle.localizedString("Skip", "IDisk", "")); //other
-                                if (choice == NSAlertPanel.DefaultReturn) {
-                                    CDBookmarkTableDataSource.instance().add(bookmark);
-                                    NSArray windows = NSApplication.sharedApplication().windows();
-                                    int count = windows.count();
-                                    while (0 != count--) {
-                                        NSWindow window = (NSWindow) windows.objectAtIndex(count);
-                                        CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-                                        if (null != controller) {
-                                            controller.reloadBookmarks();
-                                        }
-                                    }
-                                }
-                                if (choice == NSAlertPanel.AlternateReturn) {
-                                    return;
-                                }
-                                if (choice == NSAlertPanel.OtherReturn) {
-                                    //
-                                }
+                        if (!CDBookmarkTableDataSource.instance().contains(bookmark)) {
+                            int choice = NSAlertPanel.runAlert(((Host) bookmark).getNickname(),
+                                    NSBundle.localizedString("Add this bookmark to your existing bookmarks?", "IDisk", ""),
+                                    NSBundle.localizedString("Add", "IDisk", ""), //default
+                                    NSBundle.localizedString("Cancel", ""), //alternate
+                                    NSBundle.localizedString("Skip", "IDisk", "")); //other
+                            if (choice == NSAlertPanel.DefaultReturn) {
+                                CDBookmarkTableDataSource.instance().add(bookmark);
+                            }
+                            if (choice == NSAlertPanel.AlternateReturn) {
+                                return;
+                            }
+                            if (choice == NSAlertPanel.OtherReturn) {
+                                //
                             }
                         }
                     }
