@@ -32,13 +32,11 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class CDLoginController extends CDWindowController implements LoginController {
+public class CDLoginController extends CDSheetController implements LoginController {
     private static Logger log = Logger.getLogger(CDLoginController.class);
 
-    private CDWindowController windowController;
-
-    public CDLoginController(CDWindowController windowController) {
-        this.windowController = windowController;
+    public CDLoginController(CDWindowController parent) {
+        super(parent);
         if (!NSApplication.loadNibNamed("Login", this)) {
             log.fatal("Couldn't load Login.nib");
         }
@@ -107,47 +105,30 @@ public class CDLoginController extends CDWindowController implements LoginContro
         this.textField.setStringValue(message);
         this.userField.setStringValue(login.getUsername());
         this.passField.setStringValue("");
-        this.windowController.beginSheet(this.window,
-                this,
-                new NSSelector
-                        ("sheetDidEnd",
-                                new Class[]
-                                        {
-                                                NSWindow.class, int.class, Object.class
-                                        }), // end selector
-                null);
-        this.windowController.waitForSheetEnd();
+        this.beginSheet();
+        this.waitForSheetEnd();
         return this.login;
     }
 
     public void closeSheet(NSButton sender) {
-        this.windowController.endSheet(this.window, sender.tag());
+        this.endSheet(sender.tag());
     }
 
-    public void sheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-        sheet.orderOut(null);
-        String user = (String) userField.objectValue();
-        String pass = (String) passField.objectValue();
-        if (null == user || user.equals("")) {
-            log.warn("Value of username textfield is null");
-            user = "";
+    public void dismissedSheet(int returncode, Object contextInfo) {
+        if (returncode == NSAlertPanel.DefaultReturn) {
+            log.info("Updating login credentials...");
+            this.login.setTryAgain(true);
+            this.login.setUsername((String) userField.objectValue());
+            this.login.setPassword((String) passField.objectValue());
+            this.login.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
         }
-        if (null == pass || pass.equals("")) {
-            log.warn("Value of password textfield is null");
-            pass = "";
+        if (returncode == NSAlertPanel.AlternateReturn) {
+            log.info("Cancelling login...");
+            this.login.setTryAgain(false);
         }
-        switch (returncode) {
-            case (NSAlertPanel.DefaultReturn):
-                log.info("Updating login credentials...");
-                this.login.setTryAgain(true);
-                this.login.setUsername(user);
-                this.login.setPassword(pass);
-                this.login.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
-                break;
-            case (NSAlertPanel.AlternateReturn):
-                log.info("Cancelling login...");
-                this.login.setTryAgain(false);
-                break;
-        }
+    }
+
+    protected void invalidate() {
+        ; //Overriden becuase the login sheet may be used multiple times
     }
 }

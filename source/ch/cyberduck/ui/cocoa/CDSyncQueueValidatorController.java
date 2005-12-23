@@ -221,7 +221,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
             }
         }
         this.setCanceled(false);
-        this.windowController.endSheet(this.window(), sender.tag());
+        this.endSheet(sender.tag());
     }
 
     //todo - add timezone support

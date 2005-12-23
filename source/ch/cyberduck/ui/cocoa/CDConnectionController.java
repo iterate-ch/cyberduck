@@ -34,7 +34,7 @@ import java.util.HashMap;
 /**
  * @version $Id$
  */
-public class CDConnectionController extends CDWindowController {
+public class CDConnectionController extends CDSheetController {
     private static Logger log = Logger.getLogger(CDConnectionController.class);
 
     // ----------------------------------------------------------
@@ -68,6 +68,10 @@ public class CDConnectionController extends CDWindowController {
                 Host bookmark = (Host)item;
                 CDConnectionController.this.bookmarksPopup.removeItemWithTitle(bookmark.getNickname());
                 bookmarks.remove(bookmark.getNickname());
+            }
+
+            public void collectionItemChanged(Object item) {
+                ;//TODO
             }
         });
         this.bookmarksPopup.setTarget(this);
@@ -399,14 +403,12 @@ public class CDConnectionController extends CDWindowController {
             this.connectmodePopup.setTitle(CONNECTMODE_PASSIVE);
     }
 
-    private CDBrowserController browserController;
-
     // ----------------------------------------------------------
     // Constructors
     // ----------------------------------------------------------
 
-    public CDConnectionController(CDBrowserController browserController) {
-        this.browserController = browserController;
+    public CDConnectionController(CDWindowController parent) {
+        super(parent);
         if (!NSApplication.loadNibNamed("Connection", this)) {
             log.fatal("Couldn't load Connection.nib");
         }
@@ -546,60 +548,57 @@ public class CDConnectionController extends CDWindowController {
     }
 
     public void closeSheet(NSButton sender) {
-        this.endSheet(this.window(), sender.tag());
+        this.endSheet(sender.tag());
     }
 
-    public void sheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-        sheet.orderOut(null);
-        switch (returncode) {
-            case (NSAlertPanel.DefaultReturn):
-                Host host = null;
-                if (protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
-                    // SFTP has been selected as the protocol to connect with
-                    host = new Host(Session.SFTP,
-                            hostPopup.stringValue(),
-                            Integer.parseInt(portField.stringValue()),
-                            pathField.stringValue());
-                    host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
-                    if (pkCheckbox.state() == NSCell.OnState) {
-                        host.getCredentials().setPrivateKeyFile(pkLabel.stringValue());
-                    }
+    public void dismissedSheet(int returncode, Object context) {
+        if (returncode == NSAlertPanel.DefaultReturn) {
+            Host host = null;
+            if (protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
+                // SFTP has been selected as the protocol to connect with
+                host = new Host(Session.SFTP,
+                        hostPopup.stringValue(),
+                        Integer.parseInt(portField.stringValue()),
+                        pathField.stringValue());
+                host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
+                if (pkCheckbox.state() == NSCell.OnState) {
+                    host.getCredentials().setPrivateKeyFile(pkLabel.stringValue());
                 }
-                else if (protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
-                    // FTP has been selected as the protocol to connect with
-                    host = new Host(Session.FTP,
-                            hostPopup.stringValue(),
-                            Integer.parseInt(portField.stringValue()),
-                            pathField.stringValue());
-                    host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
-                    if (connectmodePopup.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
-                        host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
-                    }
-                    if (connectmodePopup.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
-                        host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
-                    }
+            }
+            else if (protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
+                // FTP has been selected as the protocol to connect with
+                host = new Host(Session.FTP,
+                        hostPopup.stringValue(),
+                        Integer.parseInt(portField.stringValue()),
+                        pathField.stringValue());
+                host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
+                if (connectmodePopup.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
+                    host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
                 }
-                else if (protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
-                    // FTP has been selected as the protocol to connect with
-                    host = new Host(Session.FTP_TLS,
-                            hostPopup.stringValue(),
-                            Integer.parseInt(portField.stringValue()),
-                            pathField.stringValue());
-                    host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
-                    if (connectmodePopup.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
-                        host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
-                    }
-                    if (connectmodePopup.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
-                        host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
-                    }
+                if (connectmodePopup.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
+                    host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
                 }
-                else {
-                    throw new IllegalArgumentException("No protocol selected.");
+            }
+            else if (protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
+                // FTP has been selected as the protocol to connect with
+                host = new Host(Session.FTP_TLS,
+                        hostPopup.stringValue(),
+                        Integer.parseInt(portField.stringValue()),
+                        pathField.stringValue());
+                host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
+                if (connectmodePopup.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
+                    host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
                 }
-                browserController.setEncoding(encodingPopup.titleOfSelectedItem());
-                browserController.mount(host);
+                if (connectmodePopup.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
+                    host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
+                }
+            }
+            else {
+                throw new IllegalArgumentException("No protocol selected.");
+            }
+            ((CDBrowserController)parent).setEncoding(encodingPopup.titleOfSelectedItem());
+            ((CDBrowserController)parent).mount(host);
         }
-        this.invalidate();
     }
 
     protected void invalidate() {

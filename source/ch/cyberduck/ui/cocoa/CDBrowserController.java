@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -518,7 +519,14 @@ public class CDBrowserController extends CDWindowController {
         }
     }
 
+    protected void setSelectedPath(Path selected) {
+        List list = new ArrayList();
+        list.add(selected);
+        this.setSelectedPaths(list);
+    }
+
     protected void setSelectedPaths(List selected) {
+        this.deselectAll();
         switch (this.browserSwitchView.selectedSegment()) {
             case LIST_VIEW: {
                 //selection handling
@@ -634,7 +642,7 @@ public class CDBrowserController extends CDWindowController {
         if (this.bookmarkDrawer.state() == NSDrawer.OpenState || this.bookmarkDrawer.state() == NSDrawer.OpeningState) {
             this.bookmarkDrawer.close();
         }
-        if(this.hasSession()) {
+        if (this.hasSession()) {
             this.session.cache().clear();
         }
         this.setWorkdir(null);
@@ -721,7 +729,6 @@ public class CDBrowserController extends CDWindowController {
     }
 
     private class AbstractBrowserTableDelegate extends CDAbstractTableDelegate {
-
         public boolean isColumnEditable(NSTableColumn tableColumn) {
             if (Preferences.instance().getBoolean("browser.editable")) {
                 return tableColumn.identifier().equals(CDBrowserTableDataSource.FILENAME_COLUMN);
@@ -741,25 +748,37 @@ public class CDBrowserController extends CDWindowController {
             CDBrowserController.this.deleteFileButtonClicked(sender);
         }
 
-        public void tableColumnClicked(NSTableView tableView, NSTableColumn tableColumn) {
+        public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
             List selected = CDBrowserController.this.getSelectedPaths();
             if (this.selectedColumnIdentifier().equals(tableColumn.identifier())) {
                 this.setSortedAscending(!this.isSortedAscending());
             }
             else {
-                tableView.setIndicatorImage(null, tableView.tableColumnWithIdentifier(this.selectedColumnIdentifier()));
+                view.setIndicatorImage(null, view.tableColumnWithIdentifier(this.selectedColumnIdentifier()));
                 this.setSelectedColumn(tableColumn);
             }
-            tableView.setIndicatorImage(this.isSortedAscending() ?
+            view.setIndicatorImage(this.isSortedAscending() ?
                     NSImage.imageNamed("NSAscendingSortIndicator") :
                     NSImage.imageNamed("NSDescendingSortIndicator"),
                     tableColumn);
-            tableView.deselectAll(null);
-            tableView.reloadData();
+            view.deselectAll(null);
+            view.reloadData();
             for (Iterator i = selected.iterator(); i.hasNext();) {
-                tableView.selectRowIndexes(new NSIndexSet(
-                        CDBrowserController.this.getSelectedBrowserModel().indexOf(tableView, (Path) i.next())),
+                view.selectRowIndexes(new NSIndexSet(
+                        CDBrowserController.this.getSelectedBrowserModel().indexOf(view, (Path) i.next())),
                         true);
+            }
+        }
+
+        public void selectionDidChange(NSNotification notification) {
+            if (Preferences.instance().getBoolean("browser.info.isInspector")) {
+                if (inspector != null && inspector.window().isVisible()) {
+                    List files = new ArrayList();
+                    for (Iterator i = getSelectedPaths().iterator(); i.hasNext();) {
+                        files.add(i.next());
+                    }
+                    inspector.setFiles(files);
+                }
             }
         }
     }
@@ -787,15 +806,8 @@ public class CDBrowserController extends CDWindowController {
         this.browserOutlineView.setAllowsColumnSelection(false);
         this.browserOutlineView.setAllowsColumnReordering(true);
 
-        if (Preferences.instance().getBoolean("browser.info.isInspector")) {
-            (NSNotificationCenter.defaultCenter()).addObserver(this,
-                    new NSSelector("browserSelectionDidChange", new Class[]{NSNotification.class}),
-                    NSOutlineView.OutlineViewSelectionDidChangeNotification,
-                    this.browserOutlineView);
-        }
         this.browserOutlineView.setDataSource(this.browserOutlineModel = new CDBrowserOutlineViewModel(this));
         this.browserOutlineView.setDelegate(this.browserOutlineViewDelegate = new AbstractBrowserTableDelegate() {
-
             public void enterKeyPressed(Object sender) {
                 if (CDBrowserController.this.browserOutlineView.numberOfSelectedRows() == 1) {
                     CDBrowserController.this.browserOutlineView.editLocation(
@@ -901,8 +913,8 @@ public class CDBrowserController extends CDWindowController {
     private NSTableView browserListView; // IBOutlet
     private CDTableDelegate browserListViewDelegate;
 
-    public void setBrowserListView(NSTableView browserListView) {
-        this.browserListView = browserListView;
+    public void setBrowserListView(NSTableView view) {
+        this.browserListView = view;
         // receive drag events from types
         this.browserListView.registerForDraggedTypes(new NSArray(new Object[]{
                 "QueuePboardType",
@@ -920,15 +932,8 @@ public class CDBrowserController extends CDWindowController {
         this.browserListView.setAllowsColumnSelection(false);
         this.browserListView.setAllowsColumnReordering(true);
 
-        if (Preferences.instance().getBoolean("browser.info.isInspector")) {
-            (NSNotificationCenter.defaultCenter()).addObserver(this,
-                    new NSSelector("browserSelectionDidChange", new Class[]{NSNotification.class}),
-                    NSTableView.TableViewSelectionDidChangeNotification,
-                    this.browserListView);
-        }
         this.browserListView.setDataSource(this.browserListModel = new CDBrowserListViewModel(this));
         this.browserListView.setDelegate(this.browserListViewDelegate = new AbstractBrowserTableDelegate() {
-
             public void enterKeyPressed(Object sender) {
                 if (CDBrowserController.this.browserListView.numberOfSelectedRows() == 1) {
                     CDBrowserController.this.browserListView.editLocation(
@@ -938,7 +943,7 @@ public class CDBrowserController extends CDWindowController {
                 }
             }
 
-            public void tableViewWillDisplayCell(NSTableView tableView, Object cell, NSTableColumn tableColumn, int row) {
+            public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn tableColumn, int row) {
                 if (cell instanceof NSTextFieldCell) {
                     if (CDBrowserController.this.isConnected()) {
                         ((NSTextFieldCell) cell).setTextColor(NSColor.controlTextColor());
@@ -949,7 +954,7 @@ public class CDBrowserController extends CDWindowController {
                 }
             }
 
-            public String tableViewToolTipForCell(NSTableView tableView, NSCell cell, NSMutableRect rect,
+            public String tableViewToolTipForCell(NSTableView view, NSCell cell, NSMutableRect rect,
                                                   NSTableColumn tc, int row, NSPoint mouseLocation) {
                 if (row < getSelectedBrowserModel().childs(CDBrowserController.this.workdir()).size()) {
                     Path p = (Path) getSelectedBrowserModel().childs(CDBrowserController.this.workdir()).get(row);
@@ -996,8 +1001,8 @@ public class CDBrowserController extends CDWindowController {
             NSTextFieldCell cell = new NSTextFieldCell();
             {
                 cell.setEditable(true);
-                cell.setTarget(browserListView.target());
-                cell.setAction(browserListView.action());
+                cell.setTarget(view.target());
+                cell.setAction(view.action());
             }
             c.setDataCell(cell);
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
@@ -1040,16 +1045,6 @@ public class CDBrowserController extends CDWindowController {
 //        }
 //        this.browserSelectionDidChange(null);
 //    }
-
-    public void browserSelectionDidChange(NSNotification notification) {
-        if (this.inspector != null && this.inspector.window().isVisible()) {
-            List files = new ArrayList();
-            for (Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
-                files.add(i.next());
-            }
-            this.inspector.setFiles(files);
-        }
-    }
 
     protected void _updateBrowserAttributes(NSTableView tableView) {
         tableView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
@@ -1158,27 +1153,36 @@ public class CDBrowserController extends CDWindowController {
     private CDTableDelegate bookmarkTableDelegate;
     private CollectionListener bookmarkCollectionListener;
 
-    public void setBookmarkTable(NSTableView bookmarkTable) {
-        this.bookmarkTable = bookmarkTable;
+    public void setBookmarkTable(NSTableView view) {
+        this.bookmarkTable = view;
 
         this.bookmarkTable.setDataSource(this.bookmarkModel = CDBookmarkTableDataSource.instance());
         this.bookmarkModel.addListener(this.bookmarkCollectionListener = new CollectionListener() {
             public void collectionItemAdded(Object item) {
-                CDBrowserController.this.bookmarkTable.reloadData();
+                bookmarkTable.reloadData();
             }
 
             public void collectionItemRemoved(Object item) {
-                CDBrowserController.this.bookmarkTable.reloadData();
+                bookmarkTable.reloadData();
+            }
+
+            public void collectionItemChanged(Object item) {
+                bookmarkTable.reloadData();
             }
         });
         this.bookmarkTable.setDelegate(this.bookmarkTableDelegate = new CDAbstractTableDelegate() {
-
             public void tableRowDoubleClicked(Object sender) {
-                CDBrowserController.this.bookmarkTableRowDoubleClicked(sender);
+                if (bookmarkTable.numberOfSelectedRows() == 1) {
+                    Host h = (Host) bookmarkModel.get(bookmarkTable.selectedRow());
+                    mount(h, h.getEncoding());
+                    if (Preferences.instance().getBoolean("browser.closeDrawer")) {
+                        bookmarkDrawer.close();
+                    }
+                }
             }
 
             public void enterKeyPressed(Object sender) {
-                CDBrowserController.this.bookmarkTableRowDoubleClicked(sender);
+                this.tableRowDoubleClicked(sender);
             }
 
             public void deleteKeyPressed(Object sender) {
@@ -1193,6 +1197,10 @@ public class CDBrowserController extends CDWindowController {
                 return null;
             }
 
+            public void selectionDidChange(NSNotification notification) {
+                editBookmarkButton.setEnabled(bookmarkTable.numberOfSelectedRows() == 1);
+                deleteBookmarkButton.setEnabled(bookmarkTable.selectedRow() != -1);
+            }
         });
         // receive drag events from types
         this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]
@@ -1201,10 +1209,6 @@ public class CDBrowserController extends CDWindowController {
                         NSPasteboard.FilesPromisePboardType,
                         "HostPBoardType" //moving bookmarks
                 }));
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
-                new NSSelector("bookmarkSelectionDidChange", new Class[]{NSNotification.class}),
-                NSTableView.TableViewSelectionDidChangeNotification,
-                this.bookmarkTable);
 
         this.bookmarkTable.setRowHeight(45f);
         NSSelector setResizableMaskSelector
@@ -1253,21 +1257,6 @@ public class CDBrowserController extends CDWindowController {
         this.bookmarkTable.setAllowsColumnSelection(false);
         this.bookmarkTable.setAllowsColumnReordering(false);
         this.bookmarkTable.sizeToFit();
-    }
-
-    public void bookmarkSelectionDidChange(NSNotification notification) {
-        editBookmarkButton.setEnabled(bookmarkTable.numberOfSelectedRows() == 1);
-        deleteBookmarkButton.setEnabled(bookmarkTable.selectedRow() != -1);
-    }
-
-    public void bookmarkTableRowDoubleClicked(Object sender) {
-        if(bookmarkTable.numberOfSelectedRows() == 1) {
-            Host h = (Host) this.bookmarkModel.get(bookmarkTable.selectedRow());
-            this.mount(h, h.getEncoding());
-            if (Preferences.instance().getBoolean("browser.closeDrawer")) {
-                this.bookmarkDrawer.close();
-           }
-        }
     }
 
     private NSMenu editMenu;
@@ -1351,7 +1340,7 @@ public class CDBrowserController extends CDWindowController {
     }
 
     public void quickConnectSelectionChanged(Object sender) {
-        if(null == sender) {
+        if (null == sender) {
             return;
         }
         String input = ((NSControl) sender).stringValue();
@@ -1421,8 +1410,9 @@ public class CDBrowserController extends CDWindowController {
 
     public void editBookmarkButtonClicked(Object sender) {
         this.bookmarkDrawer.open();
-        CDBookmarkController controller = new CDBookmarkController(bookmarkTable,
-                (Host) this.bookmarkModel.get(bookmarkTable.selectedRow()));
+        CDBookmarkController controller = new CDBookmarkController(
+                (Host) this.bookmarkModel.get(bookmarkTable.selectedRow())
+        );
         controller.window().makeKeyAndOrderFront(null);
     }
 
@@ -1449,7 +1439,7 @@ public class CDBrowserController extends CDWindowController {
         this.bookmarkModel.add(item);
         this.bookmarkTable.selectRow(this.bookmarkModel.lastIndexOf(item), false);
         this.bookmarkTable.scrollRowToVisible(this.bookmarkModel.lastIndexOf(item));
-        CDBookmarkController controller = new CDBookmarkController(bookmarkTable, item);
+        CDBookmarkController controller = new CDBookmarkController(item);
         controller.window().makeKeyAndOrderFront(null);
     }
 
@@ -1474,7 +1464,7 @@ public class CDBrowserController extends CDWindowController {
         }
         this.bookmarkTable.deselectAll(null);
         int j = 0;
-        for(i = 0; i < indexes.length; i++) {
+        for (i = 0; i < indexes.length; i++) {
             int row = indexes[i] - j;
             this.bookmarkTable.selectRow(row, false);
             Host host = (Host) this.bookmarkModel.get(row);
@@ -1715,33 +1705,29 @@ public class CDBrowserController extends CDWindowController {
     protected void renamePath(Path path, String parent, String name) {
         Path p = PathFactory.createPath(workdir.getSession(), parent, name);
         if (p.exists()) {
-            this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Replace", "Alert sheet title"), //title
-                    NSBundle.localizedString("A file with the same absolute already exists. Do you want to replace the existing file?", ""),
-                    NSBundle.localizedString("Overwrite", "Alert sheet default button"), // defaultbutton
-                    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
-                    null //other button
-            ),
-                    this,
-                    new NSSelector("renameSheetDidEnd",
-                            new Class[]{NSWindow.class, int.class, Object.class}),
-                    Arrays.asList(new Object[]{path, p.getAbsolute()})
-            );// end selector
+            CDSheetController alert = new CDSheetController(this,
+                    NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Replace", "Alert sheet title"), //title
+                            NSBundle.localizedString("A file with the same absolute already exists. Do you want to replace the existing file?", ""),
+                            NSBundle.localizedString("Overwrite", "Alert sheet default button"), // defaultbutton
+                            NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
+                            null //other button
+                    )) {
+                public void dismissedSheet(int returncode, Object contextInfo) {
+                    if (returncode == NSAlertPanel.DefaultReturn) {
+                        if (contextInfo instanceof List) {
+                            List context = (List) contextInfo;
+                            Path path = (Path) context.get(0);
+                            String name = (String) context.get(1);
+                            path.rename(name);
+                            reloadData(true);
+                        }
+                    }
+                }
+            };
+            alert.beginSheet(Arrays.asList(new Object[]{path, p.getAbsolute()}));
         }
         else {
             path.rename(p.getAbsolute());
-        }
-    }
-
-    public void renameSheetDidEnd(NSWindow sheet, int returncode, Object contextObject) {
-        sheet.orderOut(null);
-        if (returncode == NSAlertPanel.DefaultReturn) {
-            if (contextObject instanceof List) {
-                List context = (List) contextObject;
-                Path path = (Path) context.get(0);
-                String name = (String) context.get(1);
-                path.rename(name);
-                this.reloadData(true);
-            }
         }
     }
 
@@ -1769,51 +1755,31 @@ public class CDBrowserController extends CDWindowController {
     }
 
     public void gotoButtonClicked(Object sender) {
-        CDGotoController controller = new CDGotoController(this);
-        this.beginSheet(controller.window(), //sheet
-                controller, //modal delegate
-                new NSSelector("sheetDidEnd",
-                        new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
-                this.workdir()); //contextInfo
+        CDSheetController controller = new CDGotoController(this);
+        controller.beginSheet(this.workdir()); //contextInfo
     }
 
     public void createFileButtonClicked(Object sender) {
-        CDFileController controller = new CDCreateFileController(this);
-        this.beginSheet(controller.window(), //sheet
-                controller, //modal delegate
-                new NSSelector("sheetDidEnd",
-                        new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
-                this.workdir()); //contextInfo
+        CDSheetController controller = new CDCreateFileController(this);
+        controller.beginSheet(this.workdir());
     }
 
     public void duplicateFileButtonClicked(Object sender) {
         if (this.getSelectionCount() > 0) {
-            CDFileController controller = new CDDuplicateFileController(this);
-            this.beginSheet(controller.window(), //sheet
-                    controller, //modal delegate
-                    new NSSelector("sheetDidEnd",
-                            new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
-                    this.getSelectedPath().getParent()); //contextInfo
+            CDSheetController controller = new CDDuplicateFileController(this);
+            controller.beginSheet(this.getSelectedPath().getParent());
         }
     }
 
     public void sendCustomCommandClicked(Object sender) {
-        CDCommandController controller = new CDCommandController(this.session);
-        this.beginSheet(controller.window(), //sheet
-                controller, //modal delegate
-                new NSSelector("sheetDidEnd",
-                        new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
-                null); //contextInfo
+        CDSheetController controller = new CDCommandController(this, this.session);
+        controller.beginSheet();
     }
 
 
     public void createFolderButtonClicked(Object sender) {
-        CDFolderController controller = new CDFolderController(this);
-        this.beginSheet(controller.window(), //sheet
-                controller, //modal delegate
-                new NSSelector("sheetDidEnd",
-                        new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
-                this.workdir()); //contextInfo
+        CDSheetController controller = new CDFolderController(this);
+        controller.beginSheet(this.workdir());
     }
 
     private CDInfoController inspector = null;
@@ -1861,38 +1827,30 @@ public class CDBrowserController extends CDWindowController {
             }
         }
         if (files.size() > 0) {
-            this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Delete", "Alert sheet title"), //title
-                    alertText.toString(),
-                    NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
-                    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
-                    null //other button
-            ),
-                    this,
-                    new NSSelector
-                            ("deleteSheetDidEnd",
-                                    new Class[]
-                                            {
-                                                    NSWindow.class, int.class, Object.class
-                                            }),
-                    files
-            );// end selector
-        }
-    }
-
-    public void deleteSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-        sheet.orderOut(null);
-        if (returncode == NSAlertPanel.DefaultReturn) {
-            final List files = (List) contextInfo;
-            if (files.size() > 0) {
-                this.deselectAll();
-                Iterator i = files.iterator();
-                Path p;
-                while (i.hasNext()) {
-                    p = (Path) i.next();
-                    p.delete();
+            CDSheetController alert = new CDSheetController(this,
+                    NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Delete", "Alert sheet title"), //title
+                            alertText.toString(),
+                            NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
+                            NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
+                            null //other button
+                    )) {
+                public void dismissedSheet(int returncode, Object contextInfo) {
+                    if (returncode == NSAlertPanel.DefaultReturn) {
+                        final List files = (List) contextInfo;
+                        if (files.size() > 0) {
+                            Iterator i = files.iterator();
+                            Path p;
+                            while (i.hasNext()) {
+                                p = (Path) i.next();
+                                p.delete();
+                            }
+                            reloadData();
+                        }
+                    }
                 }
-                this.reloadData();
-            }
+
+            };
+            alert.beginSheet(files);
         }
     }
 
@@ -2059,10 +2017,8 @@ public class CDBrowserController extends CDWindowController {
     }
 
     public void connectButtonClicked(Object sender) {
-        CDWindowController connectionController = new CDConnectionController(this);
-        this.beginSheet(connectionController.window(), connectionController,
-                new NSSelector("sheetDidEnd", new Class[]{NSWindow.class, int.class, Object.class}),
-                null);
+        CDSheetController controller = new CDConnectionController(this);
+        controller.beginSheet();
     }
 
     public void disconnectButtonClicked(Object sender) {
@@ -2210,7 +2166,7 @@ public class CDBrowserController extends CDWindowController {
     }
 
     protected void setWorkdir(Path path) {
-        if(!this.hasSession()) {
+        if (!this.hasSession()) {
             path = null;
         }
         if (null == path) {
@@ -2295,12 +2251,14 @@ public class CDBrowserController extends CDWindowController {
                         statusLabel.setAttributedStringValue(new NSAttributedString(msg,
                                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                         statusLabel.setNeedsDisplay(true);
-                        beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
-                                msg, // msg
-                                NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                                null, //alternative button
-                                null) //other button
+                        CDSheetController alert = new CDSheetController(CDBrowserController.this,
+                                NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                                        msg, // msg
+                                        NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+                                        null, //alternative button
+                                        null) //other button
                         );
+                        alert.beginSheet();
                     }
                 });
             }
@@ -2400,27 +2358,32 @@ public class CDBrowserController extends CDWindowController {
     private final Object lock = new Object();
 
     public Session mount(final Host host, final String encoding) {
-        synchronized(lock) {
+        synchronized (lock) {
             log.debug("mount:" + host);
             if (this.isMounted()) {
                 if (this.session.getHost().getURL().equals(host.getURL())) {
                     if (host.hasReasonableDefaultPath()) {
                         Path home = PathFactory.createPath(session, host.getDefaultPath());
                         home.attributes.setType(Path.DIRECTORY_TYPE);
-								home.invalidate();
+                        home.invalidate();
                         this.setWorkdir(home);
                         return session;
                     }
                 }
             }
-            if (this.unmount(new NSSelector("mountSheetDidEnd",
-                    new Class[]{NSWindow.class, int.class, Object.class}), host// end selector
-            )) {
+            if (this.unmount(new CDSheetListener() {
+                public void dismissedSheet(int returncode, Object context) {
+                    if (returncode == NSAlertPanel.DefaultReturn) {
+                        unmount();
+                        mount(host);
+                    }
+                }
+            })) {
                 this.setEncoding(encoding, false);
                 final Session session = this.init(host);
                 new Thread(session.toString()) {
                     public void run() {
-                        synchronized(lock){
+                        synchronized (lock) {
                             session.addConnectionListener(new ConnectionListenerAdapter() {
                                 public void error(final String message) {
                                     File bookmark = getRepresentedFile();
@@ -2429,6 +2392,7 @@ public class CDBrowserController extends CDWindowController {
                                     }
                                     window().setRepresentedFilename(""); //can't send null
                                 }
+
                                 public void connectionDidOpen() {
                                     session.removeConnectionListener(this);
                                 }
@@ -2447,14 +2411,6 @@ public class CDBrowserController extends CDWindowController {
         }
     }
 
-    public void mountSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-        sheet.orderOut(null);
-        this.unmountSheetDidEnd(sheet, returncode, contextInfo);
-        if (returncode == NSAlertPanel.DefaultReturn) {
-            this.mount((Host) contextInfo);
-        }
-    }
-
     public void unmount() {
         if (this.hasSession()) {
             this.session.close();
@@ -2464,24 +2420,24 @@ public class CDBrowserController extends CDWindowController {
     /**
      * @return True if the unmount process has finished, false if the user has to agree first to close the connection
      */
-    public boolean unmount(NSSelector selector, Object context) {
-        synchronized(lock) {
+    public boolean unmount(final CDSheetListener callback) {
+        synchronized (lock) {
             log.debug("unmount");
             if (this.isConnected()) {
                 if (Preferences.instance().getBoolean("browser.confirmDisconnect")) {
-                    this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + this.session.getHost().getHostname(), //title
-                            NSBundle.localizedString("The connection will be closed.", "Alert sheet text"), // message
-                            NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
-                            NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
-                            null //other button
-                    ),
-                            this,
-                            selector,
-                            context);
+                    CDSheetController alert = new CDSheetController(this,
+                            NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + this.session.getHost().getHostname(), //title
+                                    NSBundle.localizedString("The connection will be closed.", "Alert sheet text"), // message
+                                    NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
+                                    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
+                                    null //other button
+                            ));
+                    alert.beginSheet(null, callback);
                     return false;
                 }
                 this.unmount();
-            }       }
+            }
+        }
         return true;
     }
 
@@ -2548,12 +2504,20 @@ public class CDBrowserController extends CDWindowController {
         int count = windows.count();
         // Determine if there are any open connections
         while (0 != count--) {
-            NSWindow window = (NSWindow) windows.objectAtIndex(count);
+            final NSWindow window = (NSWindow) windows.objectAtIndex(count);
             CDBrowserController controller = CDBrowserController.controllerForWindow(window);
             if (null != controller) {
-                if (!controller.unmount(new NSSelector("terminateReviewSheetDidEnd",
-                        new Class[]{NSWindow.class, int.class, Object.class}),
-                        null)) {
+                if (!controller.unmount(new CDSheetListener() {
+                    public void dismissedSheet(int returncode, Object context) {
+                        if (returncode == NSAlertPanel.DefaultReturn) { //Disconnect
+                            window.close();
+                            CDBrowserController.applicationShouldTerminate(null);
+                        }
+                        if (returncode == NSAlertPanel.AlternateReturn) { //Cancel
+                            NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
+                        }
+                    }
+                })) {
                     return NSApplication.TerminateLater;
                 }
             }
@@ -2561,38 +2525,15 @@ public class CDBrowserController extends CDWindowController {
         return CDQueueController.applicationShouldTerminate(app);
     }
 
-    public boolean windowShouldClose(NSWindow sender) {
-        return this.unmount(new NSSelector("closeSheetDidEnd",
-                new Class[]{NSWindow.class, int.class, Object.class}), null // end selector
-        );
-    }
-
-    public void unmountSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-        sheet.orderOut(null);
-        if (returncode == NSAlertPanel.DefaultReturn) {
-            this.unmount();
-        }
-    }
-
-    public void closeSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-        this.unmountSheetDidEnd(sheet, returncode, contextInfo);
-        if (returncode == NSAlertPanel.DefaultReturn) {
-            this.window.close();
-        }
-        if (returncode == NSAlertPanel.AlternateReturn) {
-            //
-        }
-    }
-
-    public void terminateReviewSheetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-        sheet.orderOut(null);
-        this.closeSheetDidEnd(sheet, returncode, contextInfo);
-        if (returncode == NSAlertPanel.DefaultReturn) { //Disconnect
-            CDBrowserController.applicationShouldTerminate(null);
-        }
-        if (returncode == NSAlertPanel.AlternateReturn) { //Cancel
-            NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
-        }
+    public boolean windowShouldClose(final NSWindow sender) {
+        return this.unmount(new CDSheetListener() {
+            public void dismissedSheet(int returncode, Object context) {
+                if (returncode == NSAlertPanel.DefaultReturn) {
+                    unmount();
+                    sender.close();
+                }
+            }
+        });
     }
 
     public boolean validateMenuItem(NSMenuItem item) {
@@ -2600,11 +2541,12 @@ public class CDBrowserController extends CDWindowController {
         if (item.action().name().equals("pasteFromFinder:")) {
             boolean valid = false;
             if (this.isMounted()) {
-                if (NSPasteboard.generalPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+                if (NSPasteboard.generalPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null)
+                {
                     Object o = NSPasteboard.generalPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
                     if (o != null) {
                         NSArray elements = (NSArray) o;
-                        if(elements.count() == 1) {
+                        if (elements.count() == 1) {
                             item.setTitle(NSBundle.localizedString("Paste", "Menu item") + " \""
                                     + elements.objectAtIndex(0) + "\"");
                         }
@@ -2617,7 +2559,7 @@ public class CDBrowserController extends CDWindowController {
                     }
                 }
             }
-            if(!valid) {
+            if (!valid) {
                 item.setTitle(NSBundle.localizedString("Paste from Finder", "Menu item"));
             }
         }
@@ -2645,7 +2587,7 @@ public class CDBrowserController extends CDWindowController {
                     }
                 }
             }
-            if(!valid) {
+            if (!valid) {
                 item.setTitle(NSBundle.localizedString("Paste", "Menu item"));
             }
         }
@@ -2714,7 +2656,7 @@ public class CDBrowserController extends CDWindowController {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
         if (identifier.equals("pasteFromFinder:")) {
-            if(this.isMounted()) {
+            if (this.isMounted()) {
                 NSPasteboard pboard = NSPasteboard.generalPasteboard();
                 if (pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
                     Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
@@ -2726,7 +2668,7 @@ public class CDBrowserController extends CDWindowController {
             return false;
         }
         if (identifier.equals("paste:")) {
-            if(this.isMounted()) {
+            if (this.isMounted()) {
                 NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
                 if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
                     Object o = pboard.propertyListForType("QueuePBoardType");

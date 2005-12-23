@@ -82,4 +82,11 @@ public class Collection extends ArrayList implements CollectionListener {
             l[i].collectionItemRemoved(item);
         }
     }
+
+    public void collectionItemChanged(Object item) {
+        CollectionListener[] l = (CollectionListener[])listeners.toArray(new CollectionListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].collectionItemChanged(item);
+        }
+    }
 }

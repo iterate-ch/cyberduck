@@ -31,6 +31,7 @@ import ch.cyberduck.core.Preferences;
 import javax.net.ssl.HandshakeCompletedEvent;
 import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.SSLSocket;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.InetAddress;
 
@@ -42,10 +43,10 @@ public class FTPSControlSocket extends FTPControlSocket {
     protected boolean useDataConnectionSecurity
             = Preferences.instance().getProperty("ftp.tls.datachannel").equals("P");
 
-    private AbstractX509TrustManager trustManager;
+    private X509TrustManager trustManager;
 
     protected FTPSControlSocket(InetAddress remoteAddr, int controlPort, int timeout, String encoding,
-                                FTPMessageListener listener, AbstractX509TrustManager trustManager) throws IOException, FTPException {
+                                FTPMessageListener listener, X509TrustManager trustManager) throws IOException, FTPException {
 
         super(remoteAddr, controlPort, timeout, encoding, listener);
         this.trustManager = trustManager;

@@ -24,12 +24,7 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
-import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSImageView;
-import com.apple.cocoa.application.NSPanel;
-import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSSize;
 
@@ -42,57 +37,49 @@ public class CDDuplicateFileController extends CDFileController {
 
     public void setIconView(NSImageView iconView) {
         this.iconView = iconView;
+        NSImage icon = NSWorkspace.sharedWorkspace().iconForFileType(((CDBrowserController)parent).getSelectedPath().getExtension());
+        icon.setScalesWhenResized(true);
+        icon.setSize(new NSSize(64f, 64f));
+        this.iconView.setImage(icon);
     }
 
-    private CDBrowserController controller;
-
-    public CDDuplicateFileController(CDBrowserController controller) {
-        this.controller = controller;
+    public CDDuplicateFileController(CDWindowController controller) {
+        super(controller);
         if (!NSApplication.loadNibNamed("Duplicate", this)) {
             log.fatal("Couldn't load Duplicate.nib");
         }
     }
 
-    public void awakeFromNib() {
-        super.awakeFromNib();
-        NSImage icon = NSWorkspace.sharedWorkspace().iconForFileType(controller.getSelectedPath().getExtension());
-        icon.setScalesWhenResized(true);
-        icon.setSize(new NSSize(64f, 64f));
-        this.iconView.setImage(icon);
-        this.filenameField.setStringValue(controller.getSelectedPath().getName() + "-Copy");
+    public void setFilenameField(NSTextField field) {
+        super.setFilenameField(field);
+        this.filenameField.setStringValue(((CDBrowserController)parent).getSelectedPath().getName() + "-Copy");
     }
 
-    public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-        sheet.orderOut(null);
+    public void dismissedSheet(int returncode, Object contextInfo) {
         Path workdir = (Path) contextInfo;
-        switch (returncode) {
-            case (NSAlertPanel.DefaultReturn): //Duplicate
-                this.duplicate(workdir, filenameField.stringValue());
-                break;
-            case (NSAlertPanel.OtherReturn): //Edit
-                Path path = this.duplicate(workdir, filenameField.stringValue());
-                if (path != null) {
-                    Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
-                    editor.open(path);
-                }
-                break;
-            case (NSAlertPanel.AlternateReturn): //Cancel
-                break;
+        if (returncode == NSAlertPanel.DefaultReturn) {
+            this.duplicate(workdir, filenameField.stringValue());
         }
-        this.invalidate();
+        if (returncode == NSAlertPanel.OtherReturn) {
+            Path path = this.duplicate(workdir, filenameField.stringValue());
+            if (path != null) {
+                Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
+                editor.open(path);
+            }
+        }
     }
 
     protected Path duplicate(Path workdir, String filename) {
         Path file = PathFactory.createPath(workdir.getSession(),
                 workdir.getAbsolute(),
                 new Local(NSPathUtilities.temporaryDirectory(),
-                        controller.getSelectedPath().getName()));
+                        ((CDBrowserController)parent).getSelectedPath().getName()));
         file.download();
         file.setPath(workdir.getAbsolute(), filename);
         file.upload();
         if(file.exists()) {
-            controller.setShowHiddenFiles(filename.charAt(0) == '.');
-            controller.reloadData(true);
+            ((CDBrowserController)parent).setShowHiddenFiles(filename.charAt(0) == '.');
+            ((CDBrowserController)parent).reloadData(true);
             return file;
         }
         return null;

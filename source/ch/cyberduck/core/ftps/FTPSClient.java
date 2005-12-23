@@ -26,6 +26,7 @@ import ch.cyberduck.core.Preferences;
 
 import org.apache.log4j.Logger;
 
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.InetAddress;
 
@@ -36,7 +37,7 @@ public class FTPSClient extends FTPClient {
     private static Logger log = Logger.getLogger(SSLProtocolSocketFactory.class);
 
     public FTPSClient(String remoteHost, int controlPort, int timeout, String encoding,
-                      FTPMessageListener listener, AbstractX509TrustManager trustManager) throws IOException, FTPException {
+                      FTPMessageListener listener, X509TrustManager trustManager) throws IOException, FTPException {
         super(listener);
         this.control = new FTPSControlSocket(InetAddress.getByName(remoteHost),
                 controlPort, timeout, encoding, listener, trustManager);

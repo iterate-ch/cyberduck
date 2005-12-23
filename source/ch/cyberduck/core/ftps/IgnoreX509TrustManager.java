@@ -21,7 +21,7 @@ package ch.cyberduck.core.ftps;
 /**
  * @version $Id$
  */
-public class IgnoreX509TrustManager extends AbstractX509TrustManager {
+public class IgnoreX509TrustManager extends StandardX509TrustManager {
     public void checkClientTrusted(java.security.cert.X509Certificate[] x509Certificates, java.lang.String string)
             throws java.security.cert.CertificateException {
         //ignore

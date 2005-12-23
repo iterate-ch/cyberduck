@@ -91,14 +91,14 @@ public class CDBookmarkTableDataSource extends Collection {
     /**
      * NSTableView.DataSource
      */
-    public int numberOfRowsInTableView(NSTableView tableView) {
+    public int numberOfRowsInTableView(NSTableView view) {
         return this.size();
     }
 
     /**
      * NSTableView.DataSource
      */
-    public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
+    public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
         if (row < this.size()) {
             String identifier = (String) tableColumn.identifier();
             if (identifier.equals("ICON")) {
@@ -137,7 +137,7 @@ public class CDBookmarkTableDataSource extends Collection {
     // Drop methods
     // ----------------------------------------------------------
 
-    public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int index, int operation) {
+    public int tableViewValidateDrop(NSTableView view, NSDraggingInfo info, int index, int operation) {
         if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
             Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
             if(o != null) {
@@ -149,9 +149,9 @@ public class CDBookmarkTableDataSource extends Collection {
                         return NSDraggingInfo.DragOperationCopy;
                     }
                 }
-                if (index > -1 && index < tableView.numberOfRows()) {
+                if (index > -1 && index < view.numberOfRows()) {
 //only allow other files if there is at least one bookmark
-                    tableView.setDropRowAndDropOperation(index, NSTableView.DropOn);
+                    view.setDropRowAndDropOperation(index, NSTableView.DropOn);
                     return NSDraggingInfo.DragOperationCopy;
                 }
             }
@@ -160,7 +160,7 @@ public class CDBookmarkTableDataSource extends Collection {
             NSPasteboard pboard = NSPasteboard.pasteboardWithName("HostPBoard");
             if (this.hostPboardChangeCount < pboard.changeCount()) {
                 if (pboard.availableTypeFromArray(new NSArray("HostPBoardType")) != null) {
-                    if (index > -1 && index < tableView.numberOfRows()) {
+                    if (index > -1 && index < view.numberOfRows()) {
                         return NSDraggingInfo.DragOperationMove;
                     }
                 }
@@ -170,14 +170,14 @@ public class CDBookmarkTableDataSource extends Collection {
     }
 
     /**
-     * Invoked by tableView when the mouse button is released over a table view that previously decided to allow a drop.
+     * Invoked by view when the mouse button is released over a table view that previously decided to allow a drop.
      *
      * @param info  contains details on this dragging operation.
      * @param index The proposed location is row and action is operation.
      *              The data source should
      *              incorporate the data from the dragging pasteboard at this time.
      */
-    public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int index, int operation) {
+    public boolean tableViewAcceptDrop(NSTableView view, NSDraggingInfo info, int index, int operation) {
         log.debug("tableViewAcceptDrop:" + index);
         if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
             NSArray filesList = (NSArray) info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);// get the data from paste board
@@ -190,15 +190,15 @@ public class CDBookmarkTableDataSource extends Collection {
                     if (index < 0) {
                         index = 0;
                     }
-                    if (index > tableView.numberOfRows()) {
-                        index = tableView.numberOfRows();
+                    if (index > view.numberOfRows()) {
+                        index = view.numberOfRows();
                     }
                     Host bookmark = this.importBookmark(new File(filename));
                     if (bookmark != null) {
                         //parsing succeeded
                         this.add(index, bookmark);
-                        tableView.reloadData();
-                        tableView.selectRow(index, false);
+                        view.reloadData();
+                        view.selectRow(index, false);
                     }
                 }
                 else {
@@ -231,8 +231,8 @@ public class CDBookmarkTableDataSource extends Collection {
                             Host h = new Host((NSDictionary) elements.objectAtIndex(i));
                             this.remove(this.indexOf(h));
                             this.add(index, h);
-                            tableView.reloadData();
-                            tableView.selectRow(index, false);
+                            view.reloadData();
+                            view.selectRow(index, false);
                         }
                         this.hostPboardChangeCount++;
                         return true;
@@ -267,7 +267,7 @@ public class CDBookmarkTableDataSource extends Collection {
     private File[] promisedDragBookmarksFileDestination;
 
     /**
-     * Invoked by tableView after it has been determined that a drag should begin, but before the drag has been started.
+     * Invoked by view after it has been determined that a drag should begin, but before the drag has been started.
      * The drag image and other drag-related information will be set up and provided by the table view once this call
      * returns with true.
      *
@@ -275,7 +275,7 @@ public class CDBookmarkTableDataSource extends Collection {
      * @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard
      *         (data, owner, and so on).
      */
-    public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
+    public boolean tableViewWriteRowsToPasteboard(NSTableView view, NSArray rows, NSPasteboard pboard) {
         log.debug("tableViewWriteRowsToPasteboard:" + rows);
         if (rows.count() > 0) {
             this.promisedDragBookmarks = new Host[rows.count()];
@@ -294,9 +294,9 @@ public class CDBookmarkTableDataSource extends Collection {
             }
 
             NSEvent event = NSApplication.sharedApplication().currentEvent();
-            NSPoint dragPosition = tableView.convertPointFromView(event.locationInWindow(), null);
+            NSPoint dragPosition = view.convertPointFromView(event.locationInWindow(), null);
             NSRect imageRect = new NSRect(new NSPoint(dragPosition.x() - 16, dragPosition.y() - 16), new NSSize(32, 32));
-            tableView.dragPromisedFilesOfTypes(new NSArray("duck"), imageRect, this, true, event);
+            view.dragPromisedFilesOfTypes(new NSArray("duck"), imageRect, this, true, event);
         }
         return true;
     }

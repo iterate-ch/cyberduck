@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public abstract class CDFileController extends CDWindowController {
+public abstract class CDFileController extends CDSheetController {
     protected static Logger log = Logger.getLogger(CDFileController.class);
 
     protected NSTextField filenameField; //IBOutlet
@@ -46,6 +46,10 @@ public abstract class CDFileController extends CDWindowController {
         this.editButton = editButton;
         this.editButton.setEnabled(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                 Preferences.instance().getProperty("editor.bundleIdentifier")) != null);
+    }
+
+    public CDFileController(CDWindowController parent) {
+        super(parent);
     }
 
     public void editButtonClicked(NSButton sender) {
@@ -71,11 +75,11 @@ public abstract class CDFileController extends CDWindowController {
             //
         }
         else {
-            this.endSheet(this.window(), sender.tag());
+            this.endSheet(sender.tag());
         }
     }
 
     public void cancelButtonClicked(NSButton sender) {
-        this.endSheet(this.window(), sender.tag());
+        this.endSheet(sender.tag());
     }
 }

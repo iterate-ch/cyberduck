@@ -54,18 +54,19 @@ public class FTPSSession extends FTPSession {
     }
 
     public boolean isSecure() {
-        return trustManager.isServerCertificateTrusted();
+        return true;
+//        return trustManager.isServerCertificateTrusted();
     }
 
     public X509TrustManager getTrustManager() {
         return trustManager;
     }
 
-    public void setTrustManager(AbstractX509TrustManager trustManager) {
+    public void setTrustManager(X509TrustManager trustManager) {
         this.trustManager = trustManager;
     }
 
-    private AbstractX509TrustManager trustManager = new IgnoreX509TrustManager();
+    private X509TrustManager trustManager = new IgnoreX509TrustManager();
 
     public void connect(String encoding) throws IOException, FTPException {
         try {

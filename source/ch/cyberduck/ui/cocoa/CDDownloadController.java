@@ -40,7 +40,7 @@ import java.net.MalformedURLException;
 /**
  * @version $Id$
  */
-public class CDDownloadController extends CDWindowController {
+public class CDDownloadController extends CDSheetController {
     private static Logger log = Logger.getLogger(CDDownloadController.class);
 
     private NSTextField urlField;
@@ -49,40 +49,15 @@ public class CDDownloadController extends CDWindowController {
         this.urlField = urlField;
     }
 
-    public CDDownloadController() {
+    public CDDownloadController(CDWindowController parent) {
+        super(parent);
         if (!NSApplication.loadNibNamed("Download", this)) {
             log.fatal("Couldn't load Download.nib");
         }
     }
 
-    public void awakeFromNib() {
-        super.awakeFromNib();
-
-        CDQueueController controller = CDQueueController.instance();
-        controller.window().makeKeyAndOrderFront(null);
-        controller.beginSheet(this.window(), //sheet
-                this, //modal delegate
-                new NSSelector("sheetDidEnd",
-                        new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
-                null); //contextInfo
-    }
-
-    public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-        sheet.orderOut(null);
-        switch (returncode) {
-            case (NSAlertPanel.DefaultReturn): //Download
-                break;
-            case (NSAlertPanel.OtherReturn): //Cancel
-                break;
-            case (NSAlertPanel.AlternateReturn): //Cancel
-                break;
-        }
-        this.invalidate();
-    }
-
-
     public void cancelButtonClicked(NSButton sender) {
-        this.endSheet(this.window(), sender.tag());
+        this.endSheet(sender.tag());
     }
 
     public void downloadButtonClicked(NSButton sender) {
@@ -101,7 +76,7 @@ public class CDDownloadController extends CDWindowController {
                     queue.addRoot(path);
                     CDQueueController.instance().startItem(queue);
                 }
-                this.endSheet(this.window(), sender.tag());
+                this.endSheet(sender.tag());
             }
             else {
                 throw new MalformedURLException("URL must contain reference to a file");

@@ -34,33 +34,25 @@ import com.apple.cocoa.foundation.NSPathUtilities;
  */
 public class CDCreateFileController extends CDFileController {
 
-    private CDBrowserController controller;
-
-    public CDCreateFileController(CDBrowserController controller) {
-        this.controller = controller;
+    public CDCreateFileController(CDWindowController parent) {
+        super(parent);
         if (!NSApplication.loadNibNamed("File", this)) {
             log.fatal("Couldn't load File.nib");
         }
     }
 
-    public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-        sheet.orderOut(null);
+    public void dismissedSheet(int returncode, Object contextInfo) {
         Path workdir = (Path) contextInfo;
-        switch (returncode) {
-            case (NSAlertPanel.DefaultReturn): //Create
-                this.create(workdir, filenameField.stringValue());
-                break;
-            case (NSAlertPanel.OtherReturn): //Edit
-                Path path = this.create(workdir, filenameField.stringValue());
-                if (path != null) {
-                    Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
-                    editor.open(path);
-                }
-                break;
-            case (NSAlertPanel.AlternateReturn): //Cancel
-                break;
+        if (returncode == NSAlertPanel.DefaultReturn) {
+            this.create(workdir, filenameField.stringValue());
         }
-        this.invalidate();
+        if (returncode == NSAlertPanel.OtherReturn) {
+            Path path = this.create(workdir, filenameField.stringValue());
+            if (path != null) {
+                Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
+                editor.open(path);
+            }
+        }
     }
 
     protected Path create(Path workdir, String filename) {
@@ -89,8 +81,9 @@ public class CDCreateFileController extends CDFileController {
             }
         }
         if(file.exists()) {
-            controller.setShowHiddenFiles(filename.charAt(0) == '.');
-            controller.reloadData(true);
+            ((CDBrowserController)parent).setShowHiddenFiles(filename.charAt(0) == '.');
+            ((CDBrowserController)parent).reloadData(true);
+            ((CDBrowserController)parent).setSelectedPath(file);
             return file;
         }
         return null;

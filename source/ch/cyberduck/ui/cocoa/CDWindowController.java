@@ -18,11 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSModalSession;
-import com.apple.cocoa.application.NSMutableParagraphStyle;
-import com.apple.cocoa.application.NSParagraphStyle;
-import com.apple.cocoa.application.NSWindow;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
@@ -44,8 +40,6 @@ public abstract class CDWindowController extends CDController {
             new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
     protected NSWindow window; // IBOutlet
-
-    private final Object lock = new Object();
 
     protected void post(NSTimer timer) {
         if(null == this.window) {
@@ -94,80 +88,6 @@ public abstract class CDWindowController extends CDController {
             }
         }
     }
-
-    public void endSheet(NSWindow sheet, int tag) {
-        log.debug("endSheet");
-        if (modalSession != null) {
-            NSApplication.sharedApplication().endModalSession(modalSession);
-            modalSession = null;
-        }
-        NSApplication.sharedApplication().endSheet(sheet, tag);
-        synchronized (lock) {
-            lock.notifyAll();
-        }
-    }
-
-    public void waitForSheetEnd() {
-        log.debug("waitForSheetEnd");
-        synchronized (lock) {
-            while (this.hasSheet()) {
-                try {
-                    if (Thread.currentThread().getName().equals("main")
-                            || Thread.currentThread().getName().equals("AWT-AppKit")) {
-                        log.warn("Waiting on main thread; will run modal!");
-                        NSApplication app = NSApplication.sharedApplication();
-                        modalSession = NSApplication.sharedApplication().beginModalSessionForWindow(
-                                this.window.attachedSheet());
-                        while (this.hasSheet()) {
-                            app.runModalSession(modalSession);
-                        }
-                        return;
-                    }
-                    log.debug("Sleeping:waitForSheetEnd...");
-                    lock.wait();
-                    log.debug("Awakened:waitForSheetEnd");
-                }
-                catch (InterruptedException e) {
-                    log.error(e.getMessage());
-                }
-            }
-        }
-    }
-
-    public void sheetWithoutTargetDidEnd(NSWindow sheet, int returncode, Object contextInfo) {
-        this.endSheet(sheet, returncode);
-        sheet.orderOut(null);
-    }
-
-    public void beginSheet(NSWindow sheet) {
-        this.beginSheet(sheet, this, new NSSelector
-                ("sheetWithoutTargetDidEnd",
-                        new Class[]
-                                {
-                                        NSWindow.class, int.class, Object.class
-                                }), null); // end selector);
-    }
-
-    public void beginSheet(final NSWindow sheet, final Object delegate,
-                           final NSSelector endSelector, final Object contextInfo) {
-        log.debug("beginSheet:" + sheet);
-        synchronized (lock) {
-            if (!this.window.isKeyWindow()) {
-                this.window.makeKeyAndOrderFront(null);
-            }
-            this.waitForSheetEnd();
-            NSApplication app = NSApplication.sharedApplication();
-            app.beginSheet(sheet, //window
-                    this.window,
-                    delegate, //modalDelegate
-                    endSelector, // did end selector
-                    contextInfo); //contextInfo
-            sheet.makeKeyAndOrderFront(null);
-            lock.notifyAll();
-        }
-    }
-
-    private NSModalSession modalSession = null;
 
     public boolean hasSheet() {
         return this.window.attachedSheet() != null;

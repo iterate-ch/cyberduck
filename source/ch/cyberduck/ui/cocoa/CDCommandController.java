@@ -21,20 +21,13 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSFont;
-import com.apple.cocoa.application.NSLayoutManager;
-import com.apple.cocoa.application.NSPanel;
-import com.apple.cocoa.application.NSTextContainer;
-import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.application.NSTextView;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 /**
  * @version $Id$
  */
-public class CDCommandController extends CDWindowController implements TranscriptListener {
+public class CDCommandController extends CDSheetController implements TranscriptListener {
 
     private NSTextField inputField; //IBOutlet
     private NSTextView responseField; //IBOUtltet
@@ -65,7 +58,8 @@ public class CDCommandController extends CDWindowController implements Transcrip
 
     private Session session;
 
-    public CDCommandController(Session session) {
+    public CDCommandController(CDWindowController parent, Session session) {
+        super(parent);
         this.session = session;
         this.session.addTranscriptListener(this);
         if (!NSApplication.loadNibNamed("Command", this)) {
@@ -90,12 +84,7 @@ public class CDCommandController extends CDWindowController implements Transcrip
     }
 
     public void closeButtonClicked(NSButton sender) {
-        this.endSheet(this.window(), sender.tag());
-    }
-
-    public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-        sheet.orderOut(null);
-        this.invalidate();
+        this.endSheet(sender.tag());
     }
 
     protected void invalidate() {

@@ -20,9 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.DownloadQueue;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.QueueListener;
-import ch.cyberduck.core.ProgressListener;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -189,12 +189,14 @@ public class CDProgressController extends CDController {
     }
 
     public void alertButtonClicked(NSButton sender) {
-        CDQueueController.instance().beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"),
-                this.getErrorText(), // message
-                NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                null, //alternative button
-                null //other button
-        ));
+        CDSheetController alert = new CDSheetController(CDQueueController.instance(),
+                NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"),
+                        this.getErrorText(), // message
+                        NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+                        null, //alternative button
+                        null //other button
+                ));
+        alert.beginSheet();
     }
 
     private boolean highlighted;

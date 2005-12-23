@@ -34,4 +34,10 @@ public interface CollectionListener {
      * @param item
      */
     public void collectionItemRemoved(Object item);
+
+    /**
+     *
+     * @param item
+     */
+    public void collectionItemChanged(Object item);
 }

@@ -25,6 +25,7 @@ import ch.cyberduck.core.Preferences;
 import com.apple.cocoa.application.NSOutlineView;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
+import com.apple.cocoa.foundation.NSNotification;
 
 import org.apache.log4j.Logger;
 
@@ -53,17 +54,17 @@ public abstract class CDAbstractTableDelegate implements CDTableDelegate {
         return (String) this.selectedColumn.identifier();
     }
 
-    public boolean isColumnEditable(NSTableColumn tableColumn) {
+    public boolean isColumnEditable(NSTableColumn column) {
         return false;
     }
 
     // NSTableView.Delegate
-    public boolean tableViewShouldSelectRow(NSTableView aTableView, int rowIndex) {
+    public boolean tableViewShouldSelectRow(NSTableView view, int rowIndex) {
         return true;
     }
 
     // NSOutlineView.Delegate
-    public boolean outlineViewShouldSelectItem(NSOutlineView outlineView, Object item) {
+    public boolean outlineViewShouldSelectItem(NSOutlineView view, Object item) {
         return true;
     }
 
@@ -82,12 +83,12 @@ public abstract class CDAbstractTableDelegate implements CDTableDelegate {
     }
 
     // NSTableView.Delegate
-    public boolean selectionShouldChangeInTableView(NSTableView tableView) {
+    public boolean selectionShouldChangeInTableView(NSTableView view) {
         return this.selectionShouldChange();
     }
 
     // NSOutlineView.Delegate
-    public boolean selectionShouldChangeInOutlineView(NSTableView tableView) {
+    public boolean selectionShouldChangeInOutlineView(NSTableView view) {
         return this.selectionShouldChange();
     }
 
@@ -103,6 +104,16 @@ public abstract class CDAbstractTableDelegate implements CDTableDelegate {
 
     public abstract void tableRowDoubleClicked(Object sender);
 
+    // NSTableView.Notifications
+    public void tableViewSelectionDidChange(NSNotification notification) {
+        this.selectionDidChange(notification);
+    }
+
+    public void outlineViewSelectionDidChange(NSNotification notification) {
+        this.selectionDidChange(notification);
+    }
+
+    public abstract void selectionDidChange(NSNotification notification);
 
     // ----------------------------------------------------------
     // Sorting

@@ -38,7 +38,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
         super(controller);
     }
 
-    public int numberOfRowsInTableView(NSTableView tableView) {
+    public int numberOfRowsInTableView(NSTableView view) {
         if (controller.isMounted()) {
             return this.childs(this.controller.workdir()).size();
         }
@@ -51,7 +51,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
         }
     }
 
-    public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
+    public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
         if (controller.isMounted()) {
             List childs = this.childs(this.controller.workdir());
             if (row < childs.size()) {
@@ -65,27 +65,27 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
     // Drop methods
     // ----------------------------------------------------------
 
-    public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+    public int tableViewValidateDrop(NSTableView view, NSDraggingInfo info, int row, int operation) {
         if (controller.isMounted()) {
             Path destination = controller.workdir();
-            if (row != -1 && row < tableView.numberOfRows()) {
+            if (row != -1 && row < view.numberOfRows()) {
                 Path p = ((Path) this.childs(this.controller.workdir()).get(row));
                 if(p.attributes.isDirectory()) {
                     destination = p;
                 }
             }
-            return super.validateDrop(tableView, destination, row, info);
+            return super.validateDrop(view, destination, row, info);
         }
         return NSDraggingInfo.DragOperationNone;
     }
 
-    public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+    public boolean tableViewAcceptDrop(NSTableView view, NSDraggingInfo info, int row, int operation) {
         if (controller.isMounted()) {
             Path destination = controller.workdir();
-            if (row != -1 && row < tableView.numberOfRows()) {
+            if (row != -1 && row < view.numberOfRows()) {
                 destination = ((Path) this.childs(this.controller.workdir()).get(row));
             }
-            return super.acceptDrop(tableView, destination, info);
+            return super.acceptDrop(view, destination, info);
         }
         return false;
     }
@@ -95,21 +95,21 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
     // ----------------------------------------------------------
 
     /**
-     * Invoked by tableView after it has been determined that a drag should begin, but before the drag has been started.
+     * Invoked by view after it has been determined that a drag should begin, but before the drag has been started.
      * The drag image and other drag-related information will be set up and provided by the table view once this call
      * returns with true.
      *
      * @param rows is the list of row numbers that will be participating in the drag.
      * @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard (data, owner, and so on).
      */
-    public boolean tableViewWriteRowsToPasteboard(NSTableView tableView, NSArray rows, NSPasteboard pboard) {
+    public boolean tableViewWriteRowsToPasteboard(NSTableView view, NSArray rows, NSPasteboard pboard) {
         if (controller.isMounted()) {
             NSMutableArray items = new NSMutableArray();
             List childs = this.childs(this.controller.workdir());
             for (int i = 0; i < rows.count(); i++) {
                 items.addObject(childs.get(((Integer) rows.objectAtIndex(i)).intValue()));
             }
-            return super.writeItemsToPasteBoard(tableView, items, pboard);
+            return super.writeItemsToPasteBoard(view, items, pboard);
         }
         return false;
     }

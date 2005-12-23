@@ -24,29 +24,8 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Validator;
 
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSButtonCell;
-import com.apple.cocoa.application.NSCell;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSImageCell;
-import com.apple.cocoa.application.NSMutableParagraphStyle;
-import com.apple.cocoa.application.NSParagraphStyle;
-import com.apple.cocoa.application.NSProgressIndicator;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.application.NSText;
-import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.application.NSTextFieldCell;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSMutableRect;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSNotificationCenter;
-import com.apple.cocoa.foundation.NSPoint;
-import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSSize;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -57,7 +36,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class CDValidatorController extends CDWindowController implements Validator {
+public abstract class CDValidatorController extends CDSheetController implements Validator {
     private static Logger log = Logger.getLogger(CDValidatorController.class);
 
     private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
@@ -69,23 +48,13 @@ public abstract class CDValidatorController extends CDWindowController implement
     protected static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
             new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
-    protected CDWindowController windowController;
 
-    public CDValidatorController(CDWindowController windowController) {
-        this.windowController = windowController;
+    public CDValidatorController(CDWindowController parent) {
+        super(parent);
         this.load();
     }
 
     protected abstract void load();
-
-    public void awakeFromNib() {
-        super.awakeFromNib();
-
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
-                new NSSelector("tableViewSelectionDidChange", new Class[]{NSNotification.class}),
-                NSTableView.TableViewSelectionDidChangeNotification,
-                this.fileTableView);
-    }
 
     protected List validatedList;
     protected List workList;
@@ -125,7 +94,7 @@ public abstract class CDValidatorController extends CDWindowController implement
             this.statusIndicator.stopAnimation(null);
             this.setEnabled(true);
             this.fireDataChanged();
-            this.windowController.waitForSheetEnd();
+            this.waitForSheetEnd();
         }
         return !this.isCanceled();
     }
@@ -200,7 +169,7 @@ public abstract class CDValidatorController extends CDWindowController implement
 
     protected void prompt(Path p) {
         if (!this.hasPrompt()) {
-            this.windowController.beginSheet(this.window());
+            this.beginSheet();
             this.statusIndicator.startAnimation(null);
             this.hasPrompt = true;
         }
@@ -241,8 +210,8 @@ public abstract class CDValidatorController extends CDWindowController implement
     protected NSTableView fileTableView; // IBOutlet
     private CDTableDelegate fileTableViewDelegate;
 
-    public void setFileTableView(NSTableView fileTableView) {
-        this.fileTableView = fileTableView;
+    public void setFileTableView(NSTableView view) {
+        this.fileTableView = view;
         this.fileTableView.setDataSource(this);
         this.fileTableView.setDelegate(this.fileTableViewDelegate = new CDAbstractTableDelegate() {
 
@@ -269,6 +238,32 @@ public abstract class CDValidatorController extends CDWindowController implement
             public void tableRowDoubleClicked(Object sender) {
                 ;
             }
+
+            public void selectionDidChange(NSNotification notification) {
+                if (fileTableView.selectedRow() != -1) {
+                    Path p = (Path) workList.get(fileTableView.selectedRow());
+                    if (p != null) {
+                        if (p.getLocal().exists()) {
+                            localField.setAttributedStringValue(new NSAttributedString(p.getLocal().getAbsolute(),
+                                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                        }
+                        else {
+                            localField.setStringValue("-");
+                        }
+                        if (p.getRemote().exists()) {
+                            urlField.setAttributedStringValue(new NSAttributedString(p.getRemote().getHost().getURL() + p.getRemote().getAbsolute(),
+                                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                        }
+                        else {
+                            urlField.setStringValue("-");
+                        }
+                    }
+                }
+                else {
+                    urlField.setStringValue("-");
+                    localField.setStringValue("-");
+                }
+            }
         });
         this.fileTableView.setRowHeight(17f);
         // selection properties
@@ -278,7 +273,8 @@ public abstract class CDValidatorController extends CDWindowController implement
         this.fileTableView.setAllowsColumnSelection(false);
         this.fileTableView.setAllowsColumnReordering(true);
         this.fileTableView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
-        if (Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
+        if (Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines"))
+        {
             this.fileTableView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
         }
         else if (Preferences.instance().getBoolean("browser.verticalLines")) {
@@ -438,7 +434,7 @@ public abstract class CDValidatorController extends CDWindowController implement
             }
         }
         this.setCanceled(false);
-        this.windowController.endSheet(this.window(), sender.tag());
+        this.endSheet(sender.tag());
     }
 
     public void overwriteActionFired(NSButton sender) {
@@ -450,25 +446,21 @@ public abstract class CDValidatorController extends CDWindowController implement
             }
         }
         this.setCanceled(false);
-        this.windowController.endSheet(this.window(), sender.tag());
+        this.endSheet(sender.tag());
     }
 
     public void skipActionFired(NSButton sender) {
         this.workList.clear();
         this.setCanceled(false);
-        this.windowController.endSheet(this.window(), sender.tag());
+        this.endSheet(sender.tag());
     }
 
     public void cancelActionFired(NSButton sender) {
         this.validatedList.clear();
         this.workList.clear();
         this.setCanceled(true);
-        this.windowController.endSheet(this.window(), sender.tag());
+        this.endSheet(sender.tag());
     }
-
-    // ----------------------------------------------------------
-    // NSTableView.DataSource
-    // ----------------------------------------------------------
 
     protected void fireDataChanged() {
         if (this.hasPrompt()) {
@@ -477,34 +469,12 @@ public abstract class CDValidatorController extends CDWindowController implement
         }
     }
 
-    public void tableViewSelectionDidChange(NSNotification notification) {
-        if (this.fileTableView.selectedRow() != -1) {
-            Path p = (Path) this.workList.get(this.fileTableView.selectedRow());
-            if (p != null) {
-                if (p.getLocal().exists()) {
-                    this.localField.setAttributedStringValue(new NSAttributedString(p.getLocal().getAbsolute(),
-                            TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                }
-                else {
-                    this.localField.setStringValue("-");
-                }
-                if (p.getRemote().exists()) {
-                    this.urlField.setAttributedStringValue(new NSAttributedString(p.getRemote().getHost().getURL() + p.getRemote().getAbsolute(),
-                            TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                }
-                else {
-                    this.urlField.setStringValue("-");
-                }
-            }
-        }
-        else {
-            this.urlField.setStringValue("-");
-            this.localField.setStringValue("-");
-        }
-    }
+    // ----------------------------------------------------------
+    // NSTableView.DataSource
+    // ----------------------------------------------------------
 
-    public void tableViewSetObjectValueForLocation(NSTableView tableView, Object object, NSTableColumn tableColumn, int row) {
-        if (row < this.numberOfRowsInTableView(tableView)) {
+    public void tableViewSetObjectValueForLocation(NSTableView view, Object object, NSTableColumn tableColumn, int row) {
+        if (row < this.numberOfRowsInTableView(view)) {
             String identifier = (String) tableColumn.identifier();
             if (identifier.equals("INCLUDE")) {
                 Path p = (Path) this.workList.get(row);
@@ -515,8 +485,8 @@ public abstract class CDValidatorController extends CDWindowController implement
 
     private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
 
-    public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-        if (row < this.numberOfRowsInTableView(tableView)) {
+    public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
+        if (row < this.numberOfRowsInTableView(view)) {
             String identifier = (String) tableColumn.identifier();
             Path p = (Path) this.workList.get(row);
             if (p != null) {
@@ -576,7 +546,7 @@ public abstract class CDValidatorController extends CDWindowController implement
         return null;
     }
 
-    public int numberOfRowsInTableView(NSTableView tableView) {
+    public int numberOfRowsInTableView(NSTableView view) {
         return this.workList.size();
     }
 }

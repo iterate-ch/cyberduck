@@ -152,8 +152,8 @@ public class CDQueueController extends CDWindowController {
     private NSTableView queueTable; // IBOutlet
     private CDTableDelegate delegate;
 
-    public void setQueueTable(NSTableView queueTable) {
-        this.queueTable = queueTable;
+    public void setQueueTable(NSTableView view) {
+        this.queueTable = view;
 
         this.queueTable.setDataSource(this.queueModel = CDQueueTableDataSource.instance());
         this.queueTable.setDelegate(this.delegate = new CDAbstractTableDelegate() {
@@ -179,9 +179,9 @@ public class CDQueueController extends CDWindowController {
                 }
             }
 
-            public String tableViewToolTipForCell(NSTableView tableView, NSCell cell, NSMutableRect rect,
+            public String tableViewToolTipForCell(NSTableView view, NSCell cell, NSMutableRect rect,
                                                   NSTableColumn tc, int row, NSPoint mouseLocation) {
-                if (row < queueModel.numberOfRowsInTableView(tableView)) {
+                if (row < queueModel.numberOfRowsInTableView(view)) {
                     queueModel.get(row).toString();
                 }
                 return null;
@@ -191,7 +191,7 @@ public class CDQueueController extends CDWindowController {
                 updateTableViewSelection();
             }
 
-            public void tableViewSelectionDidChange(NSNotification aNotification) {
+            public void selectionDidChange(NSNotification notification) {
                 updateTableViewSelection();
             }
         });
@@ -497,24 +497,28 @@ public class CDQueueController extends CDWindowController {
             String file = q.getRoot().getLocal().toString();
             if (!NSWorkspace.sharedWorkspace().openFile(file)) {
                 if (q.isComplete()) {
-                    this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not open the file", ""), //title
-                            NSBundle.localizedString("Could not open the file", "") + " \""
-                                    + file
-                                    + "\". " + NSBundle.localizedString("It moved since you downloaded it.", ""), // message
-                            NSBundle.localizedString("OK", ""), // defaultbutton
-                            null, //alternative button
-                            null //other button
-                    ));
+                    CDSheetController alert = new CDSheetController(this,
+                            NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not open the file", ""), //title
+                                    NSBundle.localizedString("Could not open the file", "") + " \""
+                                            + file
+                                            + "\". " + NSBundle.localizedString("It moved since you downloaded it.", ""), // message
+                                    NSBundle.localizedString("OK", ""), // defaultbutton
+                                    null, //alternative button
+                                    null //other button
+                            ));
+                    alert.beginSheet();
                 }
                 else {
-                    this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not open the file", ""), //title
-                            NSBundle.localizedString("Could not open the file", "") + " \""
-                                    + file
-                                    + "\". " + NSBundle.localizedString("The file has not yet been downloaded.", ""), // message
-                            NSBundle.localizedString("OK", ""), // defaultbutton
-                            null, //alternative button
-                            null //other button
-                    ));
+                    CDSheetController alert = new CDSheetController(this,
+                            NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not open the file", ""), //title
+                                    NSBundle.localizedString("Could not open the file", "") + " \""
+                                            + file
+                                            + "\". " + NSBundle.localizedString("The file has not yet been downloaded.", ""), // message
+                                    NSBundle.localizedString("OK", ""), // defaultbutton
+                                    null, //alternative button
+                                    null //other button
+                            ));
+                    alert.beginSheet();
                 }
             }
         }
@@ -526,24 +530,28 @@ public class CDQueueController extends CDWindowController {
             String file = q.getRoot().getLocal().toString();
             if (!NSWorkspace.sharedWorkspace().selectFile(file, "")) {
                 if (q.isComplete()) {
-                    this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not show the file in the Finder", ""), //title
-                            NSBundle.localizedString("Could not show the file", "") + " \""
-                                    + file
-                                    + "\". " + NSBundle.localizedString("It moved since you downloaded it.", ""), // message
-                            NSBundle.localizedString("OK", ""), // defaultbutton
-                            null, //alternative button
-                            null //other button
-                    ));
+                    CDSheetController alert = new CDSheetController(this,
+                            NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not show the file in the Finder", ""), //title
+                                    NSBundle.localizedString("Could not show the file", "") + " \""
+                                            + file
+                                            + "\". " + NSBundle.localizedString("It moved since you downloaded it.", ""), // message
+                                    NSBundle.localizedString("OK", ""), // defaultbutton
+                                    null, //alternative button
+                                    null //other button
+                            ));
+                    alert.beginSheet();
                 }
                 else {
-                    this.beginSheet(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not show the file in the Finder", ""), //title
-                            NSBundle.localizedString("Could not show the file", "") + " \""
-                                    + file
-                                    + "\". " + NSBundle.localizedString("The file has not yet been downloaded.", ""), // message
-                            NSBundle.localizedString("OK", ""), // defaultbutton
-                            null, //alternative button
-                            null //other button
-                    ));
+                    CDSheetController alert = new CDSheetController(this,
+                            NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not show the file in the Finder", ""), //title
+                                    NSBundle.localizedString("Could not show the file", "") + " \""
+                                            + file
+                                            + "\". " + NSBundle.localizedString("The file has not yet been downloaded.", ""), // message
+                                    NSBundle.localizedString("OK", ""), // defaultbutton
+                                    null, //alternative button
+                                    null //other button
+                            ));
+                    alert.beginSheet();
                 }
             }
         }

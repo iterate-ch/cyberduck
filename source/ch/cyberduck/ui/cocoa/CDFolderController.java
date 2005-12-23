@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class CDFolderController extends CDWindowController {
+public class CDFolderController extends CDSheetController {
     private static Logger log = Logger.getLogger(CDFolderController.class);
 
     private NSTextField folderField; //IBOutlet
@@ -42,10 +42,8 @@ public class CDFolderController extends CDWindowController {
         this.folderField = folderField;
     }
 
-    private CDBrowserController controller;
-
-    public CDFolderController(CDBrowserController controller) {
-        this.controller = controller;
+    public CDFolderController(CDWindowController parent) {
+        super(parent);
         if (!NSApplication.loadNibNamed("Folder", this)) {
             log.fatal("Couldn't load Folder.nib");
         }
@@ -70,33 +68,28 @@ public class CDFolderController extends CDWindowController {
             //
         }
         else {
-            this.endSheet(this.window(), sender.tag());
+            this.endSheet(sender.tag());
         }
     }
 
     public void cancelButtonClicked(NSButton sender) {
-        this.endSheet(this.window(), sender.tag());
+        this.endSheet(sender.tag());
     }
 
-    public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-        sheet.orderOut(null);
-        switch (returncode) {
-            case (NSAlertPanel.DefaultReturn):
-                Path workdir = (Path) contextInfo;
-                this.create(workdir, folderField.stringValue());
-                break;
-            case (NSAlertPanel.AlternateReturn):
-                break;
+    public void dismissedSheet(int returncode, Object contextInfo) {
+        if (returncode == NSAlertPanel.DefaultReturn) {
+            Path workdir = (Path) contextInfo;
+            this.create(workdir, folderField.stringValue());
         }
-        this.invalidate();
     }
 
     public void create(Path workdir, String filename) {
         Path folder = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
         folder.mkdir(false);
         if(folder.exists()) {
-            controller.setShowHiddenFiles(filename.charAt(0) == '.');
-            controller.reloadData(true);
+            ((CDBrowserController)parent).setShowHiddenFiles(filename.charAt(0) == '.');
+            ((CDBrowserController)parent).reloadData(true);
+            ((CDBrowserController)parent).setSelectedPath(folder);
         }
     }
 }

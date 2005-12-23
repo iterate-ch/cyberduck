@@ -30,32 +30,16 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.List;
-import java.util.Vector;
 
 /**
  * @version $Id$
  */
-public abstract class AbstractX509TrustManager implements X509TrustManager {
-    private static Logger log = Logger.getLogger(AbstractX509TrustManager.class);
-
-    protected boolean allowServerCertificate = false;
-
-    public boolean isServerCertificateTrusted() {
-        return allowServerCertificate;
-    }
-
-    public boolean isClientCertificateTrusted() {
-        return allowClientCertificate;
-    }
-
-    protected boolean allowClientCertificate = false;
-
-    protected List acceptedCertificates = new Vector();
+public class StandardX509TrustManager implements X509TrustManager {
+    private static Logger log = Logger.getLogger(StandardX509TrustManager.class);
 
     private X509TrustManager standardTrustManager = null;
 
-    protected void init(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
+    public void init(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
         TrustManagerFactory factory = TrustManagerFactory.getInstance("SunX509");
         factory.init(keystore);
         TrustManager[] trustmanagers = factory.getTrustManagers();
@@ -91,5 +75,9 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
 
     public X509Certificate[] getAcceptedIssuers() {
         return this.standardTrustManager.getAcceptedIssuers();
+    }
+
+    protected void invalidate() {
+        ; //Overriden becuase the login sheet may be used multiple times
     }
 }

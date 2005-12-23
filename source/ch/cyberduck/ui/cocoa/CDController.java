@@ -61,6 +61,9 @@ public abstract class CDController extends NSObject {
         }
     }
 
+    /**
+     * Free all locked resources by this controller; also remove me from all observables
+     */
     protected void invalidate() {
         NSNotificationCenter.defaultCenter().removeObserver(this);
         instances.removeObject(this);

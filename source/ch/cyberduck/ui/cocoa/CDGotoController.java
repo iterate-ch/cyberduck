@@ -35,13 +35,8 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class CDGotoController extends CDWindowController {
+public class CDGotoController extends CDSheetController {
     private static Logger log = Logger.getLogger(CDGotoController.class);
-
-    public void awakeFromNib() {
-        super.awakeFromNib();
-        this.folderCombobox.setStringValue(controller.workdir().getAbsolute());
-    }
 
     private NSComboBox folderCombobox; // IBOutlet
     private Object folderComboDataSource;
@@ -54,7 +49,7 @@ public class CDGotoController extends CDWindowController {
             private List directories = new ArrayList();
 
             {
-                for (Iterator i = controller.workdir().list(false).iterator(); i.hasNext();) {
+                for (Iterator i = ((CDBrowserController)parent).workdir().list(false).iterator(); i.hasNext();) {
                     Path p = (Path) i.next();
                     if (p.attributes.isDirectory()) {
                         directories.add(p.getName());
@@ -73,42 +68,35 @@ public class CDGotoController extends CDWindowController {
                 return null;
             }
         });
+        this.folderCombobox.setStringValue(((CDBrowserController)this.parent).workdir().getAbsolute());
     }
 
-    private CDBrowserController controller;
-
-    public CDGotoController(CDBrowserController controller) {
-        this.controller = controller;
+    public CDGotoController(CDWindowController parent) {
+        super(parent);
         if (!NSApplication.loadNibNamed("Goto", this)) {
             log.fatal("Couldn't load Goto.nib");
         }
     }
 
-    public void goButtonClicked(Object sender) {
+    public void goButtonClicked(NSButton sender) {
         if (folderCombobox.stringValue().length() == 0) {
             // folderCombobox.setStringValue(this.file.getName());
         }
         else {
             // Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-            this.endSheet(this.window(), ((NSButton) sender).tag());
+            this.endSheet(sender.tag());
         }
     }
 
-    public void cancelButtonClicked(Object sender) {
-        this.endSheet(this.window(), ((NSButton) sender).tag());
+    public void cancelButtonClicked(NSButton sender) {
+        this.endSheet(sender.tag());
     }
 
-    public void sheetDidEnd(NSPanel sheet, int returncode, Object contextInfo) {
-        sheet.orderOut(null);
-        switch (returncode) {
-            case (NSAlertPanel.DefaultReturn):
-                Path workdir = (Path) contextInfo;
-                this.gotoFolder(workdir, this.folderCombobox.stringValue());
-                break;
-            case (NSAlertPanel.AlternateReturn):
-                break;
+    public void dismissedSheet(int returncode, Object contextInfo) {
+        if (returncode == NSAlertPanel.DefaultReturn) {
+            Path workdir = (Path) contextInfo;
+            this.gotoFolder(workdir, this.folderCombobox.stringValue());
         }
-        this.invalidate();
     }
 
     protected void gotoFolder(Path workdir, String filename) {
@@ -119,6 +107,6 @@ public class CDGotoController extends CDWindowController {
         else {
             dir.setPath(filename);
         }
-        controller.setWorkdir(dir);
+        ((CDBrowserController)this.parent).setWorkdir(dir);
     }
 }

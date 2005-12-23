@@ -53,12 +53,8 @@ public class CDBookmarkController extends CDWindowController {
     // ----------------------------------------------------------
 
     public void windowWillClose(NSNotification notification) {
-        try {
-            CDBookmarkTableDataSource.instance().save();
-        }
-        finally {
-            super.windowWillClose(notification);
-        }
+        CDBookmarkTableDataSource.instance().save();
+        super.windowWillClose(notification);
     }
 
     private NSPopUpButton protocolPopup; // IBOutlet
@@ -190,14 +186,11 @@ public class CDBookmarkController extends CDWindowController {
         }
     }
 
-    private NSTableView callback;
-
     // ----------------------------------------------------------
     // Constructors
     // ----------------------------------------------------------
 
-    public CDBookmarkController(NSTableView callback, Host host) {
-        this.callback = callback;
+    public CDBookmarkController(Host host) {
         this.host = host;
         if (!NSApplication.loadNibNamed("Bookmark", this)) {
             log.fatal("Couldn't load Bookmark.nib");
@@ -345,7 +338,6 @@ public class CDBookmarkController extends CDWindowController {
             this.pkCheckbox.setState(NSCell.OffState);
             this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
         }
-        // Notify the observer he should reload the data to show the changes
-        this.callback.reloadData();
+        CDBookmarkTableDataSource.instance().collectionItemChanged(host);
     }
 }
