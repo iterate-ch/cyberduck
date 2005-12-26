@@ -32,7 +32,7 @@ import java.util.Iterator;
 /**
  * @version $Id$
  */
-public abstract class CDBrowserTableDataSource {
+public abstract class CDBrowserTableDataSource extends NSObject {
     private static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 
     protected static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");

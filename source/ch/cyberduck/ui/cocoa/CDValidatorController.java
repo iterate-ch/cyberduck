@@ -36,7 +36,9 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class CDValidatorController extends CDSheetController implements Validator {
+public abstract class CDValidatorController
+        extends CDSheetController implements Validator
+{
     private static Logger log = Logger.getLogger(CDValidatorController.class);
 
     private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
@@ -52,6 +54,39 @@ public abstract class CDValidatorController extends CDSheetController implements
     public CDValidatorController(CDWindowController parent) {
         super(parent);
         this.load();
+    }
+
+    public void callback(int returncode) {
+        if(returncode == DEFAULT_OPTION) { //overwrite
+            for (Iterator i = workList.iterator(); i.hasNext();) {
+                Path p = (Path) i.next();
+                if (!p.isSkipped()) {
+                    p.status.setResume(false);
+                    validatedList.add(p);
+                }
+            }
+            setCanceled(false);
+        }
+        if(returncode == ALTERNATE_OPTION) { //resume
+            for (Iterator i = workList.iterator(); i.hasNext();) {
+                Path p = (Path) i.next();
+                if (!p.isSkipped()) {
+                    p.status.setResume(true);
+                    validatedList.add(p);
+                }
+            }
+            setCanceled(false);
+
+        }
+        if(returncode == SKIP_OPTION) { //skip
+            workList.clear();
+            setCanceled(false);
+        }
+        if(returncode == OTHER_OPTION) {
+            validatedList.clear();
+            workList.clear();
+            setCanceled(true);
+        }
     }
 
     protected abstract void load();
@@ -169,7 +204,7 @@ public abstract class CDValidatorController extends CDSheetController implements
 
     protected void prompt(Path p) {
         if (!this.hasPrompt()) {
-            this.beginSheet();
+            this.beginSheet(false);
             this.statusIndicator.startAnimation(null);
             this.hasPrompt = true;
         }
@@ -388,78 +423,30 @@ public abstract class CDValidatorController extends CDSheetController implements
 
     public void setSkipButton(NSButton skipButton) {
         this.skipButton = skipButton;
-        this.skipButton.setEnabled(false);
-        this.skipButton.setTarget(this);
-        this.skipButton.setAction(new NSSelector("skipActionFired", new Class[]{Object.class}));
     }
 
     protected NSButton resumeButton; // IBOutlet
 
     public void setResumeButton(NSButton resumeButton) {
         this.resumeButton = resumeButton;
-        this.resumeButton.setEnabled(false);
-        this.resumeButton.setTarget(this);
-        this.resumeButton.setAction(new NSSelector("resumeActionFired", new Class[]{Object.class}));
     }
 
     protected NSButton overwriteButton; // IBOutlet
 
     public void setOverwriteButton(NSButton overwriteButton) {
         this.overwriteButton = overwriteButton;
-        this.overwriteButton.setEnabled(false);
-        this.overwriteButton.setTarget(this);
-        this.overwriteButton.setAction(new NSSelector("overwriteActionFired", new Class[]{Object.class}));
     }
 
     protected NSButton cancelButton; // IBOutlet
 
     public void setCancelButton(NSButton cancelButton) {
         this.cancelButton = cancelButton;
-        this.cancelButton.setTarget(this);
-        this.cancelButton.setAction(new NSSelector("cancelActionFired", new Class[]{Object.class}));
     }
 
     protected void setEnabled(boolean enabled) {
         this.overwriteButton.setEnabled(enabled);
         this.resumeButton.setEnabled(enabled);
         this.skipButton.setEnabled(enabled);
-    }
-
-    public void resumeActionFired(NSButton sender) {
-        for (Iterator i = this.workList.iterator(); i.hasNext();) {
-            Path p = (Path) i.next();
-            if (!p.isSkipped()) {
-                p.status.setResume(true);
-                this.validatedList.add(p);
-            }
-        }
-        this.setCanceled(false);
-        this.endSheet(sender.tag());
-    }
-
-    public void overwriteActionFired(NSButton sender) {
-        for (Iterator i = this.workList.iterator(); i.hasNext();) {
-            Path p = (Path) i.next();
-            if (!p.isSkipped()) {
-                p.status.setResume(false);
-                this.validatedList.add(p);
-            }
-        }
-        this.setCanceled(false);
-        this.endSheet(sender.tag());
-    }
-
-    public void skipActionFired(NSButton sender) {
-        this.workList.clear();
-        this.setCanceled(false);
-        this.endSheet(sender.tag());
-    }
-
-    public void cancelActionFired(NSButton sender) {
-        this.validatedList.clear();
-        this.workList.clear();
-        this.setCanceled(true);
-        this.endSheet(sender.tag());
     }
 
     protected void fireDataChanged() {

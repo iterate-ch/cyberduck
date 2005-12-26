@@ -19,10 +19,11 @@ package ch.cyberduck.ui.cocoa;
 */
 
 import ch.cyberduck.core.Keychain;
-import ch.cyberduck.core.ftps.StandardX509TrustManager;
+import ch.cyberduck.core.ftps.AbstractX509TrustManager;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAutoreleasePool;
+import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
@@ -32,52 +33,24 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * @version $Id$
  */
-public class CDX509TrustManagerController
-        extends CDSheetController implements javax.net.ssl.X509TrustManager {
+public class CDX509TrustManagerController extends AbstractX509TrustManager {
     protected static Logger log = Logger.getLogger(CDX509TrustManagerController.class);
 
-    public void setAlertField(NSTextField alertField) {
-        this.alertField = alertField;
-    }
+    private CDWindowController parent;
 
-    private NSTextField alertField;
+    protected List acceptedCertificates;
 
-    public void setCertificateField(NSTextView certificateField) {
-        this.certificateField = certificateField;
-    }
-
-    private NSTextView certificateField;
-
-    public void setAlwaysButton(NSButton alwaysButton) {
-        this.alwaysButton = alwaysButton;
-        this.alwaysButton.setEnabled(true);
-    }
-
-    private NSButton alwaysButton;
-
-    public void setWindow(NSWindow window) {
-        super.setWindow(window);
-        this.window.setReleasedWhenClosed(false);
-    }
-
-    private StandardX509TrustManager delegate;
-
-    protected List acceptedCertificates = new Vector();
-
-    public CDX509TrustManagerController(CDWindowController parent) {
-        super(parent);
-        if (!NSApplication.loadNibNamed("Certificate", this)) {
-            log.fatal("Couldn't load Certificate.nib");
-        }
+    public CDX509TrustManagerController(CDWindowController windowController) {
+        this.parent = windowController;
+        this.acceptedCertificates = new ArrayList();
         try {
-            this.delegate = new StandardX509TrustManager();
-            this.delegate.init(KeyStore.getInstance(KeyStore.getDefaultType()));
+            this.init(KeyStore.getInstance(KeyStore.getDefaultType()));
         }
         catch (NoSuchAlgorithmException e) {
             log.error(e.getMessage());
@@ -87,36 +60,7 @@ public class CDX509TrustManagerController
         }
     }
 
-    public void checkCertificate(X509Certificate[] x509Certificates, String authType)
-            throws CertificateException {
-
-        for (int i = 0; i < x509Certificates.length; i++) {
-            try {
-                if (!this.acceptedCertificates.contains(x509Certificates[i])) {
-                    delegate.checkServerTrusted(x509Certificates, authType);
-                }
-                this.acceptedCertificates.add(x509Certificates[i]);
-            }
-            catch (CertificateException e) {
-                if (this.keychainKnowsAbout(x509Certificates[i])) {
-                    return;
-                }
-                String cert = "";
-                if (x509Certificates.length > 0) {
-                    cert = x509Certificates[0].toString();
-                }
-                alertField.setStringValue(e.getMessage());
-                certificateField.setString(cert);
-                this.beginSheet(x509Certificates[0]);
-                this.waitForSheetEnd();
-                if (!this.acceptedCertificates.contains(x509Certificates[i])) {
-                    throw e;
-                }
-            }
-        }
-    }
-
-    public void checkClientTrusted(X509Certificate[] x509Certificates, String authType)
+    public void checkClientTrusted(final X509Certificate[] x509Certificates, String authType)
             throws CertificateException {
 
         this.checkCertificate(x509Certificates, authType);
@@ -128,21 +72,61 @@ public class CDX509TrustManagerController
         this.checkCertificate(x509Certificates, authType);
     }
 
-    public X509Certificate[] getAcceptedIssuers() {
-        return delegate.getAcceptedIssuers();
-    }
+    public void checkCertificate(final X509Certificate[] x509Certificates, String authType)
+            throws CertificateException {
+        for (int i = 0; i < x509Certificates.length; i++) {
+            final X509Certificate cert = x509Certificates[i];
+            try {
+                if (!this.acceptedCertificates.contains(cert)) {
+                    super.checkServerTrusted(x509Certificates, authType);
+                }
+            }
+            catch (final CertificateException e) {
+                if (this.keychainKnowsAbout(x509Certificates[i])) {
+                    return;
+                }
+                CDSheetController c = new CDSheetController(parent) {
+                    private NSTextField alertField;
 
-    public void dismissedSheet(int returncode, Object certificate) {
-        if (returncode == NSAlertPanel.DefaultReturn) { //Allow
-            this.acceptedCertificates.add(certificate);
-            if (alwaysButton.state() == NSCell.OnState) {
-                this.saveToKeychain((X509Certificate) certificate);
+                    public void setAlertField(NSTextField alertField) {
+                        this.alertField = alertField;
+                        this.alertField.setStringValue(e.getMessage());
+                    }
+
+                    private NSTextView certificateField;
+
+                    public void setCertificateField(NSTextView certificateField) {
+                        this.certificateField = certificateField;
+                        this.certificateField.setString(cert.toString());
+                    }
+
+                    private NSButton alwaysButton;
+
+                    public void setAlwaysButton(NSButton alwaysButton) {
+                        this.alwaysButton = alwaysButton;
+                        this.alwaysButton.setEnabled(true);
+                    }
+
+                    public void callback(int returncode) {
+                        if (returncode == DEFAULT_OPTION) { //Allow
+                            acceptedCertificates.add(cert);
+                            if (alwaysButton.state() == NSCell.OnState) {
+                                saveToKeychain(cert);
+                            }
+                        }
+                    }
+
+
+                };
+                if (!NSApplication.loadNibNamed("Certificate", c)) {
+                    log.fatal("Couldn't load Certificate.nib");
+                }
+                c.beginSheet(true);
+                if (!acceptedCertificates.contains(cert)) {
+                    throw new CertificateException(NSBundle.localizedString("No trusted certificate found", "Status"));
+                }
             }
         }
-    }
-
-    public void closeSheet(NSButton sender) {
-        this.endSheet(sender.tag());
     }
 
     public boolean keychainKnowsAbout(X509Certificate certificate) {
@@ -164,18 +148,16 @@ public class CDX509TrustManagerController
     }
 
     private void saveToKeychain(X509Certificate cert) {
-        if (alwaysButton.state() == NSCell.OnState) {
-            int pool = NSAutoreleasePool.push();
-            try {
-                Keychain.instance().addCertificateToKeychain(cert.getEncoded());
-                log.info("Certificate added to Keychain");
-            }
-            catch (CertificateEncodingException e) {
-                log.error(e.getMessage());
-            }
-            finally {
-                NSAutoreleasePool.pop(pool);
-            }
+        int pool = NSAutoreleasePool.push();
+        try {
+            Keychain.instance().addCertificateToKeychain(cert.getEncoded());
+            log.info("Certificate added to Keychain");
+        }
+        catch (CertificateEncodingException e) {
+            log.error(e.getMessage());
+        }
+        finally {
+            NSAutoreleasePool.pop(pool);
         }
     }
 }

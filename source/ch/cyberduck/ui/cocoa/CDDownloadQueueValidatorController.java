@@ -34,7 +34,8 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class CDDownloadQueueValidatorController extends CDValidatorController {
+public class CDDownloadQueueValidatorController extends CDValidatorController
+{
     private static Logger log = Logger.getLogger(CDDownloadQueueValidatorController.class);
 
     static {

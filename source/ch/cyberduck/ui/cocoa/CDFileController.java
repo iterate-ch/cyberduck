@@ -24,6 +24,7 @@ import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
@@ -52,34 +53,17 @@ public abstract class CDFileController extends CDSheetController {
         super(parent);
     }
 
-    public void editButtonClicked(NSButton sender) {
-        this.createButtonClicked(sender);
-    }
-
-    public void createButtonClicked(NSButton sender) {
-        // Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
+    protected boolean validateInput() {
         if (filenameField.stringValue().indexOf('/') != -1) {
-            NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+            this.alert(NSAlertPanel.informationalAlertPanel(
+                    NSBundle.localizedString("Error", "Alert sheet title"),
+                    NSBundle.localizedString("Invalid character in filename.", ""), // message
                     NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
                     null, //alternative button
-                    null, //other button
-                    this.window(), //docWindow
-                    null, //modalDelegate
-                    null, //didEndSelector
-                    null, // dismiss selector
-                    null, // context
-                    NSBundle.localizedString("Invalid character in filename.", "") // message
-            );
+                    null //other button
+            ));
+            return false;
         }
-        else if (filenameField.stringValue().length() == 0) {
-            //
-        }
-        else {
-            this.endSheet(sender.tag());
-        }
-    }
-
-    public void cancelButtonClicked(NSButton sender) {
-        this.endSheet(sender.tag());
+        return filenameField.stringValue().length() != 0;
     }
 }

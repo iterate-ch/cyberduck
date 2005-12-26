@@ -26,7 +26,6 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSPanel;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
 /**
@@ -41,13 +40,13 @@ public class CDCreateFileController extends CDFileController {
         }
     }
 
-    public void dismissedSheet(int returncode, Object contextInfo) {
-        Path workdir = (Path) contextInfo;
-        if (returncode == NSAlertPanel.DefaultReturn) {
-            this.create(workdir, filenameField.stringValue());
+    public void callback(int returncode) {
+        Path workdir = ((CDBrowserController)parent).workdir();
+        if (returncode == DEFAULT_OPTION) {
+            createFile(workdir, filenameField.stringValue());
         }
-        if (returncode == NSAlertPanel.OtherReturn) {
-            Path path = this.create(workdir, filenameField.stringValue());
+        if (returncode == ALTERNATE_OPTION) {
+            Path path = createFile(workdir, filenameField.stringValue());
             if (path != null) {
                 Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
                 editor.open(path);
@@ -55,8 +54,9 @@ public class CDCreateFileController extends CDFileController {
         }
     }
 
-    protected Path create(Path workdir, String filename) {
-        Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), new Local(NSPathUtilities.temporaryDirectory(), filename));
+    protected Path createFile(Path workdir, String filename) {
+        Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
+                new Local(NSPathUtilities.temporaryDirectory(), filename));
         if (!file.getRemote().exists()) {
             try {
                 String proposal;

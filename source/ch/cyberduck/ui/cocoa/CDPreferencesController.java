@@ -24,7 +24,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionPool;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
-import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.application.NSCell;
@@ -39,7 +38,6 @@ import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSNotificationCenter;
 import com.apple.cocoa.foundation.NSSelector;
@@ -830,19 +828,13 @@ public class CDPreferencesController extends CDWindowController {
         panel.beginSheetForDirectory(null, null, null, this.window, this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
     }
 
-    public void openPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
-        switch (returnCode) {
-            case (NSAlertPanel.DefaultReturn): {
-                NSArray selected = sheet.filenames();
-                String filename;
-                if ((filename = (String) selected.lastObject()) != null) {
-                    Preferences.instance().setProperty("queue.download.folder", filename);
-                    this.downloadPathField.setStringValue(Preferences.instance().getProperty("queue.download.folder"));
-                }
-                break;
-            }
-            case (NSAlertPanel.AlternateReturn): {
-                break;
+    public void openPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
+        if(returncode == CDSheetCallback.DEFAULT_OPTION) {
+            NSArray selected = sheet.filenames();
+            String filename;
+            if ((filename = (String) selected.lastObject()) != null) {
+                Preferences.instance().setProperty("queue.download.folder", filename);
+                this.downloadPathField.setStringValue(Preferences.instance().getProperty("queue.download.folder"));
             }
         }
     }
@@ -1376,13 +1368,11 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     public void secureDataChannelCheckboxClicked(NSButton sender) {
-        switch (sender.state()) {
-            case NSCell.OnState:
-                Preferences.instance().setProperty("ftp.tls.datachannel", "P");
-                break;
-            case NSCell.OffState:
-                Preferences.instance().setProperty("ftp.tls.datachannel", "C");
-                break;
+        if (sender.state() ==  NSCell.OnState) {
+            Preferences.instance().setProperty("ftp.tls.datachannel", "P");
+        }
+        if (sender.state() ==  NSCell.OffState) {
+            Preferences.instance().setProperty("ftp.tls.datachannel", "C");
         }
     }
 

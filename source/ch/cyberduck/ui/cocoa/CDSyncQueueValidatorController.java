@@ -23,15 +23,7 @@ import ch.cyberduck.core.SyncQueue;
 import ch.cyberduck.core.Validator;
 import ch.cyberduck.core.ValidatorFactory;
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSButtonCell;
-import com.apple.cocoa.application.NSCell;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSImageCell;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.application.NSText;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
@@ -208,20 +200,18 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
     public void setSyncButton(NSButton syncButton) {
         this.syncButton = syncButton;
-        this.syncButton.setEnabled(false);
-        this.syncButton.setTarget(this);
-        this.syncButton.setAction(new NSSelector("syncActionFired", new Class[]{Object.class}));
     }
 
-    public void syncActionFired(NSButton sender) {
-        for (Iterator i = this.workList.iterator(); i.hasNext();) {
-            Path p = (Path) i.next();
-            if (!p.isSkipped()) {
-                this.validatedList.add(p);
+    public void callback(int returncode) {
+        if(returncode == DEFAULT_OPTION) { //sync
+            for (Iterator i = this.workList.iterator(); i.hasNext();) {
+                Path p = (Path) i.next();
+                if (!p.isSkipped()) {
+                    this.validatedList.add(p);
+                }
             }
+            this.setCanceled(false);
         }
-        this.setCanceled(false);
-        this.endSheet(sender.tag());
     }
 
     //todo - add timezone support

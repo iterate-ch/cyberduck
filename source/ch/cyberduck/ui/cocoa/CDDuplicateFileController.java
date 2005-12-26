@@ -55,13 +55,13 @@ public class CDDuplicateFileController extends CDFileController {
         this.filenameField.setStringValue(((CDBrowserController)parent).getSelectedPath().getName() + "-Copy");
     }
 
-    public void dismissedSheet(int returncode, Object contextInfo) {
-        Path workdir = (Path) contextInfo;
-        if (returncode == NSAlertPanel.DefaultReturn) {
-            this.duplicate(workdir, filenameField.stringValue());
+    public void callback(int returncode) {
+        Path workdir = ((CDBrowserController)parent).getSelectedPath().getParent();
+        if (returncode == DEFAULT_OPTION) {
+            duplicateFile(workdir, filenameField.stringValue());
         }
-        if (returncode == NSAlertPanel.OtherReturn) {
-            Path path = this.duplicate(workdir, filenameField.stringValue());
+        if (returncode == ALTERNATE_OPTION) {
+            Path path = duplicateFile(workdir, filenameField.stringValue());
             if (path != null) {
                 Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
                 editor.open(path);
@@ -69,7 +69,7 @@ public class CDDuplicateFileController extends CDFileController {
         }
     }
 
-    protected Path duplicate(Path workdir, String filename) {
+    protected Path duplicateFile(Path workdir, String filename) {
         Path file = PathFactory.createPath(workdir.getSession(),
                 workdir.getAbsolute(),
                 new Local(NSPathUtilities.temporaryDirectory(),

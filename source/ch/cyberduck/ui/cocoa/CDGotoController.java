@@ -22,9 +22,8 @@ import ch.cyberduck.core.Path;
 
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.application.NSComboBox;
-import com.apple.cocoa.application.NSPanel;
+import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
@@ -35,17 +34,18 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class CDGotoController extends CDSheetController {
+public class CDGotoController extends CDSheetController
+{
     private static Logger log = Logger.getLogger(CDGotoController.class);
 
     private NSComboBox folderCombobox; // IBOutlet
-    private Object folderComboDataSource;
+    private NSObject folderComboDataSource;
 
     public void setFolderCombobox(NSComboBox folderCombobox) {
         this.folderCombobox = folderCombobox;
         this.folderCombobox.setCompletes(true);
         this.folderCombobox.setUsesDataSource(true);
-        this.folderCombobox.setDataSource(this.folderComboDataSource = new Object() {
+        this.folderCombobox.setDataSource(this.folderComboDataSource = new NSObject() {
             private List directories = new ArrayList();
 
             {
@@ -78,25 +78,14 @@ public class CDGotoController extends CDSheetController {
         }
     }
 
-    public void goButtonClicked(NSButton sender) {
-        if (folderCombobox.stringValue().length() == 0) {
-            // folderCombobox.setStringValue(this.file.getName());
-        }
-        else {
-            // Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
-            this.endSheet(sender.tag());
+    public void callback(int returncode) {
+        if (returncode == DEFAULT_OPTION) {
+            gotoFolder(((CDBrowserController)parent).workdir(), folderCombobox.stringValue());
         }
     }
 
-    public void cancelButtonClicked(NSButton sender) {
-        this.endSheet(sender.tag());
-    }
-
-    public void dismissedSheet(int returncode, Object contextInfo) {
-        if (returncode == NSAlertPanel.DefaultReturn) {
-            Path workdir = (Path) contextInfo;
-            this.gotoFolder(workdir, this.folderCombobox.stringValue());
-        }
+    protected boolean validateInput() {
+        return folderCombobox.stringValue().length() != 0;
     }
 
     protected void gotoFolder(Path workdir, String filename) {

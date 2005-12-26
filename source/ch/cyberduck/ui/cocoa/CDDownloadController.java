@@ -18,19 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DownloadQueue;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.application.NSPanel;
-import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
@@ -56,16 +49,13 @@ public class CDDownloadController extends CDSheetController {
         }
     }
 
-    public void cancelButtonClicked(NSButton sender) {
-        this.endSheet(sender.tag());
-    }
-
-    public void downloadButtonClicked(NSButton sender) {
-        try {
-            Host host = Host.parse(urlField.stringValue());
-            String file = host.getDefaultPath();
-            if (file.length() > 1) {
-                Path path = PathFactory.createPath(SessionFactory.createSession(host), file);
+    public void callback(int returncode) {
+        if (returncode == DEFAULT_OPTION) {
+            Host host = null;
+            try {
+                host = Host.parse(urlField.stringValue());
+                Path path = PathFactory.createPath(SessionFactory.createSession(host),
+                        host.getDefaultPath());
                 try {
                     path.cwdir();
                     CDBrowserController controller = new CDBrowserController();
@@ -76,24 +66,26 @@ public class CDDownloadController extends CDSheetController {
                     queue.addRoot(path);
                     CDQueueController.instance().startItem(queue);
                 }
-                this.endSheet(sender.tag());
             }
-            else {
-                throw new MalformedURLException("URL must contain reference to a file");
+            catch (MalformedURLException e) {
+                log.error(e.getMessage());
             }
         }
+    }
+
+    protected boolean validateInput() {
+        try {
+            Host host = Host.parse(urlField.stringValue());
+            return host.hasReasonableDefaultPath();
+        }
         catch (MalformedURLException e) {
-            NSAlertPanel.beginCriticalAlertSheet("Error", //title
-                    "OK", // defaultbutton
+            this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"),
+                    e.getMessage(), // message
+                    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
                     null, //alternative button
-                    null, //other button
-                    this.window(), //docWindow
-                    null, //modalDelegate
-                    null, //didEndSelector
-                    null, // dismiss selector
-                    null, // context
-                    e.getMessage() // message
-            );
+                    null //other button
+            ));
+            return false;
         }
     }
 }

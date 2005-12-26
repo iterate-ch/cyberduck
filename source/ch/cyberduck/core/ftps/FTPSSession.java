@@ -22,7 +22,11 @@ import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPMessageListener;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Proxy;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.ftp.FTPSession;
 
 import com.apple.cocoa.foundation.NSBundle;
@@ -70,7 +74,7 @@ public class FTPSSession extends FTPSession {
 
     public void connect(String encoding) throws IOException, FTPException {
         try {
-            synchronized(this) {
+            synchronized (this) {
                 this.retain();
                 this.message(NSBundle.localizedString("Opening FTP-TLS connection to", "Status", "") + " " + host.getIp() + "...");
                 this.log("=====================================");

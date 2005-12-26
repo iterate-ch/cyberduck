@@ -23,8 +23,6 @@ import ch.cyberduck.core.PathFactory;
 
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSPanel;
 import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.foundation.NSBundle;
 
@@ -33,7 +31,8 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class CDFolderController extends CDSheetController {
+public class CDFolderController extends CDSheetController
+{
     private static Logger log = Logger.getLogger(CDFolderController.class);
 
     private NSTextField folderField; //IBOutlet
@@ -49,41 +48,27 @@ public class CDFolderController extends CDSheetController {
         }
     }
 
-    public void createButtonClicked(NSButton sender) {
-        // Ends a document modal session by specifying the sheet window, sheet. Also passes along a returnCode to the delegate.
+    protected boolean validateInput() {
         if (folderField.stringValue().indexOf('/') != -1) {
-            NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+            this.alert(NSAlertPanel.informationalAlertPanel(
+                    NSBundle.localizedString("Error", "Alert sheet title"),
+                    NSBundle.localizedString("Invalid character in folder name.", ""), // message
                     NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
                     null, //alternative button
-                    null, //other button
-                    this.window(), //docWindow
-                    null, //modalDelegate
-                    null, //didEndSelector
-                    null, // dismiss selector
-                    null, // context
-                    NSBundle.localizedString("Invalid character in folder name.", "") // message
-            );
+                    null //other button
+            ));
+            return false;
         }
-        else if (folderField.stringValue().length() == 0) {
-            //
-        }
-        else {
-            this.endSheet(sender.tag());
+        return folderField.stringValue().length() != 0;
+    }
+
+    public void callback(int returncode) {
+        if (returncode == DEFAULT_OPTION) {
+            createFolder(((CDBrowserController)parent).workdir(), folderField.stringValue());
         }
     }
 
-    public void cancelButtonClicked(NSButton sender) {
-        this.endSheet(sender.tag());
-    }
-
-    public void dismissedSheet(int returncode, Object contextInfo) {
-        if (returncode == NSAlertPanel.DefaultReturn) {
-            Path workdir = (Path) contextInfo;
-            this.create(workdir, folderField.stringValue());
-        }
-    }
-
-    public void create(Path workdir, String filename) {
+    public void createFolder(Path workdir, String filename) {
         Path folder = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
         folder.mkdir(false);
         if(folder.exists()) {

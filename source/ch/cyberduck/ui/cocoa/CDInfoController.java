@@ -372,17 +372,13 @@ public class CDInfoController extends CDWindowController {
                     this.filenameField.setStringValue(file.getName());
                 }
                 else {
-                    NSAlertPanel.beginInformationalAlertSheet(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                    this.alert(NSAlertPanel.informationalAlertPanel(
+                            NSBundle.localizedString("Error", "Alert sheet title"),
+                            NSBundle.localizedString("Invalid character in filename.", ""), // message
                             NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
                             null, //alternative button
-                            null, //other button
-                            this.window, //docWindow
-                            null, //modalDelegate
-                            null, //didEndSelector
-                            null, // dismiss selector
-                            null, // context
-                            NSBundle.localizedString("Invalid character in filename.", "") // message
-                    );
+                            null //other button
+                    ));
                 }
             }
         }

@@ -83,8 +83,12 @@ public class CDCommandController extends CDSheetController implements Transcript
         });
     }
 
-    public void closeButtonClicked(NSButton sender) {
-        this.endSheet(sender.tag());
+    protected boolean validateInput() {
+        return true;
+    }
+
+    public void callback(int returncode) {
+        ;
     }
 
     protected void invalidate() {

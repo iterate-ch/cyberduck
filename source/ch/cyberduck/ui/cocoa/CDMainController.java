@@ -483,7 +483,7 @@ public class CDMainController extends CDController {
 
     public void closeUpdateSheet(NSButton sender) {
         updateSheet.close();
-        if (sender.tag() == NSAlertPanel.DefaultReturn) {
+        if (sender.tag() == CDSheetCallback.DEFAULT_OPTION) {
             try {
                 NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update") + updateSheet.title()));
             }
@@ -496,7 +496,7 @@ public class CDMainController extends CDController {
     public void closeDonationSheet(NSButton sender) {
         donationSheet.close();
         Preferences.instance().setProperty("donate", neverShowDonationCheckbox.state() == NSCell.OffState);
-        if (sender.tag() == NSAlertPanel.DefaultReturn) {
+        if (sender.tag() == CDSheetCallback.DEFAULT_OPTION) {
             try {
                 NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.donate")));
             }
@@ -512,8 +512,8 @@ public class CDMainController extends CDController {
     }
 
     public void newDownloadMenuClicked(Object sender) {
-        CDDownloadController controller = new CDDownloadController(CDQueueController.instance());
-        controller.beginSheet();
+        CDSheetController controller = new CDDownloadController(CDQueueController.instance());
+        controller.beginSheet(false);
     }
 
     public void newBrowserMenuClicked(Object sender) {
@@ -679,15 +679,15 @@ public class CDMainController extends CDController {
                                 NSBundle.localizedString("Review...", ""), //default
                                 NSBundle.localizedString("Quit Anyway", ""), //alternate
                                 NSBundle.localizedString("Cancel", "")); //other
-                        if (choice == NSAlertPanel.AlternateReturn) {
+                        if (choice == CDSheetCallback.ALTERNATE_OPTION) {
                             // Quit
                             return CDQueueController.applicationShouldTerminate(app);
                         }
-                        if (choice == NSAlertPanel.OtherReturn) {
+                        if (choice == CDSheetCallback.OTHER_OPTION) {
                             // Cancel
                             return NSApplication.TerminateCancel;
                         }
-                        if (choice == NSAlertPanel.DefaultReturn) {
+                        if (choice == CDSheetCallback.DEFAULT_OPTION) {
                             // Review
                             // if at least one window reqested to terminate later, we shall wait
                             return CDBrowserController.applicationShouldTerminate(app);

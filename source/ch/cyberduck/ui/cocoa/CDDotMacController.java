@@ -21,8 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Host;
 
 import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSData;
@@ -84,19 +82,16 @@ public class CDDotMacController {
                     if (element instanceof NSDictionary) {
                         Host bookmark = new Host((NSDictionary) element);
                         if (!CDBookmarkTableDataSource.instance().contains(bookmark)) {
-                            int choice = NSAlertPanel.runAlert(((Host) bookmark).getNickname(),
+                            int choice = NSAlertPanel.runAlert((bookmark).getNickname(),
                                     NSBundle.localizedString("Add this bookmark to your existing bookmarks?", "IDisk", ""),
                                     NSBundle.localizedString("Add", "IDisk", ""), //default
                                     NSBundle.localizedString("Cancel", ""), //alternate
                                     NSBundle.localizedString("Skip", "IDisk", "")); //other
-                            if (choice == NSAlertPanel.DefaultReturn) {
+                            if (choice == CDSheetCallback.DEFAULT_OPTION) {
                                 CDBookmarkTableDataSource.instance().add(bookmark);
                             }
-                            if (choice == NSAlertPanel.AlternateReturn) {
+                            if (choice == CDSheetCallback.ALTERNATE_OPTION) {
                                 return;
-                            }
-                            if (choice == NSAlertPanel.OtherReturn) {
-                                //
                             }
                         }
                     }

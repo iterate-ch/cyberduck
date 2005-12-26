@@ -275,7 +275,7 @@ public class Host {
     }
 
     public boolean hasReasonableDefaultPath() {
-        return this.getDefaultPath() != null && !this.getDefaultPath().equals("");
+        return !this.getDefaultPath().equals("");
     }
 
     protected static String getDefaultProtocol(int port) {

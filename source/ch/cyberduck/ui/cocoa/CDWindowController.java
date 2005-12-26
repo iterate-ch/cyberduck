@@ -79,17 +79,35 @@ public abstract class CDWindowController extends CDController {
         NSArray windows = NSApplication.sharedApplication().windows();
         int count = windows.count();
         if (count != 0) {
-            while (0 != count--) {
-                NSWindow window = (NSWindow) windows.objectAtIndex(count);
-                NSPoint origin = window.frame().origin();
-                origin = new NSPoint(origin.x(), origin.y() + window.frame().size().height());
-                this.window.setFrameTopLeftPoint(this.window.cascadeTopLeftFromPoint(origin));
-                break;
-            }
+            NSWindow window = (NSWindow) windows.objectAtIndex(count-1);
+            NSPoint origin = window.frame().origin();
+            origin = new NSPoint(origin.x(), origin.y() + window.frame().size().height());
+            this.window.setFrameTopLeftPoint(this.window.cascadeTopLeftFromPoint(origin));
         }
     }
 
     public boolean hasSheet() {
         return this.window.attachedSheet() != null;
+    }
+
+    /**
+     *
+     * @param sheet
+     */
+    protected void alert(NSWindow sheet) {
+        this.alert(sheet, new CDSheetCallback() {
+            public void callback(int returncode) {
+                ;
+            }
+        });
+    }
+
+    protected void alert(NSWindow sheet, final CDSheetCallback callback) {
+        CDSheetController c = new CDSheetController(this, sheet) {
+            public void callback(final int returncode) {
+                callback.callback(returncode);
+            }
+        };
+        c.beginSheet(false);
     }
 }

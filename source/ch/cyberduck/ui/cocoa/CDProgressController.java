@@ -189,14 +189,13 @@ public class CDProgressController extends CDController {
     }
 
     public void alertButtonClicked(NSButton sender) {
-        CDSheetController alert = new CDSheetController(CDQueueController.instance(),
+        CDQueueController.instance().alert(
                 NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"),
                         this.getErrorText(), // message
                         NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
                         null, //alternative button
                         null //other button
                 ));
-        alert.beginSheet();
     }
 
     private boolean highlighted;

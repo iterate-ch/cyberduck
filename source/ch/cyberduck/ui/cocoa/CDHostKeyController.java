@@ -19,125 +19,98 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.sshtools.j2ssh.transport.AbstractKnownHostsKeyVerification;
-import com.sshtools.j2ssh.transport.HostKeyVerification;
 import com.sshtools.j2ssh.transport.InvalidHostFileException;
-import com.sshtools.j2ssh.transport.TransportProtocolException;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 
 import ch.cyberduck.core.Preferences;
 
 import com.apple.cocoa.application.NSAlertPanel;
+import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
- *          Concrete Coccoa implementation of a SSH HostKeyVerification
+ * Concrete Coccoa implementation of a SSH HostKeyVerification
  */
-public class CDHostKeyController extends CDSheetController implements HostKeyVerification {
+public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
 
-    private static Logger log = Logger.getLogger(CDHostKeyController.class);
+    private CDWindowController parent;
 
-    private SshPublicKey publicKey;
-
-    private AbstractKnownHostsKeyVerification delegate;
-
-    public CDHostKeyController(CDWindowController parent) {
-        super(parent);
+    public CDHostKeyController(CDWindowController windowController) {
+        this.parent = windowController;
         try {
-            this.delegate = new AbstractKnownHostsKeyVerification() {
-                public void onHostKeyMismatch(String host, SshPublicKey allowedHostKey, SshPublicKey actualHostKey) {
-                    CDHostKeyController.this.onHostKeyMismatch(host, allowedHostKey, actualHostKey);
-                }
-
-                public void onUnknownHost(String host, SshPublicKey key) {
-                    CDHostKeyController.this.onUnknownHost(host, key);
-                }
-            };
-            this.delegate.setKnownHostFile(Preferences.instance().getProperty("ssh.knownhosts"));
+            this.setKnownHostFile(Preferences.instance().getProperty("ssh.knownhosts"));
         }
         catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
             //This exception is thrown whenever an exception occurs open or reading from the host file.
-            this.window = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", ""), //title
+            parent.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", ""), //title
                     NSBundle.localizedString("Could not open or read the host file", "") + ": " + e.getMessage(), // message
                     NSBundle.localizedString("OK", ""), // defaultbutton
                     null, //alternative button
                     null //other button
-            );
-            this.beginSheet();
+            ));
         }
     }
 
     public void onHostKeyMismatch(final String host, final SshPublicKey allowedHostKey, final SshPublicKey actualHostKey) {
-        log.debug("onHostKeyMismatch");
-        this.publicKey = actualHostKey;
-        this.window = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Host key mismatch:", "") + " " + host, //title
+        NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Host key mismatch:", "") + " " + host, //title
                 NSBundle.localizedString("The host key supplied is", "") + ": "
                         + actualHostKey.getFingerprint() +
                         "\n" + NSBundle.localizedString("The current allowed key for this host is", "") + " : "
                         + allowedHostKey.getFingerprint() + "\n" + NSBundle.localizedString("Do you want to allow the host access?", ""),
                 NSBundle.localizedString("Allow", ""), // defaultbutton
                 NSBundle.localizedString("Deny", ""), //alternative button
-                delegate.isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null //other button
+                isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null //other button
         );
-        this.beginSheet(null, new CDSheetListener() {
-            public void dismissedSheet(int returncode, Object context) {
+        CDSheetController c = new CDSheetController(parent, sheet) {
+            public void callback(int returncode) {
                 try {
-                    if (returncode == NSAlertPanel.DefaultReturn) {
-                        delegate.allowHost(host, publicKey, false);
+                    if (returncode == DEFAULT_OPTION) {
+                        allowHost(host, allowedHostKey, false);
                     }
-                    if (returncode == NSAlertPanel.AlternateReturn) {
+                    if (returncode == ALTERNATE_OPTION) {
                         log.info("Cannot continue without a valid host key");
                     }
-                    if (returncode == NSAlertPanel.OtherReturn) {
-                        delegate.allowHost(host, publicKey, true); // always allow host
+                    if (returncode == OTHER_OPTION) {
+                        allowHost(host, allowedHostKey, true); // always allow host
                     }
                 }
                 catch (InvalidHostFileException e) {
                     log.error(e.getMessage());
                 }
             }
-        });
-        this.waitForSheetEnd();
+        };
+        c.beginSheet(true);
     }
 
     public void onUnknownHost(final String host,
                               final SshPublicKey publicKey) {
-        log.debug("onUnknownHost");
-        this.publicKey = publicKey;
-        this.window = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Unknown host key for", "") + " " + host, //title
+        NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Unknown host key for", "") + " " + host, //title
                 NSBundle.localizedString("The host is currently unknown to the system. The host key fingerprint is", "") + ": " + publicKey.getFingerprint() + ".",
                 NSBundle.localizedString("Allow", ""), // defaultbutton
                 NSBundle.localizedString("Deny", ""), //alternative button
-                delegate.isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null //other button
+                isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null //other button
         );
-        this.beginSheet(null, new CDSheetListener() {
-            public void dismissedSheet(int returncode, Object context) {
+        CDSheetController c = new CDSheetController(parent, sheet) {
+            public void callback(int returncode) {
                 try {
-                    if (returncode == NSAlertPanel.DefaultReturn) {
-                        delegate.allowHost(host, publicKey, false); // allow host
+                    if (returncode == DEFAULT_OPTION) {
+                        allowHost(host, publicKey, false); // allow host
                     }
-                    if (returncode == NSAlertPanel.AlternateReturn) {
+                    if (returncode == ALTERNATE_OPTION) {
                         log.info("Cannot continue without a valid host key");
                     }
-                    if (returncode == NSAlertPanel.OtherReturn) {
-                        delegate.allowHost(host, publicKey, true); // always allow host
+                    if (returncode == OTHER_OPTION) {
+                        allowHost(host, publicKey, true); // always allow host
                     }
                 }
                 catch (InvalidHostFileException e) {
                     log.error(e.getMessage());
                 }
             }
-        });
-        this.waitForSheetEnd();
-    }
-
-    protected void invalidate() {
-        ;
-    }
-
-    public boolean verifyHost(String host, SshPublicKey pk) throws TransportProtocolException {
-        return delegate.verifyHost(host, pk);
+        };
+        c.beginSheet(true);
     }
 }

@@ -28,8 +28,11 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * @version $Id$
@@ -164,7 +167,7 @@ public class CDBrowserController extends CDWindowController {
         if (this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
             CDFolderController c = new CDFolderController(this);
-            c.create(this.workdir(), (String) args.objectForKey("Path"));
+            c.createFolder(this.workdir(), (String) args.objectForKey("Path"));
         }
         return null;
     }
@@ -186,7 +189,7 @@ public class CDBrowserController extends CDWindowController {
         if (this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
             CDCreateFileController c = new CDCreateFileController(this);
-            c.create(this.workdir(), (String) args.objectForKey("Path"));
+            c.createFile(this.workdir(), (String) args.objectForKey("Path"));
         }
         return null;
     }
@@ -1474,12 +1477,9 @@ public class CDBrowserController extends CDWindowController {
                     NSBundle.localizedString("Delete", ""),
                     NSBundle.localizedString("Cancel", ""),
                     null)) {
-                case NSAlertPanel.DefaultReturn:
+                case CDSheetCallback.DEFAULT_OPTION:
                     this.bookmarkModel.remove(row);
                     j++;
-                    break;
-                case NSAlertPanel.AlternateReturn:
-                    break;
             }
         }
         this.bookmarkTable.deselectAll(null);
@@ -1702,32 +1702,27 @@ public class CDBrowserController extends CDWindowController {
         }
     }
 
-    protected void renamePath(Path path, String parent, String name) {
-        Path p = PathFactory.createPath(workdir.getSession(), parent, name);
-        if (p.exists()) {
-            CDSheetController alert = new CDSheetController(this,
-                    NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Replace", "Alert sheet title"), //title
-                            NSBundle.localizedString("A file with the same absolute already exists. Do you want to replace the existing file?", ""),
-                            NSBundle.localizedString("Overwrite", "Alert sheet default button"), // defaultbutton
-                            NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
-                            null //other button
-                    )) {
-                public void dismissedSheet(int returncode, Object contextInfo) {
-                    if (returncode == NSAlertPanel.DefaultReturn) {
-                        if (contextInfo instanceof List) {
-                            List context = (List) contextInfo;
-                            Path path = (Path) context.get(0);
-                            String name = (String) context.get(1);
-                            path.rename(name);
-                            reloadData(true);
-                        }
+    protected void renamePath(final Path path, String parent, final String name) {
+        final Path renamed = PathFactory.createPath(workdir.getSession(), parent, name);
+        if (renamed.exists()) {
+            NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Replace", "Alert sheet title"), //title
+                    NSBundle.localizedString("A file with the same absolute already exists. Do you want to replace the existing file?", ""),
+                    NSBundle.localizedString("Overwrite", "Alert sheet default button"), // defaultbutton
+                    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
+                    null //other button
+            );
+            CDSheetController c = new CDSheetController(this, sheet) {
+                public void callback(int returncode) {
+                    if (returncode == DEFAULT_OPTION) {
+                        path.rename(renamed.getAbsolute());
+                        reloadData(true);
                     }
                 }
             };
-            alert.beginSheet(Arrays.asList(new Object[]{path, p.getAbsolute()}));
+            c.beginSheet(true);
         }
         else {
-            path.rename(p.getAbsolute());
+            path.rename(renamed.getAbsolute());
         }
     }
 
@@ -1756,30 +1751,30 @@ public class CDBrowserController extends CDWindowController {
 
     public void gotoButtonClicked(Object sender) {
         CDSheetController controller = new CDGotoController(this);
-        controller.beginSheet(this.workdir()); //contextInfo
+        controller.beginSheet(false);
     }
 
     public void createFileButtonClicked(Object sender) {
         CDSheetController controller = new CDCreateFileController(this);
-        controller.beginSheet(this.workdir());
+        controller.beginSheet(false);
     }
 
     public void duplicateFileButtonClicked(Object sender) {
         if (this.getSelectionCount() > 0) {
             CDSheetController controller = new CDDuplicateFileController(this);
-            controller.beginSheet(this.getSelectedPath().getParent());
+            controller.beginSheet(false);
         }
     }
 
     public void sendCustomCommandClicked(Object sender) {
         CDSheetController controller = new CDCommandController(this, this.session);
-        controller.beginSheet();
+        controller.beginSheet(false);
     }
 
 
     public void createFolderButtonClicked(Object sender) {
         CDSheetController controller = new CDFolderController(this);
-        controller.beginSheet(this.workdir());
+        controller.beginSheet(false);
     }
 
     private CDInfoController inspector = null;
@@ -1803,7 +1798,7 @@ public class CDBrowserController extends CDWindowController {
     }
 
     public void deleteFileButtonClicked(Object sender) {
-        List files = new ArrayList();
+        final List files = new ArrayList();
         StringBuffer alertText = new StringBuffer(NSBundle.localizedString("Really delete the following files? This cannot be undone.", "Confirm deleting files."));
         if (sender instanceof Path) {
             Path p = (Path) sender;
@@ -1827,16 +1822,15 @@ public class CDBrowserController extends CDWindowController {
             }
         }
         if (files.size() > 0) {
-            CDSheetController alert = new CDSheetController(this,
-                    NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Delete", "Alert sheet title"), //title
-                            alertText.toString(),
-                            NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
-                            NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
-                            null //other button
-                    )) {
-                public void dismissedSheet(int returncode, Object contextInfo) {
-                    if (returncode == NSAlertPanel.DefaultReturn) {
-                        final List files = (List) contextInfo;
+            NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Delete", "Alert sheet title"), //title
+                    alertText.toString(),
+                    NSBundle.localizedString("Delete", "Alert sheet default button"), // defaultbutton
+                    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
+                    null //other button
+            );
+            CDSheetController c = new CDSheetController(this, sheet) {
+                public void callback(int returncode) {
+                    if (returncode == DEFAULT_OPTION) {
                         if (files.size() > 0) {
                             Iterator i = files.iterator();
                             Path p;
@@ -1848,9 +1842,8 @@ public class CDBrowserController extends CDWindowController {
                         }
                     }
                 }
-
             };
-            alert.beginSheet(files);
+            c.beginSheet(true);
         }
     }
 
@@ -1874,7 +1867,7 @@ public class CDBrowserController extends CDWindowController {
     }
 
     public void saveAsPanelDidEnd(NSSavePanel sheet, int returncode, Object contextInfo) {
-        if (returncode == NSAlertPanel.DefaultReturn) {
+        if (returncode == CDSheetCallback.DEFAULT_OPTION) {
             String filename;
             if ((filename = sheet.filename()) != null) {
                 Path path = (Path) contextInfo;
@@ -1916,7 +1909,7 @@ public class CDBrowserController extends CDWindowController {
     }
 
     public void syncPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
-        if (returncode == NSAlertPanel.DefaultReturn) {
+        if (returncode == CDSheetCallback.DEFAULT_OPTION) {
             Path selection = (Path) contextInfo;
             if (sheet.filenames().count() > 0) {
                 selection.setLocal(new Local((String) sheet.filenames().lastObject()));
@@ -1970,7 +1963,7 @@ public class CDBrowserController extends CDWindowController {
     }
 
     public void uploadPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
-        if (returncode == NSAlertPanel.DefaultReturn) {
+        if (returncode == CDSheetCallback.DEFAULT_OPTION) {
             Path workdir = this.workdir();
             // selected files on the local filesystem
             NSArray selected = sheet.filenames();
@@ -2018,7 +2011,7 @@ public class CDBrowserController extends CDWindowController {
 
     public void connectButtonClicked(Object sender) {
         CDSheetController controller = new CDConnectionController(this);
-        controller.beginSheet();
+        controller.beginSheet(false);
     }
 
     public void disconnectButtonClicked(Object sender) {
@@ -2251,14 +2244,12 @@ public class CDBrowserController extends CDWindowController {
                         statusLabel.setAttributedStringValue(new NSAttributedString(msg,
                                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                         statusLabel.setNeedsDisplay(true);
-                        CDSheetController alert = new CDSheetController(CDBrowserController.this,
-                                NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
+                        alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
                                         msg, // msg
                                         NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
                                         null, //alternative button
                                         null) //other button
                         );
-                        alert.beginSheet();
                     }
                 });
             }
@@ -2371,9 +2362,9 @@ public class CDBrowserController extends CDWindowController {
                     }
                 }
             }
-            if (this.unmount(new CDSheetListener() {
-                public void dismissedSheet(int returncode, Object context) {
-                    if (returncode == NSAlertPanel.DefaultReturn) {
+            if (this.unmount(new CDSheetCallback() {
+                public void callback(int returncode) {
+                    if (returncode == DEFAULT_OPTION) {
                         unmount();
                         mount(host);
                     }
@@ -2420,19 +2411,17 @@ public class CDBrowserController extends CDWindowController {
     /**
      * @return True if the unmount process has finished, false if the user has to agree first to close the connection
      */
-    public boolean unmount(final CDSheetListener callback) {
+    public boolean unmount(final CDSheetCallback callback) {
         synchronized (lock) {
             log.debug("unmount");
             if (this.isConnected()) {
                 if (Preferences.instance().getBoolean("browser.confirmDisconnect")) {
-                    CDSheetController alert = new CDSheetController(this,
-                            NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + this.session.getHost().getHostname(), //title
-                                    NSBundle.localizedString("The connection will be closed.", "Alert sheet text"), // message
-                                    NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
-                                    NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
-                                    null //other button
-                            ));
-                    alert.beginSheet(null, callback);
+                    this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + this.session.getHost().getHostname(), //title
+                            NSBundle.localizedString("The connection will be closed.", "Alert sheet text"), // message
+                            NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
+                            NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
+                            null //other button
+                    ), callback);
                     return false;
                 }
                 this.unmount();
@@ -2507,13 +2496,13 @@ public class CDBrowserController extends CDWindowController {
             final NSWindow window = (NSWindow) windows.objectAtIndex(count);
             CDBrowserController controller = CDBrowserController.controllerForWindow(window);
             if (null != controller) {
-                if (!controller.unmount(new CDSheetListener() {
-                    public void dismissedSheet(int returncode, Object context) {
-                        if (returncode == NSAlertPanel.DefaultReturn) { //Disconnect
+                if (!controller.unmount(new CDSheetCallback() {
+                    public void callback(int returncode) {
+                        if (returncode == DEFAULT_OPTION) { //Disconnect
                             window.close();
                             CDBrowserController.applicationShouldTerminate(null);
                         }
-                        if (returncode == NSAlertPanel.AlternateReturn) { //Cancel
+                        if (returncode == ALTERNATE_OPTION) { //Cancel
                             NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
                         }
                     }
@@ -2526,9 +2515,9 @@ public class CDBrowserController extends CDWindowController {
     }
 
     public boolean windowShouldClose(final NSWindow sender) {
-        return this.unmount(new CDSheetListener() {
-            public void dismissedSheet(int returncode, Object context) {
-                if (returncode == NSAlertPanel.DefaultReturn) {
+        return this.unmount(new CDSheetCallback() {
+            public void callback(int returncode) {
+                if (returncode == DEFAULT_OPTION) {
                     unmount();
                     sender.close();
                 }

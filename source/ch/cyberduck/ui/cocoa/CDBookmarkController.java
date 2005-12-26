@@ -21,19 +21,9 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 
-import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSCell;
-import com.apple.cocoa.application.NSControl;
-import com.apple.cocoa.application.NSEvent;
-import com.apple.cocoa.application.NSOpenPanel;
-import com.apple.cocoa.application.NSPopUpButton;
-import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.application.NSTextField;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSNotificationCenter;
 import com.apple.cocoa.foundation.NSSelector;
@@ -259,25 +249,21 @@ public class CDBookmarkController extends CDWindowController {
         }
     }
 
-    public void pkSelectionPanelDidEnd(NSOpenPanel sheet, int returnCode, Object contextInfo) {
+    public void pkSelectionPanelDidEnd(NSOpenPanel sheet, int returncode, Object context) {
         log.debug("pkSelectionPanelDidEnd");
-        switch (returnCode) {
-            case (NSAlertPanel.DefaultReturn): {
-                NSArray selected = sheet.filenames();
-                java.util.Enumeration enumerator = selected.objectEnumerator();
-                while (enumerator.hasMoreElements()) {
-                    String pk = (String) enumerator.nextElement();
-                    this.host.getCredentials().setPrivateKeyFile(pk);
-                    this.pkLabel.setStringValue(pk);
-                }
-                break;
+        if(returncode == NSPanel.OKButton) {
+            NSArray selected = sheet.filenames();
+            java.util.Enumeration enumerator = selected.objectEnumerator();
+            while (enumerator.hasMoreElements()) {
+                String pk = (String) enumerator.nextElement();
+                this.host.getCredentials().setPrivateKeyFile(pk);
+                this.pkLabel.setStringValue(pk);
             }
-            case (NSAlertPanel.AlternateReturn): {
-                this.host.getCredentials().setPrivateKeyFile(null);
-                this.pkCheckbox.setState(NSCell.OffState);
-                this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
-                break;
-            }
+        }
+        if(returncode == NSPanel.CancelButton) {
+            this.host.getCredentials().setPrivateKeyFile(null);
+            this.pkCheckbox.setState(NSCell.OffState);
+            this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
         }
     }
 

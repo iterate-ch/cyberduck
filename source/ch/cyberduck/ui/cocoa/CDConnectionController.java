@@ -27,14 +27,14 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
 /**
  * @version $Id$
  */
-public class CDConnectionController extends CDSheetController {
+public class CDConnectionController extends CDSheetController
+{
     private static Logger log = Logger.getLogger(CDConnectionController.class);
 
     // ----------------------------------------------------------
@@ -184,7 +184,7 @@ public class CDConnectionController extends CDSheetController {
         this.connectmodePopup.setEnabled(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)
                 || protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING));
         this.pkCheckbox.setEnabled(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING));
-        this.updateURLLabel(sender);
+        this.updateURLLabel();
     }
 
     private NSComboBox hostPopup;
@@ -211,7 +211,7 @@ public class CDConnectionController extends CDSheetController {
 
     public void hostSelectionDidChange(Object sender) {
         log.debug("hostSelectionDidChange:" + sender);
-        this.updateURLLabel(sender);
+        this.updateURLLabel();
     }
 
     public void hostFieldTextDidChange(Object sender) {
@@ -295,17 +295,15 @@ public class CDConnectionController extends CDSheetController {
     }
 
     public void anonymousCheckboxClicked(NSButton sender) {
-        switch (sender.state()) {
-            case NSCell.OnState:
-                this.usernameField.setEnabled(false);
-                this.usernameField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.name"));
-                this.passField.setEnabled(false);
-                break;
-            case NSCell.OffState:
-                this.usernameField.setEnabled(true);
-                this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
-                this.passField.setEnabled(true);
-                break;
+        if (sender.state() == NSCell.OnState) {
+            this.usernameField.setEnabled(false);
+            this.usernameField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.name"));
+            this.passField.setEnabled(false);
+        }
+        if(sender.state() == NSCell.OffState) {
+            this.usernameField.setEnabled(true);
+            this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
+            this.passField.setEnabled(true);
         }
     }
 
@@ -340,23 +338,19 @@ public class CDConnectionController extends CDSheetController {
         }
     }
 
-    public void pkSelectionPanelDidEnd(NSOpenPanel window, int returnCode, Object contextInfo) {
-        switch (returnCode) {
-            case (NSAlertPanel.DefaultReturn): {
-                NSArray selected = window.filenames();
-                java.util.Enumeration enumerator = selected.objectEnumerator();
-                while (enumerator.hasMoreElements()) {
-                    this.pkLabel.setStringValue((String) enumerator.nextElement());
-                }
-                this.passField.setEnabled(false);
-                break;
+    public void pkSelectionPanelDidEnd(NSOpenPanel window, int returncode, Object context) {
+        if (DEFAULT_OPTION == returncode) {
+            NSArray selected = window.filenames();
+            java.util.Enumeration enumerator = selected.objectEnumerator();
+            while (enumerator.hasMoreElements()) {
+                this.pkLabel.setStringValue((String) enumerator.nextElement());
             }
-            case (NSAlertPanel.AlternateReturn): {
-                this.passField.setEnabled(true);
-                this.pkCheckbox.setState(NSCell.OffState);
-                this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
-                break;
-            }
+            this.passField.setEnabled(false);
+        }
+        if (ALTERNATE_OPTION == returncode) {
+            this.passField.setEnabled(true);
+            this.pkCheckbox.setState(NSCell.OffState);
+            this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
         }
     }
 
@@ -528,10 +522,10 @@ public class CDConnectionController extends CDSheetController {
             this.pkCheckbox.setState(NSCell.OffState);
         }
         this.encodingPopup.setTitle(selectedItem.getEncoding());
-        this.updateURLLabel(null);
+        this.updateURLLabel();
     }
 
-    private void updateURLLabel(Object sender) {
+    private void updateURLLabel() {
         String protocol = null;
         if (protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
             protocol = Session.SFTP + "://";
@@ -547,12 +541,8 @@ public class CDConnectionController extends CDSheetController {
                 + Path.DELIMITER + pathField.stringValue());
     }
 
-    public void closeSheet(NSButton sender) {
-        this.endSheet(sender.tag());
-    }
-
-    public void dismissedSheet(int returncode, Object context) {
-        if (returncode == NSAlertPanel.DefaultReturn) {
+    public void callback(int returncode) {
+        if (returncode == DEFAULT_OPTION) {
             Host host = null;
             if (protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
                 // SFTP has been selected as the protocol to connect with
