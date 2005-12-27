@@ -130,7 +130,7 @@ public class SFTPSession extends Session {
         try {
             synchronized(this) {
                 this.retain();
-                this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getIp() + "...");
+                this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getHostname() + "...");
                 this.log("=====================================");
                 this.log(new java.util.Date().toString());
                 this.log(host.getIp());
@@ -243,9 +243,9 @@ public class SFTPSession extends Session {
             int pool = NSAutoreleasePool.push();
             passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
             if (null == passphrase || passphrase.equals("")) {
-                host.setCredentials(credentials.promptUser("The private key is password protected. " +
+                host.getCredentials().promptUser("The private key is password protected. " +
                         "Enter the passphrase for the key file '" + credentials.getPrivateKeyFile() + "'.",
-                        this.loginController));  //todo localize
+                        this.loginController);
                 if (host.getCredentials().tryAgain()) {
                     passphrase = credentials.getPassword();
                     if (keyFile.isPassphraseProtected()) {
@@ -268,36 +268,35 @@ public class SFTPSession extends Session {
 
     protected void login() throws IOException {
         log.debug("login");
-        Login credentials = host.getCredentials();
-        if (credentials.check(this.loginController)) {
-            this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " '" + credentials.getUsername() + "'");
-            if (credentials.usesPublicKeyAuthentication()) {
-                if (AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(credentials)) {
+        if (host.getCredentials().check(this.loginController)) {
+            this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " '"
+                    + host.getCredentials().getUsername() + "'");
+            if (host.getCredentials().usesPublicKeyAuthentication()) {
+                if (AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(host.getCredentials())) {
                     this.message(NSBundle.localizedString("Login successful", "Status", ""));
                     return;
                 }
             }
             else {
-                if (AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(credentials) ||
-                        AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(credentials)) {
+                if (AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(host.getCredentials()) ||
+                        AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(host.getCredentials())) {
                     this.message(NSBundle.localizedString("Login successful", "Status", ""));
-                    credentials.addInternetPasswordToKeychain();
+                    host.getCredentials().addInternetPasswordToKeychain();
                     return;
                 }
             }
             this.message(NSBundle.localizedString("Login failed", "Status", ""));
-            host.setCredentials(credentials.promptUser("Authentication for user " + credentials.getUsername()
-                    + " failed.",
-                    this.loginController)); //todo localize
+            host.getCredentials().promptUser("Authentication for user " + host.getCredentials().getUsername()
+                    + " failed.", this.loginController);
             if (host.getCredentials().tryAgain()) {
                 this.login();
             }
             else {
-                throw new SshException("Login as user " + credentials.getUsername() + " canceled."); //todo localize
+                throw new SshException("Login as user " + host.getCredentials().getUsername() + " canceled.");
             }
         }
         else {
-            throw new IOException("Login as user " + host.getCredentials().getUsername() + " failed."); //todo localize
+            throw new IOException("Login as user " + host.getCredentials().getUsername() + " failed.");
         }
     }
 

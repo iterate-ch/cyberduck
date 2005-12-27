@@ -62,7 +62,11 @@ public class DownloadQueue extends Queue {
             childs.add(p);
             if (p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
                 p.attributes.setSize(0);
-                for (Iterator i = p.list(false).iterator(); i.hasNext();) {
+                List files = p.list(false);
+                if(null == files) {
+                    return childs;
+                }
+                for (Iterator i = files.iterator(); i.hasNext();) {
                     Path child = (Path) i.next();
                     child.setLocal(new Local(p.getLocal(), child.getName()));
                     this.getChilds(childs, child);

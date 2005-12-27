@@ -116,8 +116,6 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     public void awakeFromNib() {
-        super.awakeFromNib();
-
         NSSelector setShowsToolbarButtonSelector
                 = new NSSelector("setShowsToolbarButton", new Class[]{boolean.class});
         if (setShowsToolbarButtonSelector.implementedByClass(NSWindow.class)) {

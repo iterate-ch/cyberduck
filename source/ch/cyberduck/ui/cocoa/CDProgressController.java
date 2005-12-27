@@ -139,8 +139,6 @@ public class CDProgressController extends CDController {
     }
 
     public void awakeFromNib() {
-        super.awakeFromNib();
-
         this.filenameField.setAttributedStringValue(new NSAttributedString(this.queue.getName(),
                 TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
         this.updateProgressfield();

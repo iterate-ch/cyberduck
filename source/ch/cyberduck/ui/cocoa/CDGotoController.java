@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 
-import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSComboBox;
 import com.apple.cocoa.foundation.NSObject;
@@ -49,10 +48,13 @@ public class CDGotoController extends CDSheetController
             private List directories = new ArrayList();
 
             {
-                for (Iterator i = ((CDBrowserController)parent).workdir().list(false).iterator(); i.hasNext();) {
-                    Path p = (Path) i.next();
-                    if (p.attributes.isDirectory()) {
-                        directories.add(p.getName());
+                List files =  ((CDBrowserController)parent).workdir().list(false);
+                if(null != files) {
+                    for (Iterator iter = files.iterator(); iter.hasNext();) {
+                        Path p = (Path) iter.next();
+                        if (p.attributes.isDirectory()) {
+                            directories.add(p.getName());
+                        }
                     }
                 }
             }

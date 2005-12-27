@@ -37,7 +37,9 @@ import java.util.StringTokenizer;
 /**
  * @version $Id$
  */
-public class CDBrowserController extends CDWindowController {
+public class CDBrowserController extends CDWindowController
+        implements NSToolbarItem.ItemValidation
+{
     private static Logger log = Logger.getLogger(CDBrowserController.class);
 
     private static final File HISTORY_FOLDER = new File(
@@ -144,8 +146,12 @@ public class CDBrowserController extends CDWindowController {
                             folder);
                 }
             }
-            for (Iterator i = path.list(false, this.getEncoding(), this.getComparator(), this.getFileFilter()).iterator(); i.hasNext();)
-            {
+            List childs = path.list(false, this.getEncoding(),
+                    this.getComparator(), this.getFileFilter());
+            if(null == childs) {
+                return result;
+            }
+            for (Iterator i = childs.iterator(); i.hasNext();) {
                 result.addObject(((Path) i.next()).getName());
             }
         }
@@ -358,9 +364,9 @@ public class CDBrowserController extends CDWindowController {
         }
     }
 
-    public void awakeFromNib() {
-        super.awakeFromNib();
+    private NSToolbar toolbar;
 
+    public void awakeFromNib() {
         this._updateBrowserColumns(this.browserListView);
         this._updateBrowserColumns(this.browserOutlineView);
 
@@ -658,8 +664,6 @@ public class CDBrowserController extends CDWindowController {
     public void setBookmarkView(NSView bookmarkView) {
         this.bookmarkView = bookmarkView;
     }
-
-    private NSToolbar toolbar;
 
     private NSTabView browserTabView;
 
@@ -1347,6 +1351,9 @@ public class CDBrowserController extends CDWindowController {
             return;
         }
         String input = ((NSControl) sender).stringValue();
+        if(null == input || input.length() == 0) {
+            return;
+        }
         try {
             for (Iterator iter = this.bookmarkModel.iterator(); iter.hasNext();) {
                 Host h = (Host) iter.next();
@@ -1653,6 +1660,7 @@ public class CDBrowserController extends CDWindowController {
 
     public void setStatusIcon(NSImageView statusIcon) {
         this.statusIcon = statusIcon;
+        this.statusIcon.setImage(null);
     }
 
     private NSTextField statusLabel; // IBOutlet
@@ -1843,7 +1851,7 @@ public class CDBrowserController extends CDWindowController {
                     }
                 }
             };
-            c.beginSheet(true);
+            c.beginSheet(false);
         }
     }
 
@@ -2208,7 +2216,7 @@ public class CDBrowserController extends CDWindowController {
             this.window.setRepresentedFilename(this.getRepresentedFile().getAbsolutePath());
         }
         session.addConnectionListener(listener = new ConnectionListener() {
-            ProgressListener progress;
+            private ProgressListener progress;
 
             public void connectionWillOpen() {
                 session.addProgressListener(progress = new ProgressListener() {
@@ -2245,10 +2253,10 @@ public class CDBrowserController extends CDWindowController {
                                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                         statusLabel.setNeedsDisplay(true);
                         alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
-                                        msg, // msg
-                                        NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                                        null, //alternative button
-                                        null) //other button
+                                msg, // msg
+                                NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+                                null, //alternative button
+                                null) //other button
                         );
                     }
                 });
@@ -2308,9 +2316,9 @@ public class CDBrowserController extends CDWindowController {
                     });
                     return;
                 }
+                progressIndicator.startAnimation(this);
                 statusIcon.setImage(null);
                 statusIcon.setNeedsDisplay(true);
-                progressIndicator.startAnimation(this);
             }
 
             public void activityStopped() {
@@ -2375,7 +2383,12 @@ public class CDBrowserController extends CDWindowController {
                 new Thread(session.toString()) {
                     public void run() {
                         synchronized (lock) {
-                            session.addConnectionListener(new ConnectionListenerAdapter() {
+                            ProgressListener listener;
+                            session.addProgressListener(listener = new ProgressListener() {
+                                public void message(final String message) {
+                                    ;
+                                }
+
                                 public void error(final String message) {
                                     File bookmark = getRepresentedFile();
                                     if (bookmark.exists()) {
@@ -2383,16 +2396,9 @@ public class CDBrowserController extends CDWindowController {
                                     }
                                     window().setRepresentedFilename(""); //can't send null
                                 }
-
-                                public void connectionDidOpen() {
-                                    session.removeConnectionListener(this);
-                                }
-
-                                public void connectionDidClose() {
-                                    session.removeConnectionListener(this);
-                                }
                             });
                             setWorkdir(session.mount());
+                            session.removeProgressListener(listener);
                         }
                     }
                 }.start();

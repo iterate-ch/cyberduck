@@ -151,6 +151,7 @@ public class CDInfoController extends CDWindowController {
 
     public void windowWillClose(NSNotification notification) {
         if (Preferences.instance().getBoolean("browser.info.isInspector")) {
+            //Do not mark this controller as invalid if it should be used again 
             return;
         }
         super.windowWillClose(notification);
@@ -177,8 +178,6 @@ public class CDInfoController extends CDWindowController {
     private static NSPoint cascadedWindowPoint;
 
     public void awakeFromNib() {
-        super.awakeFromNib();
-
         if (null == cascadedWindowPoint) {
             cascadedWindowPoint = this.window.cascadeTopLeftFromPoint(this.window.frame().origin());
         }

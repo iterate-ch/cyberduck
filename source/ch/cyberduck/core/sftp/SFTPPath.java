@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -260,12 +261,10 @@ public class SFTPPath extends Path {
                     session.SFTP.removeFile(this.getAbsolute());
                 }
                 else if (this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
-                    List files = this.list(true);
+                    List files = this.list(false);
                     if (files != null) {
-                        java.util.Iterator iterator = files.iterator();
-                        Path file;
-                        while (iterator.hasNext()) {
-                            file = (Path) iterator.next();
+                        for (Iterator iter = files.iterator(); iter.hasNext();) {
+                            Path file = (Path) iter.next();
                             if (file.attributes.isFile()) {
                                 session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
                                 session.SFTP.removeFile(file.getAbsolute());
@@ -305,11 +304,10 @@ public class SFTPPath extends Path {
                     session.SFTP.changeOwner(this.getAbsolute(), owner);
                     if (recursive) {
                         List files = this.list(false);
-                        java.util.Iterator iterator = files.iterator();
-                        Path file = null;
-                        while (iterator.hasNext()) {
-                            file = (Path) iterator.next();
-                            file.changeOwner(owner, recursive);
+                        if (files != null) {
+                            for (Iterator iter = files.iterator(); iter.hasNext();) {
+                                ((Path) iter.next()).changeOwner(owner, recursive);
+                            }
                         }
                     }
                 }
@@ -340,11 +338,10 @@ public class SFTPPath extends Path {
                     session.SFTP.changeGroup(this.getAbsolute(), group);
                     if (recursive) {
                         List files = this.list(false);
-                        java.util.Iterator iterator = files.iterator();
-                        Path file = null;
-                        while (iterator.hasNext()) {
-                            file = (Path) iterator.next();
-                            file.changeGroup(group, recursive);
+                        if (files != null) {
+                            for (Iterator iter = files.iterator(); iter.hasNext();) {
+                                ((Path) iter.next()).changeGroup(group, recursive);
+                            }
                         }
                     }
                 }
@@ -375,11 +372,10 @@ public class SFTPPath extends Path {
                     session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
                     if (recursive) {
                         List files = this.list(false);
-                        java.util.Iterator iterator = files.iterator();
-                        Path file = null;
-                        while (iterator.hasNext()) {
-                            file = (Path) iterator.next();
-                            file.changePermissions(perm, recursive);
+                        if (files != null) {
+                            for (Iterator iter = files.iterator(); iter.hasNext();) {
+                                ((Path) iter.next()).changePermissions(perm, recursive);
+                            }
                         }
                     }
                 }

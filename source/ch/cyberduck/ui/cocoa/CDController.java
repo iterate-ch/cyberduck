@@ -1,14 +1,5 @@
 package ch.cyberduck.ui.cocoa;
 
-import com.apple.cocoa.foundation.NSObject;
-import com.apple.cocoa.foundation.NSRunLoop;
-import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSTimer;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSNotificationCenter;
-
-import org.apache.log4j.Logger;
-
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -27,23 +18,37 @@ import org.apache.log4j.Logger;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSObject;
+import com.apple.cocoa.foundation.NSRunLoop;
+import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSTimer;
+import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSNotificationCenter;
+
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public abstract class CDController extends NSObject {
     private static Logger log = Logger.getLogger(CDController.class);
 
-    private NSRunLoop mainRunLoop;
-
-    protected static NSMutableArray instances;
-
-    public void awakeFromNib() {
+    public CDController() {
+        //Assuming this is always called from the main thread #currentRunLoop will return the main run loop
         mainRunLoop = NSRunLoop.currentRunLoop();
         if(null == instances) {
             instances = new NSMutableArray();
         }
+        //Add this object to the array to safe weak references from being garbage collected (#hack)
         instances.addObject(this);
     }
+
+    /**
+     * Reference to the main graphical user interface thread
+     */
+    private NSRunLoop mainRunLoop;
+
+    protected static NSMutableArray instances;
 
     protected synchronized void invoke(Runnable thread) {
         mainRunLoop.addTimerForMode(new NSTimer(0f, this,
@@ -54,6 +59,10 @@ public abstract class CDController extends NSObject {
                 NSRunLoop.DefaultRunLoopMode);
     }
 
+    /**
+     * Called by the timer to invoke the passed method in the main thread
+     * @param timer holds the <code>Runnable</code> object in #userInfo
+     */
     protected void post(NSTimer timer) {
         Object info = timer.userInfo();
         if (info instanceof Runnable) {
@@ -62,12 +71,13 @@ public abstract class CDController extends NSObject {
     }
 
     /**
-     * Free all locked resources by this controller; also remove me from all observables
+     * Free all locked resources by this controller; also remove me from all observables;
+     * marks this controller to be garbage collected as soon as needed
      */
     protected void invalidate() {
         NSNotificationCenter.defaultCenter().removeObserver(this);
         instances.removeObject(this);
-        System.gc();
+        System.gc(); //todo remove
     }
 
     protected void finalize() throws java.lang.Throwable {

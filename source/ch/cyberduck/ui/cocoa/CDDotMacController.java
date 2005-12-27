@@ -70,9 +70,6 @@ public class CDDotMacController {
             if (errorString[0] != null) {
                 log.error("Problem reading bookmark file: " + errorString[0]);
             }
-            else {
-                log.debug("Successfully read Bookmarks: " + propertyListFromXMLData);
-            }
             if (propertyListFromXMLData instanceof NSArray) {
                 NSArray entries = (NSArray) propertyListFromXMLData;
                 java.util.Enumeration i = entries.objectEnumerator();

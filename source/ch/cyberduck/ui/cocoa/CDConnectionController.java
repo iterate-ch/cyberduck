@@ -339,7 +339,7 @@ public class CDConnectionController extends CDSheetController
     }
 
     public void pkSelectionPanelDidEnd(NSOpenPanel window, int returncode, Object context) {
-        if (DEFAULT_OPTION == returncode) {
+        if (NSPanel.OKButton == returncode) {
             NSArray selected = window.filenames();
             java.util.Enumeration enumerator = selected.objectEnumerator();
             while (enumerator.hasMoreElements()) {
@@ -347,7 +347,7 @@ public class CDConnectionController extends CDSheetController
             }
             this.passField.setEnabled(false);
         }
-        if (ALTERNATE_OPTION == returncode) {
+        if (NSPanel.CancelButton == returncode) {
             this.passField.setEnabled(true);
             this.pkCheckbox.setState(NSCell.OffState);
             this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
@@ -409,8 +409,6 @@ public class CDConnectionController extends CDSheetController
     }
 
     public void awakeFromNib() {
-        super.awakeFromNib();
-
         // Notify the updateURLLabel() method if the user types.
         //ControlTextDidChangeNotification
         NSNotificationCenter.defaultCenter().addObserver(this,

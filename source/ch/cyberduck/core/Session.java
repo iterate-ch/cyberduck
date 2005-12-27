@@ -18,8 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.LoginController;
+import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.foundation.NSBundle;
 
@@ -63,12 +63,18 @@ public abstract class Session
      */
     protected Host host = null;
 
+    /**
+     * Caching browsed directories
+     */
     protected Cache cache = null;
 
     private List backHistory = new ArrayList();
 
     private List forwardHistory = new ArrayList();
 
+    /**
+     *
+     */
     private boolean connected;
 
     public Session copy() {
@@ -117,7 +123,7 @@ public abstract class Session
      * Connect to the remote host and mount the home directory
      */
     public Path mount() {
-        synchronized(this) {
+        synchronized (this) {
             this.message(NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname() + "...");
             try {
                 this.check();
@@ -154,12 +160,20 @@ public abstract class Session
      */
     public abstract void close();
 
+    /**
+     * Reconnect to the server
+     * @throws IOException
+     */
     public void recycle() throws IOException {
         log.info("Recycling session");
         this.close();
         this.connect();
     }
 
+    /**
+     *
+     * @return the host this session connects to
+     */
     public Host getHost() {
         return this.host;
     }
@@ -169,8 +183,15 @@ public abstract class Session
      */
     public abstract Path workdir();
 
+    /**
+     * Send a no operation command
+     * @throws IOException
+     */
     protected abstract void noop() throws IOException;
 
+    /**
+     * Interrupt any running operation by closing the underlying socket
+     */
     public abstract void interrupt();
 
     public abstract void sendCommand(String command);
@@ -230,45 +251,45 @@ public abstract class Session
     }
 
     public void connectionWillOpen() {
-        ConnectionListener[] l = (ConnectionListener[])connectionListners.toArray(new ConnectionListener[]{});
-        for(int i = 0; i < l.length; i++) {
+        ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
+        for (int i = 0; i < l.length; i++) {
             l[i].connectionWillOpen();
         }
     }
 
     public void connectionDidOpen() {
-        ConnectionListener[] l = (ConnectionListener[])connectionListners.toArray(new ConnectionListener[]{});
-        for(int i = 0; i < l.length; i++) {
+        ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
+        for (int i = 0; i < l.length; i++) {
             l[i].connectionDidOpen();
         }
     }
 
     public void connectionWillClose() {
         this.message(NSBundle.localizedString("Disconnecting...", "Status", ""));
-        ConnectionListener[] l = (ConnectionListener[])connectionListners.toArray(new ConnectionListener[]{});
-        for(int i = 0; i < l.length; i++) {
+        ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
+        for (int i = 0; i < l.length; i++) {
             l[i].connectionWillClose();
         }
     }
 
     public void connectionDidClose() {
         this.message(NSBundle.localizedString("Disconnected", "Status", ""));
-        ConnectionListener[] l = (ConnectionListener[])connectionListners.toArray(new ConnectionListener[]{});
-        for(int i = 0; i < l.length; i++) {
+        ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
+        for (int i = 0; i < l.length; i++) {
             l[i].connectionDidClose();
         }
     }
 
     public void activityStarted() {
-        ConnectionListener[] l = (ConnectionListener[])connectionListners.toArray(new ConnectionListener[]{});
-        for(int i = 0; i < l.length; i++) {
+        ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
+        for (int i = 0; i < l.length; i++) {
             l[i].activityStarted();
         }
     }
 
     public void activityStopped() {
-        ConnectionListener[] l = (ConnectionListener[])connectionListners.toArray(new ConnectionListener[]{});
-        for(int i = 0; i < l.length; i++) {
+        ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
+        for (int i = 0; i < l.length; i++) {
             l[i].activityStopped();
         }
     }
@@ -285,8 +306,8 @@ public abstract class Session
 
     public void log(final String message) {
         log.info(message);
-        TranscriptListener[] l = (TranscriptListener[])transcriptListeners.toArray(new TranscriptListener[]{});
-        for(int i = 0; i < l.length; i++) {
+        TranscriptListener[] l = (TranscriptListener[]) transcriptListeners.toArray(new TranscriptListener[]{});
+        for (int i = 0; i < l.length; i++) {
             l[i].log(message);
         }
     }
@@ -302,19 +323,22 @@ public abstract class Session
     }
 
     public void error(final String message) {
-        ProgressListener[] l = (ProgressListener[])progressListeners.toArray(new ProgressListener[]{});
-        for(int i = 0; i < l.length; i++) {
+        ProgressListener[] l = (ProgressListener[]) progressListeners.toArray(new ProgressListener[]{});
+        for (int i = 0; i < l.length; i++) {
             l[i].error(message);
         }
     }
 
     public void message(final String message) {
-        ProgressListener[] l = (ProgressListener[])progressListeners.toArray(new ProgressListener[]{});
-        for(int i = 0; i < l.length; i++) {
+        ProgressListener[] l = (ProgressListener[]) progressListeners.toArray(new ProgressListener[]{});
+        for (int i = 0; i < l.length; i++) {
             l[i].message(message);
         }
     }
 
+    /**
+     * A task to send no operation commands
+     */
     private class KeepAliveTask extends TimerTask {
         public void run() {
             try {
@@ -327,17 +351,23 @@ public abstract class Session
         }
     }
 
+    /**
+     *
+     * @param p
+     */
     public void addPathToHistory(Path p) {
         if (backHistory.size() > 0) {
-            if (!p.equals(backHistory.get(backHistory.size() - 1))) {
-                this.backHistory.add(p);
+            if (p.equals(backHistory.get(backHistory.size() - 1))) {
+                return;
             }
         }
-        else {
-            this.backHistory.add(p);
-        }
+        this.backHistory.add(p);
     }
 
+    /**
+     * Moves the returned path to the forward cache
+     * @return The previously browsed path or null if there is none
+     */
     public Path getPreviousPath() {
         int size = this.backHistory.size();
         if (size > 1) {
@@ -355,6 +385,10 @@ public abstract class Session
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     public Path getForwardPath() {
         int size = this.forwardHistory.size();
         if (size > 0) {
@@ -382,7 +416,7 @@ public abstract class Session
     }
 
     protected void finalize() throws java.lang.Throwable {
-        log.debug("finalize:"+super.toString());
+        log.debug("finalize:" + super.toString());
         super.finalize();
     }
 }

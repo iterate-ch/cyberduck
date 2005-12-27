@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 public class Login {
     private static Logger log = Logger.getLogger(Login.class);
 
-    private String serviceName;
+    private String hostname;
     private String protocol;
     private String user;
     private transient String pass;
@@ -57,7 +57,7 @@ public class Login {
      * Use this to define if passwords should be added to the keychain
      *
      * @param shouldBeAddedToKeychain If true, the password of the login is added to the keychain uppon
-     *                                successfull login
+     * successfull login
      */
     public void setUseKeychain(boolean shouldBeAddedToKeychain) {
         this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
@@ -65,7 +65,7 @@ public class Login {
 
     /**
      *
-     * @return
+     * @return true if the password will be added to the system keychain when logged in successfully
      */
     public boolean usesKeychain() {
         return this.shouldBeAddedToKeychain;
@@ -73,36 +73,36 @@ public class Login {
 
     /**
      *
-     * @return
+     * @return the password fetched from the keychain or null if it was not found
      */
     public String getInternetPasswordFromKeychain() {
         int pool = NSAutoreleasePool.push();
         log.info("Fetching password from Keychain for:" + this.getUsername());
         String password = Keychain.instance().getInternetPasswordFromKeychain(this.protocol,
-                this.serviceName, this.getUsername());
+                this.hostname, this.getUsername());
         NSAutoreleasePool.pop(pool);
         return password;
     }
 
     /**
-     *
+     * Adds the password to the system keychain
      */
     public void addInternetPasswordToKeychain() {
         if (this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
             int pool = NSAutoreleasePool.push();
             Keychain.instance().addInternetPasswordToKeychain(this.protocol,
-                    this.serviceName, this.getUsername(), this.getPassword());
+                    this.hostname, this.getUsername(), this.getPassword());
             NSAutoreleasePool.pop(pool);
         }
     }
 
     /**
      *
-     * @return
+     * @return the password fetched from the system keychain or null if it was not found
      */
     public String getPasswordFromKeychain() {
         int pool = NSAutoreleasePool.push();
-        String pass = Keychain.instance().getPasswordFromKeychain(this.serviceName, this.getUsername());
+        String pass = Keychain.instance().getPasswordFromKeychain(this.hostname, this.getUsername());
         NSAutoreleasePool.pop(pool);
         return pass;
     }
@@ -117,13 +117,13 @@ public class Login {
     }
 
     /**
-     * @param hostname                The serviceName to use when looking up the password in the keychain
+     * @param hostname                The hostname to use when looking up the password in the keychain
      * @param user                    Login with this username
      * @param pass                    Passphrase
      * @param shouldBeAddedToKeychain if the credential should be added to the keychain uppon successful login
      */
     public Login(String hostname, String protocol, String user, String pass, boolean shouldBeAddedToKeychain) {
-        this.serviceName = hostname;
+        this.hostname = hostname;
         this.protocol = protocol;
         this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
         this.init(user, pass);
@@ -162,7 +162,7 @@ public class Login {
 
     /**
      *
-     * @return
+     * @return true if the username is anononymous
      */
     public boolean isAnonymousLogin() {
         return this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"));
@@ -189,7 +189,7 @@ public class Login {
 
     /**
      * Checks if both username and password qualify for a possible reasonable login attempt
-     * @return
+     * @return true if both username and password could be valid
      */
     public boolean hasReasonableValues() {
         boolean reasonable = false;
@@ -227,8 +227,9 @@ public class Login {
                     passFromKeychain = this.getPasswordFromKeychain(); //legacy support
                 }
                 if (null == passFromKeychain || passFromKeychain.equals("")) {
-                    return this.promptUser("The username or password does not seem reasonable.",
-                            controller).tryAgain();
+                    this.promptUser("The username or password does not seem reasonable.",
+                            controller);
+                    return this.tryAgain();
                 }
                 else {
                     this.pass = passFromKeychain;
@@ -236,7 +237,8 @@ public class Login {
                 }
             }
             else {
-                return this.promptUser("The username or password does not seem reasonable.", controller).tryAgain();
+                this.promptUser("The username or password does not seem reasonable.", controller);
+                return this.tryAgain();
             }
         }
         return true;
@@ -246,7 +248,7 @@ public class Login {
 
     /**
      *
-     * @return
+     * @return true if the user decided to try login again with new credentials
      */
     public boolean tryAgain() {
         return this.tryAgain;
@@ -264,15 +266,9 @@ public class Login {
      *
      * @param message
      * @param controller
-     * @return true if the user hasn't canceled the login process. If false is returned,
-     * no more attempts should be made and the connection closed.
+     * @throws NullPointerException if controller is null
      */
-    public Login promptUser(String message, LoginController controller) {
-        if (null == controller) {
-            log.error("No login controller; returning default credentials!");
-            this.setTryAgain(false);
-            return this;
-        }
-        return controller.promptUser(this, message);
+    public void promptUser(final String message, final LoginController controller) {
+        controller.promptUser(this, message);
     }
 }

@@ -26,8 +26,18 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public abstract class CDWindowController extends CDController {
+public abstract class CDWindowController extends CDController
+{
     protected static Logger log = Logger.getLogger(CDWindowController.class);
+
+    public CDWindowController() {
+        super();
+    }
+
+    /**
+     * Called by the runtime after the NIB file has been loaded sucessfully
+     */
+    public abstract void awakeFromNib();
 
     private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
 
@@ -39,14 +49,10 @@ public abstract class CDWindowController extends CDController {
             new Object[]{lineBreakByTruncatingMiddleParagraph},
             new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
+    /**
+     * The window this controller is owner of
+     */
     protected NSWindow window; // IBOutlet
-
-    protected void post(NSTimer timer) {
-        if(null == this.window) {
-            return;
-        }
-        super.post(timer);
-    }
 
     public void setWindow(NSWindow window) {
         this.window = window;
@@ -65,8 +71,13 @@ public abstract class CDWindowController extends CDController {
         return true;
     }
 
+    /**
+     * Override this method if the controller should not be invalidated after its window closes
+     * @param notification
+     */
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose:"+notification);
+        //If the window is closed it is assumed the controller object is no longer used
         this.invalidate();
     }
 

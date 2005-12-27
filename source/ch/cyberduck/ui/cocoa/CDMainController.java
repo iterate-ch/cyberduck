@@ -46,7 +46,6 @@ public class CDMainController extends CDController {
     }
 
     public void awakeFromNib() {
-        super.awakeFromNib();
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("applicationShouldSleep", new Class[]{Object.class}),
                 NSWorkspace.WorkspaceWillSleepNotification,
@@ -750,12 +749,10 @@ public class CDMainController extends CDController {
     // ----------------------------------------------------------
 
     public boolean applicationDelegateHandlesKey(NSApplication application, String key) {
-        log.debug("applicationDelegateHandlesKey:" + key);
         return key.equals("orderedBrowsers");
     }
 
     public NSArray orderedTransfers() {
-        log.debug("orderedTransfers");
         NSApplication app = NSApplication.sharedApplication();
         NSArray orderedWindows = (NSArray) NSKeyValue.valueForKey(app, "orderedWindows");
         int c = orderedWindows.count();
@@ -776,7 +773,6 @@ public class CDMainController extends CDController {
     }
 
     public NSArray orderedBrowsers() {
-        log.debug("orderedBrowsers");
         NSApplication app = NSApplication.sharedApplication();
         NSArray orderedWindows = (NSArray) NSKeyValue.valueForKey(app, "orderedWindows");
         int c = orderedWindows.count();

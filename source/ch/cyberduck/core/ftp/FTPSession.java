@@ -104,7 +104,7 @@ public class FTPSession extends Session {
         try {
             synchronized(this) {
                 this.retain();
-                this.message(NSBundle.localizedString("Opening FTP connection to", "Status", "") + " " + host.getIp() + "...");
+                this.message(NSBundle.localizedString("Opening FTP connection to", "Status", "") + " " + host.getHostname() + "...");
                 this.log("=====================================");
                 this.log(new java.util.Date().toString());
                 this.log(host.getIp());
@@ -150,24 +150,24 @@ public class FTPSession extends Session {
 
     protected void login() throws IOException {
         log.debug("login");
-        Login credentials = host.getCredentials();
-        if (credentials.check(loginController)) {
+        if (host.getCredentials().check(loginController)) {
             try {
-                this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " " + host.getCredentials().getUsername() + "...");
-                this.FTP.login(credentials.getUsername(), credentials.getPassword());
-                credentials.addInternetPasswordToKeychain();
+                this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " "
+                        + host.getCredentials().getUsername() + "...");
+                this.FTP.login(host.getCredentials().getUsername(), host.getCredentials().getPassword());
+                host.getCredentials().addInternetPasswordToKeychain();
                 this.message(NSBundle.localizedString("Login successful", "Status", ""));
             }
             catch (FTPException e) {
                 this.message(NSBundle.localizedString("Login failed", "Status", ""));
-                host.setCredentials(credentials.promptUser("Authentication for user " 
-                        + credentials.getUsername() + " failed. The server response is: " + e.getMessage(),
-                        this.loginController));
+                host.getCredentials().promptUser("Authentication for user "
+                        + host.getCredentials().getUsername() + " failed. The server response is: " + e.getMessage(),
+                        this.loginController);
                 if (host.getCredentials().tryAgain()) {
                     this.login();
                 }
                 else {
-                    throw new FTPException("Login as user " + credentials.getUsername() + " canceled.");
+                    throw new FTPException("Login as user " + host.getCredentials().getUsername() + " canceled.");
                 }
             }
         }

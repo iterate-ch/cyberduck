@@ -273,12 +273,10 @@ public class FTPPath extends Path {
                     session.FTP.delete(this.getName());
                 }
                 else if (this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
-                    List files = this.list(true);
+                    List files = this.list(false);
                     if (files != null) {
-                        java.util.Iterator iterator = files.iterator();
-                        Path file;
-                        while (iterator.hasNext()) {
-                            file = (Path) iterator.next();
+                        for (Iterator iter = files.iterator(); iter.hasNext();) {
+                            Path file = (Path) iter.next();
                             if (file.attributes.isFile()) {
                                 session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
                                 session.FTP.delete(file.getName());
@@ -321,9 +319,10 @@ public class FTPPath extends Path {
                     session.FTP.site(command + " " + owner + " " + this.getAbsolute());
                     if (recursive) {
                         List files = this.list(false);
-                        Iterator iterator = files.iterator();
-                        while (iterator.hasNext()) {
-                            ((Path) iterator.next()).changeOwner(owner, recursive);
+                        if (files != null) {
+                            for (Iterator iter = files.iterator(); iter.hasNext();) {
+                                ((Path) iter.next()).changeOwner(owner, recursive);
+                            }
                         }
                     }
                 }
@@ -356,9 +355,10 @@ public class FTPPath extends Path {
                     session.FTP.site(command + " " + group + " " + this.getAbsolute());
                     if (recursive) {
                         List files = this.list(false);
-                        java.util.Iterator iterator = files.iterator();
-                        while (iterator.hasNext()) {
-                            ((Path) iterator.next()).changeGroup(group, recursive);
+                        if (files != null) {
+                            for (Iterator iter = files.iterator(); iter.hasNext();) {
+                                ((Path) iter.next()).changeGroup(group, recursive);
+                            }
                         }
                     }
                 }
@@ -392,9 +392,10 @@ public class FTPPath extends Path {
                     session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getAbsolute());
                     if (recursive) {
                         List files = this.list(false);
-                        java.util.Iterator iterator = files.iterator();
-                        while (iterator.hasNext()) {
-                            ((Path) iterator.next()).changePermissions(perm, recursive);
+                        if (files != null) {
+                            for (Iterator iter = files.iterator(); iter.hasNext();) {
+                                ((Path) iter.next()).changePermissions(perm, recursive);
+                            }
                         }
                     }
                 }

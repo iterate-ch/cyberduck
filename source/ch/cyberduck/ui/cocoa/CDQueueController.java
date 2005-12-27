@@ -31,7 +31,9 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class CDQueueController extends CDWindowController {
+public class CDQueueController extends CDWindowController
+        implements NSToolbarItem.ItemValidation
+{
     private static Logger log = Logger.getLogger(CDQueueController.class);
 
     private static CDQueueController instance;
@@ -39,7 +41,6 @@ public class CDQueueController extends CDWindowController {
     private NSToolbar toolbar;
 
     public void awakeFromNib() {
-        super.awakeFromNib();
         this.toolbar = new NSToolbar("Queue Toolbar");
         this.toolbar.setDelegate(this);
         this.toolbar.setAllowsUserCustomization(true);
@@ -102,6 +103,10 @@ public class CDQueueController extends CDWindowController {
         return instance;
     }
 
+    /**
+     *
+     * @return true if any transfer is active
+     */
     public boolean hasRunningTransfers() {
         for (int i = 0; i < this.queueModel.size(); i++) {
             Queue q = (Queue) this.queueModel.get(i);
@@ -285,11 +290,19 @@ public class CDQueueController extends CDWindowController {
         this.updateTableViewSelection();
     }
 
+    /**
+     * Remove this item form the list
+     * @param queue
+     */
     public void removeItem(Queue queue) {
         this.queueModel.remove(queue);
         this.reloadQueueTable();
     }
 
+    /**
+     * Add this item to the list; select it and scroll the view to make it visible
+     * @param queue
+     */
     public void addItem(Queue queue) {
         int row = this.queueModel.size();
         this.queueModel.add(row, queue);
@@ -348,14 +361,13 @@ public class CDQueueController extends CDWindowController {
         }.start();
     }
 
-    public boolean isVisible() {
-        return this.window != null && this.window.isVisible();
-    }
-
-    // ----------------------------------------------------------
-    // Toolbar Delegate
-    // ----------------------------------------------------------
-
+    /**
+     * NSToolbar.Delegate
+     * @param toolbar
+     * @param itemIdentifier
+     * @param flag
+     * @return
+     */
     public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
         NSToolbarItem item = new NSToolbarItem(itemIdentifier);
         if (itemIdentifier.equals("Stop")) {
@@ -569,10 +581,11 @@ public class CDQueueController extends CDWindowController {
         this.reloadQueueTable();
     }
 
-    // ----------------------------------------------------------
-    // Toolbar Validation
-    // ----------------------------------------------------------
-
+    /**
+     * NSToolbar.Delegate
+     * @param toolbar
+     * @return
+     */
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return new NSArray(new Object[]{
                 "Resume",
@@ -586,6 +599,11 @@ public class CDQueueController extends CDWindowController {
         });
     }
 
+    /**
+     * NSToolbar.Delegate
+     * @param toolbar
+     * @return
+     */
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
         return new NSArray(new Object[]{
                 "Resume",
@@ -610,6 +628,11 @@ public class CDQueueController extends CDWindowController {
         return this.validateItem(item.itemIdentifier());
     }
 
+    /**
+     * Validates menu and toolbar items
+     * @param identifier
+     * @return true if the item with the identifier should be selectable
+     */
     private boolean validateItem(String identifier) {
         if (identifier.equals("paste:")) {
             NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");

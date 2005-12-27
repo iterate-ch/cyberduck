@@ -62,37 +62,45 @@ public abstract class CDValidatorController
                 Path p = (Path) i.next();
                 if (!p.isSkipped()) {
                     p.status.setResume(false);
-                    validatedList.add(p);
+                    this.validatedList.add(p);
                 }
             }
-            setCanceled(false);
+            this.setCanceled(false);
         }
         if(returncode == ALTERNATE_OPTION) { //resume
             for (Iterator i = workList.iterator(); i.hasNext();) {
                 Path p = (Path) i.next();
                 if (!p.isSkipped()) {
                     p.status.setResume(true);
-                    validatedList.add(p);
+                    this.validatedList.add(p);
                 }
             }
-            setCanceled(false);
-
+            this.setCanceled(false);
         }
         if(returncode == SKIP_OPTION) { //skip
-            workList.clear();
-            setCanceled(false);
+            this.workList.clear();
+            this.setCanceled(false);
         }
         if(returncode == OTHER_OPTION) {
-            validatedList.clear();
-            workList.clear();
-            setCanceled(true);
+            this.validatedList.clear();
+            this.workList.clear();
+            this.setCanceled(true);
         }
     }
 
     protected abstract void load();
 
+    /**
+     *
+     */
     protected List validatedList;
+    /**
+     *
+     */
     protected List workList;
+    /**
+     *
+     */
     protected List promptList;
 
     /**
@@ -435,12 +443,6 @@ public abstract class CDValidatorController
 
     public void setOverwriteButton(NSButton overwriteButton) {
         this.overwriteButton = overwriteButton;
-    }
-
-    protected NSButton cancelButton; // IBOutlet
-
-    public void setCancelButton(NSButton cancelButton) {
-        this.cancelButton = cancelButton;
     }
 
     protected void setEnabled(boolean enabled) {

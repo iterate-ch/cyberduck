@@ -188,8 +188,6 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     public void awakeFromNib() {
-        super.awakeFromNib();
-
         this.cascade();
         this.window.setTitle(this.host.getNickname());
         // Live editing of values

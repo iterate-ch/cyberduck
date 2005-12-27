@@ -41,7 +41,7 @@ public class CDLoginController implements LoginController
         this.parent = parent;
     }
 
-    public Login promptUser(final Login login, final String message) {
+    public void promptUser(final Login login, final String message) {
         CDSheetController c = new CDSheetController(parent) {
             private NSTextField userField; // IBOutlet
 
@@ -79,7 +79,7 @@ public class CDLoginController implements LoginController
                     login.setPassword((String) passField.objectValue());
                     login.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
                 }
-                if (returncode == ALTERNATE_OPTION) {
+                if (returncode == OTHER_OPTION) {
                     log.info("Cancel login...");
                     login.setTryAgain(false);
                 }
@@ -89,6 +89,5 @@ public class CDLoginController implements LoginController
             log.fatal("Couldn't load Login.nib");
         }
         c.beginSheet(true);
-        return login;
     }
 }

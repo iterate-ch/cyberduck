@@ -20,7 +20,7 @@ public interface CDSheetCallback {
     /**
      *
      */
-    int SKIP_OPTION = -2;
+    int SKIP_OPTION = 2;
 
     /**
      *

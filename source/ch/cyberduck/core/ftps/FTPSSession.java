@@ -76,7 +76,7 @@ public class FTPSSession extends FTPSession {
         try {
             synchronized (this) {
                 this.retain();
-                this.message(NSBundle.localizedString("Opening FTP-TLS connection to", "Status", "") + " " + host.getIp() + "...");
+                this.message(NSBundle.localizedString("Opening FTP-TLS connection to", "Status", "") + " " + host.getHostname() + "...");
                 this.log("=====================================");
                 this.log(new java.util.Date().toString());
                 this.log(host.getIp());

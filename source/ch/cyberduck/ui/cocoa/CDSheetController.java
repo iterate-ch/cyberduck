@@ -33,15 +33,15 @@ public abstract class CDSheetController extends CDWindowController implements CD
     protected CDWindowController parent;
 
     /**
-     * The sheet window must be provided later with #setWindow (usually called when loading the NIB)
-     * @param parent
+     * The sheet window must be provided later with #setWindow (usually called when loading the NIB file)
+     * @param parent The controller of the parent window
      */
     public CDSheetController(CDWindowController parent) {
         this.parent = parent;
     }
 
     /**
-     *
+     * Use this if no custom sheet is given (and no NIB file loaded)
      * @param parent The controller of the parent window
      * @param sheet The window to attach as the sheet
      */
@@ -50,18 +50,23 @@ public abstract class CDSheetController extends CDWindowController implements CD
         this.window = sheet;
     }
 
+    public void awakeFromNib() {
+        ;
+    }
+
     /**
      * The synchronisation lock to check that only one sheet is displayed at a time
      */
     private final Object lock = new Object();
 
     /**
-     *
+     * The lock for blocking sheets runnning in the main thread
      */
     private NSModalSession modalSession = null;
 
     /**
-     *
+     * This must be the target action for any button in the sheet dialog. Will validate the input
+     * and close the sheet; #sheetDidClose will be called afterwards
      * @param sender A button in the sheet dialog
      */
     public void closeSheet(NSButton sender) {
@@ -72,15 +77,11 @@ public abstract class CDSheetController extends CDWindowController implements CD
                 return;
             }
         }
-        if (modalSession != null) {
-            NSApplication.sharedApplication().endModalSession(modalSession);
-            modalSession = null;
-        }
         NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
 
     /**
-     *
+     * Check input fields for any errors
      * @return true if a valid input has been given
      */
     protected boolean validateInput() {
@@ -119,13 +120,15 @@ public abstract class CDSheetController extends CDWindowController implements CD
     }
 
     /**
-     *
+     * Called after the sheet has been dismissed by the user. The returncodes are defined in
+     * <code>ch.cyberduck.ui.cooca.CDSheetCallback</code>
      * @param returncode
      */
     public abstract void callback(int returncode);
 
     /**
      * Will attach the sheet to the parent window
+     * @param blocking will wait for the sheet to end if true
      */
     protected void beginSheet(boolean blocking) {
         log.debug("beginSheet:" + this.window());
@@ -140,7 +143,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
                     this, //modalDelegate
                     new NSSelector("sheetDidClose",
                             new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
-                    null); //contextInfo
+                    null); //context
             this.window().makeKeyAndOrderFront(null);
             if(blocking) {
                 this.waitForSheetEnd();
@@ -149,13 +152,19 @@ public abstract class CDSheetController extends CDWindowController implements CD
     }
 
     /**
-     *
+     * Called by the runtime after a sheet has been dismissed. Ends any modal session and
+     * sends the returncode to the callback implementation. Also invalidates this controller to be
+     * garbage collected and notifies the lock object
      * @param sheet
-     * @param returncode
-     * @param context
+     * @param returncode Identifier for the button clicked by the user
+     * @param context Not used
      */
     public void sheetDidClose(NSPanel sheet, int returncode, Object context) {
         sheet.orderOut(null);
+        if (modalSession != null) {
+            NSApplication.sharedApplication().endModalSession(modalSession);
+            modalSession = null;
+        }
         this.callback(returncode);
         this.invalidate();
         synchronized (lock) {
