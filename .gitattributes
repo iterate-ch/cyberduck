@@ -955,47 +955,47 @@ ru.lproj/Validator.strings -text svneol=native#application/octet-stream
 sk.lproj/Bookmark.nib/keyedobjects.nib -text
 sk.lproj/Bookmark.strings -text
 sk.lproj/Browser.nib/keyedobjects.nib -text
-sk.lproj/Browser.strings -text svneol=native#application/octet-stream
+sk.lproj/Browser.strings -text
 sk.lproj/Certificate.nib/keyedobjects.nib -text
 sk.lproj/Certificate.strings -text
 sk.lproj/Command.nib/keyedobjects.nib -text
-sk.lproj/Command.strings -text svneol=native#application/octet-stream
+sk.lproj/Command.strings -text
 sk.lproj/Connection.nib/keyedobjects.nib -text
 sk.lproj/Connection.strings -text
 sk.lproj/Donate.nib/keyedobjects.nib -text
-sk.lproj/Donate.strings -text svneol=native#application/octet-stream
+sk.lproj/Donate.strings -text
 sk.lproj/Download.nib/keyedobjects.nib -text
-sk.lproj/Download.strings -text svneol=native#application/octet-stream
+sk.lproj/Download.strings -text
 sk.lproj/Duplicate.nib/keyedobjects.nib -text
-sk.lproj/Duplicate.strings -text svneol=native#application/octet-stream
+sk.lproj/Duplicate.strings -text
 sk.lproj/File.nib/keyedobjects.nib -text
-sk.lproj/File.strings -text svneol=native#application/octet-stream
+sk.lproj/File.strings -text
 sk.lproj/Folder.nib/keyedobjects.nib -text
-sk.lproj/Folder.strings -text svneol=native#application/octet-stream
+sk.lproj/Folder.strings -text
 sk.lproj/Goto.nib/keyedobjects.nib -text
-sk.lproj/Goto.strings -text svneol=native#application/octet-stream
-sk.lproj/Growl.strings -text svneol=native#application/octet-stream
-sk.lproj/IDisk.strings -text svneol=native#application/octet-stream
+sk.lproj/Goto.strings -text
+sk.lproj/Growl.strings -text
+sk.lproj/IDisk.strings -text
 sk.lproj/Info.nib/keyedobjects.nib -text
-sk.lproj/Info.strings -text svneol=native#application/octet-stream
-sk.lproj/InfoPlist.strings -text svneol=native#application/octet-stream
+sk.lproj/Info.strings -text
+sk.lproj/InfoPlist.strings -text
 sk.lproj/Localizable.strings -text
 sk.lproj/Login.nib/keyedobjects.nib -text
-sk.lproj/Login.strings -text svneol=native#application/octet-stream
+sk.lproj/Login.strings -text
 sk.lproj/Main.nib/keyedobjects.nib -text
 sk.lproj/Main.strings -text
 sk.lproj/Preferences.nib/keyedobjects.nib -text
-sk.lproj/Preferences.strings -text svneol=native#application/octet-stream
+sk.lproj/Preferences.strings -text
 sk.lproj/Progress.nib/keyedobjects.nib -text
 sk.lproj/Queue.nib/keyedobjects.nib -text
-sk.lproj/Queue.strings -text svneol=native#application/octet-stream
+sk.lproj/Queue.strings -text
 sk.lproj/Status.strings -text
 sk.lproj/Sync.nib/keyedobjects.nib -text
-sk.lproj/Sync.strings -text svneol=native#application/octet-stream
+sk.lproj/Sync.strings -text
 sk.lproj/Update.nib/keyedobjects.nib -text
-sk.lproj/Update.strings -text svneol=native#application/octet-stream
+sk.lproj/Update.strings -text
 sk.lproj/Validator.nib/keyedobjects.nib -text
-sk.lproj/Validator.strings -text svneol=native#application/octet-stream
+sk.lproj/Validator.strings -text
 source/ch/cyberduck/core/CollectionListener.java -text
 source/ch/cyberduck/ui/cocoa/growl/GrowlNative.java -text
 source/com/apple/dnssd/BaseListener.java -text
