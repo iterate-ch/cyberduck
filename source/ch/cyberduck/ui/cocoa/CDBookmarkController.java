@@ -36,17 +36,6 @@ import org.apache.log4j.Logger;
 public class CDBookmarkController extends CDWindowController {
     private static Logger log = Logger.getLogger(CDBookmarkController.class);
 
-    private Host host;
-
-    // ----------------------------------------------------------
-    // Outlets
-    // ----------------------------------------------------------
-
-    public void windowWillClose(NSNotification notification) {
-        CDBookmarkTableDataSource.instance().save();
-        super.windowWillClose(notification);
-    }
-
     private NSPopUpButton protocolPopup; // IBOutlet
 
     public void setProtocolPopup(NSPopUpButton protocolPopup) {
@@ -176,15 +165,18 @@ public class CDBookmarkController extends CDWindowController {
         }
     }
 
-    // ----------------------------------------------------------
-    // Constructors
-    // ----------------------------------------------------------
+    private Host host;
 
     public CDBookmarkController(Host host) {
         this.host = host;
         if (!NSApplication.loadNibNamed("Bookmark", this)) {
             log.fatal("Couldn't load Bookmark.nib");
         }
+    }
+
+    public void windowWillClose(NSNotification notification) {
+        CDBookmarkTableDataSource.instance().save();
+        super.windowWillClose(notification);
     }
 
     public void awakeFromNib() {

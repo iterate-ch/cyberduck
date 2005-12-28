@@ -12,11 +12,11 @@ public interface CDSheetCallback {
     /**
      * Use alternate option
      */
-    int ALTERNATE_OPTION = 0;
+    int ALTERNATE_OPTION = -1;
     /**
      * Cancel proposed operation
      */
-    int OTHER_OPTION = -1;
+    int OTHER_OPTION = 0;
     /**
      *
      */

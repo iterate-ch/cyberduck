@@ -2394,7 +2394,7 @@ public class CDBrowserController extends CDWindowController
                                     if (bookmark.exists()) {
                                         bookmark.delete();
                                     }
-                                    window().setRepresentedFilename(""); //can't send null
+                                    window.setRepresentedFilename(""); //can't send null
                                 }
                             });
                             setWorkdir(session.mount());
