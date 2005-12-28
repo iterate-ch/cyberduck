@@ -46,6 +46,9 @@
 /* No comment provided by engineer. */
 "Mounting" = "Mounting";
 
+/* The user did not accept the certificate or is not valid */
+"No trusted certificate found" = "No trusted certificate found";
+
 /* No comment provided by engineer. */
 "Opening FTP connection to" = "Opening FTP connection to";
 
