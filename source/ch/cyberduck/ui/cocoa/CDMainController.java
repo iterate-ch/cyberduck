@@ -682,7 +682,7 @@ public class CDMainController extends CDController {
                             // Quit
                             return CDQueueController.applicationShouldTerminate(app);
                         }
-                        if (choice == CDSheetCallback.OTHER_OPTION) {
+                        if (choice == CDSheetCallback.CANCEL_OPTION) {
                             // Cancel
                             return NSApplication.TerminateCancel;
                         }

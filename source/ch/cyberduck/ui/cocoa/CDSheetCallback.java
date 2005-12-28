@@ -16,7 +16,7 @@ public interface CDSheetCallback {
     /**
      * Cancel proposed operation
      */
-    int OTHER_OPTION = 0;
+    int CANCEL_OPTION = 0;
     /**
      *
      */

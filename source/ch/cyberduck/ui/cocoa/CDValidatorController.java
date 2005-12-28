@@ -81,7 +81,7 @@ public abstract class CDValidatorController
             this.workList.clear();
             this.setCanceled(false);
         }
-        if(returncode == OTHER_OPTION) {
+        if(returncode == CANCEL_OPTION) {
             this.validatedList.clear();
             this.workList.clear();
             this.setCanceled(true);

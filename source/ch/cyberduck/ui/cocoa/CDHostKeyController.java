@@ -28,8 +28,6 @@ import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSBundle;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  * Concrete Coccoa implementation of a SSH HostKeyVerification
@@ -73,7 +71,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
                     if (returncode == ALTERNATE_OPTION) {
                         log.info("Cannot continue without a valid host key");
                     }
-                    if (returncode == OTHER_OPTION) {
+                    if (returncode == CANCEL_OPTION) {
                         allowHost(host, allowedHostKey, true); // always allow host
                     }
                 }
@@ -102,7 +100,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
                     if (returncode == ALTERNATE_OPTION) {
                         log.info("Cannot continue without a valid host key");
                     }
-                    if (returncode == OTHER_OPTION) {
+                    if (returncode == CANCEL_OPTION) {
                         allowHost(host, publicKey, true); // always allow host
                     }
                 }

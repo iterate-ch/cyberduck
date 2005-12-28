@@ -22,9 +22,6 @@ import ch.cyberduck.core.Login;
 import ch.cyberduck.ui.LoginController;
 
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSNotificationCenter;
-import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
 
@@ -79,7 +76,7 @@ public class CDLoginController implements LoginController
                     login.setPassword((String) passField.objectValue());
                     login.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
                 }
-                if (returncode == OTHER_OPTION) {
+                if (returncode == CANCEL_OPTION) {
                     log.info("Cancel login...");
                     login.setTryAgain(false);
                 }
