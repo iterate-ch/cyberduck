@@ -342,4 +342,9 @@ public abstract class CDBrowserTableDataSource extends NSObject {
         }
         return promisedDragNames;
     }
+
+    protected void finalize() throws java.lang.Throwable {
+        log.debug("finalize:"+this.toString());
+        super.finalize();
+    }
 }

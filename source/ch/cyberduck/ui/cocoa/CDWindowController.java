@@ -54,6 +54,14 @@ public abstract class CDWindowController extends CDController
      */
     protected NSWindow window; // IBOutlet
 
+    protected void post(NSTimer timer) {
+        if(null == this.window) {
+            //We override this because until the the timer fires in the event queue, the window may have become invalid
+            return;
+        }
+        super.post(timer);
+    }
+
     public void setWindow(NSWindow window) {
         this.window = window;
         (NSNotificationCenter.defaultCenter()).addObserver(this,

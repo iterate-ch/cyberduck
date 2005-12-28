@@ -405,9 +405,6 @@ public class CDBrowserController extends CDWindowController
             case OUTLINE_VIEW: {
                 return ((CDTableDelegate) this.browserOutlineView.delegate()).getSortingComparator();
             }
-//            case COLUMN_VIEW: {
-//                return ((CDTableDelegate) this.browserColumnView.delegate()).getSortingComparator();
-//            }
         }
         return null;
     }
@@ -487,20 +484,6 @@ public class CDBrowserController extends CDWindowController
                     this.infoLabel.setStringValue("");
                 break;
             }
-//            case COLUMN_VIEW: {
-//                this.browserColumnView.setPath(this.workdir().getAbsolute());
-//                for (int col = 0; col < this.browserColumnView.numberOfVisibleColumns(); col++) {
-//                    if (this.workdir().getAbsolute().equals(
-//                            this.browserColumnModel.pathOfColumn(this.browserColumnView, col))) {
-//                        this.browserColumnView.reloadColumn(col);
-//                    }
-//                }
-//                if (this.isMounted())
-//                    this.infoLabel.setStringValue(this.browserColumnView.matrixInColumn(this.browserColumnView.lastVisibleColumn()).numberOfRows() + " " +
-//                            NSBundle.localizedString("files", ""));
-//                else
-//                    this.infoLabel.setStringValue("");
-//            }
         }
         if (preserveSelection) {
             this.setSelectedPaths(selected);
@@ -568,9 +551,6 @@ public class CDBrowserController extends CDWindowController
             case OUTLINE_VIEW: {
                 return (Path) this.browserOutlineView.itemAtRow(this.browserOutlineView.selectedRow());
             }
-//            case COLUMN_VIEW: {
-//                return ((CDBrowserCell) this.browserColumnView.selectedCell()).getPath();
-//            }
         }
         return null;
     }
@@ -596,16 +576,6 @@ public class CDBrowserController extends CDWindowController
                 }
                 return selectedFiles;
             }
-//            case COLUMN_VIEW: {
-//                List files = new ArrayList();
-//                if (this.browserColumnView.selectedCells() != null) {
-//                    java.util.Enumeration iterator = this.browserColumnView.selectedCells().objectEnumerator();
-//                    while (iterator.hasMoreElements()) {
-//                        files.add(((CDBrowserCell) iterator.nextElement()).getPath());
-//                    }
-//                }
-//                return files;
-//            }
         }
         return null;
     }
@@ -618,11 +588,6 @@ public class CDBrowserController extends CDWindowController
             case OUTLINE_VIEW: {
                 return this.browserOutlineView.numberOfSelectedRows();
             }
-//            case COLUMN_VIEW: {
-//                if (this.browserColumnView.selectedCells() != null) {
-//                    return this.browserColumnView.selectedCells().count();
-//                }
-//            }
         }
         return 0;
     }
@@ -679,9 +644,6 @@ public class CDBrowserController extends CDWindowController
             case OUTLINE_VIEW: {
                 return this.browserOutlineView;
             }
-//            case COLUMN_VIEW: {
-//                return this.browserColumnView;
-//            }
         }
         return null;
     }
@@ -1016,42 +978,6 @@ public class CDBrowserController extends CDWindowController
             this.browserListView.addTableColumn(c);
         }
     }
-
-//    private CDBrowserColumnViewModel browserColumnModel;
-//    private NSBrowser browserColumnView; // IBOutlet
-//
-//    public void setBrowserColumnView(NSBrowser browserColumnView) {
-//        this.browserColumnView = browserColumnView;
-//        this.browserColumnView.setTarget(this);
-//        this.browserColumnView.setAction(new NSSelector("browserColumnViewRowClicked", new Class[]{Object.class}));
-//        this.browserColumnView.setAcceptsArrowKeys(true);
-//        this.browserColumnView.setSendsActionOnArrowKeys(true);
-//        this.browserColumnView.setMaxVisibleColumns(5);
-//        this.browserColumnView.setAllowsEmptySelection(true);
-//        this.browserColumnView.setAllowsMultipleSelection(true);
-//        this.browserColumnView.setAllowsBranchSelection(true);
-//        this.browserColumnView.setPathSeparator(Path.DELIMITER);
-//        this.browserColumnView.setReusesColumns(false);
-//        this.browserColumnView.setSeparatesColumns(false);
-//        this.browserColumnView.setTitled(false);
-//        this.browserColumnView.setHasHorizontalScroller(false);
-//
-//        this.browserColumnView.setDelegate(this.browserColumnModel = new CDBrowserColumnViewModel(this));
-//        // Make the browser user our custom browser cell.
-//        this.browserColumnView.setNewCellClass(CDBrowserCell.class);
-//        this.browserColumnView.setNewMatrixClass(CDBrowserMatrix.class);
-//    }
-//
-//    public void browserColumnViewRowClicked(Object sender) {
-//        Path selected = this.getSelectedPath(); //last row selected
-//        if (selected.attributes.isDirectory()) {
-//            this.setWorkdir(selected);
-//        }
-//        if (selected.attributes.isFile()) {
-//            this.setWorkdir(selected.getParent());
-//        }
-//        this.browserSelectionDidChange(null);
-//    }
 
     protected void _updateBrowserAttributes(NSTableView tableView) {
         tableView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
