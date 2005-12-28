@@ -2,7 +2,7 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
-            ACTIONS = {cancelButtonClicked = id; goButtonClicked = id; }; 
+            ACTIONS = {closeSheet = id; }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDGotoController"; 
             LANGUAGE = Java; 
             OUTLETS = {folderCombobox = NSComboBox; window = NSWindow; }; 
