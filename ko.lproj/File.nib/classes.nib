@@ -2,7 +2,7 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
-            ACTIONS = {cancelButtonClicked = id; createButtonClicked = id; editButtonClicked = id; }; 
+            ACTIONS = {closeSheet = id; }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDFileController"; 
             LANGUAGE = Java; 
             OUTLETS = {editButton = NSButton; filenameField = NSTextField; window = NSWindow; }; 
