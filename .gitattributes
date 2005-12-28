@@ -59,49 +59,49 @@ ca.lproj/Update.strings -text svneol=native#application/octet-stream
 ca.lproj/Validator.nib/keyedobjects.nib -text
 ca.lproj/Validator.strings -text svneol=native#application/octet-stream
 cs.lproj/Bookmark.nib/keyedobjects.nib -text
-cs.lproj/Bookmark.strings -text svneol=native#application/octet-stream
+cs.lproj/Bookmark.strings -text
 cs.lproj/Browser.nib/keyedobjects.nib -text
-cs.lproj/Browser.strings -text svneol=native#application/octet-stream
+cs.lproj/Browser.strings -text
 cs.lproj/Certificate.nib/keyedobjects.nib -text
-cs.lproj/Certificate.strings -text svneol=native#application/octet-stream
+cs.lproj/Certificate.strings -text
 cs.lproj/Command.nib/keyedobjects.nib -text
-cs.lproj/Command.strings -text svneol=native#application/octet-stream
+cs.lproj/Command.strings -text
 cs.lproj/Connection.nib/keyedobjects.nib -text
-cs.lproj/Connection.strings -text svneol=native#application/octet-stream
+cs.lproj/Connection.strings -text
 cs.lproj/Donate.nib/keyedobjects.nib -text
-cs.lproj/Donate.strings -text svneol=native#application/octet-stream
+cs.lproj/Donate.strings -text
 cs.lproj/Download.nib/keyedobjects.nib -text
-cs.lproj/Download.strings -text svneol=native#application/octet-stream
+cs.lproj/Download.strings -text
 cs.lproj/Duplicate.nib/keyedobjects.nib -text
-cs.lproj/Duplicate.strings -text svneol=native#application/octet-stream
+cs.lproj/Duplicate.strings -text
 cs.lproj/File.nib/keyedobjects.nib -text
-cs.lproj/File.strings -text svneol=native#application/octet-stream
+cs.lproj/File.strings -text
 cs.lproj/Folder.nib/keyedobjects.nib -text
-cs.lproj/Folder.strings -text svneol=native#application/octet-stream
+cs.lproj/Folder.strings -text
 cs.lproj/Goto.nib/keyedobjects.nib -text
-cs.lproj/Goto.strings -text svneol=native#application/octet-stream
-cs.lproj/Growl.strings -text svneol=native#application/octet-stream
-cs.lproj/IDisk.strings -text svneol=native#application/octet-stream
+cs.lproj/Goto.strings -text
+cs.lproj/Growl.strings -text
+cs.lproj/IDisk.strings -text
 cs.lproj/Info.nib/keyedobjects.nib -text
-cs.lproj/Info.strings -text svneol=native#application/octet-stream
-cs.lproj/InfoPlist.strings -text svneol=native#application/octet-stream
+cs.lproj/Info.strings -text
+cs.lproj/InfoPlist.strings -text
 cs.lproj/Localizable.strings -text
 cs.lproj/Login.nib/keyedobjects.nib -text
-cs.lproj/Login.strings -text svneol=native#application/octet-stream
+cs.lproj/Login.strings -text
 cs.lproj/Main.nib/keyedobjects.nib -text
 cs.lproj/Main.strings -text
 cs.lproj/Preferences.nib/keyedobjects.nib -text
 cs.lproj/Preferences.strings -text
 cs.lproj/Progress.nib/keyedobjects.nib -text
 cs.lproj/Queue.nib/keyedobjects.nib -text
-cs.lproj/Queue.strings -text svneol=native#application/octet-stream
-cs.lproj/Status.strings -text svneol=native#application/octet-stream
+cs.lproj/Queue.strings -text
+cs.lproj/Status.strings -text
 cs.lproj/Sync.nib/keyedobjects.nib -text
-cs.lproj/Sync.strings -text svneol=native#application/octet-stream
+cs.lproj/Sync.strings -text
 cs.lproj/Update.nib/keyedobjects.nib -text
-cs.lproj/Update.strings -text svneol=native#application/octet-stream
+cs.lproj/Update.strings -text
 cs.lproj/Validator.nib/keyedobjects.nib -text
-cs.lproj/Validator.strings -text svneol=native#application/octet-stream
+cs.lproj/Validator.strings -text
 cy.lproj/Bookmark.nib/keyedobjects.nib -text
 cy.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 cy.lproj/Browser.nib/keyedobjects.nib -text
