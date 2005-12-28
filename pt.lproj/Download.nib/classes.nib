@@ -2,7 +2,7 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
-            ACTIONS = {cancelButtonClicked = id; downloadButtonClicked = id; }; 
+            ACTIONS = {closeSheet = id; }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDDownloadController"; 
             LANGUAGE = Java; 
             OUTLETS = {urlField = NSTextField; window = NSWindow; }; 
