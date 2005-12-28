@@ -4,10 +4,10 @@
         {CLASS = CDOutlineView; LANGUAGE = ObjC; SUPERCLASS = NSOutlineView; }, 
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
+            ACTIONS = {closeSheet = id; }; 
             CLASS = "ch.sudo.cyberduck.ui.cocoa.CDValidatorController"; 
             LANGUAGE = Java; 
             OUTLETS = {
-                cancelButton = NSButton; 
                 fileTableView = NSTableView; 
                 infoLabel = NSTextField; 
                 localField = NSTextField; 
