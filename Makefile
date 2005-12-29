@@ -15,7 +15,10 @@ default:
 #	xcodebuild -project Download\ Automator\ Action/Download\ Automator\ Action.xcodeproj -target Download\ files -configuration $(BUILDSTYLE)
 	xcodebuild -project $(PROJECT) -target build -configuration $(BUILDSTYLE)
 
-release: default
+release:
+	xcodebuild -project Spotlight\ Importer/Spotlight\ Importer.xcodeproj -target Spotlight\ Importer -configuration $(BUILDSTYLE)
+#       xcodebuild -project Upload\ Automator\ Action/Upload\ Automator\ Action.xcodeproj -target Upload\ files -configuration $(BUILDSTYLE)
+#       xcodebuild -project Download\ Automator\ Action/Download\ Automator\ Action.xcodeproj -target Download\ files -configuration $(BUILDSTYLE)
 	xcodebuild -project $(PROJECT) -target release -configuration $(BUILDSTYLE)
 
 clean:
