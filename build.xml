@@ -129,7 +129,7 @@
         <replace
             dir="${app.resources}"
             token="*date*"
-            value="${svn.revision}"
+            value="r${svn.revision}"
             summary="true"
             encoding="UTF-16">
             <include name="*.lproj/InfoPlist.strings"/>
