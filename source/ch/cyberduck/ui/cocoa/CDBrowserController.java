@@ -38,8 +38,7 @@ import java.util.StringTokenizer;
  * @version $Id$
  */
 public class CDBrowserController extends CDWindowController
-        implements NSToolbarItem.ItemValidation
-{
+        implements NSToolbarItem.ItemValidation {
     private static Logger log = Logger.getLogger(CDBrowserController.class);
 
     private static final File HISTORY_FOLDER = new File(
@@ -148,7 +147,7 @@ public class CDBrowserController extends CDWindowController
             }
             List childs = path.list(false, this.getEncoding(),
                     this.getComparator(), this.getFileFilter());
-            if(null == childs) {
+            if (null == childs) {
                 return result;
             }
             for (Iterator i = childs.iterator(); i.hasNext();) {
@@ -1277,7 +1276,7 @@ public class CDBrowserController extends CDWindowController
             return;
         }
         String input = ((NSControl) sender).stringValue();
-        if(null == input || input.length() == 0) {
+        if (null == input || input.length() == 0) {
             return;
         }
         try {
@@ -2200,7 +2199,9 @@ public class CDBrowserController extends CDWindowController
                 }
                 window.setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername()
                         + "@" + host.getHostname());
-                window.setDocumentEdited(true);
+                if (Preferences.instance().getBoolean("browser.confirmDisconnect")) {
+                    window.setDocumentEdited(true);
+                }
             }
 
             public void connectionWillClose() {
