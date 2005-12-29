@@ -138,7 +138,7 @@
      
 	<target name="release" depends="build">
         <exec executable="./buildDMG.pl" spawn="false">
-            <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}(r${svn.revision}).dmg -debug -volName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}(r${svn.revision}) -buildDir ${build} -compressionLevel 9 -volSize 25 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.html  AppleScript\ Samples"/>
+            <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor} -buildDir ${build} -compressionLevel 9 -volSize 25 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.html  AppleScript\ Samples"/>
         </exec>
 		<antcall target="sign"/>
 	</target>
