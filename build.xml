@@ -78,13 +78,7 @@
 	<property name="app.spotlight" value="${app.library}/Spotlight"/>
 	<property name="app.automator" value="${app.library}/Automator"/>
 
-	<target name="init" depends="manifest">
-	  <tstamp>
-		  <format   property="touch.time" 
-					pattern="dd/MM/yyyy hh:mm aa"
-					timezone="GMT+1"
-					locale="en"/>
-	  </tstamp>
+	<target name="init" depends="revision, manifest">
 		<echo message="ant version:   ${ant.version}"/>
 		<echo message="java version:  ${ant.java.version}"/>
 		<echo message=""/>
@@ -100,22 +94,53 @@
 		<mkdir dir="${build.unittests}"/>
 		<mkdir dir="${build.unittests.reports}"/>
         <mkdir dir="${build.unittests.reports}/html"/>
-	</target>
+        <echo message="Building revision ${svn.revision}"/>
+    </target>
 
+    <target name="revision" description="Creates svn revision label file">
+        <tstamp>
+            <format property="touch.time"
+                    pattern="dd/MM/yyyy hh:mm aa"
+                    timezone="GMT+1"
+                    locale="en"/>
+        </tstamp>
+        <mkdir dir="${build}"/>
+        <exec executable="svnversion" outputproperty="svn.revision">
+            <arg value="."/>
+        </exec>
+        <property name="svn.revision" value="${svn.revision}"/>
+        <echo message="Replacing version string with ${cyberduck.version.major}.${cyberduck.version.minor}..."/>
+        <replace
+            dir="${app.contents}"
+            token="*version*"
+            value="${cyberduck.version.major}.${cyberduck.version.minor}\ (Revision ${svn.revision})"
+            summary="true"
+            encoding="UTF-8">
+            <include name="Info.plist"/>
+        </replace>
+        <replace
+            dir="${app.resources}"
+            token="*version*"
+            value="${cyberduck.version.major}.${cyberduck.version.minor}\ (Revision ${svn.revision})"
+            summary="true"
+            encoding="UTF-16">
+            <include name="*.lproj/InfoPlist.strings"/>
+        </replace>
+        <echo message="Replacing build date with ${touch.time}..."/>
+        <replace
+            dir="${app.resources}"
+            token="*date*"
+            value="${touch.time}"
+            summary="true"
+            encoding="UTF-16">
+            <include name="*.lproj/InfoPlist.strings"/>
+        </replace>
+     </target>
+     
 	<target name="release" depends="build">
-		<!--
-		<exec executable="make" spawn="false">
-			<arg line="-e -f ${build}/Makefile"/>
-			<env key="NAME" value="${app.name}"/>
-			<env key="VERSION" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-			<env key="SOURCE_DIR" value="${home}"/>
-			<env key="SOURCE_FILES" value="${app.bundle} Readme.rtfd Credits.html"/>
-			<env key="TEMPLATE_DMG" value="${build}/Template.dmg"/>
-		</exec>
-		-->
-		<exec executable="./buildDMG.pl" spawn="false">
-		    <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor} -buildDir ${build} -compressionLevel 9 -volSize 25 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.html  AppleScript\ Samples"/>
-		</exec>
+        <exec executable="./buildDMG.pl" spawn="false">
+            <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}\ (r${svn.revision}).dmg -debug -volName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}\ (r${svn.revision} -buildDir ${build} -compressionLevel 9 -volSize 25 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.html  AppleScript\ Samples"/>
+        </exec>
 		<antcall target="sign"/>
 	</target>
 
@@ -169,36 +194,6 @@
 			</fileset>
 		</copy>
 		-->
-		<antcall target="repace-tokens"/>
-	</target>
-	
-	<target name="repace-tokens">
-		<echo message="Replacing version string with ${cyberduck.version.major}.${cyberduck.version.minor}..."/>
-		<replace
-			dir="${app.contents}"
-			token="*version*"
-			value="${cyberduck.version.major}.${cyberduck.version.minor}"
-			summary="true"
-			encoding="UTF-8">
-			<include name="Info.plist"/>
-		</replace>
-		<replace
-			dir="${app.resources}"
-			token="*version*"
-			value="${cyberduck.version.major}.${cyberduck.version.minor}"
-			summary="true"
-			encoding="UTF-16">
-			<include name="*.lproj/InfoPlist.strings"/>
-		</replace>
-		<echo message="Replacing build date with ${touch.time}..."/>
-		<replace
-			dir="${app.resources}"
-			token="*date*"
-			value="${touch.time}"
-			summary="true"
-			encoding="UTF-16">
-			<include name="*.lproj/InfoPlist.strings"/>
-		</replace>
 	</target>
 	
 	<target name="compile" depends="init" description="Compile the source tree">
