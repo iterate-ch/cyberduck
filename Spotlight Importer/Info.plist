@@ -21,8 +21,10 @@
 		<string>ch.sudo.cyberduck.spotlight.importer</string>
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
-		<key>CFBundleVersion</key>
-		<string>1.0</string>
+        <key>CFBundleVersion</key>
+        <string>*version*</string>
+        <key>CFBundleShortVersionString</key>
+        <string>*revision*</string>
 		<key>CFPlugInDynamicRegisterFunction</key>
 		<string></string>
 		<key>CFPlugInDynamicRegistration</key>
