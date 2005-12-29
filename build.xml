@@ -111,28 +111,22 @@
         <property name="svn.revision" value="${svn.revision}"/>
         <echo message="Replacing version string with ${cyberduck.version.major}.${cyberduck.version.minor}..."/>
         <replace
-            dir="${app.contents}"
+            dir="${app.bundle}"
             token="*version*"
             value="${cyberduck.version.major}.${cyberduck.version.minor}"
             summary="true"
             encoding="UTF-8">
-            <include name="Info.plist"/>
+            <include name="**/Info.plist"/>
+            <include name="**/*.lproj/InfoPlist.strings"/>
         </replace>
         <replace
-            dir="${app.resources}"
-            token="*version*"
-            value="${cyberduck.version.major}.${cyberduck.version.minor}"
-            summary="true"
-            encoding="UTF-16">
-            <include name="*.lproj/InfoPlist.strings"/>
-        </replace>
-        <replace
-            dir="${app.resources}"
-            token="*date*"
+            dir="${app.bundle}"
+            token="*revision*"
             value="r${svn.revision}"
             summary="true"
-            encoding="UTF-16">
+            encoding="UTF-8">
             <include name="*.lproj/InfoPlist.strings"/>
+            <include name="**/Info.plist"/>
         </replace>
      </target>
      
