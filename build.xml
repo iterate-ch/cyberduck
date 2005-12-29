@@ -113,7 +113,7 @@
         <replace
             dir="${app.contents}"
             token="*version*"
-            value="${cyberduck.version.major}.${cyberduck.version.minor}\ (Revision ${svn.revision})"
+            value="${cyberduck.version.major}.${cyberduck.version.minor}"
             summary="true"
             encoding="UTF-8">
             <include name="Info.plist"/>
@@ -121,16 +121,15 @@
         <replace
             dir="${app.resources}"
             token="*version*"
-            value="${cyberduck.version.major}.${cyberduck.version.minor}\ (Revision ${svn.revision})"
+            value="${cyberduck.version.major}.${cyberduck.version.minor}"
             summary="true"
             encoding="UTF-16">
             <include name="*.lproj/InfoPlist.strings"/>
         </replace>
-        <echo message="Replacing build date with ${touch.time}..."/>
         <replace
             dir="${app.resources}"
             token="*date*"
-            value="${touch.time}"
+            value="${svn.revision}"
             summary="true"
             encoding="UTF-16">
             <include name="*.lproj/InfoPlist.strings"/>
@@ -139,7 +138,7 @@
      
 	<target name="release" depends="build">
         <exec executable="./buildDMG.pl" spawn="false">
-            <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}\ (r${svn.revision}).dmg -debug -volName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}\ (r${svn.revision} -buildDir ${build} -compressionLevel 9 -volSize 25 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.html  AppleScript\ Samples"/>
+            <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}(r${svn.revision}).dmg -debug -volName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}(r${svn.revision}) -buildDir ${build} -compressionLevel 9 -volSize 25 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.html  AppleScript\ Samples"/>
         </exec>
 		<antcall target="sign"/>
 	</target>
