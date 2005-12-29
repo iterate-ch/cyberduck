@@ -69,7 +69,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>*version*</string>
+	<string>*revision*</string>
 	<key>CFBundleSignature</key>
 	<string>CYCK</string>
 	<key>CFBundleURLTypes</key>
