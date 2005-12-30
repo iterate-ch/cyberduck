@@ -32,8 +32,8 @@
             OUTLETS = {
                 actionPopupButton = NSPopUpButton; 
                 addBookmarkButton = NSButton; 
+                bookmarkDrawer = NSDrawer; 
                 bookmarkTable = NSTableView; 
-                bookmarkView = NSView; 
                 browserListView = NSTableView; 
                 browserOutlineView = NSOutlineView; 
                 browserSwitchView = NSSegmentedControl; 

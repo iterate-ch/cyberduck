@@ -371,10 +371,6 @@ public class CDBrowserController extends CDWindowController
 
         // Configure window
         this.window.setTitle("Cyberduck");
-        // Drawer states
-        this.bookmarkDrawer = new NSDrawer(bookmarkView.frame().size(), NSRect.MinXEdge);
-        this.bookmarkDrawer.setParentWindow(this.window);
-        this.bookmarkDrawer.setContentView(bookmarkView);
         if (Preferences.instance().getBoolean("bookmarkDrawer.isOpen")) {
             this.bookmarkDrawer.open();
         }
@@ -623,10 +619,9 @@ public class CDBrowserController extends CDWindowController
     }
 
     private NSDrawer bookmarkDrawer;
-    private NSView bookmarkView;
 
-    public void setBookmarkView(NSView bookmarkView) {
-        this.bookmarkView = bookmarkView;
+    public void setBookmarkDrawer(NSDrawer bookmarkDrawer) {
+        this.bookmarkDrawer = bookmarkDrawer;
     }
 
     private NSTabView browserTabView;
@@ -2997,10 +2992,9 @@ public class CDBrowserController extends CDWindowController
             this.session = null;
         }
         this.toolbar.setDelegate(null);
-        this.bookmarkDrawer.setDelegate(null);
+
         this.bookmarkDrawer.setParentWindow(null);
         this.bookmarkDrawer.setContentView(null);
-        this.bookmarkView = null;
         this.bookmarkDrawer = null;
 
         this.bookmarkTable.setDataSource(null);
