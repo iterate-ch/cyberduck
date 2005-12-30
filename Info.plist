@@ -79,6 +79,8 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>*revision*</string>
+	<key>CDBundleVersion</key>
+	<string>*version*</string>
 	<key>Java</key>
 	<dict>
 		<key>JVMVersion</key>

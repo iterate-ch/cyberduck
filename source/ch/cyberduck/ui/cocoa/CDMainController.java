@@ -356,7 +356,7 @@ public class CDMainController extends CDController {
             public void run() {
                 try {
                     int pool = NSAutoreleasePool.push();
-                    String currentVersionNumber = (String) NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
+                    String currentVersionNumber = (String) NSBundle.mainBundle().objectForInfoDictionaryKey("CDBundleVersion");
                     log.info("Current version:" + currentVersionNumber);
                     NSData data = new NSData(new java.net.URL(Preferences.instance().getProperty("website.update.xml")));
                     if (null == data) {
