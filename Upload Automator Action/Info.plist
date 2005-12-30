@@ -58,8 +58,6 @@
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
-	<key>CFBundleGetInfoString</key>
-	<string>"Cyberduck *version*, Copyright 2005 David V. Kocher."</string>
 	<key>CFBundleIconFile</key>
 	<string></string>
 	<key>CFBundleIdentifier</key>
@@ -70,13 +68,11 @@
 	<string>Upload</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>*revision*</string>
 	<key>NSPrincipalClass</key>
-	<string>CDUploadAMAppleScriptAction</string>
+	<string>CDUploadScriptAction</string>
 </dict>
 </plist>

@@ -22,8 +22,6 @@
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
         <key>CFBundleVersion</key>
-        <string>*version*</string>
-        <key>CFBundleShortVersionString</key>
         <string>*revision*</string>
 		<key>CFPlugInDynamicRegisterFunction</key>
 		<string></string>
