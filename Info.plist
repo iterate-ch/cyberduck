@@ -52,12 +52,6 @@
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>Cyberduck</string>
-	<key>CFBundleHelpBookFolder</key>
-	<string>Cyberduck Help</string>
-	<key>CFBundleHelpBookName</key>
-	<string>Cyberduck Help</string>
-	<key>CFBundleGetInfoString</key>
-	<string>Cyberduck *version*</string>
 	<key>CFBundleIconFile</key>
 	<string>cyberduck-application</string>
 	<key>CFBundleIdentifier</key>
@@ -68,8 +62,6 @@
 	<string>Cyberduck</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>*revision*</string>
 	<key>CFBundleSignature</key>
 	<string>CYCK</string>
 	<key>CFBundleURLTypes</key>
@@ -86,7 +78,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>*version*</string>
+	<string>*revision*</string>
 	<key>Java</key>
 	<dict>
 		<key>JVMVersion</key>
