@@ -370,7 +370,7 @@ public class CDBrowserController extends CDWindowController
         this._updateBrowserColumns(this.browserOutlineView);
 
         // Configure window
-        this.window.setTitle("Cyberduck " + NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion"));
+        this.window.setTitle("Cyberduck");
         // Drawer states
         this.bookmarkDrawer = new NSDrawer(bookmarkView.frame().size(), NSRect.MinXEdge);
         this.bookmarkDrawer.setParentWindow(this.window);

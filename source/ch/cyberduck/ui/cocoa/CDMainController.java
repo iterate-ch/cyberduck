@@ -712,8 +712,6 @@ public class CDMainController extends CDController {
         NSNotificationCenter.defaultCenter().removeObserver(this);
         //Terminating rendezvous discovery
         Rendezvous.instance().quit();
-        //Writing major info
-        this.saveVersionInfo();
         //Writing usage info
         Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses") + 1);
         Preferences.instance().save();
@@ -787,55 +785,6 @@ public class CDMainController extends CDController {
             }
         }
         return orderedDocs;
-    }
-
-    // ----------------------------------------------------------
-
-//	private String readVersionInfo() {
-//		if(VERSION_FILE.exists()) {
-//			NSData plistData = new NSData(VERSION_FILE);
-//			String[] errorString = new String[]{null};
-//			Object propertyListFromXMLData =
-//			    NSPropertyListSerialization.propertyListFromData(plistData,
-//			        NSPropertyListSerialization.PropertyListImmutable,
-//			        new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-//			        errorString);
-//			if(errorString[0] != null) {
-//				log.error("Problem reading version file: "+errorString[0]);
-//			}
-//			else {
-//				log.debug("Successfully read version info: "+propertyListFromXMLData);
-//			}
-//			if(propertyListFromXMLData instanceof NSDictionary) {
-//				NSDictionary dict = (NSDictionary)propertyListFromXMLData;
-//				return (String)dict.objectForKey("Version");
-//			}
-//		}
-//		return null;
-//	}
-
-    private void saveVersionInfo() {
-        try {
-            NSMutableDictionary dict = new NSMutableDictionary();
-            dict.setObjectForKey(NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion"), "Version");
-            NSMutableData collection = new NSMutableData();
-            String[] errorString = new String[]{null};
-            collection.appendData(NSPropertyListSerialization.dataFromPropertyList(dict,
-                    NSPropertyListSerialization.PropertyListXMLFormat,
-                    errorString));
-            if (errorString[0] != null) {
-                log.error("Problem writing version file: " + errorString[0]);
-            }
-            if (collection.writeToURL(VERSION_FILE.toURL(), true)) {
-                log.info("Version file sucessfully saved to :" + VERSION_FILE.toString());
-            }
-            else {
-                log.error("Error saving version file to :" + VERSION_FILE.toString());
-            }
-        }
-        catch (java.net.MalformedURLException e) {
-            log.error(e.getMessage());
-        }
     }
 
     public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
