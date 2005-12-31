@@ -608,9 +608,6 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void windowWillClose(NSNotification notification) {
-        if (this.bookmarkDrawer.state() == NSDrawer.OpenState || this.bookmarkDrawer.state() == NSDrawer.OpeningState) {
-            this.bookmarkDrawer.close();
-        }
         if (this.hasSession()) {
             this.session.cache().clear();
         }

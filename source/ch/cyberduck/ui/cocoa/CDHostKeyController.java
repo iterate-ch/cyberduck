@@ -28,11 +28,16 @@ import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSBundle;
 
+import org.apache.log4j.Logger;
+
 /**
- * @version $Id$
  * Concrete Coccoa implementation of a SSH HostKeyVerification
+ *
+ * @version $Id$
  */
-public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
+public class CDHostKeyController extends AbstractKnownHostsKeyVerification
+{
+    protected static Logger log = Logger.getLogger(CDHostKeyController.class);
 
     private CDWindowController parent;
 
@@ -41,14 +46,8 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
         try {
             this.setKnownHostFile(Preferences.instance().getProperty("ssh.knownhosts"));
         }
-        catch (com.sshtools.j2ssh.transport.InvalidHostFileException e) {
-            //This exception is thrown whenever an exception occurs open or reading from the host file.
-            parent.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", ""), //title
-                    NSBundle.localizedString("Could not open or read the host file", "") + ": " + e.getMessage(), // message
-                    NSBundle.localizedString("OK", ""), // defaultbutton
-                    null, //alternative button
-                    null //other button
-            ));
+        catch (Exception e) {
+            log.error("Could not open or read the host file");
         }
     }
 
@@ -60,19 +59,19 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
                         + allowedHostKey.getFingerprint() + "\n" + NSBundle.localizedString("Do you want to allow the host access?", ""),
                 NSBundle.localizedString("Allow", ""), // defaultbutton
                 NSBundle.localizedString("Deny", ""), //alternative button
-                isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null //other button
+                this.isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null //other button
         );
         CDSheetController c = new CDSheetController(parent, sheet) {
             public void callback(int returncode) {
                 try {
                     if (returncode == DEFAULT_OPTION) {
-                        allowHost(host, allowedHostKey, false);
+                        allowHost(host, actualHostKey, false);
                     }
                     if (returncode == ALTERNATE_OPTION) {
-                        log.info("Cannot continue without a valid host key");
+                        allowHost(host, actualHostKey, true); // always allow host
                     }
                     if (returncode == CANCEL_OPTION) {
-                        allowHost(host, allowedHostKey, true); // always allow host
+                        log.info("Cannot continue without a valid host key");
                     }
                 }
                 catch (InvalidHostFileException e) {
@@ -84,24 +83,24 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification {
     }
 
     public void onUnknownHost(final String host,
-                              final SshPublicKey publicKey) {
+                              final SshPublicKey actualHostKey) {
         NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Unknown host key for", "") + " " + host, //title
-                NSBundle.localizedString("The host is currently unknown to the system. The host key fingerprint is", "") + ": " + publicKey.getFingerprint() + ".",
-                NSBundle.localizedString("Allow", ""), // defaultbutton
-                NSBundle.localizedString("Deny", ""), //alternative button
-                isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null //other button
+                NSBundle.localizedString("The host is currently unknown to the system. The host key fingerprint is", "") + ": " + actualHostKey.getFingerprint() + ".",
+                NSBundle.localizedString("Allow", ""), // default button
+                NSBundle.localizedString("Deny", ""), // alternate button
+                this.isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null //other button
         );
         CDSheetController c = new CDSheetController(parent, sheet) {
             public void callback(int returncode) {
                 try {
                     if (returncode == DEFAULT_OPTION) {
-                        allowHost(host, publicKey, false); // allow host
+                        allowHost(host, actualHostKey, false); // allow host (once)
                     }
                     if (returncode == ALTERNATE_OPTION) {
-                        log.info("Cannot continue without a valid host key");
+                        allowHost(host, actualHostKey, true); // allow host (always)
                     }
                     if (returncode == CANCEL_OPTION) {
-                        allowHost(host, publicKey, true); // always allow host
+                        log.info("Cannot continue without a valid host key");
                     }
                 }
                 catch (InvalidHostFileException e) {

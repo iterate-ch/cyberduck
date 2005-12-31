@@ -93,7 +93,6 @@ public abstract class CDSheetController extends CDWindowController implements CD
      * attached to this window has been dismissed by the user
      */
     protected void waitForSheetEnd() {
-        log.debug("waitForSheetEnd");
         synchronized (lock) {
             while (parent.hasSheet()) {
                 try {
