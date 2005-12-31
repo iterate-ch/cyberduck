@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.NameTransformer;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Status;
@@ -37,8 +36,7 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class CDValidatorController
-        extends CDSheetController implements Validator
-{
+        extends CDSheetController implements Validator {
     private static Logger log = Logger.getLogger(CDValidatorController.class);
 
     private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
@@ -57,7 +55,7 @@ public abstract class CDValidatorController
     }
 
     public void callback(int returncode) {
-        if(returncode == DEFAULT_OPTION) { //overwrite
+        if (returncode == DEFAULT_OPTION) { //overwrite
             for (Iterator i = workList.iterator(); i.hasNext();) {
                 Path p = (Path) i.next();
                 if (!p.isSkipped()) {
@@ -67,7 +65,7 @@ public abstract class CDValidatorController
             }
             this.setCanceled(false);
         }
-        if(returncode == ALTERNATE_OPTION) { //resume
+        if (returncode == ALTERNATE_OPTION) { //resume
             for (Iterator i = workList.iterator(); i.hasNext();) {
                 Path p = (Path) i.next();
                 if (!p.isSkipped()) {
@@ -77,11 +75,11 @@ public abstract class CDValidatorController
             }
             this.setCanceled(false);
         }
-        if(returncode == SKIP_OPTION) { //skip
+        if (returncode == SKIP_OPTION) { //skip
             this.workList.clear();
             this.setCanceled(false);
         }
-        if(returncode == CANCEL_OPTION) {
+        if (returncode == CANCEL_OPTION) {
             this.validatedList.clear();
             this.workList.clear();
             this.setCanceled(true);
@@ -145,9 +143,6 @@ public abstract class CDValidatorController
     protected boolean validate(Path p, boolean resumeRequested) {
         if (p.attributes.isFile()) {
             p.reset();
-            if (Preferences.instance().getBoolean("queue.transformer.useTransformer")) {
-                p.setPath(p.getParent().getAbsolute(), NameTransformer.instance().transform(p.getName()));
-            }
             return this.validateFile(p, resumeRequested);
         }
         if (p.attributes.isDirectory()) {

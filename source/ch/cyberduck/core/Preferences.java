@@ -204,17 +204,6 @@ public abstract class Preferences {
         defaults.put("queue.sync.ignore.millisecond", "true");
         defaults.put("queue.sync.timezone", java.util.TimeZone.getDefault().getID());
 
-        defaults.put("queue.transformer.useTransformer", "false");
-        defaults.put("queue.transformer.maxLength", "-1");
-        defaults.put("queue.transformer.keepsFilenameExtensions", "true");
-        defaults.put("queue.transformer.prefixString", "");
-        defaults.put("queue.transformer.appendString", "");
-        defaults.put("queue.transformer.replaceSearchString", "");
-        defaults.put("queue.transformer.replaceWithString", "");
-        defaults.put("queue.transformer.replaceAllOccurances", "true");
-        defaults.put("queue.transformer.illegalCharacters", "");
-        defaults.put("queue.transformer.substituteCharacter", "");
-
         //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");
         defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
