@@ -2990,9 +2990,7 @@ public class CDBrowserController extends CDWindowController
         }
         this.toolbar.setDelegate(null);
 
-        this.bookmarkDrawer.setParentWindow(null);
         this.bookmarkDrawer.setContentView(null);
-        this.bookmarkDrawer = null;
 
         this.bookmarkTable.setDataSource(null);
         this.bookmarkModel.removeListener(this.bookmarkCollectionListener);
