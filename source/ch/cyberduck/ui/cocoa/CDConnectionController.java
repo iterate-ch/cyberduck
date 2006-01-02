@@ -71,7 +71,7 @@ public class CDConnectionController extends CDSheetController
             }
 
             public void collectionItemChanged(Object item) {
-                ;//TODO
+                ;
             }
         });
         this.bookmarksPopup.setTarget(this);
@@ -184,7 +184,7 @@ public class CDConnectionController extends CDSheetController
         this.connectmodePopup.setEnabled(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)
                 || protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING));
         this.pkCheckbox.setEnabled(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING));
-        this.updateURLLabel();
+        this.updateURLLabel(null);
     }
 
     private NSComboBox hostPopup;
@@ -193,7 +193,7 @@ public class CDConnectionController extends CDSheetController
     public void setHostPopup(NSComboBox hostPopup) {
         this.hostPopup = hostPopup;
         this.hostPopup.setTarget(this);
-        this.hostPopup.setAction(new NSSelector("hostSelectionDidChange", new Class[]{Object.class}));
+        this.hostPopup.setAction(new NSSelector("updateURLLabel", new Class[]{Object.class}));
         this.hostPopup.setUsesDataSource(true);
         this.hostPopup.setDataSource(this.hostPopupDataSource = new Object() {
             public int numberOfItemsInComboBox(NSComboBox combo) {
@@ -207,11 +207,6 @@ public class CDConnectionController extends CDSheetController
                 return null;
             }
         });
-    }
-
-    public void hostSelectionDidChange(Object sender) {
-        log.debug("hostSelectionDidChange:" + sender);
-        this.updateURLLabel();
     }
 
     public void hostFieldTextDidChange(Object sender) {
@@ -409,7 +404,6 @@ public class CDConnectionController extends CDSheetController
     }
 
     public void awakeFromNib() {
-        // Notify the updateURLLabel() method if the user types.
         //ControlTextDidChangeNotification
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("updateURLLabel", new Class[]{Object.class}),
@@ -520,10 +514,10 @@ public class CDConnectionController extends CDSheetController
             this.pkCheckbox.setState(NSCell.OffState);
         }
         this.encodingPopup.setTitle(selectedItem.getEncoding());
-        this.updateURLLabel();
+        this.updateURLLabel(null);
     }
 
-    private void updateURLLabel() {
+    private void updateURLLabel(Object sender) {
         String protocol = null;
         if (protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
             protocol = Session.SFTP + "://";
