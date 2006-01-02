@@ -123,7 +123,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
                 }
                 c.beginSheet(true);
                 if (!acceptedCertificates.contains(cert)) {
-                    throw new CertificateException(NSBundle.localizedString("No trusted certificate found", "Status"));
+                    throw new CertificateException(NSBundle.localizedString("No trusted certificate found", "Status", ""));
                 }
             }
         }
