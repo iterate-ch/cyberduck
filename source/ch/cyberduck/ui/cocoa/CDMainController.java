@@ -676,8 +676,8 @@ public class CDMainController extends CDController {
                         int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Quit", ""),
                                 NSBundle.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
                                 NSBundle.localizedString("Review...", ""), //default
-                                NSBundle.localizedString("Quit Anyway", ""), //alternate
-                                NSBundle.localizedString("Cancel", "")); //other
+                                NSBundle.localizedString("Cancel", ""), //other
+                                NSBundle.localizedString("Quit Anyway", "")); //alternate
                         if (choice == CDSheetCallback.ALTERNATE_OPTION) {
                             // Quit
                             return CDQueueController.applicationShouldTerminate(app);
