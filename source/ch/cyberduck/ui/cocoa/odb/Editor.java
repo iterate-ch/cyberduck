@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.odb;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UploadQueue;
+import ch.cyberduck.ui.cocoa.CDController;
 
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSBundle;
@@ -36,7 +37,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class Editor {
+public class Editor extends CDController {
 
     private static Logger log = Logger.getLogger(Editor.class);
 
@@ -80,15 +81,12 @@ public class Editor {
         }
     }
 
-    private static NSMutableArray instances = new NSMutableArray();
-
     private String bundleIdentifier;
 
     /**
      * @param bundleIdentifier The bundle identifier of the external editor to use
      */
     public Editor(String bundleIdentifier) {
-        instances.addObject(this);
         this.bundleIdentifier = bundleIdentifier;
     }
 
@@ -123,7 +121,7 @@ public class Editor {
 
     public void didCloseFile() {
         this.path.getLocal().delete();
-        instances.removeObject(this);
+        this.invalidate();
     }
 
     public void didModifyFile() {
