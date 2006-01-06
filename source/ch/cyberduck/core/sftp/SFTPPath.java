@@ -156,7 +156,6 @@ public class SFTPPath extends Path {
                         }
                     }
                     session.cache().put(this, files);
-                    session.activityStopped();
                 }
                 catch (SshException e) {
                     session.error("SSH " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -167,6 +166,9 @@ public class SFTPPath extends Path {
                     session.close();
                     return null;
                 }
+	            finally {
+	                session.activityStopped();
+	            }
             }
             return session.cache().get(this, comparator, filter);
         }
@@ -193,7 +195,6 @@ public class SFTPPath extends Path {
                 session.SFTP.makeDirectory(this.getAbsolute());
                 session.cache().put(this, new ArrayList());
                 this.getParent().invalidate();
-                session.activityStopped();
             }
             catch (SshException e) {
                 session.error("SSH " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -201,6 +202,9 @@ public class SFTPPath extends Path {
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 session.close();
+            }
+            finally {
+                session.activityStopped();
             }
         }
     }
@@ -214,7 +218,6 @@ public class SFTPPath extends Path {
                 this.getParent().invalidate();
                 this.setPath(filename);
                 //this.getParent().invalidate();
-                session.activityStopped();
             }
             catch (SshException e) {
                 session.error("SSH " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -222,6 +225,9 @@ public class SFTPPath extends Path {
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 session.close();
+            }
+            finally {
+                session.activityStopped();
             }
         }
     }
@@ -278,7 +284,6 @@ public class SFTPPath extends Path {
                     }
                 }
                 this.getParent().invalidate();
-                session.activityStopped();
             }
             catch (SshException e) {
                 session.error("SSH " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -286,6 +291,9 @@ public class SFTPPath extends Path {
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 session.close();
+            }
+            finally {
+                session.activityStopped();
             }
         }
     }
@@ -312,7 +320,6 @@ public class SFTPPath extends Path {
                     }
                 }
                 this.getParent().invalidate();
-                session.activityStopped();
             }
             catch (SshException e) {
                 session.error("SSH " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -320,6 +327,9 @@ public class SFTPPath extends Path {
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 session.close();
+            }
+            finally {
+                session.activityStopped();
             }
         }
     }
@@ -346,7 +356,6 @@ public class SFTPPath extends Path {
                     }
                 }
                 this.getParent().invalidate();
-                session.activityStopped();
             }
             catch (SshException e) {
                 session.error("SSH " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -354,6 +363,9 @@ public class SFTPPath extends Path {
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 session.close();
+            }
+            finally {
+                session.activityStopped();
             }
         }
     }
@@ -380,7 +392,6 @@ public class SFTPPath extends Path {
                     }
                 }
                 this.getParent().invalidate();
-                session.activityStopped();
             }
             catch (SshException e) {
                 session.error("SSH " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -388,6 +399,9 @@ public class SFTPPath extends Path {
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 session.close();
+            }
+            finally {
+                session.activityStopped();
             }
         }
     }
@@ -442,7 +456,6 @@ public class SFTPPath extends Path {
                 if (this.attributes.isDirectory()) {
                     this.getLocal().mkdirs();
                 }
-                session.activityStopped();
             }
             catch (SshException e) {
                 session.error("SSH " + NSBundle.localizedString("Error", "") + " " + "(" + this.getName() + "): " + e.getMessage());
@@ -453,6 +466,7 @@ public class SFTPPath extends Path {
                 session.close();
             }
             finally {
+                session.activityStopped();
                 try {
                     if (in != null) {
                         in.close();
@@ -535,7 +549,6 @@ public class SFTPPath extends Path {
                     }
                 }
                 this.getParent().invalidate();
-                session.activityStopped();
             }
             catch (SshException e) {
                 session.error("SSH " + NSBundle.localizedString("Error", "") + " " + "(" + this.getName() + "): " + e.getMessage());
@@ -545,6 +558,7 @@ public class SFTPPath extends Path {
                 session.close();
             }
             finally {
+                session.activityStopped();
                 try {
                     if (in != null) {
                         in.close();
