@@ -65,12 +65,15 @@ public abstract class CDBrowserTableDataSource extends NSObject {
         return this.childs(controller.workdir()).contains(p);
     }
 
-    public void setObjectValueForItem(Path item, Object value, String identifier) {
+    public void setObjectValueForItem(final Path item, final Object value, final String identifier) {
         log.debug("setObjectValueForItem:" + item);
         if (identifier.equals(FILENAME_COLUMN)) {
             if (!item.getName().equals(value)) {
-                controller.renamePath(item, item.getParent().getAbsolute(), value.toString());
-                item.getParent().invalidate();
+                controller.invoke(new Runnable() {
+                    public void run() {
+                        controller.renamePath(item, item.getParent(), value.toString());
+                    }
+                });
             }
         }
     }
@@ -180,7 +183,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     Queue q = Queue.createQueue(dict);
                     for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                         Path item = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
-                        controller.renamePath(item, destination.getAbsolute(), item.getName());
+                        controller.renamePath(item, destination, item.getName());
                     }
                 }
                 destination.invalidate();

@@ -49,16 +49,17 @@ public class CDBrowserController extends CDWindowController
         HISTORY_FOLDER.mkdirs();
     }
 
-    // ----------------------------------------------------------
-    // Applescriptability
-    // ----------------------------------------------------------
-
+    /**
+     * Applescriptability
+     * @return
+     */
     public NSScriptObjectSpecifier objectSpecifier() {
         log.debug("objectSpecifier");
         NSArray orderedDocs = (NSArray) NSKeyValue.valueForKey(NSApplication.sharedApplication(), "orderedBrowsers");
         int index = orderedDocs.indexOfObject(this);
         if ((index >= 0) && (index < orderedDocs.count())) {
-            NSScriptClassDescription desc = (NSScriptClassDescription) NSScriptClassDescription.classDescriptionForClass(NSApplication.class);
+            NSScriptClassDescription desc
+                    = (NSScriptClassDescription) NSScriptClassDescription.classDescriptionForClass(NSApplication.class);
             return new NSIndexSpecifier(desc, null, "orderedBrowsers", index);
         }
         return null;
@@ -120,9 +121,7 @@ public class CDBrowserController extends CDWindowController
 
     public Object handleDisconnectScriptCommand(NSScriptCommand command) {
         log.debug("handleDisconnectScriptCommand:" + command);
-        this.unmount();
-        this.deselectAll();
-        this.getSelectedBrowserView().setNeedsDisplay(true);
+		this.disconnectButtonClicked(null);
         return null;
     }
 
@@ -501,8 +500,6 @@ public class CDBrowserController extends CDWindowController
             case OUTLINE_VIEW: {
                 this.browserOutlineView.selectRow(row, expand);
             }
-            case COLUMN_VIEW: {
-            }
         }
     }
 
@@ -530,9 +527,6 @@ public class CDBrowserController extends CDWindowController
                         this.selectRow(p, true);
                     }
                 }
-                break;
-            }
-            case COLUMN_VIEW: {
                 break;
             }
         }
@@ -627,7 +621,7 @@ public class CDBrowserController extends CDWindowController
         this.browserTabView = browserTabView;
     }
 
-    public NSView getSelectedBrowserView() {
+    public NSTableView getSelectedBrowserView() {
         switch (this.browserSwitchView.selectedSegment()) {
             case LIST_VIEW: {
                 return this.browserListView;
@@ -647,9 +641,6 @@ public class CDBrowserController extends CDWindowController
             case OUTLINE_VIEW: {
                 return (CDBrowserTableDataSource) this.browserOutlineView.dataSource();
             }
-//            case COLUMN_VIEW: {
-//                return this.browserColumnModel;
-//            }
         }
         return null;
     }
@@ -658,14 +649,12 @@ public class CDBrowserController extends CDWindowController
 
     private static final int LIST_VIEW = 0;
     private static final int OUTLINE_VIEW = 1;
-    private static final int COLUMN_VIEW = 2;
 
     public void setBrowserSwitchView(NSSegmentedControl browserSwitchView) {
         this.browserSwitchView = browserSwitchView;
-        this.browserSwitchView.setSegmentCount(2); // list, outline, column
+        this.browserSwitchView.setSegmentCount(2); // list, outline
         this.browserSwitchView.setImage(NSImage.imageNamed("list.tiff"), LIST_VIEW);
         this.browserSwitchView.setImage(NSImage.imageNamed("outline.tiff"), OUTLINE_VIEW);
-//		this.browserSwitchView.setImage(NSImage.imageNamed("column.tiff"), COLUMN_VIEW);
         this.browserSwitchView.setTarget(this);
         this.browserSwitchView.setAction(new NSSelector("browserSwitchClicked", new Class[]{Object.class}));
         ((NSSegmentedCell) this.browserSwitchView.cell()).setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectOne);
@@ -1627,11 +1616,18 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
-    protected void renamePath(final Path path, String parent, final String name) {
-        final Path renamed = PathFactory.createPath(workdir.getSession(), parent, name);
+    /**
+     *
+     * @param path
+     * @param destination
+     * @param name
+     */
+    protected void renamePath(final Path path, Path destination, final String name) {
+        final Path renamed = PathFactory.createPath(workdir.getSession(), destination.getAbsolute(), name);
         if (renamed.exists()) {
-            NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Replace", "Alert sheet title"), //title
-                    NSBundle.localizedString("A file with the same absolute already exists. Do you want to replace the existing file?", ""),
+//            renamed = (Path)destination.list(false).get(destination.list(false).indexOf(renamed));
+            NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Overwrite", "Alert sheet title"), //title
+                    NSBundle.localizedString("A file with the same name already exists. Do you want to replace the existing file?", ""),
                     NSBundle.localizedString("Overwrite", "Alert sheet default button"), // defaultbutton
                     NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
                     null //other button
@@ -1639,8 +1635,9 @@ public class CDBrowserController extends CDWindowController
             CDSheetController c = new CDSheetController(this, sheet) {
                 public void callback(int returncode) {
                     if (returncode == DEFAULT_OPTION) {
+                        renamed.delete();
                         path.rename(renamed.getAbsolute());
-                        reloadData(true);
+                        reloadData(false);
                     }
                 }
             };
@@ -1648,6 +1645,7 @@ public class CDBrowserController extends CDWindowController
         }
         else {
             path.rename(renamed.getAbsolute());
+            reloadData(true);
         }
     }
 
@@ -1998,7 +1996,7 @@ public class CDBrowserController extends CDWindowController
                     Path workdir = this.workdir();
                     for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                         Path item = PathFactory.createPath(workdir().getSession(), ((Path) iter.next()).getAbsolute());
-                        this.renamePath(item, workdir.getAbsolute(), item.getName());
+                        this.renamePath(item, workdir, item.getName());
                     }
                     workdir.invalidate();
                     this.reloadData(true);

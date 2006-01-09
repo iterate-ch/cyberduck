@@ -43,7 +43,7 @@ public class CDCreateFileController extends CDFileController {
     public void callback(int returncode) {
         Path workdir = ((CDBrowserController)parent).workdir();
         if (returncode == DEFAULT_OPTION) {
-            createFile(workdir, filenameField.stringValue());
+            this.createFile(workdir, filenameField.stringValue());
         }
         if (returncode == ALTERNATE_OPTION) {
             Path path = createFile(workdir, filenameField.stringValue());

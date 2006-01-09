@@ -206,7 +206,7 @@ public class FTPPath extends Path {
                 session.FTP.rename(this.getAbsolute(), filename);
                 this.getParent().invalidate();
                 this.setPath(filename);
-                //this.getParent().invalidate();
+                this.getParent().invalidate();
             }
             catch (FTPException e) {
                 session.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());

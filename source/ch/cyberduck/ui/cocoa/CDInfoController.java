@@ -363,9 +363,7 @@ public class CDInfoController extends CDWindowController {
             final Path file = (Path) this.files.get(0);
             if (!this.filenameField.stringValue().equals(file.getName())) {
                 if (this.filenameField.stringValue().indexOf('/') == -1) {
-                    controller.renamePath(file, file.getParent().getAbsolute(), this.filenameField.stringValue());
-                    file.getParent().invalidate();
-                    controller.reloadData(true);
+                    controller.renamePath(file, file.getParent(), this.filenameField.stringValue());
                 }
                 else if (filenameField.stringValue().length() == 0) {
                     this.filenameField.setStringValue(file.getName());

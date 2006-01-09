@@ -60,11 +60,6 @@ public abstract class CDSheetController extends CDWindowController implements CD
     private final Object lock = new Object();
 
     /**
-     * The lock for blocking sheets runnning in the main thread
-     */
-    private NSModalSession modalSession = null;
-
-    /**
      * This must be the target action for any button in the sheet dialog. Will validate the input
      * and close the sheet; #sheetDidClose will be called afterwards
      * @param sender A button in the sheet dialog
@@ -100,11 +95,12 @@ public abstract class CDSheetController extends CDWindowController implements CD
                             || Thread.currentThread().getName().equals("AWT-AppKit")) {
                         log.warn("Waiting on main thread; will run modal!");
                         NSApplication app = NSApplication.sharedApplication();
-                        modalSession = NSApplication.sharedApplication().beginModalSessionForWindow(
+                        NSModalSession modalSession = app.beginModalSessionForWindow(
                                 this.parent.window().attachedSheet());
                         while (parent.hasSheet()) {
                             app.runModalSession(modalSession);
                         }
+                        app.endModalSession(modalSession);
                         return;
                     }
                     log.debug("Sleeping:waitForSheetEnd...");
@@ -160,10 +156,6 @@ public abstract class CDSheetController extends CDWindowController implements CD
      */
     public void sheetDidClose(NSPanel sheet, int returncode, Object context) {
         sheet.orderOut(null);
-        if (modalSession != null) {
-            NSApplication.sharedApplication().endModalSession(modalSession);
-            modalSession = null;
-        }
         this.callback(returncode);
         this.invalidate();
         synchronized (lock) {
