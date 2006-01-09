@@ -161,16 +161,6 @@ public abstract class Session
     public abstract void close();
 
     /**
-     * Reconnect to the server
-     * @throws IOException
-     */
-    public void recycle() throws IOException {
-        log.info("Recycling session");
-        this.close();
-        this.connect();
-    }
-
-    /**
      *
      * @return the host this session connects to
      */

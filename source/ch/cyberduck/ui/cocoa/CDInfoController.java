@@ -20,33 +20,11 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Status;
 
-import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSBox;
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSCell;
-import com.apple.cocoa.application.NSControl;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSImageView;
-import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.application.NSWindow;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDate;
-import com.apple.cocoa.foundation.NSFormatter;
-import com.apple.cocoa.foundation.NSGregorianDate;
-import com.apple.cocoa.foundation.NSGregorianDateFormatter;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSNotificationCenter;
-import com.apple.cocoa.foundation.NSPoint;
-import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSSize;
-import com.apple.cocoa.foundation.NSUserDefaults;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -364,6 +342,8 @@ public class CDInfoController extends CDWindowController {
             if (!this.filenameField.stringValue().equals(file.getName())) {
                 if (this.filenameField.stringValue().indexOf('/') == -1) {
                     controller.renamePath(file, file.getParent(), this.filenameField.stringValue());
+                    file.getParent().invalidate();
+                    controller.reloadData(true);
                 }
                 else if (filenameField.stringValue().length() == 0) {
                     this.filenameField.setStringValue(file.getName());

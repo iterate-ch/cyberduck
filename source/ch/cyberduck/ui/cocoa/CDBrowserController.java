@@ -1625,7 +1625,6 @@ public class CDBrowserController extends CDWindowController
     protected void renamePath(final Path path, Path destination, final String name) {
         final Path renamed = PathFactory.createPath(workdir.getSession(), destination.getAbsolute(), name);
         if (renamed.exists()) {
-//            renamed = (Path)destination.list(false).get(destination.list(false).indexOf(renamed));
             NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Overwrite", "Alert sheet title"), //title
                     NSBundle.localizedString("A file with the same name already exists. Do you want to replace the existing file?", ""),
                     NSBundle.localizedString("Overwrite", "Alert sheet default button"), // defaultbutton
@@ -1635,9 +1634,7 @@ public class CDBrowserController extends CDWindowController
             CDSheetController c = new CDSheetController(this, sheet) {
                 public void callback(int returncode) {
                     if (returncode == DEFAULT_OPTION) {
-                        renamed.delete();
                         path.rename(renamed.getAbsolute());
-                        reloadData(false);
                     }
                 }
             };
@@ -1645,7 +1642,6 @@ public class CDBrowserController extends CDWindowController
         }
         else {
             path.rename(renamed.getAbsolute());
-            reloadData(true);
         }
     }
 

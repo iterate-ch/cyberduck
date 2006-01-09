@@ -217,7 +217,7 @@ public class SFTPPath extends Path {
                 session.SFTP.renameFile(this.getAbsolute(), filename);
                 this.getParent().invalidate();
                 this.setPath(filename);
-                this.getParent().invalidate();
+                //this.getParent().invalidate();
             }
             catch (SshException e) {
                 session.error("SSH " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());

@@ -25,14 +25,13 @@ import ch.cyberduck.ui.cocoa.CDController;
 
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
 
 /**
  * @version $Id$
@@ -48,7 +47,6 @@ public class Editor extends CDController {
         SUPPORTED_EDITORS.put("SubEthaEdit", "de.codingmonkeys.SubEthaEdit");
         SUPPORTED_EDITORS.put("BBEdit", "com.barebones.bbedit");
         SUPPORTED_EDITORS.put("TextWrangler", "com.barebones.textwrangler");
-//		SUPPORTED_EDITORS.put("PageSpinner", "com.optima.PageSpinner");
         SUPPORTED_EDITORS.put("TextMate", "com.macromates.textmate");
         SUPPORTED_EDITORS.put("Tex-Edit Plus", "com.transtex.texeditplus");
         SUPPORTED_EDITORS.put("Jedit X", "jp.co.artman21.JeditX");
@@ -58,8 +56,8 @@ public class Editor extends CDController {
         SUPPORTED_EDITORS.put("CSSEdit", "com.macrabbit.cssedit");
         SUPPORTED_EDITORS.put("Tag", "com.talacia.Tag");
 
-        java.util.Iterator editorNames = SUPPORTED_EDITORS.keySet().iterator();
-        java.util.Iterator editorIdentifiers = SUPPORTED_EDITORS.values().iterator();
+        Iterator editorNames = SUPPORTED_EDITORS.keySet().iterator();
+        Iterator editorIdentifiers = SUPPORTED_EDITORS.values().iterator();
         while (editorNames.hasNext()) {
             String editor = (String) editorNames.next();
             String identifier = (String) editorIdentifiers.next();
@@ -121,7 +119,6 @@ public class Editor extends CDController {
 
     public void didCloseFile() {
         this.path.getLocal().delete();
-        this.invalidate();
     }
 
     public void didModifyFile() {

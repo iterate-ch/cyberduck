@@ -68,10 +68,12 @@ public abstract class CDBrowserTableDataSource extends NSObject {
     public void setObjectValueForItem(final Path item, final Object value, final String identifier) {
         log.debug("setObjectValueForItem:" + item);
         if (identifier.equals(FILENAME_COLUMN)) {
-            if (!item.getName().equals(value)) {
+            if (!item.getName().equals(value) && !value.equals("")) {
                 controller.invoke(new Runnable() {
                     public void run() {
                         controller.renamePath(item, item.getParent(), value.toString());
+                        item.getParent().invalidate();
+                        controller.reloadData();
                     }
                 });
             }

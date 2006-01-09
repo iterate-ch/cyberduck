@@ -126,76 +126,66 @@ public class SFTPSession extends Session {
         return this.hostKeyVerification;
     }
 
-    public void connect(String encoding) throws IOException {
-        try {
-            synchronized(this) {
-                this.retain();
-                this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getHostname() + "...");
-                this.log("=====================================");
-                this.log(new java.util.Date().toString());
-                this.log(host.getIp());
-                SSH = new SshClient();
-                //SSH.setSocketTimeout(Preferences.instance().getInteger("connection.timeout"));
-                SSH.addEventHandler(new SshEventAdapter() {
-                    public void onSocketTimeout(TransportProtocol transport) {
-                        log.debug("onSocketTimeout");
-                    }
-
-                    public void onDisconnect(TransportProtocol transport) {
-                        log.debug(transport.getState().getDisconnectReason());
-                    }
-                });
-                SshConnectionProperties properties = new SshConnectionProperties();
-                properties.setHost(host.getHostname());
-                properties.setPort(host.getPort());
-                // Sets the prefered client->server encryption cipher
-                properties.setPrefCSEncryption(Preferences.instance().getProperty("ssh.CSEncryption"));
-                // Sets the prefered server->client encryption cipher
-                properties.setPrefSCEncryption(Preferences.instance().getProperty("ssh.SCEncryption"));
-                // Sets the prefered client->server message authentication
-                properties.setPrefCSMac(Preferences.instance().getProperty("ssh.CSAuthentication"));
-                // Sets the prefered server->client message authentication
-                properties.setPrefSCMac(Preferences.instance().getProperty("ssh.SCAuthentication"));
-                // Sets the prefered server host key for server authentication
-                properties.setPrefPublicKey(Preferences.instance().getProperty("ssh.publickey"));
-                // Set the zlib compression
-                properties.setPrefSCComp(Preferences.instance().getProperty("ssh.compression"));
-                properties.setPrefCSComp(Preferences.instance().getProperty("ssh.compression"));
-                if (Proxy.isSOCKSProxyEnabled()) {
-                    log.info("Using SOCKS Proxy");
-                    properties.setTransportProvider(SshConnectionProperties.USE_SOCKS4_PROXY);
-                    properties.setProxyHost(Proxy.getSOCKSProxyHost());
-                    properties.setProxyPort(Proxy.getSOCKSProxyPort());
+    protected void connect(String encoding) throws IOException {
+        synchronized(this) {
+            this.retain();
+            this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getHostname() + "...");
+            this.log("=====================================");
+            this.log(new java.util.Date().toString());
+            this.log(host.getIp());
+            SSH = new SshClient();
+            //SSH.setSocketTimeout(Preferences.instance().getInteger("connection.timeout"));
+            SSH.addEventHandler(new SshEventAdapter() {
+                public void onSocketTimeout(TransportProtocol transport) {
+                    log.debug("onSocketTimeout");
                 }
-                SSH.connect(properties, this.getHostKeyVerificationController());
-                if (SSH.isConnected()) {
-                    this.message(NSBundle.localizedString("SSH connection opened", "Status", ""));
-                    String id = SSH.getServerId();
-                    this.log(id);
-                    this.host.setIdentification(id);
-                    this.login();
-                    this.message(NSBundle.localizedString("Starting SFTP subsystem...", "Status", ""));
-                    this.SFTP = SSH.openSftpChannel(new ChannelEventAdapter() {
-                        public void onDataReceived(Channel channel, byte[] data) {
-                            log(new String(data));
-                        }
 
-                        public void onDataSent(Channel channel, byte[] data) {
-                            log(new String(data));
-                        }
-                    }, encoding);
-                    this.message(NSBundle.localizedString("SFTP subsystem ready", "Status", ""));
+                public void onDisconnect(TransportProtocol transport) {
+                    log.debug(transport.getState().getDisconnectReason());
                 }
-                this.setConnected();
+            });
+            SshConnectionProperties properties = new SshConnectionProperties();
+            properties.setHost(host.getHostname());
+            properties.setPort(host.getPort());
+            // Sets the prefered client->server encryption cipher
+            properties.setPrefCSEncryption(Preferences.instance().getProperty("ssh.CSEncryption"));
+            // Sets the prefered server->client encryption cipher
+            properties.setPrefSCEncryption(Preferences.instance().getProperty("ssh.SCEncryption"));
+            // Sets the prefered client->server message authentication
+            properties.setPrefCSMac(Preferences.instance().getProperty("ssh.CSAuthentication"));
+            // Sets the prefered server->client message authentication
+            properties.setPrefSCMac(Preferences.instance().getProperty("ssh.SCAuthentication"));
+            // Sets the prefered server host key for server authentication
+            properties.setPrefPublicKey(Preferences.instance().getProperty("ssh.publickey"));
+            // Set the zlib compression
+            properties.setPrefSCComp(Preferences.instance().getProperty("ssh.compression"));
+            properties.setPrefCSComp(Preferences.instance().getProperty("ssh.compression"));
+            if (Proxy.isSOCKSProxyEnabled()) {
+                log.info("Using SOCKS Proxy");
+                properties.setTransportProvider(SshConnectionProperties.USE_SOCKS4_PROXY);
+                properties.setProxyHost(Proxy.getSOCKSProxyHost());
+                properties.setProxyPort(Proxy.getSOCKSProxyPort());
             }
-        }
-        catch (SshException e) {
-            this.error("SSH " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
-            throw e;
-        }
-        catch (IOException e) {
-            this.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
-            throw e;
+            SSH.connect(properties, this.getHostKeyVerificationController());
+            if (SSH.isConnected()) {
+                this.message(NSBundle.localizedString("SSH connection opened", "Status", ""));
+                String id = SSH.getServerId();
+                this.log(id);
+                this.host.setIdentification(id);
+                this.login();
+                this.message(NSBundle.localizedString("Starting SFTP subsystem...", "Status", ""));
+                this.SFTP = SSH.openSftpChannel(new ChannelEventAdapter() {
+                    public void onDataReceived(Channel channel, byte[] data) {
+                        log(new String(data));
+                    }
+
+                    public void onDataSent(Channel channel, byte[] data) {
+                        log(new String(data));
+                    }
+                }, encoding);
+                this.message(NSBundle.localizedString("SFTP subsystem ready", "Status", ""));
+            }
+            this.setConnected();
         }
     }
 
