@@ -144,6 +144,7 @@ public abstract class Session
                 return home;
             }
             catch (IOException e) {
+                this.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
                         host.getHostname());
                 this.close();
