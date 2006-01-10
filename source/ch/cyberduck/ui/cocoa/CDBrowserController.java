@@ -1562,13 +1562,6 @@ public class CDBrowserController extends CDWindowController
         this.progressIndicator.setUsesThreadedAnimation(true);
     }
 
-    private NSImageView statusIcon; // IBOutlet
-
-    public void setStatusIcon(NSImageView statusIcon) {
-        this.statusIcon = statusIcon;
-        this.statusIcon.setImage(null);
-    }
-
     private NSTextField statusLabel; // IBOutlet
 
     public void setStatusLabel(NSTextField statusLabel) {
@@ -2157,12 +2150,6 @@ public class CDBrowserController extends CDWindowController
                             });
                             return;
                         }
-                        progressIndicator.stopAnimation(this);
-                        statusIcon.setImage(NSImage.imageNamed("alert.tiff"));
-                        statusIcon.setNeedsDisplay(true);
-                        statusLabel.setAttributedStringValue(new NSAttributedString(msg,
-                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                        statusLabel.setNeedsDisplay(true);
                         alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
                                 msg, // msg
                                 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
@@ -2215,8 +2202,6 @@ public class CDBrowserController extends CDWindowController
                 window.setDocumentEdited(false);
                 session.removeProgressListener(progress);
                 progressIndicator.stopAnimation(this);
-                statusIcon.setImage(null);
-                statusIcon.setNeedsDisplay(true);
             }
 
             public void activityStarted() {
@@ -2230,8 +2215,6 @@ public class CDBrowserController extends CDWindowController
                     return;
                 }
                 progressIndicator.startAnimation(this);
-                statusIcon.setImage(null);
-                statusIcon.setNeedsDisplay(true);
             }
 
             public void activityStopped() {
