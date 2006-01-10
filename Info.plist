@@ -96,10 +96,10 @@
 		<string>core.jar</string>
 		<string>cocoa.jar</string>
 		<string>ftp.jar</string>
-		<string>logging.jar</string>
+		<string>commons-logging.api.jar</string>
 		<string>bonjour.jar</string>
-		<string>log4j.jar</string>
-		<string>oro.jar</string>
+		<string>log4j-1.2.13.jar</string>
+		<string>jakarta-oro-2.0.8.jar</string>
 	</array>
 	<key>NSJavaRoot</key>
 	<string>Contents/Resources/Java</string>
