@@ -5,7 +5,7 @@
             ACTIONS = {closeDonationSheet = id; }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDMainController"; 
             LANGUAGE = Java; 
-            OUTLETS = {donationSheet = NSWindow; neverShowDonationCheckbox = NSButton; }; 
+            OUTLETS = {neverShowDonationCheckbox = NSButton; window = NSWindow; }; 
             SUPERCLASS = "java.lang.Object"; 
         }
     ); 

@@ -8,8 +8,8 @@
             OUTLETS = {
                 autoUpdateCheckbox = NSButton; 
                 updateLabel = NSTextField; 
-                updateSheet = NSWindow; 
                 updateText = NSTextView; 
+                window = NSWindow; 
             }; 
             SUPERCLASS = NSObject; 
         }
