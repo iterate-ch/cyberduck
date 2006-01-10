@@ -48,7 +48,6 @@
                 progressIndicator = NSProgressIndicator; 
                 quickConnectPopup = NSComboBox; 
                 searchField = NSView; 
-                statusIcon = NSImageView; 
                 statusLabel = NSTextField; 
                 upButton = NSSegmentedControl; 
                 window = NSWindow; 
