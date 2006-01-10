@@ -1,3 +1,6 @@
+/* No comment provided by engineer. */
+"A file with the same name already exists. Do you want to replace the existing file?" = "A file with the same name already exists. Do you want to replace the existing file?";
+
 /* Toolbar item */
 "Action" = "Action";
 
@@ -220,6 +223,9 @@
 
 /* Toolbar item */
 "Outline" = "Outline";
+
+/* No comment provided by engineer. */
+"Overwrite" = "Overwrite";
 
 /* No comment provided by engineer. */
 "Overwrite existing file" = "Létező file felülírása";

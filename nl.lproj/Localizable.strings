@@ -1,3 +1,6 @@
+/* No comment provided by engineer. */
+"A file with the same name already exists. Do you want to replace the existing file?" = "A file with the same name already exists. Do you want to replace the existing file?";
+
 /* Toolbar item */
 "Action" = "Action";
 
@@ -222,6 +225,9 @@
 "Outline" = "Outline";
 
 /* No comment provided by engineer. */
+"Overwrite" = "Overwrite";
+
+/* No comment provided by engineer. */
 "Overwrite existing file" = "Overschrijf bestaand bestand";
 
 /* A column in the browser */
@@ -373,4 +379,3 @@
 
 /* No comment provided by engineer. */
 "You are connected to at least one remote site. Do you want to review open browsers?" = "U bent met minstens één remote site verbonden. Wilt u de gebruikte browsers bekijken?";
-
