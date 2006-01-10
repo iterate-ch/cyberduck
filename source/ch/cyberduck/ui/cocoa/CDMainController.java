@@ -380,12 +380,6 @@ public class CDMainController extends CDController {
                                         Preferences.instance().setProperty("update.check", sender.state() == NSCell.OnState);
                                     }
 
-                                    public NSWindow updateSheet; // IBOutlet
-
-                                    public void setUpdateSheet(NSWindow updateSheet) {
-                                        this.updateSheet = updateSheet;
-                                    }
-
                                     private NSTextField updateLabel; // IBOutlet
 
                                     public void setUpdateLabel(NSTextField updateLabel) {
@@ -403,16 +397,16 @@ public class CDMainController extends CDController {
                                                 + NSBundle.localizedString("is out of date. The current version is", "Alert sheet text") + " "
                                                 + latestVersionNumber + ".");
                                         updateText.replaceCharactersInRange(new NSRange(updateText.textStorage().length(), 0), comment);
-                                        updateSheet.setTitle(filename);
-                                        updateSheet.center();
-                                        updateSheet.makeKeyAndOrderFront(null);
+                                        this.window().setTitle(filename);
+                                        this.window().center();
+                                        this.window().makeKeyAndOrderFront(null);
                                     }
 
                                     public void closeUpdateSheet(NSButton sender) {
                                         this.window().close();
                                         if (sender.tag() == CDSheetCallback.DEFAULT_OPTION) {
                                             try {
-                                                NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update") + updateSheet.title()));
+                                                NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update") + filename));
                                             }
                                             catch (java.net.MalformedURLException e) {
                                                 log.error(e.getMessage());
