@@ -35,7 +35,7 @@ public class Keychain {
     }
 
     public static Keychain instance() {
-        if (instance == null) {
+        if (null == instance) {
             instance = new Keychain();
         }
         return instance;

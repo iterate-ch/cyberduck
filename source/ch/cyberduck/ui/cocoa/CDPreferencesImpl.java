@@ -37,7 +37,9 @@ public class CDPreferencesImpl extends Preferences {
     private static Logger log = Logger.getLogger(CDPreferencesImpl.class);
 
     private NSUserDefaults props = NSUserDefaults.standardUserDefaults();
-    private static final File APP_SUPPORT_DIR = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck"));
+    
+    private static final File APP_SUPPORT_DIR
+            = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck"));
 
     static {
         APP_SUPPORT_DIR.mkdir();
@@ -45,7 +47,7 @@ public class CDPreferencesImpl extends Preferences {
 
     public String getProperty(String property) {
         String value = (String) props.objectForKey(property);
-        if (value == null) {
+        if (null == value) {
             return super.getProperty(property);
         }
         return value;

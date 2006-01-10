@@ -32,7 +32,7 @@ public abstract class Growl {
     }
 
     public static Growl instance() {
-        if (instance == null) {
+        if (null == instance) {
             if (Preferences.instance().getBoolean("growl.enable")) {
                 return (instance = new GrowlNative());
             }

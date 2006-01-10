@@ -117,6 +117,7 @@ public abstract class Preferences {
          * Current default browser view is outline view (0-List view, 1-Outline view, 2-Column view)
          */
         defaults.put("browser.view", "1");
+        defaults.put("browser.view.autoexpand", "true");
         /**
          * Confirm closing the browsing connection
          */
@@ -259,7 +260,7 @@ public abstract class Preferences {
      */
     public String getProperty(String property) {
         String value = (String) defaults.get(property);
-        if (value == null) {
+        if (null == value) {
             throw new IllegalArgumentException("No property with key '" + property + "'");
         }
         return value;

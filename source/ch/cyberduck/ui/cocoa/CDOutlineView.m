@@ -49,6 +49,15 @@
 	[super dealloc];
 }
 
+- (void)_scheduleAutoExpandTimerForItem:(id)object {
+	if([[[NSUserDefaults standardUserDefaults] stringForKey:@"browser.view.autoexpand"] isEqualToString:@"false"]) {
+		return;
+	}
+	if([super respondsToSelector:@selector(_scheduleAutoExpandTimerForItem:)]) {
+		[super performSelector:@selector(_scheduleAutoExpandTimerForItem:) withObject:object];
+	}
+}
+
 - (void)handleBrowserClick:(id)sender {
 	NSPoint where = [self convertPoint:[[NSApp currentEvent] locationInWindow] fromView:nil];
 	int row = [self rowAtPoint:where];

@@ -76,7 +76,7 @@ public class CDBookmarkTableDataSource extends Collection {
     }
 
     public static CDBookmarkTableDataSource instance() {
-        if (instance == null) {
+        if (null == instance) {
             instance = new CDBookmarkTableDataSource();
         }
         return instance;
