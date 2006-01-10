@@ -54,7 +54,7 @@
 		return;
 	}
 	if([super respondsToSelector:@selector(_scheduleAutoExpandTimerForItem:)]) {
-		[super performSelector:@selector(_scheduleAutoExpandTimerForItem:) withObject:object];
+		[super _scheduleAutoExpandTimerForItem:object];
 	}
 }
 
