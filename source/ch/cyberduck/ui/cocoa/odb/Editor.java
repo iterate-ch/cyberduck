@@ -119,6 +119,7 @@ public class Editor extends CDController {
 
     public void didCloseFile() {
         this.path.getLocal().delete();
+        this.invalidate();
     }
 
     public void didModifyFile() {
