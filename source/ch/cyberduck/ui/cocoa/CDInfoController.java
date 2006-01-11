@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Status;
+import ch.cyberduck.core.PathFactory;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -338,15 +339,18 @@ public class CDInfoController extends CDWindowController {
 
     public void filenameInputDidEndEditing(NSNotification sender) {
         if (this.numberOfFiles() == 1) {
-            final Path file = (Path) this.files.get(0);
-            if (!this.filenameField.stringValue().equals(file.getName())) {
+            final Path current = (Path) this.files.get(0);
+            if (!this.filenameField.stringValue().equals(current.getName())) {
                 if (this.filenameField.stringValue().indexOf('/') == -1) {
-                    controller.renamePath(file, file.getParent(), this.filenameField.stringValue());
-                    file.getParent().invalidate();
+                    Path renamed = PathFactory.createPath(controller.workdir().getSession(),
+                            current.getParent().getAbsolute(), this.filenameField.stringValue());
+                    controller.renamePath(current, renamed);
+                    current.getParent().invalidate();
                     controller.reloadData(true);
+                    controller.setSelectedPath(renamed);
                 }
                 else if (filenameField.stringValue().length() == 0) {
-                    this.filenameField.setStringValue(file.getName());
+                    this.filenameField.setStringValue(current.getName());
                 }
                 else {
                     this.alert(NSAlertPanel.informationalAlertPanel(

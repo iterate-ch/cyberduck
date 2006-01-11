@@ -753,13 +753,11 @@ public class CDMainController extends CDController {
         NSArray orderedWindows = (NSArray) NSKeyValue.valueForKey(app, "orderedWindows");
         int c = orderedWindows.count();
         NSMutableArray orderedDocs = new NSMutableArray();
-        Object curDelegate;
         for (int i = 0; i < c; i++) {
             if (((NSWindow) orderedWindows.objectAtIndex(i)).isVisible()) {
-                curDelegate = ((NSWindow) orderedWindows.objectAtIndex(i)).delegate();
-                if ((curDelegate != null) && (curDelegate instanceof CDQueueController)) {
-                    orderedDocs.addObject(curDelegate);
-                    log.debug("orderedTransfers:" + orderedDocs);
+                Object delegate = ((NSWindow) orderedWindows.objectAtIndex(i)).delegate();
+                if ((delegate != null) && (delegate instanceof CDQueueController)) {
+                    orderedDocs.addObject(delegate);
                     return orderedDocs;
                 }
             }
@@ -773,12 +771,11 @@ public class CDMainController extends CDController {
         NSArray orderedWindows = (NSArray) NSKeyValue.valueForKey(app, "orderedWindows");
         int c = orderedWindows.count();
         NSMutableArray orderedDocs = new NSMutableArray();
-        Object curDelegate;
         for (int i = 0; i < c; i++) {
             if (((NSWindow) orderedWindows.objectAtIndex(i)).isVisible()) {
-                curDelegate = ((NSWindow) orderedWindows.objectAtIndex(i)).delegate();
-                if ((curDelegate != null) && (curDelegate instanceof CDBrowserController)) {
-                    orderedDocs.addObject(curDelegate);
+                Object delegate = ((NSWindow) orderedWindows.objectAtIndex(i)).delegate();
+                if ((delegate != null) && (delegate instanceof CDBrowserController)) {
+                    orderedDocs.addObject(delegate);
                 }
             }
         }

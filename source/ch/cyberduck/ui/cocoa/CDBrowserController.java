@@ -392,15 +392,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     protected Comparator getComparator() {
-        switch (this.browserSwitchView.selectedSegment()) {
-            case LIST_VIEW: {
-                return ((CDTableDelegate) this.browserListView.delegate()).getSortingComparator();
-            }
-            case OUTLINE_VIEW: {
-                return ((CDTableDelegate) this.browserOutlineView.delegate()).getSortingComparator();
-            }
-        }
-        return null;
+        return ((CDTableDelegate) this.getSelectedBrowserView().delegate()).getSortingComparator();
     }
 
     private boolean showHiddenFiles;
@@ -459,31 +451,24 @@ public class CDBrowserController extends CDWindowController
             selected = this.getSelectedPaths();
         }
         this.deselectAll();
-        switch (this.browserSwitchView.selectedSegment()) {
-            case LIST_VIEW: {
-                this.browserListView.reloadData();
-                if (this.isMounted())
-                    this.infoLabel.setStringValue(this.browserListView.numberOfRows() + " " +
-                            NSBundle.localizedString("files", ""));
-                else
-                    this.infoLabel.setStringValue("");
-                break;
-            }
-            case OUTLINE_VIEW: {
-                this.browserOutlineView.reloadData();
-                if (this.isMounted())
-                    this.infoLabel.setStringValue(this.browserOutlineView.numberOfRows() + " " +
-                            NSBundle.localizedString("files", ""));
-                else
-                    this.infoLabel.setStringValue("");
-                break;
-            }
+        this.getSelectedBrowserView().reloadData();
+        if (this.isMounted()) {
+            this.infoLabel.setStringValue(this.getSelectedBrowserView().numberOfRows() + " " +
+                    NSBundle.localizedString("files", ""));
+        }
+        else {
+            this.infoLabel.setStringValue("");
         }
         if (preserveSelection) {
             this.setSelectedPaths(selected);
         }
     }
 
+    /**
+     *
+     * @param path
+     * @param expand Expand the existing selection
+     */
     private void selectRow(Path path, boolean expand) {
         log.debug("selectRow:" + path);
         if (this.getSelectedBrowserModel().contains(this.getSelectedBrowserView(), path)) {
@@ -491,16 +476,14 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
+    /**
+     *
+     * @param row
+     * @param expand Expand the existing selection
+     */
     private void selectRow(int row, boolean expand) {
         log.debug("selectRow:" + row);
-        switch (this.browserSwitchView.selectedSegment()) {
-            case LIST_VIEW: {
-                this.browserListView.selectRow(row, expand);
-            }
-            case OUTLINE_VIEW: {
-                this.browserOutlineView.selectRow(row, expand);
-            }
-        }
+        this.getSelectedBrowserView().selectRow(row, expand);
     }
 
     protected void setSelectedPath(Path selected) {
@@ -532,18 +515,22 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
+    /**
+     *
+     * @return The first selected path found or null if there is no selection
+     */
     protected Path getSelectedPath() {
-        switch (this.browserSwitchView.selectedSegment()) {
-            case LIST_VIEW: {
-                return (Path) this.browserListModel.childs(this.workdir()).get(this.browserListView.selectedRow());
-            }
-            case OUTLINE_VIEW: {
-                return (Path) this.browserOutlineView.itemAtRow(this.browserOutlineView.selectedRow());
-            }
+        List selected = this.getSelectedPaths();
+        if(selected.size() > 0) {
+            return (Path)selected.get(0);
         }
         return null;
     }
 
+    /**
+     *
+     * @return All selected paths or an empty list if there is no selection
+     */
     protected List getSelectedPaths() {
         switch (this.browserSwitchView.selectedSegment()) {
             case LIST_VIEW: {
@@ -551,8 +538,8 @@ public class CDBrowserController extends CDWindowController
                 List selectedFiles = new ArrayList();
                 List childs = this.browserListModel.childs(this.workdir());
                 while (iterator.hasMoreElements()) {
-                    int selectedIndex = ((Integer) iterator.nextElement()).intValue();
-                    selectedFiles.add(childs.get(selectedIndex));
+                    int selected = ((Integer) iterator.nextElement()).intValue();
+                    selectedFiles.add(childs.get(selected));
                 }
                 return selectedFiles;
             }
@@ -570,26 +557,11 @@ public class CDBrowserController extends CDWindowController
     }
 
     private int getSelectionCount() {
-        switch (this.browserSwitchView.selectedSegment()) {
-            case LIST_VIEW: {
-                return this.browserListView.numberOfSelectedRows();
-            }
-            case OUTLINE_VIEW: {
-                return this.browserOutlineView.numberOfSelectedRows();
-            }
-        }
-        return 0;
+        return this.getSelectedBrowserView().numberOfSelectedRows();
     }
 
     private void deselectAll() {
-        switch (this.browserSwitchView.selectedSegment()) {
-            case LIST_VIEW: {
-                this.browserListView.deselectAll(null);
-            }
-            case OUTLINE_VIEW: {
-                this.browserOutlineView.deselectAll(null);
-            }
-        }
+        this.getSelectedBrowserView().deselectAll(null);
     }
 
     // ----------------------------------------------------------
@@ -601,6 +573,10 @@ public class CDBrowserController extends CDWindowController
         this.window.setDelegate(this);
     }
 
+    /**
+     * Overwritten to clear the cache when the window closes
+     * @param notification
+     */
     public void windowWillClose(NSNotification notification) {
         if (this.hasSession()) {
             this.session.cache().clear();
@@ -621,6 +597,10 @@ public class CDBrowserController extends CDWindowController
         this.browserTabView = browserTabView;
     }
 
+    /**
+     *
+     * @return The currently selected browser view (which is either an outlineview or a plain tableview)
+     */
     public NSTableView getSelectedBrowserView() {
         switch (this.browserSwitchView.selectedSegment()) {
             case LIST_VIEW: {
@@ -633,16 +613,12 @@ public class CDBrowserController extends CDWindowController
         return null;
     }
 
+    /**
+     *
+     * @return The datasource of the currently selected browser view
+     */
     public CDBrowserTableDataSource getSelectedBrowserModel() {
-        switch (this.browserSwitchView.selectedSegment()) {
-            case LIST_VIEW: {
-                return (CDBrowserTableDataSource) this.browserListView.dataSource();
-            }
-            case OUTLINE_VIEW: {
-                return (CDBrowserTableDataSource) this.browserOutlineView.dataSource();
-            }
-        }
-        return null;
+        return (CDBrowserTableDataSource) this.getSelectedBrowserView().dataSource();
     }
 
     private NSSegmentedControl browserSwitchView;
@@ -949,7 +925,7 @@ public class CDBrowserController extends CDWindowController
             }
             NSTextFieldCell cell = new NSTextFieldCell();
             {
-                cell.setEditable(true);
+                cell.setEditable(true); //to enable inline renaming of files
                 cell.setTarget(view.target());
                 cell.setAction(view.action());
             }
@@ -1181,6 +1157,10 @@ public class CDBrowserController extends CDWindowController
         this.editMenu.setDelegate(this.editMenuDelegate = new EditMenuDelegate());
     }
 
+    /**
+     * Used to provide a custom icon for the edit menu and disable the menu if no external editor
+     * can be found
+     */
     protected class EditMenuDelegate extends NSObject {
 
         public int numberOfItemsInMenu(NSMenu menu) {
@@ -1261,6 +1241,7 @@ public class CDBrowserController extends CDWindowController
             return;
         }
         try {
+            // First look for equivalent bookmarks
             for (Iterator iter = this.bookmarkModel.iterator(); iter.hasNext();) {
                 Host h = (Host) iter.next();
                 if (h.getNickname().equals(input)) {
@@ -1268,9 +1249,11 @@ public class CDBrowserController extends CDWindowController
                     return;
                 }
             }
+            // Try to parse the input as a URL and extract protocol, hostname, username and password if any.
             this.mount(Host.parse(input));
         }
         catch (java.net.MalformedURLException e) {
+            // No URL; assume a hostname has been entered
             this.mount(new Host(input));
         }
     }
@@ -1292,6 +1275,7 @@ public class CDBrowserController extends CDWindowController
             if (null != o) {
                 final String searchString = ((NSText) o).string();
                 if (null == searchString || searchString.length() == 0) {
+                    // Revert to the last used default filter
                     if (this.getShowHiddenFiles()) {
                         this.filenameFilter = new NullFilter();
                     }
@@ -1300,6 +1284,7 @@ public class CDBrowserController extends CDWindowController
                     }
                 }
                 else {
+                    // Setting up a custom filter for the directory listing
                     this.filenameFilter = new Filter() {
                         public boolean accept(Path file) {
                             return file.getName().toLowerCase().indexOf(searchString.toLowerCase()) != -1;
@@ -1355,8 +1340,8 @@ public class CDBrowserController extends CDWindowController
         this.bookmarkModel.add(item);
         this.bookmarkTable.selectRow(this.bookmarkModel.lastIndexOf(item), false);
         this.bookmarkTable.scrollRowToVisible(this.bookmarkModel.lastIndexOf(item));
-        CDBookmarkController controller = new CDBookmarkController(item);
-        controller.window().makeKeyAndOrderFront(null);
+        CDBookmarkController c = new CDBookmarkController(item);
+        c.window().makeKeyAndOrderFront(null);
     }
 
     private NSButton deleteBookmarkButton; // IBOutlet
@@ -1430,14 +1415,16 @@ public class CDBrowserController extends CDWindowController
 
     public void backButtonClicked(Object sender) {
         Path selected = this.session.getPreviousPath();
-        if (selected != null)
+        if (selected != null) {
             this.setWorkdir(selected);
+        }
     }
 
     public void forwardButtonClicked(Object sender) {
         Path selected = this.session.getForwardPath();
-        if (selected != null)
+        if (selected != null) {
             this.setWorkdir(selected);
+        }
     }
 
     private NSSegmentedControl upButton; // IBOutlet
@@ -1451,7 +1438,7 @@ public class CDBrowserController extends CDWindowController
     public void upButtonClicked(Object sender) {
         Path previous = this.workdir();
         this.setWorkdir(this.workdir().getParent());
-        this.selectRow(previous, false);
+        this.setSelectedPath(previous);
     }
 
     private static final NSImage DISK_ICON = NSImage.imageNamed("disk.tiff");
@@ -1585,6 +1572,11 @@ public class CDBrowserController extends CDWindowController
         controller.window().makeKeyAndOrderFront(null);
     }
 
+    /**
+     * Marks all expanded directories as invalid and tells the
+     * browser table to reload its data
+     * @param sender
+     */
     public void reloadButtonClicked(Object sender) {
         if (this.isMounted()) {
             switch (this.browserSwitchView.selectedSegment()) {
@@ -1612,11 +1604,9 @@ public class CDBrowserController extends CDWindowController
     /**
      *
      * @param path
-     * @param destination
-     * @param name
+     * @param renamed
      */
-    protected void renamePath(final Path path, Path destination, final String name) {
-        final Path renamed = PathFactory.createPath(workdir.getSession(), destination.getAbsolute(), name);
+    protected void renamePath(final Path path, final Path renamed) {
         if (renamed.exists()) {
             NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Overwrite", "Alert sheet title"), //title
                     NSBundle.localizedString("A file with the same name already exists. Do you want to replace the existing file?", ""),
@@ -1659,6 +1649,28 @@ public class CDBrowserController extends CDWindowController
                 editor.open(selected);
             }
         }
+    }
+
+    /**
+     * @param selected
+     * @return True if the selected path is editable (not a directory and no known binary file)
+     */
+    private boolean isEditable(Path selected) {
+        if (selected.attributes.isFile()) {
+            if (null == selected.getExtension()) {
+                return true;
+            }
+            if (selected.getExtension() != null) {
+                StringTokenizer binaryTypes = new StringTokenizer(Preferences.instance().getProperty("editor.disabledFiles"), " ");
+                while (binaryTypes.hasMoreTokens()) {
+                    if (binaryTypes.nextToken().equalsIgnoreCase(selected.getExtension())) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     public void gotoButtonClicked(Object sender) {
@@ -1928,8 +1940,6 @@ public class CDBrowserController extends CDWindowController
 
     public void disconnectButtonClicked(Object sender) {
         this.unmount();
-        this.deselectAll();
-        this.getSelectedBrowserView().setNeedsDisplay(true);
     }
 
     public void showHiddenFilesClicked(Object sender) {
@@ -1982,13 +1992,19 @@ public class CDBrowserController extends CDWindowController
                 for (int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                     Queue q = Queue.createQueue(dict);
-                    Path workdir = this.workdir();
+                    List selected = new ArrayList();
                     for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                        Path item = PathFactory.createPath(workdir().getSession(), ((Path) iter.next()).getAbsolute());
-                        this.renamePath(item, workdir, item.getName());
+                        Path current = PathFactory.createPath(workdir().getSession(),
+                                ((Path) iter.next()).getAbsolute());
+                        Path renamed = PathFactory.createPath(workdir().getSession(),
+                                workdir().getAbsolute(), current.getName());
+                        this.renamePath(current, renamed);
+                        selected.add(renamed);
                     }
-                    workdir.invalidate();
+                    this.workdir().invalidate();
                     this.reloadData(true);
+                    this.setSelectedPaths(selected);
+
                 }
                 pboard.setPropertyListForType(null, "QueuePBoardType");
             }
@@ -2070,6 +2086,13 @@ public class CDBrowserController extends CDWindowController
         return this.workdir;
     }
 
+    /**
+     * Sets the current working directory. This will udpate the path selection dropdown button
+     * and also add this path to the browsing history. If the path cannot be a working directory (e.g. permission
+     * issues trying to enter the directory) reloading the browser view is canceled and the working directory
+     * not changed.
+     * @param path The new working directory to display
+     */
     protected void setWorkdir(Path path) {
         if (!this.hasSession()) {
             path = null;
@@ -2098,6 +2121,12 @@ public class CDBrowserController extends CDWindowController
 
     private ConnectionListener listener = null;
 
+    /**
+     * Initializes a session for the passed host. Setting up the listeners and adding any callback
+     * controllers needed for login, trust management and hostkey verification.
+     * @param host
+     * @return A session object bound to this browser controller
+     */
     private Session init(final Host host) {
         if (this.hasSession()) {
             this.session.removeConnectionListener(listener);
@@ -2250,6 +2279,9 @@ public class CDBrowserController extends CDWindowController
         return this.mount(host, this.getEncoding());
     }
 
+    /**
+     * A lock object used to make sure only one session can use this browser at once.
+     */
     private final Object lock = new Object();
 
     public Session mount(final Host host, final String encoding) {
@@ -2288,12 +2320,15 @@ public class CDBrowserController extends CDWindowController
                                 public void error(final String message) {
                                     File bookmark = getRepresentedFile();
                                     if (bookmark.exists()) {
+                                        // Delete this history bookmark if there was any error connecting
                                         bookmark.delete();
                                     }
                                     window.setRepresentedFilename(""); //can't send null
                                 }
                             });
+                            // Mount this session and set the working directory
                             setWorkdir(session.mount());
+                            // This progress listener was only used to handle initial connection errors
                             session.removeProgressListener(listener);
                         }
                     }
@@ -2304,14 +2339,21 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
+    /**
+     * Will close the session but still display the current working directory without any confirmation
+     * from the user
+     */
     public void unmount() {
         if (this.hasSession()) {
             this.session.close();
         }
+        this.deselectAll();
+        this.getSelectedBrowserView().setNeedsDisplay(true);
     }
 
     /**
-     * @return True if the unmount process has finished, false if the user has to agree first to close the connection
+     * @return True if the unmount process has finished, false if the user has to agree first
+     * to close the connection
      */
     public boolean unmount(final CDSheetCallback callback) {
         synchronized (lock) {
@@ -2332,6 +2374,13 @@ public class CDBrowserController extends CDWindowController
         return true;
     }
 
+    /**
+     * Can't remember if this is ever used because we have our own document handling and
+     * aren't a NSDocuemnt
+     * @param data
+     * @param type
+     * @return True if we succeeded opening the bookmark
+     */
     public boolean loadDataRepresentation(NSData data, String type) {
         if (type.equals("Cyberduck Bookmark")) {
             String[] errorString = new String[]{null};
@@ -2354,6 +2403,12 @@ public class CDBrowserController extends CDWindowController
         return false;
     }
 
+    /**
+     * Can't remember if this is ever used because we have our own document handling and
+     * aren't a NSDocuemnt
+     * @param type
+     * @return The bookmark data of this browser
+     */
     public NSData dataRepresentationOfType(String type) {
         if (this.isMounted()) {
             if (type.equals("Cyberduck Bookmark")) {
@@ -2384,10 +2439,6 @@ public class CDBrowserController extends CDWindowController
 
         }
     }
-
-    // ----------------------------------------------------------
-    // Window delegate methods
-    // ----------------------------------------------------------
 
     public static int applicationShouldTerminate(NSApplication app) {
         // Determine if there are any open connections
@@ -2655,24 +2706,6 @@ public class CDBrowserController extends CDWindowController
         return true; // by default everything is enabled
     }
 
-    private boolean isEditable(Path selected) {
-        if (selected.attributes.isFile()) {
-            if (null == selected.getExtension()) {
-                return true;
-            }
-            if (selected.getExtension() != null) {
-                StringTokenizer binaryTypes = new StringTokenizer(Preferences.instance().getProperty("editor.disabledFiles"), " ");
-                while (binaryTypes.hasMoreTokens()) {
-                    if (binaryTypes.nextToken().equalsIgnoreCase(selected.getExtension())) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        return false;
-    }
-
     // ----------------------------------------------------------
     // Toolbar Delegate
     // ----------------------------------------------------------
@@ -2920,6 +2953,11 @@ public class CDBrowserController extends CDWindowController
         return null;
     }
 
+    /**
+     *
+     * @param toolbar
+     * @return The default configuration of toolbar items
+     */
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return new NSArray(new Object[]{
                 "New Connection",
@@ -2935,6 +2973,11 @@ public class CDBrowserController extends CDWindowController
         });
     }
 
+    /**
+     *
+     * @param toolbar
+     * @return All available toolbar items
+     */
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
         return new NSArray(new Object[]{
                 "New Connection",
@@ -2960,6 +3003,9 @@ public class CDBrowserController extends CDWindowController
         });
     }
 
+    /**
+     * Overrriden to remove any listeners from the session
+     */
     protected void invalidate() {
         if (this.hasSession()) {
             this.session.removeConnectionListener(this.listener);

@@ -28,6 +28,8 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @version $Id$
@@ -71,9 +73,12 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             if (!item.getName().equals(value) && !value.equals("")) {
                 controller.invoke(new Runnable() {
                     public void run() {
-                        controller.renamePath(item, item.getParent(), value.toString());
+                        Path renamed = PathFactory.createPath(controller.workdir().getSession(),
+                                item.getParent().getAbsolute(), value.toString());
+                        controller.renamePath(item, renamed);
                         item.getParent().invalidate();
                         controller.reloadData();
+                        controller.setSelectedPath(renamed);
                     }
                 });
             }
@@ -180,16 +185,22 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             Object o = NSPasteboard.pasteboardWithName("QueuePBoard").propertyListForType("QueuePBoardType");
             if (o != null) {
                 NSArray elements = (NSArray) o;
+                List selected = new ArrayList();
                 for (int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                     Queue q = Queue.createQueue(dict);
                     for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                        Path item = PathFactory.createPath(controller.workdir().getSession(), ((Path) iter.next()).getAbsolute());
-                        controller.renamePath(item, destination, item.getName());
+                        Path current = PathFactory.createPath(controller.workdir().getSession(),
+                                ((Path) iter.next()).getAbsolute());
+                        Path renamed = PathFactory.createPath(controller.workdir().getSession(),
+                                destination.getAbsolute(), current.getName());
+                        controller.renamePath(current, renamed);
+                        selected.add(renamed);
                     }
                 }
                 destination.invalidate();
                 controller.reloadData(true);
+                controller.setSelectedPaths(selected);
                 return true;
             }
         }
