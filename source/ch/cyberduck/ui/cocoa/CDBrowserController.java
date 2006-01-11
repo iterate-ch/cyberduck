@@ -1617,6 +1617,7 @@ public class CDBrowserController extends CDWindowController
             CDSheetController c = new CDSheetController(this, sheet) {
                 public void callback(int returncode) {
                     if (returncode == DEFAULT_OPTION) {
+						renamed.delete();
                         path.rename(renamed.getAbsolute());
                     }
                 }
