@@ -411,7 +411,6 @@
 		474152DE06C4F08A00AC0BD2 /* Codec.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Codec.java; sourceTree = "<group>"; };
 		474152E306C4F08A00AC0BD2 /* Host.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; name = Host.java; path = source/ch/cyberduck/core/Host.java; sourceTree = SOURCE_ROOT; };
 		474152EB06C4F08A00AC0BD2 /* Login.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Login.java; sourceTree = "<group>"; };
-		474152EC06C4F08A00AC0BD2 /* Message.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Message.java; sourceTree = "<group>"; };
 		474152ED06C4F08A00AC0BD2 /* Path.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Path.java; sourceTree = "<group>"; };
 		474152EE06C4F08A00AC0BD2 /* PathFactory.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PathFactory.java; sourceTree = "<group>"; };
 		474152EF06C4F08A00AC0BD2 /* Permission.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Permission.java; sourceTree = "<group>"; };
@@ -1402,7 +1401,6 @@
 		47F0CB46087B237F00439978 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47F0CB8C087B23A900439978 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Status.strings; sourceTree = "<group>"; };
 		47F0CB91087B23B600439978 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Growl.strings; sourceTree = "<group>"; };
-		47F0E33C076624E0003F05A5 /* NameTransformer.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NameTransformer.java; sourceTree = "<group>"; };
 		47F2080E0753E676009192FF /* ValidatorFactory.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ValidatorFactory.java; sourceTree = "<group>"; };
 		47F2E9BA05BD5356003D2875 /* LoginTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = LoginTest.java; sourceTree = "<group>"; };
 		47F2EAA405BD7F7E003D2875 /* CodecTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CodecTest.java; sourceTree = "<group>"; };
@@ -1787,11 +1785,9 @@
 				47729074080D5957007126E4 /* Keychain.java */,
 				47983749072AD67800FA3CDB /* Keychain.h */,
 				4798373F072AD66D00FA3CDB /* Keychain.m */,
-				474152EC06C4F08A00AC0BD2 /* Message.java */,
 				474152ED06C4F08A00AC0BD2 /* Path.java */,
 				474152EE06C4F08A00AC0BD2 /* PathFactory.java */,
 				474152EF06C4F08A00AC0BD2 /* Permission.java */,
-				47F0E33C076624E0003F05A5 /* NameTransformer.java */,
 				474152F606C4F08A00AC0BD2 /* Rendezvous.java */,
 				47B6A3C1074F8EAF00B9F16C /* SessionPool.java */,
 				474152F706C4F08A00AC0BD2 /* Session.java */,
