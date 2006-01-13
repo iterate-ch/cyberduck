@@ -484,6 +484,7 @@ public class CDBrowserController extends CDWindowController
     private void selectRow(int row, boolean expand) {
         log.debug("selectRow:" + row);
         this.getSelectedBrowserView().selectRow(row, expand);
+		this.getSelectedBrowserView().scrollRowToVisible(row);
     }
 
     protected void setSelectedPath(Path selected) {
