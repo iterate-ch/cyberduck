@@ -4,6 +4,9 @@ http://cyberduck.ch/
 Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
+2.5.4
+- [Bugfix] Random crashes (#65, #96)
+
 2.5.3
 - [Feature] New and much improved Bonjour implementation
 - [Feature] Inline rename files in browser (Return key invokes editing)

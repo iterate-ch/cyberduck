@@ -3,11 +3,14 @@
 <plist version="1.0">
    <dict>
       <key>version</key>
-      <string>2.5.3</string>
+      <string>2.5.4</string>
       <key>file</key>
-      <string>Cyberduck-2.5.3.dmg</string>
+      <string>Cyberduck-2.5.4.dmg</string>
       <key>comment</key>
       <string>Changelog:
+2.5.4
+- [Bugfix] Random crashes (#65, #96)
+
 2.5.3
 - [Feature] New and much improved Bonjour implementation
 - [Feature] Inline rename files in browser (Return key invokes editing)
