@@ -136,7 +136,12 @@ public class Login {
      */
     private void init(String u, String p) {
         if (null == u || u.equals("")) {
-            this.user = Preferences.instance().getProperty("ftp.anonymous.name");
+			if(this.protocol.equals(Session.FTP)) {
+            	this.user = Preferences.instance().getProperty("ftp.anonymous.name");
+			}
+			else {
+            	this.user = Preferences.instance().getProperty("connection.login.name");
+			}
         }
         else {
             if (u.indexOf(':') != -1) {
@@ -166,7 +171,7 @@ public class Login {
      * @return true if the username is anononymous
      */
     public boolean isAnonymousLogin() {
-        return this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"));
+        return Preferences.instance().getProperty("ftp.anonymous.name").equals(this.getUsername());
     }
 
     /**
@@ -195,22 +200,21 @@ public class Login {
     public boolean hasReasonableValues() {
         boolean reasonable = false;
         if (this.usesPublicKeyAuthentication()) {
-            reasonable = true;
+            return true;
         }
-        if (this.user != null && this.pass != null) {
+        if (this.getUsername() != null && this.getPassword() != null) {
             // anonymous login is ok
-            if (this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name")) &&
-                    this.pass.equals(Preferences.instance().getProperty("ftp.anonymous.pass"))) {
-                reasonable = true;
+            if (Preferences.instance().getProperty("ftp.anonymous.name").equals(this.getUsername()) &&
+                    Preferences.instance().getProperty("ftp.anonymous.pass").equals(this.getPassword())) {
+                return true;
             }
             // if both name and pass are custom it is ok
-            if (!(this.user.equals(Preferences.instance().getProperty("ftp.anonymous.name"))) &&
-                    !(this.pass.equals(Preferences.instance().getProperty("ftp.anonymous.pass")))) {
-                reasonable = true;
+            if (!(Preferences.instance().getProperty("ftp.anonymous.name").equals(this.getUsername())) &&
+                    !(Preferences.instance().getProperty("ftp.anonymous.pass").equals(this.getPassword()))) {
+                return true;
             }
         }
-        log.debug("hasReasonableValues:" + reasonable);
-        return reasonable;
+		return false;
     }
 
     /**
