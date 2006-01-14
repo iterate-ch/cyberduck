@@ -196,7 +196,8 @@
 			debug="${debug}"
 			deprecation="on"
 			srcdir="${source}"
-			destdir="${build.classes}">
+            target="1.4"
+            destdir="${build.classes}">
 			<classpath refid="build.classpath"/>
 		</javac>
 	</target>
