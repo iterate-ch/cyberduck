@@ -79,7 +79,7 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>*revision*</string>
-	<key>ch.cyberduck.version</key>
+	<key>cyberduck.version</key>
 	<string>*version*</string>
 	<key>Java</key>
 	<dict>

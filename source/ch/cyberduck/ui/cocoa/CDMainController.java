@@ -310,7 +310,7 @@ public class CDMainController extends CDController {
                 try {
                     int pool = NSAutoreleasePool.push();
                     final String currentVersionNumber
-                            = (String) NSBundle.mainBundle().objectForInfoDictionaryKey("ch.cyberduck.version");
+                            = (String) NSBundle.mainBundle().objectForInfoDictionaryKey("cyberduck.version");
                     log.info("Current version:" + currentVersionNumber);
                     NSData data = new NSData(new java.net.URL(Preferences.instance().getProperty("website.update.xml")));
                     if (null == data) {
