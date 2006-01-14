@@ -21,8 +21,6 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
-import org.apache.log4j.Logger;
-
 import java.util.Arrays;
 
 /**
@@ -31,7 +29,6 @@ import java.util.Arrays;
  * @version $Id$
  */
 public class Permission {
-    private static Logger log = Logger.getLogger(Permission.class);
 
     private static final String DEFAULT_MASK = "---------";
     private String mask;

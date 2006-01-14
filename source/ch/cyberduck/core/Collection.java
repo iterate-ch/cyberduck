@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.Iterator;
 
 /**
  * @version $Id$
@@ -61,6 +62,22 @@ public class Collection extends ArrayList implements CollectionListener {
     public void add(int row, Object object) {
         super.add(row, object);
         this.collectionItemAdded(object);
+    }
+
+    public Object get(int row) {
+        return super.get(row);
+    }
+
+    public Iterator iterator() {
+        return super.iterator();
+    }
+
+    public int size() {
+        return super.size();
+    }
+
+    public boolean contains(Object o) {
+        return super.contains(o);
     }
 
     public Object remove(int row) {

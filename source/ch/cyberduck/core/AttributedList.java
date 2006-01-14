@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSObject;
 
 import java.lang.reflect.Array;
 import java.util.Comparator;
@@ -35,7 +36,7 @@ import java.util.Set;
  *
  * @version $Id$
  */
-public class AttributedList implements List {
+public class AttributedList extends NSObject implements List {
 
     private NSMutableArray content = new NSMutableArray();
 

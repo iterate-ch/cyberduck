@@ -70,7 +70,7 @@ public class SFTPSession extends Session {
     }
 
     public void close() {
-        synchronized(this) {
+        synchronized (this) {
             this.activityStarted();
             this.connectionWillClose();
             try {
@@ -127,7 +127,7 @@ public class SFTPSession extends Session {
     }
 
     protected void connect(String encoding) throws IOException {
-        synchronized(this) {
+        synchronized (this) {
             this.retain();
             this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getHostname() + "...");
             this.log("=====================================");
@@ -233,19 +233,22 @@ public class SFTPSession extends Session {
             int pool = NSAutoreleasePool.push();
             passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
             if (null == passphrase || passphrase.equals("")) {
-                host.getCredentials().promptUser("The private key is password protected. " +
-                        "Enter the passphrase for the key file '" + credentials.getPrivateKeyFile() + "'.",
-                        this.loginController);
+                loginController.promptUser(host.getCredentials(),
+                        NSBundle.localizedString("Private key password protected", "Credentials", ""),
+                        NSBundle.localizedString("Enter the passphrase for the private key file", "Credentials", "")
+                                + " (" + credentials.getPrivateKeyFile() + ")");
                 if (host.getCredentials().tryAgain()) {
                     passphrase = credentials.getPassword();
                     if (keyFile.isPassphraseProtected()) {
                         if (credentials.usesKeychain()) {
-                            Keychain.instance().addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(), passphrase);
+                            Keychain.instance().addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(),
+                                    passphrase);
                         }
                     }
                 }
                 else {
-                    throw new SshException("Login as user " + credentials.getUsername() + " canceled.");
+                    throw new SshException(
+                            NSBundle.localizedString("Login canceled", "Credentials", ""));
                 }
             }
             NSAutoreleasePool.pop(pool);
@@ -262,31 +265,36 @@ public class SFTPSession extends Session {
             this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " '"
                     + host.getCredentials().getUsername() + "'");
             if (host.getCredentials().usesPublicKeyAuthentication()) {
-                if (AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(host.getCredentials())) {
-                    this.message(NSBundle.localizedString("Login successful", "Status", ""));
+                if (AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(host.getCredentials()))
+                {
+                    this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
                     return;
                 }
             }
             else {
                 if (AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(host.getCredentials()) ||
-                        AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(host.getCredentials())) {
-                    this.message(NSBundle.localizedString("Login successful", "Status", ""));
+                        AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(host.getCredentials()))
+                {
+                    this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
                     host.getCredentials().addInternetPasswordToKeychain();
                     return;
                 }
             }
-            this.message(NSBundle.localizedString("Login failed", "Status", ""));
-            host.getCredentials().promptUser("Authentication for user " + host.getCredentials().getUsername()
-                    + " failed.", this.loginController);
+            this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
+            loginController.promptUser(host.getCredentials(),
+                    NSBundle.localizedString("Login failed", "Credentials", ""),
+                    NSBundle.localizedString("Login with username and password", "Credentials", ""));
             if (host.getCredentials().tryAgain()) {
                 this.login();
             }
             else {
-                throw new SshException("Login as user " + host.getCredentials().getUsername() + " canceled.");
+                throw new SshException(
+                        NSBundle.localizedString("Login canceled", "Credentials", ""));
             }
         }
         else {
-            throw new IOException("Login as user " + host.getCredentials().getUsername() + " failed.");
+            throw new IOException(
+                    NSBundle.localizedString("Login canceled", "Credentials", ""));
         }
     }
 
@@ -306,7 +314,7 @@ public class SFTPSession extends Session {
     }
 
     protected void noop() throws IOException {
-        synchronized(this) {
+        synchronized (this) {
             if (this.isConnected()) {
                 this.SSH.noop();
             }

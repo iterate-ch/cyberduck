@@ -80,6 +80,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         if (index < this.childs(item).size()) {
             return (Path) this.childs(item).get(index);
         }
+		log.warn("outlineViewChildOfItem:"+index+","+item);
         return null;
     }
 

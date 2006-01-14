@@ -494,18 +494,20 @@ public class CDMainController extends CDController {
     }
 
     public void showTransferQueueClicked(Object sender) {
-        CDQueueController controller = CDQueueController.instance();
-        controller.window().makeKeyAndOrderFront(null);
+        CDQueueController c = CDQueueController.instance();
+        c.window().makeKeyAndOrderFront(null);
     }
 
     public void downloadBookmarksFromDotMacClicked(Object sender) {
         CDDotMacController controller = new CDDotMacController();
         controller.downloadBookmarks();
+        controller.invalidate();
     }
 
     public void uploadBookmarksToDotMacClicked(Object sender) {
-        CDDotMacController controller = new CDDotMacController();
-        controller.uploadBookmarks();
+        CDDotMacController c = new CDDotMacController();
+        c.uploadBookmarks();
+        c.invalidate();
     }
 
     // ----------------------------------------------------------

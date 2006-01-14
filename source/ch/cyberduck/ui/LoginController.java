@@ -26,7 +26,7 @@ public interface LoginController {
 	 * Call this to allow the user to reenter the new login credentials.
 	 * A concrete sublcass could eg. display a panel.
 	 *
-	 * @param explanation Any additional information why the login failed.
+	 * @param message Any additional information why the login failed.
 	 */
-	public void promptUser(Login login, String explanation);
+	public void promptUser(Login login, String reason, String message);
 }

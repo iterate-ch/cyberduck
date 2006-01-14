@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSObject;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
@@ -31,11 +32,9 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * A path is a remote directory or file.
- *
  * @version $Id$
  */
-public abstract class Path {
+public abstract class Path extends NSObject {
     private static Logger log = Logger.getLogger(Path.class);
 
     private String path = null;

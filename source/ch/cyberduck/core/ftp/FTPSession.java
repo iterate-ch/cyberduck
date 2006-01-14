@@ -62,7 +62,7 @@ public class FTPSession extends Session {
     }
 
     public void close() {
-        synchronized(this) {
+        synchronized (this) {
             this.activityStarted();
             this.connectionWillClose();
             try {
@@ -101,7 +101,7 @@ public class FTPSession extends Session {
     }
 
     protected void connect(String encoding) throws IOException, FTPException {
-        synchronized(this) {
+        synchronized (this) {
             this.retain();
             this.message(NSBundle.localizedString("Opening FTP connection to", "Status", "") + " " + host.getHostname() + "...");
             this.log("=====================================");
@@ -146,23 +146,25 @@ public class FTPSession extends Session {
                         + host.getCredentials().getUsername() + "...");
                 this.FTP.login(host.getCredentials().getUsername(), host.getCredentials().getPassword());
                 host.getCredentials().addInternetPasswordToKeychain();
-                this.message(NSBundle.localizedString("Login successful", "Status", ""));
+                this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
             }
             catch (FTPException e) {
-                this.message(NSBundle.localizedString("Login failed", "Status", ""));
-                host.getCredentials().promptUser("Authentication for user "
-                        + host.getCredentials().getUsername() + " failed. The server response is: " + e.getMessage(),
-                        this.loginController);
+                this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
+                loginController.promptUser(host.getCredentials(),
+                        NSBundle.localizedString("Login failed", "Credentials", ""),
+                        e.getMessage());
                 if (host.getCredentials().tryAgain()) {
                     this.login();
                 }
                 else {
-                    throw new FTPException("Login as user " + host.getCredentials().getUsername() + " canceled.");
+                    throw new FTPException(
+                            NSBundle.localizedString("Login canceled", "Credentials", ""));
                 }
             }
         }
         else {
-            throw new FTPException("Login as user " + host.getCredentials().getUsername() + " failed.");
+            throw new FTPException(
+                    NSBundle.localizedString("Login canceled", "Status", ""));
         }
     }
 
@@ -184,7 +186,7 @@ public class FTPSession extends Session {
     }
 
     protected void noop() throws IOException {
-        synchronized(this) {
+        synchronized (this) {
             if (this.isConnected()) {
                 this.FTP.noop();
             }

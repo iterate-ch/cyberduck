@@ -72,6 +72,9 @@ public class Rendezvous
         this.browsers = new HashMap();
     }
 
+    /**
+     * Start browsing for rendezvous servcices for all registered service types
+     */
     public void init() {
         log.debug("init");
         try {
@@ -87,6 +90,9 @@ public class Rendezvous
         }
     }
 
+    /**
+     * Halt all service discvery browsers
+     */
     public void quit() {
         for (int i = 0; i < serviceTypes.length; i++) {
             String protocol = serviceTypes[i];
@@ -123,23 +129,45 @@ public class Rendezvous
         }
     };
 
+    /**
+     * Register a listener to be notified
+     * @param listener
+     */
     public void addListener(RendezvousListener listener) {
         listeners.add(listener);
     }
 
+    /**
+     * Remove the listener from the notification queue
+     * @param listener
+     */
     public void removeListener(RendezvousListener listener) {
         listeners.remove(listener);
     }
 
+    /**
+     *
+     * @return All services discovered
+     */
     public java.util.Collection getServices() {
         return services.keySet();
     }
 
+    /**
+     *
+     * @param identifier The full service domain name
+     * @return The host this name maps to or null if none is found
+     */
     public Host getServiceWithIdentifier(String identifier) {
         log.debug("getService:" + identifier);
         return (Host) services.get(identifier);
     }
 
+    /**
+     *
+     * @param displayedName The name returned by #getDisplayedName
+     * @return The host this name maps to or null if none is found
+     */
     public Host getServiceWithDisplayedName(String displayedName) {
         synchronized (Rendezvous.this) {
             for (Iterator iter = services.values().iterator(); iter.hasNext();) {
@@ -153,10 +181,19 @@ public class Rendezvous
         return null;
     }
 
+    /**
+     *
+     * @return The number of services found; 0 <= services < n
+     */
     public int numberOfServices() {
         return services.size();
     }
 
+    /**
+     *
+     * @param index
+     * @return A nicely formatted informative string
+     */
     public String getDisplayedName(int index) {
         if (index < this.numberOfServices()) {
             synchronized (Rendezvous.this) {
@@ -166,6 +203,11 @@ public class Rendezvous
         return NSBundle.localizedString("Unknown", "");
     }
 
+    /**
+     *
+     * @param identifier The full service domain name
+     * @return A nicely formatted informative string
+     */
     public String getDisplayedName(String identifier) {
         Object o = services.get(identifier);
         if (null == o) {

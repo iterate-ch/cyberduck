@@ -22,6 +22,7 @@ import ch.cyberduck.ui.LoginController;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
@@ -35,7 +36,7 @@ import java.util.Vector;
 /**
  * @version $Id$
  */
-public abstract class Session
+public abstract class Session extends NSObject
         implements ConnectionListener, ProgressListener, TranscriptListener {
 
     private static Logger log = Logger.getLogger(Session.class);

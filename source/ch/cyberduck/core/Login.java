@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.ui.LoginController;
 
 import com.apple.cocoa.foundation.NSAutoreleasePool;
+import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
@@ -227,8 +228,9 @@ public class Login {
                     passFromKeychain = this.getPasswordFromKeychain(); //legacy support
                 }
                 if (null == passFromKeychain || passFromKeychain.equals("")) {
-                    this.promptUser("The username or password does not seem reasonable.",
-                            controller);
+                    controller.promptUser(this,
+                            NSBundle.localizedString("Login with username and password", "Credentials", ""),
+                            NSBundle.localizedString("No login credentials could be found in the Keychain", "Credentials", ""));
                     return this.tryAgain();
                 }
                 else {
@@ -237,7 +239,9 @@ public class Login {
                 }
             }
             else {
-                this.promptUser("The username or password does not seem reasonable.", controller);
+                controller.promptUser(this,
+                        NSBundle.localizedString("Login with username and password", "Credentials", ""),
+                        NSBundle.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials", ""));
                 return this.tryAgain();
             }
         }
@@ -260,15 +264,5 @@ public class Login {
      */
     public void setTryAgain(boolean v) {
         this.tryAgain = v;
-    }
-
-    /**
-     *
-     * @param message
-     * @param controller
-     * @throws NullPointerException if controller is null
-     */
-    public void promptUser(final String message, final LoginController controller) {
-        controller.promptUser(this, message);
     }
 }

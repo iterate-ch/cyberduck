@@ -75,11 +75,9 @@ public class Status {
                     1,
                     BigDecimal.ROUND_FLOOR).toString() + "MB";
         }
-        else {
-            return new BigDecimal(size).divide(new BigDecimal(GIGA),
-                    1,
-                    BigDecimal.ROUND_FLOOR).toString() + "GB";
-        }
+        return new BigDecimal(size).divide(new BigDecimal(GIGA),
+                1,
+                BigDecimal.ROUND_FLOOR).toString() + "GB";
     }
 
     public void setComplete(boolean complete) {

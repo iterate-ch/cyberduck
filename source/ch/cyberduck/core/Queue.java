@@ -22,10 +22,11 @@ import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSMutableDictionary;
+import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
+import javax.swing.Timer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,7 +36,7 @@ import java.util.Vector;
 /**
  * @version $Id$
  */
-public abstract class Queue implements QueueListener {
+public abstract class Queue extends NSObject implements QueueListener {
     protected static Logger log = Logger.getLogger(Queue.class);
 
     //	private Worker worker;
@@ -66,7 +67,6 @@ public abstract class Queue implements QueueListener {
     private Vector queueListeners = new Vector();
 
     /**
-     *
      * @param listener
      */
     public void addListener(QueueListener listener) {
@@ -74,7 +74,6 @@ public abstract class Queue implements QueueListener {
     }
 
     /**
-     *
      * @param listener
      */
     public void removeListener(QueueListener listener) {
@@ -82,15 +81,15 @@ public abstract class Queue implements QueueListener {
     }
 
     public void queueStarted() {
-        QueueListener[] l = (QueueListener[])queueListeners.toArray(new QueueListener[]{});
-        for(int i = 0; i < l.length; i++) {
+        QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
+        for (int i = 0; i < l.length; i++) {
             l[i].queueStarted();
         }
     }
 
     public void queueStopped() {
-        QueueListener[] l = (QueueListener[])queueListeners.toArray(new QueueListener[]{});
-        for(int i = 0; i < l.length; i++) {
+        QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
+        for (int i = 0; i < l.length; i++) {
             l[i].queueStopped();
         }
     }

@@ -35,7 +35,7 @@ import java.util.ArrayList;
  * @version $Id$
  */
 public abstract class CDBrowserTableDataSource extends NSObject {
-    private static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
+    protected static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 
     protected static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
     protected static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
@@ -131,6 +131,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
+		log.warn("objectValueForItem:"+item+","+identifier);
         return null;
     }
 

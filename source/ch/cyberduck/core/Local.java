@@ -34,8 +34,6 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * A path is a local directory or file.
- *
  * @version $Id$
  */
 public class Local extends File {
@@ -73,7 +71,7 @@ public class Local extends File {
     }
 
     /**
-     * @return the extension if any
+     * @return the extension if any or null
      */
     public String getExtension() {
         String name = this.getName();
@@ -144,7 +142,7 @@ public class Local extends File {
 
     /**
      *
-     * @return
+     * @return The timestamp as a calendar with the current timezone
      */
     public Calendar getTimestampAsCalendar() {
         Calendar c = Calendar.getInstance(TimeZone.getDefault());
@@ -160,15 +158,21 @@ public class Local extends File {
         return c;
     }
 
-    private static final NSGregorianDateFormatter longDateFormatter = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
-    private static final NSGregorianDateFormatter shortDateFormatter = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString), false);
+    private static final NSGregorianDateFormatter longDateFormatter
+            = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(
+            NSUserDefaults.TimeDateFormatString), false);
+    private static final NSGregorianDateFormatter shortDateFormatter
+            = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(
+            NSUserDefaults.ShortTimeDateFormatString), false);
 
     /**
-     * @return the modification date of this file
+     * Modification date represented as NSUserDefaults.TimeDateFormatString
+     * @return the modification date of this file or null if there is a problem converting the time to a string
      */
     public String getTimestampAsString() {
         try {
-            return longDateFormatter.stringForObjectValue(new NSGregorianDate((double) this.getTimestamp().getTime() / 1000, NSDate.DateFor1970));
+            return longDateFormatter.stringForObjectValue(
+                    new NSGregorianDate((double) this.getTimestamp().getTime() / 1000, NSDate.DateFor1970));
         }
         catch (NSFormatter.FormattingException e) {
             e.printStackTrace();
@@ -177,12 +181,13 @@ public class Local extends File {
     }
 
     /**
-     *
-     * @return
+     * Modification date represented as NSUserDefaults.ShortTimeDateFormatString
+     * @return The teimestamp as a short string or null if there is a problem convertign the time to a string
      */
     public String getTimestampAsShortString() {
         try {
-            return shortDateFormatter.stringForObjectValue(new NSGregorianDate((double) this.getTimestamp().getTime() / 1000, NSDate.DateFor1970));
+            return shortDateFormatter.stringForObjectValue(
+                    new NSGregorianDate((double) this.getTimestamp().getTime() / 1000, NSDate.DateFor1970));
         }
         catch (NSFormatter.FormattingException e) {
             e.printStackTrace();

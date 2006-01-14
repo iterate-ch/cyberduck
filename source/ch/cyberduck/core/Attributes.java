@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Observable;
 import java.util.TimeZone;
 
 /**
@@ -32,7 +31,7 @@ import java.util.TimeZone;
  *
  * @version $Id$
  */
-public class Attributes extends Observable {
+public class Attributes {
     private static Logger log = Logger.getLogger(Attributes.class);
 
     /**
@@ -42,6 +41,9 @@ public class Attributes extends Observable {
     private Date modified = null;
     private String owner = null;
     private String group = null;
+    /**
+     * The file type
+     */
     private int type = Path.FILE_TYPE;
     protected Permission permission = null;
 

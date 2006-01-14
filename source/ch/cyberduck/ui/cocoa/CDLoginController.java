@@ -38,8 +38,15 @@ public class CDLoginController implements LoginController
         this.parent = parent;
     }
 
-    public void promptUser(final Login login, final String message) {
+    public void promptUser(final Login login, final String reason, final String message) {
         CDSheetController c = new CDSheetController(parent) {
+            private NSTextField titleField; // IBOutlet
+
+            public void setTitleField(NSTextField titleField) {
+                this.titleField = titleField;
+                this.titleField.setStringValue(reason);
+            }
+
             private NSTextField userField; // IBOutlet
 
             public void setUserField(NSTextField userField) {

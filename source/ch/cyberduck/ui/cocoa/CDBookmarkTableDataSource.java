@@ -112,7 +112,7 @@ public class CDBookmarkTableDataSource extends Collection {
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
-        log.warn("tableViewObjectValueForLocation:return null");
+        log.warn("tableViewObjectValueForLocation:"+row+" == null");
         return null;
     }
 

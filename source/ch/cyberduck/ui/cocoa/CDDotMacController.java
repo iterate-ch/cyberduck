@@ -35,7 +35,7 @@ import java.io.File;
 /**
  * @version $Id$
  */
-public class CDDotMacController {
+public class CDDotMacController extends CDController {
 
     private static Logger log = Logger.getLogger(CDDotMacController.class);
 
