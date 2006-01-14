@@ -9,6 +9,7 @@
                 keychainCheckbox = NSButton; 
                 passField = NSSecureTextField; 
                 textField = NSTextField; 
+                titleField = NSTextField; 
                 userField = NSTextField; 
                 window = NSWindow; 
             }; 

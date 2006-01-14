@@ -24,6 +24,7 @@ ca.lproj/Command.nib/keyedobjects.nib -text
 ca.lproj/Command.strings -text svneol=native#application/octet-stream
 ca.lproj/Connection.nib/keyedobjects.nib -text
 ca.lproj/Connection.strings -text svneol=native#application/octet-stream
+ca.lproj/Credentials.strings -text svneol=unset#application/octet-stream
 ca.lproj/Donate.nib/keyedobjects.nib -text
 ca.lproj/Donate.strings -text svneol=native#application/octet-stream
 ca.lproj/Download.nib/keyedobjects.nib -text
@@ -68,6 +69,7 @@ cs.lproj/Command.nib/keyedobjects.nib -text
 cs.lproj/Command.strings -text
 cs.lproj/Connection.nib/keyedobjects.nib -text
 cs.lproj/Connection.strings -text
+cs.lproj/Credentials.strings -text
 cs.lproj/Donate.nib/keyedobjects.nib -text
 cs.lproj/Donate.strings -text
 cs.lproj/Download.nib/keyedobjects.nib -text
@@ -112,6 +114,7 @@ cy.lproj/Command.nib/keyedobjects.nib -text
 cy.lproj/Command.strings -text svneol=native#application/octet-stream
 cy.lproj/Connection.nib/keyedobjects.nib -text
 cy.lproj/Connection.strings -text svneol=native#application/octet-stream
+cy.lproj/Credentials.strings -text svneol=unset#application/octet-stream
 cy.lproj/Donate.nib/keyedobjects.nib -text
 cy.lproj/Donate.strings -text svneol=native#application/octet-stream
 cy.lproj/Download.nib/keyedobjects.nib -text
@@ -161,6 +164,7 @@ da.lproj/Command.nib/keyedobjects.nib -text
 da.lproj/Command.strings -text svneol=native#application/octet-stream
 da.lproj/Connection.nib/keyedobjects.nib -text
 da.lproj/Connection.strings -text svneol=native#application/octet-stream
+da.lproj/Credentials.strings -text
 da.lproj/Donate.nib/keyedobjects.nib -text
 da.lproj/Donate.strings -text svneol=native#application/octet-stream
 da.lproj/Download.nib/keyedobjects.nib -text
@@ -205,6 +209,7 @@ de.lproj/Command.nib/keyedobjects.nib -text
 de.lproj/Command.strings -text svneol=native#application/octet-stream
 de.lproj/Connection.nib/keyedobjects.nib -text
 de.lproj/Connection.strings -text svneol=native#application/octet-stream
+de.lproj/Credentials.strings -text
 de.lproj/Donate.nib/keyedobjects.nib -text
 de.lproj/Donate.strings -text svneol=native#application/octet-stream
 de.lproj/Download.nib/keyedobjects.nib -text
@@ -249,6 +254,7 @@ en.lproj/Command.nib/keyedobjects.nib -text
 en.lproj/Command.strings -text svneol=native#application/octet-stream
 en.lproj/Connection.nib/keyedobjects.nib -text
 en.lproj/Connection.strings -text svneol=native#application/octet-stream
+en.lproj/Credentials.strings -text
 en.lproj/Donate.nib/keyedobjects.nib -text
 en.lproj/Donate.strings -text svneol=native#application/octet-stream
 en.lproj/Download.nib/keyedobjects.nib -text
@@ -293,6 +299,7 @@ es.lproj/Command.nib/keyedobjects.nib -text
 es.lproj/Command.strings -text svneol=native#application/octet-stream
 es.lproj/Connection.nib/keyedobjects.nib -text
 es.lproj/Connection.strings -text svneol=native#application/octet-stream
+es.lproj/Credentials.strings -text
 es.lproj/Donate.nib/keyedobjects.nib -text
 es.lproj/Donate.strings -text svneol=native#application/octet-stream
 es.lproj/Download.nib/keyedobjects.nib -text
@@ -337,6 +344,7 @@ fi.lproj/Command.nib/keyedobjects.nib -text
 fi.lproj/Command.strings -text svneol=native#application/octet-stream
 fi.lproj/Connection.nib/keyedobjects.nib -text
 fi.lproj/Connection.strings -text svneol=native#application/octet-stream
+fi.lproj/Credentials.strings -text
 fi.lproj/Donate.nib/keyedobjects.nib -text
 fi.lproj/Donate.strings -text svneol=native#application/octet-stream
 fi.lproj/Download.nib/keyedobjects.nib -text
@@ -381,6 +389,7 @@ fr.lproj/Command.nib/keyedobjects.nib -text
 fr.lproj/Command.strings -text svneol=native#application/octet-stream
 fr.lproj/Connection.nib/keyedobjects.nib -text
 fr.lproj/Connection.strings -text svneol=native#application/octet-stream
+fr.lproj/Credentials.strings -text
 fr.lproj/Donate.nib/keyedobjects.nib -text
 fr.lproj/Donate.strings -text svneol=native#application/octet-stream
 fr.lproj/Download.nib/keyedobjects.nib -text
@@ -427,6 +436,7 @@ hu.lproj/Command.nib/keyedobjects.nib -text
 hu.lproj/Command.strings -text svneol=native#application/octet-stream
 hu.lproj/Connection.nib/keyedobjects.nib -text
 hu.lproj/Connection.strings -text svneol=native#application/octet-stream
+hu.lproj/Credentials.strings -text svneol=unset#application/octet-stream
 hu.lproj/Donate.nib/keyedobjects.nib -text
 hu.lproj/Donate.strings -text svneol=native#application/octet-stream
 hu.lproj/Download.nib/keyedobjects.nib -text
@@ -471,6 +481,7 @@ id.lproj/Command.nib/keyedobjects.nib -text
 id.lproj/Command.strings -text svneol=native#application/octet-stream
 id.lproj/Connection.nib/keyedobjects.nib -text
 id.lproj/Connection.strings -text svneol=native#application/octet-stream
+id.lproj/Credentials.strings -text svneol=unset#application/octet-stream
 id.lproj/Donate.nib/keyedobjects.nib -text
 id.lproj/Donate.strings -text svneol=native#application/octet-stream
 id.lproj/Download.nib/keyedobjects.nib -text
@@ -603,6 +614,7 @@ it.lproj/Command.nib/keyedobjects.nib -text
 it.lproj/Command.strings -text svneol=native#application/octet-stream
 it.lproj/Connection.nib/keyedobjects.nib -text
 it.lproj/Connection.strings -text svneol=native#application/octet-stream
+it.lproj/Credentials.strings -text
 it.lproj/Donate.nib/keyedobjects.nib -text
 it.lproj/Donate.strings -text svneol=native#application/octet-stream
 it.lproj/Download.nib/keyedobjects.nib -text
@@ -647,6 +659,7 @@ ja.lproj/Command.nib/keyedobjects.nib -text
 ja.lproj/Command.strings -text svneol=native#application/octet-stream
 ja.lproj/Connection.nib/keyedobjects.nib -text
 ja.lproj/Connection.strings -text svneol=native#application/octet-stream
+ja.lproj/Credentials.strings -text svneol=unset#application/octet-stream
 ja.lproj/Donate.nib/keyedobjects.nib -text
 ja.lproj/Donate.strings -text svneol=native#application/octet-stream
 ja.lproj/Download.nib/keyedobjects.nib -text
@@ -692,6 +705,7 @@ ko.lproj/Command.nib/keyedobjects.nib -text
 ko.lproj/Command.strings -text svneol=native#application/octet-stream
 ko.lproj/Connection.nib/keyedobjects.nib -text
 ko.lproj/Connection.strings -text svneol=native#application/octet-stream
+ko.lproj/Credentials.strings -text svneol=unset#application/octet-stream
 ko.lproj/Donate.nib/keyedobjects.nib -text
 ko.lproj/Donate.strings -text svneol=native#application/octet-stream
 ko.lproj/Download.nib/keyedobjects.nib -text
@@ -740,6 +754,7 @@ nl.lproj/Command.nib/keyedobjects.nib -text
 nl.lproj/Command.strings -text svneol=native#application/octet-stream
 nl.lproj/Connection.nib/keyedobjects.nib -text
 nl.lproj/Connection.strings -text svneol=native#application/octet-stream
+nl.lproj/Credentials.strings -text
 nl.lproj/Donate.nib/keyedobjects.nib -text
 nl.lproj/Donate.strings -text svneol=native#application/octet-stream
 nl.lproj/Download.nib/keyedobjects.nib -text
@@ -784,6 +799,7 @@ no.lproj/Command.nib/keyedobjects.nib -text
 no.lproj/Command.strings -text svneol=native#application/octet-stream
 no.lproj/Connection.nib/keyedobjects.nib -text
 no.lproj/Connection.strings -text svneol=native#application/octet-stream
+no.lproj/Credentials.strings -text
 no.lproj/Donate.nib/keyedobjects.nib -text
 no.lproj/Donate.strings -text svneol=native#application/octet-stream
 no.lproj/Download.nib/keyedobjects.nib -text
@@ -829,6 +845,7 @@ pl.lproj/Command.nib/keyedobjects.nib -text
 pl.lproj/Command.strings -text svneol=native#application/octet-stream
 pl.lproj/Connection.nib/keyedobjects.nib -text
 pl.lproj/Connection.strings -text svneol=native#application/octet-stream
+pl.lproj/Credentials.strings -text
 pl.lproj/Donate.nib/keyedobjects.nib -text
 pl.lproj/Donate.strings -text svneol=native#application/octet-stream
 pl.lproj/Download.nib/keyedobjects.nib -text
@@ -874,6 +891,7 @@ pt.lproj/Command.nib/keyedobjects.nib -text
 pt.lproj/Command.strings -text svneol=native#application/octet-stream
 pt.lproj/Connection.nib/keyedobjects.nib -text
 pt.lproj/Connection.strings -text svneol=native#application/octet-stream
+pt.lproj/Credentials.strings -text
 pt.lproj/Donate.nib/keyedobjects.nib -text
 pt.lproj/Donate.strings -text svneol=native#application/octet-stream
 pt.lproj/Download.nib/keyedobjects.nib -text
@@ -918,6 +936,7 @@ ru.lproj/Command.nib/keyedobjects.nib -text
 ru.lproj/Command.strings -text svneol=native#application/octet-stream
 ru.lproj/Connection.nib/keyedobjects.nib -text
 ru.lproj/Connection.strings -text svneol=native#application/octet-stream
+ru.lproj/Credentials.strings -text
 ru.lproj/Donate.nib/keyedobjects.nib -text
 ru.lproj/Donate.strings -text svneol=native#application/octet-stream
 ru.lproj/Download.nib/keyedobjects.nib -text
@@ -962,6 +981,7 @@ sk.lproj/Command.nib/keyedobjects.nib -text
 sk.lproj/Command.strings -text
 sk.lproj/Connection.nib/keyedobjects.nib -text
 sk.lproj/Connection.strings -text
+sk.lproj/Credentials.strings -text
 sk.lproj/Donate.nib/keyedobjects.nib -text
 sk.lproj/Donate.strings -text
 sk.lproj/Download.nib/keyedobjects.nib -text
@@ -1023,6 +1043,7 @@ sv.lproj/Command.nib/keyedobjects.nib -text
 sv.lproj/Command.strings -text svneol=native#application/octet-stream
 sv.lproj/Connection.nib/keyedobjects.nib -text
 sv.lproj/Connection.strings -text svneol=native#application/octet-stream
+sv.lproj/Credentials.strings -text
 sv.lproj/Donate.nib/keyedobjects.nib -text
 sv.lproj/Donate.strings -text svneol=native#application/octet-stream
 sv.lproj/Download.nib/keyedobjects.nib -text
@@ -1067,6 +1088,7 @@ zh_CN.lproj/Command.nib/keyedobjects.nib -text
 zh_CN.lproj/Command.strings -text svneol=native#application/octet-stream
 zh_CN.lproj/Connection.nib/keyedobjects.nib -text
 zh_CN.lproj/Connection.strings -text svneol=native#application/octet-stream
+zh_CN.lproj/Credentials.strings -text
 zh_CN.lproj/Donate.nib/keyedobjects.nib -text
 zh_CN.lproj/Donate.strings -text svneol=native#application/octet-stream
 zh_CN.lproj/Download.nib/keyedobjects.nib -text
@@ -1111,6 +1133,7 @@ zh_TW.lproj/Command.nib/keyedobjects.nib -text
 zh_TW.lproj/Command.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Connection.nib/keyedobjects.nib -text
 zh_TW.lproj/Connection.strings -text svneol=native#application/octet-stream
+zh_TW.lproj/Credentials.strings -text
 zh_TW.lproj/Donate.nib/keyedobjects.nib -text
 zh_TW.lproj/Donate.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Download.nib/keyedobjects.nib -text
