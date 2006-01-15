@@ -58,7 +58,6 @@
 		4739EFBD0856991200405FD3 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479982AF05F54B1600F81519 /* Carbon.framework */; };
 		4739F01808569A8100405FD3 /* Keychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4739EFFB08569A8100405FD3 /* Keychain.framework */; };
 		4739F04508569B5E00405FD3 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4739F03D08569B5E00405FD3 /* Growl.framework */; };
-		4741639E06C4F5FB00AC0BD2 /* Credits.html in Resources */ = {isa = PBXBuildFile; fileRef = 4741639D06C4F5FB00AC0BD2 /* Credits.html */; };
 		474163C106C4F64100AC0BD2 /* Info.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A306C4F64000AC0BD2 /* Info.nib */; };
 		474163C206C4F64100AC0BD2 /* Browser.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A506C4F64100AC0BD2 /* Browser.nib */; };
 		474163C306C4F64100AC0BD2 /* Main.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A706C4F64100AC0BD2 /* Main.nib */; };
@@ -153,6 +152,7 @@
 		479909B70940B062004AD6F7 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		47990A7A0940B0D2004AD6F7 /* JNISupport.c in Sources */ = {isa = PBXBuildFile; fileRef = 47990A730940B0A2004AD6F7 /* JNISupport.c */; };
 		47990C0B0940B2E6004AD6F7 /* DNSSD.h in Headers */ = {isa = PBXBuildFile; fileRef = 47990C0A0940B2E6004AD6F7 /* DNSSD.h */; };
+		479C422A097AB2BB00DDE88A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 479C4229097AB2BB00DDE88A /* Credits.rtf */; };
 		479D64A70752257400FE6086 /* arrowUpBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479D64A50752257400FE6086 /* arrowUpBlack16.tiff */; };
 		47A61DCA076C854A00B535D6 /* generic-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A61DC9076C854A00B535D6 /* generic-document.icns */; };
 		47C261A90859014400765C4A /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739F03D08569B5E00405FD3 /* Growl.framework */; };
@@ -693,7 +693,6 @@
 		4741549006C4F08B00AC0BD2 /* FromNetASCIIOutputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FromNetASCIIOutputStream.java; sourceTree = "<group>"; };
 		4741549106C4F08B00AC0BD2 /* ToNetASCIIInputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ToNetASCIIInputStream.java; sourceTree = "<group>"; };
 		4741549206C4F08B00AC0BD2 /* ToNetASCIIOutputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ToNetASCIIOutputStream.java; sourceTree = "<group>"; };
-		4741639D06C4F5FB00AC0BD2 /* Credits.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = Credits.html; sourceTree = "<group>"; };
 		474163A406C4F64000AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Info.nib; sourceTree = "<group>"; };
 		474163A606C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Browser.nib; sourceTree = "<group>"; };
 		474163A806C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Main.nib; sourceTree = "<group>"; };
@@ -1274,6 +1273,7 @@
 		47990C0A0940B2E6004AD6F7 /* DNSSD.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = DNSSD.h; sourceTree = "<group>"; };
 		479982AF05F54B1600F81519 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		479AE0DE0767A17900F7178B /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Progress.nib; sourceTree = "<group>"; };
+		479C4229097AB2BB00DDE88A /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		479D170F0792BFFE006F8896 /* SFTPSession.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SFTPSession.java; sourceTree = "<group>"; };
 		479D17100792BFFE006F8896 /* SFTPPath.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SFTPPath.java; sourceTree = "<group>"; };
 		479D17150792C006006F8896 /* FTPPath.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPPath.java; sourceTree = "<group>"; };
@@ -2381,7 +2381,7 @@
 		4741639206C4F58D00AC0BD2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				4741639D06C4F5FB00AC0BD2 /* Credits.html */,
+				479C4229097AB2BB00DDE88A /* Credits.rtf */,
 				47026426087DC91C008837FD /* IDisk.strings */,
 				4741686906C6BA9400AC0BD2 /* Localizable.strings */,
 				4751799C097943FA008F671F /* Credentials.strings */,
@@ -3293,7 +3293,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4741639E06C4F5FB00AC0BD2 /* Credits.html in Resources */,
 				474163C106C4F64100AC0BD2 /* Info.nib in Resources */,
 				474163C206C4F64100AC0BD2 /* Browser.nib in Resources */,
 				474163C306C4F64100AC0BD2 /* Main.nib in Resources */,
@@ -3401,6 +3400,7 @@
 				478B71F0089FEB4E003B512A /* arrowRightBlack16.tiff in Resources */,
 				47723BC8096072B800B47E99 /* cancel.tiff in Resources */,
 				4751799E097943FA008F671F /* Credentials.strings in Resources */,
+				479C422A097AB2BB00DDE88A /* Credits.rtf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
