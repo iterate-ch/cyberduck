@@ -2,4 +2,4 @@
 
 CFBundleShortVersionString = "Versie *version*";
 CFBundleGetInfoString = "Cyberduck *version* (*revision*), Copyright 2005 David V. Kocher.";
-NSHumanReadableCopyright = "Copyright 2005 David V. Kocher\nhttp://cyberduck.ch";
+NSHumanReadableCopyright = "Copyright 2005 David V. Kocher";

@@ -86,7 +86,7 @@ cs.lproj/Growl.strings -text
 cs.lproj/IDisk.strings -text
 cs.lproj/Info.nib/keyedobjects.nib -text
 cs.lproj/Info.strings -text
-cs.lproj/InfoPlist.strings -text
+cs.lproj/InfoPlist.strings -text svneol=unset#application/octet-stream
 cs.lproj/Localizable.strings -text
 cs.lproj/Login.nib/keyedobjects.nib -text
 cs.lproj/Login.strings -text
@@ -226,7 +226,7 @@ de.lproj/Growl.strings -text svneol=native#application/octet-stream
 de.lproj/IDisk.strings -text svneol=native#application/octet-stream
 de.lproj/Info.nib/keyedobjects.nib -text
 de.lproj/Info.strings -text svneol=native#application/octet-stream
-de.lproj/InfoPlist.strings -text
+de.lproj/InfoPlist.strings -text svneol=unset#application/octet-stream
 de.lproj/Localizable.strings -text
 de.lproj/Login.nib/keyedobjects.nib -text
 de.lproj/Login.strings -text svneol=native#application/octet-stream
@@ -998,7 +998,7 @@ sk.lproj/Growl.strings -text
 sk.lproj/IDisk.strings -text
 sk.lproj/Info.nib/keyedobjects.nib -text
 sk.lproj/Info.strings -text
-sk.lproj/InfoPlist.strings -text
+sk.lproj/InfoPlist.strings -text svneol=unset#application/octet-stream
 sk.lproj/Localizable.strings -text
 sk.lproj/Login.nib/keyedobjects.nib -text
 sk.lproj/Login.strings -text
