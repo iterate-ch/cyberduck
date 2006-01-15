@@ -40,6 +40,10 @@ init() {
 		nibtool --localizable-strings $language/$nibfile > $language/$nib.strings
 	done
 	cp en.lproj/Localizable.strings $language/
+	cp en.lproj/Status.strings $language/
+	cp en.lproj/Credentials.strings $language/
+	cp en.lproj/IDisk.strings $language/
+	cp en.lproj/Growl.strings $language/
 	cp en.lproj/InfoPlist.strings $language/
 	cp en.lproj/License.txt $language/
 }
