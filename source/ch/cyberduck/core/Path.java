@@ -387,6 +387,7 @@ public abstract class Path extends NSObject {
         int amount = 0;
         long current = this.status.getCurrent();
         boolean complete = false;
+		boolean updateProgress = this.attributes.getSize() > Status.MEGA * 10;
         int step = 0;
         this.getLocal().setProgress(step);
         // read from socket (bytes) & write to file in chunks
@@ -398,10 +399,12 @@ public abstract class Path extends NSObject {
             else {
                 out.write(chunk, 0, amount);
                 this.status.setCurrent(current += amount);
-                int fraction = (int) (status.getCurrent() / this.attributes.getSize() * 10);
-                if ((fraction > step)) {
-                    this.getLocal().setProgress(++step);
-                }
+				if(updateProgress) {
+	                int fraction = (int) (status.getCurrent() / this.attributes.getSize() * 10);
+	                if ((fraction > step)) {
+	                    this.getLocal().setProgress(++step);
+	                }
+				}
                 out.flush();
             }
         }

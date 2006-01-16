@@ -86,16 +86,20 @@ public class Local extends File {
         return super.getAbsolutePath();
     }
 
+	private Object lock = new Object();
+		
     public void setProgress(int progress) {
         if (Preferences.instance().getBoolean("queue.download.updateIcon")) {
-            if (-1 == progress) {
-                this.removeResourceFork();
-            }
-            else {
-                this.setIconFromFile(this.getAbsolute(), "download" + progress + ".icns");
-            }
-            NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
-        }
+			synchronized(lock) {
+	            if (-1 == progress) {
+	                this.removeResourceFork();
+	            }
+	            else {
+	                this.setIconFromFile(this.getAbsolute(), "download" + progress + ".icns");
+	            }
+	            NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
+	        }
+		}
     }
 
     private void removeResourceFork() {
@@ -110,23 +114,20 @@ public class Local extends File {
         }
     }
 
-    public void setIconFromFile(String icon) {
+    private void setIconFromFile(String icon) {
         this.setIconFromFile(this.getAbsolute(), icon);
     }
 
     /**
      * @param icon the absolute path to the image file to use as an icon
      */
-    public native void setIconFromFile(String path, String icon);
+    private native void setIconFromFile(String path, String icon);
 
-    /**
-     *
-     */
-    public void removeCustomIcon() {
+    private void removeCustomIcon() {
         this.removeCustomIcon(this.getAbsolute());
     }
 
-    public native void removeCustomIcon(String path);
+    private native void removeCustomIcon(String path);
 
     public Permission getPermission() {
         NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);

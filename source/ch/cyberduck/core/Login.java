@@ -89,7 +89,7 @@ public class Login {
      * Adds the password to the system keychain
      */
     public void addInternetPasswordToKeychain() {
-        if (this.shouldBeAddedToKeychain && !this.isAnonymousLogin()) {
+        if (this.shouldBeAddedToKeychain && !this.isAnonymousLogin() && this.hasReasonableValues()) {
             int pool = NSAutoreleasePool.push();
             Keychain.instance().addInternetPasswordToKeychain(this.protocol,
                     this.hostname, this.getUsername(), this.getPassword());
