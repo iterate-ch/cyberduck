@@ -712,6 +712,8 @@ public class CDMainController extends CDController {
         NSNotificationCenter.defaultCenter().removeObserver(this);
         //Terminating rendezvous discovery
         Rendezvous.instance().quit();
+		//Saving state of transfer window
+		Preferences.instance().setProperty("queue.openByDefault", CDQueueController.instance().window().isVisible());
         //Writing usage info
         Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses") + 1);
         Preferences.instance().save();

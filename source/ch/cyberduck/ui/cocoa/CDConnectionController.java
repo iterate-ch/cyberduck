@@ -406,11 +406,11 @@ public class CDConnectionController extends CDSheetController
     public void awakeFromNib() {
         //ControlTextDidChangeNotification
         NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("updateURLLabel", new Class[]{Object.class}),
+                new NSSelector("hostFieldTextDidChange", new Class[]{Object.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.hostPopup);
         NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("hostFieldTextDidChange", new Class[]{Object.class}),
+                new NSSelector("updateURLLabel", new Class[]{Object.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.hostPopup);
         NSNotificationCenter.defaultCenter().addObserver(this,
@@ -530,7 +530,7 @@ public class CDConnectionController extends CDSheetController
         }
         urlLabel.setStringValue(protocol + usernameField.stringValue()
                 + "@" + hostPopup.stringValue() + ":" + portField.stringValue()
-                + Path.DELIMITER + pathField.stringValue());
+                + pathField.stringValue());
     }
 
     public void callback(int returncode) {

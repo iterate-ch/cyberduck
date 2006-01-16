@@ -97,9 +97,9 @@ public class Local extends File {
 	            else {
 	                this.setIconFromFile(this.getAbsolute(), "download" + progress + ".icns");
 	            }
-	            NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
 	        }
 		}
+		NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
     }
 
     private void removeResourceFork() {
