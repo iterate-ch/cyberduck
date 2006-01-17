@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+
+  
+  <meta name="generator" content="HTML Tidy for Mac OS X (vers 12 April 2005), see www.w3.org" />
+
+
+  
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+
+
+  
+  <link href="../../css/style.css" rel="stylesheet" media="all" type="text/css" />
+
+  
+  <title>Ajuda del Cyberduck</title>
+</head>
+
+
+<body>
+
+
+<h2><a href="..">Ajuda del Cyberduck</a><br />
+
+
+Com es fa... ?</h2>
+
+
+
+    
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+        <tbody>
+    <tr>
+
+            <td class="menu" valign="top" width="120">
+      <p style="font-weight: normal;" class="bold"><a href="index.html">Obrir Connexions</a></p>
+
+
+
+      
+      
+      <p><a href="bookmark.html">Afegir adreces
+d'inter&egrave;s</a></p>
+
+
+
+      
+      
+      <p><a href="download.html">Descarregar</a></p>
+
+
+
+      
+      
+      <p><a href="upload.html">Pujar</a></p>
+
+
+
+      
+      
+      <p><a href="editing.html">Editar fitxers</a></p>
+
+
+
+      
+      
+      <p><a href="synchronization.html">Sincronitzar</a></p>
+
+
+
+      
+      
+      <p style="font-weight: bold;">Configurar una clau
+d'autenticaci&oacute; p&uacute;blica SSH</p>
+      </td>
+
+
+            <td class="content">
+                
+      <p>L'autenticaci&oacute; de clau p&uacute;blica us permet
+connectar-vos a un servidor remot sense la necessitat d'escriure una
+contrasenya. Aquesta autenticaci&oacute; utilitza dues claus, una clau
+privada que nom&eacute;s vosaltres disposareu (la haur&iacute;eu de
+protegir en un lloc segur i amb contrasenya), i una clau p&uacute;blica
+que est&agrave; ubicada en el servidor remot al que voleu accedir,
+normalment subministrada per l'administrador del sistema quan
+d&oacute;na d'alta el vostre compte.</p>
+
+
+                
+      <ul>
+
+                    <li>
+                        
+          <p class="bold">Com es configura una autenticaci&oacute; de clau p&uacute;blica?</p>
+
+
+                        
+          <p>1. Executeu la comanda&nbsp;<span style="font-style: italic;">ssh-keygen</span> des de l'aplicaci&oacute;&nbsp;<span style="font-style: italic;">Terminal</span>&nbsp;per
+tal de generar un parell de claus p&uacute;blica/privada. Aquestes
+claus es crearan habitualment en el directori ~/.ssh, tot i que el
+programa us preguntar&agrave; si ho voleu fer en una ubicaci&oacute;
+diferent.<br />
+Quan genereu les claus s'us preguntar&agrave; per una paraula de pas
+(passphrase). Si la poseu haureu de continuar proporcionant-la cada cop
+que us connecteu. Si per contra, no n'especifiqueu cap, tot i que no
+&eacute;s tan segur, &uacute;s pot ser de gran utilitat ja que entrareu
+directament sense que s'&uacute;s sol&middot;liciti contrasenya.
+Escriviu a la terminal la seg&uuml;ent comanda si voleu fer-ne
+&uacute;s:<br />
+          </p>
+
+
+                        
+          <div>
+          <div style="text-align: center;">
+                            <code>ssh-keygen
+                            -t rsa</code></div>
+
+                        </div>
+
+
+                        
+          <p>2. Copieu la clau p&uacute;blica al servidor remot al que
+voleu accedir i afegiu-la al fitxer remot authorized_keys que es troba
+en el vostre directori&nbsp;~/.ssh del servidor al que us connecteu.
+(Cas que aquest nom de fitxer no exist&iacute;s encara l'haurieu de
+crear nou.) Qualsevol ordinador&nbsp;que estigui llistat en el
+fitxer&nbsp;authorized_keys&nbsp;(via clau p&uacute;blica) t&eacute;
+permesa l'entrada al sistema si t&eacute; una clau privada que li
+correspon. Aix&iacute;, si teniu la clau privada en la carpeta .ssh de
+la m&agrave;quina des de la que us esteu connectant podreu accedir al
+servidor a trav&eacute;s d'aquest m&egrave;tode. Per a copiar la clau
+(substitu&iuml;u 'servidor' per la direcci&oacute; que correspongui):<br />
+          </p>
+
+
+                        
+          <div>
+          <div style="text-align: center;">
+                            <code>ssh servidor &lt; id_rsa.pub 'cat &gt;&gt; .ssh/authorized_keys'</code></div>
+
+                        </div>
+
+
+                        
+          <p>3. Quan aix&ograve; estigui fet, en el di&agrave;leg de
+connexi&oacute; o en l'editor de les adreces d'inter&egrave;s del
+Cyberduck podreu seleccionar l'opci&oacute; 'Utilitza
+autenticaci&oacute; de clau p&uacute;blica' i seleccionar el fitxer de
+la clau privada del vostre directori&nbsp;.ssh</p>
+
+                    </li>
+
+                
+      </ul>
+
+            </td>
+
+        </tr>
+
+    
+  </tbody>
+</table>
+
+
+    
+<div id="footer">
+Traducció al catal&agrave; de programari i ajuda per Albert Lombarte.
+</div>
+
+</body>
+</html>

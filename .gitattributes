@@ -1079,6 +1079,73 @@ sv.lproj/Update.nib/keyedobjects.nib -text
 sv.lproj/Update.strings -text svneol=native#application/octet-stream
 sv.lproj/Validator.nib/keyedobjects.nib -text
 sv.lproj/Validator.strings -text svneol=native#application/octet-stream
+www/help/.htaccess -text
+www/help/ca/faq/index.html -text
+www/help/ca/howto/bookmark.html -text
+www/help/ca/howto/download.html -text
+www/help/ca/howto/editing.html -text
+www/help/ca/howto/index.html -text
+www/help/ca/howto/ssh.html -text
+www/help/ca/howto/synchronization.html -text
+www/help/ca/howto/upload.html -text
+www/help/ca/index.html -text
+www/help/ca/problems/index.html -text
+www/help/cs/.htaccess -text
+www/help/css/index.css -text
+www/help/css/style.css -text
+www/help/da/.htaccess -text
+www/help/de/.htaccess -text
+www/help/en/faq/index.html -text
+www/help/en/howto/bookmark.html -text
+www/help/en/howto/download.html -text
+www/help/en/howto/editing.html -text
+www/help/en/howto/index.html -text
+www/help/en/howto/ssh.html -text
+www/help/en/howto/synchronization.html -text
+www/help/en/howto/upload.html -text
+www/help/en/index.html -text
+www/help/en/problems/index.html -text
+www/help/es/.htaccess -text
+www/help/fi/.htaccess -text
+www/help/fr/.htaccess -text
+www/help/hu/.htaccess -text
+www/help/id/.htaccess -text
+www/help/images/bonjour.png -text svneol=unset#image/png
+www/help/images/bookmark_add.png -text svneol=unset#image/png
+www/help/images/bookmark_drag.png -text svneol=unset#image/png
+www/help/images/bookmark_edit.png -text svneol=unset#image/png
+www/help/images/bookmark_export.png -text svneol=unset#image/png
+www/help/images/bookmark_file.png -text svneol=unset#image/png
+www/help/images/bookmark_import.png -text svneol=unset#image/png
+www/help/images/bookmarks.png -text svneol=unset#image/png
+www/help/images/connection.png -text svneol=unset#image/png
+www/help/images/download.png -text svneol=unset#image/png
+www/help/images/drop.png -text svneol=unset#image/png
+www/help/images/edit.png -text svneol=unset#image/png
+www/help/images/history.png -text svneol=unset#image/png
+www/help/images/inetloc.png -text svneol=unset#image/png
+www/help/images/move.png -text svneol=unset#image/png
+www/help/images/paste.png -text svneol=unset#image/png
+www/help/images/permissions.png -text svneol=unset#image/png
+www/help/images/quick.png -text svneol=unset#image/png
+www/help/images/quicksilver.png -text svneol=unset#image/png
+www/help/images/rename.png -text svneol=unset#image/png
+www/help/images/synchronize.png -text svneol=unset#image/png
+www/help/images/toolbar.png -text svneol=unset#image/png
+www/help/images/transfer.png -text svneol=unset#image/png
+www/help/images/upload.png -text svneol=unset#image/png
+www/help/it/.htaccess -text
+www/help/ja/.htaccess -text
+www/help/ko/.htaccess -text
+www/help/nl/.htaccess -text
+www/help/no/.htaccess -text
+www/help/pl/.htaccess -text
+www/help/pt/.htaccess -text
+www/help/ru/.htaccess -text
+www/help/sk/.htaccess -text
+www/help/sv/.htaccess -text
+www/help/zh_CN/.htaccess -text
+www/help/zh_TW/.htaccess -text
 zh_CN.lproj/Bookmark.nib/keyedobjects.nib -text
 zh_CN.lproj/Bookmark.strings -text
 zh_CN.lproj/Browser.nib/keyedobjects.nib -text
