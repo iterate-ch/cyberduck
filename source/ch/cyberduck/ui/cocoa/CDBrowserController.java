@@ -409,11 +409,11 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
-    private Filter getFileFilter() {
+    protected Filter getFileFilter() {
         return this.filenameFilter;
     }
 
-	private void setFileFilter(final String searchString) {
+	protected void setFileFilter(final String searchString) {
 		if (null == searchString || searchString.length() == 0) {
 			this.searchField.setStringValue("");
 		    // Revert to the last used default filter
