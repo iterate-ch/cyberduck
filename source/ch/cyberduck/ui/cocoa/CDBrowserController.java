@@ -409,9 +409,30 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
-    protected Filter getFileFilter() {
+    private Filter getFileFilter() {
         return this.filenameFilter;
     }
+
+	private void setFileFilter(final String searchString) {
+		if (null == searchString || searchString.length() == 0) {
+			this.searchField.setStringValue("");
+		    // Revert to the last used default filter
+		    if (this.getShowHiddenFiles()) {
+		        this.filenameFilter = new NullFilter();
+		    }
+		    else {
+		        this.filenameFilter = new HiddenFilesFilter();
+		    }
+		}
+		else {
+		    // Setting up a custom filter for the directory listing
+		    this.filenameFilter = new Filter() {
+		        public boolean accept(Path file) {
+		            return file.getName().toLowerCase().indexOf(searchString.toLowerCase()) != -1;
+		        }
+		    };
+		}
+	}
 
     public void setShowHiddenFiles(boolean showHidden) {
         if (showHidden) {
@@ -1275,23 +1296,7 @@ public class CDBrowserController extends CDWindowController
             Object o = userInfo.allValues().lastObject();
             if (null != o) {
                 final String searchString = ((NSText) o).string();
-                if (null == searchString || searchString.length() == 0) {
-                    // Revert to the last used default filter
-                    if (this.getShowHiddenFiles()) {
-                        this.filenameFilter = new NullFilter();
-                    }
-                    else {
-                        this.filenameFilter = new HiddenFilesFilter();
-                    }
-                }
-                else {
-                    // Setting up a custom filter for the directory listing
-                    this.filenameFilter = new Filter() {
-                        public boolean accept(Path file) {
-                            return file.getName().toLowerCase().indexOf(searchString.toLowerCase()) != -1;
-                        }
-                    };
-                }
+				this.setFileFilter(searchString);
                 this.reloadData(true);
             }
         }
@@ -2099,6 +2104,7 @@ public class CDBrowserController extends CDWindowController
         if (!this.hasSession()) {
             path = null;
         }
+		this.setFileFilter(null);
         if (null == path) {
             this.workdir = null;
             this.pathPopupItems.clear();
