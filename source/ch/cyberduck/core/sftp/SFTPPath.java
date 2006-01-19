@@ -496,7 +496,6 @@ public class SFTPPath extends Path {
                     if (in == null) {
                         throw new IOException("Unable to buffer data");
                     }
-                    boolean exists = this.exists();
                     SftpFile f = null;
                     if (this.status.isResume()) {
                         f = session.SFTP.openFile(this.getAbsolute(),
@@ -509,7 +508,7 @@ public class SFTPPath extends Path {
                                         SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
                                         SftpSubsystemClient.OPEN_TRUNCATE); //File open flag, forces an existing file with the same name to be truncated to zero length when creating a file by specifying OPEN_CREATE.
                     }
-                    if (!exists && Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                    if (Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                         Permission perm = null;
                         if (Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
                             perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
@@ -536,7 +535,7 @@ public class SFTPPath extends Path {
                         }
                     }
                     this.upload(out, in);
-                    if (!exists && Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                    if (Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                         FileAttributes attrs = new FileAttributes();
                         attrs.setTimes(f.getAttributes().getAccessedTime(),
                                 new UnsignedInteger32(this.getLocal().getTimestamp().getTime() / 1000));
