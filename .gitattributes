@@ -1230,6 +1230,7 @@ www/help/pt/.htaccess -text
 www/help/ru/.htaccess -text
 www/help/sk/.htaccess -text
 www/help/sv/.htaccess -text
+www/help/th/.htaccess -text
 www/help/zh_CN/.htaccess -text
 www/help/zh_TW/.htaccess -text
 zh_CN.lproj/Bookmark.nib/keyedobjects.nib -text
