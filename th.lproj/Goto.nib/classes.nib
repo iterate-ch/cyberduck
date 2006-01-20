@@ -1,0 +1,13 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {closeSheet = id; }; 
+            CLASS = "ch.cyberduck.ui.cocoa.CDGotoController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {folderCombobox = NSComboBox; window = NSWindow; }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}
