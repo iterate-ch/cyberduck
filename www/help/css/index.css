@@ -45,6 +45,10 @@ p {
 	padding-top:40px; 
 }
 
+a.hidden {
+	color:#4e4e4e;
+}
+
 ul li {
 		padding-left:7px;
 		padding-right:7px;
