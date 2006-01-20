@@ -1171,6 +1171,33 @@
 		4764B47E08B7835E00441096 /* SKWSegmentedControlWindowProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControlWindowProxy.m; sourceTree = "<group>"; };
 		4764B47F08B7835E00441096 /* SKWSegmentedControlWindowProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControlWindowProxy.h; sourceTree = "<group>"; };
 		4764B48008B7835E00441096 /* SKWSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControl.h; sourceTree = "<group>"; };
+		476565150981349B00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Queue.nib; sourceTree = "<group>"; };
+		476565160981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Login.nib; sourceTree = "<group>"; };
+		476565170981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Preferences.nib; sourceTree = "<group>"; };
+		476565180981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Download.nib; sourceTree = "<group>"; };
+		476565190981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = text; name = th; path = th.lproj/License.txt; sourceTree = "<group>"; };
+		4765651A0981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Update.nib; sourceTree = "<group>"; };
+		4765651B0981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Bookmark.nib; sourceTree = "<group>"; };
+		4765651C0981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Duplicate.nib; sourceTree = "<group>"; };
+		4765651D0981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Info.nib; sourceTree = "<group>"; };
+		4765651E0981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Folder.nib; sourceTree = "<group>"; };
+		4765651F0981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Goto.nib; sourceTree = "<group>"; };
+		476565200981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Certificate.nib; sourceTree = "<group>"; };
+		476565210981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Donate.nib; sourceTree = "<group>"; };
+		476565220981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Command.nib; sourceTree = "<group>"; };
+		476565230981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Sync.nib; sourceTree = "<group>"; };
+		476565240981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Progress.nib; sourceTree = "<group>"; };
+		476565250981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Connection.nib; sourceTree = "<group>"; };
+		476565260981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Browser.nib; sourceTree = "<group>"; };
+		476565270981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Validator.nib; sourceTree = "<group>"; };
+		476565280981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/File.nib; sourceTree = "<group>"; };
+		476565290981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Main.nib; sourceTree = "<group>"; };
+		4765652A098134B200633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/Credentials.strings; sourceTree = "<group>"; };
+		4765652B098134B200633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/Growl.strings; sourceTree = "<group>"; };
+		4765652C098134B200633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		4765652D098134B200633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/Localizable.strings; sourceTree = "<group>"; };
+		4765652E098134B200633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/IDisk.strings; sourceTree = "<group>"; };
+		4765652F098134D300633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/Status.strings; sourceTree = "<group>"; };
 		47685DD80759706B00C744E1 /* Local.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; name = Local.java; path = source/ch/cyberduck/core/Local.java; sourceTree = SOURCE_ROOT; };
 		476C7C1807F5A2A700CF6032 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/File.nib; sourceTree = "<group>"; };
 		476C7C1C07F5A2D000CF6032 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/File.nib; sourceTree = "<group>"; };
@@ -3270,6 +3297,7 @@
 				ca,
 				jp,
 				cy,
+				th,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* cyberduck-cocoa */;
 			projectDirPath = "";
@@ -3609,6 +3637,7 @@
 				47026440087DC98B008837FD /* id */,
 				47026441087DC98E008837FD /* ca */,
 				4743002509596BB700848A35 /* cy */,
+				4765652E098134B200633FD8 /* th */,
 			);
 			name = IDisk.strings;
 			sourceTree = "<group>";
@@ -3638,6 +3667,7 @@
 				47C4D6E208798D79007A1D39 /* id */,
 				47C4E7E10879EB5B007A1D39 /* ca */,
 				4743002D09596BB700848A35 /* cy */,
+				476565220981349C00633FD8 /* th */,
 			);
 			name = Command.nib;
 			sourceTree = "<group>";
@@ -3667,6 +3697,7 @@
 				475465A10841C094009A1734 /* id */,
 				47C4E7F70879EBC7007A1D39 /* ca */,
 				4743002B09596BB700848A35 /* cy */,
+				476565200981349C00633FD8 /* th */,
 			);
 			name = Certificate.nib;
 			sourceTree = "<group>";
@@ -3696,6 +3727,7 @@
 				475465710841C056009A1734 /* id */,
 				47C4E7EA0879EB7C007A1D39 /* ca */,
 				4743002409596BB700848A35 /* cy */,
+				4765651D0981349C00633FD8 /* th */,
 			);
 			name = Info.nib;
 			sourceTree = "<group>";
@@ -3725,6 +3757,7 @@
 				475465770841C05E009A1734 /* id */,
 				47C4E7F00879EB88007A1D39 /* ca */,
 				4743001F09596BB700848A35 /* cy */,
+				476565260981349C00633FD8 /* th */,
 			);
 			name = Browser.nib;
 			sourceTree = "<group>";
@@ -3754,6 +3787,7 @@
 				475465740841C05A009A1734 /* id */,
 				47C4E7ED0879EB81007A1D39 /* ca */,
 				4743001D09596BB700848A35 /* cy */,
+				476565290981349C00633FD8 /* th */,
 			);
 			name = Main.nib;
 			sourceTree = "<group>";
@@ -3783,6 +3817,7 @@
 				4754657A0841C062009A1734 /* id */,
 				47C4E8290879EC6C007A1D39 /* ca */,
 				4743002F09596BB700848A35 /* cy */,
+				4765651E0981349C00633FD8 /* th */,
 			);
 			name = Folder.nib;
 			sourceTree = "<group>";
@@ -3812,6 +3847,7 @@
 				4754657D0841C066009A1734 /* id */,
 				47C4E8260879EC65007A1D39 /* ca */,
 				4743002809596BB700848A35 /* cy */,
+				4765651A0981349C00633FD8 /* th */,
 			);
 			name = Update.nib;
 			sourceTree = "<group>";
@@ -3841,6 +3877,7 @@
 				475465800841C06A009A1734 /* id */,
 				47C4E8210879EC5C007A1D39 /* ca */,
 				4743003009596BB700848A35 /* cy */,
+				476565180981349C00633FD8 /* th */,
 			);
 			name = Download.nib;
 			sourceTree = "<group>";
@@ -3870,6 +3907,7 @@
 				475465620841C036009A1734 /* id */,
 				47C4E7D60879EB28007A1D39 /* ca */,
 				4743002009596BB700848A35 /* cy */,
+				476565190981349C00633FD8 /* th */,
 			);
 			name = License.txt;
 			sourceTree = "<group>";
@@ -3899,6 +3937,7 @@
 				475465830841C06E009A1734 /* id */,
 				47C4E81E0879EC55007A1D39 /* ca */,
 				4743001B09596BB700848A35 /* cy */,
+				476565270981349C00633FD8 /* th */,
 			);
 			name = Validator.nib;
 			sourceTree = "<group>";
@@ -3928,6 +3967,7 @@
 				475465860841C071009A1734 /* id */,
 				47C4E81B0879EC4F007A1D39 /* ca */,
 				4743001C09596BB700848A35 /* cy */,
+				4765651F0981349C00633FD8 /* th */,
 			);
 			name = Goto.nib;
 			sourceTree = "<group>";
@@ -3957,6 +3997,7 @@
 				475465890841C075009A1734 /* id */,
 				47C4E8110879EC01007A1D39 /* ca */,
 				4743001809596BB600848A35 /* cy */,
+				476565250981349C00633FD8 /* th */,
 			);
 			name = Connection.nib;
 			sourceTree = "<group>";
@@ -3986,6 +4027,7 @@
 				4754658C0841C079009A1734 /* id */,
 				47C4E80E0879EBFB007A1D39 /* ca */,
 				4743001909596BB600848A35 /* cy */,
+				476565210981349C00633FD8 /* th */,
 			);
 			name = Donate.nib;
 			sourceTree = "<group>";
@@ -4015,6 +4057,7 @@
 				4754658F0841C07D009A1734 /* id */,
 				47C4E80B0879EBF5007A1D39 /* ca */,
 				4743001A09596BB700848A35 /* cy */,
+				476565150981349B00633FD8 /* th */,
 			);
 			name = Queue.nib;
 			sourceTree = "<group>";
@@ -4044,6 +4087,7 @@
 				475465920841C081009A1734 /* id */,
 				47C4E8060879EBED007A1D39 /* ca */,
 				4743002A09596BB700848A35 /* cy */,
+				476565160981349C00633FD8 /* th */,
 			);
 			name = Login.nib;
 			sourceTree = "<group>";
@@ -4073,6 +4117,7 @@
 				475465950841C085009A1734 /* id */,
 				47C4E8030879EBE6007A1D39 /* ca */,
 				4743001E09596BB700848A35 /* cy */,
+				476565170981349C00633FD8 /* th */,
 			);
 			name = Preferences.nib;
 			sourceTree = "<group>";
@@ -4102,6 +4147,7 @@
 				475465980841C089009A1734 /* id */,
 				47C4E8000879EBDF007A1D39 /* ca */,
 				4743002209596BB700848A35 /* cy */,
+				4765651B0981349C00633FD8 /* th */,
 			);
 			name = Bookmark.nib;
 			sourceTree = "<group>";
@@ -4131,6 +4177,7 @@
 				475465680841C046009A1734 /* id */,
 				47C4E7DC0879EB3A007A1D39 /* ca */,
 				4743002309596BB700848A35 /* cy */,
+				4765652C098134B200633FD8 /* th */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -4160,6 +4207,7 @@
 				475465650841C041009A1734 /* id */,
 				47C4E7D90879EB31007A1D39 /* ca */,
 				4743002109596BB700848A35 /* cy */,
+				4765652D098134B200633FD8 /* th */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -4189,6 +4237,7 @@
 				4754656E0841C052009A1734 /* id */,
 				47C4E7E70879EB72007A1D39 /* ca */,
 				4743002609596BB700848A35 /* cy */,
+				4765651C0981349C00633FD8 /* th */,
 			);
 			name = Duplicate.nib;
 			sourceTree = "<group>";
@@ -4218,6 +4267,7 @@
 				475179B8097945A9008F671F /* id */,
 				475179A409794467008F671F /* ca */,
 				475179A60979447B008F671F /* cy */,
+				4765652A098134B200633FD8 /* th */,
 			);
 			name = Credentials.strings;
 			sourceTree = "<group>";
@@ -4247,6 +4297,7 @@
 				4754656B0841C04D009A1734 /* id */,
 				47C4E7E40879EB67007A1D39 /* ca */,
 				4743002909596BB700848A35 /* cy */,
+				476565280981349C00633FD8 /* th */,
 			);
 			name = File.nib;
 			sourceTree = "<group>";
@@ -4276,6 +4327,7 @@
 				4754659E0841C091009A1734 /* id */,
 				47C4E7FA0879EBCE007A1D39 /* ca */,
 				4743002C09596BB700848A35 /* cy */,
+				476565240981349C00633FD8 /* th */,
 			);
 			name = Progress.nib;
 			sourceTree = "<group>";
@@ -4305,6 +4357,7 @@
 				4754659B0841C08D009A1734 /* id */,
 				47C4E7FD0879EBD5007A1D39 /* ca */,
 				4743002E09596BB700848A35 /* cy */,
+				476565230981349C00633FD8 /* th */,
 			);
 			name = Sync.nib;
 			sourceTree = "<group>";
@@ -4334,6 +4387,7 @@
 				47F0B71D087ACD8E00439978 /* id */,
 				47F0B71E087ACD9200439978 /* ca */,
 				4743002709596BB700848A35 /* cy */,
+				4765652B098134B200633FD8 /* th */,
 			);
 			name = Growl.strings;
 			sourceTree = "<group>";
@@ -4363,6 +4417,7 @@
 				47F0B7EB087AD34300439978 /* id */,
 				47F0B7EC087AD34B00439978 /* ca */,
 				4743003109596BD900848A35 /* cy */,
+				4765652F098134D300633FD8 /* th */,
 			);
 			name = Status.strings;
 			sourceTree = "<group>";
