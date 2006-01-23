@@ -272,7 +272,7 @@ en.lproj/Growl.strings -text svneol=native#application/octet-stream
 en.lproj/IDisk.strings -text svneol=native#application/octet-stream
 en.lproj/Info.nib/keyedobjects.nib -text
 en.lproj/Info.strings -text svneol=native#application/octet-stream
-en.lproj/InfoPlist.strings -text
+en.lproj/InfoPlist.strings -text svneol=unset#application/octet-stream
 en.lproj/Localizable.strings -text
 en.lproj/Login.nib/keyedobjects.nib -text
 en.lproj/Login.strings -text svneol=native#application/octet-stream

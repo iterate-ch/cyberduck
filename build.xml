@@ -126,6 +126,10 @@
             <replacefilter token="*revision*" value="${svn.revision}" />
         </replace>
         <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
+            <include name="**/InfoPlist.strings" />
+            <replacefilter token="*revision*" value="${svn.revision}" />
+        </replace>
+        <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
             <include name="**/Info.plist" />
             <replacefilter token="*revision*" value="${svn.revision}" />
         </replace>
