@@ -349,6 +349,9 @@ public class Host extends NSObject {
             if (Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
                 this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.PASV;
         }
+		if(null == this.login)
+			return;
+        this.login.setProtocol(this.protocol);
     }
 
     public String getProtocol() {
@@ -382,6 +385,9 @@ public class Host extends NSObject {
 
     public void setHostname(String hostname) {
         this.hostname = hostname;
+		if(null == this.login)
+			return;
+        this.login.setHostname(hostname);
     }
 
     /**

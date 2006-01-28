@@ -38,6 +38,14 @@ public class Login {
     private String privateKeyFile;
     private boolean shouldBeAddedToKeychain;
 
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
+    }
+
     public String getUsername() {
         return this.user;
     }
@@ -198,7 +206,6 @@ public class Login {
      * @return true if both username and password could be valid
      */
     public boolean hasReasonableValues() {
-        boolean reasonable = false;
         if (this.usesPublicKeyAuthentication()) {
             return true;
         }
