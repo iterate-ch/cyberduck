@@ -18,26 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.DownloadQueue;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.NSDraggingInfo;
 import com.apple.cocoa.application.NSPasteboard;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSData;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSMutableData;
-import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSPropertyListSerialization;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -49,7 +36,8 @@ import java.io.File;
 public class CDQueueTableDataSource extends Collection {
     private static Logger log = Logger.getLogger(CDQueueTableDataSource.class);
 
-    private static final File QUEUE_FILE = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Queue.plist"));
+    private static final File QUEUE_FILE
+            = new File(NSPathUtilities.stringByExpandingTildeInPath(Preferences.instance().getProperty("queue.user.path")));
 
     static {
         QUEUE_FILE.getParentFile().mkdir();

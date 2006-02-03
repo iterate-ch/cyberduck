@@ -170,9 +170,14 @@ public abstract class Preferences {
          * Save bookmarks in ~/Library
          */
         defaults.put("favorites.save", "true");
+		defaults.put("favorites.user.path", "~/Library/Application Support/Cyberduck/Favorites.plist");
+		defaults.put("favorites.system.path", "/Library/Application Support/Cyberduck/Favorites.plist");
+
+		defaults.put("history.user.path", "~/Library/Application Support/Cyberduck/History");
 
         defaults.put("queue.openByDefault", "false");
         defaults.put("queue.save", "true");
+		defaults.put("queue.user.path", "~/Library/Application Support/Cyberduck/Queue.plist");
         defaults.put("queue.removeItemWhenComplete", "false");
 
         /**
