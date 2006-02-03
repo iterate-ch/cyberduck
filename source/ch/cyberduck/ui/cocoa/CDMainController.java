@@ -97,7 +97,7 @@ public class CDMainController extends CDController {
     }
 
     public void historyMenuClicked(NSMenuItem sender) {
-        NSWorkspace.sharedWorkspace().selectFile(HISTORY_FOLDER.getAbsolutePath(), "");
+        NSWorkspace.sharedWorkspace().selectFile(CDBrowserController.HISTORY_FOLDER.getAbsolutePath(), "");
     }
 
     private class BookmarkMenuDelegate extends NSObject {
@@ -151,15 +151,12 @@ public class CDMainController extends CDController {
         }
     }
 
-    private static final File HISTORY_FOLDER = new File(
-            NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History"));
-
     private class HistoryMenuDelegate extends NSObject {
 
         private Map cache = new HashMap();
 
         private File[] listFiles() {
-            File[] files = HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
+            File[] files = CDBrowserController.HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
                 public boolean accept(File dir, String name) {
                     return name.endsWith(".duck");
                 }
