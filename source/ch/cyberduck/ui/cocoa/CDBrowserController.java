@@ -43,7 +43,7 @@ public class CDBrowserController extends CDWindowController
 
     private static final File HISTORY_FOLDER = new File(
             NSPathUtilities.stringByExpandingTildeInPath(
-                    "~/Library/Application Support/Cyberduck/History"));
+                    Preferences.instance().getProperty("history.user.path")));
 
     static {
         HISTORY_FOLDER.mkdirs();

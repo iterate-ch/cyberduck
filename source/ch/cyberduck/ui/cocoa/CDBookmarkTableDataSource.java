@@ -51,9 +51,9 @@ public class CDBookmarkTableDataSource extends Collection {
     private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 
     private static final File BOOKMARKS_FILE_USER
-            = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/Favorites.plist"));
+            = new File(NSPathUtilities.stringByExpandingTildeInPath(Preferences.instance().getProperty("favorites.user.path")));
     private static final File BOOKMARKS_FILE_SYSTEM
-            = new File("/Library/Application Support/Cyberduck/Favorites.plist");
+            = new File(Preferences.instance().getProperty("favorites.system.path"));
 
     private static final File BOOKMARKS_FILE;
 
