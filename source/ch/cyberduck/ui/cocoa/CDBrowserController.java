@@ -41,9 +41,8 @@ public class CDBrowserController extends CDWindowController
         implements NSToolbarItem.ItemValidation {
     private static Logger log = Logger.getLogger(CDBrowserController.class);
 
-    protected static final File HISTORY_FOLDER = new File(
-            NSPathUtilities.stringByExpandingTildeInPath(
-                    Preferences.instance().getProperty("history.user.path")));
+    protected static final File HISTORY_FOLDER
+        = new File(CDPreferencesImpl.APP_SUPPORT_DIR, "History");
 
     static {
         HISTORY_FOLDER.mkdirs();

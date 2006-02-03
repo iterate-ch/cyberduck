@@ -50,23 +50,13 @@ import java.io.File;
 public class CDBookmarkTableDataSource extends Collection {
     private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 
-    private static final File BOOKMARKS_FILE_USER
-            = new File(NSPathUtilities.stringByExpandingTildeInPath(Preferences.instance().getProperty("favorites.user.path")));
-    private static final File BOOKMARKS_FILE_SYSTEM
-            = new File(Preferences.instance().getProperty("favorites.system.path"));
-
-    private static final File BOOKMARKS_FILE;
+    private static final File BOOKMARKS_FILE
+            = new File(CDPreferencesImpl.APP_SUPPORT_DIR, "Favorites.plist");
 
     private int hostPboardChangeCount = NSPasteboard.pasteboardWithName("HostPBoard").changeCount();
 
     static {
-        if (BOOKMARKS_FILE_SYSTEM.exists()) {
-            BOOKMARKS_FILE = BOOKMARKS_FILE_SYSTEM;
-        }
-        else {
-            BOOKMARKS_FILE_USER.getParentFile().mkdir();
-            BOOKMARKS_FILE = BOOKMARKS_FILE_USER;
-        }
+	    BOOKMARKS_FILE.getParentFile().mkdir();
     }
 
     private static CDBookmarkTableDataSource instance;

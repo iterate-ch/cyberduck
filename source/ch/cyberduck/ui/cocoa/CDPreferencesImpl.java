@@ -38,8 +38,8 @@ public class CDPreferencesImpl extends Preferences {
 
     private NSUserDefaults props = NSUserDefaults.standardUserDefaults();
     
-    private static final File APP_SUPPORT_DIR
-            = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck"));
+    protected static final File APP_SUPPORT_DIR
+            = new File(NSPathUtilities.stringByExpandingTildeInPath(	Preferences.instance().getProperty("application.support.path")));
 
     static {
         APP_SUPPORT_DIR.mkdir();
