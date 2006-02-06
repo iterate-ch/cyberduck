@@ -111,8 +111,9 @@
 		4741686B06C6BA9400AC0BD2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4741686906C6BA9400AC0BD2 /* Localizable.strings */; };
 		47442A6C0733C7DD00BA512B /* rendezvous.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47442A6A0733C7DD00BA512B /* rendezvous.icns */; };
 		47442A6D0733C7DD00BA512B /* rendezvous16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47442A6B0733C7DD00BA512B /* rendezvous16.tiff */; };
-		47488FD50944523700FD68D7 /* SmartCrashReportsInstall.h in Headers */ = {isa = PBXBuildFile; fileRef = 47488FD30944523700FD68D7 /* SmartCrashReportsInstall.h */; };
-		47488FD60944523700FD68D7 /* SmartCrashReportsInstall.o in Frameworks */ = {isa = PBXBuildFile; fileRef = 47488FD40944523700FD68D7 /* SmartCrashReportsInstall.o */; };
+		47457F8E09980270002C93C3 /* UKCrashReporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 47457F8C09980270002C93C3 /* UKCrashReporter.h */; };
+		47457F8F09980270002C93C3 /* UKCrashReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47457F8D09980270002C93C3 /* UKCrashReporter.m */; };
+		47457FFC099804C2002C93C3 /* UKCrashReporter.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47457FFA099804C2002C93C3 /* UKCrashReporter.strings */; };
 		47494C4007EC6B4200B34D53 /* CDOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47494C3C07EC6B4200B34D53 /* CDOutlineView.m */; };
 		47494C4107EC6B4200B34D53 /* CDOutlineView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47494C3D07EC6B4200B34D53 /* CDOutlineView.h */; };
 		47494C4207EC6B4200B34D53 /* CDListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47494C3E07EC6B4200B34D53 /* CDListView.m */; };
@@ -1004,8 +1005,9 @@
 		4744374D0737C48000BA512B /* CDSyncQueueValidatorController.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CDSyncQueueValidatorController.java; sourceTree = "<group>"; };
 		4744374E0737C48000BA512B /* CDUploadQueueValidatorController.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CDUploadQueueValidatorController.java; sourceTree = "<group>"; };
 		4744374F0737C48000BA512B /* CDDownloadQueueValidatorController.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CDDownloadQueueValidatorController.java; sourceTree = "<group>"; };
-		47488FD30944523700FD68D7 /* SmartCrashReportsInstall.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SmartCrashReportsInstall.h; sourceTree = "<group>"; };
-		47488FD40944523700FD68D7 /* SmartCrashReportsInstall.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = SmartCrashReportsInstall.o; sourceTree = "<group>"; };
+		47457F8C09980270002C93C3 /* UKCrashReporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKCrashReporter.h; sourceTree = "<group>"; };
+		47457F8D09980270002C93C3 /* UKCrashReporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKCrashReporter.m; sourceTree = "<group>"; };
+		47457FFB099804C2002C93C3 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/UKCrashReporter.strings; sourceTree = "<group>"; };
 		47494C3C07EC6B4200B34D53 /* CDOutlineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDOutlineView.m; sourceTree = "<group>"; };
 		47494C3D07EC6B4200B34D53 /* CDOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDOutlineView.h; sourceTree = "<group>"; };
 		47494C3E07EC6B4200B34D53 /* CDListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDListView.m; sourceTree = "<group>"; };
@@ -1487,7 +1489,6 @@
 				47649E0908E563C500207DC9 /* Security.framework in Frameworks */,
 				47649E4508E563D000207DC9 /* CoreFoundation.framework in Frameworks */,
 				47649EDD08E563D600207DC9 /* Carbon.framework in Frameworks */,
-				47488FD60944523700FD68D7 /* SmartCrashReportsInstall.o in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1786,6 +1787,7 @@
 		474152D706C4F08A00AC0BD2 /* source */ = {
 			isa = PBXGroup;
 			children = (
+				47457F8A09980270002C93C3 /* de */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
 				474152D806C4F08A00AC0BD2 /* ch */,
 				4741532B06C4F08A00AC0BD2 /* com */,
@@ -1919,7 +1921,6 @@
 		4741532B06C4F08A00AC0BD2 /* com */ = {
 			isa = PBXGroup;
 			children = (
-				47488FD20944523700FD68D7 /* unsanity */,
 				47990A690940B0A2004AD6F7 /* apple */,
 				4741532C06C4F08A00AC0BD2 /* enterprisedt */,
 				4741533806C4F08A00AC0BD2 /* sshtools */,
@@ -2409,6 +2410,7 @@
 			isa = PBXGroup;
 			children = (
 				479C4229097AB2BB00DDE88A /* Credits.rtf */,
+				47457FFA099804C2002C93C3 /* UKCrashReporter.strings */,
 				47026426087DC91C008837FD /* IDisk.strings */,
 				4741686906C6BA9400AC0BD2 /* Localizable.strings */,
 				4751799C097943FA008F671F /* Credentials.strings */,
@@ -2525,13 +2527,21 @@
 			path = img;
 			sourceTree = "<group>";
 		};
-		47488FD20944523700FD68D7 /* unsanity */ = {
+		47457F8A09980270002C93C3 /* de */ = {
 			isa = PBXGroup;
 			children = (
-				47488FD30944523700FD68D7 /* SmartCrashReportsInstall.h */,
-				47488FD40944523700FD68D7 /* SmartCrashReportsInstall.o */,
+				47457F8B09980270002C93C3 /* zathras */,
 			);
-			path = unsanity;
+			path = de;
+			sourceTree = "<group>";
+		};
+		47457F8B09980270002C93C3 /* zathras */ = {
+			isa = PBXGroup;
+			children = (
+				47457F8C09980270002C93C3 /* UKCrashReporter.h */,
+				47457F8D09980270002C93C3 /* UKCrashReporter.m */,
+			);
+			path = zathras;
 			sourceTree = "<group>";
 		};
 		47494C5007EC6B8A00B34D53 /* model */ = {
@@ -2839,7 +2849,7 @@
 				47FD45330801EAEE00716715 /* UKPrefsPanel.h in Headers */,
 				4764B48308B7835E00441096 /* SKWSegmentedControlWindowProxy.h in Headers */,
 				4764B48408B7835E00441096 /* SKWSegmentedControl.h in Headers */,
-				47488FD50944523700FD68D7 /* SmartCrashReportsInstall.h in Headers */,
+				47457F8E09980270002C93C3 /* UKCrashReporter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3001,9 +3011,9 @@
 			productReference = 4716D8B80877533B00938886 /* libDotMac.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		471D2C0B05A2505500675163 /* app */ = {
+		471D2C0B05A2505500675163 /* app (International) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 47D286C50855740C008142CF /* Build configuration list for PBXNativeTarget "app" */;
+			buildConfigurationList = 47D286C50855740C008142CF /* Build configuration list for PBXNativeTarget "app (International)" */;
 			buildPhases = (
 				471D2C0D05A2505500675163 /* Headers */,
 				471D2C0E05A2505500675163 /* Resources */,
@@ -3035,7 +3045,7 @@
 			};
 			dependencies = (
 			);
-			name = app;
+			name = "app (International)";
 			productInstallPath = "$(USER_APPS_DIR)";
 			productName = Cyberduck;
 			productReference = 471D2C5505A2505600675163 /* Cyberduck.app */;
@@ -3302,7 +3312,7 @@
 			mainGroup = 29B97314FDCFA39411CA2CEA /* cyberduck-cocoa */;
 			projectDirPath = "";
 			targets = (
-				471D2C0B05A2505500675163 /* app */,
+				471D2C0B05A2505500675163 /* app (International) */,
 				4734485D04575C6D00A801C6 /* build */,
 				474432380736A1DB00BA512B /* release */,
 				4739EF670856981300405FD3 /* libKeychain */,
@@ -3429,6 +3439,7 @@
 				47723BC8096072B800B47E99 /* cancel.tiff in Resources */,
 				4751799E097943FA008F671F /* Credentials.strings in Resources */,
 				479C422A097AB2BB00DDE88A /* Credits.rtf in Resources */,
+				47457FFC099804C2002C93C3 /* UKCrashReporter.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3505,6 +3516,7 @@
 				47FD45340801EAEE00716715 /* UKPrefsPanel.m in Sources */,
 				4764B48108B7835E00441096 /* SKWSegmentedControl.m in Sources */,
 				4764B48208B7835E00441096 /* SKWSegmentedControlWindowProxy.m in Sources */,
+				47457F8F09980270002C93C3 /* UKCrashReporter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3596,7 +3608,7 @@
 		};
 		47CD9C500739339B00E9379E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 471D2C0B05A2505500675163 /* app */;
+			target = 471D2C0B05A2505500675163 /* app (International) */;
 			targetProxy = 47CD9C4F0739339B00E9379E /* PBXContainerItemProxy */;
 		};
 		47F0B756087ACF5500439978 /* PBXTargetDependency */ = {
@@ -4212,6 +4224,14 @@
 			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
+		47457FFA099804C2002C93C3 /* UKCrashReporter.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				47457FFB099804C2002C93C3 /* en */,
+			);
+			name = UKCrashReporter.strings;
+			sourceTree = "<group>";
+		};
 		47494C8107EC6C3C00B34D53 /* Duplicate.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -4770,7 +4790,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
 		};
-		47D286C50855740C008142CF /* Build configuration list for PBXNativeTarget "app" */ = {
+		47D286C50855740C008142CF /* Build configuration list for PBXNativeTarget "app (International)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47D286C70855740C008142CF /* Deployment */,

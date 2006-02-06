@@ -20,12 +20,10 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import "SmartCrashReportsInstall.h"
+#import "UKCrashReporter.h"
 
 int main(int argc, char *argv[])
 {
-	if (UnsanitySCR_CanInstall(FALSE)) {
-		UnsanitySCR_Install(FALSE);
-	}
+	UKCrashReporterCheckForCrash();
 	return NSApplicationMain(argc, (const char **) argv);
 }
