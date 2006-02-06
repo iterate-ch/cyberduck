@@ -1033,6 +1033,7 @@ source/com/apple/dnssd/RegisterListener.java -text
 source/com/apple/dnssd/ResolveListener.java -text
 source/com/apple/dnssd/TXTRecord.java -text
 source/com/unsanity/SmartCrashReportsInstall.o -text
+source/de/zathras/UKCrashReporter.m -text
 sv.lproj/Bookmark.nib/keyedobjects.nib -text
 sv.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 sv.lproj/Browser.nib/keyedobjects.nib -text
