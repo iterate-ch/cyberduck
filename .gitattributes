@@ -427,6 +427,32 @@ fr.lproj/Validator.nib/keyedobjects.nib -text
 fr.lproj/Validator.strings -text svneol=native#application/octet-stream
 /generic-document.icns -text
 /generic-document.tiff -text
+he.lproj/Bookmark.strings -text
+he.lproj/Browser.strings -text
+he.lproj/Certificate.strings -text
+he.lproj/Command.strings -text
+he.lproj/Connection.strings -text
+he.lproj/Credentials.strings -text
+he.lproj/Donate.strings -text
+he.lproj/Download.strings -text
+he.lproj/Duplicate.strings -text
+he.lproj/File.strings -text
+he.lproj/Folder.strings -text
+he.lproj/Goto.strings -text
+he.lproj/Growl.strings -text
+he.lproj/IDisk.strings -text
+he.lproj/Info.strings -text
+he.lproj/InfoPlist.strings -text svneol=unset#application/octet-stream
+he.lproj/Localizable.strings -text
+he.lproj/Login.strings -text
+he.lproj/Main.strings -text
+he.lproj/Preferences.strings -text
+he.lproj/Progress.strings -text svneol=unset#application/octet-stream
+he.lproj/Queue.strings -text
+he.lproj/Status.strings -text
+he.lproj/Sync.strings -text
+he.lproj/Update.strings -text
+he.lproj/Validator.strings -text
 hu.lproj/Bookmark.nib/keyedobjects.nib -text
 hu.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 hu.lproj/Browser.nib/keyedobjects.nib -text
