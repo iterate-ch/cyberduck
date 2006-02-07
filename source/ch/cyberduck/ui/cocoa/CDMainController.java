@@ -585,41 +585,6 @@ public class CDMainController extends CDController {
         if (Preferences.instance().getBoolean("queue.openByDefault")) {
             this.showTransferQueueClicked(null);
         }
-        if (Preferences.instance().getBoolean("donate")) {
-            final int uses = Preferences.instance().getInteger("uses");
-            CDWindowController c = new CDWindowController() {
-                private NSButton neverShowDonationCheckbox;
-
-                public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
-                    this.neverShowDonationCheckbox = neverShowDonationCheckbox;
-                    this.neverShowDonationCheckbox.setTarget(this);
-                    this.neverShowDonationCheckbox.setState(
-                            Preferences.instance().getBoolean("donate") ? NSCell.OffState : NSCell.OnState);
-                }
-
-                public void awakeFromNib() {
-                    this.window().setTitle(this.window().title() + " (" + uses + ")");
-                    this.window().center();
-                    this.window().makeKeyAndOrderFront(null);
-                }
-
-                public void closeDonationSheet(NSButton sender) {
-                    this.window().close();
-                    Preferences.instance().setProperty("donate", neverShowDonationCheckbox.state() == NSCell.OffState);
-                    if (sender.tag() == CDSheetCallback.DEFAULT_OPTION) {
-                        try {
-                            NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.donate")));
-                        }
-                        catch (java.net.MalformedURLException e) {
-                            log.error(e.getMessage());
-                        }
-                    }
-                }
-            };
-            if (!NSApplication.loadNibNamed("Donate", c)) {
-                log.fatal("Couldn't load Donate.nib");
-            }
-        }
         if (Preferences.instance().getBoolean("update.check")) {
             this.checkForUpdate(false);
         }
@@ -659,8 +624,49 @@ public class CDMainController extends CDController {
         }
     }
 
+    private boolean donationBoxDisplayed = false;
+
     public int applicationShouldTerminate(NSApplication app) {
         log.debug("applicationShouldTerminate");
+        if (!donationBoxDisplayed && Preferences.instance().getBoolean("donate")) {
+            final int uses = Preferences.instance().getInteger("uses");
+            CDWindowController c = new CDWindowController() {
+                private NSButton neverShowDonationCheckbox;
+
+                public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
+                    this.neverShowDonationCheckbox = neverShowDonationCheckbox;
+                    this.neverShowDonationCheckbox.setTarget(this);
+                    this.neverShowDonationCheckbox.setState(
+                            Preferences.instance().getBoolean("donate") ? NSCell.OffState : NSCell.OnState);
+                }
+
+                public void awakeFromNib() {
+                    this.window().setTitle(this.window().title() + " (" + uses + ")");
+                    this.window().center();
+                    this.window().makeKeyAndOrderFront(null);
+                }
+
+                public void closeDonationSheet(NSButton sender) {
+                    this.window().close();
+                    Preferences.instance().setProperty("donate", neverShowDonationCheckbox.state() == NSCell.OffState);
+                    if (sender.tag() == CDSheetCallback.DEFAULT_OPTION) {
+                        try {
+                            NSWorkspace.sharedWorkspace().openURL(
+                                    new java.net.URL(Preferences.instance().getProperty("website.donate")));
+                        }
+                        catch (java.net.MalformedURLException e) {
+                            log.error(e.getMessage());
+                        }
+                    }
+                    NSApplication.sharedApplication().terminate(null);
+                }
+            };
+            if (!NSApplication.loadNibNamed("Donate", c)) {
+                log.fatal("Couldn't load Donate.nib");
+            }
+            donationBoxDisplayed = true;
+            return NSApplication.TerminateCancel;
+        }
         NSArray windows = app.windows();
         int count = windows.count();
         // Determine if there are any open connections
