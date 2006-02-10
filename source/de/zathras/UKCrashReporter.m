@@ -12,9 +12,27 @@
 
 #import "UKCrashReporter.h"
 
+@implementation UKCrashReporter
+
+-(id) init
+{
+	if( self = [super init] )
+	{
+		[self checkForCrash];
+	}
+	
+	return self;
+}
+
+
+-(void)	dealloc
+{
+	[super dealloc];
+}
+
 
 // -----------------------------------------------------------------------------
-//	UKCrashReporterCheckForCrash:
+//	checkForCrash:
 //		This submits the crash report to a CGI form as a POST request by
 //		passing it as the request variable "crashlog".
 //	
@@ -30,10 +48,9 @@
 //		application.
 // -----------------------------------------------------------------------------
 
-void UKCrashReporterCheckForCrash()
+- (void) checkForCrash
 {
 	NS_DURING
-		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 		// Try whether the classes we need to talk to the CGI are present:
 		Class			NSMutableURLRequestClass = NSClassFromString( @"NSMutableURLRequest" );
 		Class			NSURLConnectionClass = NSClassFromString( @"NSURLConnection" );
@@ -55,6 +72,7 @@ void UKCrashReporterCheckForCrash()
 			// If we never before reported a crash or the last report lies before the last crash:
 			if( [lastTimeCrashReported compare: lastTimeCrashLogged] == NSOrderedAscending )
 			{
+				NSLog(@"New crash log found! Running alert panel");
 				if( NSRunAlertPanel( NSLocalizedStringFromTable( @"WANT_TO_SEND_CRASH_TITLE", @"UKCrashReporter", @"" ),
 									NSLocalizedStringFromTable( @"WANT_TO_SEND_CRASH", @"UKCrashReporter", @"" ),
 									NSLocalizedStringFromTable( @"WANT_TO_SEND_CRASH_SEND", @"UKCrashReporter", @"" ),
@@ -89,15 +107,23 @@ void UKCrashReporterCheckForCrash()
 					[postRequest setHTTPBody: formData];
 					
 					(NSData*) [NSURLConnectionClass sendSynchronousRequest: postRequest returningResponse: &response error: &error];
+					NSLog(@"Crash report sent to %@", NSLocalizedStringFromTable( @"CRASH_REPORT_CGI_URL", @"UKCrashReporter", @"" ));
 				}
-				
+				NSLog(@"Updating last reported crash date in user defaults");
 				// Remember we just reported a crash, so we don't ask twice:
 				[[NSUserDefaults standardUserDefaults] setFloat: [[NSDate date] timeIntervalSince1970] forKey: @"UKCrashReporterLastCrashReportDate"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 			}
+			else {
+				NSLog(@"No new crash log found.");
+			}
 		}
-		[pool release];
-		NS_HANDLER
+		else {
+			NSLog(@"No crash log found at all.");
+		}
+	NS_HANDLER
 		NSLog(@"Exception during check for crash: %@",localException);
 	NS_ENDHANDLER
 }
+
+@end
