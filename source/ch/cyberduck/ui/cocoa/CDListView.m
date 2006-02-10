@@ -22,6 +22,7 @@
 - (NSTableColumn *)_typeAheadSelectionColumn;
 - (void)selectRow;
 - (void)selectRowWithTimer:(NSTimer *)sender;
+- (void)_scheduleAutoExpandTimerForItem:(id)object;
 @end
 
 @implementation CDListView
@@ -86,6 +87,11 @@
 			[[self delegate] performSelector:@selector(tableRowDoubleClicked:) withObject:self];
 		}
 	}
+}
+
+- (void)cancelOperation:(id)sender
+{
+	[self abortEditing];
 }
 
 // make return and tab only end editing, and not cause other cells to edit
