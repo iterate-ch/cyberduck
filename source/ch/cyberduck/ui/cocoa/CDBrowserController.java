@@ -240,7 +240,7 @@ public class CDBrowserController extends CDWindowController
             path.attributes.setType(Path.DIRECTORY_TYPE);
             Object localObj = args.objectForKey("Local");
             if (localObj != null) {
-                path.setLocal(new Local((String) localObj, path.getName()));
+                path.setLocal(new Local((String) localObj));
             }
             Queue q = new SyncQueue(path);
             q.process(false, true);
@@ -818,6 +818,7 @@ public class CDBrowserController extends CDWindowController
                 return null;
             }
         });
+        NSSelector setResizableMaskSelector = new NSSelector("setResizingMask", new Class[]{int.class});
         {
             NSTableColumn c = new NSTableColumn();
             c.headerCell().setStringValue(NSBundle.localizedString("Filename", "A column in the browser"));
@@ -825,7 +826,6 @@ public class CDBrowserController extends CDWindowController
             c.setMinWidth(100f);
             c.setWidth(250f);
             c.setMaxWidth(1000f);
-            NSSelector setResizableMaskSelector = new NSSelector("setResizingMask", new Class[]{int.class});
             if (setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
@@ -916,7 +916,7 @@ public class CDBrowserController extends CDWindowController
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {
             NSTableColumn c = new NSTableColumn();
-            c.setIdentifier("TYPE");
+            c.setIdentifier(CDBrowserTableDataSource.TYPE_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
@@ -974,13 +974,13 @@ public class CDBrowserController extends CDWindowController
     }
 
     protected void _updateBrowserColumns(NSTableView table) {
-        table.removeTableColumn(table.tableColumnWithIdentifier("SIZE"));
         NSSelector setResizableMaskSelector
                 = new NSSelector("setResizingMask", new Class[]{int.class});
+        table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.SIZE_COLUMN));
         if (Preferences.instance().getBoolean("browser.columnSize")) {
             NSTableColumn c = new NSTableColumn();
             c.headerCell().setStringValue(NSBundle.localizedString("Size", "A column in the browser"));
-            c.setIdentifier("SIZE");
+            c.setIdentifier(CDBrowserTableDataSource.SIZE_COLUMN);
             c.setMinWidth(50f);
             c.setWidth(80f);
             c.setMaxWidth(100f);
@@ -994,11 +994,11 @@ public class CDBrowserController extends CDWindowController
             c.dataCell().setAlignment(NSText.RightTextAlignment);
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier("MODIFIED"));
+        table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.MODIFIED_COLUMN));
         if (Preferences.instance().getBoolean("browser.columnModification")) {
             NSTableColumn c = new NSTableColumn();
             c.headerCell().setStringValue(NSBundle.localizedString("Modified", "A column in the browser"));
-            c.setIdentifier("MODIFIED");
+            c.setIdentifier(CDBrowserTableDataSource.MODIFIED_COLUMN);
             c.setMinWidth(100f);
             c.setWidth(180f);
             c.setMaxWidth(500f);
@@ -1014,11 +1014,11 @@ public class CDBrowserController extends CDWindowController
                     true));
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier("OWNER"));
+        table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.OWNER_COLUMN));
         if (Preferences.instance().getBoolean("browser.columnOwner")) {
             NSTableColumn c = new NSTableColumn();
             c.headerCell().setStringValue(NSBundle.localizedString("Owner", "A column in the browser"));
-            c.setIdentifier("OWNER");
+            c.setIdentifier(CDBrowserTableDataSource.OWNER_COLUMN);
             c.setMinWidth(100f);
             c.setWidth(80f);
             c.setMaxWidth(500f);
@@ -1032,11 +1032,11 @@ public class CDBrowserController extends CDWindowController
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
             table.addTableColumn(c);
         }
-        table.removeTableColumn(table.tableColumnWithIdentifier("PERMISSIONS"));
+        table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.PERMISSIONS_COLUMN));
         if (Preferences.instance().getBoolean("browser.columnPermissions")) {
             NSTableColumn c = new NSTableColumn();
             c.headerCell().setStringValue(NSBundle.localizedString("Permissions", "A column in the browser"));
-            c.setIdentifier("PERMISSIONS");
+            c.setIdentifier(CDBrowserTableDataSource.PERMISSIONS_COLUMN);
             c.setMinWidth(100f);
             c.setWidth(100f);
             c.setMaxWidth(800f);
@@ -3016,6 +3016,7 @@ public class CDBrowserController extends CDWindowController
     protected void invalidate() {
         if (this.hasSession()) {
             this.session.removeConnectionListener(this.listener);
+            this.session.getHost().getCredentials().setPassword(null);
             this.session = null;
         }
         this.toolbar.setDelegate(null);

@@ -108,6 +108,8 @@ public abstract class Preferences {
          */
         defaults.put("update.check", "true");
 
+		defaults.put("application.support.path", "~/Library/Application Support/Cyberduck");
+
         /**
          * Bookmark drawer should be opened for new browser windows
          */
@@ -127,6 +129,7 @@ public abstract class Preferences {
          */
         defaults.put("browser.info.isInspector", "true");
 
+        defaults.put("browser.columnKind", "false");
         defaults.put("browser.columnSize", "true");
         defaults.put("browser.columnModification", "true");
         defaults.put("browser.columnOwner", "false");
@@ -160,8 +163,8 @@ public abstract class Preferences {
         /**
          * Default editor
          */
-        defaults.put("editor.name", "SubEthaEdit");
-        defaults.put("editor.bundleIdentifier", "de.codingmonkeys.SubEthaEdit");
+        defaults.put("editor.name", "TextMate");
+        defaults.put("editor.bundleIdentifier", "com.macromates.textmate");
         defaults.put("editor.disabledFiles", "pdf ps exe bin jpeg jpg jp2 gif tif ico icns tiff bmp pict sgi tga png psd " +
                 "hqx sea dmg zip sit tar gz tgz bz2 avi qtl bom pax pgp" +
                 "mpg mpeg mp3 m4p m4a mov qt ram aiff aif wav wma jar war ear doc xls ppt");
@@ -170,14 +173,9 @@ public abstract class Preferences {
          * Save bookmarks in ~/Library
          */
         defaults.put("favorites.save", "true");
-		defaults.put("favorites.user.path", "~/Library/Application Support/Cyberduck/Favorites.plist");
-		defaults.put("favorites.system.path", "/Library/Application Support/Cyberduck/Favorites.plist");
-
-		defaults.put("history.user.path", "~/Library/Application Support/Cyberduck/History");
 
         defaults.put("queue.openByDefault", "false");
         defaults.put("queue.save", "true");
-		defaults.put("queue.user.path", "~/Library/Application Support/Cyberduck/Queue.plist");
         defaults.put("queue.removeItemWhenComplete", "false");
 
         /**
@@ -197,12 +195,14 @@ public abstract class Preferences {
         defaults.put("queue.upload.permissions.default", "rw-r--r--");
         defaults.put("queue.upload.preserveDate", "true");
         defaults.put("queue.upload.preserveDate.fallback", "false");
+        defaults.put("queue.upload.skip", ".DS_Store");
 
         defaults.put("queue.download.changePermissions", "false");
         defaults.put("queue.download.permissions.useDefault", "false");
         defaults.put("queue.download.permissions.default", "rw-r--r--");
         defaults.put("queue.download.preserveDate", "true");
         defaults.put("queue.download.updateIcon", "true");
+        defaults.put("queue.download.skip", ".DS_Store");
 
         defaults.put("queue.sync.ignore.hour", "false");
         defaults.put("queue.sync.ignore.minute", "false");
