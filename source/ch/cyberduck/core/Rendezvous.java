@@ -36,18 +36,6 @@ public class Rendezvous
 
     private static Logger log = Logger.getLogger(Rendezvous.class);
 
-    static {
-        try {
-            NSBundle bundle = NSBundle.mainBundle();
-            String lib = bundle.resourcePath() + "/Java/" + "libDNSSD.dylib";
-            log.info("Locating libDNSSD.dylib at '" + lib + "'");
-            System.load(lib);
-        }
-        catch (UnsatisfiedLinkError e) {
-            log.error("Could not load the libDNSSD.dylib library:" + e.getMessage());
-        }
-    }
-
     private static final String[] serviceTypes = new String[]{
             "_sftp._tcp.",
             "_ssh._tcp.",
