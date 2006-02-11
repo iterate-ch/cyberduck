@@ -26,6 +26,7 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * @version $Id$
@@ -71,9 +72,10 @@ public class UploadQueue extends Queue {
                     File[] files = p.getLocal().listFiles();
                     for (int i = 0; i < files.length; i++) {
                         if (files[i].canRead()) {
-                            Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(), new Local(files[i].getAbsolutePath()));
-                            // users complaining about .DS_Store files getting uploaded. It should be apple fixing their crappy file system, but whatever.
-                            if (!child.getName().equals(".DS_Store")) {
+                            Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(),
+                                    new Local(files[i].getAbsolutePath()));
+                            if(!this.isSkipped(new StringTokenizer(
+                                    Preferences.instance().getProperty("queue.upload.skip")), child.getName())) {
                                 this.getChilds(childs, child);
                             }
                         }

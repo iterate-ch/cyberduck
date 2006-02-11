@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.StringTokenizer;
 
 /**
  * @version $Id$
@@ -197,12 +198,20 @@ public abstract class Queue extends NSObject implements QueueListener {
 
     protected abstract List getChilds(List childs, Path root);
 
+    protected boolean isSkipped(StringTokenizer tokenizer, String filename) {
+        while(tokenizer.hasMoreTokens()) {
+            if(tokenizer.nextToken().equals(filename)) {
+                return true;
+            }
+        }
+        return false;
+    }
+        
     protected abstract void process(Path p);
 
     public List getJobs() {
         return this.jobs;
     }
-
 
     /**
      * Process the queue. All files will be downloaded/uploaded/synced rerspectively.

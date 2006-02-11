@@ -25,6 +25,7 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * @version $Id$
@@ -69,7 +70,10 @@ public class DownloadQueue extends Queue {
                 for (Iterator i = files.iterator(); i.hasNext();) {
                     Path child = (Path) i.next();
                     child.setLocal(new Local(p.getLocal(), child.getName()));
-                    this.getChilds(childs, child);
+                    if(!this.isSkipped(new StringTokenizer(
+                            Preferences.instance().getProperty("queue.download.skip")), child.getName())) {
+                        this.getChilds(childs, child);
+                    }
                 }
             }
         }

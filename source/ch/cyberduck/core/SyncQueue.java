@@ -27,6 +27,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * @version $Id$
@@ -79,7 +80,8 @@ public class SyncQueue extends Queue {
                     for (int i = 0; i < files.length; i++) {
                         Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(),
                                 new Local(files[i].getAbsolutePath()));
-                        if (!child.getName().equals(".DS_Store")) {
+                        if(!this.isSkipped(new StringTokenizer(
+                                Preferences.instance().getProperty("queue.download.skip")), child.getName())) {
                             this.addLocalChilds(childs, child);
                         }
                     }
@@ -103,7 +105,10 @@ public class SyncQueue extends Queue {
                     for (Iterator i = files.iterator(); i.hasNext();) {
                         Path child = (Path) i.next();
                         child.setLocal(new Local(p.getLocal(), child.getName()));
-                        this.addRemoteChilds(childs, child);
+                        if(!this.isSkipped(new StringTokenizer(
+                                Preferences.instance().getProperty("queue.upload.skip")), child.getName())) {
+                            this.addRemoteChilds(childs, child);
+                        }
                     }
                 }
             }
