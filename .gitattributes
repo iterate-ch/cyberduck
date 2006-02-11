@@ -1048,13 +1048,11 @@ source/ch/cyberduck/ui/cocoa/growl/GrowlNative.java -text
 source/com/apple/dnssd/BaseListener.java -text
 source/com/apple/dnssd/BrowseListener.java -text
 source/com/apple/dnssd/DNSRecord.java -text
-source/com/apple/dnssd/DNSSD.h -text
 source/com/apple/dnssd/DNSSD.java -text
 source/com/apple/dnssd/DNSSDException.java -text
 source/com/apple/dnssd/DNSSDRegistration.java -text
 source/com/apple/dnssd/DNSSDService.java -text
 source/com/apple/dnssd/DomainListener.java -text
-source/com/apple/dnssd/JNISupport.c -text
 source/com/apple/dnssd/QueryListener.java -text
 source/com/apple/dnssd/RegisterListener.java -text
 source/com/apple/dnssd/ResolveListener.java -text
