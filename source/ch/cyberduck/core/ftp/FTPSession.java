@@ -68,7 +68,6 @@ public class FTPSession extends Session {
             try {
                 if (FTP != null) {
                     FTP.quit();
-                    host.getCredentials().setPassword(null);
                     FTP = null;
                 }
             }

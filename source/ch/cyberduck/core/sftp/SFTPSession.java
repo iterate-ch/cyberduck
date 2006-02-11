@@ -76,7 +76,6 @@ public class SFTPSession extends Session {
             try {
                 if (SFTP != null) {
                     SFTP.close();
-                    host.getCredentials().setPassword(null);
                     SFTP = null;
                 }
                 if (SSH != null) {
