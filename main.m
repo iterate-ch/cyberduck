@@ -20,10 +20,8 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import "UKCrashReporter.h"
 
 int main(int argc, char *argv[])
 {
-	UKCrashReporterCheckForCrash();
 	return NSApplicationMain(argc, (const char **) argv);
 }
