@@ -228,6 +228,7 @@ public abstract class Session extends NSObject
         if (Preferences.instance().getBoolean("connection.keepalive") && this.keepAliveTimer != null) {
             this.keepAliveTimer.cancel();
         }
+//        host.getCredentials().setPassword(null);
 //        this.cache.clear();
         SessionPool.instance().release(this);
     }
