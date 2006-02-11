@@ -304,7 +304,8 @@ public class CDBookmarkController extends CDWindowController {
         if (this.host.getProtocol().equals(Session.SFTP)) {
             this.protocolPopup.setTitle(Session.SFTP_STRING);
         }
-        this.connectmodePopup.setEnabled(this.host.getProtocol().equals(Session.FTP));
+        this.connectmodePopup.setEnabled(this.host.getProtocol().equals(Session.FTP) || 
+			this.host.getProtocol().equals(Session.FTP_TLS));
         this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Session.SFTP));
         if (this.host.getCredentials().usesPublicKeyAuthentication()) {
             this.pkCheckbox.setState(NSCell.OnState);
