@@ -72,7 +72,7 @@
 			// If we never before reported a crash or the last report lies before the last crash:
 			if( [lastTimeCrashReported compare: lastTimeCrashLogged] == NSOrderedAscending )
 			{
-				NSLog(@"New crash log found! Running alert panel");
+				//NSLog(@"New crash log found! Running alert panel");
 				if( NSRunAlertPanel( NSLocalizedStringFromTable( @"WANT_TO_SEND_CRASH_TITLE", @"UKCrashReporter", @"" ),
 									NSLocalizedStringFromTable( @"WANT_TO_SEND_CRASH", @"UKCrashReporter", @"" ),
 									NSLocalizedStringFromTable( @"WANT_TO_SEND_CRASH_SEND", @"UKCrashReporter", @"" ),
@@ -84,15 +84,15 @@
 					NSArray*			separateReports = [crashLog componentsSeparatedByString: @"\n\n**********\n\n"];
 					NSString*			currentReport = [separateReports count] > 0 ? [separateReports objectAtIndex: [separateReports count] -1] : @"*** Couldn't read Report ***";
 					NSData*				crashReport = [currentReport dataUsingEncoding: NSUTF8StringEncoding];	// 1 since report 0 is empty (file has a delimiter at the top).
-					//NSLog(@"Report = \"%@\"", currentReport);
 					
 					// Prepare a request:
-					NSMutableURLRequest *postRequest = [NSMutableURLRequestClass requestWithURL: [NSURL URLWithString: NSLocalizedStringFromTable( @"CRASH_REPORT_CGI_URL", @"UKCrashReporter", @"" )]];
+					NSMutableURLRequest *postRequest = [NSMutableURLRequestClass requestWithURL: 
+						[NSURL URLWithString: NSLocalizedStringFromTable( @"CRASH_REPORT_CGI_URL", @"UKCrashReporter", @"" )]];
 					NSString            *boundary = @"0xKhTmLbOuNdArY";
 					NSURLResponse       *response = nil;
 					NSError             *error = nil;
 					NSString            *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
-					NSString			*agent = @"UKCrashReporter";
+					NSString			*agent = [NSString stringWithFormat:@"Cyberduck (%@)", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
 					
 					// Add form trappings to crashReport:
 					NSData*			header = [[NSString stringWithFormat:@"--%@\r\nContent-Disposition: form-data; name=\"crashlog\"\r\n\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding];
@@ -107,19 +107,19 @@
 					[postRequest setHTTPBody: formData];
 					
 					(NSData*) [NSURLConnectionClass sendSynchronousRequest: postRequest returningResponse: &response error: &error];
-					NSLog(@"Crash report sent to %@", NSLocalizedStringFromTable( @"CRASH_REPORT_CGI_URL", @"UKCrashReporter", @"" ));
+					//NSLog(@"Crash report sent to %@", NSLocalizedStringFromTable( @"CRASH_REPORT_CGI_URL", @"UKCrashReporter", @"" ));
 				}
-				NSLog(@"Updating last reported crash date in user defaults");
+				//NSLog(@"Updating last reported crash date in user defaults");
 				// Remember we just reported a crash, so we don't ask twice:
 				[[NSUserDefaults standardUserDefaults] setFloat: [[NSDate date] timeIntervalSince1970] forKey: @"UKCrashReporterLastCrashReportDate"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 			}
 			else {
-				NSLog(@"No new crash log found.");
+				//NSLog(@"No new crash log found.");
 			}
 		}
 		else {
-			NSLog(@"No crash log found at all.");
+			//NSLog(@"No crash log found at all.");
 		}
 	NS_HANDLER
 		NSLog(@"Exception during check for crash: %@",localException);
