@@ -286,7 +286,6 @@ en.lproj/Queue.strings -text svneol=native#application/octet-stream
 en.lproj/Status.strings -text svneol=native#application/octet-stream
 en.lproj/Sync.nib/keyedobjects.nib -text
 en.lproj/Sync.strings -text svneol=native#application/octet-stream
-en.lproj/UKCrashReporter.strings -text svneol=unset#application/octet-stream
 en.lproj/Update.nib/keyedobjects.nib -text
 en.lproj/Update.strings -text svneol=native#application/octet-stream
 en.lproj/Validator.nib/keyedobjects.nib -text
