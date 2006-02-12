@@ -437,29 +437,29 @@ public class FTPPath extends Path {
                     else {
                         throw new FTPException("Transfer mode not set");
                     }
-                    if (this.status.isComplete()) {
-                        if (Preferences.instance().getBoolean("queue.download.changePermissions")) {
-                            log.info("Updating permissions");
-                            Permission perm;
-                            if (Preferences.instance().getBoolean("queue.download.permissions.useDefault")) {
-                                perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
-                            }
-                            else {
-                                perm = this.attributes.getPermission();
-                            }
-                            if (!perm.isUndefined()) {
-                                this.getLocal().setPermission(perm);
-                            }
-                        }
-                    }
-                    if (Preferences.instance().getBoolean("queue.download.preserveDate")) {
-                        if (!this.attributes.isUndefined()) {
-                            this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
-                        }
-                    }
                 }
                 if (this.attributes.isDirectory()) {
                     this.getLocal().mkdirs();
+                }
+                if (Preferences.instance().getBoolean("queue.download.changePermissions")) {
+                    log.info("Updating permissions");
+                    Permission perm;
+                    if (this.attributes.isFile()
+                            && Preferences.instance().getBoolean("queue.download.permissions.useDefault")) {
+                        perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
+                    }
+                    else {
+                        perm = this.attributes.getPermission();
+                    }
+                    if (!perm.isUndefined()) {
+                        this.getLocal().setPermission(perm);
+                    }
+                }
+                if (Preferences.instance().getBoolean("queue.download.preserveDate")) {
+                    if (this.attributes.getTimestamp() != null) {
+                        log.info("Updating timestamp");
+                        this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
+                    }
                 }
             }
             catch (FTPException e) {
@@ -630,40 +630,39 @@ public class FTPPath extends Path {
                     else {
                         throw new FTPException("Transfer mode not set");
                     }
-                    if (Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        try {
-                            if (Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                                Permission perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
-                                session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
-                            }
-                            else {
-                                Permission perm = this.getLocal().getPermission();
-                                if (!perm.isUndefined()) {
-                                    session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
-                                }
-                            }
-                        }
-                        catch (FTPException e) {
-                            log.warn(e.getMessage());
-                        }
-                    }
-                    if (Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                        try {
-                            session.FTP.setmodtime(this.getLocal().getTimestamp(), this.getAbsolute());
-                        }
-                        catch (FTPException e) {
-                            log.warn(e.getMessage());
-                            if (Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
-                                if (!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
-                                    this.getLocal().setLastModified(session.FTP.modtime(this.getAbsolute()).getTime());
-                                }
-                            }
-                        }
-                    }
                 }
                 if (this.attributes.isDirectory()) {
-                    if (!this.isRoot()) {
-                        this.mkdir();
+                    this.mkdir();
+                }
+                if (Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                    try {
+                        if (this.attributes.isFile()
+                                && Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                            Permission perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
+                            session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
+                        }
+                        else {
+                            Permission perm = this.getLocal().getPermission();
+                            if (!perm.isUndefined()) {
+                                session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
+                            }
+                        }
+                    }
+                    catch (FTPException e) {
+                        log.warn(e.getMessage());
+                    }
+                }
+                if (Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                    try {
+                        session.FTP.setmodtime(this.getLocal().getTimestamp(), this.getAbsolute());
+                    }
+                    catch (FTPException e) {
+                        log.warn(e.getMessage());
+                        if (Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
+                            if (!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
+                                this.getLocal().setLastModified(session.FTP.modtime(this.getAbsolute()).getTime());
+                            }
+                        }
                     }
                 }
                 this.getParent().invalidate();

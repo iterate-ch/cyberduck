@@ -305,11 +305,11 @@ public class SFTPPath extends Path {
                 session.check();
                 if (this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
                     session.message("Changing owner to " + owner + " on " + this.getName()); //todo localize
-                    session.SFTP.changeOwner(this.getAbsolute(), owner);
+                    //session.SFTP.changeOwner(this.getAbsolute(), owner);
                 }
                 else if (this.attributes.isDirectory()) {
                     session.message("Changing owner to " + owner + " on " + this.getName()); //todo localize
-                    session.SFTP.changeOwner(this.getAbsolute(), owner);
+                    //session.SFTP.changeOwner(this.getAbsolute(), owner);
                     if (recursive) {
                         List files = this.list(false);
                         if (files != null) {
@@ -341,11 +341,11 @@ public class SFTPPath extends Path {
                 session.check();
                 if (this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
                     session.message("Changing group to " + group + " on " + this.getName()); //todo localize
-                    session.SFTP.changeGroup(this.getAbsolute(), group);
+                    //session.SFTP.changeGroup(this.getAbsolute(), group);
                 }
                 else if (this.attributes.isDirectory()) {
                     session.message("Changing group to " + group + " on " + this.getName()); //todo localize
-                    session.SFTP.changeGroup(this.getAbsolute(), group);
+                    //session.SFTP.changeGroup(this.getAbsolute(), group);
                     if (recursive) {
                         List files = this.list(false);
                         if (files != null) {
@@ -376,12 +376,12 @@ public class SFTPPath extends Path {
             try {
                 session.check();
                 if (this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-                    session.message("Changing permission to " + perm.getOctalCode() + " on " + this.getName()); //todo localize
-                    session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
+	                session.message("Changing permission to " + perm.getOctalCode() + " on " + this.getName()); //todo localize
+                    session.SFTP.changePermissions(this.getAbsolute(), perm.getMask());
                 }
                 else if (this.attributes.isDirectory()) {
-                    session.message("Changing permission to " + perm.getOctalCode() + " on " + this.getName()); //todo localize
-                    session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
+	                session.message("Changing permission to " + perm.getOctalCode() + " on " + this.getName()); //todo localize
+                    session.SFTP.changePermissions(this.getAbsolute(), perm.getMask());
                     if (recursive) {
                         List files = this.list(false);
                         if (files != null) {
@@ -432,29 +432,29 @@ public class SFTPPath extends Path {
                         }
                     }
                     this.download(in, out);
-                    if (this.status.isComplete()) {
-                        if (Preferences.instance().getBoolean("queue.download.changePermissions")) {
-                            log.info("Updating permissions");
-                            Permission perm = null;
-                            if (Preferences.instance().getBoolean("queue.download.permissions.useDefault")) {
-                                perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
-                            }
-                            else {
-                                perm = this.attributes.getPermission();
-                            }
-                            if (!perm.isUndefined()) {
-                                this.getLocal().setPermission(perm);
-                            }
-                        }
-                    }
-                    if (Preferences.instance().getBoolean("queue.download.preserveDate")) {
-                        if (!this.attributes.isUndefined()) {
-                            this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
-                        }
-                    }
                 }
                 if (this.attributes.isDirectory()) {
                     this.getLocal().mkdirs();
+                }
+                if (Preferences.instance().getBoolean("queue.download.changePermissions")) {
+                    log.info("Updating permissions");
+                    Permission perm = null;
+                    if (this.attributes.isFile()
+                            && Preferences.instance().getBoolean("queue.download.permissions.useDefault")) {
+                        perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
+                    }
+                    else {
+                        perm = this.attributes.getPermission();
+                    }
+                    if (!perm.isUndefined()) {
+                        this.getLocal().setPermission(perm);
+                    }
+                }
+                if (Preferences.instance().getBoolean("queue.download.preserveDate")) {
+                    if (this.attributes.getTimestamp() != null) {
+                        log.info("Updating timestamp");
+                        this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
+                    }
                 }
             }
             catch (SshException e) {
@@ -490,13 +490,13 @@ public class SFTPPath extends Path {
             InputStream in = null;
             SftpFileOutputStream out = null;
             try {
+                SftpFile f = null;
                 if (this.attributes.isFile()) {
                     session.check();
                     in = new FileInputStream(this.getLocal());
                     if (in == null) {
                         throw new IOException("Unable to buffer data");
                     }
-                    SftpFile f = null;
                     if (this.status.isResume()) {
                         f = session.SFTP.openFile(this.getAbsolute(),
                                 SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
@@ -508,16 +508,24 @@ public class SFTPPath extends Path {
                                         SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
                                         SftpSubsystemClient.OPEN_TRUNCATE); //File open flag, forces an existing file with the same name to be truncated to zero length when creating a file by specifying OPEN_CREATE.
                     }
+                    // We do set the permissions here as otehrwise we might have an empty mask for
+                    // interrupted file transfers
                     if (Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        Permission perm = null;
-                        if (Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                            perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
+                        try {
+                            Permission perm = null;
+                            if (this.attributes.isFile()
+                                    && Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                                perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
+                            }
+                            else {
+                                perm = this.getLocal().getPermission();
+                            }
+                            if (!perm.isUndefined()) {
+                                session.SFTP.changePermissions(this.getAbsolute(), perm.getMask());
+                            }
                         }
-                        else {
-                            perm = this.getLocal().getPermission();
-                        }
-                        if (!perm.isUndefined()) {
-                            session.SFTP.changePermissions(this.getAbsolute(), perm.getDecimalCode());
+                        catch(SshException e) {
+                            log.warn(e.getMessage());
                         }
                     }
                     if (this.status.isResume()) {
@@ -535,16 +543,27 @@ public class SFTPPath extends Path {
                         }
                     }
                     this.upload(out, in);
-                    if (Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                }
+                if (this.attributes.isDirectory()) {
+                    this.mkdir();
+                    if (Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                        Permission perm = this.getLocal().getPermission();
+                        if (!perm.isUndefined()) {
+                            session.SFTP.changePermissions(this.getAbsolute(), perm.getMask());
+                        }
+                    }
+                    f = session.SFTP.openFile(this.getAbsolute(),
+                            SftpSubsystemClient.OPEN_READ);
+                }
+                if (Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                    try {
                         FileAttributes attrs = new FileAttributes();
                         attrs.setTimes(f.getAttributes().getAccessedTime(),
                                 new UnsignedInteger32(this.getLocal().getTimestamp().getTime() / 1000));
-                        session.SFTP.setAttributes(f, attrs);
+                        session.SFTP.setAttributes(this.getAbsolute(), attrs);
                     }
-                }
-                if (this.attributes.isDirectory()) {
-                    if (!this.isRoot()) {
-                        this.mkdir();
+                    catch(SshException e) {
+                        log.warn(e.getMessage());
                     }
                 }
                 this.getParent().invalidate();

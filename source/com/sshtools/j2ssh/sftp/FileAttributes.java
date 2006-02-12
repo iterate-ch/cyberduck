@@ -127,7 +127,7 @@ public class FileAttributes {
     /**  */
     public final static int S_IXOTH = 0x01;
 
-    int version = 3;
+    int version = SftpSubsystemClient.VERSION_3;
     long flags = 0x0000000; // Version 3 & 4
     int type; // Version 4 only
     UnsignedInteger64 size = null; // Version 3 & 4
@@ -158,9 +158,6 @@ public class FileAttributes {
      */
     public FileAttributes(ByteArrayReader bar) throws IOException {
         flags = bar.readInt();
-        /*
-              type = bar.readInt();
-         */
         if (this.isFlagSet(SSH_FILEXFER_ATTR_SIZE)) {
             size = bar.readUINT64();
         }
@@ -170,10 +167,10 @@ public class FileAttributes {
             gid = bar.readUINT32();
         }
 
-//        if(this.isFlagSet(SSH_FILEXFER_ATTR_OWNERGROUP)) {
-//            owner = bar.readString();
-//            group = bar.readString();
-//        }
+        if(this.isFlagSet(SSH_FILEXFER_ATTR_OWNERGROUP)) {
+            owner = bar.readString();
+            group = bar.readString();
+        }
 
         if (this.isFlagSet(SSH_FILEXFER_ATTR_PERMISSIONS)) {
             permissions = bar.readUINT32();
@@ -468,9 +465,6 @@ public class FileAttributes {
 
         baw.writeInt(flags);
 
-        /*
-              baw.write(type);
-         */
         if (this.isFlagSet(SSH_FILEXFER_ATTR_SIZE)) {
             baw.writeUINT64(size);
         }
@@ -491,10 +485,10 @@ public class FileAttributes {
             }
         }
 
-//        if(this.isFlagSet(SSH_FILEXFER_ATTR_OWNERGROUP)) {
-//            baw.writeString(owner);
-//            baw.writeString(group);
-//        }
+        if(this.isFlagSet(SSH_FILEXFER_ATTR_OWNERGROUP)) {
+            baw.writeString(owner);
+            baw.writeString(group);
+        }
 
         if (this.isFlagSet(SSH_FILEXFER_ATTR_PERMISSIONS)) {
             baw.writeUINT32(permissions);

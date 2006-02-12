@@ -121,7 +121,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	 * @throws IOException
 	 */
 	protected synchronized void closeHandle(byte[] handle)
-	    throws IOException {
+	    throws IOException
+    {
 		if(!isValidHandle(handle)) {
 			throw new SshException("The handle is invalid!");
 		}
@@ -159,7 +160,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	 * @throws IOException
 	 */
 	public synchronized int listChildren(SftpFile file, List children)
-	    throws IOException {
+	    throws IOException
+    {
 		if(file.isDirectory()) {
 			if(!isValidHandle(file.getHandle())) {
 				file = openDirectory(file.getAbsolutePath());
@@ -213,12 +215,14 @@ public class SftpSubsystemClient extends SubsystemChannel {
 		}
 	}
 
-	/**
-	 * @param path
-	 * @throws IOException
-	 */
-	public synchronized void makeDirectory(String path)
-	    throws IOException {
+    /**
+     *
+     * @param path
+     * @throws IOException
+     */
+    public synchronized void makeDirectory(String path)
+	    throws IOException
+    {
 		UnsignedInteger32 requestId = nextRequestId();
 		SshFxpMkdir msg = new SshFxpMkdir(requestId, path, new FileAttributes());
 		this.sendMessage(msg);
@@ -227,43 +231,12 @@ public class SftpSubsystemClient extends SubsystemChannel {
 
 	/**
 	 * @param path
-	 * @throws IOException
-	 */
-	public void recurseMakeDirectory(String path) throws IOException {
-		SftpFile file;
-
-		if(path.trim().length() > 0) {
-			try {
-				file = openDirectory(path);
-				file.close();
-			}
-			catch(IOException ioe) {
-				StringTokenizer tokenizer = new StringTokenizer(path, "/", true);
-				String dir = "";
-
-				while(tokenizer.hasMoreElements()) {
-					dir += tokenizer.nextElement();
-
-					try {
-						file = openDirectory(dir);
-						file.close();
-					}
-					catch(IOException ioe2) {
-						log.info("Creating "+dir);
-						makeDirectory(dir);
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * @param path
 	 * @return
 	 * @throws IOException
 	 */
 	public synchronized SftpFile openDirectory(String path)
-	    throws IOException {
+	    throws IOException
+    {
 		String absolutePath = getAbsolutePath(path);
 		UnsignedInteger32 requestId = nextRequestId();
 		SubsystemMessage msg = new SshFxpOpenDir(requestId, absolutePath);
@@ -367,7 +340,9 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	 * @throws IOException
 	 */
 	public synchronized SftpFile openFile(String absolutePath, int flags,
-	                                      FileAttributes attrs) throws IOException {
+	                                      FileAttributes attrs)
+            throws IOException
+    {
 		if(attrs == null) {
 			attrs = new FileAttributes();
 		}
@@ -391,7 +366,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	 * @throws IOException
 	 */
 	public synchronized FileAttributes getAttributes(String path)
-	    throws IOException {
+	    throws IOException
+    {
 		SubsystemMessage msg;
 		UnsignedInteger32 requestId = nextRequestId();
 		msg = new SshFxpStat(requestId, path);
@@ -422,7 +398,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	 * @throws IOException
 	 */
 	public synchronized FileAttributes getAttributes(SftpFile file)
-	    throws IOException {
+	    throws IOException
+    {
 		SubsystemMessage msg;
 		UnsignedInteger32 requestId = nextRequestId();
 
@@ -465,7 +442,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	 */
 	protected synchronized int readFile(byte[] handle,
 	                                    UnsignedInteger64 offset, byte[] output, int off, int len)
-	    throws IOException {
+	    throws IOException
+    {
 		if(!handles.contains(handle)) {
 			throw new SshException("The file handle is invalid!");
 		}
@@ -513,7 +491,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	 * @throws IOException
 	 */
 	public synchronized void removeDirectory(String path)
-	    throws IOException {
+	    throws IOException
+    {
 		UnsignedInteger32 requestId = nextRequestId();
 		SshFxpRmdir msg = new SshFxpRmdir(requestId, path);
 		this.sendMessage(msg);
@@ -525,7 +504,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	 * @throws IOException
 	 */
 	public synchronized void removeFile(String filename)
-	    throws IOException {
+	    throws IOException
+    {
 		UnsignedInteger32 requestId = nextRequestId();
 		SshFxpRemove msg = new SshFxpRemove(requestId, filename);
 		this.sendMessage(msg);
@@ -538,7 +518,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	 * @throws IOException
 	 */
 	public synchronized void renameFile(String oldpath, String newpath)
-	    throws IOException {
+	    throws IOException
+    {
 		UnsignedInteger32 requestId = nextRequestId();
 		SshFxpRename msg = new SshFxpRename(requestId, oldpath, newpath);
 		this.sendMessage(msg);
@@ -555,7 +536,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	 */
 	protected synchronized void writeFile(byte[] handle,
 	                                      UnsignedInteger64 offset, byte[] data, int off, int len)
-	    throws IOException {
+	    throws IOException
+    {
 		if(!handles.contains(handle)) {
 			throw new SshException("The handle is not valid!");
 		}
@@ -577,7 +559,9 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	 * @throws IOException
 	 */
 	public synchronized void createSymbolicLink(String targetpath,
-	                                            String linkpath) throws IOException {
+	                                            String linkpath)
+            throws IOException
+    {
 		UnsignedInteger32 requestId = nextRequestId();
 		SubsystemMessage msg = new SshFxpSymlink(requestId, targetpath, linkpath);
 		this.sendMessage(msg);
@@ -590,7 +574,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	 * @throws IOException
 	 */
 	public synchronized String getSymbolicLinkTarget(String linkpath)
-	    throws IOException {
+	    throws IOException
+    {
 		UnsignedInteger32 requestId = nextRequestId();
 		SubsystemMessage msg = new SshFxpReadlink(requestId, linkpath);
 		this.sendMessage(msg);
@@ -626,7 +611,8 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	 * @throws IOException
 	 */
 	public synchronized void setAttributes(String path, FileAttributes attrs)
-	    throws IOException {
+	    throws IOException
+    {
 		UnsignedInteger32 requestId = nextRequestId();
 		SubsystemMessage msg = new SshFxpSetStat(requestId, path, attrs);
 		this.sendMessage(msg);
@@ -639,83 +625,37 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	 * @throws IOException
 	 */
 	public synchronized void setAttributes(SftpFile file, FileAttributes attrs)
-	    throws IOException {
+	    throws IOException
+    {
 		if(!isValidHandle(file.getHandle())) {
 			throw new SshException("The handle is not an open file handle!");
 		}
-
 		UnsignedInteger32 requestId = nextRequestId();
-		SubsystemMessage msg = new SshFxpFSetStat(requestId, file.getHandle(),
-		    attrs);
+		SubsystemMessage msg = new SshFxpFSetStat(requestId, file.getHandle(), attrs);
 		this.sendMessage(msg);
 		this.getOKRequestStatus(requestId);
 	}
 
 	/**
-	 * @param file
+	 * @param path
 	 * @param permissions
 	 * @throws IOException
 	 */
-	public void changePermissions(SftpFile file, String permissions)
-	    throws IOException {
-		FileAttributes attrs = new FileAttributes(); //file.getAttributes();
-		attrs.setPermissions(permissions);
-		this.setAttributes(file, attrs);
-	}
-
-	/**
-	 * @param file
-	 * @param permissions
-	 * @throws IOException
-	 */
-	public void changePermissions(SftpFile file, int permissions)
-	    throws IOException {
-		FileAttributes attrs = new FileAttributes(); //file.getAttributes();
-		attrs.setPermissions(new UnsignedInteger32(permissions));
-		this.setAttributes(file, attrs);
-	}
-
-	/**
-	 * @param filename
-	 * @param permissions
-	 * @throws IOException
-	 */
-	public void changePermissions(String filename, int permissions)
-	    throws IOException {
-		FileAttributes attrs = new FileAttributes();
-		attrs.setPermissions(new UnsignedInteger32(permissions));
-		this.setAttributes(filename, attrs);
-	}
-
-	/**
-	 * @param filename
-	 * @param permissions
-	 * @throws IOException
-	 */
-	public void changePermissions(String filename, String permissions)
-	    throws IOException {
+	public void changePermissions(String path, String permissions)
+	    throws IOException
+    {
 		FileAttributes attrs = new FileAttributes();
 		attrs.setPermissions(permissions);
-		this.setAttributes(filename, attrs);
+		this.setAttributes(path, attrs);
 	}
 
-	public void changeOwner(String filename, String owner) throws IOException {
-		FileAttributes attrs = new FileAttributes();
-//		attrs.setOwner(owner);
-		this.setAttributes(filename, attrs);
-	}
-
-	public void changeGroup(String filename, String group) throws IOException {
-		FileAttributes attrs = new FileAttributes();
-//		attrs.setGroup(owner);
-		this.setAttributes(filename, attrs);
-	}
-	
 	/**
 	 * @return
 	 * @throws IOException
 	 */
-	public synchronized boolean initialize() throws IOException {
+	public synchronized boolean initialize()
+            throws IOException
+    {
 		log.info("Initializing SFTP protocol version "+
 		    String.valueOf(version));
 
