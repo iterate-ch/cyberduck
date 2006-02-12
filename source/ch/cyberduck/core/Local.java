@@ -217,7 +217,7 @@ public class Local extends File {
 
     public boolean equals(Object other) {
         if (other instanceof Local) {
-            return this.getAbsolutePath().equals(((Local) other).getAbsolutePath());// && this.attributes.getTimestamp().equals(((Local)other).attributes.getTimestamp());
+            return this.getAbsolutePath().equalsIgnoreCase(((Local) other).getAbsolutePath());
         }
         return false;
     }

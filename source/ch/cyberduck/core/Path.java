@@ -454,7 +454,7 @@ public abstract class Path extends NSObject {
 
     public boolean equals(Object other) {
         if (other instanceof Path) {
-            return this.getAbsolute().equals(((Path) other).getAbsolute());
+            return this.getAbsolute().equalsIgnoreCase(((Path) other).getAbsolute());
         }
         return false;
     }
