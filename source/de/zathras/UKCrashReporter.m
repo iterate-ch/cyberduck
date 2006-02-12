@@ -64,7 +64,7 @@
 		NSString*		crashLogPath = [crashLogsFolder stringByAppendingPathComponent: crashLogName];
 		NSDictionary*	fileAttrs = [[NSFileManager defaultManager] fileAttributesAtPath: crashLogPath traverseLink: YES];
 		NSDate*			lastTimeCrashLogged = (fileAttrs == nil) ? nil : [fileAttrs fileModificationDate];
-		NSTimeInterval	lastCrashReportInterval = [[NSUserDefaults standardUserDefaults] floatForKey: @"UKCrashReporterLastCrashReportDate"];
+		NSTimeInterval	lastCrashReportInterval = [[NSUserDefaults standardUserDefaults] floatForKey: @"crashreport.date"];
 		NSDate*			lastTimeCrashReported = [NSDate dateWithTimeIntervalSince1970: lastCrashReportInterval];
 		
 		if( lastTimeCrashLogged )	// We have a crash log file and its mod date? Means we crashed sometime in the past.
@@ -73,10 +73,10 @@
 			if( [lastTimeCrashReported compare: lastTimeCrashLogged] == NSOrderedAscending )
 			{
 				//NSLog(@"New crash log found! Running alert panel");
-				if( NSRunAlertPanel( NSLocalizedStringFromTable( @"WANT_TO_SEND_CRASH_TITLE", @"UKCrashReporter", @"" ),
-									NSLocalizedStringFromTable( @"WANT_TO_SEND_CRASH", @"UKCrashReporter", @"" ),
-									NSLocalizedStringFromTable( @"WANT_TO_SEND_CRASH_SEND", @"UKCrashReporter", @"" ),
-									NSLocalizedStringFromTable( @"WANT_TO_SEND_CRASH_DONT_SEND", @"UKCrashReporter", @"" ),
+				if( NSRunAlertPanel( NSLocalizedStringFromTable( @"Do you want to report the last crash?", @"Crash", @"" ),
+									NSLocalizedStringFromTable( @"The application %@ has recently crashed. To help improve it, you can send the crash log to the author, so he can use the information in it to fix the bug. Do you want to report the crash?", @"Crash", @"" ),
+									NSLocalizedStringFromTable( @"Send", @"Crash", @"" ),
+									NSLocalizedStringFromTable( @"Don't Send", @"Crash", @"" ),
 									@"", appName ) )
 				{
 					// Fetch the newest report from the log:
@@ -87,7 +87,7 @@
 					
 					// Prepare a request:
 					NSMutableURLRequest *postRequest = [NSMutableURLRequestClass requestWithURL: 
-						[NSURL URLWithString: NSLocalizedStringFromTable( @"CRASH_REPORT_CGI_URL", @"UKCrashReporter", @"" )]];
+						[NSURL URLWithString: @"http://crash.cyberduck.ch/report/"]];
 					NSString            *boundary = @"0xKhTmLbOuNdArY";
 					NSURLResponse       *response = nil;
 					NSError             *error = nil;
@@ -107,11 +107,9 @@
 					[postRequest setHTTPBody: formData];
 					
 					(NSData*) [NSURLConnectionClass sendSynchronousRequest: postRequest returningResponse: &response error: &error];
-					//NSLog(@"Crash report sent to %@", NSLocalizedStringFromTable( @"CRASH_REPORT_CGI_URL", @"UKCrashReporter", @"" ));
 				}
-				//NSLog(@"Updating last reported crash date in user defaults");
 				// Remember we just reported a crash, so we don't ask twice:
-				[[NSUserDefaults standardUserDefaults] setFloat: [[NSDate date] timeIntervalSince1970] forKey: @"UKCrashReporterLastCrashReportDate"];
+				[[NSUserDefaults standardUserDefaults] setFloat: [[NSDate date] timeIntervalSince1970] forKey: @"crashreport.date"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 			}
 			else {

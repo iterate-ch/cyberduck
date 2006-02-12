@@ -254,6 +254,7 @@ en.lproj/Command.nib/keyedobjects.nib -text
 en.lproj/Command.strings -text svneol=native#application/octet-stream
 en.lproj/Connection.nib/keyedobjects.nib -text
 en.lproj/Connection.strings -text svneol=native#application/octet-stream
+en.lproj/Crash.strings -text
 en.lproj/Credentials.strings -text
 en.lproj/Donate.nib/keyedobjects.nib -text
 en.lproj/Donate.strings -text svneol=native#application/octet-stream
