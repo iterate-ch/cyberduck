@@ -1278,6 +1278,7 @@ www/help/en/problems/index.html -text
 www/help/es/.htaccess -text
 www/help/fi/.htaccess -text
 www/help/fr/.htaccess -text
+www/help/he/.htaccess -text
 www/help/hu/.htaccess -text
 www/help/id/.htaccess -text
 www/help/images/bonjour.png -text svneol=unset#image/png
