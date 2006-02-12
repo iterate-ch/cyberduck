@@ -1,0 +1,64 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {
+                addBookmarkButtonClicked = id; 
+                backButtonClicked = id; 
+                browserSwitchClicked = id; 
+                connectButtonClicked = id; 
+                copyURLButtonClicked = id; 
+                createFileButtonClicked = id; 
+                createFolderButtonClicked = id; 
+                deleteBookmarkButtonClicked = id; 
+                deleteFileButtonClicked = id; 
+                disconnectButtonClicked = id; 
+                downloadAsButtonClicked = id; 
+                downloadButtonClicked = id; 
+                duplicateFileButtonClicked = id; 
+                editBookmarkButtonClicked = id; 
+                editButtonClicked = id; 
+                forwardButtonClicked = id; 
+                gotoButtonClicked = id; 
+                infoButtonClicked = id; 
+                insideButtonClicked = id; 
+                pasteFromFinder = id; 
+                reloadButtonClicked = id; 
+                sendCustomCommandClicked = id; 
+                showHiddenFilesClicked = id; 
+                showTransferQueueClicked = id; 
+                syncButtonClicked = id; 
+                toggleBookmarkDrawer = id; 
+                toggleLogDrawer = id; 
+                upButtonClicked = id; 
+                uploadButtonClicked = id; 
+            }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = UKCrashReporter; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {
+                bugreportMenuClicked = id; 
+                donateMenuClicked = id; 
+                downloadBookmarksFromDotMacClicked = id; 
+                faqMenuClicked = id; 
+                feedbackMenuClicked = id; 
+                forumMenuClicked = id; 
+                helpMenuClicked = id; 
+                licenseMenuClicked = id; 
+                newBrowserMenuClicked = id; 
+                newDownloadMenuClicked = id; 
+                preferencesMenuClicked = id; 
+                updateMenuClicked = id; 
+                uploadBookmarksToDotMacClicked = id; 
+                websiteMenuClicked = id; 
+            }; 
+            CLASS = "ch.cyberduck.ui.cocoa.CDMainController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {bookmarkMenu = NSMenu; encodingMenu = NSMenu; }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}
