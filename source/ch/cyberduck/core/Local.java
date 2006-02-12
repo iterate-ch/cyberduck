@@ -86,7 +86,7 @@ public class Local extends File {
         return super.getAbsolutePath();
     }
 
-	private Object lock = new Object();
+	private final Object lock = new Object();
 		
     public void setProgress(int progress) {
         if (Preferences.instance().getBoolean("queue.download.updateIcon")) {
