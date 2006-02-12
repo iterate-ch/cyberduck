@@ -22,7 +22,6 @@
 - (NSTableColumn *)_typeAheadSelectionColumn;
 - (void)selectRow;
 - (void)selectRowWithTimer:(NSTimer *)sender;
-- (void)_scheduleAutoExpandTimerForItem:(id)object;
 @end
 
 @implementation CDOutlineView
@@ -55,7 +54,7 @@
 		return;
 	}
 	if([super respondsToSelector:@selector(_scheduleAutoExpandTimerForItem:)]) {
-		[super _scheduleAutoExpandTimerForItem:object];
+		[super performSelector:@selector(_scheduleAutoExpandTimerForItem:) withObject:object];
 	}
 }
 
@@ -170,20 +169,29 @@
 		return;
 	} 
 	else if (key == NSLeftArrowFunctionKey) { //left
-		id 	object = [self itemAtRow:[self selectedRow]];
-		if (object && [self isExpandable:object] && [self isItemExpanded:object]) {
-			[self collapseItem:object];
+		NSEnumerator *enumerator = [self selectedRowEnumerator];
+		id row;
+		while (row = [enumerator nextObject]) {
+			id object = [self itemAtRow:[row intValue]];
+			if (object && [self isExpandable:object] && [self isItemExpanded:object]) {
+				[self collapseItem:object];
+				enumerator = [self selectedRowEnumerator];
+			}
 		}
 		return;
 	}
 	else if (key == NSRightArrowFunctionKey) { //right
-		id 	object = [self itemAtRow:[self selectedRow]];
-		if (object && [self isExpandable:object] && ![self isItemExpanded:object]) {
-			[self expandItem:object];
+		NSEnumerator *enumerator = [self selectedRowEnumerator];
+		id row;
+		while (row = [enumerator nextObject]) {
+			id object = [self itemAtRow:[row intValue]];
+			if (object && [self isExpandable:object] && ![self isItemExpanded:object]) {
+				[self expandItem:object];
+				enumerator = [self selectedRowEnumerator];
+			}
 		}
 		return;
 	}
-		
 	if ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] && 
 		(![[NSCharacterSet controlCharacterSet] characterIsMember:key])) {
 		
