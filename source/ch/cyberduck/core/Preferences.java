@@ -108,8 +108,6 @@ public abstract class Preferences {
          */
         defaults.put("update.check", "true");
 
-		defaults.put("application.support.path", "~/Library/Application Support/Cyberduck");
-
         /**
          * Bookmark drawer should be opened for new browser windows
          */

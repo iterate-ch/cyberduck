@@ -25,6 +25,8 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
 
 import java.io.File;
 import java.util.Arrays;
@@ -40,7 +42,6 @@ public class CDMainController extends CDController {
 
     static {
         BasicConfigurator.configure();
-        org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.toLevel(Preferences.instance().getProperty("logging")));
     }
 
     public void awakeFromNib() {
@@ -53,6 +54,8 @@ public class CDMainController extends CDController {
                 new NSSelector("applicationShouldWake", new Class[]{Object.class}),
                 NSWorkspace.WorkspaceDidWakeNotification,
                 null);
+        Logger.getRootLogger().setLevel(Level.toLevel(
+                Preferences.instance().getProperty("logging")));
     }
 
     // ----------------------------------------------------------
@@ -216,10 +219,6 @@ public class CDMainController extends CDController {
 
     private class RendezvousMenuDelegate extends NSObject {
 
-        public RendezvousMenuDelegate() {
-            log.debug("RendezvousMenuDelegate");
-        }
-
         public int numberOfItemsInMenu(NSMenu menu) {
             int n = Rendezvous.instance().numberOfServices();
             if (n > 0) {
@@ -275,7 +274,8 @@ public class CDMainController extends CDController {
     public void helpMenuClicked(Object sender) {
         try {
             String locale = "en";
-            NSArray preferredLocalizations = NSBundle.preferredLocalizations(NSBundle.mainBundle().localizations());
+            NSArray preferredLocalizations = NSBundle.preferredLocalizations(
+                    NSBundle.mainBundle().localizations());
             if (preferredLocalizations.count() > 0) {
                 locale = (String) preferredLocalizations.objectAtIndex(0);
             }
@@ -468,7 +468,7 @@ public class CDMainController extends CDController {
 
     public void feedbackMenuClicked(Object sender) {
         try {
-            String versionString = (String) NSBundle.bundleForClass(this.getClass()).objectForInfoDictionaryKey("CFBundleVersion");
+            String versionString = (String) NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
             NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail") + "?subject=Cyberduck-" + versionString));
         }
         catch (java.net.MalformedURLException e) {
