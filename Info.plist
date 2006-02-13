@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>English</string>
+	<string>en</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
@@ -107,9 +107,5 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>SmartCrashReports_CompanyName</key>
-	<string>Cyberduck</string>
-	<key>SmartCrashReports_EmailTicket</key>
-	<string>SCR-0F8F2475E9</string>
 </dict>
 </plist>
