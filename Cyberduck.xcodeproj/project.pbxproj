@@ -113,7 +113,6 @@
 		47442A6D0733C7DD00BA512B /* rendezvous16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47442A6B0733C7DD00BA512B /* rendezvous16.tiff */; };
 		47457F8E09980270002C93C3 /* UKCrashReporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 47457F8C09980270002C93C3 /* UKCrashReporter.h */; };
 		47457F8F09980270002C93C3 /* UKCrashReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47457F8D09980270002C93C3 /* UKCrashReporter.m */; };
-		47457FFC099804C2002C93C3 /* UKCrashReporter.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47457FFA099804C2002C93C3 /* UKCrashReporter.strings */; };
 		47494C4007EC6B4200B34D53 /* CDOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47494C3C07EC6B4200B34D53 /* CDOutlineView.m */; };
 		47494C4107EC6B4200B34D53 /* CDOutlineView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47494C3D07EC6B4200B34D53 /* CDOutlineView.h */; };
 		47494C4207EC6B4200B34D53 /* CDListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47494C3E07EC6B4200B34D53 /* CDListView.m */; };
@@ -171,6 +170,7 @@
 		47EF997509006EF500D4B4FF /* IconFamily.h in Headers */ = {isa = PBXBuildFile; fileRef = 47EF997109006EF500D4B4FF /* IconFamily.h */; };
 		47F0B701087ACD0B00439978 /* Growl.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B6FE087ACD0300439978 /* Growl.strings */; };
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
+		47FC190C099FB8AF0082431D /* Crash.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47FC190A099FB8AF0082431D /* Crash.strings */; };
 		47FD44A70801DCE200716715 /* queue.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FD44A60801DCE200716715 /* queue.tiff */; };
 		47FD45330801EAEE00716715 /* UKPrefsPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 47FD45310801EAEE00716715 /* UKPrefsPanel.h */; };
 		47FD45340801EAEE00716715 /* UKPrefsPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FD45320801EAEE00716715 /* UKPrefsPanel.m */; };
@@ -406,6 +406,25 @@
 		47215A0907FC77DE00451725 /* CDX509TrustManagerController.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CDX509TrustManagerController.java; sourceTree = "<group>"; };
 		47215AA607FC9A3E00451725 /* login.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = login.tiff; sourceTree = "<group>"; };
 		4725BE0A05D2E27000C7CCBD /* JavaVM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaVM.framework; path = /System/Library/Frameworks/JavaVM.framework; sourceTree = "<absolute>"; };
+		47341D6C099FF7740065FF57 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341D83099FF7B20065FF57 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341DA709A003A50065FF57 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341DCB09A08C240065FF57 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341DF309A09AF70065FF57 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341DF909A09B1C0065FF57 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341E0009A09CBF0065FF57 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341E0109A09CC20065FF57 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341E0209A09CC80065FF57 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341E0309A09CCB0065FF57 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341E0409A09CD60065FF57 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = zh_CN.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341E0509A09CD90065FF57 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341E0609A09CDC0065FF57 /* no */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = no; path = no.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341E0709A09CDF0065FF57 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341E0A09A09CE90065FF57 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341E0B09A09CEF0065FF57 /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341E0C09A09CF80065FF57 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341E0D09A09D040065FF57 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = cy.lproj/Crash.strings; sourceTree = "<group>"; };
+		47341E0E09A09D070065FF57 /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/Crash.strings; sourceTree = "<group>"; };
 		4739EF730856981400405FD3 /* libKeychain.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libKeychain.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EF94085698F700405FD3 /* libODBEdit.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libODBEdit.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EFA20856990000405FD3 /* libGrowl.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libGrowl.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1024,7 +1043,6 @@
 		4744374F0737C48000BA512B /* CDDownloadQueueValidatorController.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CDDownloadQueueValidatorController.java; sourceTree = "<group>"; };
 		47457F8C09980270002C93C3 /* UKCrashReporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKCrashReporter.h; sourceTree = "<group>"; };
 		47457F8D09980270002C93C3 /* UKCrashReporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKCrashReporter.m; sourceTree = "<group>"; };
-		47457FFB099804C2002C93C3 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/UKCrashReporter.strings; sourceTree = "<group>"; };
 		47494C3C07EC6B4200B34D53 /* CDOutlineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDOutlineView.m; sourceTree = "<group>"; };
 		47494C3D07EC6B4200B34D53 /* CDOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDOutlineView.h; sourceTree = "<group>"; };
 		47494C3E07EC6B4200B34D53 /* CDListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDListView.m; sourceTree = "<group>"; };
@@ -1472,6 +1490,11 @@
 		47F2080E0753E676009192FF /* ValidatorFactory.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ValidatorFactory.java; sourceTree = "<group>"; };
 		47F2E9BA05BD5356003D2875 /* LoginTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = LoginTest.java; sourceTree = "<group>"; };
 		47F2EAA405BD7F7E003D2875 /* CodecTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CodecTest.java; sourceTree = "<group>"; };
+		47FC190B099FB8AF0082431D /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Crash.strings; sourceTree = "<group>"; };
+		47FC191F099FC1290082431D /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Crash.strings; sourceTree = "<group>"; };
+		47FC1943099FDB310082431D /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Crash.strings; sourceTree = "<group>"; };
+		47FC195A099FDB3B0082431D /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Crash.strings; sourceTree = "<group>"; };
+		47FC195D099FDB710082431D /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FD44A60801DCE200716715 /* queue.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = queue.tiff; sourceTree = "<group>"; };
 		47FD45310801EAEE00716715 /* UKPrefsPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKPrefsPanel.h; sourceTree = "<group>"; };
 		47FD45320801EAEE00716715 /* UKPrefsPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKPrefsPanel.m; sourceTree = "<group>"; };
@@ -2416,8 +2439,8 @@
 		4741639206C4F58D00AC0BD2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				47FC190A099FB8AF0082431D /* Crash.strings */,
 				479C4229097AB2BB00DDE88A /* Credits.rtf */,
-				47457FFA099804C2002C93C3 /* UKCrashReporter.strings */,
 				47026426087DC91C008837FD /* IDisk.strings */,
 				4741686906C6BA9400AC0BD2 /* Localizable.strings */,
 				4751799C097943FA008F671F /* Credentials.strings */,
@@ -3271,6 +3294,8 @@
 				cy,
 				th,
 				he,
+				English,
+				guugs,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* cyberduck-cocoa */;
 			projectDirPath = "";
@@ -3401,7 +3426,7 @@
 				47723BC8096072B800B47E99 /* cancel.tiff in Resources */,
 				4751799E097943FA008F671F /* Credentials.strings in Resources */,
 				479C422A097AB2BB00DDE88A /* Credits.rtf in Resources */,
-				47457FFC099804C2002C93C3 /* UKCrashReporter.strings in Resources */,
+				47FC190C099FB8AF0082431D /* Crash.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4186,14 +4211,6 @@
 			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
-		47457FFA099804C2002C93C3 /* UKCrashReporter.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				47457FFB099804C2002C93C3 /* en */,
-			);
-			name = UKCrashReporter.strings;
-			sourceTree = "<group>";
-		};
 		47494C8107EC6C3C00B34D53 /* Duplicate.nib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -4409,6 +4426,37 @@
 				470FDC80099E4AC5008DE09C /* he */,
 			);
 			name = Status.strings;
+			sourceTree = "<group>";
+		};
+		47FC190A099FB8AF0082431D /* Crash.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				47FC190B099FB8AF0082431D /* en */,
+				47341DF909A09B1C0065FF57 /* cs */,
+				47341E0009A09CBF0065FF57 /* nl */,
+				47341E0109A09CC20065FF57 /* fi */,
+				47FC191F099FC1290082431D /* fr */,
+				47341DF309A09AF70065FF57 /* de */,
+				47FC1943099FDB310082431D /* it */,
+				47341E0209A09CC80065FF57 /* ja */,
+				47341E0309A09CCB0065FF57 /* ko */,
+				47341D83099FF7B20065FF57 /* sk */,
+				47341DCB09A08C240065FF57 /* es */,
+				47341E0409A09CD60065FF57 /* zh_CN */,
+				47341E0509A09CD90065FF57 /* zh_TW */,
+				47341E0609A09CDC0065FF57 /* no */,
+				47FC195A099FDB3B0082431D /* da */,
+				47341E0709A09CDF0065FF57 /* ru */,
+				47341E0A09A09CE90065FF57 /* sv */,
+				47341E0B09A09CEF0065FF57 /* hu */,
+				47FC195D099FDB710082431D /* pl */,
+				47341E0C09A09CF80065FF57 /* id */,
+				47341D6C099FF7740065FF57 /* ca */,
+				47341E0D09A09D040065FF57 /* cy */,
+				47341E0E09A09D070065FF57 /* th */,
+				47341DA709A003A50065FF57 /* he */,
+			);
+			name = Crash.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

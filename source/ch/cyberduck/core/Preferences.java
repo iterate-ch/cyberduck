@@ -195,7 +195,7 @@ public abstract class Preferences {
         defaults.put("queue.upload.preserveDate.fallback", "false");
         defaults.put("queue.upload.skip", ".DS_Store");
 
-        defaults.put("queue.download.changePermissions", "false");
+        defaults.put("queue.download.changePermissions", "true");
         defaults.put("queue.download.permissions.useDefault", "false");
         defaults.put("queue.download.permissions.default", "rw-r--r--");
         defaults.put("queue.download.preserveDate", "true");

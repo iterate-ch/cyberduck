@@ -1250,7 +1250,7 @@ public class CDBrowserController extends CDWindowController
 
     public void quickConnectWillPopUp(NSNotification notification) {
         int size = CDBookmarkTableDataSource.instance().size();
-        this.quickConnectPopup.setNumberOfVisibleItems(size > 5 ? 5 : size);
+        this.quickConnectPopup.setNumberOfVisibleItems(size > 10 ? 10 : size);
     }
 
     public void quickConnectSelectionChanged(Object sender) {
