@@ -74,7 +74,7 @@
 			{
 				//NSLog(@"New crash log found! Running alert panel");
 				if( NSRunAlertPanel( NSLocalizedStringFromTable( @"Do you want to report the last crash?", @"Crash", @"" ),
-									NSLocalizedStringFromTable( @"The application %@ has recently crashed. To help improve it, you can send the crash log to the author, so he can use the information in it to fix the bug.", @"Crash", @"" ),
+									NSLocalizedStringFromTable( @"The application %@ has recently crashed. To help improve it, you can send the crash log to the author.", @"Crash", @"" ),
 									NSLocalizedStringFromTable( @"Send", @"Crash", @"" ),
 									NSLocalizedStringFromTable( @"Don't Send", @"Crash", @"" ),
 									@"", appName ) )
