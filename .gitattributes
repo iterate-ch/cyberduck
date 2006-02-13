@@ -1394,7 +1394,7 @@ zh_TW.lproj/Certificate.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Command.nib/keyedobjects.nib -text
 zh_TW.lproj/Command.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Connection.nib/keyedobjects.nib -text
-zh_TW.lproj/Connection.strings -text svneol=native#application/octet-stream
+zh_TW.lproj/Connection.strings -text
 zh_TW.lproj/Crash.strings -text
 zh_TW.lproj/Credentials.strings -text
 zh_TW.lproj/Donate.nib/keyedobjects.nib -text
@@ -1414,13 +1414,13 @@ zh_TW.lproj/IDisk.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Info.nib/keyedobjects.nib -text
 zh_TW.lproj/Info.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/InfoPlist.strings -text svneol=native#application/octet-stream
-zh_TW.lproj/Localizable.strings -text svneol=native#application/octet-stream
+zh_TW.lproj/Localizable.strings -text
 zh_TW.lproj/Login.nib/keyedobjects.nib -text
 zh_TW.lproj/Login.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Main.nib/keyedobjects.nib -text
 zh_TW.lproj/Main.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Preferences.nib/keyedobjects.nib -text
-zh_TW.lproj/Preferences.strings -text svneol=native#application/octet-stream
+zh_TW.lproj/Preferences.strings -text
 zh_TW.lproj/Progress.nib/keyedobjects.nib -text
 zh_TW.lproj/Queue.nib/keyedobjects.nib -text
 zh_TW.lproj/Queue.strings -text svneol=native#application/octet-stream
