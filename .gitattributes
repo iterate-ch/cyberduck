@@ -1123,19 +1123,6 @@ sk.lproj/Validator.nib/keyedobjects.nib -text
 sk.lproj/Validator.strings -text
 source/ch/cyberduck/core/CollectionListener.java -text
 source/ch/cyberduck/ui/cocoa/growl/GrowlNative.java -text
-source/com/apple/dnssd/BaseListener.java -text
-source/com/apple/dnssd/BrowseListener.java -text
-source/com/apple/dnssd/DNSRecord.java -text
-source/com/apple/dnssd/DNSSD.java -text
-source/com/apple/dnssd/DNSSDException.java -text
-source/com/apple/dnssd/DNSSDRegistration.java -text
-source/com/apple/dnssd/DNSSDService.java -text
-source/com/apple/dnssd/DomainListener.java -text
-source/com/apple/dnssd/QueryListener.java -text
-source/com/apple/dnssd/RegisterListener.java -text
-source/com/apple/dnssd/ResolveListener.java -text
-source/com/apple/dnssd/TXTRecord.java -text
-source/com/unsanity/SmartCrashReportsInstall.o -text
 source/de/zathras/UKCrashReporter.m -text
 sv.lproj/Bookmark.nib/keyedobjects.nib -text
 sv.lproj/Bookmark.strings -text svneol=native#application/octet-stream

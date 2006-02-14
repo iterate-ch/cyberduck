@@ -235,13 +235,6 @@
 				<include name="org/apache/commons/net/**/*.class"/>
 			</fileset>
 		</jar>
-        <jar jarfile="${build}/bonjour.jar"
-            update="yes"
-            manifest="${build}/MANIFEST.MF">
-            <fileset dir="${build.classes}">
-                <include name="com/apple/dnssd/**/*.class"/>
-            </fileset>
-        </jar>
 	</target>
 
 	<target name="doc" depends="init" description="Generate Javadoc">
