@@ -223,41 +223,44 @@ static ODBEditor	*_sharedODBEditor;
 {
 	NSAppleEventDescriptor  *descriptor = [[event paramDescriptorForKeyword: keyDirectObject] coerceToDescriptorType: typeFileURL];
 	NSString *urlString = [[[NSString alloc] initWithData: [descriptor data] encoding: NSUTF8StringEncoding] autorelease];
+	if (nil == urlString)
+	{
+		NSLog(@"handleModifiedFileEvent: No URL given.");
+		return;
+	}
 	NSString *fileName = [[NSURL URLWithString: urlString] path];
 	NSDictionary *dictionary = nil;
 	dictionary = [_filesBeingEdited objectForKey: fileName];
-	
-	if (dictionary != nil)
-	{
-		id  client = [[dictionary objectForKey: ODBEditorNonRetainedClient] nonretainedObjectValue];
-		[client odbEditor: self didModifyFile: fileName newFileLocation: nil context: nil];
-	}
-	else
+	if (nil == dictionary)
 	{
 		NSLog(@"handleModifiedFileEvent: Got ODB editor event for unknown file.");
+		return;
 	}
+	id  client = [[dictionary objectForKey: ODBEditorNonRetainedClient] nonretainedObjectValue];
+	[client odbEditor: self didModifyFile: fileName newFileLocation: nil context: nil];
 }
 
 - (void)handleClosedFileEvent:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent
 {
 	NSAppleEventDescriptor *descriptor = [[event paramDescriptorForKeyword: keyDirectObject] coerceToDescriptorType: typeFileURL];
 	NSString *urlString = [[[NSString alloc] initWithData: [descriptor data] encoding: NSUTF8StringEncoding] autorelease];
-	
+	if (nil == urlString)
+	{
+		NSLog(@"handleClosedFileEvent: No URL given.");
+		return;
+	}
 	NSString *fileName = [[NSURL URLWithString: urlString] path];
 	NSDictionary *dictionary = nil;
 	dictionary = [_filesBeingEdited objectForKey: fileName];
-	
-	if (dictionary != nil)
-	{
-		id client = [[dictionary objectForKey: ODBEditorNonRetainedClient] nonretainedObjectValue];
-		void *context = [[dictionary objectForKey: ODBEditorClientContext] pointerValue];
-		[client odbEditor: self didClosefile: fileName context: context];
-		[_filesBeingEdited removeObjectForKey: fileName];
-	}
-	else
+	if (nil == dictionary)
 	{
 		NSLog(@"handleClosedFileEvent: Got ODB editor event for unknown file.");
+		return;
 	}
+	id client = [[dictionary objectForKey: ODBEditorNonRetainedClient] nonretainedObjectValue];
+	void *context = [[dictionary objectForKey: ODBEditorClientContext] pointerValue];
+	[client odbEditor: self didClosefile: fileName context: context];
+	[_filesBeingEdited removeObjectForKey: fileName];
 }
 
 @end
