@@ -67,7 +67,6 @@
 	    <classpath refid="build.classpath"/>
 	</taskdef>
 
-
 	<!-- mac os x properties-->
 	<property name="app.name" value="Cyberduck"/>
 	<property name="app.bundle" value="${build}/Deployment/${app.name}.app"/>
@@ -96,7 +95,7 @@
         <mkdir dir="${build.unittests.reports}/html"/>
     </target>
 
-    <target name="revision" description="Creates svn revision label file">
+    <target name="revision">
         <tstamp>
             <format property="touch.time"
                     pattern="dd/MM/yyyy hh:mm aa"
@@ -131,14 +130,40 @@
         </replace>
      </target>
 
+	<target name="release-localization" depends="build" if="localization">
+		<mkdir dir="${build}/Deployment/${localization}"/>
+		<property name="app.bundle.loc" value="${build}/Deployment/${localization}/${app.name}.app"/>
+		<copy todir="${app.bundle.loc}">
+	    	<fileset dir="${app.bundle}">
+				<include name="**/*"/>
+				<exclude name="**/*.lproj/**"/>
+			</fileset>
+		</copy>
+		<copy todir="${app.bundle.loc}">
+	    	<fileset dir="${app.bundle}">
+				<!--<include name="**/en.lproj/**"/>-->
+				<include name="**/${localization}.lproj/**"/>
+			</fileset>
+		</copy>
+		<chmod perm="a+x" type="file">
+			<fileset dir="${app.bundle.loc}">
+				<include name="**/*.framework/*"/>
+				<include name="**/*.framework/Versions/*/*"/>
+				<include name="**/MacOS/*"/>
+			</fileset>
+		</chmod>
+        <exec executable="./buildDMG.pl" spawn="false">
+            <arg line="-dmgName '${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg' -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor} (${localization})' -buildDir ${build} -compressionLevel 9 ${app.bundle.loc} ${app.name}\ Website.webloc Donate.webloc ${localization}.lproj/License.txt Credits.rtf  AppleScript\ Samples"/>
+        </exec>
+		<exec executable="md5sum" spawn="false" output="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg.md5">
+			<arg line="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg"/>
+		</exec>
+    </target>
+
 	<target name="release" depends="build">
         <exec executable="./buildDMG.pl" spawn="false">
-            <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor} -buildDir ${build} -compressionLevel 9 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.rtf  AppleScript\ Samples"/>
+            <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor}' -buildDir ${build} -compressionLevel 9 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.rtf  AppleScript\ Samples"/>
         </exec>
-		<antcall target="sign" />
-	</target>
-
-	<target name="sign">
 		<exec executable="md5sum" spawn="false" output="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.md5">
 			<arg line="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"/>
 		</exec>
@@ -151,6 +176,16 @@
 		       passphrase="">
 		</scp>
 		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.md5"
+		       todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
+		       keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
+		       passphrase="">
+		</scp>
+		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-(${app.bundle.min.localizations}).dmg"
+		       todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
+		       keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
+		       passphrase="">
+		</scp>
+		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-(${app.bundle.min.localizations}).dmg.md5"
 		       todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
 		       keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
 		       passphrase="">
@@ -178,17 +213,12 @@
 				<include name="*.mdimporter/**"/>
 			</fileset>
 		</copy>
-		<!--
-		<copy todir="${app.automator}">
-			<fileset dir="${build.automator.upload}">
-				<include name="*.action/**"/>
-			</fileset>
-			<fileset dir="${build.automator.download}">
-				<include name="*.action/**"/>
-			</fileset>
-		</copy>
-		-->
-        <antcall target="revision" />
+		<chmod perm="a+x" type="file">
+			<fileset dir="${app.spotlight}">
+			<include name="**/MacOS/*"/>
+		  </fileset>
+		</chmod>
+		<antcall target="revision" />
     </target>
 
 	<target name="compile" depends="init" description="Compile the source tree">

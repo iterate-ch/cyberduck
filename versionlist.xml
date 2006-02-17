@@ -9,6 +9,7 @@
       <key>comment</key>
       <string>Changelog:
 2.5.5
+- [Localize] Hebrew Localization
 - [Bugfix] Excape key cancels editing [#190]
 - [Bugfix] Adjust permissions on created folders when transfering files [#77]
 - [Bugfix] Cannot write to group writable files (SFTP) [#173]

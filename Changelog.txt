@@ -5,6 +5,7 @@ Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
 2.5.5
+- [Localize] Hebrew Localization
 - [Bugfix] Excape key cancels editing [#190]
 - [Bugfix] Adjust permissions on created folders when transfering files [#77]
 - [Bugfix] Cannot write to group writable files (SFTP) [#173]
