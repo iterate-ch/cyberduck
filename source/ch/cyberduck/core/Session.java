@@ -109,6 +109,7 @@ public abstract class Session extends NSObject
     protected abstract void connect(String encoding) throws IOException;
 
     protected void connect() throws IOException {
+        this.retain();
         this.connect(this.host.getEncoding());
     }
 
@@ -219,8 +220,7 @@ public abstract class Session extends NSObject
     }
 
     public void retain() throws IOException {
-        SessionPool.instance().add(this, Preferences.instance().getBoolean("connection.pool.force"));
-
+        SessionPool.instance().add(this);
         this.connectionWillOpen();
     }
 

@@ -58,10 +58,6 @@ public class SessionPool extends Hashtable {
         return Preferences.instance().getInteger("connection.pool.max");
     }
 
-    public synchronized void add(Session session) throws IOException {
-        this.add(session, false);
-    }
-
     /**
      * Adding a session to the connection pool of the remote host. This method
      * will block until the session has been added to the pool; e.g if the size
@@ -69,14 +65,14 @@ public class SessionPool extends Hashtable {
      *
      * @throws IOException If the timeout to wait for a place in the pool has exceeded.
      */
-    public synchronized void add(Session session, boolean force) throws IOException {
+    public synchronized void add(Session session) throws IOException {
         String key = session.getHost().getURL();
         List connections = null;
         if (this.containsKey(key)) {
             connections = (List) this.get(key);
             while (connections.size() >= Preferences.instance().getInteger("connection.pool.max")) {
                 try {
-                    if (force) {
+                    if (Preferences.instance().getBoolean("connection.pool.force")) {
                         ((Session) connections.get(connections.size() - 1)).close();
                     }
                     else {
@@ -90,7 +86,8 @@ public class SessionPool extends Hashtable {
                 if (connections.size() >= Preferences.instance().getInteger("connection.pool.max")) {
                     // not awakened by another session but because of the timeout
                     //I gave up after waiting for "+Preferences.instance().getProperty("connection.pool.timeout")+" seconds
-                    throw new IOException(NSBundle.localizedString("Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences.", ""));
+                    throw new IOException(NSBundle.localizedString("Too many simultaneous connections. " +
+                            "You may want to adjust the number of allowed concurrent connections in the Preferences.", ""));
                 }
             }
         }

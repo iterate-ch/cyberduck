@@ -127,7 +127,6 @@ public class SFTPSession extends Session {
 
     protected void connect(String encoding) throws IOException {
         synchronized (this) {
-            this.retain();
             this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getHostname() + "...");
             this.log("=====================================");
             this.log(new java.util.Date().toString());
