@@ -1316,10 +1316,10 @@ public class CDBrowserController extends CDWindowController
 
     public void editBookmarkButtonClicked(Object sender) {
         this.bookmarkDrawer.open();
-        CDBookmarkController controller = new CDBookmarkController(
+        CDBookmarkController c = new CDBookmarkController(
                 (Host) this.bookmarkModel.get(bookmarkTable.selectedRow())
         );
-        controller.window().makeKeyAndOrderFront(null);
+        c.window().makeKeyAndOrderFront(null);
     }
 
     private NSButton addBookmarkButton; // IBOutlet
@@ -1509,6 +1509,7 @@ public class CDBrowserController extends CDWindowController
         log.info("Encoding changed to:" + this.getEncoding());
         this.encodingPopup.setTitle(this.getEncoding());
         if (force) {
+            this.unmount();
             this.reloadButtonClicked(null);
         }
     }

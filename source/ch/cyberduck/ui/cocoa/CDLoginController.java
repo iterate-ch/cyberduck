@@ -38,6 +38,8 @@ public class CDLoginController implements LoginController
         this.parent = parent;
     }
 
+    private static final Object lock = new Object();
+
     public void promptUser(final Login login, final String reason, final String message) {
         CDSheetController c = new CDSheetController(parent) {
             private NSTextField titleField; // IBOutlet
@@ -89,8 +91,10 @@ public class CDLoginController implements LoginController
                 }
             }
         };
-        if (!NSApplication.loadNibNamed("Login", c)) {
-            log.fatal("Couldn't load Login.nib");
+        synchronized(lock) {
+            if (!NSApplication.loadNibNamed("Login", c)) {
+                log.fatal("Couldn't load Login.nib");
+            }
         }
         c.beginSheet(true);
     }

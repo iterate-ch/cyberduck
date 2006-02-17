@@ -53,10 +53,12 @@ public class CDDownloadQueueValidatorController extends CDValidatorController
     }
 
     protected void load() {
-        if (!NSApplication.loadNibNamed("Validator", this)) {
-            log.fatal("Couldn't load Validator.nib");
+        synchronized(CDQueueController.instance()) {
+            if (!NSApplication.loadNibNamed("Validator", this)) {
+                log.fatal("Couldn't load Validator.nib");
+            }
+            this.setEnabled(false);
         }
-        this.setEnabled(false);
     }
 
     public List getResult() {

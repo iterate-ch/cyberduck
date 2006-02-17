@@ -53,15 +53,18 @@ public class CDPreferencesController extends CDWindowController {
 
     private static CDPreferencesController instance;
 
+    private static final Object lock = new Object();
+
     public static CDPreferencesController instance() {
-        log.debug("instance");
-        if (null == instance) {
-            instance = new CDPreferencesController();
-            if (!NSApplication.loadNibNamed("Preferences", instance)) {
-                log.fatal("Couldn't load Preferences.nib");
+        synchronized(lock) {
+            if (null == instance) {
+                instance = new CDPreferencesController();
+                if (!NSApplication.loadNibNamed("Preferences", instance)) {
+                    log.fatal("Couldn't load Preferences.nib");
+                }
             }
+            return instance;
         }
-        return instance;
     }
 
     private CDPreferencesController() {

@@ -93,14 +93,18 @@ public class CDQueueController extends CDWindowController
         ;
     }
 
+    private static final Object lock = new Object();
+
     public static CDQueueController instance() {
-        if (null == instance) {
-            instance = new CDQueueController();
-            if (!NSApplication.loadNibNamed("Queue", instance)) {
-                log.fatal("Couldn't load Queue.nib");
+        synchronized(lock) {
+            if (null == instance) {
+                instance = new CDQueueController();
+                if (!NSApplication.loadNibNamed("Queue", instance)) {
+                    log.fatal("Couldn't load Queue.nib");
+                }
             }
+            return instance;
         }
-        return instance;
     }
 
     /**

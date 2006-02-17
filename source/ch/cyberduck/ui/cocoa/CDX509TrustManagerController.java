@@ -72,6 +72,8 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
         this.checkCertificate(x509Certificates, authType);
     }
 
+    private static final Object lock = new Object();
+
     public void checkCertificate(final X509Certificate[] x509Certificates, String authType)
             throws CertificateException {
         for (int i = 0; i < x509Certificates.length; i++) {
@@ -118,8 +120,10 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 
 
                 };
-                if (!NSApplication.loadNibNamed("Certificate", c)) {
-                    log.fatal("Couldn't load Certificate.nib");
+                synchronized(lock) {
+                    if (!NSApplication.loadNibNamed("Certificate", c)) {
+                        log.fatal("Couldn't load Certificate.nib");
+                    }
                 }
                 c.beginSheet(true);
                 if (!acceptedCertificates.contains(cert)) {

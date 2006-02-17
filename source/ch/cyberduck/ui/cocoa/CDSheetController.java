@@ -57,7 +57,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
     /**
      * The synchronisation lock to check that only one sheet is displayed at a time
      */
-    private final Object lock = new Object();
+    private static final Object lock = new Object();
 
     /**
      * This must be the target action for any button in the sheet dialog. Will validate the input
@@ -155,6 +155,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
      * @param context Not used
      */
     public void sheetDidClose(NSPanel sheet, int returncode, Object context) {
+        log.debug("sheetDidClose:" + sheet);
         sheet.orderOut(null);
         this.callback(returncode);
         this.invalidate();

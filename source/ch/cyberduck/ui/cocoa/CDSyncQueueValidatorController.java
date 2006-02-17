@@ -52,10 +52,12 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
     }
 
     protected void load() {
-        if (!NSApplication.loadNibNamed("Sync", this)) {
-            log.fatal("Couldn't load Sync.nib");
+        synchronized(CDQueueController.instance()) {
+            if (!NSApplication.loadNibNamed("Sync", this)) {
+                log.fatal("Couldn't load Sync.nib");
+            }
+            this.setEnabled(false);
         }
-        this.setEnabled(false);
     }
 
     public void awakeFromNib() {
