@@ -180,16 +180,6 @@
 		       keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
 		       passphrase="">
 		</scp>
-		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-(${app.bundle.min.localizations}).dmg"
-		       todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
-		       keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
-		       passphrase="">
-		</scp>
-		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-(${app.bundle.min.localizations}).dmg.md5"
-		       todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
-		       keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
-		       passphrase="">
-		</scp>
 	</target>
 
 	<target name="build" depends="archive" description="Compile, jar and copy to application bundle">
