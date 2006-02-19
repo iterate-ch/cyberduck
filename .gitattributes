@@ -1385,7 +1385,7 @@ zh_TW.lproj/Connection.strings -text
 zh_TW.lproj/Crash.strings -text
 zh_TW.lproj/Credentials.strings -text
 zh_TW.lproj/Donate.nib/keyedobjects.nib -text
-zh_TW.lproj/Donate.strings -text svneol=native#application/octet-stream
+zh_TW.lproj/Donate.strings -text
 zh_TW.lproj/Download.nib/keyedobjects.nib -text
 zh_TW.lproj/Download.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Duplicate.nib/keyedobjects.nib -text
