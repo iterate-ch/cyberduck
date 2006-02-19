@@ -87,10 +87,12 @@ public abstract class Preferences {
          */
         defaults.put("uses", "0");
         /**
-         * True if donation dialog will be displayed at startup
+         * True if donation dialog will be displayed before quit
          */
-        defaults.put("donate", "true");
-        defaults.put("mail", "mailto:feedback@cyberduck.ch");
+        defaults.put("donate.reminder", "true");
+
+        defaults.put("mail.feedback", "mailto:feedback@cyberduck.ch");
+
         defaults.put("website.donate", "http://cyberduck.ch/donate/");
         defaults.put("website.update.xml", "http://update.cyberduck.ch/versionlist.xml");
         defaults.put("website.update", "http://update.cyberduck.ch/");

@@ -469,7 +469,8 @@ public class CDMainController extends CDController {
     public void feedbackMenuClicked(Object sender) {
         try {
             String versionString = (String) NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
-            NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail") + "?subject=Cyberduck-" + versionString));
+            NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail.feedback")
+                    + "?subject=Cyberduck-" + versionString));
         }
         catch (java.net.MalformedURLException e) {
             log.error(e.getMessage());
@@ -628,7 +629,7 @@ public class CDMainController extends CDController {
 
     public int applicationShouldTerminate(NSApplication app) {
         log.debug("applicationShouldTerminate");
-        if (!donationBoxDisplayed && Preferences.instance().getBoolean("donate")) {
+        if (!donationBoxDisplayed && Preferences.instance().getBoolean("donate.reminder")) {
             final int uses = Preferences.instance().getInteger("uses");
             CDWindowController c = new CDWindowController() {
                 private NSButton neverShowDonationCheckbox;
@@ -636,8 +637,7 @@ public class CDMainController extends CDController {
                 public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
                     this.neverShowDonationCheckbox = neverShowDonationCheckbox;
                     this.neverShowDonationCheckbox.setTarget(this);
-                    this.neverShowDonationCheckbox.setState(
-                            Preferences.instance().getBoolean("donate") ? NSCell.OffState : NSCell.OnState);
+                    this.neverShowDonationCheckbox.setState(NSCell.OffState);
                 }
 
                 public void awakeFromNib() {
@@ -648,7 +648,7 @@ public class CDMainController extends CDController {
 
                 public void closeDonationSheet(NSButton sender) {
                     this.window().close();
-                    Preferences.instance().setProperty("donate", neverShowDonationCheckbox.state() == NSCell.OffState);
+                    Preferences.instance().setProperty("donate.reminder", neverShowDonationCheckbox.state() == NSCell.OffState);
                     if (sender.tag() == CDSheetCallback.DEFAULT_OPTION) {
                         try {
                             NSWorkspace.sharedWorkspace().openURL(
