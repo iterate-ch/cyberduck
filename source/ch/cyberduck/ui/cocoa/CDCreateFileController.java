@@ -24,7 +24,6 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
-import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
@@ -41,7 +40,7 @@ public class CDCreateFileController extends CDFileController {
     }
 
     public void callback(int returncode) {
-        Path workdir = ((CDBrowserController)parent).workdir();
+        Path workdir = ((CDBrowserController) parent).workdir();
         if (returncode == DEFAULT_OPTION) {
             this.createFile(workdir, filenameField.stringValue());
         }
@@ -58,32 +57,27 @@ public class CDCreateFileController extends CDFileController {
         Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
                 new Local(NSPathUtilities.temporaryDirectory(), filename));
         if (!file.getRemote().exists()) {
-            try {
-                String proposal;
-                int no = 0;
-                int index = filename.lastIndexOf(".");
-                while (file.getLocal().exists()) {
-                    no++;
-                    if (index != -1) {
-                        proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
-                    }
-                    else {
-                        proposal = filename + "-" + no;
-                    }
-                    file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
+            String proposal;
+            int no = 0;
+            int index = filename.lastIndexOf(".");
+            while (file.getLocal().exists()) {
+                no++;
+                if (index != -1) {
+                    proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
                 }
-                file.getLocal().createNewFile();
-                file.upload();
-                file.getLocal().delete();
+                else {
+                    proposal = filename + "-" + no;
+                }
+                file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
             }
-            catch (java.io.IOException e) {
-                log.error(e.getMessage());
-            }
+            file.getLocal().createNewFile();
+            file.upload();
+            file.getLocal().delete();
         }
-        if(file.exists()) {
-            ((CDBrowserController)parent).setShowHiddenFiles(filename.charAt(0) == '.');
-            ((CDBrowserController)parent).reloadData(true);
-            ((CDBrowserController)parent).setSelectedPath(file);
+        if (file.exists()) {
+            ((CDBrowserController) parent).setShowHiddenFiles(filename.charAt(0) == '.');
+            ((CDBrowserController) parent).reloadData(true);
+            ((CDBrowserController) parent).setSelectedPath(file);
             return file;
         }
         return null;
