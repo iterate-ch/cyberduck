@@ -143,7 +143,6 @@ cy.lproj/Main.strings -text svneol=native#application/octet-stream
 cy.lproj/Preferences.nib/keyedobjects.nib -text
 cy.lproj/Preferences.strings -text svneol=native#application/octet-stream
 cy.lproj/Progress.nib/keyedobjects.nib -text
-cy.lproj/Progress.strings -text svneol=native#application/octet-stream
 cy.lproj/Queue.nib/keyedobjects.nib -text
 cy.lproj/Queue.strings -text svneol=native#application/octet-stream
 cy.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -1239,7 +1238,6 @@ th.lproj/Preferences.strings -text
 th.lproj/Progress.nib/classes.nib -text
 th.lproj/Progress.nib/info.nib -text
 th.lproj/Progress.nib/keyedobjects.nib -text
-th.lproj/Progress.strings -text svneol=unset#application/octet-stream
 th.lproj/Queue.nib/classes.nib -text
 th.lproj/Queue.nib/info.nib -text
 th.lproj/Queue.nib/keyedobjects.nib -text
