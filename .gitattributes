@@ -7,7 +7,9 @@ AppleScript[!!-~]Samples/Sync[!!-~]Sample.scpt -text
 AppleScript[!!-~]Samples/Upload[!!-~]Sample.scpt -text
 AppleScript[!!-~]Samples/iPhoto[!!-~]Upload[!!-~]Sample.scpt -text
 /Credits.rtf -text
+/Cyberduck[!!-~]Website.url -text
 /Cyberduck.scriptTerminology -text svneol=unset#application/octet-stream
+/Donate.url -text
 Download[!!-~]Automator[!!-~]Action/English.lproj/InfoPlist.strings svneol=native#unset
 Spotlight[!!-~]Importer/English.lproj/schema.strings svneol=native#unset
 Upload[!!-~]Automator[!!-~]Action/English.lproj/InfoPlist.strings svneol=native#unset
