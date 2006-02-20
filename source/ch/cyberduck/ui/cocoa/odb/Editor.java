@@ -55,6 +55,7 @@ public class Editor extends CDController {
         SUPPORTED_EDITORS.put("CotEditor", "com.aynimac.CotEditor");
         SUPPORTED_EDITORS.put("CSSEdit", "com.macrabbit.cssedit");
         SUPPORTED_EDITORS.put("Tag", "com.talacia.Tag");
+        SUPPORTED_EDITORS.put("skEdit", "org.skti.skEdit");
 
         Iterator editorNames = SUPPORTED_EDITORS.keySet().iterator();
         Iterator editorIdentifiers = SUPPORTED_EDITORS.values().iterator();
