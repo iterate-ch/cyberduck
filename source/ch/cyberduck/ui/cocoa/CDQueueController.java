@@ -262,7 +262,7 @@ public class CDQueueController extends CDWindowController
             Queue q = (Queue) queueModel.get(queueTable.selectedRow());
             if (q.numberOfRoots() == 1) {
                 urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()
-                        + Path.DELIMITER + q.getRoot().getAbsolute(),
+                        + q.getRoot().getAbsolute(),
                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                 localField.setAttributedStringValue(new NSAttributedString(q.getRoot().getLocal().getAbsolute(),
                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
@@ -271,7 +271,6 @@ public class CDQueueController extends CDWindowController
                 urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL(),
                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                 localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiple files", ""),
-                        //				    +" ("+q.numberOfJobs()+" "+NSBundle.localizedString("files", "")+")",
                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
             }
         }

@@ -342,12 +342,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             }
             if (q.numberOfRoots() == 1) {
                 if (q.getRoot().attributes.isFile()) {
-                    try {
-                        q.getRoot().getLocal().createNewFile();
-                    }
-                    catch (IOException e) {
-                        log.error(e.getMessage());
-                    }
+                    q.getRoot().getLocal().createNewFile();
                 }
                 if (q.getRoot().attributes.isDirectory()) {
                     q.getRoot().getLocal().mkdir();

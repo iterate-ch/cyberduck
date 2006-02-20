@@ -63,9 +63,14 @@ public class Local extends File {
         super(NSPathUtilities.stringByExpandingTildeInPath(path));
     }
 
-    public boolean createNewFile() throws IOException {
-        if (super.createNewFile()) {
-            this.setProgress(0);
+    public boolean createNewFile() {
+        try {
+            if (super.createNewFile()) {
+                this.setProgress(0);
+            }
+        }
+        catch (IOException e) {
+            log.error(e.getMessage());
         }
         return false;
     }
@@ -112,10 +117,6 @@ public class Local extends File {
         catch (IOException e) {
             log.error("Failed to remove resource fork from file:" + e.getMessage());
         }
-    }
-
-    private void setIconFromFile(String icon) {
-        this.setIconFromFile(this.getAbsolute(), icon);
     }
 
     /**
