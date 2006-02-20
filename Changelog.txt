@@ -11,6 +11,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Bugfix] Cannot write to group writable files (SFTP) [#173]
 - [Bugfix] Spotlight module not working [#212]
 - [Feature] Added options to use Cyberduck as a portable application (see http://www.freesmug.org/portableapps/) [#180]
+- [Feature] New Crash Reporter (Thanks to M. Uli Kusterer!) [#195]
 
 2.5.4
 - [Localize] Thai Localization
