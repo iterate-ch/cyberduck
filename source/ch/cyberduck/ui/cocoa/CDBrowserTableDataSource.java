@@ -313,43 +313,38 @@ public abstract class CDBrowserTableDataSource extends NSObject {
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
         log.debug("finishedDraggingImage:" + operation);
         NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes(null, null);
+        Queue q = new DownloadQueue();
+        for (int i = 0; i < this.promisedDragPaths.length; i++) {
+            q.addRoot(this.promisedDragPaths[i]);
+        }
+        if (q.numberOfRoots() > 0) {
+            CDQueueController.instance().startItem(q);
+        }
+        this.promisedDragPaths = null;
     }
 
     /**
      * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-     *         This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
-     *         Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
-     *         you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
-     *         blocking the destination application.
+     * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
+     * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
+     * you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
+     * blocking the destination application.
      */
     public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
         NSMutableArray promisedDragNames = new NSMutableArray();
         if (null != dropDestination) {
-            Queue q = new DownloadQueue();
             for (int i = 0; i < this.promisedDragPaths.length; i++) {
-                try {
-                    this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"), this.promisedDragPaths[i].getName()));
-                    q.addRoot(this.promisedDragPaths[i]);
-                    promisedDragNames.addObject(this.promisedDragPaths[i].getName());
-                }
-                catch (UnsupportedEncodingException e) {
-                    log.error(e.getMessage());
-                }
-                catch (IOException e) {
-                    log.error(e.getMessage());
-                }
+	            this.promisedDragPaths[i].setLocal(new Local(dropDestination.getPath(), this.promisedDragPaths[i].getName()));
+	            promisedDragNames.addObject(this.promisedDragPaths[i].getName());
             }
-            if (q.numberOfRoots() == 1) {
-                if (q.getRoot().attributes.isFile()) {
-                    q.getRoot().getLocal().createNewFile();
-                }
-                if (q.getRoot().attributes.isDirectory()) {
-                    q.getRoot().getLocal().mkdir();
-                }
+        }
+        if (this.promisedDragPaths.length == 1) {
+            if (this.promisedDragPaths[0].attributes.isFile()) {
+                this.promisedDragPaths[0].getLocal().createNewFile();
             }
-            if (q.numberOfRoots() > 0) {
-                CDQueueController.instance().startItem(q);
+            if (this.promisedDragPaths[0].attributes.isDirectory()) {
+                this.promisedDragPaths[0].getLocal().mkdir();
             }
         }
         return promisedDragNames;
