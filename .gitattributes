@@ -855,7 +855,7 @@ nl.lproj/Command.nib/keyedobjects.nib -text
 nl.lproj/Command.strings -text svneol=native#application/octet-stream
 nl.lproj/Connection.nib/keyedobjects.nib -text
 nl.lproj/Connection.strings -text svneol=native#application/octet-stream
-nl.lproj/Crash.strings -text
+nl.lproj/Crash.strings -text svneol=unset#application/octet-stream
 nl.lproj/Credentials.strings -text
 nl.lproj/Donate.nib/keyedobjects.nib -text
 nl.lproj/Donate.strings -text svneol=native#application/octet-stream
