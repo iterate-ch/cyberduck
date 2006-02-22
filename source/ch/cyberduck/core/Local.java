@@ -131,8 +131,14 @@ public class Local extends File {
     private native void removeCustomIcon(String path);
 
     public Permission getPermission() {
-        NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
-        return new Permission(((Integer) fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions)).intValue());
+        try {
+            NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
+            return new Permission(((Integer) fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions)).intValue());
+        }
+        catch(IllegalArgumentException e) {
+            log.error(this.getAbsolute()+":"+e.getMessage());
+            return new Permission();
+        }
     }
 
     public void setPermission(Permission p) {
