@@ -42,7 +42,7 @@ public class CDBrowserController extends CDWindowController
     private static Logger log = Logger.getLogger(CDBrowserController.class);
 
     protected static final File HISTORY_FOLDER
-        = new File(CDPreferencesImpl.APP_SUPPORT_DIR, "History");
+        = new File(Preferences.instance().getProperty("application.support.path"), "History");
 
     static {
         HISTORY_FOLDER.mkdirs();

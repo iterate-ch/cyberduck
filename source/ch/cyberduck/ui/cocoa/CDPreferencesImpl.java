@@ -37,20 +37,6 @@ public class CDPreferencesImpl extends Preferences {
 
     private NSUserDefaults props;
 
-    protected static File APP_SUPPORT_DIR;
-
-    static {
-        if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")) {
-           APP_SUPPORT_DIR = new File(
-                   NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck"));
-        }
-        else {
-            APP_SUPPORT_DIR = new File(NSPathUtilities.stringByExpandingTildeInPath(
-                (String)NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")));
-        }
-        APP_SUPPORT_DIR.mkdir();
-    }
-
     public String getProperty(String property) {
         String value = (String) props.objectForKey(property);
         if (null == value) {
@@ -63,33 +49,19 @@ public class CDPreferencesImpl extends Preferences {
         if (log.isDebugEnabled()) {
             log.debug("setProperty(" + property + ", " + value + ")");
         }
-        this.props.setObjectForKey(value, property);
-    }
-
-    public void setProperty(String property, boolean v) {
-        if (log.isDebugEnabled()) {
-            log.debug("setProperty(" + property + ", " + v + ")");
-        }
-        String value = "false";
-        if (v) {
-            value = "true";
-        }
-        //Sets the value of the default identified by defaultName in the standard application domain.
+        // Sets the value of the default identified by defaultName in the standard application domain.
         // Setting a default has no effect on the value returned by the objectForKey method if
         // the same key exists in a domain that precedes the application domain in the search list.
         this.props.setObjectForKey(value, property);
     }
 
-    public void setProperty(String property, int v) {
-        if (log.isDebugEnabled()) {
-            log.debug("setProperty(" + property + ", " + v + ")");
-        }
-        String value = String.valueOf(v);
-        this.props.setObjectForKey(value, property);
-    }
-
     public void setDefaults() {
         super.setDefaults();
+
+        File APP_SUPPORT_DIR = new File(
+                NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck"));
+        APP_SUPPORT_DIR.mkdirs();
+        defaults.put("application.support.path", APP_SUPPORT_DIR.getAbsolutePath());
     }
 
     /**
@@ -97,28 +69,6 @@ public class CDPreferencesImpl extends Preferences {
      */
     public void load() {
         this.props = NSUserDefaults.standardUserDefaults();
-        if(NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path") != null) {
-            File f = new File(NSPathUtilities.stringByExpandingTildeInPath(
-                    (String)NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")));
-            if (f.exists()) {
-                log.info("Found preferences file: " + f.toString());
-                NSData plistData = new NSData(f);
-                String[] errorString = new String[]{null};
-                Object propertyListFromXMLData =
-                        NSPropertyListSerialization.propertyListFromData(plistData,
-                                NSPropertyListSerialization.PropertyListMutableContainersAndLeaves,
-                                new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-                                errorString);
-                if (errorString[0] != null) {
-                    log.error("Problem reading preferences file: " + errorString[0]);
-                }
-                if (propertyListFromXMLData instanceof NSDictionary) {
-                    NSUserDefaults.standardUserDefaults().setPersistentDomainForName(
-                            (NSDictionary)propertyListFromXMLData,
-                            NSBundle.mainBundle().bundleIdentifier());
-                }
-            }
-        }
     }
 
     public void save() {
@@ -130,31 +80,5 @@ public class CDPreferencesImpl extends Preferences {
         // your application is about to exit) or if you want to update user props
         // to what is on disk even though you have not made any changes.
         this.props.synchronize();
-
-        if(NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path") != null) {
-            try {
-                NSMutableData collection = new NSMutableData();
-                String[] errorString = new String[]{null};
-                collection.appendData(NSPropertyListSerialization.dataFromPropertyList(
-                        NSUserDefaults.standardUserDefaults().persistentDomainForName(
-                                NSBundle.mainBundle().bundleIdentifier()),
-                        NSPropertyListSerialization.PropertyListXMLFormat,
-                        errorString));
-                if (errorString[0] != null) {
-                    log.error("Problem writing queue file: " + errorString[0]);
-                }
-                File f = new File(NSPathUtilities.stringByExpandingTildeInPath(
-                        (String)NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")));
-                if (collection.writeToURL(f.toURL(), true)) {
-                    log.info("Preferences sucessfully saved to :" + f.toString());
-                }
-                else {
-                    log.error("Error saving preferences to :" + f.toString());
-                }
-            }
-            catch (java.net.MalformedURLException e) {
-                log.error(e.getMessage());
-            }
-        }
     }
 }

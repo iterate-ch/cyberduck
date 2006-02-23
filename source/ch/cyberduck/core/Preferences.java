@@ -19,6 +19,10 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
+import ch.cyberduck.ui.cocoa.CDPreferencesImpl;
+import ch.cyberduck.ui.cocoa.CDPortablePreferencesImpl;
+
+import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
@@ -35,7 +39,8 @@ public abstract class Preferences {
     private static Logger log = Logger.getLogger(Preferences.class);
 
     private static Preferences current = null;
-    private HashMap defaults;
+
+    protected HashMap defaults;
 
     static {
         System.setProperty("networkaddress.cache.ttl", "10");
@@ -47,7 +52,13 @@ public abstract class Preferences {
      */
     public static Preferences instance() {
         if (null == current) {
-            current = new ch.cyberduck.ui.cocoa.CDPreferencesImpl();
+            if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")
+                    || null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")) {
+                current = new CDPreferencesImpl();
+            }
+            else {
+                current = new CDPortablePreferencesImpl();
+            }
             current.setDefaults();
             current.load();
         }
@@ -64,13 +75,28 @@ public abstract class Preferences {
      * @param property The name of the property to overwrite
      * @param v        The new vlaue
      */
-    public abstract void setProperty(String property, boolean v);
+    public void setProperty(String property, boolean v) {
+        if (log.isDebugEnabled()) {
+            log.debug("setProperty(" + property + ", " + v + ")");
+        }
+        String value = "false";
+        if (v) {
+            value = "true";
+        }
+        this.setProperty(property, value);
+    }
 
     /**
      * @param property The name of the property to overwrite
      * @param v        The new vlaue
      */
-    public abstract void setProperty(String property, int v);
+    public void setProperty(String property, int v) {
+        if (log.isDebugEnabled()) {
+            log.debug("setProperty(" + property + ", " + v + ")");
+        }
+        String value = String.valueOf(v);
+        this.setProperty(property, value);
+    }
 
     /**
      * setting the default prefs values

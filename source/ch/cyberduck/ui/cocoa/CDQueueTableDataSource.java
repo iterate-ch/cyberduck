@@ -37,7 +37,7 @@ public class CDQueueTableDataSource extends Collection {
     private static Logger log = Logger.getLogger(CDQueueTableDataSource.class);
 
     private static final File QUEUE_FILE
-    	= new File(CDPreferencesImpl.APP_SUPPORT_DIR, "Queue.plist");
+    	= new File(Preferences.instance().getProperty("application.support.path"), "Queue.plist");
 
     static {
         QUEUE_FILE.getParentFile().mkdir();

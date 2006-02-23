@@ -38,7 +38,7 @@ import java.util.Map;
  * @version $Id$
  */
 public class CDMainController extends CDController {
-    private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(CDMainController.class);
+    private static Logger log = Logger.getLogger(CDMainController.class);
 
     static {
         BasicConfigurator.configure();

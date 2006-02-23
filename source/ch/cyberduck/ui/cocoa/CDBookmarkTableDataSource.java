@@ -51,7 +51,7 @@ public class CDBookmarkTableDataSource extends Collection {
     private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 
     private static final File BOOKMARKS_FILE
-            = new File(CDPreferencesImpl.APP_SUPPORT_DIR, "Favorites.plist");
+            = new File(Preferences.instance().getProperty("application.support.path"), "Favorites.plist");
 
     private int hostPboardChangeCount = NSPasteboard.pasteboardWithName("HostPBoard").changeCount();
 
