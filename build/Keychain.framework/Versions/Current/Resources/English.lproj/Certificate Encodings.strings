@@ -1,0 +1,11 @@
+/* This file contains names for CSSM_CERT_ENCODINGs. */
+
+/* The key is the numeric value as defined in cssmtype.h in Apple's Security framework.  Last updated for 10.3.9. */
+/* The value is human-readable name for the encoding, generally a single word. */
+
+1 = "Custom";
+2 = "BER";
+3 = "DER";
+4 = "NDR";
+5 = "SEXPR";
+6 = "PGP";

@@ -1,0 +1,25 @@
+/* This file contains the names of various miscellaneous CSSM constants */
+
+/* The key is the defined name of the constant */
+/* The value is a brief name for the constant */
+
+CSSM_KEYUSE_ANY = "Any";
+CSSM_KEYUSE_ENCRYPT = "Encryption";
+CSSM_KEYUSE_DECRYPT = "Decryption";
+CSSM_KEYUSE_SIGN = "Signing";
+CSSM_KEYUSE_VERIFY = "Verifying";
+CSSM_KEYUSE_SIGN_RECOVER = "Sign recovery";
+CSSM_KEYUSE_VERIFY_RECOVER = "Verification recovery";
+CSSM_KEYUSE_WRAP = "Wrapping";
+CSSM_KEYUSE_UNWRAP = "Unwrapping";
+CSSM_KEYUSE_DERIVE = "Deriving";
+
+CSSM_X509_DATAFORMAT_ENCODED = "Encoded";
+CSSM_X509_DATAFORMAT_PARSED = "Parsed";
+CSSM_X509_DATAFORMAT_PAIR = "Pair";
+
+Unknown = "Unknown (%@)";
+YES = "YES"; // It may be redundent having upper and lowercase versions
+yes = "yes"; // However, I've heard that some cultures find all uppercase
+NO = "NO"; // very offensive, or something to that effect.  So, the
+no = "no"; // option is made here to change casing.

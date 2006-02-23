@@ -1,0 +1,16 @@
+/* This file contains names for CSSM_KEYATTR_FLAGSs. */
+
+/* The key is the bit mask value as defined in cssmtype.h in Apple's Security framework.  Last updated for 10.3.9.  Note that since the key attribute is a bit map, you must mask out other bits first. */
+/* The value is human-readable name for the key attribute. */
+
+0x00000001 = "Permanent";
+0x00000002 = "Private";
+0x00000004 = "Modifiable";
+0x00000008 = "Sensitive";
+0x00000010 = "Always sensitive";
+0x00000020 = "Extractable";
+0x00000040 = "Never extractable";
+
+0x10000000 = "Return Data";
+0x20000000 = "Return Reference";
+0x40000000 = "Return None";

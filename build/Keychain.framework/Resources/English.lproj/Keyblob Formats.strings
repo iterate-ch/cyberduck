@@ -1,0 +1,25 @@
+/* This file contains names for CSSM_KEYBLOB_FORMATs. */
+
+/* The key is a combination of the numeric values of the keyblob type and keyblob format, separated by a hyphen.  This is to get around the unfortunate design error of using overlapping enums for formats of different types.  The numeric values understand are those in cssmtype.h in Apple's Security framework.  Last updated for 10.3.9. */
+/* The value is human-readable name for the format, generally a single word. */
+
+"0-0" = "None";
+"0-1" = "RSA PKCS1 (v1.5)";
+"0-2" = "RSA PKCS3 (v1.5)";
+"0-3" = "Microsoft CAPI (v2)";
+"0-4" = "PGP V";
+"0-5" = "US Government FIPS 186 - DSS V";
+"0-6" = "RSA Bsafe (v3)";
+"0-9" = "CCA clear public key blob";
+"0-10" = "RSA PKCS8 (v1.2)";
+"0-11" = "SPKI Specification";
+"0-12" = "Octet String";
+
+"1-0" = "None";
+"1-1" = "RSA PKCS8 (v1.2)";
+"1-2" = "RSA PKCS7";
+"1-3" = "Microsoft CAPI";
+
+"2-0" = "Integer (e.g. handle)";
+"2-1" = "String (e.g. label)";
+"2-2" = "SPKI S-expression";

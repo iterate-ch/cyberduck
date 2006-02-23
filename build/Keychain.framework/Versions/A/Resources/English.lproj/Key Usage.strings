@@ -1,0 +1,16 @@
+/* This file contains names for CSSM_KEYUSEs. */
+
+/* The key is the bit mask value as defined in cssmtype.h in Apple's Security framework.  Last updated for 10.3.9.  Note that since the key attribute is a bit map, you must mask out other bits first. */
+/* The value is human-readable name for the key usage. */
+
+0x00000001 = "Encrypt";
+0x00000002 = "Decrypt";
+0x00000004 = "Sign";
+0x00000008 = "Verify";
+0x00000010 = "Sign Recovery";
+0x00000020 = "Verify Recovery";
+0x00000040 = "Wrap";
+0x00000080 = "Unwrap";
+0x00000100 = "Derive";
+
+0x80000000 = "Any";

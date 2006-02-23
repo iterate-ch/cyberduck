@@ -1,0 +1,18 @@
+/* This file contains names for CSSM_CERT_TYPEs. */
+
+/* The key is the numeric value as defined in cssmtype.h in Apple's Security framework.  Last updated for 10.3.9. */
+/* The value is human-readable name for the type, generally a single word. */
+
+
+1 = "X509 (v1)";
+2 = "X509 (v2)";
+3 = "X509 (v3)";
+4 = "PGP";
+5 = "SPKI";
+6 = "SDSI (v1)";
+8 = "Intel";
+9 = "X509 Attribute";
+10 = "X9 Attribute";
+11 = "Tuple";
+12 = "ACL Entry";
+32766 = "Multiple";
