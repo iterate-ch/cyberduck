@@ -49,23 +49,18 @@ public class CDQueueController extends CDWindowController
     }
 
     public void setWindow(NSWindow window) {
-        super.setWindow(window);
+        this.window = window;
         this.window.setReleasedWhenClosed(false);
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
-                new NSSelector("windowDidBecomeKey", new Class[]{NSNotification.class}),
-                NSWindow.WindowDidBecomeKeyNotification,
-                window);
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
-                new NSSelector("windowDidResignKey", new Class[]{NSNotification.class}),
-                NSWindow.WindowDidResignKeyNotification,
-                window);
+		this.window.setDelegate(this);
     }
 
     public void windowDidBecomeKey(NSNotification notification) {
+		log.debug("windowDidBecomeKey");
         this.updateTableViewSelection();
     }
 
     public void windowDidResignKey(NSNotification notification) {
+		log.debug("windowDidResignKey");
         this.updateTableViewSelection();
     }
 
@@ -624,7 +619,34 @@ public class CDQueueController extends CDWindowController
     }
 
     public boolean validateMenuItem(NSMenuItem item) {
-        return this.validateItem(item.action().name());
+        String identifier = item.action().name();
+        if (item.action().name().equals("paste:")) {
+            boolean valid = false;
+            NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
+            if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+                Object o = pboard.propertyListForType("QueuePBoardType");
+                if (o != null) {
+                    NSArray elements = (NSArray) o;
+                    for (int i = 0; i < elements.count(); i++) {
+                        NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+                        Queue q = Queue.createQueue(dict);
+                        if (q.numberOfRoots() == 1)
+                            item.setTitle(NSBundle.localizedString("Paste", "Menu item") + " \""
+                                    + q.getRoot().getName() + "\"");
+                        else {
+                            item.setTitle(NSBundle.localizedString("Paste", "Menu item")
+                                    + " (" + q.numberOfRoots() + " " +
+                                    NSBundle.localizedString("files", "") + ")");
+                        }
+                        valid = true;
+                    }
+                }
+            }
+            if (!valid) {
+                item.setTitle(NSBundle.localizedString("Paste", "Menu item"));
+            }
+        }
+        return this.validateItem(identifier);
     }
 
     public boolean validateToolbarItem(NSToolbarItem item) {
@@ -639,8 +661,13 @@ public class CDQueueController extends CDWindowController
     private boolean validateItem(String identifier) {
         if (identifier.equals("paste:")) {
             NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-            return pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null
-                    && pboard.propertyListForType("QueuePBoardType") != null;
+            if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+                Object o = pboard.propertyListForType("QueuePBoardType");
+                if (o != null) {
+                    return true;
+                }
+            }
+            return false;
         }
         if (identifier.equals("Stop") || identifier.equals("stopButtonClicked:")) {
             if (this.queueTable.numberOfSelectedRows() < 1) {

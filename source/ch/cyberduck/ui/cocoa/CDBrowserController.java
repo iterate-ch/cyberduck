@@ -380,8 +380,11 @@ public class CDBrowserController extends CDWindowController
         this.window.setToolbar(toolbar);
 
         this.browserSwitchClicked(this.browserSwitchView);
+
         this.window.setInitialFirstResponder(this.quickConnectPopup);
-        this.window.makeFirstResponder(this.quickConnectPopup);
+
+        this.browserListView.setNextKeyView(this.searchField);
+        this.browserOutlineView.setNextKeyView(this.searchField);
     }
 
     private String encoding = Preferences.instance().getProperty("browser.charset.encoding");

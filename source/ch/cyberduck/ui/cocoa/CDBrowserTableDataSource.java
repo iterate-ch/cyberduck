@@ -202,6 +202,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                 destination.invalidate();
                 controller.reloadData(true);
                 controller.setSelectedPaths(selected);
+                NSPasteboard.pasteboardWithName("QueuePBoard").setPropertyListForType(null, "QueuePBoardType");
                 return true;
             }
         }
@@ -312,14 +313,6 @@ public abstract class CDBrowserTableDataSource extends NSObject {
     // @see http://www.cocoabuilder.com/archive/message/2005/10/5/118857
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
         log.debug("finishedDraggingImage:" + operation);
-        NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes(null, null);
-        Queue q = new DownloadQueue();
-        for (int i = 0; i < this.promisedDragPaths.length; i++) {
-            q.addRoot(this.promisedDragPaths[i]);
-        }
-        if (q.numberOfRoots() > 0) {
-            CDQueueController.instance().startItem(q);
-        }
         this.promisedDragPaths = null;
     }
 
@@ -346,6 +339,13 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             if (this.promisedDragPaths[0].attributes.isDirectory()) {
                 this.promisedDragPaths[0].getLocal().mkdir();
             }
+        }
+        Queue q = new DownloadQueue();
+        for (int i = 0; i < this.promisedDragPaths.length; i++) {
+            q.addRoot(this.promisedDragPaths[i]);
+        }
+        if (q.numberOfRoots() > 0) {
+            CDQueueController.instance().startItem(q);
         }
         return promisedDragNames;
     }
