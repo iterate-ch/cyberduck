@@ -154,6 +154,18 @@
                     <li>No autoexpanding (spring loaded folders) in outline view<br />
                     <code>defaults write ch.sudo.cyberduck
                     browser.view.autoexpand false</code></li>
+					<br />
+                    <li>Exclude some files and directories globally from
+					download, upload, e.g.<br />
+					- Exclude all CVS and .svn directories from downloads:<br />
+                    <code>defaults write ch.sudo.cyberduck
+                    queue.download.skip "CVS .svn"</code><br />
+					- Exclude all CVS and .svn directories from uploads:<br />
+                    <code>defaults write ch.sudo.cyberduck
+                    queue.upload.skip "CVS .svn"</code><br />
+					These settings also apply to files downloads or uploaded using
+					the synchronization feature.
+					</li>
                 </ul>
             </td>
         </tr>
