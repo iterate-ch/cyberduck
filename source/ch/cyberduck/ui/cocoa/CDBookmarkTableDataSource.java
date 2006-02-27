@@ -29,16 +29,7 @@ import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.UploadQueue;
 
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSData;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSMutableData;
-import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSPoint;
-import com.apple.cocoa.foundation.NSPropertyListSerialization;
-import com.apple.cocoa.foundation.NSRect;
-import com.apple.cocoa.foundation.NSSize;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 

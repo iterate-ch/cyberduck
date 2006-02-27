@@ -239,6 +239,9 @@ public class Login {
                     passFromKeychain = this.getPasswordFromKeychain(); //legacy support
                 }
                 if (null == passFromKeychain || passFromKeychain.equals("")) {
+					if(null == controller) {
+						throw new IllegalArgumentException("No login controller given");
+					}
                     controller.promptUser(this,
                             NSBundle.localizedString("Login with username and password", "Credentials", ""),
                             NSBundle.localizedString("No login credentials could be found in the Keychain", "Credentials", ""));
@@ -250,6 +253,9 @@ public class Login {
                 }
             }
             else {
+				if(null == controller) {
+					throw new IllegalArgumentException("No login controller given");
+				}
                 controller.promptUser(this,
                         NSBundle.localizedString("Login with username and password", "Credentials", ""),
                         NSBundle.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials", ""));

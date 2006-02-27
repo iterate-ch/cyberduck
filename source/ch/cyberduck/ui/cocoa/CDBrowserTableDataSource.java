@@ -34,7 +34,7 @@ import java.util.ArrayList;
 /**
  * @version $Id$
  */
-public abstract class CDBrowserTableDataSource extends NSObject {
+public abstract class CDBrowserTableDataSource extends CDController {
     protected static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 
     protected static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
@@ -340,13 +340,17 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                 this.promisedDragPaths[0].getLocal().mkdir();
             }
         }
-        Queue q = new DownloadQueue();
-        for (int i = 0; i < this.promisedDragPaths.length; i++) {
-            q.addRoot(this.promisedDragPaths[i]);
-        }
-        if (q.numberOfRoots() > 0) {
-            CDQueueController.instance().startItem(q);
-        }
+		this.invoke(new Runnable() {
+			public void run() {
+		        Queue q = new DownloadQueue();
+		        for (int i = 0; i < promisedDragPaths.length; i++) {
+		            q.addRoot(promisedDragPaths[i]);
+		        }
+		        if (q.numberOfRoots() > 0) {
+		            CDQueueController.instance().startItem(q);
+		        }
+			}
+		});
         return promisedDragNames;
     }
 

@@ -18,10 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.QueueListener;
+import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -696,11 +693,16 @@ public class CDQueueController extends CDWindowController
             }
             return false;
         }
-        if (identifier.equals("Show") || identifier.equals("revealButtonClicked:")) {
-            return this.queueTable.numberOfSelectedRows() == 1;
-        }
-        if (identifier.equals("Open") || identifier.equals("openButtonClicked:")) {
-            return this.queueTable.numberOfSelectedRows() == 1;
+        if (identifier.equals("Open") || identifier.equals("openButtonClicked:")
+        		|| identifier.equals("Show") || identifier.equals("revealButtonClicked:")) {
+            if(this.queueTable.numberOfSelectedRows() == 1) {
+            	Queue queue = (Queue) this.queueModel.get(this.queueTable.selectedRow());
+				if(queue instanceof DownloadQueue) {
+					return queue.getCurrent() > 0;
+				}
+				return true;
+			}
+			return false;
         }
         if (identifier.equals("Clean Up")) {
             return this.queueTable.numberOfRows() > 0;

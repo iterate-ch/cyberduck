@@ -3034,12 +3034,14 @@ public class CDBrowserController extends CDWindowController
         this.bookmarkTableDelegate = null;
         this.bookmarkTable = null;
 
+		this.browserListModel.invalidate();
         this.browserListView.setDataSource(null);
         this.browserListModel = null;
         this.browserListView.setDelegate(null);
         this.browserListViewDelegate = null;
         this.browserListView = null;
 
+		this.browserOutlineModel.invalidate();
         this.browserOutlineView.setDataSource(null);
         this.browserOutlineModel = null;
         this.browserOutlineView.setDelegate(null);

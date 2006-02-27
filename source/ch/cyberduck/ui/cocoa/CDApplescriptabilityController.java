@@ -53,15 +53,7 @@ public class CDApplescriptabilityController extends NSScriptCommand {
             Host h = Host.parse(arg);
             if (h.getDefaultPath().length() > 1) {
                 Path p = PathFactory.createPath(SessionFactory.createSession(h), h.getDefaultPath());
-                try {
-                    p.cwdir();
-                }
-                catch (java.net.ConnectException e) {
-                    log.error(e.getMessage());
-                    return null;
-                }
-                catch (IOException e) {
-                    log.error(e.getMessage());
+				if(null != p.getExtension()) {
                     Queue q = new DownloadQueue();
                     q.addRoot(p);
                     CDQueueController.instance().startItem(q);
