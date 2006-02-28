@@ -20,7 +20,7 @@ build() {
 	if [ "$language" = "all" ] ; then
 		{
 			echo "*** Building all localizations...";
-			for lproj in `ls . | grep lproj`; do
+			for lproj in `ls ./build/Deployment/Cyberduck.app/Contents/Resources/ | grep lproj`; do
 				language=`basename $lproj .lproj`;
 				echo "*** Building $language localization disk image...";
 				ant -Dlocalization=$language release-localization 
