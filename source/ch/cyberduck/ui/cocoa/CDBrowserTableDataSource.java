@@ -328,8 +328,14 @@ public abstract class CDBrowserTableDataSource extends CDController {
         NSMutableArray promisedDragNames = new NSMutableArray();
         if (null != dropDestination) {
             for (int i = 0; i < this.promisedDragPaths.length; i++) {
-	            this.promisedDragPaths[i].setLocal(new Local(dropDestination.getPath(), this.promisedDragPaths[i].getName()));
-	            promisedDragNames.addObject(this.promisedDragPaths[i].getName());
+                try {
+                    this.promisedDragPaths[i].setLocal(new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8"),
+                            this.promisedDragPaths[i].getName()));
+                }
+                catch (UnsupportedEncodingException e) {
+                    log.error(e.getMessage());
+                }
+                promisedDragNames.addObject(this.promisedDragPaths[i].getName());
             }
         }
         if (this.promisedDragPaths.length == 1) {
@@ -340,17 +346,17 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 this.promisedDragPaths[0].getLocal().mkdir();
             }
         }
-		this.invoke(new Runnable() {
-			public void run() {
-		        Queue q = new DownloadQueue();
-		        for (int i = 0; i < promisedDragPaths.length; i++) {
-		            q.addRoot(promisedDragPaths[i]);
-		        }
-		        if (q.numberOfRoots() > 0) {
-		            CDQueueController.instance().startItem(q);
-		        }
-			}
-		});
+        this.invoke(new Runnable() {
+            public void run() {
+                Queue q = new DownloadQueue();
+                for (int i = 0; i < promisedDragPaths.length; i++) {
+                    q.addRoot(promisedDragPaths[i]);
+                }
+                if (q.numberOfRoots() > 0) {
+                    CDQueueController.instance().startItem(q);
+                }
+            }
+        });
         return promisedDragNames;
     }
 
