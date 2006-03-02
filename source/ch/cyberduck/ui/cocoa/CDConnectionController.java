@@ -86,7 +86,12 @@ public class CDConnectionController extends CDSheetController
 
     private Map history = new HashMap();
 
-    private static final File HISTORY_FOLDER = new File(NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck/History"));
+    protected static final File HISTORY_FOLDER
+        = new File(Preferences.instance().getProperty("application.support.path"), "History");
+
+    static {
+        HISTORY_FOLDER.mkdirs();
+    }
 
     public void setHistoryPopup(NSPopUpButton historyPopup) {
         this.historyPopup = historyPopup;
