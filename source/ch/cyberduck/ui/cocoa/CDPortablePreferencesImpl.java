@@ -86,6 +86,7 @@ public class CDPortablePreferencesImpl extends Preferences {
             }
             File f = new File(NSPathUtilities.stringByExpandingTildeInPath(
                     (String)NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")));
+            f.getParentFile().mkdirs();
             if (collection.writeToURL(f.toURL(), true)) {
                 log.info("Preferences sucessfully saved to :" + f.toString());
             }
