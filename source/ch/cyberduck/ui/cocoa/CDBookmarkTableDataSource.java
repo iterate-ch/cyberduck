@@ -44,11 +44,11 @@ public class CDBookmarkTableDataSource extends Collection {
     private static final File BOOKMARKS_FILE
             = new File(Preferences.instance().getProperty("application.support.path"), "Favorites.plist");
 
-    private int hostPboardChangeCount = NSPasteboard.pasteboardWithName("HostPBoard").changeCount();
-
     static {
 	    BOOKMARKS_FILE.getParentFile().mkdir();
     }
+
+    private int hostPboardChangeCount = NSPasteboard.pasteboardWithName("HostPBoard").changeCount();
 
     private static CDBookmarkTableDataSource instance;
 

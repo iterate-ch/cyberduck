@@ -23,10 +23,12 @@ import ch.cyberduck.ui.cocoa.CDPreferencesImpl;
 import ch.cyberduck.ui.cocoa.CDPortablePreferencesImpl;
 
 import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
+import java.io.File;
 
 /**
  * Holding all application preferences. Default values get overwritten when loading
@@ -40,7 +42,7 @@ public abstract class Preferences {
 
     private static Preferences current = null;
 
-    protected HashMap defaults;
+    private HashMap defaults;
 
     static {
         System.setProperty("networkaddress.cache.ttl", "10");
@@ -52,8 +54,7 @@ public abstract class Preferences {
      */
     public static Preferences instance() {
         if (null == current) {
-            if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")
-                    || null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")) {
+            if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")) {
                 current = new CDPreferencesImpl();
             }
             else {
@@ -103,6 +104,21 @@ public abstract class Preferences {
      */
     public void setDefaults() {
         this.defaults = new HashMap();
+
+        File APP_SUPPORT_DIR = null;
+        if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")) {
+            APP_SUPPORT_DIR = new File(
+                    NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck"));
+            APP_SUPPORT_DIR.mkdirs();
+        }
+        else {
+            APP_SUPPORT_DIR = new File(
+                    NSPathUtilities.stringByExpandingTildeInPath(
+                            (String)NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")));
+        }
+        APP_SUPPORT_DIR.mkdirs();
+        
+        defaults.put("application.support.path", APP_SUPPORT_DIR.getAbsolutePath());
 
         /**
          * The logging level (DEBUG, INFO, WARN, ERROR)

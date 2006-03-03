@@ -97,13 +97,4 @@ public class CDPortablePreferencesImpl extends Preferences {
             log.error(e.getMessage());
         }
     }
-
-    public void setDefaults() {
-        super.setDefaults();
-        
-        File APP_SUPPORT_DIR = new File(NSPathUtilities.stringByExpandingTildeInPath(
-                (String)NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")));
-        APP_SUPPORT_DIR.mkdirs();
-        defaults.put("application.support.path", APP_SUPPORT_DIR.getAbsolutePath());
-    }
 }

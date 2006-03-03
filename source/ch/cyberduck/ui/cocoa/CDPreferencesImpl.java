@@ -20,11 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Preferences;
 
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSUserDefaults;
 
 import org.apache.log4j.Logger;
-
-import java.io.File;
 
 /**
  * Concrete subclass using the Cocoa Preferences classes.
@@ -53,15 +51,6 @@ public class CDPreferencesImpl extends Preferences {
         // Setting a default has no effect on the value returned by the objectForKey method if
         // the same key exists in a domain that precedes the application domain in the search list.
         this.props.setObjectForKey(value, property);
-    }
-
-    public void setDefaults() {
-        super.setDefaults();
-
-        File APP_SUPPORT_DIR = new File(
-                NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck"));
-        APP_SUPPORT_DIR.mkdirs();
-        defaults.put("application.support.path", APP_SUPPORT_DIR.getAbsolutePath());
     }
 
     /**
