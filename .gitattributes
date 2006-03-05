@@ -9,20 +9,6 @@ AppleScript[!!-~]Samples/iPhoto[!!-~]Upload[!!-~]Sample.scpt -text
 /Credits.rtf -text
 /Cyberduck[!!-~]Website.url -text
 /Cyberduck.scriptTerminology -text svneol=unset#application/octet-stream
-Cyberduck.wdgt/Default.png -text svneol=unset#image/png
-Cyberduck.wdgt/Icon.png -text svneol=unset#image/png
-Cyberduck.wdgt/Images/back.png -text svneol=unset#image/png
-Cyberduck.wdgt/Images/duck.png -text svneol=unset#image/png
-Cyberduck.wdgt/Images/front.png -text svneol=unset#image/png
-Cyberduck.wdgt/Plugin/BookmarkPlugin.m -text
-Cyberduck.wdgt/Plugin/BookmarkPlugin_Prefix.pch -text
-Cyberduck.wdgt/Plugin/English.lproj/InfoPlist.strings -text
-Cyberduck.wdgt/Plugin/Info.plist -text
-Cyberduck.wdgt/Plugin/Plugin.xcodeproj/project.pbxproj -text
-Cyberduck.wdgt/Scripts/Upload.scpt -text
-Cyberduck.wdgt/Upload.css -text
-Cyberduck.wdgt/Upload.html -text
-Cyberduck.wdgt/Upload.js -text
 Dashboard[!!-~]Widget/Cyberduck.wdgt/Default.png -text svneol=unset#image/png
 Dashboard[!!-~]Widget/Cyberduck.wdgt/Icon.png -text svneol=unset#image/png
 Dashboard[!!-~]Widget/Cyberduck.wdgt/Images/back.png -text svneol=unset#image/png
