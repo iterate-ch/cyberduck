@@ -42,7 +42,7 @@ form { margin: 0; }
 {
 	width: 158px;
 	height: 221px;
-	display: none;
+	/*display: none;*/
 	background: transparent url("Images/back.png") no-repeat bottom left;
 }
 
@@ -88,7 +88,10 @@ select#protocol
 }
 
 div#done { right: 14px; }
-form { padding: 71px 14px 0 14px; }
+
+div#prefs {
+	padding: 71px 14px 0 14px; 
+}
 
 input[type=text]
 {
@@ -99,5 +102,5 @@ input[type=text]
 p
 {
 	margin: 0;
-	padding: 1px;
+	padding: 2px 0;
 }

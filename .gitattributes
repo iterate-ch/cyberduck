@@ -12,6 +12,7 @@ AppleScript[!!-~]Samples/iPhoto[!!-~]Upload[!!-~]Sample.scpt -text
 Dashboard[!!-~]Widget/Cyberduck.wdgt/Default.png -text svneol=unset#image/png
 Dashboard[!!-~]Widget/Cyberduck.wdgt/Icon.png -text svneol=unset#image/png
 Dashboard[!!-~]Widget/Cyberduck.wdgt/Images/back.png -text svneol=unset#image/png
+Dashboard[!!-~]Widget/Cyberduck.wdgt/Images/bookmark.png -text svneol=unset#image/png
 Dashboard[!!-~]Widget/Cyberduck.wdgt/Images/duck.png -text svneol=unset#image/png
 Dashboard[!!-~]Widget/Cyberduck.wdgt/Images/front.png -text svneol=unset#image/png
 Dashboard[!!-~]Widget/Cyberduck.wdgt/Info.plist -text
