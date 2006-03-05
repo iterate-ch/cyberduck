@@ -23,6 +23,21 @@ Cyberduck.wdgt/Scripts/Upload.scpt -text
 Cyberduck.wdgt/Upload.css -text
 Cyberduck.wdgt/Upload.html -text
 Cyberduck.wdgt/Upload.js -text
+Dashboard[!!-~]Widget/Cyberduck.wdgt/Default.png -text svneol=unset#image/png
+Dashboard[!!-~]Widget/Cyberduck.wdgt/Icon.png -text svneol=unset#image/png
+Dashboard[!!-~]Widget/Cyberduck.wdgt/Images/back.png -text svneol=unset#image/png
+Dashboard[!!-~]Widget/Cyberduck.wdgt/Images/duck.png -text svneol=unset#image/png
+Dashboard[!!-~]Widget/Cyberduck.wdgt/Images/front.png -text svneol=unset#image/png
+Dashboard[!!-~]Widget/Cyberduck.wdgt/Info.plist -text
+Dashboard[!!-~]Widget/Cyberduck.wdgt/Plugin/BookmarkPlugin.m -text
+Dashboard[!!-~]Widget/Cyberduck.wdgt/Plugin/BookmarkPlugin_Prefix.pch -text
+Dashboard[!!-~]Widget/Cyberduck.wdgt/Plugin/English.lproj/InfoPlist.strings -text
+Dashboard[!!-~]Widget/Cyberduck.wdgt/Plugin/Info.plist -text
+Dashboard[!!-~]Widget/Cyberduck.wdgt/Plugin/Plugin.xcodeproj/project.pbxproj -text
+Dashboard[!!-~]Widget/Cyberduck.wdgt/Scripts/Upload.scpt -text
+Dashboard[!!-~]Widget/Cyberduck.wdgt/Upload.css -text
+Dashboard[!!-~]Widget/Cyberduck.wdgt/Upload.html -text
+Dashboard[!!-~]Widget/Cyberduck.wdgt/Upload.js -text
 /Donate.url -text
 Download[!!-~]Automator[!!-~]Action/English.lproj/InfoPlist.strings svneol=native#unset
 Spotlight[!!-~]Importer/English.lproj/schema.strings svneol=native#unset
