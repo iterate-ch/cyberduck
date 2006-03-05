@@ -28,7 +28,7 @@
 
 	<div id="back">
 		<form id="prefs">
-			<select name="bookmarks" onchange="bookmarkSelectionChanged(this)">
+			<select id="bookmarks" name="bookmarks" onchange="bookmarkSelectionChanged(this)">
 				<script type="text/javascript">
 				 //<![CDATA[
 				if (window.Plugin) {
@@ -39,20 +39,11 @@
 				//]]>
 				</script>
 			</select>
-			
-			<p>
-				<label for="nickname">Nickname:</label><input type="text" id="nickname" name="nickname" />
-			</p>
-			<p>
-				<label for="server">Server:</label><input type="text" id="server" name="server" />
-			</p>
-			<p>
-				<label for="user">User:</label><input type="text" id="user" name="user" />
-			</p>
-			<p>
-				<label for="path">Path:</label><input type="text" id="path" name="path" />
-			</p>
-			<select name="protocol" id="protocol">
+			<input type="text" id="nickname" name="nickname" />
+			<p><input placeholder="Server" type="text" id="server" name="server" /></p>
+			<p><input placeholder="Username" type="text" id="user" name="user" /></p>
+			<p><input placeholder="Path" type="text" id="path" name="path" /></p>
+			<select placeholder="Protocol" name="protocol" id="protocol">
 				<option value="ftp">FTP</option>
 				<option value="ftps">FTP-TLS</option>
 				<option value="sftp">SFTP</option>

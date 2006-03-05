@@ -16,6 +16,11 @@ form { margin: 0; }
 	background: transparent url("Images/duck.png") no-repeat center 30px;
 }
 
+#nickname
+{
+	display: none;
+}
+
 #serverlabel
 {
 	position: absolute;
@@ -60,36 +65,35 @@ form { margin: 0; }
 	background: transparent url("file:///System/Library/WidgetResources/ibutton/white_rollie.png") no-repeat left top;
 }
 
-select#bookmarks { width: 130px; }
-select#protocol { margin: 2px 0; }
+select#bookmarks 
+{ 
+	width: 130px; 
+}
 
-select#protocol,
+select#bookmarks option:before 
+{ 
+	content:url(Images/bookmark.png);
+}
+
+select#protocol 
+{ 
+	width: 70px;
+	margin: 2px 0; 
+}
+
 .button
 {
 	position: absolute;
 	bottom: 20px;
 }
 
-#done { right: 14px; }
+div#done { right: 14px; }
 form { padding: 71px 14px 0 14px; }
-
-label
-{
-	display: inline-block;
-	text-align: right;
-	width: 32px;
-	font-family: "Lucida Sans";
-	font-weight: bold;
-	font-size: 7pt;
-	color: #fff;
-	padding-right: 3px;
-	text-shadow: 0 1px 2px #000;
-}
 
 input[type=text]
 {
 	margin: 0;
-	width: 93px;
+	width: 130px; 
 }
 
 p
@@ -97,5 +101,3 @@ p
 	margin: 0;
 	padding: 1px;
 }
-
-select#protocol { left: 14px; }

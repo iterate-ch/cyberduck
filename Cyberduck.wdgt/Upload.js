@@ -38,11 +38,11 @@ function setup()
 function bookmarkSelectionChanged(popup) 
 {
 	if (window.Plugin) {
-		document.getElementById("nickname").value = Plugin.nicknameAtIndex(popup.selectedIndex);
-		document.getElementById("server").value = Plugin.hostnameAtIndex(popup.selectedIndex);
-		document.getElementById("user").value = Plugin.usernameAtIndex(popup.selectedIndex);
-		document.getElementById("path").value = Plugin.pathAtIndex(popup.selectedIndex);
-		document.getElementById("protocol").value = Plugin.protocolAtIndex(popup.selectedIndex);
+		document.getElementById("nickname").value = Plugin.nicknameAtIndex(popup.options[popup.selectedIndex].value);
+		document.getElementById("server").value = Plugin.hostnameAtIndex(popup.options[popup.selectedIndex].value);
+		document.getElementById("user").value = Plugin.usernameAtIndex(popup.options[popup.selectedIndex].value);
+		document.getElementById("path").value = Plugin.pathAtIndex(popup.options[popup.selectedIndex].value);
+		document.getElementById("protocol").value = Plugin.protocolAtIndex(popup.options[popup.selectedIndex].value);
 	}
 }
 
@@ -53,10 +53,6 @@ function savePreferences()
 	var user =     document.getElementById("user").value || null;
 	var path =     document.getElementById("path").value || null;
 	var protocol = document.getElementById("protocol").value || null;
-	
-	document.getElementById("serverlabel").innerHTML = nickname || CONFIGURE_ME;
-	
-	configured = !!server;
 	
 	if (verifyAccount())
 	{	
@@ -76,14 +72,13 @@ function loadPreferences()
 	var path = widget.preferenceForKey(widget.identifier + "@path");
 	var protocol = widget.preferenceForKey(widget.identifier + "@protocol");
 
-	document.getElementById("nickname").value = nickname || "";
-	document.getElementById("server").value = server || "";
-	document.getElementById("user").value = user || "";
-	document.getElementById("path").value = path || "";
-	document.getElementById("protocol").value = protocol || "";
+	document.getElementById("nickname").value = nickname || null;
+	document.getElementById("server").value = server || null;
+	document.getElementById("user").value = user || null;
+	document.getElementById("path").value = path || null;
+	document.getElementById("protocol").value = protocol || null;
 
-	document.getElementById("serverlabel").innerHTML = nickname || CONFIGURE_ME;
-	configured = !!server;
+	verifyAccount();
 }
 
 function clearPreferences()
@@ -200,9 +195,20 @@ function bounce()
 	T = limit_3(time-bouncer.starttime, 0, bouncer.duration * bouncer.times);
 
 	if (T >= bouncer.duration * bouncer.times) {
+		// The duration of animation has reached the total time
+		// needed by the required bounces. We reposition the duck
+		// to its rest position.
+
 		clearInterval (bouncer.timer);
 		bouncer.timer = null;
 		bouncer.now = bouncer.from;
+	}
+	else if (bouncer.shouldStop) {
+		// We adjust the number of bounces, bouncer.times, to finish
+		// the current bounce
+
+		bouncer.times = Math.ceil(T / bouncer.duration);
+		bouncer.shouldStop = false;
 	}
 	else {
 		ease = Math.abs(Math.sin(Math.PI * T / bouncer.duration));
@@ -214,20 +220,21 @@ function bounce()
 
 function bounceDuckStop()
 {
-	if (bouncer.timer != null) {
-		clearInterval (bouncer.timer);
-		bouncer.timer  = null;
-		bouncer.firstElement.style.backgroundPositionY = "30px";
-	}
+	// Simply signals that this is the last bounce
+	bouncer.shouldStop = true;
 }
 
 function bounceDuckStart(times) 
 {
-	bounceDuckStop();
+	if (bouncer.timer) {
+		clearInterval (bouncer.timer);
+		bouncer.timer = null;
+	}
 
 	var starttime = (new Date).getTime() - 11;
 
-	bouncer.duration = times != 1 ? 650 : 500;
+	bouncer.shouldStop = false;
+	bouncer.duration = 650;
 	bouncer.starttime = starttime;
 	bouncer.firstElement = document.getElementById ("duck");
 	bouncer.timer = setInterval ("bounce();", 11);
@@ -267,21 +274,18 @@ function exitflip(event) {
 
 function verifyAccount()
 {
-	// Not yet implemented
-	
-	return true;
-
-	var nickname =   document.getElementById("nickname").value || null;
-	var server =   document.getElementById("server").value || null;
-	var user =     document.getElementById("user").value || null;
-	var path =     document.getElementById("path").value || null;
-	var protocol = document.getElementById("protocol").value || null;
-
-	var command = "/usr/bin/" + protocol + " " + user + "@" + server;
-	alert(command);
-
-	var oString = widget.system(command, null).outputString;
-	alert(oString);
+	configured = 
+		(document.getElementById("server").value != null
+		&& document.getElementById("server").value != ""
+		&& document.getElementById("user").value != null
+		&& document.getElementById("user").value != "");
+	if(configured) {
+		document.getElementById("serverlabel").innerHTML = document.getElementById("nickname").value;
+	}
+	else {
+		document.getElementById("serverlabel").innerHTML = CONFIGURE_ME;
+	}
+	return configured;
 }
 
 /**
@@ -301,10 +305,10 @@ function dragdrop (event) {
 	if (uri && configured)
 	{
 		var droppedfilesURI = uri.split("\n");
-		var droppedfilesLocal = "";
-		for(var i in droppedfilesURI) {
-			droppedfilesLocal += droppedfilesURI[i].substr(droppedfilesURI[i].indexOf("localhost") + 9)+" ";
+		for(var i = 0; i < droppedfilesURI.length; i++) {
+			droppedfilesURI[i] = droppedfilesURI[i].substr(droppedfilesURI[i].indexOf("localhost") + 9);
 		}
+		var droppedfilesLocal = droppedfilesURI.join(" ");
 		transfer(droppedfilesLocal);
 	}
 	else
