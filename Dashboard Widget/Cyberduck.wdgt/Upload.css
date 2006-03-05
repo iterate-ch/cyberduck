@@ -42,7 +42,7 @@ form { margin: 0; }
 {
 	width: 158px;
 	height: 221px;
-	/*display: none;*/
+	display: none;
 	background: transparent url("Images/back.png") no-repeat bottom left;
 }
 
@@ -77,7 +77,7 @@ select#bookmarks option:before
 
 select#protocol 
 { 
-	width: 70px;
+	width: 60px;
 	margin: 2px 0; 
 }
 

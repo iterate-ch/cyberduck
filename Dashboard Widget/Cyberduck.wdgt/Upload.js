@@ -17,7 +17,7 @@
  *	dkocher@cyberduck.ch
  */
 
-var CONFIGURE_ME = '<span id="catcheye" onclick="showPreferences()">Please configure me!</span>';
+var CONFIGURE_ME =  '<span id="catcheye" onclick="showPreferences()">' + getLocalizedString("Please configure me!") + '</span>';
 
 var flipShown = false,
 	configured = false,
@@ -26,13 +26,29 @@ var flipShown = false,
 
 function setup()
 {
-	createGenericButton(document.getElementById("done"), "Done", hidePreferences);
-	loadPreferences();
-	
+	createGenericButton(document.getElementById("done"), getLocalizedString("Done"), hidePreferences);
 	if (window.widget)
 	{
 		widget.onremove = clearPreferences;
 	}
+	document.getElementById("server").setAttribute("placeholder", getLocalizedString("Server"));
+	document.getElementById("user").setAttribute("placeholder", getLocalizedString("Username"));
+	document.getElementById("path").setAttribute("placeholder", getLocalizedString("Path"));
+	loadPreferences();
+}
+
+function getLocalizedString (key) {
+	try {
+		var ret = localizedStrings[key];
+		if (ret === undefined) {
+			ret = key;
+		}
+		return ret;
+	}
+	catch (ex) {
+		//
+	}
+	return key;
 }
 
 function bookmarkSelectionChanged(popup) 
