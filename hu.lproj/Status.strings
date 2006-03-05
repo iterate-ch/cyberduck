@@ -1,69 +1,69 @@
 /* No comment provided by engineer. */
-"Authenticating as" = "Authenticating as";
+"Authenticating as" = "Bejelentkezés mint";
 
 /* No comment provided by engineer. */
-"Closing SSH Session Channel" = "Closing SSH Session Channel";
+"Closing SSH Session Channel" = "SSH csatorna bezárása";
 
 /* No comment provided by engineer. */
-"Deleting" = "Deleting";
+"Deleting" = "Törlés";
 
 /* No comment provided by engineer. */
-"Disconnected" = "Disconnected";
+"Disconnected" = "Kapcsolat bontva";
 
 /* No comment provided by engineer. */
-"Disconnecting..." = "Disconnecting...";
+"Disconnecting..." = "kapcsolat bontása...";
 
 /* No comment provided by engineer. */
-"Downloading" = "Downloading";
+"Downloading" = "Letöltés";
 
 /* No comment provided by engineer. */
-"FTP connection opened" = "FTP connection opened";
+"FTP connection opened" = "FTP kapcsolat nyitva";
 
 /* No comment provided by engineer. */
-"Getting size of" = "Getting size of";
+"Getting size of" = "Méret olvasása";
 
 /* No comment provided by engineer. */
-"Getting timestamp of" = "Getting timestamp of";
+"Getting timestamp of" = "Utolsó módosítás olvasása";
 
 /* No activity */
 "Idle" = "Pihen";
 
 /* No comment provided by engineer. */
-"Listing directory" = "Listing directory";
+"Listing directory" = "Mappák listázása";
 
 /* No comment provided by engineer. */
-"Make directory" = "Make directory";
+"Make directory" = "Új mappa létrehozása";
 
 /* No comment provided by engineer. */
-"Maximum allowed connections exceeded. Waiting..." = "Maximum allowed connections exceeded. Waiting...";
+"Maximum allowed connections exceeded. Waiting..." = "A kapcsolatok száma elérte a maximális kapcsolatok számát . Várakozik...";
 
 /* No comment provided by engineer. */
-"Mounting" = "Mounting";
+"Mounting" = "Mount-olás";
 
 /* The user did not accept the certificate or is not valid */
-"No trusted certificate found" = "No trusted certificate found";
+"No trusted certificate found" = "Nincs megbízható tanúsítvány";
 
 /* No comment provided by engineer. */
-"Opening FTP connection to" = "Opening FTP connection to";
+"Opening FTP connection to" = "FTP kapcsolódás";
 
 /* No comment provided by engineer. */
-"Opening FTP-TLS connection to" = "Opening FTP-TLS connection to";
+"Opening FTP-TLS connection to" = "FTP-TLS kapcsolódás";
 
 /* No comment provided by engineer. */
-"Opening SSH connection to" = "Opening SSH connection to";
+"Opening SSH connection to" = "SSH kapcsolódás";
 
 /* No comment provided by engineer. */
-"SFTP subsystem ready" = "SFTP subsystem ready";
+"SFTP subsystem ready" = "SFTP filerendszer kész";
 
 /* No comment provided by engineer. */
-"SSH connection opened" = "SSH connection opened";
+"SSH connection opened" = "SSH kapcsolat létrehozva";
 
 /* No comment provided by engineer. */
-"Starting SFTP subsystem..." = "Starting SFTP subsystem...";
+"Starting SFTP subsystem..." = "SFTP filerendszer indítása...";
 
 /* No comment provided by engineer. */
-"Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences." = "Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences.";
+"Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences." = "Túl sok egyidejü kapcsolat. Állítsa át a konkurens kapcsolatok számát.";
 
 /* No comment provided by engineer. */
-"Uploading" = "Uploading";
+"Uploading" = "Feltöltés";
 
