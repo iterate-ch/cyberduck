@@ -17,7 +17,7 @@
  *	dkocher@cyberduck.ch
  */
 
-var CONFIGURE_ME =  '<span id="catcheye" onclick="showPreferences()">' + getLocalizedString("Please configure me!") + '</span>';
+var CONFIGURE_ME;
 
 var flipShown = false,
 	configured = false,
@@ -26,6 +26,7 @@ var flipShown = false,
 
 function setup()
 {
+	CONFIGURE_ME =  '<span id="catcheye" onclick="showPreferences()">' + getLocalizedString("Please configure me!") + '</span>';
 	createGenericButton(document.getElementById("done"), getLocalizedString("Done"), hidePreferences);
 	if (window.widget)
 	{

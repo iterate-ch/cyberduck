@@ -1,4 +1,4 @@
-﻿/**
+/**
  *	Cyberduck Dashboard widget
  *	Copyright (c) 2006 Claudio Procida & David V. Kocher. All rights reserved.
  *	http://cyberduck.ch/
@@ -19,7 +19,8 @@
 
 localizedStrings = new Array();
 
-localizedStrings["Username"] = "ユーザ吊";
+localizedStrings["Please configure me!"] = "設定してください！";
+localizedStrings["Username"] = "ユーザ名";
 localizedStrings["Path"] = "パス";
 localizedStrings["Server"] = "サーバ";
 localizedStrings["Done"] = "完了";
