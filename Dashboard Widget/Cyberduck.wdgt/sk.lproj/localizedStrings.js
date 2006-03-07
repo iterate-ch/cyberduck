@@ -19,6 +19,7 @@
 
 localizedStrings = new Array();
 
+localizedStrings["Please configure me!"] = "Please configure me!";
 localizedStrings["Username"] = "Užívateľské meno";
 localizedStrings["Path"] = "Cesta";
 localizedStrings["Server"] = "Server";

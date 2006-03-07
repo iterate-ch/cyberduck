@@ -19,6 +19,7 @@
 
 localizedStrings = new Array();
 
+localizedStrings["Please configure me!"] = "Please configure me!";
 localizedStrings["Username"] = "ชื่อผู้ใช้";
 localizedStrings["Path"] = "ตำแหน่ง";
 localizedStrings["Server"] = "อร์เวอร์";

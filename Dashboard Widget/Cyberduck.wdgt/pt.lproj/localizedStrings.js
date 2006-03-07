@@ -19,7 +19,8 @@
 
 localizedStrings = new Array();
 
+localizedStrings["Please configure me!"] = "Please configure me!";
 localizedStrings["Username"] = "Utilizador";
 localizedStrings["Path"] = "Caminho";
 localizedStrings["Server"] = "Servidor";
-localizedStrings["Done"] = "Concluído";
+localizedStrings["Done"] = "ConcluÃ­do";
