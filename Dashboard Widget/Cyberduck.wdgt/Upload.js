@@ -322,7 +322,7 @@ function dragdrop (event) {
 	{
 		var droppedfilesURI = uri.split("\n");
 		for(var i = 0; i < droppedfilesURI.length; i++) {
-			droppedfilesURI[i] = droppedfilesURI[i].substr(droppedfilesURI[i].indexOf("localhost") + 9);
+			droppedfilesURI[i] = droppedfilesURI[i].toPosixPath();
 		}
 		var droppedfilesLocal = droppedfilesURI.join(" ");
 		transfer(droppedfilesLocal);
@@ -370,4 +370,10 @@ function transfer(file)
 		+ " " + path
 		+ " " + file;
 	widget.system(command, bounceDuckStop);
+}
+
+String.prototype.toPosixPath = function()
+{
+	var tmp = unescape(this.substr(this.indexOf("localhost") + 9));
+	return tmp.replace(/ /g, "\\ ");
 }
