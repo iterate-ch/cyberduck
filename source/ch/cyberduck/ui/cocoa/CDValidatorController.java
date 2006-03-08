@@ -142,7 +142,6 @@ public abstract class CDValidatorController
 
     protected boolean validate(Path p, boolean resumeRequested) {
         if (p.attributes.isFile()) {
-            p.reset();
             return this.validateFile(p, resumeRequested);
         }
         if (p.attributes.isDirectory()) {
@@ -156,6 +155,7 @@ public abstract class CDValidatorController
 
     protected boolean validateFile(Path path, boolean resumeRequested) {
         if (resumeRequested) { // resume existing files independant of settings in preferences
+            path.reset();
             path.status.setResume(this.isExisting(path));
             return true;
         }
@@ -165,6 +165,7 @@ public abstract class CDValidatorController
             path.status.setResume(false);
             return true;
         }
+        path.reset();
         if (this.isExisting(path)) {
             if (Preferences.instance().getProperty("queue.fileExists").equals("resume")) {
                 log.debug("Apply validation rule to resume:" + path.getName());
