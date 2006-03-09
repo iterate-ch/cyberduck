@@ -132,7 +132,7 @@ public class SFTPSession extends Session {
             this.log(new java.util.Date().toString());
             this.log(host.getIp());
             SSH = new SshClient();
-            //SSH.setSocketTimeout(Preferences.instance().getInteger("connection.timeout"));
+            SSH.setSocketTimeout(Preferences.instance().getInteger("connection.timeout"));
             SSH.addEventHandler(new SshEventAdapter() {
                 public void onSocketTimeout(TransportProtocol transport) {
                     log.debug("onSocketTimeout");

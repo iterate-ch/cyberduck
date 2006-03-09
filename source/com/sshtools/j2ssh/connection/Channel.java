@@ -63,7 +63,7 @@ public abstract class Channel {
 	protected long remotePacketSize;
 
 	/**  */
-	protected ChannelState state = new ChannelState();
+	protected final ChannelState state = new ChannelState();
 	private boolean isClosed = false;
 	private boolean isLocalEOF = false;
 	private boolean isRemoteEOF = false;

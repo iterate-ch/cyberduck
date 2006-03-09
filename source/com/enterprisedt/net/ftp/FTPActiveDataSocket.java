@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 
 /**
  * Active data socket handling class
@@ -37,96 +38,108 @@ import java.net.Socket;
  */
 public class FTPActiveDataSocket implements FTPDataSocket {
 
-	/**
-	 * The underlying socket for Active connection.
-	 */
-	protected ServerSocket sock = null;
+    /**
+     * The underlying socket for Active connection.
+     */
+    protected ServerSocket sock = null;
 
-	/**
-	 * The socket accepted from server.
-	 */
-	protected Socket acceptedSock = null;
+    /**
+     * The socket accepted from server.
+     */
+    protected Socket acceptedSock = null;
 
-	/**
-	 * Constructor
-	 *
-	 * @param sock the server socket to use
-	 */
-	public FTPActiveDataSocket(ServerSocket sock) {
-		this.sock = sock;
-	}
+    /**
+     * Constructor
+     *
+     * @param sock the server socket to use
+     */
+    public FTPActiveDataSocket(ServerSocket sock) {
+        this.sock = sock;
+    }
 
-	/**
-	 * Set the TCP timeout on the underlying data socket(s).
-	 * If a timeout is set, then any operation which
-	 * takes longer than the timeout value will be
-	 * killed with a java.io.InterruptedException.
-	 *
-	 * @param millis The length of the timeout, in milliseconds
-	 */
-	public void setTimeout(int millis) throws IOException {
-		sock.setSoTimeout(millis);
-		if(acceptedSock != null)
-			acceptedSock.setSoTimeout(millis);
-	}
+    /**
+     * Set the TCP timeout on the underlying data socket(s).
+     * If a timeout is set, then any operation which
+     * takes longer than the timeout value will be
+     * killed with a java.io.InterruptedException.
+     *
+     * @param millis The length of the timeout, in milliseconds
+     */
+    public void setTimeout(int millis) throws IOException {
+        sock.setSoTimeout(millis);
+        if(acceptedSock != null) {
+            acceptedSock.setSoTimeout(millis);
+        }
+    }
 
-	/**
-	 * Returns the local port to which this socket is bound.
-	 *
-	 * @return the local port number to which this socket is bound
-	 */
-	public int getLocalPort() {
-		return sock.getLocalPort();
-	}
+    /**
+     * Returns the local port to which this socket is bound.
+     *
+     * @return the local port number to which this socket is bound
+     */
+    public int getLocalPort() {
+        return sock.getLocalPort();
+    }
 
-	/**
-	 * Waits for a connection from the server and then sets the timeout
-	 * when the connection is made.
-	 *
-	 * @throws IOException There was an error while waiting for or accepting
-	 *                     a connection from the server.
-	 */
-	protected void acceptConnection() throws IOException {
-		if(acceptedSock == null) {
-			acceptedSock = sock.accept();
-			acceptedSock.setSoTimeout(sock.getSoTimeout());
-		}
-	}
+    /**
+     * Waits for a connection from the server and then sets the timeout
+     * when the connection is made.
+     *
+     * @throws IOException There was an error while waiting for or accepting
+     *                     a connection from the server.
+     */
+    protected void acceptConnection() throws IOException {
+        if(acceptedSock == null) {
+            acceptedSock = sock.accept();
+            try {
+                acceptedSock.setSoTimeout(sock.getSoTimeout());
+            }
+            catch(SocketException e) {
+                //log.error(e.getMessage());
+            }
+            try {
+                acceptedSock.setKeepAlive(true);
+            }
+            catch(SocketException e) {
+                //log.error(e.getMessage());
+            }
+        }
+    }
 
-	/**
-	 * If active mode, accepts the FTP server's connection - in PASV,
-	 * we are already connected. Then gets the output stream of
-	 * the connection
-	 *
-	 * @return output stream for underlying socket.
-	 */
-	public OutputStream getOutputStream() throws IOException {
-		// accept socket from server
-		acceptConnection();
-		return acceptedSock.getOutputStream();
-	}
+    /**
+     * If active mode, accepts the FTP server's connection - in PASV,
+     * we are already connected. Then gets the output stream of
+     * the connection
+     *
+     * @return output stream for underlying socket.
+     */
+    public OutputStream getOutputStream() throws IOException {
+        // accept socket from server
+        acceptConnection();
+        return acceptedSock.getOutputStream();
+    }
 
-	/**
-	 * If active mode, accepts the FTP server's connection - in PASV,
-	 * we are already connected. Then gets the input stream of
-	 * the connection
-	 *
-	 * @return input stream for underlying socket.
-	 */
-	public InputStream getInputStream() throws IOException {
-		// accept socket from server
-		acceptConnection();
-		return acceptedSock.getInputStream();
-	}
+    /**
+     * If active mode, accepts the FTP server's connection - in PASV,
+     * we are already connected. Then gets the input stream of
+     * the connection
+     *
+     * @return input stream for underlying socket.
+     */
+    public InputStream getInputStream() throws IOException {
+        // accept socket from server
+        acceptConnection();
+        return acceptedSock.getInputStream();
+    }
 
-	/**
-	 * Closes underlying sockets
-	 */
-	public void close() throws IOException {
-		if(acceptedSock != null) {
-			acceptedSock.close();
-			acceptedSock = null;
-		}
-		sock.close();
-	}
+    /**
+     * Closes underlying sockets
+     */
+    public void close() throws IOException {
+        if(acceptedSock != null) {
+            acceptedSock.close();
+            acceptedSock = null;
+        }
+        sock.close();
+    }
 }

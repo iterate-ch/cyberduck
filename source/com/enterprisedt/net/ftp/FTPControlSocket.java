@@ -29,6 +29,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -114,6 +115,12 @@ public class FTPControlSocket {
 
 		this.encoding = encoding;
 		this.controlSock = controlSock;
+        try {
+            this.controlSock.setKeepAlive(true);
+        }
+        catch(SocketException e) {
+            //log.error(e.getMessage());
+        }
 		this.listener = listener;
 
 		this.setTimeout(timeout);
@@ -185,12 +192,8 @@ public class FTPControlSocket {
 	 * @param millis The length of the timeout, in milliseconds
 	 */
 	public void setTimeout(int millis) throws IOException {
-
-		if(controlSock == null)
-			throw new IllegalStateException("Failed to set timeout - no control socket");
-
 		controlSock.setSoTimeout(millis);
-	}
+    }
 
 	/**
 	 * Quit this FTP session and clean up.

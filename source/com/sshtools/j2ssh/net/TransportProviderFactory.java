@@ -65,17 +65,10 @@ public class TransportProviderFactory {
 		}
 		else {
 			// No proxy just attempt a standard socket connection
-
-			/*SocketTransportProvider socket = new SocketTransportProvider();
-			 socket.setSoTimeout(socketTimeout);
-			 socket.connect(new InetSocketAddress(properties.getHost(),
-			                         properties.getPort()),
-			   connectTimeout);*/
 			SocketTransportProvider socket = new SocketTransportProvider(properties.getHost(),
 			    properties.getPort());
-			socket.setTcpNoDelay(true);
+			//socket.setTcpNoDelay(true);
 			socket.setSoTimeout(socketTimeout);
-
 			return socket;
 		}
 	}
