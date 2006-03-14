@@ -678,21 +678,20 @@ public class CDMainController extends CDController {
                     if (Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                         int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Quit", ""),
                                 NSBundle.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
-                                NSBundle.localizedString("Review...", ""), //default
+                                NSBundle.localizedString("Quit Anyway", ""), //default
                                 NSBundle.localizedString("Cancel", ""), //other
-                                NSBundle.localizedString("Quit Anyway", "")); //alternate
+                                NSBundle.localizedString("Review...", "")); //alternate
                         if (choice == CDSheetCallback.ALTERNATE_OPTION) {
-                            // Quit
-                            return CDQueueController.applicationShouldTerminate(app);
+                            // Review if at least one window reqested to terminate later, we shall wait
+                            return CDBrowserController.applicationShouldTerminate(app);
                         }
                         if (choice == CDSheetCallback.CANCEL_OPTION) {
                             // Cancel
                             return NSApplication.TerminateCancel;
                         }
                         if (choice == CDSheetCallback.DEFAULT_OPTION) {
-                            // Review
-                            // if at least one window reqested to terminate later, we shall wait
-                            return CDBrowserController.applicationShouldTerminate(app);
+                            // Quit
+                            return CDQueueController.applicationShouldTerminate(app);
                         }
                     }
                     else {
