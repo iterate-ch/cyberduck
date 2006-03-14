@@ -58,7 +58,7 @@ public class CDDuplicateFileController extends CDFileController {
     public void callback(int returncode) {
         Path workdir = ((CDBrowserController)parent).getSelectedPath().getParent();
         if (returncode == DEFAULT_OPTION) {
-            duplicateFile(workdir, filenameField.stringValue());
+            this.duplicateFile(workdir, filenameField.stringValue());
         }
         if (returncode == ALTERNATE_OPTION) {
             Path path = duplicateFile(workdir, filenameField.stringValue());

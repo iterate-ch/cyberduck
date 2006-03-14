@@ -274,21 +274,21 @@ public class FTPPath extends Path {
                 }
                 else if (this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
                     List files = this.list(false);
-                    if (files != null) {
+                    if (files != null && files.size() > 0) {
                         for (Iterator iter = files.iterator(); iter.hasNext();) {
                             Path file = (Path) iter.next();
                             if (file.attributes.isFile()) {
                                 session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
                                 session.FTP.delete(file.getName());
                             }
-                            if (file.attributes.isDirectory()) {
+                            else if (file.attributes.isDirectory()) {
                                 file.delete();
                             }
                         }
-                        session.FTP.cdup();
-                        session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
-                        session.FTP.rmdir(this.getName());
                     }
+                    session.FTP.chdir(this.getParent().getAbsolute());
+                    session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
+                    session.FTP.rmdir(this.getName());
                 }
                 this.getParent().invalidate();
             }

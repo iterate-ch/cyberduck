@@ -64,7 +64,7 @@ public class CDFolderController extends CDSheetController
 
     public void callback(int returncode) {
         if (returncode == DEFAULT_OPTION) {
-            createFolder(((CDBrowserController)parent).workdir(), folderField.stringValue());
+            this.createFolder(((CDBrowserController)parent).workdir(), folderField.stringValue());
         }
     }
 

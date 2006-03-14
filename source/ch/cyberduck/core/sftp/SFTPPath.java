@@ -268,20 +268,13 @@ public class SFTPPath extends Path {
                 }
                 else if (this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
                     List files = this.list(false);
-                    if (files != null) {
+                    if (files != null && files.size() > 0) {
                         for (Iterator iter = files.iterator(); iter.hasNext();) {
-                            Path file = (Path) iter.next();
-                            if (file.attributes.isFile()) {
-                                session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
-                                session.SFTP.removeFile(file.getAbsolute());
-                            }
-                            if (file.attributes.isDirectory()) {
-                                file.delete();
-                            }
+                            ((Path) iter.next()).delete();
                         }
-                        session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
-                        session.SFTP.removeDirectory(this.getAbsolute());
                     }
+                    session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
+                    session.SFTP.removeDirectory(this.getAbsolute());
                 }
                 this.getParent().invalidate();
             }
