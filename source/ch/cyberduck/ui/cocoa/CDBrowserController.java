@@ -2499,7 +2499,7 @@ public class CDBrowserController extends CDWindowController
 
     public boolean validateMenuItem(NSMenuItem item) {
         String identifier = item.action().name();
-        if (item.action().name().equals("pasteFromFinder:")) {
+        if (identifier.equals("pasteFromFinder:")) {
             boolean valid = false;
             if (this.isMounted()) {
                 if (NSPasteboard.generalPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null)
@@ -2524,7 +2524,7 @@ public class CDBrowserController extends CDWindowController
                 item.setTitle(NSBundle.localizedString("Paste from Finder", "Menu item"));
             }
         }
-        if (item.action().name().equals("paste:")) {
+        if (identifier.equals("paste:")) {
             boolean valid = false;
             if (this.isMounted()) {
                 NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
@@ -2580,9 +2580,9 @@ public class CDBrowserController extends CDWindowController
         if (identifier.equals("editButtonContextMenuClicked:")) {
             String bundleIdentifier = (String) Editor.SUPPORTED_EDITORS.get(item.title());
             if (null != bundleIdentifier) {
-                String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
-                if (path != null) {
-                    NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
+                String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
+                if (editorPath != null) {
+                    NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(editorPath);
                     icon.setScalesWhenResized(true);
                     icon.setSize(new NSSize(16f, 16f));
                     item.setImage(icon);
@@ -2662,6 +2662,12 @@ public class CDBrowserController extends CDWindowController
                 if (editorPath != null) {
                     return this.isEditable(this.getSelectedPath());
                 }
+            }
+            return false;
+        }
+        if (identifier.equals("editButtonContextMenuClicked:")) {
+            if (this.isMounted() && this.getSelectionCount() > 0) {
+                return this.isEditable(this.getSelectedPath());
             }
             return false;
         }

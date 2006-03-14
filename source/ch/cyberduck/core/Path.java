@@ -332,6 +332,7 @@ public abstract class Path extends NSObject {
      * @param o The stream to write to
      */
     public void upload(java.io.OutputStream o, java.io.InputStream i) throws IOException {
+        this.status.reset();
         if (log.isDebugEnabled()) {
             log.debug("upload(" + o.toString() + ", " + i.toString());
         }
@@ -373,6 +374,7 @@ public abstract class Path extends NSObject {
      * @param o The stream to write to
      */
     public void download(java.io.InputStream i, java.io.OutputStream o) throws IOException {
+        this.status.reset();
         if (log.isDebugEnabled()) {
             log.debug("transfer(" + i.toString() + ", " + o.toString());
         }
