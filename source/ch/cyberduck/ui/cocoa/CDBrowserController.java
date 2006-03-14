@@ -776,7 +776,15 @@ public class CDBrowserController extends CDWindowController
                             icon = CDBrowserTableDataSource.SYMLINK_ICON;
                         }
                         else if (item.attributes.isDirectory()) {
-                            icon = CDBrowserTableDataSource.FOLDER_ICON;
+							Permission perm = item.attributes.getPermission();
+							if (false == perm.getOwnerPermissions()[Permission.EXECUTE]
+									&& false == perm.getGroupPermissions()[Permission.EXECUTE]
+									&& false == perm.getOtherPermissions()[Permission.EXECUTE]) {
+								icon = CDBrowserTableDataSource.FOLDER_NOACCESS_ICON;
+							}
+							else {
+			                    icon = CDBrowserTableDataSource.FOLDER_ICON;
+							}
                         }
                         else if (item.attributes.isFile()) {
                             icon = CDIconCache.instance().get(item.getExtension());

@@ -271,21 +271,18 @@ public class CDInfoController extends CDWindowController {
             for (Iterator i = files.iterator(); i.hasNext();) {
                 permission = ((Path) i.next()).attributes.getPermission();
                 log.debug("Permission:" + permission);
-                boolean[] ownerPerm = permission.getOwnerPermissions();
-                boolean[] groupPerm = permission.getGroupPermissions();
-                boolean[] otherPerm = permission.getOtherPermissions();
 
-                this.update(ownerr, ownerPerm[Permission.READ]);
-                this.update(ownerw, ownerPerm[Permission.WRITE]);
-                this.update(ownerx, ownerPerm[Permission.EXECUTE]);
+                this.update(ownerr, permission.getOwnerPermissions()[Permission.READ]);
+                this.update(ownerw, permission.getOwnerPermissions()[Permission.WRITE]);
+                this.update(ownerx, permission.getOwnerPermissions()[Permission.EXECUTE]);
 
-                this.update(groupr, groupPerm[Permission.READ]);
-                this.update(groupw, groupPerm[Permission.WRITE]);
-                this.update(groupx, groupPerm[Permission.EXECUTE]);
+                this.update(groupr, permission.getGroupPermissions()[Permission.READ]);
+                this.update(groupw, permission.getGroupPermissions()[Permission.WRITE]);
+                this.update(groupx, permission.getGroupPermissions()[Permission.EXECUTE]);
 
-                this.update(otherr, otherPerm[Permission.READ]);
-                this.update(otherw, otherPerm[Permission.WRITE]);
-                this.update(otherx, otherPerm[Permission.EXECUTE]);
+                this.update(otherr, permission.getOtherPermissions()[Permission.READ]);
+                this.update(otherw, permission.getOtherPermissions()[Permission.WRITE]);
+                this.update(otherx, permission.getOtherPermissions()[Permission.EXECUTE]);
             }
 
             //		octalField.setStringValue(""+file.getOctalCode());

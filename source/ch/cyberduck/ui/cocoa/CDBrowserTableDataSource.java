@@ -39,6 +39,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
 
     protected static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
     protected static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
+    protected static final NSImage FOLDER_NOACCESS_ICON = NSImage.imageNamed("noaccess.tiff");
     protected static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
     public static final String TYPE_COLUMN = "TYPE";
@@ -93,7 +94,15 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     icon = SYMLINK_ICON;
                 }
                 else if (item.attributes.isDirectory()) {
-                    icon = FOLDER_ICON;
+					Permission perm = item.attributes.getPermission();
+					if (false == perm.getOwnerPermissions()[Permission.EXECUTE]
+							&& false == perm.getGroupPermissions()[Permission.EXECUTE]
+							&& false == perm.getOtherPermissions()[Permission.EXECUTE]) {
+						icon = FOLDER_NOACCESS_ICON;
+					}
+					else {
+	                    icon = FOLDER_ICON;
+					}
                 }
                 else if (item.attributes.isFile()) {
                     icon = CDIconCache.instance().get(item.getExtension());
