@@ -13,9 +13,9 @@
 	<key>CFBundleName</key>
 	<string>Cyberduck Upload Widget</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.1</string>
+	<string>Version 1.0 (*revision*)</string>
 	<key>CFBundleVersion</key>
-	<string>0.1</string>
+	<string>1.0 (*revision*)</string>
 	<key>CloseBoxInsetX</key>
 	<integer>12</integer>
 	<key>CloseBoxInsetY</key>
