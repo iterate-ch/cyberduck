@@ -1,13 +1,7 @@
 BUILD_DIR=build
 BUILD_DIR_PLUGIN=Plugin/build
-DEFAULT_BUILDSTYLE=Release
-
-BUILDSTYLE=$(DEFAULT_BUILDSTYLE)
-
+BUILDSTYLE=Release
 PROJECT=Plugin/Plugin.xcodeproj
-
-CP=ditto --rsrc
-export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/1.4/Home
 
 default:
 	xcodebuild -project $(PROJECT) -configuration $(BUILDSTYLE)
