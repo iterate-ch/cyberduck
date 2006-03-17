@@ -784,6 +784,7 @@ img/login.tiff -text
 img/multipleDocuments.tiff -text
 img/multipleDocuments32.tiff -text
 img/newfolder.tiff -text
+img/noaccess.tiff -text svneol=unset#image/tiff
 img/notfound.tiff -text
 img/open.tiff -text
 img/outline.tiff -text
