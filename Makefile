@@ -13,8 +13,8 @@ default:
 	xcodebuild -project $(PROJECT) -target build -configuration $(BUILDSTYLE)
 
 release:
-	cd Spotlight\ Importer; make
-	cd Dashboard\ Widget; make clean; make
+	cd Spotlight\ Importer; make release
+	cd Dashboard\ Widget; make clean; make release
 	xcodebuild -project $(PROJECT) -target release -configuration $(BUILDSTYLE)
 
 clean:

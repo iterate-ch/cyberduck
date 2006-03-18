@@ -10,7 +10,9 @@ default:
 	rsync --archive --exclude=.svn Cyberduck.wdgt/ $(BUILD_DIR)/Cyberduck.wdgt
 	cd $(BUILD_DIR)/Cyberduck.wdgt/Cyberduck.widgetplugin/Contents; mv Info.plist Info.plist.tmp; sed s/\\*revision\\*/`svnversion ../../../..`/g Info.plist.tmp > Info.plist; rm Info.plist.tmp
 	cd $(BUILD_DIR)/Cyberduck.wdgt; mv Info.plist Info.plist.tmp; sed s/\\*revision\\*/`svnversion ../..`/g Info.plist.tmp > Info.plist; rm Info.plist.tmp
-	cd $(BUILD_DIR); zip -vryX Cyberduck.wdgt.zip Cyberduck.wdgt
+
+release: default
+	cd $(BUILD_DIR); zip -ryX Cyberduck.wdgt.zip Cyberduck.wdgt
 
 clean:
 	rm -rf $(BUILD_DIR_PLUGIN)
