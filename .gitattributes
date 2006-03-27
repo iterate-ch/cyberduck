@@ -1627,7 +1627,16 @@ www/help/en/index.html -text
 www/help/en/problems/index.html -text
 www/help/es/.htaccess -text
 www/help/fi/.htaccess -text
-www/help/fr/.htaccess -text
+www/help/fr/faq/index.html -text
+www/help/fr/howto/bookmark.html -text
+www/help/fr/howto/download.html -text
+www/help/fr/howto/editing.html -text
+www/help/fr/howto/index.html -text
+www/help/fr/howto/ssh.html -text
+www/help/fr/howto/synchronization.html -text
+www/help/fr/howto/upload.html -text
+www/help/fr/index.html -text
+www/help/fr/problems/index.html -text
 www/help/he/.htaccess -text
 www/help/hu/.htaccess -text
 www/help/id/.htaccess -text
