@@ -136,7 +136,6 @@ public abstract class Preferences {
         defaults.put("mail.feedback", "mailto:feedback@cyberduck.ch");
 
         defaults.put("website.donate", "http://cyberduck.ch/donate/");
-        defaults.put("website.update.xml", "http://update.cyberduck.ch/versionlist.xml");
         defaults.put("website.update", "http://update.cyberduck.ch/");
         defaults.put("website.home", "http://cyberduck.ch/");
         defaults.put("website.forum", "http://cyberduck.ch/forum/");
@@ -146,11 +145,6 @@ public abstract class Preferences {
         defaults.put("rendezvous.enable", "true");
 
         defaults.put("growl.enable", "true");
-
-        /**
-         * Check for newer version on application launch in background thread
-         */
-        defaults.put("update.check", "true");
 
         /**
          * Bookmark drawer should be opened for new browser windows
@@ -281,7 +275,7 @@ public abstract class Preferences {
         defaults.put("connection.buffer.default", "16384");
         defaults.put("connection.port.default", "21");
         defaults.put("connection.protocol.default", "ftp");
-        defaults.put("connection.timeout", "30000");
+        defaults.put("connection.timeout", "15000"); //in milliseconds
         defaults.put("connection.keepalive", "false");
         defaults.put("connection.keepalive.interval", "30000");
 

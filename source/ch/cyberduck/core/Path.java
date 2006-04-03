@@ -18,15 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSObject;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
+import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
@@ -49,20 +47,6 @@ public abstract class Path extends NSObject {
 
     public static final String DELIMITER = "/";
 
-    /**
-     * Deep copies the current path with its attributes but without the status information
-     *
-     * @param s The session this path will use to fullfill its tasks
-     * @return A copy of me with a new session
-     */
-    public Path copy(Session s) {
-        Path copy = PathFactory.createPath(s, this.getAbsolute());
-        copy.local = this.local;
-        copy.attributes = this.attributes;
-        copy.status = this.status;
-        return copy;
-    }
-
     public Path(NSDictionary dict) {
         Object pathObj = dict.objectForKey("Remote");
         if (pathObj != null) {
@@ -84,6 +68,12 @@ public abstract class Path extends NSObject {
         dict.setObjectForKey(this.getLocal().toString(), "Local");
         dict.setObjectForKey(this.attributes.getAsDictionary(), "Attributes");
         return dict;
+    }
+
+    public Object clone(Session session) {
+        Path copy = PathFactory.createPath(session, this.getAsDictionary());
+        copy.attributes = (Attributes)this.attributes.clone();
+        return copy;
     }
 
     protected Path() {
@@ -279,7 +269,6 @@ public abstract class Path extends NSObject {
     }
 
     public void setLocal(Local file) {
-        log.debug("setLocal:" + file);
         this.local = file;
     }
 
@@ -328,27 +317,24 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     * @param i The stream to read from
-     * @param o The stream to write to
+     * @param in The stream to read from
+     * @param out The stream to write to
      */
-    public void upload(java.io.OutputStream o, java.io.InputStream i) throws IOException {
-        this.status.reset();
+    public void upload(java.io.OutputStream out, java.io.InputStream in) throws IOException {
         if (log.isDebugEnabled()) {
-            log.debug("upload(" + o.toString() + ", " + i.toString());
+            log.debug("upload(" + out.toString() + ", " + in.toString());
         }
         this.getSession().message(NSBundle.localizedString("Uploading", "Status", "") + " " + this.getName());
         if (this.status.isResume()) {
-            long skipped = i.skip(this.status.getCurrent());
+            long skipped = in.skip(this.status.getCurrent());
             log.info("Skipping " + skipped + " bytes");
             if (skipped < this.status.getCurrent()) {
                 throw new IOException("Resume failed: Skipped " + skipped + " bytes instead of " + this.status.getCurrent());
             }
         }
         if (log.isDebugEnabled()) {
-            log.debug("transfer(" + i.toString() + ", " + o.toString());
+            log.debug("upload(" + in.toString() + ", " + out.toString());
         }
-        BufferedInputStream in = new BufferedInputStream(i, Preferences.instance().getInteger("connection.buffer"));
-        BufferedOutputStream out = new BufferedOutputStream(o, Preferences.instance().getInteger("connection.buffer"));
         int chunksize = Preferences.instance().getInteger("connection.buffer");
         byte[] chunk = new byte[chunksize];
         int amount = 0;
@@ -370,20 +356,14 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     * @param i The stream to read from
-     * @param o The stream to write to
+     * @param in The stream to read from
+     * @param out The stream to write to
      */
-    public void download(java.io.InputStream i, java.io.OutputStream o) throws IOException {
-        this.status.reset();
+    public void download(java.io.InputStream in, java.io.OutputStream out) throws IOException {
         if (log.isDebugEnabled()) {
-            log.debug("transfer(" + i.toString() + ", " + o.toString());
+            log.debug("download(" + in.toString() + ", " + out.toString());
         }
         this.getSession().message(NSBundle.localizedString("Downloading", "Status", "") + " " + this.getName());
-        if (log.isDebugEnabled()) {
-            log.debug("transfer(" + i.toString() + ", " + o.toString());
-        }
-        BufferedInputStream in = new BufferedInputStream(i, Preferences.instance().getInteger("connection.buffer"));
-        BufferedOutputStream out = new BufferedOutputStream(o, Preferences.instance().getInteger("connection.buffer"));
         int chunksize = Preferences.instance().getInteger("connection.buffer");
         byte[] chunk = new byte[chunksize];
         int amount = 0;
@@ -456,7 +436,7 @@ public abstract class Path extends NSObject {
 
     public boolean equals(Object other) {
         if (other instanceof Path) {
-            return this.getAbsolute().equalsIgnoreCase(((Path) other).getAbsolute());
+            return this.getAbsolute().equals(((Path) other).getAbsolute());
         }
         return false;
     }

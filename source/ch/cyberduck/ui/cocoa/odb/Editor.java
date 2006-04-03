@@ -92,7 +92,7 @@ public class Editor extends CDController {
     private Path path;
 
     public void open(Path f) {
-        this.path = f.copy(f.getSession());
+        this.path = (Path)f.clone(f.getSession());
         String parent = NSPathUtilities.temporaryDirectory();
         String filename = this.path.getName();
         String proposal = filename;

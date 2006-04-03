@@ -308,8 +308,10 @@ public class CDBrowserController extends CDWindowController
     // ----------------------------------------------------------
 
     public CDBrowserController() {
-        if (!NSApplication.loadNibNamed("Browser", this)) {
-            log.fatal("Couldn't load Browser.nib");
+        synchronized(NSApplication.sharedApplication()) {
+            if (!NSApplication.loadNibNamed("Browser", this)) {
+                log.fatal("Couldn't load Browser.nib");
+            }
         }
     }
 
@@ -1345,7 +1347,7 @@ public class CDBrowserController extends CDWindowController
         this.bookmarkDrawer.open();
         Host item;
         if (this.isMounted()) {
-            item = this.session.getHost().copy();
+            item = (Host)this.session.getHost().clone();
             item.setDefaultPath(this.workdir().getAbsolute());
         }
         else {
@@ -1790,9 +1792,9 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void downloadAsButtonClicked(Object sender) {
-        Session session = this.session.copy();
+        Session session = (Session)this.session.clone();
         for (Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
-            Path path = ((Path) i.next()).copy(session);
+            Path path = (Path)((Path) i.next()).clone(session);
             NSSavePanel panel = NSSavePanel.savePanel();
             panel.setMessage(NSBundle.localizedString("Download the selected file to...", ""));
             panel.setNameFieldLabel(NSBundle.localizedString("Download As:", ""));
@@ -1825,10 +1827,10 @@ public class CDBrowserController extends CDWindowController
         Path selection;
         if (this.getSelectionCount() == 1 &&
                 this.getSelectedPath().attributes.isDirectory()) {
-            selection = (this.getSelectedPath().copy(this.session.copy()));
+            selection = (Path)this.getSelectedPath().clone((Session)this.session.clone());
         }
         else {
-            selection = this.workdir().copy(this.session.copy());
+            selection = (Path)this.workdir().clone((Session)this.session.clone());
         }
         NSOpenPanel panel = NSOpenPanel.openPanel();
         panel.setCanChooseDirectories(selection.attributes.isDirectory());
@@ -1876,9 +1878,9 @@ public class CDBrowserController extends CDWindowController
 
     public void downloadButtonClicked(Object sender) {
         Queue q = new DownloadQueue();
-        Session session = this.session.copy();
+        Session session = (Session)this.session.clone();
         for (Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
-            Path path = ((Path) i.next()).copy(session);
+            Path path = (Path)((Path)i.next()).clone(session);
             q.addRoot(path);
         }
         CDQueueController.instance().startItem(q);
@@ -1923,7 +1925,7 @@ public class CDBrowserController extends CDWindowController
                     q.removeListener(this);
                 }
             });
-            Session session = workdir.getSession().copy();
+            Session session = (Session)workdir.getSession().clone();
             while (iterator.hasMoreElements()) {
                 q.addRoot(PathFactory.createPath(session,
                         workdir.getAbsolute(),
@@ -2036,7 +2038,7 @@ public class CDBrowserController extends CDWindowController
             if (o != null) {
                 NSArray elements = (NSArray) o;
                 final Queue q = new UploadQueue();
-                Session session = this.workdir().getSession().copy();
+                Session session = (Session)this.workdir().getSession().clone();
                 for (int i = 0; i < elements.count(); i++) {
                     Path p = PathFactory.createPath(session,
                             workdir().getAbsolute(),

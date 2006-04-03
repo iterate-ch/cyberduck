@@ -167,10 +167,14 @@ public class CDBookmarkController extends CDWindowController {
 
     private Host host;
 
+    private static final Object lock = new Object();
+
     public CDBookmarkController(Host host) {
         this.host = host;
-        if (!NSApplication.loadNibNamed("Bookmark", this)) {
-            log.fatal("Couldn't load Bookmark.nib");
+        synchronized(lock) {
+            if (!NSApplication.loadNibNamed("Bookmark", this)) {
+                log.fatal("Couldn't load Bookmark.nib");
+            }
         }
     }
 

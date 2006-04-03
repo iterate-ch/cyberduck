@@ -116,13 +116,8 @@ public class Host extends NSObject {
         return dict;
     }
 
-    public Host copy() {
-        Host copy = new Host(this.getProtocol(),
-                this.getHostname(),
-                this.getPort(),
-                this.getDefaultPath());
-        copy.setCredentials(this.login.getUsername(), this.login.getPassword());
-        return copy;
+    public Object clone() {
+        return new Host(this.getAsDictionary());
     }
 
     /**

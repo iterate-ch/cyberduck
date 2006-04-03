@@ -34,16 +34,17 @@ public class Permission {
     private String mask;
 
     public Permission(NSDictionary dict) {
-        Object maskObj = dict.objectForKey("Mask");
-        if (maskObj != null) {
-            this.mask = (String) maskObj;
-        }
+        this((String)dict.objectForKey("Mask"));
     }
 
     public NSDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
         dict.setObjectForKey(this.mask, "Mask");
         return dict;
+    }
+
+    public Object clone() {
+        return new Permission(this.getAsDictionary());
     }
 
     /**

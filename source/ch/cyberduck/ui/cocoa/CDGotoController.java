@@ -75,8 +75,10 @@ public class CDGotoController extends CDSheetController
 
     public CDGotoController(CDWindowController parent) {
         super(parent);
-        if (!NSApplication.loadNibNamed("Goto", this)) {
-            log.fatal("Couldn't load Goto.nib");
+        synchronized(parent) {
+            if (!NSApplication.loadNibNamed("Goto", this)) {
+                log.fatal("Couldn't load Goto.nib");
+            }
         }
     }
 
@@ -91,7 +93,7 @@ public class CDGotoController extends CDSheetController
     }
 
     protected void gotoFolder(Path workdir, String filename) {
-        Path dir = workdir.copy(workdir.getSession());
+        Path dir = (Path)workdir.clone(workdir.getSession());
         if (filename.charAt(0) != '/') {
             dir.setPath(workdir.getAbsolute(), filename);
         }

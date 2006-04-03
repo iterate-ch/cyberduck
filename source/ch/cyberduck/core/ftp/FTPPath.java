@@ -80,7 +80,7 @@ public class FTPPath extends Path {
         }
     }
 
-    private final FTPSession session;
+    private FTPSession session;
 
     /**
      * @param s      The connection to work with for regular file operations
@@ -146,7 +146,7 @@ public class FTPPath extends Path {
                     session.cache().put(this, files);
                 }
                 catch (FTPException e) {
-                    session.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                    session.error("FTP " + NSBundle.localizedString("Error", "") + ": (" + this.getName() + ") " + e.getMessage());
                     return null;
                 }
                 catch (IOException e) {
@@ -185,7 +185,7 @@ public class FTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (FTPException e) {
-                session.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error("FTP " + NSBundle.localizedString("Error", "") + ": (" + this.getName() + ") " + e.getMessage());
             }
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -228,7 +228,12 @@ public class FTPPath extends Path {
                     try {
                         session.check();
                         session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
-                        this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()));
+                        try {
+                            this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()));
+                        }
+                        catch (FTPException e) {
+                            log.warn(e.getMessage());
+                        }
                         if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
                             if (this.isASCIIType()) {
                                 session.FTP.setTransferType(FTPTransferType.ASCII);
@@ -293,7 +298,7 @@ public class FTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (FTPException e) {
-                session.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error("FTP " + NSBundle.localizedString("Error", "") + ": (" + this.getName() + ") " + e.getMessage());
             }
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -329,7 +334,7 @@ public class FTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (FTPException e) {
-                session.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error("FTP " + NSBundle.localizedString("Error", "") + ": (" + this.getName() + ") " + e.getMessage());
             }
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -365,7 +370,7 @@ public class FTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (FTPException e) {
-                session.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error("FTP " + NSBundle.localizedString("Error", "") + ": (" + this.getName() + ") " + e.getMessage());
             }
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -402,7 +407,7 @@ public class FTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (FTPException e) {
-                session.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error("FTP " + NSBundle.localizedString("Error", "") + ": (" + this.getName() + ") " + e.getMessage());
             }
             catch (IOException e) {
                 session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
@@ -450,6 +455,7 @@ public class FTPPath extends Path {
                     }
                     else {
                         perm = this.attributes.getPermission();
+                        perm.getOwnerPermissions()[Permission.WRITE] = true;
                     }
                     if (!perm.isUndefined()) {
                         this.getLocal().setPermission(perm);
@@ -658,10 +664,16 @@ public class FTPPath extends Path {
                     }
                     catch (FTPException e) {
                         log.warn(e.getMessage());
-                        if (Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
-                            if (!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
-                                this.getLocal().setLastModified(session.FTP.modtime(this.getAbsolute()).getTime());
+                        try {
+                            if (Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
+                                if (!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
+                                    this.getLocal().setLastModified(session.FTP.modtime(this.getAbsolute()).getTime());
+                                }
                             }
+                        }
+                        catch (FTPException ignore) {
+                            //MDTM not supported
+                            log.warn(ignore.getMessage());
                         }
                     }
                 }

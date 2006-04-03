@@ -139,7 +139,7 @@ public class CDBrowserMatrix extends NSMatrix {
             if (infoPboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
                 NSArray filesList = (NSArray) infoPboard.propertyListForType(NSPasteboard.FilenamesPboardType);
                 Queue q = new UploadQueue(); //todo set browser as observer
-                Session session = selected.getSession().copy();
+                Session session = (Session)selected.getSession().clone();
                 for (int i = 0; i < filesList.count(); i++) {
                     log.debug("Filename:" + filesList.objectAtIndex(i));
                     Path p = PathFactory.createPath(session,
@@ -200,9 +200,9 @@ public class CDBrowserMatrix extends NSMatrix {
                         for (int i = 0; iterator.hasMoreElements(); i++) {
                             Path p = ((CDBrowserCell) iterator.nextElement()).getPath();
                             if (null == session) {
-                                session = p.getSession().copy();
+                                session = (Session)p.getSession().clone();
                             }
-                            promisedDragPaths[i] = p.copy(session);
+                            promisedDragPaths[i] = (Path)p.clone(session);
                             if (promisedDragPaths[i].attributes.isFile()) {
                                 if (promisedDragPaths[i].getExtension() != null) {
                                     fileTypes.addObject(promisedDragPaths[i].getExtension());

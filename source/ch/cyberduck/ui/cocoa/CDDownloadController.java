@@ -44,8 +44,10 @@ public class CDDownloadController extends CDSheetController {
 
     public CDDownloadController(CDWindowController parent) {
         super(parent);
-        if (!NSApplication.loadNibNamed("Download", this)) {
-            log.fatal("Couldn't load Download.nib");
+        synchronized(parent) {
+            if (!NSApplication.loadNibNamed("Download", this)) {
+                log.fatal("Couldn't load Download.nib");
+            }
         }
     }
 

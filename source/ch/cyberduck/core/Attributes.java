@@ -38,6 +38,9 @@ public class Attributes {
      * The file length
      */
     private double size = -1;
+    /**
+     *
+     */
     private Date modified = null;
     private String owner = null;
     private String group = null;
@@ -49,6 +52,22 @@ public class Attributes {
 
     public Attributes() {
         super();
+    }
+
+    public Object clone() {
+        Attributes copy = new Attributes(this.getAsDictionary());
+        //TODO
+//2006-03-28 23:38:53.566 Cyberduck[9989] java/lang/NullPointerException
+//Stack Trace:
+//java.lang.NullPointerException
+//	at ch.cyberduck.core.Attributes.clone(Attributes.java:57)
+//	at ch.cyberduck.core.Path.clone(Path.java:75)
+//	at ch.cyberduck.ui.cocoa.CDGotoController.gotoFolder(CDGotoController.java:96)
+//	at ch.cyberduck.ui.cocoa.CDBrowserController.handleGotoScriptCommand(CDBrowserController.java:163)
+        copy.permission = (Permission)this.getPermission().clone();
+        copy.modified = (Date)this.getTimestamp().clone();
+        copy.size = this.getSize();
+        return copy;
     }
 
     public boolean isUndefined() {
@@ -92,14 +111,27 @@ public class Attributes {
         this.setTimestamp(new Date(m));
     }
 
+    /**
+     *
+     * @param d
+     */
     public void setTimestamp(Date d) {
         this.modified = d;
     }
 
+    /**
+     *
+     * @return
+     */
     public Date getTimestamp() {
+        //TODO may be null
         return this.modified;
     }
 
+    /**
+     *
+     * @return
+     */
     public Calendar getTimestampAsCalendar() {
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone(Preferences.instance().getProperty("queue.sync.timezone")));
         if (this.getTimestamp() != null) {
@@ -140,6 +172,10 @@ public class Attributes {
         return NSBundle.localizedString("Unknown", "");
     }
 
+    /**
+     *
+     * @return
+     */
     public String getTimestampAsShortString() {
         if (this.getTimestamp() != null) {
             try {
@@ -154,10 +190,18 @@ public class Attributes {
         return NSBundle.localizedString("Unknown", "");
     }
 
+    /**
+     *
+     * @param p
+     */
     public void setPermission(Permission p) {
         this.permission = p;
     }
 
+    /**
+     *
+     * @return
+     */
     public Permission getPermission() {
         if (null == this.permission)
             return new Permission();
@@ -188,6 +232,10 @@ public class Attributes {
         this.owner = o;
     }
 
+    /**
+     *
+     * @return The owner of the file or 'Unknown' if not set
+     */
     public String getOwner() {
         if (null == this.owner)
             return NSBundle.localizedString("Unknown", "");
@@ -198,6 +246,10 @@ public class Attributes {
         this.group = g;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getGroup() {
         if (null == this.group)
             return NSBundle.localizedString("Unknown", "");

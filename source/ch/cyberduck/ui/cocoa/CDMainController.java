@@ -297,148 +297,6 @@ public class CDMainController extends CDController {
                 new File(NSBundle.mainBundle().pathForResource("License", "txt")).toString());
     }
 
-    public void updateMenuClicked(Object sender) {
-        this.checkForUpdate(true);
-    }
-
-    public void checkForUpdate(final boolean verbose) {
-        new Thread("Update") {
-            public void run() {
-                try {
-                    int pool = NSAutoreleasePool.push();
-                    final String currentVersionNumber
-                            = (String) NSBundle.mainBundle().objectForInfoDictionaryKey("cyberduck.version");
-                    log.info("Current version:" + currentVersionNumber);
-                    NSData data = new NSData(new java.net.URL(Preferences.instance().getProperty("website.update.xml")));
-                    if (null == data) {
-                        if (verbose) {
-                            NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Error", "Alert sheet title"), //title
-                                    NSBundle.localizedString("There was a problem checking for an update. Please try again later.", "Alert sheet text"),
-                                    NSBundle.localizedString("OK", "Alert sheet default button"), // defaultbutton
-                                    null, //alternative button
-                                    null//other button
-                            );
-                        }
-                        return;
-                    }
-                    String[] errorString = new String[]{null};
-                    Object propertyListFromXMLData =
-                            NSPropertyListSerialization.propertyListFromData(data,
-                                    NSPropertyListSerialization.PropertyListImmutable,
-                                    new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-                                    errorString);
-                    if (errorString[0] != null || null == propertyListFromXMLData) {
-                        log.error("Version info could not be retrieved: " + errorString[0]);
-                        if (verbose) {
-                            NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Error", "Alert sheet title"), //title
-                                    NSBundle.localizedString("There was a problem checking for an update. Please try again later.", "Alert sheet text") + " (" + errorString[0] + ")",
-                                    NSBundle.localizedString("OK", "Alert sheet default button"), // defaultbutton
-                                    null, //alternative button
-                                    null//other button
-                            );
-                        }
-                    }
-                    else {
-                        if (log.isInfoEnabled())
-                            log.info(propertyListFromXMLData.toString());
-                        NSDictionary entries = (NSDictionary) propertyListFromXMLData;
-                        final String latestVersionNumber = (String) entries.objectForKey("version");
-                        log.info("Latest version:" + latestVersionNumber);
-                        final String filename = (String) entries.objectForKey("file");
-                        final String comment = (String) entries.objectForKey("comment");
-
-                        Version currentVersion = new Version(currentVersionNumber);
-                        Version latestVersion = new Version(latestVersionNumber);
-                        if (currentVersion.compareTo(latestVersion) == 0) {
-                            if (verbose) {
-                                NSAlertPanel.runInformationalAlert(NSBundle.localizedString("No update", "Alert sheet title"), //title
-                                        NSBundle.localizedString("No newer version available.", "Alert sheet text") + " Cyberduck " + currentVersionNumber + " " + NSBundle.localizedString("is up to date.", "Alert sheet text"),
-                                        "OK", // defaultbutton
-                                        null, //alternative button
-                                        null//other button
-                                );
-                            }
-                        }
-                        else {
-                            if (currentVersion.compareTo(latestVersion) < 0) {
-                                // Update available, show update dialog
-                                CDWindowController c = new CDWindowController() {
-
-                                    private NSButton autoUpdateCheckbox;
-
-                                    public void setAutoUpdateCheckbox(NSButton autoUpdateCheckbox) {
-                                        this.autoUpdateCheckbox = autoUpdateCheckbox;
-                                        this.autoUpdateCheckbox.setTarget(this);
-                                        this.autoUpdateCheckbox.setAction(new NSSelector("autoUpdateCheckboxClicked", new Class[]{NSButton.class}));
-                                        this.autoUpdateCheckbox.setState(Preferences.instance().getBoolean("update.check") ? NSCell.OnState : NSCell.OffState);
-                                    }
-
-                                    public void autoUpdateCheckboxClicked(NSButton sender) {
-                                        Preferences.instance().setProperty("update.check", sender.state() == NSCell.OnState);
-                                    }
-
-                                    private NSTextField updateLabel; // IBOutlet
-
-                                    public void setUpdateLabel(NSTextField updateLabel) {
-                                        this.updateLabel = updateLabel;
-                                    }
-
-                                    private NSTextView updateText; // IBOutlet
-
-                                    public void setUpdateText(NSTextView updateText) {
-                                        this.updateText = updateText;
-                                    }
-
-                                    public void awakeFromNib() {
-                                        updateLabel.setStringValue("Cyberduck " + currentVersionNumber + " "
-                                                + NSBundle.localizedString("is out of date. The current version is", "Alert sheet text") + " "
-                                                + latestVersionNumber + ".");
-                                        updateText.replaceCharactersInRange(new NSRange(updateText.textStorage().length(), 0), comment);
-                                        this.window().setTitle(filename);
-                                        this.window().center();
-                                        this.window().makeKeyAndOrderFront(null);
-                                    }
-
-                                    public void closeUpdateSheet(NSButton sender) {
-                                        this.window().close();
-                                        if (sender.tag() == CDSheetCallback.DEFAULT_OPTION) {
-                                            try {
-                                                NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.update") + filename));
-                                            }
-                                            catch (java.net.MalformedURLException e) {
-                                                log.error(e.getMessage());
-                                            }
-                                        }
-                                    }
-                                };
-                                if (!NSApplication.loadNibNamed("Update", c)) {
-                                    log.fatal("Couldn't load Update.nib");
-                                }
-                            }
-                            else {
-                                if (verbose) {
-                                    NSAlertPanel.runInformationalAlert(NSBundle.localizedString("No update", "Alert sheet title"), //title
-                                            NSBundle.localizedString("No newer version available.", "Alert sheet text")
-                                                    + " Cyberduck " + currentVersionNumber + " "
-                                                    + NSBundle.localizedString("is up to date.", "Alert sheet text"),
-                                            "OK", // defaultbutton
-                                            null, //alternative button
-                                            null//other button
-                                    );
-
-                                }
-                            }
-                        }
-                    }
-                    NSAutoreleasePool.pop(pool);
-                }
-                catch (Exception e) {
-                    log.error(e.getMessage());
-                }
-            }
-        }.start();
-    }
-
     public void websiteMenuClicked(Object sender) {
         try {
             NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.home")));
@@ -545,7 +403,7 @@ public class CDMainController extends CDController {
                                     q.removeListener(this);
                                 }
                             });
-                            Session session = workdir.getSession().copy();
+                            Session session = (Session)workdir.getSession().clone();
                             q.addRoot(PathFactory.createPath(session, workdir.getAbsolute(), new Local(f.getAbsolutePath())));
                             CDQueueController.instance().startItem(q);
                             break;
@@ -585,9 +443,6 @@ public class CDMainController extends CDController {
             log.info("Available localizations:" + NSBundle.mainBundle().localizations());
         if (Preferences.instance().getBoolean("queue.openByDefault")) {
             this.showTransferQueueClicked(null);
-        }
-        if (Preferences.instance().getBoolean("update.check")) {
-            this.checkForUpdate(false);
         }
         Rendezvous.instance().addListener(new RendezvousListener() {
             public void serviceResolved(String identifier) {
@@ -661,8 +516,10 @@ public class CDMainController extends CDController {
                     NSApplication.sharedApplication().terminate(null);
                 }
             };
-            if (!NSApplication.loadNibNamed("Donate", c)) {
-                log.fatal("Couldn't load Donate.nib");
+            synchronized(app) {
+                if (!NSApplication.loadNibNamed("Donate", c)) {
+                    log.fatal("Couldn't load Donate.nib");
+                }
             }
             donationBoxDisplayed = true;
             return NSApplication.TerminateCancel;

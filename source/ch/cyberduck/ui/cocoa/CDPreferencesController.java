@@ -1328,21 +1328,6 @@ public class CDPreferencesController extends CDWindowController {
         Preferences.instance().setProperty("browser.confirmDisconnect", enabled);
     }
 
-    private NSButton autoUpdateCheckbox; //IBOutlet
-
-    public void setAutoUpdateCheckbox(NSButton autoUpdateCheckbox) {
-        this.autoUpdateCheckbox = autoUpdateCheckbox;
-        this.autoUpdateCheckbox.setTarget(this);
-        this.autoUpdateCheckbox.setAction(new NSSelector("autoUpdateCheckboxClicked", new Class[]{NSButton.class}));
-        this.autoUpdateCheckbox.setState(
-                Preferences.instance().getBoolean("update.check") ? NSCell.OnState : NSCell.OffState);
-    }
-
-    public void autoUpdateCheckboxClicked(NSButton sender) {
-        boolean enabled = sender.state() == NSCell.OnState;
-        Preferences.instance().setProperty("update.check", enabled);
-    }
-
     private NSButton acceptAnyCertificateCheckbox; //IBOutlet
 
     public void setAcceptAnyCertificateCheckbox(NSButton acceptAnyCertificateCheckbox) {

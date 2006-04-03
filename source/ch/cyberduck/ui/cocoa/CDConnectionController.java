@@ -403,8 +403,10 @@ public class CDConnectionController extends CDSheetController
 
     public CDConnectionController(CDWindowController parent) {
         super(parent);
-        if (!NSApplication.loadNibNamed("Connection", this)) {
-            log.fatal("Couldn't load Connection.nib");
+        synchronized(parent) {
+            if (!NSApplication.loadNibNamed("Connection", this)) {
+                log.fatal("Couldn't load Connection.nib");
+            }
         }
     }
 

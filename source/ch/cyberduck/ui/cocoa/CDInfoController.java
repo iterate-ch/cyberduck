@@ -144,8 +144,10 @@ public class CDInfoController extends CDWindowController {
 
     public CDInfoController(CDBrowserController controller) {
         this.controller = controller;
-        if (!NSApplication.loadNibNamed("Info", this)) {
-            log.fatal("Couldn't load Info.nib");
+        synchronized(controller) {
+            if (!NSApplication.loadNibNamed("Info", this)) {
+                log.fatal("Couldn't load Info.nib");
+            }
         }
     }
 

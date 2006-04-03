@@ -203,10 +203,6 @@ public class Local extends File {
         return null;
     }
 
-    /**
-     *
-     * @return
-     */
     public Date getTimestamp() {
         return new Date(super.lastModified());
     }

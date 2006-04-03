@@ -78,8 +78,8 @@ public abstract class Session extends NSObject
      */
     private boolean connected;
 
-    public Session copy() {
-        return SessionFactory.createSession(this.host);
+    public Object clone() {
+        return SessionFactory.createSession((Host)this.host.clone());
     }
 
     protected Session(Host h) {

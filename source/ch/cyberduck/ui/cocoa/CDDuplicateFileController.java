@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
@@ -43,10 +42,12 @@ public class CDDuplicateFileController extends CDFileController {
         this.iconView.setImage(icon);
     }
 
-    public CDDuplicateFileController(CDWindowController controller) {
-        super(controller);
-        if (!NSApplication.loadNibNamed("Duplicate", this)) {
-            log.fatal("Couldn't load Duplicate.nib");
+    public CDDuplicateFileController(CDWindowController parent) {
+        super(parent);
+        synchronized(parent) {
+            if (!NSApplication.loadNibNamed("Duplicate", this)) {
+                log.fatal("Couldn't load Duplicate.nib");
+            }
         }
     }
 
@@ -56,12 +57,12 @@ public class CDDuplicateFileController extends CDFileController {
     }
 
     public void callback(int returncode) {
-        Path workdir = ((CDBrowserController)parent).getSelectedPath().getParent();
+        Path selected = ((CDBrowserController)parent).getSelectedPath();
         if (returncode == DEFAULT_OPTION) {
-            this.duplicateFile(workdir, filenameField.stringValue());
+            this.duplicateFile(selected, filenameField.stringValue());
         }
         if (returncode == ALTERNATE_OPTION) {
-            Path path = duplicateFile(workdir, filenameField.stringValue());
+            Path path = this.duplicateFile(selected, filenameField.stringValue());
             if (path != null) {
                 Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
                 editor.open(path);
@@ -69,18 +70,18 @@ public class CDDuplicateFileController extends CDFileController {
         }
     }
 
-    protected Path duplicateFile(Path workdir, String filename) {
-        Path file = PathFactory.createPath(workdir.getSession(),
-                workdir.getAbsolute(),
-                new Local(NSPathUtilities.temporaryDirectory(),
-                        ((CDBrowserController)parent).getSelectedPath().getName()));
-        file.download();
-        file.setPath(workdir.getAbsolute(), filename);
-        file.upload();
-        if(file.exists()) {
+    protected Path duplicateFile(Path selected, String filename) {
+        Path duplicate = (Path)selected.clone(selected.getSession());
+        duplicate.setLocal(new Local(NSPathUtilities.temporaryDirectory(),
+                selected.getName()));
+        duplicate.download();
+        duplicate.setPath(selected.getParent().getAbsolute(), filename);
+        duplicate.upload();
+        duplicate.setLocal(null);
+        if(duplicate.exists()) {
             ((CDBrowserController)parent).setShowHiddenFiles(filename.charAt(0) == '.');
             ((CDBrowserController)parent).reloadData(true);
-            return file;
+            return duplicate;
         }
         return null;
     }

@@ -43,8 +43,10 @@ public class CDFolderController extends CDSheetController
 
     public CDFolderController(CDWindowController parent) {
         super(parent);
-        if (!NSApplication.loadNibNamed("Folder", this)) {
-            log.fatal("Couldn't load Folder.nib");
+        synchronized(parent) {
+            if (!NSApplication.loadNibNamed("Folder", this)) {
+                log.fatal("Couldn't load Folder.nib");
+            }
         }
     }
 
