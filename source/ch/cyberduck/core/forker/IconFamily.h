@@ -1,7 +1,7 @@
 // IconFamily.h
 // IconFamily class interface
-// by Troy Stephens, Thomas Schnitzer, David Remahl, Nathan Day and Ben Haller
-// version 0.9.1
+// by Troy Stephens, Thomas Schnitzer, David Remahl, Nathan Day, Ben Haller, Sven Janssen, Peter Hosey, Conor Dearden, and Elliot Glaysher
+// version 0.9.2
 //
 // Project Home Page:
 //   http://homepage.mac.com/troy_stephens/software/objects/IconFamily/

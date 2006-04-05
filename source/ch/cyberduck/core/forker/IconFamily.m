@@ -1,7 +1,7 @@
 // IconFamily.m
 // IconFamily class implementation
-// by Troy Stephens, Thomas Schnitzer, David Remahl, Nathan Day and Ben Haller
-// version 0.9.1
+// by Troy Stephens, Thomas Schnitzer, David Remahl, Nathan Day, Ben Haller, Sven Janssen, Peter Hosey, Conor Dearden, and Elliot Glaysher
+// version 0.9.2
 //
 // Project Home Page:
 //   http://homepage.mac.com/troy_stephens/software/objects/IconFamily/
@@ -431,10 +431,7 @@
 {
     NSImage* image = NULL;
     image = [[[NSImage alloc] initWithData:[NSData dataWithBytes:*hIconFamily length:GetHandleSize((Handle)hIconFamily)]] autorelease];
-
     return image;
-
-    //investigate optimisations (dataWithBytesNoCopy:length: for example...)
 }
 
 - (BOOL) setIconFamilyElement:(OSType)elementType fromBitmapImageRep:(NSBitmapImageRep*)bitmapImageRep
@@ -534,10 +531,13 @@
     Handle hIconFamilyCopy;
 	NSString *parentDirectory;
 	
+    // Before we do anything, get the original modification time for the target file.
+    NSDate* modificationDate = [[[NSFileManager defaultManager] fileAttributesAtPath:path traverseLink:NO] objectForKey:NSFileModificationDate];
+
 	if ([path isAbsolutePath])
 		parentDirectory = [path stringByDeletingLastPathComponent];
-	else
-		parentDirectory = [[NSFileManager defaultManager] currentDirectoryPath];
+    else
+        parentDirectory = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:[path stringByDeletingLastPathComponent]];
 	
     // Get an FSRef for the target file's parent directory that we can use in
     // the FSCreateResFile() and FNNotify() calls below.
@@ -645,6 +645,10 @@
     if (result != noErr)
 		return NO;
 	
+    // Now set the modification time back to when the file was actually last modified.
+    NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys:modificationDate, NSFileModificationDate, nil];
+    [[NSFileManager defaultManager] changeFileAttributes:attributes atPath:path];
+
     // Notify the system that the directory containing the file has changed, to
     // give Finder the chance to find out about the file's new custom icon.
     result = FNNotify( &parentDirectoryFSRef, kFNDirectoryModifiedMessage, kNilOptions );
@@ -724,7 +728,7 @@
     NSFileManager *fm = [NSFileManager defaultManager];
     BOOL isDir;
     BOOL exists;
-    NSString *iconrPath = [path stringByAppendingPathComponent:@"Icon\r"];
+    NSString *iconrPath;
     FSRef targetFolderFSRef, iconrFSRef;
     SInt16 file;
     OSErr result;
@@ -733,18 +737,23 @@
     Handle hExistingCustomIcon;
     Handle hIconFamilyCopy;
 
+    // Confirm that "path" exists and specifies a directory.
     exists = [fm fileExistsAtPath:path isDirectory:&isDir];
-
     if( !isDir || !exists )
         return NO;
 
+    // Get an FSRef for the folder.
+    if( ![path getFSRef:&targetFolderFSRef createFileIfNecessary:NO] )
+        return NO;
+
+    // Remove and re-create any existing "Icon\r" file in the directory, and get an FSRef for it.
+    iconrPath = [path stringByAppendingPathComponent:@"Icon\r"];
     if( [fm fileExistsAtPath:iconrPath] )
     {
         if( ![fm removeFileAtPath:iconrPath handler:nil] )
             return NO;
     }
-
-    if( ![path getFSRef:&targetFolderFSRef createFileIfNecessary:NO] )
+    if( ![iconrPath getFSRef:&iconrFSRef createFileIfNecessary:YES] )
         return NO;
 
     // Get type and creator information for the Icon file.
