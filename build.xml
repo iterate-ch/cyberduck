@@ -36,6 +36,7 @@
 	<property name="build.automator.upload" value="${home}/Upload Automator Action/build/Deployment"/>
 	<property name="build.automator.download" value="${home}/Download Automator Action/build/Deployment"/>
 	<property name="config" value="${home}/config"/>
+	<property name="widget" value="${home}/Dashboard Widget"/>
 	<property name="img" value="${home}/img"/>
 	<property name="lib" value="${home}/lib"/>
 	<property name="lib.ext" value="${lib}/ext"/>
@@ -153,7 +154,7 @@
 			</fileset>
 		</chmod>
         <exec executable="./buildDMG.pl" spawn="false">
-            <arg line="-dmgName '${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg' -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor} (${localization})' -buildDir ${build} -compressionLevel 9 ${app.bundle.loc} ${app.name}\ Website.url Donate.url ${localization}.lproj/License.txt Credits.rtf  AppleScript\ Samples"/>
+            <arg line="-dmgName '${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg' -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor} (${localization})' -buildDir ${build} -compressionLevel 9 ${app.bundle.loc} ${app.name}\ Website.url Donate.url ${localization}.lproj/License.txt Credits.rtf  AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
         </exec>
 		<exec executable="md5sum" spawn="false" output="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg.md5">
 			<arg line="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg"/>
@@ -162,7 +163,7 @@
 
 	<target name="release" depends="build">
         <exec executable="./buildDMG.pl" spawn="false">
-            <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor}' -buildDir ${build} -compressionLevel 9 ${app.bundle} ${app.name}\ Website.url Donate.url en.lproj/License.txt Credits.rtf  AppleScript\ Samples"/>
+            <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor}' -buildDir ${build} -compressionLevel 9 ${app.bundle} ${app.name}\ Website.url Donate.url en.lproj/License.txt Credits.rtf  AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
         </exec>
 		<exec executable="md5sum" spawn="false" output="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.md5">
 			<arg line="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"/>
@@ -271,7 +272,7 @@
 			<classpath refid="build.classpath"/>
 		</javadoc>
 	</target>
-
+	
 	<target name="clean" description="Delete compiled classes, jar files, jni libraries and application bundle">
 		<delete dir="${build.classes}"/>
 		<delete dir="${build}/Cyberduck.build"/>
@@ -287,7 +288,7 @@
 	<target name="manifest" description="Create a manifest used in the jar files">
 		<manifest file="${build}/MANIFEST.MF">
 			<attribute name="Built-By" value="${user.name}"/>
-			<attribute name="Specification-Title" value="Cyberduck"/>
+			<attribute name="Specification-Title" value="${app.name}"/>
 			<attribute name="Specification-Version" value="${svn.revision}"/>
 			<attribute name="Specification-Vendor" value="David Kocher"/>
 			<attribute name="Implementation-Version" value="${svn.revision}"/>
