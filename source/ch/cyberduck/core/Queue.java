@@ -95,30 +95,7 @@ public abstract class Queue extends NSObject implements QueueListener {
         }
     }
 
-    public static final int KIND_DOWNLOAD = 0;
-    public static final int KIND_UPLOAD = 1;
-    public static final int KIND_SYNC = 2;
-
-    public static Queue createQueue(NSDictionary dict) {
-        Queue q = null;
-        Object kindObj = dict.objectForKey("Kind");
-        if (kindObj != null) {
-            int kind = Integer.parseInt((String) kindObj);
-            switch (kind) {
-                case Queue.KIND_DOWNLOAD:
-                    q = new DownloadQueue();
-                    break;
-                case Queue.KIND_UPLOAD:
-                    q = new UploadQueue();
-                    break;
-                case Queue.KIND_SYNC:
-                    q = new SyncQueue();
-                    break;
-            }
-        }
-        if (null == q) {
-            throw new IllegalArgumentException("Unknown queue");
-        }
+    public Queue(NSDictionary dict) {
         Object hostObj = dict.objectForKey("Host");
         if (hostObj != null) {
             Host host = new Host((NSDictionary) hostObj);
@@ -127,19 +104,18 @@ public abstract class Queue extends NSObject implements QueueListener {
             if (rootsObj != null) {
                 NSArray r = (NSArray) rootsObj;
                 for (int i = 0; i < r.count(); i++) {
-                    q.addRoot(PathFactory.createPath(s, (NSDictionary) r.objectAtIndex(i)));
+                    this.addRoot(PathFactory.createPath(s, (NSDictionary) r.objectAtIndex(i)));
                 }
             }
         }
         Object sizeObj = dict.objectForKey("Size");
         if (sizeObj != null) {
-            q.size = Double.parseDouble((String) sizeObj);
+            this.size = Double.parseDouble((String) sizeObj);
         }
         Object currentObj = dict.objectForKey("Current");
         if (currentObj != null) {
-            q.current = Double.parseDouble((String) currentObj);
+            this.current = Double.parseDouble((String) currentObj);
         }
-        return q;
     }
 
     public NSMutableDictionary getAsDictionary() {

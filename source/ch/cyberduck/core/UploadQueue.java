@@ -22,6 +22,7 @@ import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableDictionary;
+import com.apple.cocoa.foundation.NSDictionary;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,9 +42,13 @@ public class UploadQueue extends Queue {
         super(root);
     }
 
+    public UploadQueue(NSDictionary dict) {
+        super(dict);
+    }
+    
     public NSMutableDictionary getAsDictionary() {
         NSMutableDictionary dict = super.getAsDictionary();
-        dict.setObjectForKey(String.valueOf(Queue.KIND_UPLOAD), "Kind");
+        dict.setObjectForKey(String.valueOf(QueueFactory.KIND_UPLOAD), "Kind");
         return dict;
     }
 

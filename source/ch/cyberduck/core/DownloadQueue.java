@@ -22,6 +22,7 @@ import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSMutableDictionary;
+import com.apple.cocoa.foundation.NSDictionary;
 
 import java.util.Iterator;
 import java.util.List;
@@ -42,8 +43,12 @@ public class DownloadQueue extends Queue {
 
     public NSMutableDictionary getAsDictionary() {
         NSMutableDictionary dict = super.getAsDictionary();
-        dict.setObjectForKey(String.valueOf(Queue.KIND_DOWNLOAD), "Kind");
+        dict.setObjectForKey(String.valueOf(QueueFactory.KIND_DOWNLOAD), "Kind");
         return dict;
+    }
+
+    public DownloadQueue(NSDictionary dict) {
+        super(dict);
     }
 
     protected void finish(boolean headless) {
