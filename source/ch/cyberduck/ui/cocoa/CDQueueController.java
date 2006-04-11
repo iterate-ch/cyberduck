@@ -442,7 +442,7 @@ public class CDQueueController extends CDWindowController
                 NSArray elements = (NSArray) o;
                 for (int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                    this.queueModel.add(Queue.createQueue(dict));
+                    this.queueModel.add(QueueFactory.createQueue(dict));
                 }
                 pboard.setPropertyListForType(null, "QueuePBoardType");
                 this.reloadQueueTable();
@@ -626,7 +626,7 @@ public class CDQueueController extends CDWindowController
                     NSArray elements = (NSArray) o;
                     for (int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                        Queue q = Queue.createQueue(dict);
+                        Queue q = QueueFactory.createQueue(dict);
                         if (q.numberOfRoots() == 1)
                             item.setTitle(NSBundle.localizedString("Paste", "Menu item") + " \""
                                     + q.getRoot().getName() + "\"");

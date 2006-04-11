@@ -142,7 +142,7 @@ public class CDQueueTableDataSource extends Collection {
                     NSArray elements = (NSArray) o;
                     for (int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                        this.add(row, Queue.createQueue(dict));
+                        this.add(row, QueueFactory.createQueue(dict));
                         tableView.reloadData();
                         tableView.selectRow(row, false);
                     }
@@ -218,7 +218,7 @@ public class CDQueueTableDataSource extends Collection {
                     element = i.nextElement();
                     if (element instanceof NSDictionary) {
                         super.add(new CDProgressController(
-                                Queue.createQueue((NSDictionary) element)));
+                                QueueFactory.createQueue((NSDictionary) element)));
                     }
                 }
             }

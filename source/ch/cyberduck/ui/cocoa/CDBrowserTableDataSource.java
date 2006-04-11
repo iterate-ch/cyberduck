@@ -198,7 +198,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 List selected = new ArrayList();
                 for (int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                    Queue q = Queue.createQueue(dict);
+                    Queue q = QueueFactory.createQueue(dict);
                     for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                         Path current = PathFactory.createPath(controller.workdir().getSession(),
                                 ((Path) iter.next()).getAbsolute());
@@ -240,7 +240,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         NSArray elements = (NSArray) o;
                         for (int i = 0; i < elements.count(); i++) {
                             NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                            Queue q = Queue.createQueue(dict);
+                            Queue q = QueueFactory.createQueue(dict);
                             for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                                 Path item = (Path) iter.next();
                                 if (destination.equals(item)) {

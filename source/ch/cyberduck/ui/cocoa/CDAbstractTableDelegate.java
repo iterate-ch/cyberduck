@@ -31,6 +31,7 @@ import com.apple.cocoa.foundation.NSObject;
 import org.apache.log4j.Logger;
 
 import java.util.Comparator;
+import java.util.Date;
 
 /**
  * @version $Id$
@@ -240,10 +241,18 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         public int compare(Object o1, Object o2) {
             Path p1 = (Path) o1;
             Path p2 = (Path) o2;
-            if (ascending) {
-                return p1.attributes.getTimestamp().compareTo(p2.attributes.getTimestamp());
+            Date d1 = p1.attributes.getTimestamp();
+            if(null == d1) {
+                return 0;
             }
-            return -p1.attributes.getTimestamp().compareTo(p2.attributes.getTimestamp());
+            Date d2 = p2.attributes.getTimestamp();
+            if(null == d2) {
+                return 0;
+            }
+            if (ascending) {
+                return d1.compareTo(d2);
+            }
+            return -d1.compareTo(d2);
         }
 
         public String toString() {

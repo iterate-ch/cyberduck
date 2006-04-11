@@ -18,14 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DownloadQueue;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.Status;
-import ch.cyberduck.core.UploadQueue;
+import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSCell;
@@ -160,7 +153,7 @@ public class CDBrowserMatrix extends NSMatrix {
                     for (int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                         if (selected.attributes.isDirectory()) {
-                            Queue q = Queue.createQueue(dict);
+                            Queue q = QueueFactory.createQueue(dict);
                             for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                                 Path p = (Path) iter.next();
 //                                controller.renamePath(selected.getAbsolute()+Path.DELIMITER+p.getName());

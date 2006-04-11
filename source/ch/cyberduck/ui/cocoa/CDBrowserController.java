@@ -2011,7 +2011,7 @@ public class CDBrowserController extends CDWindowController
                 NSArray elements = (NSArray) o;
                 for (int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                    Queue q = Queue.createQueue(dict);
+                    Queue q = QueueFactory.createQueue(dict);
                     List selected = new ArrayList();
                     for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                         Path current = PathFactory.createPath(workdir().getSession(),
@@ -2536,7 +2536,7 @@ public class CDBrowserController extends CDWindowController
                         NSArray elements = (NSArray) o;
                         for (int i = 0; i < elements.count(); i++) {
                             NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                            Queue q = Queue.createQueue(dict);
+                            Queue q = QueueFactory.createQueue(dict);
                             if (q.numberOfRoots() == 1)
                                 item.setTitle(NSBundle.localizedString("Paste", "Menu item") + " \""
                                         + q.getRoot().getName() + "\"");
