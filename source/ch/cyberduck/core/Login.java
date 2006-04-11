@@ -152,21 +152,14 @@ public class Login {
 			}
         }
         else {
-            if (u.indexOf(':') != -1) {
-                this.user = u.substring(0, u.indexOf(':'));
-                this.pass = u.substring(u.indexOf(':') + 1, u.length());
-                return;
-            }
-            else {
-                this.user = u;
-            }
+			this.user = u;
         }
         if (null == p || p.equals("")) {
             if (this.isAnonymousLogin()) {
                 this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
             }
             else {
-                this.pass = null;
+                this.pass = p;
             }
         }
         else {

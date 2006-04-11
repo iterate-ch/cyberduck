@@ -56,17 +56,11 @@ public class Attributes {
 
     public Object clone() {
         Attributes copy = new Attributes(this.getAsDictionary());
-        //TODO
-//2006-03-28 23:38:53.566 Cyberduck[9989] java/lang/NullPointerException
-//Stack Trace:
-//java.lang.NullPointerException
-//	at ch.cyberduck.core.Attributes.clone(Attributes.java:57)
-//	at ch.cyberduck.core.Path.clone(Path.java:75)
-//	at ch.cyberduck.ui.cocoa.CDGotoController.gotoFolder(CDGotoController.java:96)
-//	at ch.cyberduck.ui.cocoa.CDBrowserController.handleGotoScriptCommand(CDBrowserController.java:163)
-        copy.permission = (Permission)this.getPermission().clone();
-        copy.modified = (Date)this.getTimestamp().clone();
         copy.size = this.getSize();
+        copy.permission = (Permission)this.getPermission().clone();
+        if(this.getTimestamp() != null) {
+            copy.modified = (Date)this.getTimestamp().clone();
+        }
         return copy;
     }
 
@@ -124,7 +118,6 @@ public class Attributes {
      * @return
      */
     public Date getTimestamp() {
-        //TODO may be null
         return this.modified;
     }
 
