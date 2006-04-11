@@ -105,7 +105,7 @@ public class Host extends NSObject {
         if (this.getCredentials().getPrivateKeyFile() != null) {
             dict.setObjectForKey(this.getCredentials().getPrivateKeyFile(), Host.KEYFILE);
         }
-        if (this.getProtocol().equals(Session.FTP)) {
+        if (this.getProtocol().equals(Session.FTP) || this.getProtocol().equals(Session.FTP_TLS)) {
             if (this.getFTPConnectMode().equals(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE)) {
                 dict.setObjectForKey("active", Host.FTPCONNECTMODE);
             }
@@ -338,7 +338,7 @@ public class Host extends NSObject {
      */
     public void setProtocol(String protocol) {
         this.protocol = protocol != null ? protocol : Preferences.instance().getProperty("connection.protocol.default");
-        if (this.getProtocol().equals(Session.FTP)) {
+        if (this.getProtocol().equals(Session.FTP) || this.getProtocol().equals(Session.FTP_TLS)) {
             if (Preferences.instance().getProperty("ftp.connectmode").equals("active"))
                 this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE;
             if (Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
@@ -414,6 +414,12 @@ public class Host extends NSObject {
     }
 
     public com.enterprisedt.net.ftp.FTPConnectMode getFTPConnectMode() {
+		if(null == this.connectMode) {
+	        if (Preferences.instance().getProperty("ftp.connectmode").equals("active"))
+	            this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE;
+	        if (Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
+	            this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.PASV;
+		}
         return this.connectMode;
     }
 
