@@ -1054,7 +1054,7 @@ it.lproj/Command.strings -text svneol=native#application/octet-stream
 it.lproj/Connection.nib/keyedobjects.nib -text
 it.lproj/Connection.strings -text svneol=native#application/octet-stream
 it.lproj/Crash.strings -text
-it.lproj/Credentials.strings -text
+it.lproj/Credentials.strings -text svneol=unset#application/octet-stream
 it.lproj/Donate.nib/keyedobjects.nib -text
 it.lproj/Donate.strings -text svneol=native#application/octet-stream
 it.lproj/Download.nib/keyedobjects.nib -text
