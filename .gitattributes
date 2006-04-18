@@ -96,8 +96,7 @@ Sparkle/de.lproj/SUUpdateAlert.nib/classes.nib -text
 Sparkle/de.lproj/SUUpdateAlert.nib/info.nib -text
 Sparkle/de.lproj/SUUpdateAlert.nib/keyedobjects.nib -text
 Sparkle/de.lproj/SUUpdateAlert.strings -text
-Sparkle/de.lproj/Sparkle.strings -text
-Sparkle/en.lproj/InfoPlist.strings -text
+Sparkle/de.lproj/Sparkle.strings -text svneol=unset#application/octet-stream
 Sparkle/en.lproj/SUAutomaticUpdateAlert.nib/classes.nib -text
 Sparkle/en.lproj/SUAutomaticUpdateAlert.nib/info.nib -text
 Sparkle/en.lproj/SUAutomaticUpdateAlert.nib/keyedobjects.nib -text
@@ -129,6 +128,9 @@ Sparkle/fi.lproj/SUUpdateAlert.nib/info.nib -text
 Sparkle/fi.lproj/SUUpdateAlert.nib/keyedobjects.nib -text
 Sparkle/fi.lproj/SUUpdateAlert.strings -text
 Sparkle/fi.lproj/Sparkle.strings -text
+Sparkle/fr.lproj/SUAutomaticUpdateAlert.nib/classes.nib -text
+Sparkle/fr.lproj/SUAutomaticUpdateAlert.nib/info.nib -text
+Sparkle/fr.lproj/SUAutomaticUpdateAlert.nib/keyedobjects.nib -text
 Sparkle/fr.lproj/SUAutomaticUpdateAlert.strings -text
 Sparkle/fr.lproj/SUUpdateAlert.nib/classes.nib -text
 Sparkle/fr.lproj/SUUpdateAlert.nib/info.nib -text
@@ -225,6 +227,9 @@ Sparkle/pl.lproj/SUUpdateAlert.nib/info.nib -text
 Sparkle/pl.lproj/SUUpdateAlert.nib/keyedobjects.nib -text
 Sparkle/pl.lproj/SUUpdateAlert.strings -text
 Sparkle/pl.lproj/Sparkle.strings -text
+Sparkle/ru.lproj/SUAutomaticUpdateAlert.nib/classes.nib -text
+Sparkle/ru.lproj/SUAutomaticUpdateAlert.nib/info.nib -text
+Sparkle/ru.lproj/SUAutomaticUpdateAlert.nib/keyedobjects.nib -text
 Sparkle/ru.lproj/SUAutomaticUpdateAlert.strings -text
 Sparkle/ru.lproj/SUUpdateAlert.nib/classes.nib -text
 Sparkle/ru.lproj/SUUpdateAlert.nib/info.nib -text
