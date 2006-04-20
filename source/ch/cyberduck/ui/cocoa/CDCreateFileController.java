@@ -77,7 +77,9 @@ public class CDCreateFileController extends CDFileController {
             file.getLocal().delete();
         }
         if (file.exists()) {
-            ((CDBrowserController) parent).setShowHiddenFiles(filename.charAt(0) == '.');
+            if(filename.charAt(0) == '.') {
+                ((CDBrowserController) parent).setShowHiddenFiles(true);
+            }
             ((CDBrowserController) parent).reloadData(true);
             ((CDBrowserController) parent).setSelectedPath(file);
             return file;

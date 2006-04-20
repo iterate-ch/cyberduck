@@ -79,7 +79,9 @@ public class CDDuplicateFileController extends CDFileController {
         duplicate.upload();
         duplicate.setLocal(null);
         if(duplicate.exists()) {
-            ((CDBrowserController)parent).setShowHiddenFiles(filename.charAt(0) == '.');
+            if(filename.charAt(0) == '.') {
+                ((CDBrowserController)parent).setShowHiddenFiles(true);
+            }
             ((CDBrowserController)parent).reloadData(true);
             return duplicate;
         }
