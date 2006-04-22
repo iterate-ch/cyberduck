@@ -64,7 +64,13 @@
 		</fileset>
     </path>
 
-	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+    <path id="build.bootclasspath">
+		<pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.4/Classes/classes.jar"/>
+        <pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.4/Classes/jce.jar"/>
+        <pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.4/Classes/jsse.jar"/>
+    </path>
+
+    <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
 	    <classpath refid="build.classpath"/>
 	</taskdef>
 
@@ -217,9 +223,11 @@
 			debug="${debug}"
 			deprecation="on"
 			srcdir="${source}"
+            source="1.4"
             target="1.4"
             destdir="${build.classes}">
-			<classpath refid="build.classpath"/>
+            <bootclasspath refid="build.bootclasspath"/>
+            <classpath refid="build.classpath"/>
 		</javac>
 	</target>
 
