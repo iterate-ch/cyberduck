@@ -468,7 +468,8 @@ public class CDBrowserController extends CDWindowController
         this.deselectAll();
         // Tell the browser view to reload the data. This will request all paths from the browser model
         // which will refetch paths from the server marked as invalid.
-        this.getSelectedBrowserView().reloadData();
+        final NSTableView browser = this.getSelectedBrowserView();
+        browser.reloadData();
         if (this.isMounted()) {
             this.infoLabel.setStringValue(this.getSelectedBrowserView().numberOfRows() + " " +
                     NSBundle.localizedString("files", ""));
@@ -1579,6 +1580,11 @@ public class CDBrowserController extends CDWindowController
     // Status
     // ----------------------------------------------------------
 
+    /**
+     * A task is in progress; e.g. a file listing is expected from the server
+     */
+    private boolean activityRunning;
+
     private NSProgressIndicator progressIndicator; // IBOutlet
 
     public void setProgressIndicator(NSProgressIndicator progressIndicator) {
@@ -1978,6 +1984,9 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void disconnectButtonClicked(final Object sender) {
+        if(this.activityRunning) {
+            this.interrupt();
+        }
         this.unmount();
     }
 
@@ -2145,7 +2154,7 @@ public class CDBrowserController extends CDWindowController
             this.reloadData(false);
             return;
         }
-        if (null == path.list()) {
+        if (null == path.list()) {//TODO: should be threaded to be interruptable by the main thread
             return;
         }
         this.workdir = path;
@@ -2293,6 +2302,7 @@ public class CDBrowserController extends CDWindowController
                     });
                     return;
                 }
+                activityRunning = true;
                 progressIndicator.startAnimation(this);
             }
 
@@ -2306,6 +2316,7 @@ public class CDBrowserController extends CDWindowController
                     });
                     return;
                 }
+                activityRunning = false;
                 progressIndicator.stopAnimation(this);
                 statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "Status", ""),
                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
@@ -2323,6 +2334,9 @@ public class CDBrowserController extends CDWindowController
         return null;
     }
 
+    /**
+     *
+     */
     private Session session;
 
     /**
@@ -2386,6 +2400,16 @@ public class CDBrowserController extends CDWindowController
                 return session;
             }
             return null;
+        }
+    }
+
+    /**
+     * Close the underlying socket regardless of its state; will throw a socket exception
+     * on the thread owning the socket
+     */
+    protected void interrupt() {
+        if(this.hasSession()) {
+           this.session.interrupt();
         }
     }
 
@@ -2528,6 +2552,11 @@ public class CDBrowserController extends CDWindowController
         });
     }
 
+    /**
+     *
+     * @param item
+     * @return
+     */
     public boolean validateMenuItem(NSMenuItem item) {
         String identifier = item.action().name();
         if (identifier.equals("pasteFromFinder:")) {
@@ -2639,6 +2668,11 @@ public class CDBrowserController extends CDWindowController
         return this.validateItem(identifier);
     }
 
+    /**
+     *
+     * @param identifier
+     * @return
+     */
     private boolean validateItem(String identifier) {
         if (identifier.equals("New Connection")) {
             return true;
@@ -2756,7 +2790,7 @@ public class CDBrowserController extends CDWindowController
             return this.isMounted();
         }
         if (identifier.equals("Disconnect") || identifier.equals("disconnectButtonClicked:")) {
-            return this.isMounted() && this.isConnected();
+            return this.isConnected() || this.activityRunning;
         }
         if (identifier.equals("printDocument:")) {
             return this.isMounted();

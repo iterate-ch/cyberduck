@@ -20,13 +20,12 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.ui.LoginController;
 import ch.cyberduck.ui.cocoa.growl.Growl;
-
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSObject;
-
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -116,15 +115,15 @@ public abstract class Session extends NSObject
      * @return
      */
     public Path mount() {
-        synchronized (this) {
+        synchronized(this) {
             this.message(NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname() + "...");
             try {
                 this.check();
                 Path home;
-                if (host.hasReasonableDefaultPath()) {
+                if(host.hasReasonableDefaultPath()) {
                     home = PathFactory.createPath(this, host.getDefaultPath());
                     home.attributes.setType(Path.DIRECTORY_TYPE);
-                    if (null == home.list()) {
+                    if(null == home.list()) {
                         // the default path does not exist
                         home = workdir();
                     }
@@ -141,7 +140,19 @@ public abstract class Session extends NSObject
                 Growl.instance().notify(e.getMessage(), host.getHostname());
                 this.close();
             }
-            catch (IOException e) {
+            catch(SocketException e) {
+                if(e.getMessage().equals("Software caused connection abort")) {//hack; socket opening interrupted
+                    this.close();
+                }
+                else {
+                    this.error("Network " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                    Growl.instance().notify(
+                            NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
+                            host.getHostname());
+                    this.close();
+                }
+            }
+            catch(IOException e) {
                 this.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 Growl.instance().notify(
                         NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
@@ -207,14 +218,14 @@ public abstract class Session extends NSObject
 
     public void connectionWillOpen() {
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
-        for (int i = 0; i < l.length; i++) {
+        for(int i = 0; i < l.length; i++) {
             l[i].connectionWillOpen();
         }
     }
 
     public void connectionDidOpen() {
         this.connected = true;
-        if (Preferences.instance().getBoolean("connection.keepalive")) {
+        if(Preferences.instance().getBoolean("connection.keepalive")) {
             this.keepAliveTimer = new Timer();
             this.keepAliveTimer.scheduleAtFixedRate(new KeepAliveTask(),
                     Preferences.instance().getInteger("connection.keepalive.interval"),
@@ -222,7 +233,7 @@ public abstract class Session extends NSObject
         }
 
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
-        for (int i = 0; i < l.length; i++) {
+        for(int i = 0; i < l.length; i++) {
             l[i].connectionDidOpen();
         }
     }
@@ -230,14 +241,14 @@ public abstract class Session extends NSObject
     public void connectionWillClose() {
         this.message(NSBundle.localizedString("Disconnecting...", "Status", ""));
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
-        for (int i = 0; i < l.length; i++) {
+        for(int i = 0; i < l.length; i++) {
             l[i].connectionWillClose();
         }
     }
 
     public void connectionDidClose() {
         this.connected = false;
-        if (Preferences.instance().getBoolean("connection.keepalive") && this.keepAliveTimer != null) {
+        if(Preferences.instance().getBoolean("connection.keepalive") && this.keepAliveTimer != null) {
             this.keepAliveTimer.cancel();
         }
         this.cache().clear();
@@ -245,21 +256,21 @@ public abstract class Session extends NSObject
 
         this.message(NSBundle.localizedString("Disconnected", "Status", ""));
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
-        for (int i = 0; i < l.length; i++) {
+        for(int i = 0; i < l.length; i++) {
             l[i].connectionDidClose();
         }
     }
 
     public void activityStarted() {
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
-        for (int i = 0; i < l.length; i++) {
+        for(int i = 0; i < l.length; i++) {
             l[i].activityStarted();
         }
     }
 
     public void activityStopped() {
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
-        for (int i = 0; i < l.length; i++) {
+        for(int i = 0; i < l.length; i++) {
             l[i].activityStopped();
         }
     }
@@ -277,7 +288,7 @@ public abstract class Session extends NSObject
     public void log(final String message) {
         log.info(message);
         TranscriptListener[] l = (TranscriptListener[]) transcriptListeners.toArray(new TranscriptListener[]{});
-        for (int i = 0; i < l.length; i++) {
+        for(int i = 0; i < l.length; i++) {
             l[i].log(message);
         }
     }
@@ -294,14 +305,14 @@ public abstract class Session extends NSObject
 
     public void error(final String message) {
         ProgressListener[] l = (ProgressListener[]) progressListeners.toArray(new ProgressListener[]{});
-        for (int i = 0; i < l.length; i++) {
+        for(int i = 0; i < l.length; i++) {
             l[i].error(message);
         }
     }
 
     public void message(final String message) {
         ProgressListener[] l = (ProgressListener[]) progressListeners.toArray(new ProgressListener[]{});
-        for (int i = 0; i < l.length; i++) {
+        for(int i = 0; i < l.length; i++) {
             l[i].message(message);
         }
     }
@@ -314,7 +325,7 @@ public abstract class Session extends NSObject
             try {
                 Session.this.noop();
             }
-            catch (IOException e) {
+            catch(IOException e) {
                 log.error(e.getMessage());
                 this.cancel();
             }
@@ -325,8 +336,8 @@ public abstract class Session extends NSObject
      * @param p
      */
     public void addPathToHistory(Path p) {
-        if (backHistory.size() > 0) {
-            if (p.equals(backHistory.get(backHistory.size() - 1))) {
+        if(backHistory.size() > 0) {
+            if(p.equals(backHistory.get(backHistory.size() - 1))) {
                 return;
             }
         }
@@ -340,7 +351,7 @@ public abstract class Session extends NSObject
      */
     public Path getPreviousPath() {
         int size = this.backHistory.size();
-        if (size > 1) {
+        if(size > 1) {
             this.forwardHistory.add(this.backHistory.get(size - 1));
             Path p = (Path) this.backHistory.get(size - 2);
             //delete the fetched path - otherwise we produce a loop
@@ -348,7 +359,7 @@ public abstract class Session extends NSObject
             this.backHistory.remove(size - 2);
             return p;
         }
-        else if (1 == size) {
+        else if(1 == size) {
             this.forwardHistory.add(this.backHistory.get(size - 1));
             return (Path) this.backHistory.get(size - 1);
         }
@@ -360,7 +371,7 @@ public abstract class Session extends NSObject
      */
     public Path getForwardPath() {
         int size = this.forwardHistory.size();
-        if (size > 0) {
+        if(size > 0) {
             Path p = (Path) this.forwardHistory.get(size - 1);
             this.forwardHistory.remove(size - 1);
             return p;
@@ -378,7 +389,7 @@ public abstract class Session extends NSObject
     }
 
     public Cache cache() {
-        if (null == this.cache) {
+        if(null == this.cache) {
             this.cache = new Cache();
         }
         return this.cache;
