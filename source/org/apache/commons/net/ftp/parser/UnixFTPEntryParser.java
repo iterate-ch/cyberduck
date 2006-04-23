@@ -66,7 +66,7 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
 	    +"(\\d+)?\\s*"
 	    +"(\\S+)\\s+"
 	    +"(?:(\\S+)\\s+)?"
-	    +"(\\d+)?\\s"
+	    +"(\\d+)?\\s+"
 	    +MONTHS+"\\s+"
 	    +"((?:[0-9])|(?:[0-2][0-9])|(?:3[0-1]))\\s+"
 	    +"((\\d{4})|((?:[01]?\\d)|(?:2[0123])):([012345]\\d))\\s"
@@ -75,9 +75,9 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
 	/**
 	 * The sole constructor for a UnixFTPEntryParser object.
 	 *
-	 * @throws IllegalArgumentException Thrown if the regular expression is unparseable.  Should not be seen
-	 *                                  under normal conditions.  It it is seen, this is a sign that
-	 *                                  <code>REGEX</code> is  not a valid regular expression.
+	 * @throws IllegalArgumentException Thrown if the regular expression is unparseable.  Should
+     * not be seen under normal conditions.  It it is seen, this is a sign that
+	 * <code>REGEX</code> is  not a valid regular expression.
 	 */
 	public UnixFTPEntryParser() {
 		super(REGEX);
