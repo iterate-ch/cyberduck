@@ -257,20 +257,19 @@ public class Host extends NSObject {
     }
 
     /**
-     *
      * @return empty string if no default path is set
      */
     public String getDefaultPath() {
-        if(null == this.defaultpath) {
+        if (null == this.defaultpath) {
             return "";
         }
-        if(this.defaultpath.equals("")) {
+        if (this.defaultpath.equals("")) {
             return "";
         }
-        if(this.defaultpath.charAt(0) == '/') {
+        if (this.defaultpath.charAt(0) == '/') {
             return this.defaultpath;
         }
-        return Path.DELIMITER+this.defaultpath;
+        return Path.DELIMITER + this.defaultpath;
     }
 
     public boolean hasReasonableDefaultPath() {
@@ -344,8 +343,8 @@ public class Host extends NSObject {
             if (Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
                 this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.PASV;
         }
-		if(null == this.login)
-			return;
+        if (null == this.login)
+            return;
         this.login.setProtocol(this.protocol);
     }
 
@@ -380,8 +379,8 @@ public class Host extends NSObject {
 
     public void setHostname(String hostname) {
         this.hostname = hostname;
-		if(null == this.login)
-			return;
+        if (null == this.login)
+            return;
         this.login.setHostname(hostname);
     }
 
@@ -414,12 +413,12 @@ public class Host extends NSObject {
     }
 
     public com.enterprisedt.net.ftp.FTPConnectMode getFTPConnectMode() {
-		if(null == this.connectMode) {
-	        if (Preferences.instance().getProperty("ftp.connectmode").equals("active"))
-	            this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE;
-	        if (Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
-	            this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.PASV;
-		}
+        if (null == this.connectMode) {
+            if (Preferences.instance().getProperty("ftp.connectmode").equals("active"))
+                this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE;
+            if (Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
+                this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.PASV;
+        }
         return this.connectMode;
     }
 
@@ -449,6 +448,9 @@ public class Host extends NSObject {
     }
 
     public boolean equals(Object other) {
+        if (null == other) {
+            return false;
+        }
         if (other instanceof Host) {
             Host o = (Host) other;
             return this.getProtocol().equals(o.getProtocol())
@@ -462,7 +464,7 @@ public class Host extends NSObject {
     }
 
     protected void finalize() throws java.lang.Throwable {
-        log.debug("finalize:"+super.toString());
+        log.debug("finalize:" + super.toString());
         super.finalize();
     }
 }
