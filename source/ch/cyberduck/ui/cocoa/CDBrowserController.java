@@ -242,7 +242,7 @@ public class CDBrowserController extends CDWindowController
                 path.setLocal(new Local((String) localObj));
             }
             Queue q = new SyncQueue(path);
-            q.start(false, true);
+            q.process(false, true);
         }
         return null;
     }
@@ -270,7 +270,7 @@ public class CDBrowserController extends CDWindowController
                 path.setLocal(new Local(path.getLocal().getParent(), (String) nameObj));
             }
             Queue q = new DownloadQueue(path);
-            q.start(false, true);
+            q.process(false, true);
         }
         return null;
     }
@@ -297,7 +297,7 @@ public class CDBrowserController extends CDWindowController
                 path.setPath(this.workdir().getAbsolute(), (String) nameObj);
             }
             Queue q = new UploadQueue(path);
-            q.start(false, true);
+            q.process(false, true);
         }
         return null;
     }
