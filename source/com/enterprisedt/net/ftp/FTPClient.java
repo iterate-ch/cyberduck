@@ -188,6 +188,7 @@ public class FTPClient {
                 return;
             }
             socket.close();
+            log.info("Forced to close socket "+socket.toString());
         }
         finally {
             control = null;
