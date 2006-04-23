@@ -79,7 +79,7 @@ public abstract class Session extends NSObject
     private boolean connected;
 
     public Object clone() {
-        return SessionFactory.createSession((Host)this.host.clone());
+        return SessionFactory.createSession((Host) this.host.clone());
     }
 
     protected Session(Host h) {
@@ -100,18 +100,7 @@ public abstract class Session extends NSObject
      */
     public abstract boolean isSecure();
 
-    /**
-     * Connect to the remote Host
-     * The protocol specific implementation has to  be coded in the subclasses.
-     *
-     * @see Host
-     */
-    protected abstract void connect(String encoding) throws IOException;
-
-    protected void connect() throws IOException {
-        this.retain();
-        this.connect(this.host.getEncoding());
-    }
+    protected abstract void connect() throws IOException;
 
     protected LoginController loginController;
 
@@ -123,6 +112,8 @@ public abstract class Session extends NSObject
 
     /**
      * Connect to the remote host and mount the home directory
+     *
+     * @return
      */
     public Path mount() {
         synchronized (this) {
@@ -133,7 +124,8 @@ public abstract class Session extends NSObject
                 if (host.hasReasonableDefaultPath()) {
                     home = PathFactory.createPath(this, host.getDefaultPath());
                     home.attributes.setType(Path.DIRECTORY_TYPE);
-                    if (null == home.list(true)) {
+                    //todo
+                    if (null == home.list()) {
                         // the default path does not exist
                         home = workdir();
                     }
@@ -164,7 +156,6 @@ public abstract class Session extends NSObject
     public abstract void close();
 
     /**
-     *
      * @return the host this session connects to
      */
     public Host getHost() {
@@ -178,6 +169,7 @@ public abstract class Session extends NSObject
 
     /**
      * Send a no operation command
+     *
      * @throws IOException
      */
     protected abstract void noop() throws IOException;
@@ -198,41 +190,6 @@ public abstract class Session extends NSObject
 
     private Timer keepAliveTimer = null;
 
-    public void setConnected() throws IOException {
-        log.debug("setConnected");
-        this.connected = true;
-        if (Preferences.instance().getBoolean("connection.keepalive")) {
-            this.keepAliveTimer = new Timer();
-            this.keepAliveTimer.scheduleAtFixedRate(new KeepAliveTask(),
-                    Preferences.instance().getInteger("connection.keepalive.interval"),
-                    Preferences.instance().getInteger("connection.keepalive.interval"));
-        }
-
-        this.connectionDidOpen();
-    }
-
-    public void setClosed() {
-        log.debug("setClosed");
-        this.connected = false;
-        this.release();
-
-        this.connectionDidClose();
-    }
-
-    public void retain() throws IOException {
-        SessionPool.instance().add(this);
-        this.connectionWillOpen();
-    }
-
-    private void release() {
-        if (Preferences.instance().getBoolean("connection.keepalive") && this.keepAliveTimer != null) {
-            this.keepAliveTimer.cancel();
-        }
-//        host.getCredentials().setPassword(null);
-//        this.cache.clear();
-        SessionPool.instance().release(this);
-    }
-
     private Vector connectionListners = new Vector();
 
     public void addConnectionListener(ConnectionListener listener) {
@@ -251,6 +208,14 @@ public abstract class Session extends NSObject
     }
 
     public void connectionDidOpen() {
+        this.connected = true;
+        if (Preferences.instance().getBoolean("connection.keepalive")) {
+            this.keepAliveTimer = new Timer();
+            this.keepAliveTimer.scheduleAtFixedRate(new KeepAliveTask(),
+                    Preferences.instance().getInteger("connection.keepalive.interval"),
+                    Preferences.instance().getInteger("connection.keepalive.interval"));
+        }
+
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
         for (int i = 0; i < l.length; i++) {
             l[i].connectionDidOpen();
@@ -266,6 +231,13 @@ public abstract class Session extends NSObject
     }
 
     public void connectionDidClose() {
+        this.connected = false;
+        if (Preferences.instance().getBoolean("connection.keepalive") && this.keepAliveTimer != null) {
+            this.keepAliveTimer.cancel();
+        }
+        this.cache().clear();
+        SessionPool.instance().release(this);
+
         this.message(NSBundle.localizedString("Disconnected", "Status", ""));
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
         for (int i = 0; i < l.length; i++) {
@@ -345,7 +317,6 @@ public abstract class Session extends NSObject
     }
 
     /**
-     *
      * @param p
      */
     public void addPathToHistory(Path p) {
@@ -359,6 +330,7 @@ public abstract class Session extends NSObject
 
     /**
      * Moves the returned path to the forward cache
+     *
      * @return The previously browsed path or null if there is none
      */
     public Path getPreviousPath() {
@@ -379,7 +351,6 @@ public abstract class Session extends NSObject
     }
 
     /**
-     *
      * @return
      */
     public Path getForwardPath() {

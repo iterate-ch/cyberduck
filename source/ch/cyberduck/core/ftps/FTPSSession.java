@@ -22,11 +22,7 @@ import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPMessageListener;
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Proxy;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.FTPSession;
 
 import com.apple.cocoa.foundation.NSBundle;
@@ -72,8 +68,10 @@ public class FTPSSession extends FTPSession {
 
     private X509TrustManager trustManager = new IgnoreX509TrustManager();
 
-    protected void connect(String encoding) throws IOException, FTPException {
+    protected void connect() throws IOException, FTPException {
         synchronized (this) {
+            SessionPool.instance().add(this);
+            this.connectionWillOpen();
             this.message(NSBundle.localizedString("Opening FTP-TLS connection to", "Status", "") + " " + host.getHostname() + "...");
             this.log("=====================================");
             this.log(new java.util.Date().toString());
@@ -81,7 +79,7 @@ public class FTPSSession extends FTPSession {
             this.FTP = new FTPSClient(host.getHostname(),
                     host.getPort(),
                     Preferences.instance().getInteger("connection.timeout"), //timeout
-                    encoding, new FTPMessageListener() {
+                    host.getEncoding(), new FTPMessageListener() {
                 public void logCommand(String cmd) {
                     FTPSSession.this.log(cmd);
                 }
@@ -107,7 +105,7 @@ public class FTPSSession extends FTPSession {
                 this.host.setIdentification(this.FTP.system());
             }
             this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.host.getIdentification());
-            this.setConnected();
+            this.connectionDidOpen();
         }
     }
 }

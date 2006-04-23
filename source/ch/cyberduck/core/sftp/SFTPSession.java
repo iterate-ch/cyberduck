@@ -91,7 +91,7 @@ public class SFTPSession extends Session {
             }
             finally {
                 this.activityStopped();
-                this.setClosed();
+                this.connectionDidClose();
             }
         }
     }
@@ -125,8 +125,10 @@ public class SFTPSession extends Session {
         return this.hostKeyVerification;
     }
 
-    protected void connect(String encoding) throws IOException {
+    protected void connect() throws IOException {
         synchronized (this) {
+            SessionPool.instance().add(this);
+            this.connectionWillOpen();
             this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getHostname() + "...");
             this.log("=====================================");
             this.log(new java.util.Date().toString());
@@ -180,10 +182,10 @@ public class SFTPSession extends Session {
                     public void onDataSent(Channel channel, byte[] data) {
                         log(new String(data));
                     }
-                }, encoding);
+                }, host.getEncoding());
                 this.message(NSBundle.localizedString("SFTP subsystem ready", "Status", ""));
             }
-            this.setConnected();
+            this.connectionDidOpen();
         }
     }
 
