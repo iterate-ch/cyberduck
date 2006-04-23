@@ -25,10 +25,6 @@ import junit.framework.TestCase;
  */
 public class CodecTest extends TestCase {
 	
-	static {
-		org.apache.log4j.BasicConfigurator.configure();
-	}
-	
 	public CodecTest(String name) {
 		super(name);
 	}

@@ -22,8 +22,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.framework.TestCase;
 
-public class QueueTest extends TestCase {
-    public QueueTest(String name) {
+public class StatusTest extends TestCase {
+    public StatusTest(String name) {
         super(name);
     }
 
@@ -35,67 +35,27 @@ public class QueueTest extends TestCase {
         super.tearDown();
     }
 
-    public void testGetAsDictionary() throws Exception {
-        ;
-    }
-
-    public void testGetRoot() throws Exception {
-        ;
-    }
-
-    public void testGetRoots() throws Exception {
-        ;
-    }
-
-    public void testGetSession() throws Exception {
-        ;
-    }
-
-    public void testGetHost() throws Exception {
-        ;
-    }
-
-    public void testGetName() throws Exception {
-        ;
-    }
-
-    public void testGetChilds() throws Exception {
-        ;
-    }
-
-    public void testGetChilds1() throws Exception {
-        ;
-    }
-
-    public void testGetJobs() throws Exception {
-        ;
-    }
-
-    public void testGetSize() throws Exception {
-        ;
-    }
-
     public void testGetSizeAsString() throws Exception {
         ;
     }
 
-    public void testGetCurrent() throws Exception {
+    public void testSetComplete() throws Exception {
         ;
     }
 
-    public void testGetCurrentAsString() throws Exception {
+    public void testSetCanceled() throws Exception {
         ;
     }
 
-    public void testGetSpeedAsString() throws Exception {
+    public void testSetGetCurrent() throws Exception {
         ;
     }
 
-    public void testGetSpeed() throws Exception {
+    public void testSetResume() throws Exception {
         ;
     }
 
     public static Test suite() {
-        return new TestSuite(QueueTest.class);
+        return new TestSuite(StatusTest.class);
     }
 }

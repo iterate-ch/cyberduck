@@ -13,7 +13,8 @@ import junit.framework.TestCase;
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  MERCHANTABILI
+ TY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  Bug fixes, suggestions and comments should be sent to:
@@ -27,6 +28,11 @@ public class PermissionTest extends TestCase {
 
     public PermissionTest(String name) {
         super(name);
+    }
+
+    public void testClone() {
+        Permission p = new Permission("rwxrwxrwx");
+        assertEquals(p, p.clone());
     }
 
     public void testEmptyPermissions() {

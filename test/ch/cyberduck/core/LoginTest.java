@@ -36,7 +36,7 @@ public class LoginTest extends TestCase {
 	public void testLoginReasonable() {
 		try {
 			Login login = new Login("example.net", "ftp",
-									"dkocher", 
+									"guest",
 									"changeme");
 			assertTrue(login.hasReasonableValues());
 		}
@@ -56,14 +56,24 @@ public class LoginTest extends TestCase {
 	public void testLoginWithoutPass() {
 		try {
             Login login = new Login("example.net", "ftp",
-									"dkocher",
+									"guest",
 									null);
 			assertFalse(login.hasReasonableValues());
 		}
 		catch(java.lang.UnsatisfiedLinkError e) {}
 	}
-	
-	public void testLoginAnonymous1() {
+
+    public void testLoginWithoutEmptyPass() {
+        try {
+            Login login = new Login("example.net", "ftp",
+                                    "guest",
+                                    "");
+            assertTrue(login.hasReasonableValues());
+        }
+        catch(java.lang.UnsatisfiedLinkError e) {}
+    }
+
+    public void testLoginAnonymous1() {
 		try {
             Login login = new Login("example.net", "ftp",
 									Preferences.instance().getProperty("ftp.anonymous.name"),
@@ -77,16 +87,6 @@ public class LoginTest extends TestCase {
 		try {
             Login login = new Login("example.net", "ftp",
 									Preferences.instance().getProperty("ftp.anonymous.name"),
-									null);
-			assertTrue(login.hasReasonableValues());
-		}
-		catch(java.lang.UnsatisfiedLinkError e) {}
-	}
-	
-	public void testLoginAnonymous3() {
-		try {
-            Login login = new Login("example.net", "ftp",
-									"user:pass", 
 									null);
 			assertTrue(login.hasReasonableValues());
 		}

@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- *  Copyright (c) 2006 David Kocher. All rights reserved.
+ *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -22,8 +22,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.framework.TestCase;
 
-public class QueueTest extends TestCase {
-    public QueueTest(String name) {
+public class PathTest extends TestCase {
+    public PathTest(String name) {
         super(name);
     }
 
@@ -35,19 +35,15 @@ public class QueueTest extends TestCase {
         super.tearDown();
     }
 
+    public void testClone() throws Exception {
+        ;
+    }
+
     public void testGetAsDictionary() throws Exception {
         ;
     }
 
-    public void testGetRoot() throws Exception {
-        ;
-    }
-
-    public void testGetRoots() throws Exception {
-        ;
-    }
-
-    public void testGetSession() throws Exception {
+    public void testGetParent() throws Exception {
         ;
     }
 
@@ -59,43 +55,27 @@ public class QueueTest extends TestCase {
         ;
     }
 
-    public void testGetChilds() throws Exception {
+    public void testGetAbsolute() throws Exception {
         ;
     }
 
-    public void testGetChilds1() throws Exception {
+    public void testSetGetLocal() throws Exception {
         ;
     }
 
-    public void testGetJobs() throws Exception {
+    public void testGetRemote() throws Exception {
         ;
     }
 
-    public void testGetSize() throws Exception {
+    public void testGetExtension() throws Exception {
         ;
     }
 
-    public void testGetSizeAsString() throws Exception {
-        ;
-    }
-
-    public void testGetCurrent() throws Exception {
-        ;
-    }
-
-    public void testGetCurrentAsString() throws Exception {
-        ;
-    }
-
-    public void testGetSpeedAsString() throws Exception {
-        ;
-    }
-
-    public void testGetSpeed() throws Exception {
+    public void testGetSession() throws Exception {
         ;
     }
 
     public static Test suite() {
-        return new TestSuite(QueueTest.class);
+        return new TestSuite(PathTest.class);
     }
 }

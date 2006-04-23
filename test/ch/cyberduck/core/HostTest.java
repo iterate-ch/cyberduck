@@ -31,6 +31,13 @@ public class HostTest extends TestCase {
         super(name);
     }
 
+    public void testClone() throws Exception {
+        Host host = new Host("ftp.cyberduck.ch");
+        Host clone = (Host)host.clone();
+        assertNotSame(clone, host);
+        assertNotSame(clone.getCredentials(), host.getCredentials());        
+    }
+
     public void testParseURLFull() {
         try {
             {
