@@ -60,10 +60,11 @@ public class Cache extends HashMap {
     }
 
     /**
+     * Get the childs of this path using the last sorting and filter used
      * @param path
      * @return null if no cached file listing is available
      */
-    public AttributedList get(Path path) {
+    private AttributedList get(Path path) {
         return (AttributedList) super.get(path.getAbsolute());
     }
 
@@ -73,10 +74,10 @@ public class Cache extends HashMap {
      * @param filter
      * @return null if no cached file listing is available
      */
-    public AttributedList get(Path path, Comparator comparator, Filter filter) {
+    public AttributedList get(final Path path, final Comparator comparator, final Filter filter) {
         AttributedList childs = (AttributedList) super.get(path.getAbsolute());
         if (null == childs) {
-            return childs;
+            return null;
         }
         boolean needsSorting = !childs.getAttributes().get(AttributedList.COMPARATOR).equals(comparator);
         boolean needsFiltering = !childs.getAttributes().get(AttributedList.FILTER).equals(filter);
@@ -110,16 +111,16 @@ public class Cache extends HashMap {
         return childs;
     }
 
-    public Object put(Path path, List childs) {
-        return super.put(path.getAbsolute(), new AttributedList(childs));
+    public Object put(Path path, AttributedList childs) {
+        return super.put(path.getAbsolute(), childs);
     }
 
     /**
      * @param path   ch.cyberduck.core.Path
-     * @param childs java.util.List
+     * @param childs ch.cyberduck.core.AttributedList
      */
     public Object put(Object path, Object childs) {
-        return this.put((Path) path, (List) childs);
+        return this.put((Path) path, (AttributedList) childs);
     }
 
     public void clear() {

@@ -23,13 +23,7 @@ import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSObject;
 
 import java.lang.reflect.Array;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Facade for com.apple.cocoa.foundation.NSMutableArray
@@ -52,27 +46,11 @@ public class AttributedList extends NSObject implements List {
 
     private Attributes attributes;
 
-    public AttributedList() {
-        this.attributes = new Attributes();
-    }
-
     /**
      * Initialize an attributed list with default attributes
-     *
-     * @param list
      */
-    public AttributedList(java.util.List list) {
-        this.content = new NSMutableArray(list.toArray());
+    public AttributedList() {
         this.attributes = new Attributes();
-    }
-
-    public AttributedList(Attributes attributes) {
-        this.attributes = attributes;
-    }
-
-    public AttributedList(java.util.List list, Attributes attributes) {
-        this.content = new NSMutableArray(list.toArray());
-        this.attributes = attributes;
     }
 
     /**
@@ -81,7 +59,7 @@ public class AttributedList extends NSObject implements List {
      * @see Filter
      * @see BrowserComparator
      */
-    protected class Attributes extends java.util.HashMap {
+    protected class Attributes extends HashMap {
         /**
          * Initialize with default values
          */
@@ -178,7 +156,7 @@ public class AttributedList extends NSObject implements List {
     }
 
     /**
-     * @param object
+     * @param object Path
      * @return true if this collection changed as a result of the call
      */
     public boolean add(Object object) {
@@ -187,7 +165,7 @@ public class AttributedList extends NSObject implements List {
     }
 
     /**
-     * @param object
+     * @param object Path
      * @return true if this collection changed as a result of the call
      */
     public boolean remove(Object object) {

@@ -75,7 +75,7 @@ public class SFTPPath extends Path {
         }
     }
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     private SFTPPath(SFTPSession s) {
         super();
@@ -106,16 +106,10 @@ public class SFTPPath extends Path {
         return this.session;
     }
 
-    public AttributedList list(boolean refresh, String encoding, Comparator comparator, Filter filter) {
+    public AttributedList list(Comparator comparator, Filter filter) {
         synchronized (session) {
-            if (refresh || !session.cache().containsKey(this) || session.cache().isInvalid(this)) {
-                AttributedList files = null;
-                if (session.cache().isInvalid(this)) {
-                    files = new AttributedList(session.cache().get(this).getAttributes());
-                }
-                else {
-                    files = new AttributedList();
-                }
+            if (!session.cache().containsKey(this) || session.cache().isInvalid(this)) {
+                AttributedList files = new AttributedList();
                 session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
                 try {
                     session.check();
@@ -159,12 +153,10 @@ public class SFTPPath extends Path {
                 }
                 catch (SshException e) {
                     session.error("SSH " + NSBundle.localizedString("Error", "") + " " + "(" + this.getName() + "): " + e.getMessage());
-                    return null;
                 }
                 catch (IOException e) {
                     session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                     session.close();
-                    return null;
                 }
 	            finally {
 	                session.activityStopped();
@@ -193,7 +185,7 @@ public class SFTPPath extends Path {
                 session.check();
                 session.message(NSBundle.localizedString("Make directory", "Status", "") + " " + this.getName());
                 session.SFTP.makeDirectory(this.getAbsolute());
-                session.cache().put(this, new ArrayList());
+                session.cache().put(this, new AttributedList());//todo
                 this.getParent().invalidate();
             }
             catch (SshException e) {
@@ -267,7 +259,7 @@ public class SFTPPath extends Path {
                     session.SFTP.removeFile(this.getAbsolute());
                 }
                 else if (this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
-                    List files = this.list(false);
+                    List files = this.list();
                     if (files != null && files.size() > 0) {
                         for (Iterator iter = files.iterator(); iter.hasNext();) {
                             ((Path) iter.next()).delete();
@@ -304,7 +296,7 @@ public class SFTPPath extends Path {
                     session.message("Changing owner to " + owner + " on " + this.getName()); //todo localize
                     //session.SFTP.changeOwner(this.getAbsolute(), owner);
                     if (recursive) {
-                        List files = this.list(false);
+                        List files = this.list();
                         if (files != null) {
                             for (Iterator iter = files.iterator(); iter.hasNext();) {
                                 ((Path) iter.next()).changeOwner(owner, recursive);
@@ -340,7 +332,7 @@ public class SFTPPath extends Path {
                     session.message("Changing group to " + group + " on " + this.getName()); //todo localize
                     //session.SFTP.changeGroup(this.getAbsolute(), group);
                     if (recursive) {
-                        List files = this.list(false);
+                        List files = this.list();
                         if (files != null) {
                             for (Iterator iter = files.iterator(); iter.hasNext();) {
                                 ((Path) iter.next()).changeGroup(group, recursive);
@@ -376,7 +368,7 @@ public class SFTPPath extends Path {
 	                session.message("Changing permission to " + perm.getOctalCode() + " on " + this.getName()); //todo localize
                     session.SFTP.changePermissions(this.getAbsolute(), perm.getMask());
                     if (recursive) {
-                        List files = this.list(false);
+                        List files = this.list();
                         if (files != null) {
                             for (Iterator iter = files.iterator(); iter.hasNext();) {
                                 ((Path) iter.next()).changePermissions(perm, recursive);

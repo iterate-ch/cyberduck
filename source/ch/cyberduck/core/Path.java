@@ -72,7 +72,7 @@ public abstract class Path extends NSObject {
 
     public Object clone(Session session) {
         Path copy = PathFactory.createPath(session, this.getAsDictionary());
-        copy.attributes = (Attributes)this.attributes.clone();
+        copy.attributes = (Attributes) this.attributes.clone();
         return copy;
     }
 
@@ -183,21 +183,23 @@ public abstract class Path extends NSObject {
         this.getSession().cache().invalidate(this);
     }
 
-    public AttributedList list(boolean reload) {
-        return this.list(reload, Preferences.instance().getProperty("browser.charset.encoding"),
-                new NullComparator(), new NullFilter());
+    /**
+     * Request a unsorted and unfiltered file listing from the server.
+     *
+     * @return
+     */
+    public AttributedList list() {
+        return this.list(new NullComparator(), new NullFilter());
     }
 
     /**
-     * Request a file listing from the server. Has to be a directory.
+     * Request a sorted and filtered file listing from the server. Has to be a directory.
      *
-     * @param reload          Discard any cached entries
-     * @param encoding        The character encoding to decode the filenames with
-     * @param comparator      The comparator to sort the listing with
-     * @param filter          The filter to exlude certain files
-     * @return null if there is an error, otherwise a list with 0-n <code>Path</code> references
+     * @param comparator The comparator to sort the listing with
+     * @param filter     The filter to exlude certain files
+     * @return
      */
-    public abstract AttributedList list(boolean reload, String encoding, Comparator comparator, Filter filter);
+    public abstract AttributedList list(Comparator comparator, Filter filter);
 
     /**
      * Remove this file from the remote host. Does not affect any corresponding local file
@@ -317,7 +319,7 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     * @param in The stream to read from
+     * @param in  The stream to read from
      * @param out The stream to write to
      */
     public void upload(java.io.OutputStream out, java.io.InputStream in) throws IOException {
@@ -356,7 +358,7 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     * @param in The stream to read from
+     * @param in  The stream to read from
      * @param out The stream to write to
      */
     public void download(java.io.InputStream in, java.io.OutputStream out) throws IOException {
@@ -369,7 +371,7 @@ public abstract class Path extends NSObject {
         int amount = 0;
         long current = this.status.getCurrent();
         boolean complete = false;
-		boolean updateProgress = this.attributes.getSize() > Status.MEGA * 5;
+        boolean updateProgress = this.attributes.getSize() > Status.MEGA * 5;
         int step = 0;
         this.getLocal().setProgress(step);
         // read from socket (bytes) & write to file in chunks
@@ -381,12 +383,12 @@ public abstract class Path extends NSObject {
             else {
                 out.write(chunk, 0, amount);
                 this.status.setCurrent(current += amount);
-				if(updateProgress) {
-	                int fraction = (int) (status.getCurrent() / this.attributes.getSize() * 10);
-	                if ((fraction > step)) {
-	                    this.getLocal().setProgress(++step);
-	                }
-				}
+                if (updateProgress) {
+                    int fraction = (int) (status.getCurrent() / this.attributes.getSize() * 10);
+                    if ((fraction > step)) {
+                        this.getLocal().setProgress(++step);
+                    }
+                }
                 out.flush();
             }
         }
@@ -423,7 +425,7 @@ public abstract class Path extends NSObject {
         if (this.isRoot()) {
             return true;
         }
-        List listing = this.getParent().list(false);
+        List listing = this.getParent().list();
         if (null == listing) {
             return false;
         }
@@ -434,7 +436,10 @@ public abstract class Path extends NSObject {
         return this.getAbsolute().hashCode();
     }
 
-    public boolean equals(Object other) {
+    public boolean equals(Object other) { //todo
+        if (null == other) {
+            return false;
+        }
         if (other instanceof Path) {
             return this.getAbsolute().equals(((Path) other).getAbsolute());
         }
