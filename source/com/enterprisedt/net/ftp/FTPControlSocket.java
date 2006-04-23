@@ -30,6 +30,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.InetSocketAddress;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -81,52 +82,41 @@ public class FTPControlSocket {
     }
 
 	private FTPMessageListener listener = null;
-	
-	/**
-	 * Constructor. Performs TCP connection and
-	 * sets up reader/writer. Allows different control
-	 * port to be used
-	 *
-	 * @param remoteAddr      Remote inet address
-	 * @param controlPort     port for control stream
-	 * @param timeout          the length of the timeout, in milliseconds
-	 * @param encoding        character encoding used for data
-	 * @param listener listens for messages
-	 */
-	protected FTPControlSocket(InetAddress remoteAddr, int controlPort, int timeout,
-	                           String encoding, FTPMessageListener listener)
+
+    /**
+     *
+     * @param encoding character encoding used for data
+     * @param listener listens for messages
+     */
+    protected FTPControlSocket(final String encoding, final FTPMessageListener listener) {
+        this.encoding = encoding;
+        this.listener = listener;
+    }
+
+    /**
+     * Performs TCP connection and sets up reader/writer. Allows different control
+     * port to be used
+     *
+     * @param remoteAddr      Remote inet address
+     * @param controlPort     port for control stream
+     * @param timeout         Timeout to be used.
+     * @throws IOException  Thrown if no connection response could be read from the server.
+     * @throws FTPException Thrown if the incorrect connection response was sent by the server.
+     */
+    protected void connect(final InetAddress remoteAddr, int controlPort, int timeout)
             throws IOException, FTPException {
 
-		this(new Socket(remoteAddr, controlPort), timeout, encoding, listener);
-	}
-
-	/**
-	 * Constructs a new <code>FTPControlSocket</code> using the given
-	 * <code>Socket</code> object.
-	 *
-	 * @param controlSock     Socket to be used.
-	 * @param timeout         Timeout to be used.
-	 * @param encoding        character encoding used for data
-	 * @param listener listens for messages
-	 * @throws IOException  Thrown if no connection response could be read from the server.
-	 * @throws FTPException Thrown if the incorrect connection response was sent by the server.
-	 */
-	protected FTPControlSocket(Socket controlSock, int timeout,
-	                           String encoding, FTPMessageListener listener)
-            throws IOException, FTPException {
-
-		this.encoding = encoding;
-		this.controlSock = controlSock;
+        this.controlSock = new Socket();
+        this.controlSock.connect(new InetSocketAddress(remoteAddr, controlPort));
         try {
             this.controlSock.setKeepAlive(true);
         }
         catch(SocketException e) {
-            //log.error(e.getMessage());
+            log.error(e.getMessage());
         }
-		this.listener = listener;
 
 		this.setTimeout(timeout);
-		this.initStreams(encoding);
+		this.initStreams();
 		this.validateConnection();
 	}
 	
@@ -149,10 +139,8 @@ public class FTPControlSocket {
 	/**
 	 * Obtain the reader/writer streams for this
 	 * connection
-	 *
-	 * @param encoding character encoding used for data
 	 */
-	protected void initStreams(String encoding) throws IOException {
+	protected void initStreams() throws IOException {
 
 		// input stream
 		InputStream is = controlSock.getInputStream();
