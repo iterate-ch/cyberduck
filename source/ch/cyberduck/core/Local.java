@@ -133,7 +133,12 @@ public class Local extends File {
     public Permission getPermission() {
         try {
             NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
-            return new Permission(((Integer) fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions)).intValue());
+            Object posix = fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions);
+            if(null == posix) {
+                //The file may have desappeared since
+                throw new IllegalArgumentException("No such file.");
+            }
+            return new Permission(((Integer) posix).intValue());
         }
         catch(IllegalArgumentException e) {
             log.error(this.getAbsolute()+":"+e.getMessage());
