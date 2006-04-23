@@ -1472,6 +1472,7 @@ sk.lproj/Validator.strings -text
 source/ch/cyberduck/core/CollectionListener.java -text
 source/ch/cyberduck/core/forker/NSString+CarbonFSRefCreation.m -text
 source/ch/cyberduck/ui/cocoa/growl/GrowlNative.java -text
+source/com/adiumx/AIAutoScrollView.m -text
 source/de/zathras/UKCrashReporter.m -text
 sv.lproj/Bookmark.nib/keyedobjects.nib -text
 sv.lproj/Bookmark.strings -text svneol=native#application/octet-stream
