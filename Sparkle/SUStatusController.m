@@ -71,6 +71,8 @@
 	[actionButton setFrameSize:NSMakeSize([actionButton frame].size.width + 15, [actionButton frame].size.height)];
 	// Now we have to move it over so that it's always 15px from the side of the window.
 	[actionButton setFrameOrigin:NSMakePoint([[self window] frame].size.width - 15 - [actionButton frame].size.width, [actionButton frame].origin.y)];	
+	// Redisplay superview to clean up artifacts
+	[[actionButton superview] display];
 	
 	[actionButton setTarget:target];
 	[actionButton setAction:action];

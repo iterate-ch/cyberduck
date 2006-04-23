@@ -486,19 +486,17 @@
 	}
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:SUUpdaterWillRestartNotification object:self];
-	[[NSWorkspace sharedWorkspace] launchApplication:currentAppPath];
-	
-	// Now we'll give the new process a chance to split off; wait up to five seconds for the launch thread to terminate.
-	int oldCount = [NSApp copiesRunning];
-	NSDate *failDate = [NSDate dateWithTimeIntervalSinceNow:5];
-	while([failDate timeIntervalSinceNow] > 0)
-	{		
-		if([NSApp copiesRunning] > oldCount) // Has a new copy of the app appeared?
-			[NSApp terminate:self]; // That's it! Our work is done here.
-		[NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
-	}
-	[self showUpdateErrorAlertWithInfo:[NSString stringWithFormat:SULocalizedString(@"An error occurred while trying to relaunch %@. The update will take effect next you run %@.", nil), SUHostAppName(), SUHostAppName()]];
-	[self abandonUpdate];
+
+	// Thanks to Allan Odgaard for this restart code, which is much more clever than mine was.
+	setenv("LAUNCH_PATH", [currentAppPath UTF8String], 1);
+	system("/bin/bash -c '{ for (( i = 0; i < 3000 && $(echo $(/bin/ps -xp $PPID|/usr/bin/wc -l))-1; i++ )); do\n"
+		   "    /bin/sleep .2;\n"
+		   "  done\n"
+		   "  if [[ $(/bin/ps -xp $PPID|/usr/bin/wc -l) -ne 2 ]]; then\n"
+		   "    /usr/bin/open \"${LAUNCH_PATH}\"\n"
+		   "  fi\n"
+		   "} &>/dev/null &'");
+	[NSApp terminate:self];	
 }
 
 - (IBAction)cancelDownload:sender
