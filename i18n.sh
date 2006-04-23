@@ -15,7 +15,9 @@
 #  dkocher@cyberduck.ch
 
 #!/bin/bash
-        
+
+base_language="en.lproj"
+
 usage() {
 	echo ""
 	echo "    Usage: i18n.sh --extractstrings"
@@ -32,20 +34,21 @@ usage() {
 
 init() {
 	mkdir -p $language
-	for nibfile in `ls en.lproj | grep .nib | grep -v ~.nib | grep -v .bak`; do
+	for nibfile in `ls $base_language | grep .nib | grep -v ~.nib | grep -v .bak`; do
 		echo "Copying $nibfile"
 		nib=`basename $nibfile .nib`
-		cp -R en.lproj/$nibfile $language/$nibfile
+		cp -R $base_language/$nibfile $language/$nibfile
 		rm -rf $language/$nibfile/.svn
 		nibtool --localizable-strings $language/$nibfile > $language/$nib.strings
 	done
-	cp en.lproj/Localizable.strings $language/
-	cp en.lproj/Status.strings $language/
-	cp en.lproj/Credentials.strings $language/
-	cp en.lproj/IDisk.strings $language/
-	cp en.lproj/Growl.strings $language/
-	cp en.lproj/InfoPlist.strings $language/
-	cp en.lproj/License.txt $language/
+	cp $base_language/Localizable.strings $language/
+	cp $base_language/Crash.strings $language/
+	cp $base_language/Status.strings $language/
+	cp $base_language/Credentials.strings $language/
+	cp $base_language/IDisk.strings $language/
+	cp $base_language/Growl.strings $language/
+	cp $base_language/InfoPlist.strings $language/
+	cp $base_language/License.txt $language/
 }
 
 open() {
@@ -53,7 +56,7 @@ open() {
 	if [ "$language" = "all" ] ; then
 	{
 		for lproj in `ls . | grep lproj`; do
-			if [ $lproj != "en.lproj" ]; then
+			if [ $lproj != $base_language ]; then
 				echo "*** Opening $lproj/$nib.strings"
 				/usr/bin/open $lproj/$nib.strings
 			fi;
@@ -69,13 +72,13 @@ open() {
 
 extractstrings() {
     echo "*** Extracting strings from Obj-C source files (genstrings)..."
-    genstrings -j -a -q -o en.lproj source/ch/cyberduck/ui/cocoa/*.java
+    genstrings -j -a -q -o $base_language source/ch/cyberduck/ui/cocoa/*.java
     echo "*** Extracting strings from Java source files (genstrings)..."
-    genstrings -j -a -q -o en.lproj source/ch/cyberduck/core/*.java
-    genstrings    -a -q -o en.lproj source/ch/cyberduck/ui/cocoa/*.m
-    genstrings -j -a -q -o en.lproj source/ch/cyberduck/core/ftp/*.java
-    genstrings -j -a -q -o en.lproj source/ch/cyberduck/core/ftps/*.java
-    genstrings -j -a -q -o en.lproj source/ch/cyberduck/core/sftp/*.java
+    genstrings -j -a -q -o $base_language source/ch/cyberduck/core/*.java
+    genstrings    -a -q -o $base_language source/ch/cyberduck/ui/cocoa/*.m
+    genstrings -j -a -q -o $base_language source/ch/cyberduck/core/ftp/*.java
+    genstrings -j -a -q -o $base_language source/ch/cyberduck/core/ftps/*.java
+    genstrings -j -a -q -o $base_language source/ch/cyberduck/core/sftp/*.java
 }
 
 status() {
@@ -83,7 +86,7 @@ status() {
 	{
 		for lproj in `ls . | grep lproj`; do
 			language=$lproj;
-			if [ $language != "en.lproj" ]; then
+			if [ $language != "$base_language" ]; then
 				echo "*** Status of $language Localization...";
 				/usr/local/bin/polyglot -b en -l `basename $language .lproj` .
 			fi;
@@ -98,7 +101,9 @@ status() {
 }
 
 nib() {
+	#Changes to the .strings has precedence over the NIBs
     updateNibFromStrings;
+	#Update the .strings with new values from NIBs
     udpateStringsFromNib;
 }
 
@@ -110,7 +115,7 @@ updateNibFromStrings() {
 	{
 		# force update
 		echo "*** Updating $nib... (force) in $language..."
-		nibtool --write $language/$nibfile --dictionary $language/$nib.strings en.lproj/$nibfile
+		nibtool --write $language/$nibfile --dictionary $language/$nib.strings $base_language/$nibfile
 	}
     else
 	{
@@ -118,7 +123,7 @@ updateNibFromStrings() {
 		echo "*** Updating $nib... (incremental) in $language..."
 		nibtool --write $language/$nibfile \
 				--incremental $language/$nibfile.bak \
-				--dictionary $language/$nib.strings en.lproj/$nibfile
+				--dictionary $language/$nib.strings $base_language/$nibfile
 	}
     fi;
     cp -R $language/$nibfile.bak/.svn $language/$nibfile/.svn
@@ -127,9 +132,9 @@ updateNibFromStrings() {
 
 udpateStringsFromNib() {
     echo "*** Updating $nib.strings in $language..."
-    nibtool --previous en.lproj/$nibfile \
+    nibtool --previous $base_language/$nibfile \
             --incremental $language/$nibfile \
-            --localizable-strings en.lproj/$nibfile > $language/$nib.strings
+            --localizable-strings $base_language/$nibfile > $language/$nib.strings
 }
 
 update() {
@@ -138,20 +143,20 @@ update() {
 			echo "*** Updating all localizations...";
 			for lproj in `ls . | grep lproj`; do
 				language=$lproj;
-				if [ $language != "en.lproj" ]; then
+				if [ $language != $base_language ]; then
 				{
 					echo "*** Updating $language Localization...";
 					if [ "$nibfile" = "all" ] ; then
 						echo "*** Updating all NIBs...";
 						for nibfile in `ls $language | grep .nib | grep -v ~.nib | grep -v .bak`; do
 							nib=`basename $nibfile .nib`
-							nibtool --localizable-strings en.lproj/$nibfile > en.lproj/$nib.strings
+							nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
 							nib;
 						done;
 					fi;
 					if [ "$nibfile" != "all" ] ; then
 							nib=`basename $nibfile .nib`
-							nibtool --localizable-strings en.lproj/$nibfile > en.lproj/$nib.strings
+							nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
 							nib;
 					fi;
 				}
@@ -165,14 +170,14 @@ update() {
 				echo "*** Updating all NIBs...";
 				for nibfile in `ls $language | grep .nib | grep -v ~.nib | grep -v .bak`; do
 					nib=`basename $nibfile .nib`;
-					nibtool --localizable-strings en.lproj/$nibfile > en.lproj/$nib.strings
+					nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
 					nib;
 				done;
 			fi;
 			if [ "$nibfile" != "all" ] ; then
 			{
 				nib=`basename $nibfile .nib`;
-				nibtool --localizable-strings en.lproj/$nibfile > en.lproj/$nib.strings
+				nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
 				nib;
 			}
 			fi;
