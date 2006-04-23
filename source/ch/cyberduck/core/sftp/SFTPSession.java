@@ -101,18 +101,19 @@ public class SFTPSession extends Session {
             if (null == this.SSH) {
                 return;
             }
-            this.SSH.getActiveSession("sftp").close();
+            this.SSH.interrupt();
         }
-        catch (SshException e) {
-            log.error("SSH Error: " + e.getMessage());
+        catch(IOException e) {
+            log.error(e.getMessage());
         }
-        catch (IOException e) {
-            this.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+        finally {
+            this.SFTP = null;
+            this.connectionDidClose();
         }
     }
 
     public void sendCommand(String command) {
-        //todo
+        log.error("Not implemented");
     }
 
     private HostKeyVerification hostKeyVerification = new IgnoreHostKeyVerification();
@@ -125,7 +126,7 @@ public class SFTPSession extends Session {
         return this.hostKeyVerification;
     }
 
-    protected void connect() throws IOException {
+    protected void connect() throws IOException, SshException, LoginCanceledException {
         synchronized (this) {
             SessionPool.instance().add(this);
             this.connectionWillOpen();
@@ -184,12 +185,12 @@ public class SFTPSession extends Session {
                     }
                 }, host.getEncoding());
                 this.message(NSBundle.localizedString("SFTP subsystem ready", "Status", ""));
+                this.connectionDidOpen();
             }
-            this.connectionDidOpen();
         }
     }
 
-    private int loginUsingKBIAuthentication(final Login credentials) throws IOException {
+    private int loginUsingKBIAuthentication(final Login credentials) throws IOException, SshException {
         log.info("Trying Keyboard Interactive (PAM) authentication...");
         KBIAuthenticationClient kbi = new KBIAuthenticationClient();
         kbi.setUsername(credentials.getUsername());
@@ -212,7 +213,7 @@ public class SFTPSession extends Session {
     }
 
 
-    private int loginUsingPasswordAuthentication(final Login credentials) throws IOException {
+    private int loginUsingPasswordAuthentication(final Login credentials) throws IOException, SshException {
         log.info("Trying Password authentication...");
         PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
         auth.setUsername(credentials.getUsername());
@@ -221,7 +222,7 @@ public class SFTPSession extends Session {
         return SSH.authenticate(auth);
     }
 
-    private int loginUsingPublicKeyAuthentication(Login credentials) throws IOException {
+    private int loginUsingPublicKeyAuthentication(Login credentials) throws IOException, SshException {
         log.info("Trying Public Key authentication...");
         PublicKeyAuthenticationClient pk = new PublicKeyAuthenticationClient();
         pk.setUsername(credentials.getUsername());
@@ -259,7 +260,7 @@ public class SFTPSession extends Session {
         return SSH.authenticate(pk);
     }
 
-    protected void login() throws IOException {
+    protected void login() throws IOException, SshException, LoginCanceledException {
         log.debug("login");
         if (host.getCredentials().check(this.loginController)) {
             this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " '"
@@ -284,17 +285,13 @@ public class SFTPSession extends Session {
             loginController.promptUser(host.getCredentials(),
                     NSBundle.localizedString("Login failed", "Credentials", ""),
                     NSBundle.localizedString("Login with username and password", "Credentials", ""));
-            if (host.getCredentials().tryAgain()) {
-                this.login();
+            if (!host.getCredentials().tryAgain()) {
+                throw new LoginCanceledException();
             }
-            else {
-                throw new SshException(
-                        NSBundle.localizedString("Login canceled", "Credentials", ""));
-            }
+            this.login();
         }
         else {
-            throw new IOException(
-                    NSBundle.localizedString("Login canceled", "Credentials", ""));
+            throw new LoginCanceledException();
         }
     }
 
@@ -313,7 +310,7 @@ public class SFTPSession extends Session {
         return null;
     }
 
-    protected void noop() throws IOException {
+    protected void noop() throws IOException, SshException {
         synchronized (this) {
             if (this.isConnected()) {
                 this.SSH.noop();

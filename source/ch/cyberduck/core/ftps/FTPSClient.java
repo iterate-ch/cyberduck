@@ -36,11 +36,9 @@ import java.net.InetAddress;
 public class FTPSClient extends FTPClient {
     private static Logger log = Logger.getLogger(SSLProtocolSocketFactory.class);
 
-    public FTPSClient(String remoteHost, int controlPort, int timeout, String encoding,
-                      FTPMessageListener listener, X509TrustManager trustManager) throws IOException, FTPException {
-        super(listener);
-        this.control = new FTPSControlSocket(InetAddress.getByName(remoteHost),
-                controlPort, timeout, encoding, listener, trustManager);
+    public FTPSClient(final String encoding, final FTPMessageListener listener, final X509TrustManager trustManager) {
+        super(encoding, listener);
+        this.control = new FTPSControlSocket(encoding, listener, trustManager);
     }
 
     /**

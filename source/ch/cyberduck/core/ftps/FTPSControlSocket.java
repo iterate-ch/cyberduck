@@ -45,10 +45,8 @@ public class FTPSControlSocket extends FTPControlSocket {
 
     private X509TrustManager trustManager;
 
-    protected FTPSControlSocket(InetAddress remoteAddr, int controlPort, int timeout, String encoding,
-                                FTPMessageListener listener, X509TrustManager trustManager) throws IOException, FTPException {
-
-        super(remoteAddr, controlPort, timeout, encoding, listener);
+    protected FTPSControlSocket(String encoding, FTPMessageListener listener, X509TrustManager trustManager) {
+        super(encoding, listener);
         this.trustManager = trustManager;
     }
 
@@ -65,7 +63,8 @@ public class FTPSControlSocket extends FTPControlSocket {
             }
         };
         ((SSLSocket) this.controlSock).addHandshakeCompletedListener(listener);
-        this.initStreams(this.getEncoding());
+
+        this.initStreams();
     }
 
     public void setUseDataConnectionSecurity(boolean b) {

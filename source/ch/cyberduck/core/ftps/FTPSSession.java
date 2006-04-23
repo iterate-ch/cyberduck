@@ -76,10 +76,7 @@ public class FTPSSession extends FTPSession {
             this.log("=====================================");
             this.log(new java.util.Date().toString());
             this.log(host.getIp());
-            this.FTP = new FTPSClient(host.getHostname(),
-                    host.getPort(),
-                    Preferences.instance().getInteger("connection.timeout"), //timeout
-                    host.getEncoding(), new FTPMessageListener() {
+            this.FTP = new FTPSClient(host.getEncoding(), new FTPMessageListener() {
                 public void logCommand(String cmd) {
                     FTPSSession.this.log(cmd);
                 }
@@ -89,6 +86,8 @@ public class FTPSSession extends FTPSession {
                 }
             },
                     this.trustManager);
+            this.FTP.connect(host.getHostname(), host.getPort(),
+                    Preferences.instance().getInteger("connection.timeout"));
             this.FTP.setStrictReturnCodes(true);
             if (Proxy.isSOCKSProxyEnabled()) {
                 log.info("Using SOCKS Proxy");

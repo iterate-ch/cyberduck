@@ -100,7 +100,7 @@ public abstract class Session extends NSObject
      */
     public abstract boolean isSecure();
 
-    protected abstract void connect() throws IOException;
+    protected abstract void connect() throws IOException, LoginCanceledException;
 
     protected LoginController loginController;
 
@@ -108,7 +108,7 @@ public abstract class Session extends NSObject
         this.loginController = loginController;
     }
 
-    protected abstract void login() throws IOException;
+    protected abstract void login() throws IOException, LoginCanceledException;
 
     /**
      * Connect to the remote host and mount the home directory
@@ -124,7 +124,6 @@ public abstract class Session extends NSObject
                 if (host.hasReasonableDefaultPath()) {
                     home = PathFactory.createPath(this, host.getDefaultPath());
                     home.attributes.setType(Path.DIRECTORY_TYPE);
-                    //todo
                     if (null == home.list()) {
                         // the default path does not exist
                         home = workdir();
@@ -133,13 +132,19 @@ public abstract class Session extends NSObject
                 else {
                     home = workdir();
                 }
-                Growl.instance().notify(NSBundle.localizedString("Connection opened", "Growl", "Growl Notification"),
+                Growl.instance().notify(
+                        NSBundle.localizedString("Connection opened", "Growl", "Growl Notification"),
                         host.getHostname());
                 return home;
             }
+            catch(LoginCanceledException e) {
+                Growl.instance().notify(e.getMessage(), host.getHostname());
+                this.close();
+            }
             catch (IOException e) {
                 this.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
-                Growl.instance().notify(NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
+                Growl.instance().notify(
+                        NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
                         host.getHostname());
                 this.close();
             }

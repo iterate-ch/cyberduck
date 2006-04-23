@@ -91,15 +91,15 @@ public class FTPSession extends Session {
             }
             this.FTP.interrupt();
         }
-        catch (FTPException e) {
-            this.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+        catch(IOException e) {
+            log.error(e.getMessage());
         }
-        catch (IOException e) {
-            this.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+        finally {
+            this.connectionDidClose();
         }
     }
 
-    protected void connect() throws IOException, FTPException {
+    protected void connect() throws IOException, FTPException, LoginCanceledException {
         synchronized (this) {
             SessionPool.instance().add(this);
             this.connectionWillOpen();
@@ -107,10 +107,7 @@ public class FTPSession extends Session {
             this.log("=====================================");
             this.log(new java.util.Date().toString());
             this.log(host.getIp());
-            this.FTP = new FTPClient(host.getHostname(),
-                    host.getPort(),
-                    Preferences.instance().getInteger("connection.timeout"), //timeout
-                    host.getEncoding(), new FTPMessageListener() {
+            this.FTP = new FTPClient(host.getEncoding(), new FTPMessageListener() {
                 public void logCommand(String cmd) {
                     FTPSession.this.log(cmd);
                 }
@@ -119,6 +116,8 @@ public class FTPSession extends Session {
                     FTPSession.this.log(reply);
                 }
             });
+            this.FTP.connect(host.getHostname(), host.getPort(),
+                    Preferences.instance().getInteger("connection.timeout"));
             this.FTP.setStrictReturnCodes(true);
             if (Proxy.isSOCKSProxyEnabled()) {
                 log.info("Using SOCKS Proxy");
@@ -138,7 +137,7 @@ public class FTPSession extends Session {
         }
     }
 
-    protected void login() throws IOException {
+    protected void login() throws IOException, LoginCanceledException {
         log.debug("login");
         if (host.getCredentials().check(loginController)) {
             try {
@@ -153,18 +152,14 @@ public class FTPSession extends Session {
                 loginController.promptUser(host.getCredentials(),
                         NSBundle.localizedString("Login failed", "Credentials", ""),
                         e.getMessage());
-                if (host.getCredentials().tryAgain()) {
-                    this.login();
+                if (!host.getCredentials().tryAgain()) {
+                    throw new LoginCanceledException();
                 }
-                else {
-                    throw new FTPException(
-                            NSBundle.localizedString("Login canceled", "Credentials", ""));
-                }
+                this.login();
             }
         }
         else {
-            throw new FTPException(
-                    NSBundle.localizedString("Login canceled", "Status", ""));
+            throw new LoginCanceledException();
         }
     }
 
