@@ -31,15 +31,14 @@ import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 import com.sshtools.j2ssh.subsystem.SubsystemMessageStore;
 import com.sshtools.j2ssh.util.OpenClosedState;
 
-import java.util.Iterator;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import ch.cyberduck.core.Preferences;
 
+import org.apache.log4j.Logger;
+
+import java.util.Iterator;
+
 class SftpMessageStore extends SubsystemMessageStore {
-	public static Log log = LogFactory.getLog(SftpMessageStore.class);
+	private static Logger log = Logger.getLogger(SftpMessageStore.class);
 
 
 	/**

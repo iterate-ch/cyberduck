@@ -28,10 +28,12 @@ package com.sshtools.j2ssh.transport.kex;
 
 import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 
-import java.util.*;
+import org.apache.log4j.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -41,7 +43,7 @@ import org.apache.commons.logging.LogFactory;
 public class SshKeyExchangeFactory {
     private static Map kexs;
     private static String defaultAlgorithm;
-    private static Log log = LogFactory.getLog(SshKeyExchangeFactory.class);
+    private static Logger log = Logger.getLogger(SshKeyExchangeFactory.class);
 
     static {
         kexs = new HashMap();

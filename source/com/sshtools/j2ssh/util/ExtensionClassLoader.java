@@ -26,16 +26,19 @@
  */
 package com.sshtools.j2ssh.util;
 
-import java.io.*;
+import org.apache.log4j.Logger;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -48,7 +51,7 @@ import org.apache.commons.logging.LogFactory;
  * @version $Id$
  */
 public class ExtensionClassLoader extends ClassLoader {
-	private static Log log = LogFactory.getLog(ExtensionClassLoader.class);
+	private static Logger log = Logger.getLogger(ExtensionClassLoader.class);
 	Vector classpath = new Vector();
 	private Hashtable cache = new Hashtable();
 	private HashMap packages = new HashMap();

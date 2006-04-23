@@ -28,13 +28,12 @@ package com.sshtools.j2ssh.transport.hmac;
 
 import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -44,7 +43,7 @@ import org.apache.commons.logging.LogFactory;
 public class SshHmacFactory {
     private static String defaultAlgorithm;
     private static Map macs;
-    private static Log log = LogFactory.getLog(SshHmacFactory.class);
+    private static Logger log = Logger.getLogger(SshHmacFactory.class);
 
     static {
         macs = new HashMap();

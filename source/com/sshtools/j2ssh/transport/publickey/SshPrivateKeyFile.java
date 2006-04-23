@@ -29,13 +29,12 @@ package com.sshtools.j2ssh.transport.publickey;
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -43,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
  * @version $Revision$
  */
 public class SshPrivateKeyFile {
-	private static Log log = LogFactory.getLog(SshPrivateKeyFile.class);
+	private static Logger log = Logger.getLogger(SshPrivateKeyFile.class);
 	private SshPrivateKeyFormat format;
 	private byte[] keyblob;
 

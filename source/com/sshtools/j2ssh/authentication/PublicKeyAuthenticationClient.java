@@ -31,11 +31,10 @@ import com.sshtools.j2ssh.transport.SshMessage;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.util.Properties;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -43,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
  * @version $Revision$
  */
 public class PublicKeyAuthenticationClient extends SshAuthenticationClient {
-    private static Log log = LogFactory.getLog(PublicKeyAuthenticationClient.class);
+    private static Logger log = Logger.getLogger(PublicKeyAuthenticationClient.class);
 
     /**  */
     protected SshPrivateKey key;

@@ -26,16 +26,16 @@
  */
 package com.sshtools.j2ssh.connection;
 
+import com.sshtools.j2ssh.io.ByteArrayWriter;
+
+import ch.cyberduck.core.Preferences;
+
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.Socket;
 import java.net.SocketException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import com.sshtools.j2ssh.io.ByteArrayWriter;
-
-import ch.cyberduck.core.Preferences;
 
 
 /**
@@ -43,7 +43,7 @@ import ch.cyberduck.core.Preferences;
  * @version $Revision$
  */
 public abstract class SocketChannel extends Channel {
-    private static Log log = LogFactory.getLog(SocketChannel.class);
+    private static Logger log = Logger.getLogger(SocketChannel.class);
 
     /**  */
     protected Socket socket = null;

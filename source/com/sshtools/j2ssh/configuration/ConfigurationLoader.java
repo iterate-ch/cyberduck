@@ -28,6 +28,8 @@ package com.sshtools.j2ssh.configuration;
 
 import com.sshtools.j2ssh.util.ExtensionClassLoader;
 
+import org.apache.log4j.Logger;
+
 import java.io.*;
 import java.security.AccessControlException;
 import java.security.AccessController;
@@ -37,9 +39,6 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.PropertyPermission;
 import java.util.Vector;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -51,7 +50,7 @@ public class ConfigurationLoader {
     private static SecureRandom rnd;
     private static ExtensionClassLoader ext = null;
     private static ClassLoader clsLoader = null;
-    private static Log log = LogFactory.getLog(ConfigurationLoader.class);
+    private static Logger log = Logger.getLogger(ConfigurationLoader.class);
     private static String homedir;
     private static boolean initialized = false;
     private static Object initializationLock = new Object();

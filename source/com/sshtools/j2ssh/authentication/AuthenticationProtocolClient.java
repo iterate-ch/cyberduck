@@ -27,13 +27,13 @@ import com.sshtools.j2ssh.transport.MessageStoreEOFException;
 import com.sshtools.j2ssh.transport.Service;
 import com.sshtools.j2ssh.transport.SshMessage;
 
+
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author $author$
@@ -41,7 +41,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class AuthenticationProtocolClient
         extends Service {
-    private static Log log = LogFactory.getLog(AuthenticationProtocolClient.class);
+    private static Logger log = Logger.getLogger(AuthenticationProtocolClient.class);
     private int[] resultFilter = new int[2];
     private int[] singleIdFilter = new int[3];
     private Vector listeners = new Vector();

@@ -26,14 +26,14 @@
  */
 package com.sshtools.j2ssh.io;
 
+import com.sshtools.j2ssh.SshThread;
+
+import org.apache.log4j.Logger;
+
 import javax.swing.event.EventListenerList;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import com.sshtools.j2ssh.SshThread;
 
 
 /**
@@ -41,7 +41,7 @@ import com.sshtools.j2ssh.SshThread;
  * @version $Revision$
  */
 public class IOStreamConnector {
-	private static Log log = LogFactory.getLog(IOStreamConnector.class);
+	private static Logger log = Logger.getLogger(IOStreamConnector.class);
 	private IOStreamConnectorState state = new IOStreamConnectorState();
 	private InputStream in = null;
 	private OutputStream out = null;
@@ -144,7 +144,7 @@ public class IOStreamConnector {
 	}
 
 	class IOStreamConnectorThread implements Runnable {
-		private Log log = LogFactory.getLog(IOStreamConnectorThread.class);
+		private Logger log = Logger.getLogger(IOStreamConnectorThread.class);
 
 		public void run() {
 			byte[] buffer = new byte[4096];

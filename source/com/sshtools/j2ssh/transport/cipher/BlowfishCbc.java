@@ -28,6 +28,8 @@ package com.sshtools.j2ssh.transport.cipher;
 
 import com.sshtools.j2ssh.transport.AlgorithmOperationException;
 
+import org.apache.log4j.Logger;
+
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
@@ -36,16 +38,13 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 
 /**
  * @author $author$
  * @version $Revision$
  */
 public class BlowfishCbc extends SshCipher {
-	private static Log log = LogFactory.getLog(BlowfishCbc.class);
+	private static Logger log = Logger.getLogger(BlowfishCbc.class);
 
 	/**  */
 	protected static String algorithmName = "blowfish-cbc";

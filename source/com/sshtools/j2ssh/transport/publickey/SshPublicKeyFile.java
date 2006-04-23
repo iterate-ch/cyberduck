@@ -28,13 +28,12 @@ package com.sshtools.j2ssh.transport.publickey;
 
 import com.sshtools.j2ssh.io.ByteArrayReader;
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -42,7 +41,7 @@ import org.apache.commons.logging.LogFactory;
  * @version $Revision$
  */
 public class SshPublicKeyFile {
-	private static Log log = LogFactory.getLog(SshPublicKeyFile.class);
+	private static Logger log = Logger.getLogger(SshPublicKeyFile.class);
 	private SshPublicKeyFormat format;
 	private byte[] keyblob;
 	private String comment;

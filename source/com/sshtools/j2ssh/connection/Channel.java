@@ -26,12 +26,11 @@
  */
 package com.sshtools.j2ssh.connection;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -39,7 +38,7 @@ import org.apache.commons.logging.LogFactory;
  * @version $Revision$
  */
 public abstract class Channel {
-	private static Log log = LogFactory.getLog(Channel.class);
+	private static Logger log = Logger.getLogger(Channel.class);
 
 	/**  */
 	protected ChannelDataWindow localWindow = new ChannelDataWindow();

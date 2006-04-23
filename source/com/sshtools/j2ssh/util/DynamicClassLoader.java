@@ -26,15 +26,22 @@
  */
 package com.sshtools.j2ssh.util;
 
-import java.io.*;
+import org.apache.log4j.Logger;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -42,7 +49,7 @@ import org.apache.commons.logging.LogFactory;
  * @version $Revision$
  */
 public class DynamicClassLoader extends ClassLoader {
-	private static Log log = LogFactory.getLog(DynamicClassLoader.class);
+	private static Logger log = Logger.getLogger(DynamicClassLoader.class);
 	private static int generationCounter = 0;
 	private Hashtable cache;
 	private List classpath = new Vector();

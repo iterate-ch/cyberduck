@@ -26,15 +26,14 @@
  */
 package com.sshtools.j2ssh.io;
 
+import ch.cyberduck.core.Preferences;
+
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import ch.cyberduck.core.Preferences;
 
 /**
  * <p/>
@@ -51,7 +50,7 @@ import ch.cyberduck.core.Preferences;
  * @version $Revision$
  */
 public class DynamicBuffer {
-	private static Log log = LogFactory.getLog(DynamicBuffer.class);
+	private static Logger log = Logger.getLogger(DynamicBuffer.class);
 
 	/**
 	 * Buffer size when the dynamic buffer is opened

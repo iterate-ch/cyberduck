@@ -21,10 +21,9 @@
 
 package com.sshtools.j2ssh.transport;
 
-import java.io.IOException;
+import org.apache.log4j.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.IOException;
 //import com.sshtools.j2ssh.SshThread;
 
 /**
@@ -39,7 +38,7 @@ import org.apache.commons.logging.LogFactory;
  * @since 0.2.0
  */
 public abstract class AsyncService extends Service implements SshMessageListener /*Runnable*/ {
-  private static Log log = LogFactory.getLog(Service.class);
+  private static Logger log = Logger.getLogger(Service.class);
 
   /**  */
   //protected SshThread thread;

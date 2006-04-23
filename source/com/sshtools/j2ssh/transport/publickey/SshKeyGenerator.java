@@ -28,7 +28,11 @@ package com.sshtools.j2ssh.transport.publickey;
 
 import com.sshtools.j2ssh.SshThread;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 
 

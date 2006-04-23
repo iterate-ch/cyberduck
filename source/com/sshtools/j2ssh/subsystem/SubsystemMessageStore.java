@@ -26,17 +26,17 @@
  */
 package com.sshtools.j2ssh.subsystem;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.transport.MessageNotAvailableException;
 import com.sshtools.j2ssh.transport.MessageStoreEOFException;
 import com.sshtools.j2ssh.util.OpenClosedState;
+
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -44,7 +44,7 @@ import com.sshtools.j2ssh.util.OpenClosedState;
  * @version $Revision$
  */
 public class SubsystemMessageStore {
-	private static Log log = LogFactory.getLog(SubsystemMessageStore.class);
+	private static Logger log = Logger.getLogger(SubsystemMessageStore.class);
 
 	// List to hold messages as they are received
 

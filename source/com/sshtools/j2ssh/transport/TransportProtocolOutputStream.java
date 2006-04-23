@@ -32,16 +32,15 @@ import com.sshtools.j2ssh.transport.cipher.SshCipher;
 import com.sshtools.j2ssh.transport.compression.SshCompression;
 import com.sshtools.j2ssh.transport.hmac.SshHmac;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.Random;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public class TransportProtocolOutputStream {
-	private static Log log = LogFactory.getLog(TransportProtocolOutputStream.class);
+	private static Logger log = Logger.getLogger(TransportProtocolOutputStream.class);
 	private OutputStream out;
 
 	//private Socket socket;

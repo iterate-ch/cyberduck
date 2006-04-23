@@ -31,11 +31,14 @@ import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 import com.sshtools.j2ssh.transport.publickey.dsa.SshDssKeyPair;
 import com.sshtools.j2ssh.transport.publickey.rsa.SshRsaKeyPair;
 
-import java.io.IOException;
-import java.util.*;
+import org.apache.log4j.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -45,7 +48,7 @@ import org.apache.commons.logging.LogFactory;
 public class SshKeyPairFactory {
     private static Map pks;
     private static String defaultAlgorithm;
-    private static Log log = LogFactory.getLog(SshKeyPairFactory.class);
+    private static Logger log = Logger.getLogger(SshKeyPairFactory.class);
 
     static {
         pks = new HashMap();

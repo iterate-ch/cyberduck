@@ -29,12 +29,11 @@ package com.sshtools.j2ssh.transport.cipher;
 import com.sshtools.ext.bouncycastle.cipher.*;
 import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author $author$
@@ -43,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
 public class SshCipherFactory {
 	private static HashMap ciphers;
 	private static String defaultCipher;
-	private static Log log = LogFactory.getLog(SshCipherFactory.class);
+	private static Logger log = Logger.getLogger(SshCipherFactory.class);
 
 	static {
 		ciphers = new HashMap();

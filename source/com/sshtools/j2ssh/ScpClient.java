@@ -20,11 +20,11 @@
  */
 package com.sshtools.j2ssh;
 
-import java.io.*;
-
 import com.sshtools.j2ssh.configuration.ConfigurationLoader;
 import com.sshtools.j2ssh.connection.ChannelEventListener;
 import com.sshtools.j2ssh.session.SessionChannelClient;
+
+import java.io.*;
 
 /**
  * <p/>

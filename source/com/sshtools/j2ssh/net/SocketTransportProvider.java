@@ -35,7 +35,15 @@ import java.net.Socket;
  * @version $Revision$
  */
 public class SocketTransportProvider extends Socket implements TransportProvider {
-	/**
+
+    /**
+     * Creates an unconnected socket
+     */
+    public SocketTransportProvider() {
+        super();
+    }
+
+    /**
 	 * Creates a new SocketTransportProvider object.
 	 *
 	 * @param host

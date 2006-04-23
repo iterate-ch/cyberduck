@@ -28,18 +28,17 @@ package com.sshtools.j2ssh.authentication;
 
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.util.Properties;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author $author$
  * @version $Revision$
  */
 public class PasswordAuthenticationClient extends SshAuthenticationClient {
-    private static Log log = LogFactory.getLog(PasswordAuthenticationClient.class);
+    private static Logger log = Logger.getLogger(PasswordAuthenticationClient.class);
     private PasswordChangePrompt changePrompt = null;
 
     /**  */

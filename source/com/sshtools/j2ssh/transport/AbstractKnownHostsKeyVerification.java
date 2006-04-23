@@ -26,10 +26,12 @@
  */
 package com.sshtools.j2ssh.transport;
 
+import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
 import com.sshtools.j2ssh.transport.publickey.SshKeyPairFactory;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
-import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
 import com.sshtools.j2ssh.util.Base64;
+
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.security.AccessControlException;
@@ -38,9 +40,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -55,7 +54,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class AbstractKnownHostsKeyVerification
     implements HostKeyVerification {
-	private static Log log = LogFactory.getLog(HostKeyVerification.class);
+	private static Logger log = Logger.getLogger(HostKeyVerification.class);
 
 	private Map allowedHosts = new HashMap();
 	private String knownhosts;

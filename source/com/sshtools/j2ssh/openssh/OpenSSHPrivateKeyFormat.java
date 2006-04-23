@@ -26,19 +26,19 @@
  */
 package com.sshtools.j2ssh.openssh;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.math.BigInteger;
-import java.security.GeneralSecurityException;
-
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.publickey.InvalidSshKeyException;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFormat;
 import com.sshtools.j2ssh.util.SimpleASNReader;
 import com.sshtools.j2ssh.util.SimpleASNWriter;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 
 
 /**

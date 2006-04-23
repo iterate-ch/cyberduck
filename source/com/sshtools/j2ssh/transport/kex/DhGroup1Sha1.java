@@ -27,23 +27,26 @@ import com.sshtools.j2ssh.transport.AlgorithmOperationException;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
 import com.sshtools.j2ssh.util.Hash;
 
+import org.apache.log4j.Logger;
+
 import javax.crypto.KeyAgreement;
 import javax.crypto.interfaces.DHPrivateKey;
 import javax.crypto.interfaces.DHPublicKey;
 import javax.crypto.spec.DHParameterSpec;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.*;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * @author $author$
  * @version $Revision$
  */
 public class DhGroup1Sha1 extends SshKeyExchange {
-    private static Log log = LogFactory.getLog(DhGroup1Sha1.class);
+    private static Logger log = Logger.getLogger(DhGroup1Sha1.class);
     private static BigInteger g = new BigInteger("2");
     private static BigInteger p = new BigInteger(new byte[]{
         (byte) 0x00, (byte) 0xFF,

@@ -32,6 +32,8 @@ import com.sshtools.j2ssh.transport.cipher.SshCipher;
 import com.sshtools.j2ssh.transport.compression.SshCompression;
 import com.sshtools.j2ssh.transport.hmac.SshHmac;
 
+import org.apache.log4j.Logger;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,11 +42,8 @@ import java.math.BigInteger;
 import java.net.SocketException;
 import java.util.Iterator;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public class TransportProtocolInputStream {
-	private static Log log = LogFactory.getLog(TransportProtocolInputStream.class);
+	private static Logger log = Logger.getLogger(TransportProtocolInputStream.class);
 	private long bytesTransfered = 0;
 	private BufferedInputStream in;
 	private Object sequenceLock = new Object();

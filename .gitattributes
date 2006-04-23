@@ -1207,7 +1207,6 @@ ko.lproj/Update.nib/keyedobjects.nib -text
 ko.lproj/Update.strings -text svneol=native#application/octet-stream
 ko.lproj/Validator.nib/keyedobjects.nib -text
 ko.lproj/Validator.strings -text svneol=native#application/octet-stream
-lib/commons-logging-api.jar -text
 lib/ext/junit.jar -text
 lib/jakarta-oro-2.0.8.jar -text
 lib/log4j-1.2.13.jar -text

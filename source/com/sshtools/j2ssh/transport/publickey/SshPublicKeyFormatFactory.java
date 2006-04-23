@@ -28,10 +28,13 @@ package com.sshtools.j2ssh.transport.publickey;
 
 import com.sshtools.j2ssh.configuration.ConfigurationLoader;
 
-import java.util.*;
+import org.apache.log4j.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 
 /**
@@ -41,7 +44,7 @@ import org.apache.commons.logging.LogFactory;
 public class SshPublicKeyFormatFactory {
 	private static String defaultFormat;
 	private static HashMap formatTypes = new HashMap();
-	private static Log log = LogFactory.getLog(SshPublicKeyFormatFactory.class);
+	private static Logger log = Logger.getLogger(SshPublicKeyFormatFactory.class);
 	private static Vector types = new Vector();
 
 	static {

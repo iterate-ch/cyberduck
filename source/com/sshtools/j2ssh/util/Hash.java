@@ -26,12 +26,12 @@
  */
 package com.sshtools.j2ssh.util;
 
+import com.sshtools.j2ssh.io.ByteArrayWriter;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import com.sshtools.j2ssh.io.ByteArrayWriter;
 
 
 /**

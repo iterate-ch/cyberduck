@@ -34,6 +34,8 @@ import com.sshtools.j2ssh.transport.publickey.SshPrivateKey;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 import com.sshtools.j2ssh.util.SimpleASNReader;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.KeyFactory;
@@ -43,12 +45,9 @@ import java.security.interfaces.DSAPublicKey;
 import java.security.spec.DSAPrivateKeySpec;
 import java.security.spec.DSAPublicKeySpec;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 
 class SshDssPrivateKey extends SshPrivateKey {
-	private static Log log = LogFactory.getLog(SshDssPrivateKey.class);
+	private static Logger log = Logger.getLogger(SshDssPrivateKey.class);
 	DSAPrivateKey prvkey;
 
 	/**

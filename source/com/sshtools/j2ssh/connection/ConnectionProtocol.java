@@ -21,15 +21,6 @@
 
 package com.sshtools.j2ssh.connection;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.transport.AsyncService;
 import com.sshtools.j2ssh.transport.MessageStoreEOFException;
@@ -37,12 +28,20 @@ import com.sshtools.j2ssh.transport.ServiceState;
 import com.sshtools.j2ssh.transport.SshMessage;
 import com.sshtools.j2ssh.transport.TransportProtocolState;
 
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+
 /**
  * @author $author$
  * @version $Revision$
  */
 public class ConnectionProtocol extends AsyncService {
-    private static Log log = LogFactory.getLog(ConnectionProtocol.class);
+    private static Logger log = Logger.getLogger(ConnectionProtocol.class);
     private HashSet reusableChannels = new HashSet();
     private Map activeChannels = new HashMap();
     private Map allowedChannels = new HashMap();

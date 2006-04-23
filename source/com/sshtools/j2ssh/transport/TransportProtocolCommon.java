@@ -32,8 +32,7 @@ import com.sshtools.j2ssh.transport.kex.SshKeyExchange;
 import com.sshtools.j2ssh.transport.kex.SshKeyExchangeFactory;
 import com.sshtools.j2ssh.util.Hash;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -48,7 +47,7 @@ import java.util.*;
 public abstract class TransportProtocolCommon implements TransportProtocol, Runnable {
 
     /**  */
-    protected static Log log = LogFactory.getLog(TransportProtocolCommon.class);
+    protected static Logger log = Logger.getLogger(TransportProtocolCommon.class);
     private static int nextThreadNo = 1;
 
     /**  */

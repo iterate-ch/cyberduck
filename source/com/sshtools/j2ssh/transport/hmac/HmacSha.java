@@ -28,13 +28,12 @@ package com.sshtools.j2ssh.transport.hmac;
 
 import com.sshtools.j2ssh.transport.AlgorithmInitializationException;
 
+import org.apache.log4j.Logger;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -42,7 +41,7 @@ import org.apache.commons.logging.LogFactory;
  * @version $Revision$
  */
 public class HmacSha implements SshHmac {
-    private static Log log = LogFactory.getLog(HmacSha.class);
+    private static Logger log = Logger.getLogger(HmacSha.class);
     private Mac mac;
 
     /**

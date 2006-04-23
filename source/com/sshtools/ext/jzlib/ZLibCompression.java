@@ -1,6 +1,7 @@
 package com.sshtools.ext.jzlib;
 
 import com.sshtools.j2ssh.transport.compression.SshCompression;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 

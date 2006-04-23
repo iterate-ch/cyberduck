@@ -31,9 +31,15 @@ import com.sshtools.j2ssh.authentication.AuthenticationProtocolState;
 import com.sshtools.j2ssh.authentication.PublicKeyAuthenticationClient;
 import com.sshtools.j2ssh.authentication.SshAuthenticationClient;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
-import com.sshtools.j2ssh.connection.*;
+import com.sshtools.j2ssh.connection.Channel;
+import com.sshtools.j2ssh.connection.ChannelEventAdapter;
+import com.sshtools.j2ssh.connection.ChannelEventListener;
+import com.sshtools.j2ssh.connection.ChannelFactory;
+import com.sshtools.j2ssh.connection.ConnectionProtocol;
+import com.sshtools.j2ssh.net.HttpProxySocketProvider;
+import com.sshtools.j2ssh.net.SocketTransportProvider;
+import com.sshtools.j2ssh.net.SocksProxySocket;
 import com.sshtools.j2ssh.net.TransportProvider;
-import com.sshtools.j2ssh.net.TransportProviderFactory;
 import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
@@ -43,15 +49,16 @@ import com.sshtools.j2ssh.transport.TransportProtocolState;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 import com.sshtools.j2ssh.util.State;
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.net.Socket;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -110,7 +117,7 @@ import org.apache.commons.logging.LogFactory;
  * @since 0.2.0
  */
 public class SshClient {
-	private static Log log = LogFactory.getLog(SshClient.class);
+	private static Logger log = Logger.getLogger(SshClient.class);
 
 	/**
 	 * The SSH Authentication protocol implementation for this SSH client. The
@@ -127,7 +134,12 @@ public class SshClient {
 	 */
 	protected ConnectionProtocol connection;
 
-	/**
+    /**
+     * The underlying socket
+     */
+    private TransportProvider socket;
+
+    /**
 	 * The SSH Transport protocol implementation for this SSH Client.
 	 */
 	protected TransportProtocolClient transport;
@@ -165,11 +177,6 @@ public class SshClient {
 	 * connection is made.
 	 */
 	protected boolean useDefaultForwarding = true;
-
-	/**
-	 * The currently active Sftp clients
-	 */
-	private Vector activeSftpClients = new Vector();
 
 	/**
 	 * <p/>
@@ -610,13 +617,36 @@ public class SshClient {
 	public void connect(SshConnectionProperties properties,
 	                    HostKeyVerification hostVerification)
 	    throws UnknownHostException, IOException {
-		TransportProvider provider = TransportProviderFactory.connectTransportProvider(properties /*, connectTimeout*/,
-		    socketTimeout);
+
+        if(properties.getTransportProvider() == SshConnectionProperties.USE_HTTP_PROXY) {
+            socket = HttpProxySocketProvider.connectViaProxy(properties.getHost(),
+                properties.getPort(), properties.getProxyHost(),
+                properties.getProxyPort(), properties.getProxyUsername(),
+                properties.getProxyPassword(), "J2SSH");
+        }
+        else if(properties.getTransportProvider() == SshConnectionProperties.USE_SOCKS4_PROXY) {
+            socket = SocksProxySocket.connectViaSocks4Proxy(properties.getHost(),
+                properties.getPort(), properties.getProxyHost(),
+                properties.getProxyPort(), properties.getProxyUsername());
+        }
+        else if(properties.getTransportProvider() == SshConnectionProperties.USE_SOCKS5_PROXY) {
+            socket = SocksProxySocket.connectViaSocks5Proxy(properties.getHost(),
+                properties.getPort(), properties.getProxyHost(),
+                properties.getProxyPort(), properties.getProxyUsername(),
+                properties.getProxyPassword());
+        }
+        else {
+            // No proxy just attempt a standard socket connection
+            socket = new SocketTransportProvider();
+            ((SocketTransportProvider)socket).connect(new InetSocketAddress(properties.getHost(), properties.getPort()));
+            //socket.setTcpNoDelay(true);
+            ((SocketTransportProvider)socket).setSoTimeout(socketTimeout);
+        }
 
 		// Start the transport protocol
 		transport = new TransportProtocolClient(hostVerification);
 		transport.addEventHandler(eventHandler);
-		transport.startTransportProtocol(provider, properties);
+		transport.startTransportProtocol(socket, properties);
 
 		// Start the authentication protocol
 		authentication = new AuthenticationProtocolClient();
@@ -720,7 +750,20 @@ public class SshClient {
 		}
 	}
 
-	/**
+    public void interrupt() throws IOException {
+        try {
+            if(null == this.socket) {
+                log.warn("Cannot interrupt; no socket");
+                return;
+            }
+            socket.close();
+        }
+        finally {
+            this.disconnect();
+        }
+    }
+
+    /**
 	 * <p/>
 	 * Returns the number of bytes transmitted to the remote server.
 	 * </p>

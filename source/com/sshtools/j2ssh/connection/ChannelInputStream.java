@@ -50,12 +50,11 @@ import com.sshtools.j2ssh.transport.MessageNotAvailableException;
 import com.sshtools.j2ssh.transport.MessageStoreEOFException;
 import com.sshtools.j2ssh.transport.SshMessageStore;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -63,7 +62,7 @@ import org.apache.commons.logging.LogFactory;
  * @version $Revision$
  */
 public class ChannelInputStream extends InputStream {
-	private static Log log = LogFactory.getLog(ChannelInputStream.class);
+	private static Logger log = Logger.getLogger(ChannelInputStream.class);
 	int[] filter;
 	byte[] msgdata;
 	int currentPos = 0;

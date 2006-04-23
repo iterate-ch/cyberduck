@@ -26,11 +26,10 @@
  */
 package com.sshtools.j2ssh.connection;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.io.OutputStream;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -38,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
  * @version $Revision$
  */
 public class ChannelOutputStream extends OutputStream {
-	private static Log log = LogFactory.getLog(ChannelOutputStream.class);
+	private static Logger log = Logger.getLogger(ChannelOutputStream.class);
 	private Channel channel;
 	private boolean isClosed = false;
 	private Integer type = null;

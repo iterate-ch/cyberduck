@@ -26,13 +26,13 @@
  */
 package com.sshtools.j2ssh.sftp;
 
-import java.io.IOException;
-
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
+
+import java.io.IOException;
 
 /**
  * @author $author$

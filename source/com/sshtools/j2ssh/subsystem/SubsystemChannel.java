@@ -34,13 +34,12 @@ import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.io.DynamicBuffer;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public abstract class SubsystemChannel extends Channel {
-	private static Log log = LogFactory.getLog(SubsystemChannel.class);
+	private static Logger log = Logger.getLogger(SubsystemChannel.class);
 	Integer exitCode = null;
 	String name;
 	protected SubsystemMessageStore messageStore;

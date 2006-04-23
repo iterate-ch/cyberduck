@@ -26,16 +26,16 @@
  */
 package com.sshtools.j2ssh.connection;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.sshtools.j2ssh.io.IOStreamConnector;
 import com.sshtools.j2ssh.transport.MessageNotAvailableException;
 import com.sshtools.j2ssh.transport.MessageStoreEOFException;
 import com.sshtools.j2ssh.transport.SshMessageStore;
+
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 
 /**
@@ -43,7 +43,7 @@ import com.sshtools.j2ssh.transport.SshMessageStore;
  * @version $Revision$
  */
 public abstract class IOChannel extends Channel {
-	private static Log log = LogFactory.getLog(IOChannel.class);
+	private static Logger log = Logger.getLogger(IOChannel.class);
 
 	/**  */
 	private SshMessageStore incoming = new SshMessageStore();

@@ -26,14 +26,8 @@
  */
 package com.sshtools.j2ssh.subsystem;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import com.sshtools.j2ssh.SshThread;
 import com.sshtools.j2ssh.SshException;
+import com.sshtools.j2ssh.SshThread;
 import com.sshtools.j2ssh.connection.ChannelState;
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
@@ -41,13 +35,19 @@ import com.sshtools.j2ssh.session.SessionChannelClient;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
 import com.sshtools.j2ssh.util.StartStopState;
 
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 
 /**
  * @author $author$
  * @version $Revision$
  */
 public abstract class SubsystemClient implements Runnable {
-	private static Log log = LogFactory.getLog(SubsystemClient.class);
+	private static Logger log = Logger.getLogger(SubsystemClient.class);
 	private InputStream in;
 	private OutputStream out;
 	private Thread thread;

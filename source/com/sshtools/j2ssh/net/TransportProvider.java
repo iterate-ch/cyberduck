@@ -36,22 +36,22 @@ import java.io.OutputStream;
  * @version $Revision$
  */
 public interface TransportProvider {
-	/**
-	 * @throws IOException
-	 */
-	public void close() throws IOException;
+    /**
+     * @throws IOException
+     */
+    public void close() throws IOException;
 
-	//public boolean isConnected();
-	public InputStream getInputStream() throws IOException;
+    //public boolean isConnected();
+    public InputStream getInputStream() throws IOException;
 
-	/**
-	 * @return
-	 * @throws IOException
-	 */
-	public OutputStream getOutputStream() throws IOException;
+    /**
+     * @return
+     * @throws IOException
+     */
+    public OutputStream getOutputStream() throws IOException;
 
-	/**
-	 * @return
-	 */
-	public String getProviderDetail();
+    /**
+     * @return
+     */
+    public String getProviderDetail();
 }

@@ -26,11 +26,11 @@
  */
 package com.sshtools.j2ssh.io;
 
+import ch.cyberduck.core.Codec;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-
-import ch.cyberduck.core.Codec;
 
 /**
  * @author $author$

@@ -21,10 +21,9 @@
 
 package com.sshtools.j2ssh.transport;
 
-import java.io.IOException;
+import org.apache.log4j.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.IOException;
 
 /**
 * <p>
@@ -52,7 +51,7 @@ import org.apache.commons.logging.LogFactory;
  * @since 0.2.0
  */
 public abstract class Service {
-	private static Log log = LogFactory.getLog(Service.class);
+	private static Logger log = Logger.getLogger(Service.class);
 	
 	/**
 	* Service start mode passed into <code>init</code> method when the service

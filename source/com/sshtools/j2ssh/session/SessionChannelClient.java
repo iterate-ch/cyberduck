@@ -26,11 +26,6 @@
  */
 package com.sshtools.j2ssh.session;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.sshtools.j2ssh.connection.ChannelInputStream;
 import com.sshtools.j2ssh.connection.IOChannel;
 import com.sshtools.j2ssh.connection.SshMsgChannelExtendedData;
@@ -40,13 +35,18 @@ import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.subsystem.SubsystemClient;
 import com.sshtools.j2ssh.transport.SshMessageStore;
 
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.io.InputStream;
+
 
 /**
  * @author $author$
  * @version $Revision$
  */
 public class SessionChannelClient extends IOChannel {
-	private static Log log = LogFactory.getLog(SessionChannelClient.class);
+	private static Logger log = Logger.getLogger(SessionChannelClient.class);
 	private Integer exitCode = null;
 	private String sessionType = "Uninitialized";
 	private SubsystemClient subsystem;

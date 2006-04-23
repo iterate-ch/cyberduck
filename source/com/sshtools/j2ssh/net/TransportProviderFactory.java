@@ -26,10 +26,10 @@
  */
 package com.sshtools.j2ssh.net;
 
+import com.sshtools.j2ssh.configuration.SshConnectionProperties;
+
 import java.io.IOException;
 import java.net.UnknownHostException;
-
-import com.sshtools.j2ssh.configuration.SshConnectionProperties;
 
 
 /**

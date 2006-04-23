@@ -26,14 +26,14 @@
  */
 package com.sshtools.j2ssh.openssh;
 
+import com.sshtools.j2ssh.util.SimpleASNReader;
+import com.sshtools.j2ssh.util.SimpleASNWriter;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.spec.KeySpec;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
-
-import com.sshtools.j2ssh.util.SimpleASNReader;
-import com.sshtools.j2ssh.util.SimpleASNWriter;
 
 
 /**

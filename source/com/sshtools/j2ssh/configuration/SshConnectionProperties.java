@@ -32,16 +32,14 @@ import com.sshtools.j2ssh.transport.hmac.SshHmacFactory;
 import com.sshtools.j2ssh.transport.kex.SshKeyExchangeFactory;
 import com.sshtools.j2ssh.transport.publickey.SshKeyPairFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.apache.log4j.Logger;
 
 /**
  * @author $author$
  * @version $Revision$
  */
 public class SshConnectionProperties {
-    private static Log log = LogFactory.getLog(SshConnectionProperties.class);
+    private static Logger log = Logger.getLogger(SshConnectionProperties.class);
 
     /**  */
     public static final int USE_STANDARD_SOCKET = 1;

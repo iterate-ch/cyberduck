@@ -33,15 +33,18 @@ import com.sshtools.j2ssh.transport.publickey.InvalidSshKeySignatureException;
 import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
 import com.sshtools.j2ssh.util.SimpleASNWriter;
 
+import org.apache.log4j.Logger;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.security.interfaces.DSAPublicKey;
 import java.security.spec.DSAPublicKeySpec;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -49,7 +52,7 @@ import org.apache.commons.logging.LogFactory;
  * @version $Revision$
  */
 public class SshDssPublicKey extends SshPublicKey {
-	private static Log log = LogFactory.getLog(SshDssPublicKey.class);
+	private static Logger log = Logger.getLogger(SshDssPublicKey.class);
 	private DSAPublicKey pubkey;
 
 	/**

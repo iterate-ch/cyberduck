@@ -23,14 +23,13 @@ package com.sshtools.j2ssh.transport;
 
 import com.sshtools.j2ssh.io.ByteArrayReader;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * <p/>
@@ -43,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
  * @since 0.2.0
  */
 public final class SshMessageStore {
-    private static Log log = LogFactory.getLog(SshMessageStore.class);
+    private static Logger log = Logger.getLogger(SshMessageStore.class);
 
     // List to hold messages as they are received
     private List messages = new ArrayList();

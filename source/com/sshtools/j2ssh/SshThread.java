@@ -26,9 +26,9 @@
  */
 package com.sshtools.j2ssh;
 
-import java.util.HashMap;
-
 import com.sshtools.j2ssh.configuration.ConfigurationLoader;
+
+import java.util.HashMap;
 
 
 /**

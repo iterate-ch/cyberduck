@@ -26,6 +26,8 @@
  */
 package com.sshtools.j2ssh.openssh;
 
+import com.sshtools.j2ssh.util.Base64;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -36,8 +38,6 @@ import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.sshtools.j2ssh.util.Base64;
 
 
 /**

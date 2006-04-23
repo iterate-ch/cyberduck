@@ -26,11 +26,11 @@
  */
 package com.sshtools.j2ssh.subsystem;
 
-import java.io.IOException;
-
 import com.sshtools.j2ssh.io.ByteArrayReader;
 import com.sshtools.j2ssh.io.ByteArrayWriter;
 import com.sshtools.j2ssh.transport.InvalidMessageException;
+
+import java.io.IOException;
 
 
 /**

@@ -26,10 +26,10 @@
  */
 package com.sshtools.j2ssh.sftp;
 
+import com.sshtools.j2ssh.io.UnsignedInteger64;
+
 import java.io.IOException;
 import java.io.OutputStream;
-
-import com.sshtools.j2ssh.io.UnsignedInteger64;
 
 
 /**

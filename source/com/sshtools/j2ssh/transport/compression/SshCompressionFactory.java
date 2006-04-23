@@ -28,13 +28,12 @@ package com.sshtools.j2ssh.transport.compression;
 
 import com.sshtools.j2ssh.transport.AlgorithmNotSupportedException;
 
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -46,7 +45,7 @@ public class SshCompressionFactory {
 	public final static String COMP_NONE = "none";
 	private static String defaultAlgorithm;
 	private static Map comps;
-	private static Log log = LogFactory.getLog(SshCompressionFactory.class);
+	private static Logger log = Logger.getLogger(SshCompressionFactory.class);
 
 	static {
 		comps = new HashMap();

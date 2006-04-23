@@ -35,13 +35,11 @@ import com.sshtools.j2ssh.subsystem.SubsystemMessage;
 import com.sshtools.j2ssh.transport.MessageNotAvailableException;
 import com.sshtools.j2ssh.transport.MessageStoreEOFException;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.Vector;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author $author$
@@ -79,7 +77,7 @@ public class SftpSubsystemClient extends SubsystemChannel {
 	public static final int VERSION_4 = 4;
 
 	/* Private variables */
-	private static Log log = LogFactory.getLog(SftpSubsystemClient.class);
+	private static Logger log = Logger.getLogger(SftpSubsystemClient.class);
 	private List handles = new Vector();
 	private UnsignedInteger32 nextRequestId = new UnsignedInteger32(1);
 	private int version = VERSION_3;
