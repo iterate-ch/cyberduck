@@ -68,7 +68,7 @@ public class DownloadQueue extends Queue {
             childs.add(p);
             if (p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
                 p.attributes.setSize(0);
-                List files = p.list(false);
+                List files = p.list();
                 if(null == files) {
                     return childs;
                 }

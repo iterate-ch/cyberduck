@@ -79,7 +79,7 @@ public class SyncQueue extends Queue {
                 if (p.attributes.isDirectory()) {
                     if (!p.getRemote().exists()) {
                         //hack
-                        p.getSession().cache().put(p, new ArrayList());
+                        p.getSession().cache().put(p, new AttributedList());
                     }
                     File[] files = p.getLocal().listFiles();
                     for (int i = 0; i < files.length; i++) {
@@ -103,7 +103,7 @@ public class SyncQueue extends Queue {
                 }
                 if (p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
                     p.attributes.setSize(0);
-                    List files = p.list(false);
+                    List files = p.list();
                     if(null == files) {
                         return;
                     }
