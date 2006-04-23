@@ -155,8 +155,6 @@
 		4784DAAB07AEFB5900A8FC38 /* transparent.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4784DAAA07AEFB5900A8FC38 /* transparent.tiff */; };
 		4785B6060806FC6500F4E71F /* download10.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4785B6050806FC6500F4E71F /* download10.icns */; };
 		478B71F0089FEB4E003B512A /* arrowRightBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 478B71EF089FEB4E003B512A /* arrowRightBlack16.tiff */; };
-		4791CE5809D5E60600A0F79D /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4791CE5709D5E60600A0F79D /* Sparkle.framework */; };
-		4791CE9709D5E65A00A0F79D /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4791CE5709D5E60600A0F79D /* Sparkle.framework */; };
 		479734DB077B735A0027370F /* arrowLeftBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479734D9077B735A0027370F /* arrowLeftBlack16.tiff */; };
 		4798363E072AC0FA00FA3CDB /* Progress.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4798363C072AC0FA00FA3CDB /* Progress.nib */; };
 		479C422A097AB2BB00DDE88A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 479C4229097AB2BB00DDE88A /* Credits.rtf */; };
@@ -178,6 +176,8 @@
 		47EF997509006EF500D4B4FF /* IconFamily.h in Headers */ = {isa = PBXBuildFile; fileRef = 47EF997109006EF500D4B4FF /* IconFamily.h */; };
 		47F0B701087ACD0B00439978 /* Growl.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B6FE087ACD0300439978 /* Growl.strings */; };
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
+		47F2B1FE09FB24A60027D535 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47F2B1FD09FB24A60027D535 /* Sparkle.framework */; };
+		47F2B21109FB24B20027D535 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47F2B1FD09FB24A60027D535 /* Sparkle.framework */; };
 		47FC190C099FB8AF0082431D /* Crash.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47FC190A099FB8AF0082431D /* Crash.strings */; };
 		47FD44A70801DCE200716715 /* queue.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FD44A60801DCE200716715 /* queue.tiff */; };
 		47FD455A0801EC1400716715 /* advanced.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FD45590801EC1400716715 /* advanced.tiff */; };
@@ -282,7 +282,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				4791CE9709D5E65A00A0F79D /* Sparkle.framework in CopyFiles */,
+				47F2B21109FB24B20027D535 /* Sparkle.framework in CopyFiles */,
 				47DC8F0D0869A44E00B9DD7D /* DotMacKit.framework in CopyFiles */,
 				47C261A90859014400765C4A /* Growl.framework in CopyFiles */,
 				47C261AA0859014400765C4A /* Keychain.framework in CopyFiles */,
@@ -1337,7 +1337,6 @@
 		4785B6050806FC6500F4E71F /* download10.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download10.icns; sourceTree = "<group>"; };
 		478B71EF089FEB4E003B512A /* arrowRightBlack16.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowRightBlack16.tiff; sourceTree = "<group>"; };
 		4790762A0764903900676C18 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4791CE5709D5E60600A0F79D /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = build/Sparkle.framework; sourceTree = "<group>"; };
 		479734D9077B735A0027370F /* arrowLeftBlack16.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowLeftBlack16.tiff; sourceTree = "<group>"; };
 		479814C907280B2B00FA3CDB /* no */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = no; path = no.lproj/Localizable.strings; sourceTree = "<group>"; };
 		479814CA07280B2B00FA3CDB /* no */ = {isa = PBXFileReference; lastKnownFileType = text; name = no; path = no.lproj/License.txt; sourceTree = "<group>"; };
@@ -1516,6 +1515,7 @@
 		47F0CB8C087B23A900439978 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Status.strings; sourceTree = "<group>"; };
 		47F0CB91087B23B600439978 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Growl.strings; sourceTree = "<group>"; };
 		47F2080E0753E676009192FF /* ValidatorFactory.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ValidatorFactory.java; sourceTree = "<group>"; };
+		47F2B1FD09FB24A60027D535 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = Sparkle/build/Release/Sparkle.framework; sourceTree = "<group>"; };
 		47F2E9BA05BD5356003D2875 /* LoginTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = LoginTest.java; sourceTree = "<group>"; };
 		47F2EAA405BD7F7E003D2875 /* CodecTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CodecTest.java; sourceTree = "<group>"; };
 		47FC190B099FB8AF0082431D /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Crash.strings; sourceTree = "<group>"; };
@@ -1554,7 +1554,7 @@
 				47649E0908E563C500207DC9 /* Security.framework in Frameworks */,
 				47649E4508E563D000207DC9 /* CoreFoundation.framework in Frameworks */,
 				47649EDD08E563D600207DC9 /* Carbon.framework in Frameworks */,
-				4791CE5809D5E60600A0F79D /* Sparkle.framework in Frameworks */,
+				47F2B1FE09FB24A60027D535 /* Sparkle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1650,7 +1650,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				4791CE5709D5E60600A0F79D /* Sparkle.framework */,
+				47F2B1FD09FB24A60027D535 /* Sparkle.framework */,
 				47DC7F4308694B5A00B9DD7D /* DotMacKit.framework */,
 				4739F03D08569B5E00405FD3 /* Growl.framework */,
 				4739EFFB08569A8100405FD3 /* Keychain.framework */,
@@ -4691,6 +4691,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SRCROOT)/build",
 					"$(SRCROOT)",
+					"$(SRCROOT)/Sparkle/build/Release",
 				);
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
