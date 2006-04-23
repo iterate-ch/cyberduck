@@ -80,7 +80,7 @@ public class CDCreateFileController extends CDFileController {
             if(filename.charAt(0) == '.') {
                 ((CDBrowserController) parent).setShowHiddenFiles(true);
             }
-            ((CDBrowserController) parent).reloadData(true);
+            ((CDBrowserController) parent).reloadData(false);
             ((CDBrowserController) parent).setSelectedPath(file);
             return file;
         }

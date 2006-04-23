@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.NullComparator;
+import ch.cyberduck.core.NullFilter;
 
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSComboBox;
@@ -48,7 +50,7 @@ public class CDGotoController extends CDSheetController
             private List directories = new ArrayList();
 
             {
-                List files =  ((CDBrowserController)parent).workdir().list(false);
+                List files =  ((CDBrowserController)parent).workdir().list();
                 if(null != files) {
                     for (Iterator iter = files.iterator(); iter.hasNext();) {
                         Path p = (Path) iter.next();
@@ -84,7 +86,7 @@ public class CDGotoController extends CDSheetController
 
     public void callback(int returncode) {
         if (returncode == DEFAULT_OPTION) {
-            gotoFolder(((CDBrowserController)parent).workdir(), folderCombobox.stringValue());
+            this.gotoFolder(((CDBrowserController)parent).workdir(), folderCombobox.stringValue());
         }
     }
 

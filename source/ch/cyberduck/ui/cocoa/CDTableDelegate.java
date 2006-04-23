@@ -24,9 +24,9 @@ import java.util.Comparator;
  * @version $Id$
  */
 public interface CDTableDelegate {
-    public void enterKeyPressed(Object sender);
+    public void enterKeyPressed(final Object sender);
 
-    public void deleteKeyPressed(Object sender);
+    public void deleteKeyPressed(final Object sender);
 
     public boolean isSortedAscending();
 

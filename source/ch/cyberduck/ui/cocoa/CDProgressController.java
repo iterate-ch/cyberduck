@@ -190,7 +190,7 @@ public class CDProgressController extends CDController {
         return this.queue;
     }
 
-    public void alertButtonClicked(NSButton sender) {
+    public void alertButtonClicked(final Object sender) {
         CDQueueController.instance().alert(
                 NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"),
                         this.getErrorText(), // message

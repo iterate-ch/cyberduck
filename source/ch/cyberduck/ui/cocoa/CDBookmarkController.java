@@ -225,7 +225,7 @@ public class CDBookmarkController extends CDWindowController {
         this.pkCheckbox.setAction(new NSSelector("pkCheckboxSelectionChanged", new Class[]{Object.class}));
     }
 
-    public void pkCheckboxSelectionChanged(Object sender) {
+    public void pkCheckboxSelectionChanged(final Object sender) {
         log.debug("pkCheckboxSelectionChanged");
         if (this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected", ""))) {
             NSOpenPanel panel = NSOpenPanel.openPanel();

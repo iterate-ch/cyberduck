@@ -382,7 +382,7 @@ public class CDInfoController extends CDWindowController {
         return new Permission(p);
     }
 
-    public void permissionSelectionChanged(NSButton sender) {
+    public void permissionSelectionChanged(final NSButton sender) {
         if (sender.state() == NSCell.MixedState) {
             sender.setState(NSCell.OnState);
         }
@@ -390,7 +390,7 @@ public class CDInfoController extends CDWindowController {
         permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
     }
 
-    public void applyButtonClicked(Object sender) {
+    public void applyButtonClicked(final Object sender) {
         log.debug("applyButtonClicked");
         final Permission permission = this.getPermissionFromSelection();
         // send the changes to the remote host

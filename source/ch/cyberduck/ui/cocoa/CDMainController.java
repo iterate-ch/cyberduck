@@ -147,7 +147,7 @@ public class CDMainController extends CDController {
             return true;
         }
 
-        public void bookmarkMenuItemClicked(Object sender) {
+        public void bookmarkMenuItemClicked(final Object sender) {
             log.debug("bookmarkMenuItemClicked:" + sender);
             CDBrowserController controller = CDMainController.this.newDocument();
             controller.mount((Host) items.get(sender));
@@ -261,7 +261,7 @@ public class CDMainController extends CDController {
         }
     }
 
-    public void bugreportMenuClicked(Object sender) {
+    public void bugreportMenuClicked(final Object sender) {
         try {
             NSWorkspace.sharedWorkspace().openURL(
                     new java.net.URL(Preferences.instance().getProperty("website.bug")));
@@ -271,7 +271,7 @@ public class CDMainController extends CDController {
         }
     }
 
-    public void helpMenuClicked(Object sender) {
+    public void helpMenuClicked(final Object sender) {
         try {
             String locale = "en";
             NSArray preferredLocalizations = NSBundle.preferredLocalizations(
@@ -287,17 +287,17 @@ public class CDMainController extends CDController {
         }
     }
 
-    public void faqMenuClicked(Object sender) {
+    public void faqMenuClicked(final Object sender) {
         NSWorkspace.sharedWorkspace().openFile(
                 new File(NSBundle.mainBundle().pathForResource("Cyberduck FAQ", "rtfd")).toString());
     }
 
-    public void licenseMenuClicked(Object sender) {
+    public void licenseMenuClicked(final Object sender) {
         NSWorkspace.sharedWorkspace().openFile(
                 new File(NSBundle.mainBundle().pathForResource("License", "txt")).toString());
     }
 
-    public void websiteMenuClicked(Object sender) {
+    public void websiteMenuClicked(final Object sender) {
         try {
             NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.home")));
         }
@@ -306,7 +306,7 @@ public class CDMainController extends CDController {
         }
     }
 
-    public void forumMenuClicked(Object sender) {
+    public void forumMenuClicked(final Object sender) {
         try {
             NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.forum")));
         }
@@ -315,7 +315,7 @@ public class CDMainController extends CDController {
         }
     }
 
-    public void donateMenuClicked(Object sender) {
+    public void donateMenuClicked(final Object sender) {
         try {
             NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.donate")));
         }
@@ -324,7 +324,7 @@ public class CDMainController extends CDController {
         }
     }
 
-    public void feedbackMenuClicked(Object sender) {
+    public void feedbackMenuClicked(final Object sender) {
         try {
             String versionString = (String) NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
             NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail.feedback")
@@ -335,32 +335,32 @@ public class CDMainController extends CDController {
         }
     }
 
-    public void preferencesMenuClicked(Object sender) {
+    public void preferencesMenuClicked(final Object sender) {
         CDPreferencesController controller = CDPreferencesController.instance();
         controller.window().makeKeyAndOrderFront(null);
     }
 
-    public void newDownloadMenuClicked(Object sender) {
+    public void newDownloadMenuClicked(final Object sender) {
         CDSheetController controller = new CDDownloadController(CDQueueController.instance());
         controller.beginSheet(false);
     }
 
-    public void newBrowserMenuClicked(Object sender) {
+    public void newBrowserMenuClicked(final Object sender) {
         this.newDocument(true);
     }
 
-    public void showTransferQueueClicked(Object sender) {
+    public void showTransferQueueClicked(final Object sender) {
         CDQueueController c = CDQueueController.instance();
         c.window().makeKeyAndOrderFront(null);
     }
 
-    public void downloadBookmarksFromDotMacClicked(Object sender) {
+    public void downloadBookmarksFromDotMacClicked(final Object sender) {
         CDDotMacController controller = new CDDotMacController();
         controller.downloadBookmarks();
         controller.invalidate();
     }
 
-    public void uploadBookmarksToDotMacClicked(Object sender) {
+    public void uploadBookmarksToDotMacClicked(final Object sender) {
         CDDotMacController c = new CDDotMacController();
         c.uploadBookmarks();
         c.invalidate();
@@ -501,7 +501,7 @@ public class CDMainController extends CDController {
                     this.window().makeKeyAndOrderFront(null);
                 }
 
-                public void closeDonationSheet(NSButton sender) {
+                public void closeDonationSheet(final NSButton sender) {
                     this.window().close();
                     Preferences.instance().setProperty("donate.reminder", neverShowDonationCheckbox.state() == NSCell.OffState);
                     if (sender.tag() == CDSheetCallback.DEFAULT_OPTION) {

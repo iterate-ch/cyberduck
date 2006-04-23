@@ -75,7 +75,7 @@ public class CDFolderController extends CDSheetController
         folder.mkdir(false);
         if(folder.exists()) {
             ((CDBrowserController)parent).setShowHiddenFiles(filename.charAt(0) == '.');
-            ((CDBrowserController)parent).reloadData(true);
+            ((CDBrowserController)parent).reloadData(false);
             ((CDBrowserController)parent).setSelectedPath(folder);
         }
     }

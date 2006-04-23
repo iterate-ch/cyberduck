@@ -45,9 +45,6 @@ public class CDCommandController extends CDSheetController implements Transcript
         this.responseField.layoutManager().setDelegate(this);
     }
 
-    private static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)},
-            new Object[]{NSAttributedString.FontAttributeName});
-
     public void layoutManagerDidCompleteLayoutForTextContainer(NSLayoutManager layoutManager,
                                                                NSTextContainer textContainer,
                                                                boolean finished) {
@@ -69,7 +66,7 @@ public class CDCommandController extends CDSheetController implements Transcript
         }
     }
 
-    public void sendButtonClicked(NSButton sender) {
+    public void sendButtonClicked(final Object sender) {
         String command = this.inputField.stringValue();
         if (command != null && command.length() > 0) {
             session.sendCommand(command);

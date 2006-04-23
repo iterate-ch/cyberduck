@@ -70,7 +70,7 @@ public class CDDuplicateFileController extends CDFileController {
         }
     }
 
-    protected Path duplicateFile(Path selected, String filename) {
+    private Path duplicateFile(Path selected, String filename) {
         Path duplicate = (Path)selected.clone(selected.getSession());
         duplicate.setLocal(new Local(NSPathUtilities.temporaryDirectory(),
                 selected.getName()));
@@ -82,7 +82,8 @@ public class CDDuplicateFileController extends CDFileController {
             if(filename.charAt(0) == '.') {
                 ((CDBrowserController)parent).setShowHiddenFiles(true);
             }
-            ((CDBrowserController)parent).reloadData(true);
+            ((CDBrowserController)parent).reloadData(false);
+            ((CDBrowserController)parent).setSelectedPath(duplicate);
             return duplicate;
         }
         return null;

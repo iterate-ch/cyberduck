@@ -18,12 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSObject;
-import com.apple.cocoa.foundation.NSRunLoop;
-import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSTimer;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSNotificationCenter;
+import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.application.NSFont;
 
 import org.apache.log4j.Logger;
 
@@ -32,6 +28,9 @@ import org.apache.log4j.Logger;
  */
 public abstract class CDController extends NSObject {
     private static Logger log = Logger.getLogger(CDController.class);
+
+    protected static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)},
+            new Object[]{NSAttributedString.FontAttributeName});
 
     public CDController() {
         //Assuming this is always called from the main thread #currentRunLoop will return the main run loop

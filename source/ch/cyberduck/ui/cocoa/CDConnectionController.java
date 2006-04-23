@@ -155,7 +155,7 @@ public class CDConnectionController extends CDSheetController
         });
     }
 
-    public void rendezvousSelectionDidChange(Object sender) {
+    public void rendezvousSelectionDidChange(final Object sender) {
         this.bookmarkSelectionDidChange((Host) Rendezvous.instance().getServiceWithDisplayedName(
                 rendezvousPopup.titleOfSelectedItem()));
     }
@@ -175,7 +175,7 @@ public class CDConnectionController extends CDSheetController
         this.protocolPopup.setAction(new NSSelector("protocolSelectionDidChange", new Class[]{Object.class}));
     }
 
-    public void protocolSelectionDidChange(Object sender) {
+    public void protocolSelectionDidChange(final Object sender) {
         log.debug("protocolSelectionDidChange:" + sender);
         if (protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
             this.portField.setIntValue(Session.FTP_PORT);
@@ -214,7 +214,7 @@ public class CDConnectionController extends CDSheetController
         });
     }
 
-    public void hostFieldTextDidChange(Object sender) {
+    public void hostFieldTextDidChange(final Object sender) {
         try {
             Host h = Host.parse(hostPopup.stringValue());
             this.hostPopup.setStringValue(h.getHostname());
@@ -245,7 +245,7 @@ public class CDConnectionController extends CDSheetController
         this.portField = portField;
     }
 
-    public void portFieldTextDidChange(Object sender) {
+    public void portFieldTextDidChange(final Object sender) {
         if (null == this.portField.stringValue() || this.portField.stringValue().equals("")) {
             if (protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
                 this.portField.setStringValue("" + Session.SSH_PORT);
@@ -294,7 +294,7 @@ public class CDConnectionController extends CDSheetController
         this.anonymousCheckbox.setState(NSCell.OffState);
     }
 
-    public void anonymousCheckboxClicked(NSButton sender) {
+    public void anonymousCheckboxClicked(final NSButton sender) {
         if (sender.state() == NSCell.OnState) {
             this.usernameField.setEnabled(false);
             this.usernameField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.name"));
@@ -316,7 +316,7 @@ public class CDConnectionController extends CDSheetController
         this.pkCheckbox.setState(NSCell.OffState);
     }
 
-    public void pkCheckboxSelectionDidChange(Object sender) {
+    public void pkCheckboxSelectionDidChange(final Object sender) {
         log.debug("pkCheckboxSelectionDidChange");
         if (this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected", ""))) {
             NSOpenPanel panel = NSOpenPanel.openPanel();
@@ -466,7 +466,7 @@ public class CDConnectionController extends CDSheetController
      * Updating the password field with the actual password if any
      * is avaialble for this hostname
      */
-    public void getPasswordFromKeychain(Object sender) {
+    public void getPasswordFromKeychain(final Object sender) {
         if (Preferences.instance().getBoolean("connection.login.useKeychain")) {
             if (hostPopup.stringValue() != null && !hostPopup.stringValue().equals("") &&
                     usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {
@@ -524,7 +524,7 @@ public class CDConnectionController extends CDSheetController
         this.updateURLLabel(null);
     }
 
-    private void updateURLLabel(Object sender) {
+    private void updateURLLabel(final Object sender) {
         String protocol = null;
         if (protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
             protocol = Session.SFTP + "://";
@@ -585,7 +585,7 @@ public class CDConnectionController extends CDSheetController
             else {
                 throw new IllegalArgumentException("No protocol selected.");
             }
-            ((CDBrowserController)parent).setEncoding(encodingPopup.titleOfSelectedItem());
+            host.setEncoding(encodingPopup.titleOfSelectedItem());
             ((CDBrowserController)parent).mount(host);
         }
     }

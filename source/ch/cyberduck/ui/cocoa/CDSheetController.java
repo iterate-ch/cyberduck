@@ -64,7 +64,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
      * and close the sheet; #sheetDidClose will be called afterwards
      * @param sender A button in the sheet dialog
      */
-    public void closeSheet(NSButton sender) {
+    public void closeSheet(final NSButton sender) {
         log.debug("closeSheet:"+sender);
         if(sender.tag() == DEFAULT_OPTION
                 || sender.tag() == ALTERNATE_OPTION) {
