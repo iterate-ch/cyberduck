@@ -21,11 +21,10 @@ package ch.cyberduck.core;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSMutableDictionary;
 import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -45,7 +44,7 @@ public class UploadQueue extends Queue {
     public UploadQueue(NSDictionary dict) {
         super(dict);
     }
-    
+
     public NSMutableDictionary getAsDictionary() {
         NSMutableDictionary dict = super.getAsDictionary();
         dict.setObjectForKey(String.valueOf(QueueFactory.KIND_UPLOAD), "Kind");
@@ -54,7 +53,7 @@ public class UploadQueue extends Queue {
 
     protected void finish(boolean headless) {
         super.finish(headless);
-        if (this.isComplete() && !this.isCanceled()) {
+        if(this.isComplete() && !this.isCanceled()) {
             this.getSession().message(
                     NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"));
             Growl.instance().notify(
@@ -65,18 +64,18 @@ public class UploadQueue extends Queue {
     }
 
     protected List getChilds(List childs, Path p) {
-        if (!this.isCanceled()) {
-            if (p.getLocal().exists()) {// && p.getLocal().canRead()) {
+        if(!this.isCanceled()) {
+            if(p.getLocal().exists()) {// && p.getLocal().canRead()) {
                 childs.add(p);
-                if (p.attributes.isDirectory()) {
-                    if (!p.getRemote().exists()) {
+                if(p.attributes.isDirectory()) {
+                    if(!p.getRemote().exists()) {
                         //hack
                         p.getSession().cache().put(p, new AttributedList());
                     }
                     p.attributes.setSize(0);
                     File[] files = p.getLocal().listFiles();
-                    for (int i = 0; i < files.length; i++) {
-                        if (files[i].canRead()) {
+                    for(int i = 0; i < files.length; i++) {
+                        if(files[i].canRead()) {
                             Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(),
                                     new Local(files[i].getAbsolutePath()));
                             if(!this.isSkipped(new StringTokenizer(
@@ -93,7 +92,7 @@ public class UploadQueue extends Queue {
 
     protected void reset() {
         this.size = 0;
-        for (java.util.Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
+        for(java.util.Iterator iter = this.jobs.iterator(); iter.hasNext();) {
             this.size += ((Path) iter.next()).getLocal().getSize();
         }
     }

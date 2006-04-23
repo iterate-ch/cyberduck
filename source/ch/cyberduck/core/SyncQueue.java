@@ -21,11 +21,10 @@ package ch.cyberduck.core;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSMutableDictionary;
 import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -46,7 +45,7 @@ public class SyncQueue extends Queue {
     public SyncQueue(NSDictionary dict) {
         super(dict);
     }
-    
+
     public NSMutableDictionary getAsDictionary() {
         NSMutableDictionary dict = super.getAsDictionary();
         dict.setObjectForKey(String.valueOf(QueueFactory.KIND_SYNC), "Kind");
@@ -60,7 +59,7 @@ public class SyncQueue extends Queue {
 
     protected void finish(boolean headless) {
         super.finish(headless);
-        if (this.isComplete() && !this.isCanceled()) {
+        if(this.isComplete() && !this.isCanceled()) {
             this.getSession().message(
                     NSBundle.localizedString("Synchronization complete", "Growl", "Growl Notification"));
             Growl.instance().notify(
@@ -71,18 +70,18 @@ public class SyncQueue extends Queue {
     }
 
     private void addLocalChilds(List childs, Path p) {
-        if (!this.isCanceled()) {
-            if (p.getLocal().exists()) {// && p.getLocal().canRead()) {
-                if (!childs.contains(p)) {
+        if(!this.isCanceled()) {
+            if(p.getLocal().exists()) {// && p.getLocal().canRead()) {
+                if(!childs.contains(p)) {
                     childs.add(p);
                 }
-                if (p.attributes.isDirectory()) {
-                    if (!p.getRemote().exists()) {
+                if(p.attributes.isDirectory()) {
+                    if(!p.getRemote().exists()) {
                         //hack
                         p.getSession().cache().put(p, new AttributedList());
                     }
                     File[] files = p.getLocal().listFiles();
-                    for (int i = 0; i < files.length; i++) {
+                    for(int i = 0; i < files.length; i++) {
                         Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(),
                                 new Local(files[i].getAbsolutePath()));
                         if(!this.isSkipped(new StringTokenizer(
@@ -96,18 +95,18 @@ public class SyncQueue extends Queue {
     }
 
     private void addRemoteChilds(List childs, Path p) {
-        if (!this.isCanceled()) {
-            if (p.getRemote().exists()) {
-                if (!childs.contains(p)) {
+        if(!this.isCanceled()) {
+            if(p.getRemote().exists()) {
+                if(!childs.contains(p)) {
                     childs.add(p);
                 }
-                if (p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
+                if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
                     p.attributes.setSize(0);
                     List files = p.list();
                     if(null == files) {
                         return;
                     }
-                    for (Iterator i = files.iterator(); i.hasNext();) {
+                    for(Iterator i = files.iterator(); i.hasNext();) {
                         Path child = (Path) i.next();
                         child.setLocal(new Local(p.getLocal(), child.getName()));
                         if(!this.isSkipped(new StringTokenizer(
@@ -128,20 +127,20 @@ public class SyncQueue extends Queue {
 
     protected void reset() {
         this.size = 0;
-        for (Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
+        for(Iterator iter = this.jobs.iterator(); iter.hasNext();) {
             Path path = ((Path) iter.next());
-            if (path.getRemote().exists() && path.getLocal().exists()) {
-                if (path.getLocal().getTimestampAsCalendar().before(path.attributes.getTimestampAsCalendar())) {
+            if(path.getRemote().exists() && path.getLocal().exists()) {
+                if(path.getLocal().getTimestampAsCalendar().before(path.attributes.getTimestampAsCalendar())) {
                     this.size += path.getRemote().attributes.getSize();
                 }
-                if (path.getLocal().getTimestampAsCalendar().after(path.attributes.getTimestampAsCalendar())) {
+                if(path.getLocal().getTimestampAsCalendar().after(path.attributes.getTimestampAsCalendar())) {
                     this.size += path.getLocal().getSize();
                 }
             }
-            else if (path.getRemote().exists()) {
+            else if(path.getRemote().exists()) {
                 this.size += path.getRemote().attributes.getSize();
             }
-            else if (path.getLocal().exists()) {
+            else if(path.getLocal().exists()) {
                 this.size += path.getLocal().getSize();
             }
         }

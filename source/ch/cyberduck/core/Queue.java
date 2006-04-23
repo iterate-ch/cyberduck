@@ -42,7 +42,7 @@ public abstract class Queue extends NSObject implements QueueListener {
 
     //	private Worker worker;
     private List roots = new ArrayList();
-    private List jobs;
+    protected List jobs;
 
     protected double size = -1;
     private double current = 0;
@@ -185,10 +185,6 @@ public abstract class Queue extends NSObject implements QueueListener {
         
     protected abstract void process(Path p);
 
-    public List getJobs() {
-        return this.jobs;
-    }
-
     /**
      * Process the queue. All files will be downloaded/uploaded/synced rerspectively.
      *
@@ -199,10 +195,10 @@ public abstract class Queue extends NSObject implements QueueListener {
         try {
             if (this.init(resume, headless)) {
                 this.reset();
-                for (Iterator iter = this.getJobs().iterator(); iter.hasNext() && !this.isCanceled();) {
+                for (Iterator iter = this.jobs.iterator(); iter.hasNext() && !this.isCanceled();) {
                     ((Path) iter.next()).status.reset();
                 }
-                for (Iterator iter = this.getJobs().iterator(); iter.hasNext() && !this.isCanceled();) {
+                for (Iterator iter = this.jobs.iterator(); iter.hasNext() && !this.isCanceled();) {
                     this.process((Path) iter.next());
                 }
             }
@@ -286,12 +282,18 @@ public abstract class Queue extends NSObject implements QueueListener {
     }
 
     public void cancel() {
-        if (this.isInitialized()) {
-            for (Iterator iter = this.jobs.iterator(); iter.hasNext();) {
-                ((Path) iter.next()).status.setCanceled();
-            }
+        if(canceled) {
+            // Called prevously; now force
+            this.getSession().interrupt();
         }
-        this.canceled = true;
+        else {
+            if (this.isInitialized()) {
+                for (Iterator iter = this.jobs.iterator(); iter.hasNext();) {
+                    ((Path) iter.next()).status.setCanceled();
+                }
+            }
+            this.canceled = true;
+        }
     }
 
     public boolean isCanceled() {
@@ -305,7 +307,7 @@ public abstract class Queue extends NSObject implements QueueListener {
     protected abstract void reset();
 
     public boolean isInitialized() {
-        return this.getJobs() != null;
+        return this.jobs != null;
     }
 
     public int numberOfRoots() {
@@ -327,7 +329,7 @@ public abstract class Queue extends NSObject implements QueueListener {
     public double getCurrent() {
         if (this.isInitialized()) {
             double size = 0;
-            for (Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
+            for (Iterator iter = this.jobs.iterator(); iter.hasNext();) {
                 size += ((Path) iter.next()).status.getCurrent();
             }
             this.current = size;

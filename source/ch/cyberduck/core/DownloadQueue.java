@@ -21,8 +21,8 @@ package ch.cyberduck.core;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSMutableDictionary;
 import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.util.Iterator;
 import java.util.List;
@@ -53,7 +53,7 @@ public class DownloadQueue extends Queue {
 
     protected void finish(boolean headless) {
         super.finish(headless);
-        if (this.isComplete() && !this.isCanceled()) {
+        if(this.isComplete() && !this.isCanceled()) {
             this.getSession().message(
                     NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
             Growl.instance().notify(
@@ -64,15 +64,15 @@ public class DownloadQueue extends Queue {
     }
 
     protected List getChilds(List childs, Path p) {
-        if (!this.isCanceled()) {
+        if(!this.isCanceled()) {
             childs.add(p);
-            if (p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
+            if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
                 p.attributes.setSize(0);
                 List files = p.list();
                 if(null == files) {
                     return childs;
                 }
-                for (Iterator i = files.iterator(); i.hasNext();) {
+                for(Iterator i = files.iterator(); i.hasNext();) {
                     Path child = (Path) i.next();
                     child.setLocal(new Local(p.getLocal(), child.getName()));
                     if(!this.isSkipped(new StringTokenizer(
@@ -87,7 +87,7 @@ public class DownloadQueue extends Queue {
 
     protected void reset() {
         this.size = 0;
-        for (Iterator iter = this.getJobs().iterator(); iter.hasNext();) {
+        for(Iterator iter = this.jobs.iterator(); iter.hasNext();) {
             this.size += ((Path) iter.next()).attributes.getSize();
         }
     }
