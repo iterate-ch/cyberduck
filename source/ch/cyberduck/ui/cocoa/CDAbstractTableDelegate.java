@@ -104,7 +104,7 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         this.tableColumnClicked(view, tableColumn);
     }
 
-    public abstract void tableRowDoubleClicked(Object sender);
+    public abstract void tableRowDoubleClicked(final Object sender);
 
     // NSTableView.Notifications
     public void tableViewSelectionDidChange(NSNotification notification) {

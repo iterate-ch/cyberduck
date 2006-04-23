@@ -25,7 +25,6 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +38,8 @@ public abstract class CDBrowserTableDataSource extends CDController {
 
     protected static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
     protected static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
-    protected static final NSImage FOLDER_NOACCESS_ICON = NSImage.imageNamed("noaccess.tiff");
+    protected static final NSImage FOLDER_NOACCESS_ICON = NSImage.imageNamed("folder_noaccess.tiff");
+    protected static final NSImage FOLDER_WRITEONLY_ICON = NSImage.imageNamed("folder_writeonly.tiff");
     protected static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
     public static final String TYPE_COLUMN = "TYPE";
@@ -49,9 +49,17 @@ public abstract class CDBrowserTableDataSource extends CDController {
     public static final String OWNER_COLUMN = "OWNER";
     public static final String PERMISSIONS_COLUMN = "PERMISSIONS";
 
-    protected AttributedList childs(Path path) {
-        return path.list(false, controller.getEncoding(),
-                controller.getComparator(), controller.getFileFilter());
+    /**
+     *
+     * @param path The directory to fetch the childs from
+     * @return The cached or newly fetched file listing of the directory
+     */
+    protected List childs(Path path) {
+        List childs = path.list(controller.getComparator(), controller.getFileFilter());
+        if(null == childs) {
+            return new ArrayList();
+        }
+        return childs;
     }
 
     protected CDBrowserController controller;
@@ -78,7 +86,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                                 item.getParent().getAbsolute(), value.toString());
                         controller.renamePath(item, renamed);
                         item.getParent().invalidate();
-                        controller.reloadData();
+                        controller.reloadData(false);
                         controller.setSelectedPath(renamed);
                     }
                 });
@@ -100,6 +108,11 @@ public abstract class CDBrowserTableDataSource extends CDController {
 							&& false == perm.getOtherPermissions()[Permission.EXECUTE]) {
 						icon = FOLDER_NOACCESS_ICON;
 					}
+                    else if (false == perm.getOwnerPermissions()[Permission.READ]
+                            && false == perm.getGroupPermissions()[Permission.READ]
+                            && false == perm.getOtherPermissions()[Permission.READ]) {
+                        icon = FOLDER_WRITEONLY_ICON;
+                    }
 					else {
 	                    icon = FOLDER_ICON;
 					}

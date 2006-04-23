@@ -50,7 +50,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
 
     public boolean outlineViewIsItemExpandable(NSOutlineView outlineView, Path item) {
         if (null == item) {
-            item = controller.workdir();
+            return false;
         }
         return item.attributes.isDirectory();
     }
@@ -60,10 +60,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
             if (null == item) {
                 item = controller.workdir();
             }
-            List childs = this.childs(item);
-            if (childs != null) {
-                return childs.size();
-            }
+            return this.childs(item).size();
         }
         return 0;
     }
@@ -78,10 +75,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
             item = controller.workdir();
         }
         List childs = this.childs(item);
-        if(null == childs) {
-            log.warn("outlineViewChildOfItem: No child at index "+index+" for "+item);
-            return null;
-        }
         if (index < childs.size()) {
             return (Path) this.childs(item).get(index);
         }

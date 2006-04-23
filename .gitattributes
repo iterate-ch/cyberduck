@@ -1009,6 +1009,9 @@ img/eject.tiff -text
 img/folder.tiff -text
 img/folder16.tiff -text
 img/folder32.tiff -text
+img/folder_new.tiff -text
+img/folder_noaccess.tiff -text svneol=unset#image/tiff
+img/folder_writeonly.tiff -text svneol=unset#image/tiff
 img/ftp-tls.tiff -text
 img/ftp.tiff -text
 img/gear.tiff -text
@@ -1021,8 +1024,6 @@ img/locked.tiff -text
 img/login.tiff -text
 img/multipleDocuments.tiff -text
 img/multipleDocuments32.tiff -text
-img/newfolder.tiff -text
-img/noaccess.tiff -text svneol=unset#image/tiff
 img/notfound.tiff -text
 img/open.tiff -text
 img/outline.tiff -text

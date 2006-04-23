@@ -42,11 +42,11 @@ public class CDBrowserColumnViewModel extends CDBrowserTableDataSource implement
         return false;
     }
 
-    public void enterKeyPressed(Object sender) {
+    public void enterKeyPressed(final Object sender) {
 
     }
 
-    public void deleteKeyPressed(Object sender) {
+    public void deleteKeyPressed(final Object sender) {
 
     }
 
