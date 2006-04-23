@@ -79,7 +79,7 @@ public class FTPSession extends Session {
             }
             finally {
                 this.activityStopped();
-                this.setClosed();
+                this.connectionDidClose();
             }
         }
     }
@@ -99,8 +99,10 @@ public class FTPSession extends Session {
         }
     }
 
-    protected void connect(String encoding) throws IOException, FTPException {
+    protected void connect() throws IOException, FTPException {
         synchronized (this) {
+            SessionPool.instance().add(this);
+            this.connectionWillOpen();
             this.message(NSBundle.localizedString("Opening FTP connection to", "Status", "") + " " + host.getHostname() + "...");
             this.log("=====================================");
             this.log(new java.util.Date().toString());
@@ -108,7 +110,7 @@ public class FTPSession extends Session {
             this.FTP = new FTPClient(host.getHostname(),
                     host.getPort(),
                     Preferences.instance().getInteger("connection.timeout"), //timeout
-                    encoding, new FTPMessageListener() {
+                    host.getEncoding(), new FTPMessageListener() {
                 public void logCommand(String cmd) {
                     FTPSession.this.log(cmd);
                 }
@@ -132,7 +134,7 @@ public class FTPSession extends Session {
                 this.host.setIdentification(this.FTP.system());
             }
             this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.host.getIdentification());
-            this.setConnected();
+            this.connectionDidOpen();
         }
     }
 
