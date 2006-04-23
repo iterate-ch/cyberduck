@@ -1690,6 +1690,7 @@ tr.lproj/Validator.nib/classes.nib -text
 tr.lproj/Validator.nib/info.nib -text
 tr.lproj/Validator.nib/keyedobjects.nib -text
 tr.lproj/Validator.strings -text
+www/crash/crash.py -text
 www/help/.htaccess -text
 www/help/ca/faq/index.html -text
 www/help/ca/howto/bookmark.html -text
