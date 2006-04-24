@@ -533,6 +533,24 @@ public class Host extends NSObject {
     /**
      *
      */
+    public boolean isReachable() {
+        boolean available = this.isReachable(this.getURL());
+        if(!available) {
+            log.warn("Unreachable hostname:"+this.getHostname());
+        }
+        return available;
+    }
+
+    /**
+     *
+     * @param url
+     * @return
+     */
+    private native boolean isReachable(String url);
+
+    /**
+     *
+     */
     public void diagnose() {
 		this.diagnose(this.getURL());
 	}

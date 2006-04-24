@@ -107,6 +107,13 @@ public class CDBookmarkController extends CDWindowController {
         this.hostField = hostField;
     }
 
+    private NSImageView alertIcon; // IBOutlet
+
+    public void setAlertIcon(NSImageView alertIcon) {
+        this.alertIcon = alertIcon;
+        this.alertIcon.setHidden(true);
+    }
+
     private NSTextField portField; // IBOutlet
 
     public void setPortField(NSTextField portField) {
@@ -320,5 +327,6 @@ public class CDBookmarkController extends CDWindowController {
             this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
         }
         CDBookmarkTableDataSource.instance().collectionItemChanged(host);
+        this.alertIcon.setHidden(new Host(hostField.stringValue()).isReachable());
     }
 }

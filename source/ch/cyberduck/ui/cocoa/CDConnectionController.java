@@ -233,6 +233,13 @@ public class CDConnectionController extends CDSheetController
         }
     }
 
+    private NSImageView alertIcon; // IBOutlet
+
+    public void setAlertIcon(NSImageView alertIcon) {
+        this.alertIcon = alertIcon;
+        this.alertIcon.setHidden(true);
+    }
+
     private NSTextField pathField;
 
     public void setPathField(NSTextField pathField) {
@@ -538,6 +545,7 @@ public class CDConnectionController extends CDSheetController
         urlLabel.setStringValue(protocol + usernameField.stringValue()
                 + "@" + hostPopup.stringValue() + ":" + portField.stringValue()
                 + pathField.stringValue());
+        this.alertIcon.setHidden(new Host(hostPopup.stringValue()).isReachable());
     }
 
     public void callback(int returncode) {

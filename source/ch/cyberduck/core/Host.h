@@ -28,6 +28,14 @@ extern "C" {
 #endif
 /*
  * Class:     ch_cyberduck_core_Host
+ * Method:    isReachable
+ * Signature: (Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Host_isReachable
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     ch_cyberduck_core_Host
  * Method:    diagnose
  * Signature: (Ljava/lang/String;)V
  */
@@ -41,11 +49,13 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Host_diagnose
 
 #import <Foundation/Foundation.h>
 #import <CoreServices/CoreServices.h>
+#import "SystemConfiguration/SCNetworkReachability.h"
 
 @interface Host : NSObject {
 
 }
 
 + (void)diagnose:(NSString*)urlString;
++ (BOOL)isReachable:(NSString*)urlString;
 
 @end

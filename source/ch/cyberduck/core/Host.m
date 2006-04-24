@@ -37,10 +37,16 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
     return converted;
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Host_diagnose
-  (JNIEnv *env, jobject this, jstring url)
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Host_isReachable
+  (JNIEnv *env, jobject this, jstring urlString)
 {
-	[Host diagnose:convertToNSString(env, url)];
+	return [Host isReachable:convertToNSString(env, urlString)];
+}
+
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_Host_diagnose
+  (JNIEnv *env, jobject this, jstring urlString)
+{
+	[Host diagnose:convertToNSString(env, urlString)];
 }
 
 @implementation Host
@@ -64,6 +70,15 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Host_diagnose
 			CFRelease(myDiagnostics);
 		}
 	}
+}
+
++ (BOOL)isReachable:(NSString*)urlString {
+	SCNetworkConnectionFlags flags;
+	NSURL * url = [NSURL URLWithString:urlString];
+	
+	if (!SCNetworkCheckReachabilityByName([[url host] cString], &flags))
+		return NO;
+	return (flags & kSCNetworkFlagsReachable) && !(flags & kSCNetworkFlagsConnectionRequired);
 }
 
 @end
