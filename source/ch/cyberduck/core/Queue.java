@@ -206,17 +206,18 @@ public abstract class Queue extends NSObject implements QueueListener {
                 this.cancel();
             }
         }
-        catch (IOException e) {
-            this.canceled = true;
-        }
         finally {
             this.finish(headless);
         }
     }
 
-    private boolean init(boolean resumeRequested, boolean headless)
-            throws IOException {
-
+    /**
+     *
+     * @param resumeRequested
+     * @param headless
+     * @return
+     */
+    private boolean init(boolean resumeRequested, boolean headless) {
         this.canceled = false;
         this.running = true;
         this.jobs = null;
@@ -251,11 +252,7 @@ public abstract class Queue extends NSObject implements QueueListener {
                     });
             this.progressTimer.start();
         }
-
         this.queueStarted();
-
-        this.getSession().check();
-
         if (!headless) {
             Validator validator = ValidatorFactory.createValidator(this.getClass());
             List childs = this.getChilds();
