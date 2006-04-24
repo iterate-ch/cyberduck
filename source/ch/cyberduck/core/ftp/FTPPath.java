@@ -143,7 +143,7 @@ public class FTPPath extends Path {
                     session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
                 }
                 catch (IOException e) {
-                    session.error(e);
+                    session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                     session.close();
                 }
                 finally {
@@ -180,7 +180,7 @@ public class FTPPath extends Path {
                 session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
             }
             catch (IOException e) {
-                session.error(e);
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.close();
             }
             finally {
@@ -204,7 +204,7 @@ public class FTPPath extends Path {
                 session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
             }
             catch (IOException e) {
-                session.error(e);
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.close();
             }
             finally {
@@ -251,7 +251,7 @@ public class FTPPath extends Path {
                         //ignore
                     }
                     catch (IOException e) {
-                        session.error(e);
+                        session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                         session.close();
                     }
                 }
@@ -293,7 +293,7 @@ public class FTPPath extends Path {
                 session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
             }
             catch (IOException e) {
-                session.error(e);
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.close();
             }
             finally {
@@ -329,7 +329,7 @@ public class FTPPath extends Path {
                 session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
             }
             catch (IOException e) {
-                session.error(e);
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.close();
             }
             finally {
@@ -365,7 +365,7 @@ public class FTPPath extends Path {
                 session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
             }
             catch (IOException e) {
-                session.error(e);
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.close();
             }
             finally {
@@ -402,7 +402,7 @@ public class FTPPath extends Path {
                 session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
             }
             catch (IOException e) {
-                session.error(e);
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.close();
             }
             finally {
@@ -464,7 +464,7 @@ public class FTPPath extends Path {
                 session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
             }
             catch (IOException e) {
-                session.error(e);
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.close();
             }
             finally {
@@ -675,7 +675,7 @@ public class FTPPath extends Path {
                 session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
             }
             catch (IOException e) {
-                session.error(e);
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.close();
             }
             finally {

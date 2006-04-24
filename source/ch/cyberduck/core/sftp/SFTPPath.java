@@ -155,7 +155,7 @@ public class SFTPPath extends Path {
                     session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
                 }
                 catch (IOException e) {
-                    session.error(e);
+                    session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                     session.close();
                 }
 	            finally {
@@ -192,7 +192,7 @@ public class SFTPPath extends Path {
                 session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error(e);
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.close();
             }
             finally {
@@ -215,7 +215,7 @@ public class SFTPPath extends Path {
                 session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error(e);
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.close();
             }
             finally {
@@ -241,7 +241,7 @@ public class SFTPPath extends Path {
                         session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
                     }
                     catch (IOException e) {
-                        session.error(e);
+                        session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                         session.close();
                     }
                 }
@@ -274,7 +274,7 @@ public class SFTPPath extends Path {
                 session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error(e);
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.close();
             }
             finally {
@@ -310,7 +310,7 @@ public class SFTPPath extends Path {
                 session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error(e);
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.close();
             }
             finally {
@@ -346,7 +346,7 @@ public class SFTPPath extends Path {
                 session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error(e);
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.close();
             }
             finally {
@@ -382,7 +382,7 @@ public class SFTPPath extends Path {
                 session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error(e);
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.close();
             }
             finally {
@@ -447,7 +447,7 @@ public class SFTPPath extends Path {
                 session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error(e);
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.close();
             }
             finally {
@@ -557,7 +557,7 @@ public class SFTPPath extends Path {
                 session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error(e);
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.close();
             }
             finally {
