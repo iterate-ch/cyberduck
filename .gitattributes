@@ -1879,7 +1879,7 @@ zh_TW.lproj/Localizable.strings -text
 zh_TW.lproj/Login.nib/keyedobjects.nib -text
 zh_TW.lproj/Login.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Main.nib/keyedobjects.nib -text
-zh_TW.lproj/Main.strings -text svneol=native#application/octet-stream
+zh_TW.lproj/Main.strings -text
 zh_TW.lproj/Preferences.nib/keyedobjects.nib -text
 zh_TW.lproj/Preferences.strings -text
 zh_TW.lproj/Progress.nib/keyedobjects.nib -text
