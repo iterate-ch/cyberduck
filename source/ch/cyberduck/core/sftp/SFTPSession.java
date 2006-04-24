@@ -107,7 +107,6 @@ public class SFTPSession extends Session {
             log.error(e.getMessage());
         }
         finally {
-            this.SFTP = null;
             this.connectionDidClose();
         }
     }

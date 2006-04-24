@@ -118,44 +118,40 @@ public abstract class Session extends NSObject
         synchronized(this) {
             this.message(NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname() + "...");
             try {
-                this.check();
-                Path home;
-                if(host.hasReasonableDefaultPath()) {
-                    home = PathFactory.createPath(this, host.getDefaultPath());
-                    home.attributes.setType(Path.DIRECTORY_TYPE);
-                    if(null == home.list()) {
-                        // the default path does not exist
+                try {
+                    this.check();
+                    Path home;
+                    if(host.hasReasonableDefaultPath()) {
+                        home = PathFactory.createPath(this, host.getDefaultPath());
+                        home.attributes.setType(Path.DIRECTORY_TYPE);
+                        if(null == home.list()) {
+                            // the default path does not exist
+                            home = workdir();
+                        }
+                    }
+                    else {
                         home = workdir();
                     }
-                }
-                else {
-                    home = workdir();
-                }
-                Growl.instance().notify(
-                        NSBundle.localizedString("Connection opened", "Growl", "Growl Notification"),
-                        host.getHostname());
-                return home;
-            }
-            catch(LoginCanceledException e) {
-                Growl.instance().notify(e.getMessage(), host.getHostname());
-                this.close();
-            }
-            catch(SocketException e) {
-                if(e.getMessage().equals("Software caused connection abort")) {//hack; socket opening interrupted
-                    this.close();
-                }
-                else {
-                    this.error(e);
-//                    this.error("Network " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                     Growl.instance().notify(
-                            NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
+                            NSBundle.localizedString("Connection opened", "Growl", "Growl Notification"),
                             host.getHostname());
+                    return home;
+                }
+                catch(LoginCanceledException e) {
+                    Growl.instance().notify(e.getMessage(), host.getHostname());
                     this.close();
+                }
+                catch(SocketException e) {
+                    if(e.getMessage().equals("Software caused connection abort")) {//hack; socket opening interrupted
+                        this.close();
+                    }
+                    else {
+                        throw e;
+                    }
                 }
             }
             catch(IOException e) {
                 this.error(e);
-//                this.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 Growl.instance().notify(
                         NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
                         host.getHostname());
