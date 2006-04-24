@@ -34,6 +34,6 @@ public interface ProgressListener {
      *
      * @param exception
      */
-    public void error(final String exception);
+    public void error(final Exception exception);
 
 }

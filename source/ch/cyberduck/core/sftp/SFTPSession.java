@@ -301,11 +301,8 @@ public class SFTPSession extends Session {
             workdir.attributes.setType(Path.DIRECTORY_TYPE);
             return workdir;
         }
-        catch (SshException e) {
-            this.error("SSH " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
-        }
         catch (IOException e) {
-            this.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+            this.error(e);
         }
         return null;
     }

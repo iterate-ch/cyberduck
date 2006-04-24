@@ -140,10 +140,10 @@ public class FTPPath extends Path {
                     session.cache().put(this, files);
                 }
                 catch (FTPException e) {
-                    session.error("FTP " + NSBundle.localizedString("Error", "") + ": (" + this.getName() + ") " + e.getMessage());
+                    session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
                 }
                 catch (IOException e) {
-                    session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                    session.error(e);
                     session.close();
                 }
                 finally {
@@ -177,10 +177,10 @@ public class FTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (FTPException e) {
-                session.error("FTP " + NSBundle.localizedString("Error", "") + ": (" + this.getName() + ") " + e.getMessage());
+                session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
             }
             catch (IOException e) {
-                session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(e);
                 session.close();
             }
             finally {
@@ -201,10 +201,10 @@ public class FTPPath extends Path {
                 //this.getParent().invalidate();
             }
             catch (FTPException e) {
-                session.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
             }
             catch (IOException e) {
-                session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(e);
                 session.close();
             }
             finally {
@@ -251,7 +251,7 @@ public class FTPPath extends Path {
                         //ignore
                     }
                     catch (IOException e) {
-                        session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                        session.error(e);
                         session.close();
                     }
                 }
@@ -290,10 +290,10 @@ public class FTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (FTPException e) {
-                session.error("FTP " + NSBundle.localizedString("Error", "") + ": (" + this.getName() + ") " + e.getMessage());
+                session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
             }
             catch (IOException e) {
-                session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(e);
                 session.close();
             }
             finally {
@@ -326,10 +326,10 @@ public class FTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (FTPException e) {
-                session.error("FTP " + NSBundle.localizedString("Error", "") + ": (" + this.getName() + ") " + e.getMessage());
+                session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
             }
             catch (IOException e) {
-                session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(e);
                 session.close();
             }
             finally {
@@ -362,10 +362,10 @@ public class FTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (FTPException e) {
-                session.error("FTP " + NSBundle.localizedString("Error", "") + ": (" + this.getName() + ") " + e.getMessage());
+                session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
             }
             catch (IOException e) {
-                session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(e);
                 session.close();
             }
             finally {
@@ -399,10 +399,10 @@ public class FTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (FTPException e) {
-                session.error("FTP " + NSBundle.localizedString("Error", "") + ": (" + this.getName() + ") " + e.getMessage());
+                session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
             }
             catch (IOException e) {
-                session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(e);
                 session.close();
             }
             finally {
@@ -461,10 +461,10 @@ public class FTPPath extends Path {
                 }
             }
             catch (FTPException e) {
-                session.error("FTP " + NSBundle.localizedString("Error", "") + ": (" + this.getName() + ") " + e.getMessage());
+                session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
             }
             catch (IOException e) {
-                session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(e);
                 session.close();
             }
             finally {
@@ -672,10 +672,10 @@ public class FTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (FTPException e) {
-                session.error("FTP " + NSBundle.localizedString("Error", "") + ": (" + this.getName() + ") " + e.getMessage());
+                session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
             }
             catch (IOException e) {
-                session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(e);
                 session.close();
             }
             finally {

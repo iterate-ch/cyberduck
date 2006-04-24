@@ -145,7 +145,8 @@ public abstract class Session extends NSObject
                     this.close();
                 }
                 else {
-                    this.error("Network " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                    this.error(e);
+//                    this.error("Network " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                     Growl.instance().notify(
                             NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
                             host.getHostname());
@@ -153,7 +154,8 @@ public abstract class Session extends NSObject
                 }
             }
             catch(IOException e) {
-                this.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                this.error(e);
+//                this.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
                 Growl.instance().notify(
                         NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
                         host.getHostname());
@@ -303,10 +305,10 @@ public abstract class Session extends NSObject
         progressListeners.remove(listener);
     }
 
-    public void error(final String message) {
+    public void error(final Exception e) {
         ProgressListener[] l = (ProgressListener[]) progressListeners.toArray(new ProgressListener[]{});
         for(int i = 0; i < l.length; i++) {
-            l[i].error(message);
+            l[i].error(e);
         }
     }
 

@@ -140,6 +140,11 @@ public class Host extends NSObject {
         this(getDefaultProtocol(port), hostname, port);
     }
 
+    /**
+     *
+     * @param protocol
+     * @param hostname
+     */
     public Host(String protocol, String hostname) {
         this(protocol, hostname, getDefaultPort(protocol));
     }
@@ -153,6 +158,13 @@ public class Host extends NSObject {
         this(protocol, hostname, port, null);
     }
 
+    /**
+     *
+     * @param protocol
+     * @param hostname
+     * @param port
+     * @param defaultpath
+     */
     public Host(String protocol, String hostname, int port, String defaultpath) {
         this.setProtocol(protocol);
         this.setPort(port);
@@ -253,6 +265,10 @@ public class Host extends NSObject {
 
     // ----------------------------------------------------------
 
+    /**
+     *
+     * @param defaultpath The path to change the working directory to upon connecting
+     */
     public void setDefaultPath(String defaultpath) {
         this.defaultpath = defaultpath;
     }
@@ -273,10 +289,19 @@ public class Host extends NSObject {
         return Path.DELIMITER + this.defaultpath;
     }
 
+    /**
+     *
+     * @return Has a non empty default path set
+     */
     public boolean hasReasonableDefaultPath() {
         return !this.getDefaultPath().equals("");
     }
 
+    /**
+     *
+     * @param port
+     * @return The standard protocol for this port number
+     */
     protected static String getDefaultProtocol(int port) {
         switch (port) {
             case Session.FTP_PORT:
@@ -288,6 +313,11 @@ public class Host extends NSObject {
         return Preferences.instance().getProperty("connection.protocol.default");
     }
 
+    /**
+     *
+     * @param protocol
+     * @return The default port for this protocol
+     */
     private static int getDefaultPort(String protocol) {
         if (protocol.equals(Session.FTP)) {
             return Session.FTP_PORT;
@@ -315,16 +345,31 @@ public class Host extends NSObject {
     // Accessor methods
     // ----------------------------------------------------------
 
+    /**
+     *
+     * @param login
+     */
     public void setCredentials(Login login) {
         this.login = login;
     }
 
+    /**
+     *
+     * @param username
+     * @param password
+     */
     public void setCredentials(String username, String password) {
         this.setCredentials(username,
                 password,
                 Preferences.instance().getBoolean("connection.login.useKeychain"));
     }
 
+    /**
+     *
+     * @param username
+     * @param password
+     * @param addToKeychain
+     */
     public void setCredentials(String username, String password, boolean addToKeychain) {
         this.setCredentials(new Login(this.getHostname(), this.getProtocol(), username, password, addToKeychain));
     }
@@ -360,6 +405,10 @@ public class Host extends NSObject {
         return this.identification;
     }
 
+    /**
+     *
+     * @param id
+     */
     public void setIdentification(String id) {
         this.identification = id;
     }
@@ -481,9 +530,16 @@ public class Host extends NSObject {
         }
     }
 
+    /**
+     *
+     */
     public void diagnose() {
 		this.diagnose(this.getURL());
 	}
 
+    /**
+     *
+     * @param url
+     */
     private native void diagnose(String url);
 }

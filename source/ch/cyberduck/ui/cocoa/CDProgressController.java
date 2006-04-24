@@ -98,7 +98,7 @@ public class CDProgressController extends CDController {
                         });
                     }
 
-                    public void error(final String exception) {
+                    public void error(final Exception e) {
                         invoke(new Runnable() {
                             public void run() {
                                 int l = errorText.toString().split("\n").length;
@@ -106,7 +106,7 @@ public class CDProgressController extends CDController {
                                     errorText.append("\n- (...)");
                                 }
                                 if (l < 10) {
-                                    errorText.append("\n" + exception);
+                                    errorText.append("\n" + e.getMessage());
                                 }
                                 alertIcon.setHidden(false);
                             }

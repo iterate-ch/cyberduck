@@ -152,10 +152,10 @@ public class SFTPPath extends Path {
                     session.cache().put(this, files);
                 }
                 catch (SshException e) {
-                    session.error("SSH " + NSBundle.localizedString("Error", "") + " " + "(" + this.getName() + "): " + e.getMessage());
+                    session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
                 }
                 catch (IOException e) {
-                    session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                    session.error(e);
                     session.close();
                 }
 	            finally {
@@ -189,10 +189,10 @@ public class SFTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (SshException e) {
-                session.error("SSH " + NSBundle.localizedString("Error", "") + " " + "(" + this.getName() + "): " + e.getMessage());
+                session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(e);
                 session.close();
             }
             finally {
@@ -212,10 +212,10 @@ public class SFTPPath extends Path {
                 //this.getParent().invalidate();
             }
             catch (SshException e) {
-                session.error("SSH " + NSBundle.localizedString("Error", "") + " " + "(" + this.getName() + "): " + e.getMessage());
+                session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(e);
                 session.close();
             }
             finally {
@@ -238,10 +238,10 @@ public class SFTPPath extends Path {
                         f.close();
                     }
                     catch (SshException e) {
-                        session.error("SSH " + NSBundle.localizedString("Error", "") + " " + "(" + this.getName() + "): " + e.getMessage());
+                        session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
                     }
                     catch (IOException e) {
-                        session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                        session.error(e);
                         session.close();
                     }
                 }
@@ -271,10 +271,10 @@ public class SFTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (SshException e) {
-                session.error("SSH " + NSBundle.localizedString("Error", "") + " " + "(" + this.getName() + "): " + e.getMessage());
+                session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(e);
                 session.close();
             }
             finally {
@@ -307,10 +307,10 @@ public class SFTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (SshException e) {
-                session.error("SSH " + NSBundle.localizedString("Error", "") + " " + "(" + this.getName() + "): " + e.getMessage());
+                session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(e);
                 session.close();
             }
             finally {
@@ -343,10 +343,10 @@ public class SFTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (SshException e) {
-                session.error("SSH " + NSBundle.localizedString("Error", "") + " " + "(" + this.getName() + "): " + e.getMessage());
+                session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(e);
                 session.close();
             }
             finally {
@@ -379,10 +379,10 @@ public class SFTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (SshException e) {
-                session.error("SSH " + NSBundle.localizedString("Error", "") + " " + "(" + this.getName() + "): " + e.getMessage());
+                session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(e);
                 session.close();
             }
             finally {
@@ -444,10 +444,10 @@ public class SFTPPath extends Path {
                 }
             }
             catch (SshException e) {
-                session.error("SSH " + NSBundle.localizedString("Error", "") + " " + "(" + this.getName() + "): " + e.getMessage());
+                session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(e);
                 session.close();
             }
             finally {
@@ -554,10 +554,10 @@ public class SFTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (SshException e) {
-                session.error("SSH " + NSBundle.localizedString("Error", "") + " " + "(" + this.getName() + "): " + e.getMessage());
+                session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+                session.error(e);
                 session.close();
             }
             finally {

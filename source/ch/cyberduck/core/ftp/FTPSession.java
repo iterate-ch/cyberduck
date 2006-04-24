@@ -171,10 +171,10 @@ public class FTPSession extends Session {
             return workdir;
         }
         catch (FTPException e) {
-            this.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+            this.error(e);
         }
         catch (IOException e) {
-            this.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+            this.error(e);
             this.close();
         }
         return null;
@@ -193,10 +193,10 @@ public class FTPSession extends Session {
             this.FTP.quote(command);
         }
         catch (FTPException e) {
-            this.error("FTP " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+            this.error(e);
         }
         catch (IOException e) {
-            this.error("IO " + NSBundle.localizedString("Error", "") + ": " + e.getMessage());
+            this.error(e);
             this.close();
         }
     }

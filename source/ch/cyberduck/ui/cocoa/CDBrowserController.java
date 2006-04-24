@@ -18,6 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.enterprisedt.net.ftp.FTPException;
+import com.sshtools.j2ssh.SshException;
+
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
@@ -33,6 +36,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.net.SocketException;
 
 /**
  * @version $Id$
@@ -120,7 +124,7 @@ public class CDBrowserController extends CDWindowController
 
     public Object handleDisconnectScriptCommand(NSScriptCommand command) {
         log.debug("handleDisconnectScriptCommand:" + command);
-		this.disconnectButtonClicked(null);
+        this.disconnectButtonClicked(null);
         return null;
     }
 
@@ -410,26 +414,26 @@ public class CDBrowserController extends CDWindowController
         return this.filenameFilter;
     }
 
-	protected void setFileFilter(final String searchString) {
-		if (null == searchString || searchString.length() == 0) {
-			this.searchField.setStringValue("");
-		    // Revert to the last used default filter
-		    if (this.getShowHiddenFiles()) {
-		        this.filenameFilter = new NullFilter();
-		    }
-		    else {
-		        this.filenameFilter = new HiddenFilesFilter();
-		    }
-		}
-		else {
-		    // Setting up a custom filter for the directory listing
-		    this.filenameFilter = new Filter() {
-		        public boolean accept(Path file) {
-		            return file.getName().toLowerCase().indexOf(searchString.toLowerCase()) != -1;
-		        }
-		    };
-		}
-	}
+    protected void setFileFilter(final String searchString) {
+        if (null == searchString || searchString.length() == 0) {
+            this.searchField.setStringValue("");
+            // Revert to the last used default filter
+            if (this.getShowHiddenFiles()) {
+                this.filenameFilter = new NullFilter();
+            }
+            else {
+                this.filenameFilter = new HiddenFilesFilter();
+            }
+        }
+        else {
+            // Setting up a custom filter for the directory listing
+            this.filenameFilter = new Filter() {
+                public boolean accept(Path file) {
+                    return file.getName().toLowerCase().indexOf(searchString.toLowerCase()) != -1;
+                }
+            };
+        }
+    }
 
     public void setShowHiddenFiles(boolean showHidden) {
         if (showHidden) {
@@ -502,7 +506,7 @@ public class CDBrowserController extends CDWindowController
     private void selectRow(int row, boolean expand) {
         log.debug("selectRow:" + row);
         this.getSelectedBrowserView().selectRow(row, expand);
-		this.getSelectedBrowserView().scrollRowToVisible(row);
+        this.getSelectedBrowserView().scrollRowToVisible(row);
     }
 
     protected void setSelectedPath(Path selected) {
@@ -791,15 +795,15 @@ public class CDBrowserController extends CDWindowController
                             icon = CDBrowserTableDataSource.SYMLINK_ICON;
                         }
                         else if (item.attributes.isDirectory()) {
-							Permission perm = item.attributes.getPermission();
-							if (false == perm.getOwnerPermissions()[Permission.EXECUTE]
-									&& false == perm.getGroupPermissions()[Permission.EXECUTE]
-									&& false == perm.getOtherPermissions()[Permission.EXECUTE]) {
-								icon = CDBrowserTableDataSource.FOLDER_NOACCESS_ICON;
-							}
-							else {
-			                    icon = CDBrowserTableDataSource.FOLDER_ICON;
-							}
+                            Permission perm = item.attributes.getPermission();
+                            if (false == perm.getOwnerPermissions()[Permission.EXECUTE]
+                                    && false == perm.getGroupPermissions()[Permission.EXECUTE]
+                                    && false == perm.getOtherPermissions()[Permission.EXECUTE]) {
+                                icon = CDBrowserTableDataSource.FOLDER_NOACCESS_ICON;
+                            }
+                            else {
+                                icon = CDBrowserTableDataSource.FOLDER_ICON;
+                            }
                         }
                         else if (item.attributes.isFile()) {
                             icon = CDIconCache.instance().get(item.getExtension());
@@ -1320,7 +1324,7 @@ public class CDBrowserController extends CDWindowController
             Object o = userInfo.allValues().lastObject();
             if (null != o) {
                 final String searchString = ((NSText) o).string();
-				this.setFileFilter(searchString);
+                this.setFileFilter(searchString);
                 this.reloadData(true);
             }
         }
@@ -1661,7 +1665,7 @@ public class CDBrowserController extends CDWindowController
             CDSheetController c = new CDSheetController(this, sheet) {
                 public void callback(int returncode) {
                     if (returncode == DEFAULT_OPTION) {
-						renamed.delete();
+                        renamed.delete();
                         path.rename(renamed.getAbsolute());
                     }
                 }
@@ -2146,7 +2150,7 @@ public class CDBrowserController extends CDWindowController
         if (!this.hasSession()) {
             path = null;
         }
-		this.setFileFilter(null); // Remove any custom file filter
+        this.setFileFilter(null); // Remove any custom file filter
         if (null == path) {
             this.workdir = null;
             this.pathPopupItems.clear();
@@ -2221,22 +2225,45 @@ public class CDBrowserController extends CDWindowController
                     }
 
 
-                    public void error(final String msg) {
+                    public void error(final Exception e) {
                         if (!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
                         {
                             invoke(new Runnable() {
                                 public void run() {
-                                    error(msg);
+                                    error(e);
                                 }
                             });
                             return;
                         }
+                        String alert = e.getMessage();
+                        boolean diagnostics = false;
+                        if(e instanceof FTPException) {
+                            alert = "FTP " + NSBundle.localizedString("Error", "") + ": "+alert;
+                        }
+                        if(e instanceof SshException) {
+                            alert = "SSH " + NSBundle.localizedString("Error", "") + ": "+alert;
+                        }
+                        if(e instanceof SocketException) {
+                            alert = "Network " + NSBundle.localizedString("Error", "") + ": "+alert;
+                            diagnostics = true;
+                        }
+                        if(e instanceof IOException) {
+                            alert = "IO " + NSBundle.localizedString("Error", "") + ": "+alert;
+                            diagnostics = true;
+                        }
                         alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title
-                                msg, // msg
+                                alert, // alert text
                                 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
                                 null, //alternative button
-                                null) //other button
-                        );
+                                diagnostics ? NSBundle.localizedString("Open Network Diagnostics",
+                                        "Status", "Run interactive network diagnostics") : null), //other button
+                                new CDSheetCallback() {
+                                    public void callback(int returncode) {
+                                        if(returncode == ALTERNATE_OPTION) {
+                                            host.diagnose();
+                                        }
+                                    }
+                                });
                     }
                 });
                 session.addTranscriptListener(transcript = new TranscriptListener() {
@@ -2381,13 +2408,15 @@ public class CDBrowserController extends CDWindowController
                                     ;
                                 }
 
-                                public void error(final String message) {
-                                    File bookmark = getRepresentedFile();
-                                    if (bookmark.exists()) {
-                                        // Delete this history bookmark if there was any error connecting
-                                        bookmark.delete();
+                                public void error(final Exception e) {
+                                    if(e instanceof IOException) {
+                                        File bookmark = getRepresentedFile();
+                                        if (bookmark.exists()) {
+                                            // Delete this history bookmark if there was any error connecting
+                                            bookmark.delete();
+                                        }
+                                        window.setRepresentedFilename(""); //can't send null
                                     }
-                                    window.setRepresentedFilename(""); //can't send null
                                 }
                             });
                             // Mount this session and set the working directory
@@ -3115,14 +3144,14 @@ public class CDBrowserController extends CDWindowController
         this.bookmarkTableDelegate = null;
         this.bookmarkTable = null;
 
-		this.browserListModel.invalidate();
+        this.browserListModel.invalidate();
         this.browserListView.setDataSource(null);
         this.browserListModel = null;
         this.browserListView.setDelegate(null);
         this.browserListViewDelegate = null;
         this.browserListView = null;
 
-		this.browserOutlineModel.invalidate();
+        this.browserOutlineModel.invalidate();
         this.browserOutlineView.setDataSource(null);
         this.browserOutlineModel = null;
         this.browserOutlineView.setDelegate(null);
