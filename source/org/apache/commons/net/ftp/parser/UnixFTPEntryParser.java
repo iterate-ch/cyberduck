@@ -17,6 +17,7 @@ package org.apache.commons.net.ftp.parser;
  */
 
 import java.util.Calendar;
+import java.io.IOException;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
@@ -207,7 +208,7 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
 					f.cwdir();
 					f.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
 				}
-				catch(java.io.IOException e) {
+				catch(IOException e) {
 					f.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
 				}
 			}
