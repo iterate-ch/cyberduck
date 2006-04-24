@@ -29,27 +29,6 @@
 			<string>Editor</string>
 		</dict>
 	</array>
-	<key>UTExportedTypeDeclarations</key>
-	<array>
-		<dict>
-			<key>UTTypeIdentifier</key>
-			<string>ch.sudo.cyberduck.bookmark</string>
-			<key>UTTypeDescription</key>
-			<string>Cyberduck Bookmark</string>
-			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.data</string>
-				<string>public.xml</string>
-			</array>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>duck</string>
-				</array>
-			</dict>
-		</dict>
-	</array>
 	<key>CFBundleExecutable</key>
 	<string>Cyberduck</string>
 	<key>CFBundleIconFile</key>
@@ -79,8 +58,6 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>*revision*</string>
-	<key>cyberduck.version</key>
-	<string>*version*</string>
 	<key>Java</key>
 	<dict>
 		<key>JVMVersion</key>
@@ -96,7 +73,6 @@
 		<string>core.jar</string>
 		<string>cocoa.jar</string>
 		<string>ftp.jar</string>
-		<string>commons-logging-api.jar</string>
 		<string>log4j-1.2.13.jar</string>
 		<string>jakarta-oro-2.0.8.jar</string>
 	</array>
@@ -106,5 +82,28 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>SUFeedURL</key>
+	<string>http://update.cyberduck.ch/changelog.rss</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+				<string>public.xml</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Cyberduck Bookmark</string>
+			<key>UTTypeIdentifier</key>
+			<string>ch.sudo.cyberduck.bookmark</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>duck</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>
