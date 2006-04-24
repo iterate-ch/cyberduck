@@ -1488,6 +1488,7 @@ sk.lproj/Update.strings -text
 sk.lproj/Validator.nib/keyedobjects.nib -text
 sk.lproj/Validator.strings -text
 source/ch/cyberduck/core/CollectionListener.java -text
+source/ch/cyberduck/core/Host.m -text
 source/ch/cyberduck/core/forker/NSString+CarbonFSRefCreation.m -text
 source/ch/cyberduck/ui/cocoa/growl/GrowlNative.java -text
 source/com/adiumx/AIAutoScrollView.m -text

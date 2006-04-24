@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 import com.apple.cocoa.foundation.NSObject;
+import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
@@ -467,4 +468,22 @@ public class Host extends NSObject {
         log.debug("finalize:" + super.toString());
         super.finalize();
     }
+
+    static {
+        try {
+            NSBundle bundle = NSBundle.mainBundle();
+            String lib = bundle.resourcePath() + "/Java/" + "libDiagnostics.dylib";
+            log.info("Locating libDiagnostics.dylib at '" + lib + "'");
+            System.load(lib);
+        }
+        catch (UnsatisfiedLinkError e) {
+            log.error("Could not load the libDiagnostics.dylib library:" + e.getMessage());
+        }
+    }
+
+    public void diagnose() {
+		this.diagnose(this.getURL());
+	}
+
+    private native void diagnose(String url);
 }
