@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2005 David Kocher. All rights reserved.
+ *  Copyright (c) 2006 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ extern "C" {
 
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
-#include <SystemConfiguration/SystemConfiguration.h>
+#import <SystemConfiguration/SystemConfiguration.h>
 
 @interface Proxy : NSObject
 {
