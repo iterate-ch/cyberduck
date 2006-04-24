@@ -42,10 +42,9 @@ public class CDCreateFileController extends CDFileController {
     }
 
     public void callback(int returncode) {
-        Path selected = ((CDBrowserController)parent).getSelectedPath();
         Path workdir = null;
-        if(selected != null) {
-            workdir = selected.getParent();
+        if(((CDBrowserController)parent).getSelectionCount() == 1) {
+            workdir = ((CDBrowserController)parent).getSelectedPath().getParent();
         }
         else {
             workdir = ((CDBrowserController) parent).workdir();

@@ -66,10 +66,9 @@ public class CDFolderController extends CDSheetController
 
     public void callback(int returncode) {
         if (returncode == DEFAULT_OPTION) {
-            Path selected = ((CDBrowserController)parent).getSelectedPath();
             Path workdir = null;
-            if(selected != null) {
-                workdir = selected.getParent();
+            if(((CDBrowserController)parent).getSelectionCount() == 1) {
+                workdir = ((CDBrowserController)parent).getSelectedPath().getParent();
             }
             else {
                 workdir = ((CDBrowserController) parent).workdir();
@@ -78,7 +77,7 @@ public class CDFolderController extends CDSheetController
         }
     }
 
-    public void createFolder(Path workdir, String filename) {
+    protected void createFolder(Path workdir, String filename) {
         Path folder = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
         folder.mkdir(false);
         if(folder.exists()) {
