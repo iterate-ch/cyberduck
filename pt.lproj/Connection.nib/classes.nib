@@ -6,6 +6,7 @@
             CLASS = "ch.cyberduck.ui.cocoa.CDConnectionController"; 
             LANGUAGE = Java; 
             OUTLETS = {
+                alertIcon = NSImageView; 
                 anonymousCheckbox = NSButton; 
                 bookmarksPopup = NSPopUpButton; 
                 connectmodePopup = NSPopUpButton; 
