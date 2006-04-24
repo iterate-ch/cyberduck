@@ -379,3 +379,6 @@
 
 /* No comment provided by engineer. */
 "You are connected to at least one remote site. Do you want to review open browsers?" = "Legalább egy távoli kiszolgálóhoz csatlakozva van. Szeretné áttekinteni a nyitott böngészőket?";
+
+/* Option in error dialog if a connection error occurs, opens the Network Diagnostics application */
+"Open Network Diagnostics" = "Open Network Diagnostics";
