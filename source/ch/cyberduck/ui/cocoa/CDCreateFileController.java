@@ -42,18 +42,11 @@ public class CDCreateFileController extends CDFileController {
     }
 
     public void callback(int returncode) {
-        Path workdir = null;
-        if(((CDBrowserController)parent).getSelectionCount() == 1) {
-            workdir = ((CDBrowserController)parent).getSelectedPath().getParent();
-        }
-        else {
-            workdir = ((CDBrowserController) parent).workdir();
-        }
         if (returncode == DEFAULT_OPTION) {
-            this.createFile(workdir, filenameField.stringValue());
+            this.createFile(this.getWorkdir(), filenameField.stringValue());
         }
         if (returncode == ALTERNATE_OPTION) {
-            Path path = createFile(workdir, filenameField.stringValue());
+            Path path = createFile(this.getWorkdir(), filenameField.stringValue());
             if (path != null) {
                 Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
                 editor.open(path);
@@ -64,24 +57,23 @@ public class CDCreateFileController extends CDFileController {
     protected Path createFile(Path workdir, String filename) {
         Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
                 new Local(NSPathUtilities.temporaryDirectory(), filename));
-        if (!file.getRemote().exists()) {
-            String proposal;
-            int no = 0;
-            int index = filename.lastIndexOf(".");
-            while (file.getLocal().exists()) {
-                no++;
-                if (index != -1) {
-                    proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
-                }
-                else {
-                    proposal = filename + "-" + no;
-                }
-                file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
+
+        String proposal;
+        int no = 0;
+        int index = filename.lastIndexOf(".");
+        while (file.getLocal().exists()) {
+            no++;
+            if (index != -1) {
+                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
             }
-            file.getLocal().createNewFile();
-            file.upload();
-            file.getLocal().delete();
+            else {
+                proposal = filename + "-" + no;
+            }
+            file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
         }
+        file.getLocal().createNewFile();
+        file.upload();
+        file.getLocal().delete();
         if (file.exists()) {
             if(filename.charAt(0) == '.') {
                 ((CDBrowserController) parent).setShowHiddenFiles(true);

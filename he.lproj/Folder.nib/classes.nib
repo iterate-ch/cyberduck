@@ -5,7 +5,7 @@
             ACTIONS = {closeSheet = id; }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDFolderController"; 
             LANGUAGE = Java; 
-            OUTLETS = {folderField = NSTextField; window = NSWindow; }; 
+            OUTLETS = {filenameField = NSTextField; window = NSWindow; }; 
             SUPERCLASS = NSObject; 
         }
     ); 

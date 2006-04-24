@@ -69,6 +69,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
         if(sender.tag() == DEFAULT_OPTION
                 || sender.tag() == ALTERNATE_OPTION) {
             if(!this.validateInput()) {
+                NSApplication.beep();
                 return;
             }
         }

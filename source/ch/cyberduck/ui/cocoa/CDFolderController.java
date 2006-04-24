@@ -31,15 +31,9 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class CDFolderController extends CDSheetController
+public class CDFolderController extends CDFileController
 {
     private static Logger log = Logger.getLogger(CDFolderController.class);
-
-    private NSTextField folderField; //IBOutlet
-
-    public void setFolderField(NSTextField folderField) {
-        this.folderField = folderField;
-    }
 
     public CDFolderController(CDWindowController parent) {
         super(parent);
@@ -50,30 +44,9 @@ public class CDFolderController extends CDSheetController
         }
     }
 
-    protected boolean validateInput() {
-        if (folderField.stringValue().indexOf('/') != -1) {
-            this.alert(NSAlertPanel.informationalAlertPanel(
-                    NSBundle.localizedString("Error", "Alert sheet title"),
-                    NSBundle.localizedString("Invalid character in folder name.", ""), // message
-                    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                    null, //alternative button
-                    null //other button
-            ));
-            return false;
-        }
-        return folderField.stringValue().length() != 0;
-    }
-
     public void callback(int returncode) {
         if (returncode == DEFAULT_OPTION) {
-            Path workdir = null;
-            if(((CDBrowserController)parent).getSelectionCount() == 1) {
-                workdir = ((CDBrowserController)parent).getSelectedPath().getParent();
-            }
-            else {
-                workdir = ((CDBrowserController) parent).workdir();
-            }
-            this.createFolder(workdir, folderField.stringValue());
+            this.createFolder(this.getWorkdir(), filenameField.stringValue());
         }
     }
 

@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
 
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSButton;
@@ -53,17 +55,26 @@ public abstract class CDFileController extends CDSheetController {
         super(parent);
     }
 
+    protected Path getWorkdir() {
+        Path workdir = null;
+        if(((CDBrowserController)parent).getSelectionCount() == 1) {
+            workdir = ((CDBrowserController)parent).getSelectedPath().getParent();
+        }
+        else {
+            workdir = ((CDBrowserController) parent).workdir();
+        }
+        return workdir;
+    }
+
     protected boolean validateInput() {
         if (filenameField.stringValue().indexOf('/') != -1) {
-            this.alert(NSAlertPanel.informationalAlertPanel(
-                    NSBundle.localizedString("Error", "Alert sheet title"),
-                    NSBundle.localizedString("Invalid character in filename.", ""), // message
-                    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                    null, //alternative button
-                    null //other button
-            ));
             return false;
         }
-        return filenameField.stringValue().length() != 0;
+        if(filenameField.stringValue().length() != 0) {
+            Path file = PathFactory.createPath(this.getWorkdir().getSession(), this.getWorkdir().getAbsolute(),
+                    filenameField.stringValue());
+            return !file.exists();
+        }
+        return false;
     }
 }

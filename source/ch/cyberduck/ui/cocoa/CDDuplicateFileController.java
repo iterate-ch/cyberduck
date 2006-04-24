@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 import com.apple.cocoa.application.*;
@@ -68,6 +69,10 @@ public class CDDuplicateFileController extends CDFileController {
                 editor.open(path);
             }
         }
+    }
+
+    protected Path getWorkdir() {
+        return ((CDBrowserController)parent).getSelectedPath().getParent();
     }
 
     private Path duplicateFile(Path selected, String filename) {
