@@ -750,6 +750,10 @@ public class SshClient {
 		}
 	}
 
+    /**
+     * 
+     * @throws IOException
+     */
     public void interrupt() throws IOException {
         try {
             if(null == this.socket) {

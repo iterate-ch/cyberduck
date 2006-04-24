@@ -176,23 +176,22 @@ public class FTPClient {
         }
     }
 
+    /**
+     * 
+     * @throws IOException
+     */
     public void interrupt() throws IOException {
-        try {
-            if(null == this.control) {
-                log.warn("Cannot interrupt; no control channel");
-                return;
-            }
-            Socket socket = this.control.getSocket();
-            if(null == socket) {
-                log.warn("Cannot interrupt; no socket");
-                return;
-            }
-            socket.close();
-            log.info("Forced to close socket "+socket.toString());
+        if(null == this.control) {
+            log.warn("Cannot interrupt; no control channel");
+            return;
         }
-        finally {
-            control = null;
+        Socket socket = this.control.getSocket();
+        if(null == socket) {
+            log.warn("Cannot interrupt; no socket");
+            return;
         }
+        socket.close();
+        log.info("Forced to close socket "+socket.toString());
     }
 
     /**
