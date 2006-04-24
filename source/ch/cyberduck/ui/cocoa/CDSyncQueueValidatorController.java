@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -51,9 +52,14 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
         super(windowController);
     }
 
+    /**
+     *
+     */
+    protected List promptList = new ArrayList();
+
     protected void load() {
         synchronized(CDQueueController.instance()) {
-            if (!NSApplication.loadNibNamed("Sync", this)) {
+            if(!NSApplication.loadNibNamed("Sync", this)) {
                 log.fatal("Couldn't load Sync.nib");
             }
             this.setEnabled(false);
@@ -76,7 +82,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
-            if (setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
             else {
@@ -94,7 +100,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
-            if (setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
             else {
@@ -109,9 +115,9 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
     }
 
     protected boolean validateFile(Path p, boolean resume) {
-        if (p.getRemote().exists() && p.getLocal().exists()) {
+        if(p.getRemote().exists() && p.getLocal().exists()) {
             //todo:bug equals returns false because of different timezone!
-            if (!(p.getRemote().attributes.getTimestampAsCalendar().equals(p.getLocal().getTimestampAsCalendar()))) {
+            if(!(p.getRemote().attributes.getTimestampAsCalendar().equals(p.getLocal().getTimestampAsCalendar()))) {
                 this.prompt(p);
             }
         }
@@ -122,11 +128,29 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
     }
 
     protected boolean validateDirectory(Path p) {
-        if (!(p.getRemote().exists() && p.getLocal().exists())) {
+        if(!(p.getRemote().exists() && p.getLocal().exists())) {
             //List the directory in the validation window that the user sees it will get created
             this.prompt(p);
         }
         return false;
+    }
+
+    protected void prompt(Path p) {
+        this.promptList.add(p);
+        if(this.mirrorRadioCell.state() == NSCell.OnState) {
+            this.workList.add(p);
+        }
+        if(this.downloadRadioCell.state() == NSCell.OnState) {
+            if(p.getRemote().exists()) {
+                this.workList.add(p);
+            }
+        }
+        if(this.uploadRadioCell.state() == NSCell.OnState) {
+            if(p.getLocal().exists()) {
+                this.workList.add(p);
+            }
+        }
+        super.prompt(p);
     }
 
     protected boolean isExisting(Path p) {
@@ -137,41 +161,35 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
         this.syncButton.setEnabled(enabled);
     }
 
-    public void mirrorCellClicked(Object sender) {
-        if (this.mirrorRadioCell.state() == NSCell.OnState) {
-            this.workList = new ArrayList();
-            for (Iterator i = this.promptList.iterator(); i.hasNext();) {
-                Path p = (Path) i.next();
+    public void mirrorCellClicked(final Object sender) {
+        this.workList.clear();
+        for(Iterator i = this.promptList.iterator(); i.hasNext();) {
+            Path p = (Path) i.next();
+            this.workList.add(p);
+        }
+        this.fireDataChanged();
+    }
+
+    public void downloadCellClicked(final Object sender) {
+        this.workList.clear();
+        for(Iterator i = this.promptList.iterator(); i.hasNext();) {
+            Path p = (Path) i.next();
+            if(p.getRemote().exists()) {
                 this.workList.add(p);
             }
         }
-        super.fireDataChanged();
+        this.fireDataChanged();
     }
 
-    public void downloadCellClicked(Object sender) {
-        if (this.downloadRadioCell.state() == NSCell.OnState) {
-            this.workList = new ArrayList();
-            for (Iterator i = this.promptList.iterator(); i.hasNext();) {
-                Path p = (Path) i.next();
-                if (p.getRemote().exists()) {
-                    this.workList.add(p);
-                }
+    public void uploadCellClicked(final Object sender) {
+        this.workList.clear();
+        for(Iterator i = this.promptList.iterator(); i.hasNext();) {
+            Path p = (Path) i.next();
+            if(p.getLocal().exists()) {
+                this.workList.add(p);
             }
         }
-        super.fireDataChanged();
-    }
-
-    public void uploadCellClicked(Object sender) {
-        if (this.uploadRadioCell.state() == NSCell.OnState) {
-            this.workList = new ArrayList();
-            for (Iterator i = this.promptList.iterator(); i.hasNext();) {
-                Path p = (Path) i.next();
-                if (p.getLocal().exists()) {
-                    this.workList.add(p);
-                }
-            }
-        }
-        super.fireDataChanged();
+        this.fireDataChanged();
     }
 
     // ----------------------------------------------------------
@@ -204,9 +222,9 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
     public void callback(int returncode) {
         if(returncode == DEFAULT_OPTION) { //sync
-            for (Iterator i = this.workList.iterator(); i.hasNext();) {
+            for(Iterator i = this.workList.iterator(); i.hasNext();) {
                 Path p = (Path) i.next();
-                if (!p.isSkipped()) {
+                if(!p.isSkipped()) {
                     this.validatedList.add(p);
                 }
             }
@@ -236,42 +254,36 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
     // NSTableView.DataSource
     // ----------------------------------------------------------
 
-    protected void fireDataChanged() {
-        if (this.hasPrompt()) {
-            this.mirrorCellClicked(null);
-            this.downloadCellClicked(null);
-            this.uploadCellClicked(null);
-        }
-    }
-
     private static final NSImage ARROW_UP_ICON = NSImage.imageNamed("arrowUp16.tiff");
     private static final NSImage ARROW_DOWN_ICON = NSImage.imageNamed("arrowDown16.tiff");
     private static final NSImage PLUS_ICON = NSImage.imageNamed("plus.tiff");
 
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-        if (row < this.numberOfRowsInTableView(tableView)) {
+        if(row < this.numberOfRowsInTableView(tableView)) {
             String identifier = (String) tableColumn.identifier();
             Path p = (Path) this.workList.get(row);
-            if (p != null) {
-                if (identifier.equals("TYPE")) {
-                    if (p.getRemote().exists() && p.getLocal().exists()) {
-                        if (p.getLocal().getTimestampAsCalendar().before(p.getRemote().attributes.getTimestampAsCalendar())) {
+            if(p != null) {
+                if(identifier.equals("TYPE")) {
+                    if(p.getRemote().exists() && p.getLocal().exists()) {
+                        if(p.getLocal().getTimestampAsCalendar().before(p.getRemote().attributes.getTimestampAsCalendar()))
+                        {
                             return ARROW_DOWN_ICON;
                         }
-                        if (p.getLocal().getTimestampAsCalendar().after(p.getRemote().attributes.getTimestampAsCalendar())) {
+                        if(p.getLocal().getTimestampAsCalendar().after(p.getRemote().attributes.getTimestampAsCalendar()))
+                        {
                             return ARROW_UP_ICON;
                         }
                     }
-                    if (p.getRemote().exists()) {
+                    if(p.getRemote().exists()) {
                         return ARROW_DOWN_ICON;
                     }
-                    if (p.getLocal().exists()) {
+                    if(p.getLocal().exists()) {
                         return ARROW_UP_ICON;
                     }
                     throw new IllegalArgumentException("The file must exist either locally or on the server");
                 }
-                if (identifier.equals("NEW")) {
-                    if (!(p.getRemote().exists() && p.getLocal().exists())) {
+                if(identifier.equals("NEW")) {
+                    if(!(p.getRemote().exists() && p.getLocal().exists())) {
                         return PLUS_ICON;
                     }
                     return null;

@@ -2248,7 +2248,7 @@ public class CDBrowserController extends CDWindowController
                             diagnostics = true;
                         }
                         if(e instanceof IOException) {
-                            alert = "IO " + NSBundle.localizedString("Error", "") + ": "+alert;
+                            alert = "I/O " + NSBundle.localizedString("Error", "") + ": "+alert;
                             diagnostics = true;
                         }
                         alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"), //title

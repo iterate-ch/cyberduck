@@ -70,6 +70,11 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
         return false;
     }
 
+    protected void prompt(Path p) {
+        this.workList.add(p);
+        super.prompt(p);
+    }
+
     protected void adjustFilename(Path path) {
         String parent = path.getParent().getAbsolute();
         String filename = path.getName();

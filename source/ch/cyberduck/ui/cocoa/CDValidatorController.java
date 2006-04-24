@@ -91,15 +91,12 @@ public abstract class CDValidatorController
     /**
      *
      */
-    protected List validatedList;
+    protected List validatedList = new ArrayList();
+
     /**
      *
      */
-    protected List workList;
-    /**
-     *
-     */
-    protected List promptList;
+    protected List workList = new ArrayList();
 
     /**
      * The user canceled this request, no further validation should be taken
@@ -115,12 +112,6 @@ public abstract class CDValidatorController
     }
 
     protected abstract boolean isExisting(Path p);
-
-    {
-        this.validatedList = new ArrayList();
-        this.workList = new ArrayList();
-        this.promptList = new ArrayList();
-    }
 
     public boolean validate(List files, boolean resumeRequested) {
         for (Iterator iter = files.iterator(); iter.hasNext() && !this.isCanceled();) {
@@ -212,8 +203,6 @@ public abstract class CDValidatorController
             this.statusIndicator.startAnimation(null);
             this.hasPrompt = true;
         }
-        this.promptList.add(p);
-        this.workList.add(p);
         this.fireDataChanged();
     }
 
@@ -262,11 +251,11 @@ public abstract class CDValidatorController
                 return null;
             }
 
-            public void enterKeyPressed(Object sender) {
+            public void enterKeyPressed(final Object sender) {
                 ;
             }
 
-            public void deleteKeyPressed(Object sender) {
+            public void deleteKeyPressed(final Object sender) {
                 ;
             }
 
@@ -274,7 +263,7 @@ public abstract class CDValidatorController
                 ;
             }
 
-            public void tableRowDoubleClicked(Object sender) {
+            public void tableRowDoubleClicked(final Object sender) {
                 ;
             }
 
