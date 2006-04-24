@@ -26,6 +26,8 @@ import com.apple.cocoa.foundation.NSBundle;
 import org.apache.log4j.Logger;
 
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
+import java.net.InetAddress;
 
 /**
  * @version $Id$
@@ -475,12 +477,12 @@ public class Host extends NSObject {
     /**
      * @return The IP address of the remote host if available
      */
-    public String getIp() throws java.net.UnknownHostException {
+    public String getIp() throws UnknownHostException {
         try {
-            return java.net.InetAddress.getByName(hostname).toString();
+            return InetAddress.getByName(hostname).toString();
         }
-        catch (java.net.UnknownHostException e) {
-            throw new java.net.UnknownHostException("Hostname cannot be resolved");
+        catch (UnknownHostException e) {
+            throw new UnknownHostException("Hostname cannot be resolved");
         }
     }
 
@@ -552,8 +554,8 @@ public class Host extends NSObject {
      *
      */
     public void diagnose() {
-		this.diagnose(this.getURL());
-	}
+        this.diagnose(this.getURL());
+    }
 
     /**
      *
