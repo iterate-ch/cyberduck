@@ -50,7 +50,13 @@ public class FTPException extends IOException {
 		super(msg);
 	}
 
-	/**
+    public FTPException(String msg, int replyCode) {
+
+        super(msg);
+        this.replyCode = replyCode;
+    }
+
+    /**
 	 * Constructor. Permits setting of reply code
 	 *
 	 * @param msg       message that the user will be
