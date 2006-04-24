@@ -1,5 +1,6 @@
 {
     IBClasses = (
+        {CLASS = AIAutoScrollView; LANGUAGE = ObjC; SUPERCLASS = NSScrollView; }, 
         {CLASS = CDListView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {
             ACTIONS = {
@@ -18,6 +19,8 @@
             LANGUAGE = Java; 
             OUTLETS = {
                 localField = NSTextField; 
+                logDrawer = NSDrawer; 
+                logView = NSTextView; 
                 queueTable = NSTableView; 
                 urlField = NSTextField; 
                 window = NSWindow; 
