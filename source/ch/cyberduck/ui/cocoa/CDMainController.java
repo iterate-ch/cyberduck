@@ -562,12 +562,6 @@ public class CDMainController extends CDController {
 
     public void applicationWillTerminate(NSNotification notification) {
         log.debug("applicationWillTerminate");
-        NSApplication app = NSApplication.sharedApplication();
-        NSArray orderedWindows = (NSArray) NSKeyValue.valueForKey(app, "orderedWindows");
-        int c = orderedWindows.count();
-        for (int i = 0; i < c; i++) {
-            NSNotificationCenter.defaultCenter().removeObserver(orderedWindows.objectAtIndex(i));
-        }
         NSNotificationCenter.defaultCenter().removeObserver(this);
         //Terminating rendezvous discovery
         Rendezvous.instance().quit();

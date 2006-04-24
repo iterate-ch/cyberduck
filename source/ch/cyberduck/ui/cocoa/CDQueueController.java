@@ -50,11 +50,19 @@ public class CDQueueController extends CDWindowController
         this.window.setDelegate(this);
     }
 
+    /**
+     *
+     * @param notification
+     */
     public void windowDidBecomeKey(NSNotification notification) {
         log.debug("windowDidBecomeKey");
         this.updateTableViewSelection();
     }
 
+    /**
+     *
+     * @param notification
+     */
     public void windowDidResignKey(NSNotification notification) {
         log.debug("windowDidResignKey");
         this.updateTableViewSelection();
