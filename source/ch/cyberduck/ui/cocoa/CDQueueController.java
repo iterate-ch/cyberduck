@@ -372,7 +372,9 @@ public class CDQueueController extends CDWindowController
                         reloadQueueTable();
                         queueTable.selectRow(row, false);
                         if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
-                            window().close();
+                            if(!hasRunningTransfers()) {
+                                window().close();
+                            }
                         }
                     }
                 });
