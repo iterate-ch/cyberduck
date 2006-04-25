@@ -22,6 +22,7 @@ import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -462,9 +463,15 @@ public class FTPPath extends Path {
             }
             catch (FTPException e) {
                 session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
+                Growl.instance().notify(
+                        NSBundle.localizedString("Download failed", "Growl", "Growl Notification"),
+                        this.getName());
             }
             catch (IOException e) {
                 session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
+                Growl.instance().notify(
+                        NSBundle.localizedString("Download failed", "Growl", "Growl Notification"),
+                        this.getName());
                 session.close();
             }
             finally {
@@ -673,9 +680,15 @@ public class FTPPath extends Path {
             }
             catch (FTPException e) {
                 session.error(new FTPException(e.getMessage()+" (" + this.getName() + ")", e.getReplyCode()));
+                Growl.instance().notify(
+                        NSBundle.localizedString("Upload failed", "Growl", "Growl Notification"),
+                        this.getName());
             }
             catch (IOException e) {
                 session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
+                Growl.instance().notify(
+                        NSBundle.localizedString("Upload failed", "Growl", "Growl Notification"),
+                        this.getName());
                 session.close();
             }
             finally {

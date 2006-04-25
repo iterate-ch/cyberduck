@@ -27,6 +27,7 @@ import com.sshtools.j2ssh.sftp.SftpFileOutputStream;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -445,9 +446,15 @@ public class SFTPPath extends Path {
             }
             catch (SshException e) {
                 session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
+                Growl.instance().notify(
+                        NSBundle.localizedString("Download failed", "Growl", "Growl Notification"),
+                        this.getName());
             }
             catch (IOException e) {
                 session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
+                Growl.instance().notify(
+                        NSBundle.localizedString("Download failed", "Growl", "Growl Notification"),
+                        this.getName());
                 session.close();
             }
             finally {
@@ -555,9 +562,15 @@ public class SFTPPath extends Path {
             }
             catch (SshException e) {
                 session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
+                Growl.instance().notify(
+                        NSBundle.localizedString("Upload failed", "Growl", "Growl Notification"),
+                        this.getName());
             }
             catch (IOException e) {
                 session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
+                Growl.instance().notify(
+                        NSBundle.localizedString("Upload failed", "Growl", "Growl Notification"),
+                        this.getName());
                 session.close();
             }
             finally {

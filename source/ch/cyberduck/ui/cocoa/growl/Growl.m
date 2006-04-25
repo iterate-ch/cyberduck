@@ -76,6 +76,8 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_GrowlNative_notifyWithIm
 #define GROWL_SYNCHRONIZATION_COMPLETE		NSLocalizedStringFromTable(@"Synchronization complete", @"Growl", @"Growl Notification")
 #define	GROWL_CONNECTION_OPENED				NSLocalizedStringFromTable(@"Connection opened", @"Growl", @"Growl Notification")
 #define	GROWL_CONNECTION_FAILED				NSLocalizedStringFromTable(@"Connection failed", @"Growl", @"Growl Notification")
+#define	GROWL_DOWNLOAD_FAILED				NSLocalizedStringFromTable(@"Download failed", @"Growl", @"Growl Notification")
+#define	GROWL_UPLOAD_FAILED					NSLocalizedStringFromTable(@"Upload failed", @"Growl", @"Growl Notification")
 #define	GROWL_RENDEZVOUS_FOUND_SERVICE		@"Bonjour"
 
 @implementation Growl
@@ -145,6 +147,8 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_GrowlNative_notifyWithIm
 		GROWL_SYNCHRONIZATION_COMPLETE,
 		GROWL_CONNECTION_OPENED,
 		GROWL_CONNECTION_FAILED,
+		GROWL_DOWNLOAD_FAILED,
+		GROWL_UPLOAD_FAILED,
 		GROWL_RENDEZVOUS_FOUND_SERVICE,
 		nil];
 	NSArray *defaultNotifications = [NSArray arrayWithObjects:
@@ -153,6 +157,8 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_GrowlNative_notifyWithIm
 		GROWL_SYNCHRONIZATION_COMPLETE,
 		GROWL_CONNECTION_OPENED,
 		GROWL_CONNECTION_FAILED,
+		GROWL_DOWNLOAD_FAILED,
+		GROWL_UPLOAD_FAILED,
 		GROWL_RENDEZVOUS_FOUND_SERVICE,
 		nil];
 	
