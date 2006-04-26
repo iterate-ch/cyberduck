@@ -1884,7 +1884,7 @@ public class CDBrowserController extends CDWindowController
 
                     public void queueStopped() {
                         if(isMounted()) {
-                            workdir().getSession().cache().invalidate(q.getRoot().getParent());
+                            getSession().cache().invalidate(q.getRoot().getParent());
                             reloadData(true);
                         }
                         q.removeListener(this);
@@ -1939,13 +1939,13 @@ public class CDBrowserController extends CDWindowController
 
                 public void queueStopped() {
                     if(isMounted()) {
-                        workdir().getSession().cache().invalidate(q.getRoot().getParent());
+                        getSession().cache().invalidate(q.getRoot().getParent());
                         reloadData(true);
                     }
                     q.removeListener(this);
                 }
             });
-            Session session = (Session) workdir.getSession().clone();
+            Session session = (Session) this.getSession().clone();
             while(iterator.hasMoreElements()) {
                 q.addRoot(PathFactory.createPath(session,
                         workdir.getAbsolute(),
@@ -2006,6 +2006,10 @@ public class CDBrowserController extends CDWindowController
         return this.session != null;
     }
 
+    public Session getSession() {
+        return this.session;
+    }
+
     /**
      * @return true if the remote file system has been mounted
      */
@@ -2034,9 +2038,9 @@ public class CDBrowserController extends CDWindowController
                     Queue q = QueueFactory.createQueue(dict);
                     List selected = new ArrayList();
                     for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                        Path current = PathFactory.createPath(workdir().getSession(),
+                        Path current = PathFactory.createPath(this.getSession(),
                                 ((Path) iter.next()).getAbsolute());
-                        Path renamed = PathFactory.createPath(workdir().getSession(),
+                        Path renamed = PathFactory.createPath(this.getSession(),
                                 workdir().getAbsolute(), current.getName());
                         this.renamePath(current, renamed);
                         selected.add(renamed);
@@ -2059,7 +2063,7 @@ public class CDBrowserController extends CDWindowController
             if(o != null) {
                 NSArray elements = (NSArray) o;
                 final Queue q = new UploadQueue();
-                Session session = (Session) this.workdir().getSession().clone();
+                Session session = (Session) this.getSession().clone();
                 for(int i = 0; i < elements.count(); i++) {
                     Path p = PathFactory.createPath(session,
                             workdir().getAbsolute(),
@@ -2074,7 +2078,7 @@ public class CDBrowserController extends CDWindowController
 
                         public void queueStopped() {
                             if(isMounted()) {
-                                workdir().getSession().cache().invalidate(q.getRoot().getParent());
+                                getSession().cache().invalidate(q.getRoot().getParent());
                                 reloadData(true);
                             }
                             q.removeListener(this);
