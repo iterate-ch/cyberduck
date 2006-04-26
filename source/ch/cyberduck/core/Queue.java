@@ -278,10 +278,14 @@ public abstract class Queue extends NSObject implements QueueListener {
         }
     }
 
+    public void interrupt() {
+        this.getSession().interrupt();
+    }
+
     public void cancel() {
         if(canceled) {
             // Called prevously; now force
-            this.getSession().interrupt();
+            this.interrupt();
         }
         else {
             if (this.isInitialized()) {
