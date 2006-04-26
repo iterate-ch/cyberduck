@@ -39,16 +39,23 @@ import java.util.TimeZone;
 public class Local extends File {
     private static Logger log = Logger.getLogger(Local.class);
 
-    static {
-        try {
-            NSBundle bundle = NSBundle.mainBundle();
-            String lib = bundle.resourcePath() + "/Java/" + "libLocal.dylib";
-            log.info("Locating libLocal.dylib at '" + lib + "'");
-            System.load(lib);
+    static boolean JNI_LOADED = false;
+
+    private boolean jni_load() {
+        if(!JNI_LOADED) {
+            try {
+                NSBundle bundle = NSBundle.mainBundle();
+                String lib = bundle.resourcePath() + "/Java/" + "libLocal.dylib";
+                log.info("Locating libLocal.dylib at '" + lib + "'");
+                System.load(lib);
+                JNI_LOADED = true;
+
+            }
+            catch (UnsatisfiedLinkError e) {
+                log.error("Could not load the alias resolving library:" + e.getMessage());
+            }
         }
-        catch (UnsatisfiedLinkError e) {
-            log.error("Could not load the alias resolving library:" + e.getMessage());
-        }
+        return JNI_LOADED;
     }
 
     public Local(File parent, String name) {
@@ -100,7 +107,8 @@ public class Local extends File {
 	                this.removeResourceFork();
 	            }
 	            else {
-	                this.setIconFromFile(this.getAbsolute(), "download" + progress + ".icns");
+                    this.jni_load();
+                    this.setIconFromFile(this.getAbsolute(), "download" + progress + ".icns");
 	            }
 	        }
 		}
@@ -125,6 +133,7 @@ public class Local extends File {
     private native void setIconFromFile(String path, String icon);
 
     private void removeCustomIcon() {
+        this.jni_load();
         this.removeCustomIcon(this.getAbsolute());
     }
 
