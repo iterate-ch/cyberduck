@@ -151,7 +151,12 @@ public class CDQueueController extends CDWindowController
                 instance.alert(sheet, new CDSheetCallback() {
                     public void callback(int returncode) {
                         if(returncode == DEFAULT_OPTION) { //Quit
-                            instance.stopAllButtonClicked(null);
+                            for(int i = 0; i < instance.queueModel.size(); i++) {
+                                Queue queue = (Queue) instance.queueModel.get(i);
+                                if(queue.isRunning()) {
+                                    queue.interrupt();
+                                }
+                            }
                             NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
                         }
                         if(returncode == ALTERNATE_OPTION) { //Cancel
