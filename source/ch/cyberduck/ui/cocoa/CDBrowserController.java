@@ -2433,9 +2433,6 @@ public class CDBrowserController extends CDWindowController
      * on the thread owning the socket
      */
     protected void interrupt() {
-        if(this.hasSession()) {
-            this.session.interrupt();
-        }
     }
 
     /**
@@ -2443,14 +2440,14 @@ public class CDBrowserController extends CDWindowController
      * from the user
      */
     public void unmount() {
-        if(this.activityRunning) {
-            this.interrupt();
+        synchronized(lock) {
+            if(this.hasSession()) {
+                if(this.activityRunning) {
+                    this.session.interrupt();
+                }
+                this.session.close();
+            }
         }
-        if(this.hasSession()) {
-            this.session.close();
-        }
-        this.deselectAll();
-        this.getSelectedBrowserView().setNeedsDisplay(true);
     }
 
     /**
@@ -2458,20 +2455,18 @@ public class CDBrowserController extends CDWindowController
      *         to close the connection
      */
     public boolean unmount(final CDSheetCallback callback) {
-        synchronized(lock) {
-            log.debug("unmount");
-            if(this.isConnected()) {
-                if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
-                    this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + this.session.getHost().getHostname(), //title
-                            NSBundle.localizedString("The connection will be closed.", "Alert sheet text"), // message
-                            NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
-                            NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
-                            null //other button
-                    ), callback);
-                    return false;
-                }
-                this.unmount();
+        log.debug("unmount");
+        if(this.isConnected() || this.activityRunning) {
+            if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
+                this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + this.session.getHost().getHostname(), //title
+                        NSBundle.localizedString("The connection will be closed.", "Alert sheet text"), // message
+                        NSBundle.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
+                        NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
+                        null //other button
+                ), callback);
+                return false;
             }
+            this.unmount();
         }
         return true;
     }

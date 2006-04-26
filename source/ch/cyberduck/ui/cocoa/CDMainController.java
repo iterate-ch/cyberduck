@@ -437,8 +437,8 @@ public class CDMainController extends CDController {
     }
 
     public void applicationDidFinishLaunching(NSNotification notification) {
-        Growl.instance().register();
         log.info("Running Java " + System.getProperty("java.version"));
+        Growl.instance().register();
         if (log.isInfoEnabled())
             log.info("Available localizations:" + NSBundle.mainBundle().localizations());
         if (Preferences.instance().getBoolean("queue.openByDefault")) {
