@@ -68,18 +68,6 @@ public class Editor extends CDController {
         }
     }
 
-    static {
-        try {
-            NSBundle bundle = NSBundle.mainBundle();
-            String lib = bundle.resourcePath() + "/Java/" + "libODBEdit.dylib";
-            log.info("Locating libODBEdit.dylib at '" + lib + "'");
-            System.load(lib);
-        }
-        catch (UnsatisfiedLinkError e) {
-            log.error("Could not load the ODBEdit library:" + e.getMessage());
-        }
-    }
-
     private String bundleIdentifier;
 
     /**
@@ -112,8 +100,27 @@ public class Editor extends CDController {
 
         this.path.download();
         if (this.path.status.isComplete()) {
+            this.jni_load();
             this.edit(this.path.getLocal().getAbsolute(), this.bundleIdentifier);
         }
+    }
+
+    static boolean JNI_LOADED = false;
+
+    private boolean jni_load() {
+        if(!JNI_LOADED) {
+            try {
+                NSBundle bundle = NSBundle.mainBundle();
+                String lib = bundle.resourcePath() + "/Java/" + "libODBEdit.dylib";
+                log.info("Locating libODBEdit.dylib at '" + lib + "'");
+                System.load(lib);
+                JNI_LOADED = true;
+            }
+            catch (UnsatisfiedLinkError e) {
+                log.error("Could not load the ODBEdit library:" + e.getMessage());
+            }
+        }
+        return JNI_LOADED;
     }
 
     private native void edit(String path, String bundleIdentifier);

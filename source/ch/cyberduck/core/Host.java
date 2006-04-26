@@ -520,22 +520,31 @@ public class Host extends NSObject {
         super.finalize();
     }
 
-    static {
-        try {
-            NSBundle bundle = NSBundle.mainBundle();
-            String lib = bundle.resourcePath() + "/Java/" + "libDiagnostics.dylib";
-            log.info("Locating libDiagnostics.dylib at '" + lib + "'");
-            System.load(lib);
+    static boolean JNI_LOADED = false;
+
+    private boolean jni_load() {
+        if(!JNI_LOADED) {
+            try {
+                NSBundle bundle = NSBundle.mainBundle();
+                String lib = bundle.resourcePath() + "/Java/" + "libDiagnostics.dylib";
+                log.info("Locating libDiagnostics.dylib at '" + lib + "'");
+                System.load(lib);
+                JNI_LOADED = true;
+            }
+            catch (UnsatisfiedLinkError e) {
+                log.error("Could not load the libDiagnostics.dylib library:" + e.getMessage());
+            }
         }
-        catch (UnsatisfiedLinkError e) {
-            log.error("Could not load the libDiagnostics.dylib library:" + e.getMessage());
-        }
+        return JNI_LOADED;
     }
 
     /**
      *
      */
     public boolean isReachable() {
+        if(!this.jni_load()) {
+            return false;
+        }
         boolean available = this.isReachable(this.getURL());
         if(!available) {
             log.warn("Unreachable hostname:"+this.getHostname());
@@ -554,6 +563,9 @@ public class Host extends NSObject {
      *
      */
     public void diagnose() {
+        if(!this.jni_load()) {
+            return;
+        }
         this.diagnose(this.getURL());
     }
 
