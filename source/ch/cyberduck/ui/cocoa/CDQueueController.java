@@ -55,7 +55,6 @@ public class CDQueueController extends CDWindowController
      * @param notification
      */
     public void windowDidBecomeKey(NSNotification notification) {
-        log.debug("windowDidBecomeKey");
         this.updateTableViewSelection();
     }
 
@@ -64,7 +63,6 @@ public class CDQueueController extends CDWindowController
      * @param notification
      */
     public void windowDidResignKey(NSNotification notification) {
-        log.debug("windowDidResignKey");
         this.updateTableViewSelection();
     }
 
@@ -373,12 +371,11 @@ public class CDQueueController extends CDWindowController
                 CDQueueController.this.invoke(new Runnable() {
                     public void run() {
                         toolbar.validateVisibleItems();
-                        int row = queueTable.selectedRow();
-                        reloadQueueTable();
-                        queueTable.selectRow(row, false);
-                        if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
-                            if(!hasRunningTransfers()) {
-                                window().close();
+                        if(queue.isComplete()) {
+                            if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
+                                if(!hasRunningTransfers()) {
+                                    window().close();
+                                }
                             }
                         }
                     }
