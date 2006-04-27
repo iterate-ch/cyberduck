@@ -23,28 +23,31 @@ import junit.framework.TestSuite;
 import junit.framework.TestCase;
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Path;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 
+/**
+ * @version $Id$
+ */
 public class UnixFTPEntryParserTest extends TestCase
 {
+
     public UnixFTPEntryParserTest(String name)
     {
         super(name);
     }
 
     private FTPFileEntryParser parser;
-    private Path parentPath;
+    private Path parent;
 
 
     public void setUp() throws Exception
     {
-        this.parser = new UnixFTPEntryParser();
-        this.parentPath = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+        this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser("UNIX");
+        this.parent = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
                 "/");
     }
 
@@ -55,7 +58,7 @@ public class UnixFTPEntryParserTest extends TestCase
 
     public void testParseFTPEntry() throws Exception
     {
-        Path parsed = parser.parseFTPEntry(parentPath,
+        Path parsed = parser.parseFTPEntry(parent,
                 "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 ADMIN_Documentation");
         assertEquals(parsed.attributes.getType(), Path.DIRECTORY_TYPE);
         assertEquals(parsed.attributes.getPermission().getMask(), "rw-rw-rw-");
