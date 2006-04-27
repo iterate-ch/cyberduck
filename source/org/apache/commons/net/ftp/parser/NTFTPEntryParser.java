@@ -36,12 +36,11 @@ public class NTFTPEntryParser extends RegexFTPFileEntryParserImpl {
 	private static final String REGEX =
 	    "((?:0[1-9])|(?:1[0-2]))-"
 	    +"((?:0[1-9])|(?:[1-2]\\d)|(?:3[0-1]))-"
-	    +"(\\d\\d)\\s*"
+	    +"(\\d\\d|\\d\\d\\d\\d)\\s*"
 	    +"((?:0[1-9])|(?:1[012])):"
 	    +"([0-5]\\d)\\s*"
 	    +"([AP])M\\s*"
-	    +"(<DIR>)?\\s*"
-	    +"([0-9]+)?\\s+"
+        + "(?:(<DIR>)|([0-9]+))\\s+"
 	    +"(\\S.*)";
 
 	/**
@@ -85,11 +84,11 @@ public class NTFTPEntryParser extends RegexFTPFileEntryParserImpl {
 			}
 			f.setPath(parent.getAbsolute(), name);
 			//convert all the calendar stuff to ints
-			int month = new Integer(mo).intValue()-1;
-			int day = new Integer(da).intValue();
-			int year = new Integer(yr).intValue()+2000;
-			int hour = new Integer(hr).intValue();
-			int minutes = new Integer(min).intValue();
+			int month = Integer.parseInt(mo) -1;
+			int day = Integer.parseInt(da);
+			int year = Integer.parseInt(yr) +2000;
+			int hour = Integer.parseInt(hr);
+			int minutes = Integer.parseInt(min);
 
 			// Y2K stuff? this will break again in 2080 but I will
 			// be sooooo dead anyways who cares.

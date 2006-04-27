@@ -32,12 +32,6 @@ import java.text.ParseException;
  */
 public abstract class RegexFTPFileEntryParserImpl extends FTPFileEntryParserImpl {
 
-    private FTPTimestampParser timestampParser;
-
-    {
-        this.timestampParser = new FTPTimestampParserImpl();
-    }
-
     /**
      * internal pattern the matcher tries to match, representing a file
      * entry
@@ -136,16 +130,5 @@ public abstract class RegexFTPFileEntryParserImpl extends FTPFileEntryParserImpl
         }
         return b.toString();
 
-    }
-
-    /**
-     * @param timestampStr the timestamp string pulled from the
-     * file listing by the regular expression parser, to be submitted
-     * to the <code>timestampParser</code> for extracting the timestamp.
-     * @return a <code>java.util.Calendar</code> containing results of the
-     * timestamp parse.
-     */
-    public Calendar parseTimestamp(String timestampStr) throws ParseException {
-        return this.timestampParser.parseTimestamp(timestampStr);
     }
 }
