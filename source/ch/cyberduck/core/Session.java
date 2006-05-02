@@ -120,6 +120,9 @@ public abstract class Session extends NSObject
             try {
                 try {
                     this.check();
+                    if(!this.isConnected()) {
+                        return null;
+                    }
                     Path home;
                     if(host.hasReasonableDefaultPath()) {
                         home = PathFactory.createPath(this, host.getDefaultPath());
@@ -142,11 +145,11 @@ public abstract class Session extends NSObject
                     this.close();
                 }
                 catch(SocketException e) {
-                    if(e.getMessage().equals("Software caused connection abort")) {//hack; socket opening interrupted
-                        this.close();
+                    if(!e.getMessage().equals("Software caused connection abort")) {//hack; socket opening interrupted
+                        throw e;
                     }
                     else {
-                        throw e;
+                        log.warn("Supressed socket exception:"+e.getMessage());
                     }
                 }
             }
@@ -189,7 +192,9 @@ public abstract class Session extends NSObject
     protected abstract void noop() throws IOException;
 
     /**
-     * Interrupt any running operation by closing the underlying socket
+     * Interrupt any running operation by closing the underlying socket.
+     * Close the underlying socket regardless of its state; will throw a socket exception
+     * on the thread owning the socket
      */
     public abstract void interrupt();
 
@@ -215,6 +220,7 @@ public abstract class Session extends NSObject
     }
 
     public void connectionWillOpen() {
+        log.debug("connectionWillOpen");
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].connectionWillOpen();
@@ -222,6 +228,7 @@ public abstract class Session extends NSObject
     }
 
     public void connectionDidOpen() {
+        log.debug("connectionDidOpen");
         this.connected = true;
         if(Preferences.instance().getBoolean("connection.keepalive")) {
             this.keepAliveTimer = new Timer();
@@ -237,6 +244,7 @@ public abstract class Session extends NSObject
     }
 
     public void connectionWillClose() {
+        log.debug("connectionWillClose");
         this.message(NSBundle.localizedString("Disconnecting...", "Status", ""));
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
         for(int i = 0; i < l.length; i++) {
@@ -245,6 +253,7 @@ public abstract class Session extends NSObject
     }
 
     public void connectionDidClose() {
+        log.debug("connectionDidClose");
         this.connected = false;
         if(Preferences.instance().getBoolean("connection.keepalive") && this.keepAliveTimer != null) {
             this.keepAliveTimer.cancel();
@@ -260,6 +269,7 @@ public abstract class Session extends NSObject
     }
 
     public void activityStarted() {
+        log.debug("activityStarted");
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].activityStarted();
@@ -267,6 +277,7 @@ public abstract class Session extends NSObject
     }
 
     public void activityStopped() {
+        log.debug("activityStopped");
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].activityStopped();
