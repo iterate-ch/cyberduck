@@ -33,7 +33,7 @@ public class GrowlNative extends Growl {
             System.load(lib);
         }
         catch (UnsatisfiedLinkError e) {
-            log.error("Could not load the Growl library:" + e.getMessage());
+            log.error("Could not load the libGrowl.dylib library:" + e.getMessage());
         }
     }
 
