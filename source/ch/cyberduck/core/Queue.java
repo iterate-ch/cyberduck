@@ -27,7 +27,6 @@ import com.apple.cocoa.foundation.NSObject;
 import org.apache.log4j.Logger;
 
 import javax.swing.Timer;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -81,17 +80,58 @@ public abstract class Queue extends NSObject implements QueueListener {
         queueListeners.remove(listener);
     }
 
-    public void queueStarted() {
+    public void queueStarted(boolean headless) {
+        this.canceled = false;
+        this.running = true;
+        this.jobs = null;
+        if (!headless) {
+            this.progressTimer = new Timer(500,
+                    new java.awt.event.ActionListener() {
+                        int i = 0;
+                        double current;
+                        double last;
+                        double[] speeds = new double[8];
+
+                        public void actionPerformed(java.awt.event.ActionEvent e) {
+                            double diff = 0;
+                            current = getCurrent(); // Bytes
+                            if (current <= 0) {
+                                setSpeed(0);
+                            }
+                            else {
+                                speeds[i] = (current - last) * 2; // Bytes per second
+                                i++;
+                                last = current;
+                                if (i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
+                                    i = 0;
+                                }
+                                for (int k = 0; k < speeds.length; k++) {
+                                    diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
+                                }
+                                setSpeed((diff / speeds.length)); //Bytes per second
+                            }
+
+                        }
+                    });
+            this.progressTimer.start();
+        }
+
         QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
         for (int i = 0; i < l.length; i++) {
-            l[i].queueStarted();
+            l[i].queueStarted(headless);
         }
     }
 
-    public void queueStopped() {
+    public void queueStopped(boolean headless) {
+        this.running = false;
+        if (!headless) {
+            this.getRoot().getSession().close();
+            this.progressTimer.stop();
+        }
+
         QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
         for (int i = 0; i < l.length; i++) {
-            l[i].queueStopped();
+            l[i].queueStopped(headless);
         }
     }
 
@@ -183,23 +223,24 @@ public abstract class Queue extends NSObject implements QueueListener {
         return false;
     }
         
-    protected abstract void process(Path p);
+    protected abstract void transfer(Path p);
 
     /**
      * Process the queue. All files will be downloaded/uploaded/synced rerspectively.
      *
-     * @param resume   The user requested to resume the transfer
-     * @param headless
+     * @param resume The user requested to resume the transfer
+     * @param headless No validation of items in the queue; don't show dialog
      */
-    public void process(boolean resume, boolean headless) {
+    public void run(boolean resume, boolean headless) {
         try {
+            this.queueStarted(headless);
             if (this.init(resume, headless)) {
                 this.reset();
                 for (Iterator iter = this.jobs.iterator(); iter.hasNext() && !this.isCanceled();) {
                     ((Path) iter.next()).status.reset();
                 }
                 for (Iterator iter = this.jobs.iterator(); iter.hasNext() && !this.isCanceled();) {
-                    this.process((Path) iter.next());
+                    this.transfer((Path) iter.next());
                 }
             }
             else {
@@ -207,7 +248,7 @@ public abstract class Queue extends NSObject implements QueueListener {
             }
         }
         finally {
-            this.finish(headless);
+            this.queueStopped(headless);
         }
     }
 
@@ -215,54 +256,14 @@ public abstract class Queue extends NSObject implements QueueListener {
      *
      * @param resumeRequested
      * @param headless
-     * @return
+     * @return if validation succeeded and the queue should be run
      */
     private boolean init(boolean resumeRequested, boolean headless) {
-        this.canceled = false;
-        this.running = true;
-        this.jobs = null;
         if (!headless) {
-            this.progressTimer = new Timer(500,
-                    new java.awt.event.ActionListener() {
-                        int i = 0;
-                        double current;
-                        double last;
-                        double[] speeds = new double[8];
-
-                        public void actionPerformed(java.awt.event.ActionEvent e) {
-                            double diff = 0;
-                            current = getCurrent(); // Bytes
-                            if (current <= 0) {
-                                setSpeed(0);
-                            }
-                            else {
-                                speeds[i] = (current - last) * 2; // Bytes per second
-                                i++;
-                                last = current;
-                                if (i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
-                                    i = 0;
-                                }
-                                for (int k = 0; k < speeds.length; k++) {
-                                    diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
-                                }
-                                setSpeed((diff / speeds.length)); //Bytes per second
-                            }
-
-                        }
-                    });
-            this.progressTimer.start();
-        }
-        this.queueStarted();
-        if (!headless) {
-            Validator validator = ValidatorFactory.createValidator(this.getClass());
-            List childs = this.getChilds();
-            if (!this.isCanceled()) {
-                if (validator.validate(childs, resumeRequested)) {
-                    if (validator.getValidated().size() > 0) {
-                        this.jobs = validator.getValidated();
-                        return true;
-                    }
-                }
+            Validator validator = this.getValidator();
+            if (validator.validate(resumeRequested)) {
+                this.jobs = validator.getValidated();
+                return true;
             }
             return false;
         }
@@ -270,13 +271,7 @@ public abstract class Queue extends NSObject implements QueueListener {
         return true;
     }
 
-    protected void finish(boolean headless) {
-        this.running = false;
-        if (!headless) {
-            this.progressTimer.stop();
-            this.getRoot().getSession().close();
-        }
-    }
+    protected abstract Validator getValidator();
 
     public void interrupt() {
         this.getSession().interrupt();

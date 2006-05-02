@@ -70,7 +70,7 @@ public class CDProgressController extends CDController {
         this.queue.addListener(new QueueListener() {
             ProgressListener progress;
 
-            public void queueStarted() {
+            public void queueStarted(boolean headless) {
                 invoke(new Runnable() {
                     public void run() {
                         progressBar.setHidden(false);
@@ -115,7 +115,7 @@ public class CDProgressController extends CDController {
                 });
             }
 
-            public void queueStopped() {
+            public void queueStopped(boolean headless) {
                 invoke(new Runnable() {
                     public void run() {
                         progressTimer.invalidate();

@@ -117,7 +117,7 @@ public class Editor extends CDController {
                 JNI_LOADED = true;
             }
             catch (UnsatisfiedLinkError e) {
-                log.error("Could not load the ODBEdit library:" + e.getMessage());
+                log.error("Could not load the libODBEdit.dylib library:" + e.getMessage());
             }
         }
         return JNI_LOADED;
@@ -132,6 +132,6 @@ public class Editor extends CDController {
 
     public void didModifyFile() {
         UploadQueue q = new UploadQueue(this.path);
-        q.process(false, true);
+        q.run(false, true);
     }
 }

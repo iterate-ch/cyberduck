@@ -32,7 +32,6 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -248,7 +247,7 @@ public class CDBrowserController extends CDWindowController
                 path.setLocal(new Local((String) localObj));
             }
             Queue q = new SyncQueue(path);
-            q.process(false, true);
+            q.run(false, true);
         }
         return null;
     }
@@ -276,7 +275,7 @@ public class CDBrowserController extends CDWindowController
                 path.setLocal(new Local(path.getLocal().getParent(), (String) nameObj));
             }
             Queue q = new DownloadQueue(path);
-            q.process(false, true);
+            q.run(false, true);
         }
         return null;
     }
@@ -303,7 +302,7 @@ public class CDBrowserController extends CDWindowController
                 path.setPath(this.workdir().getAbsolute(), (String) nameObj);
             }
             Queue q = new UploadQueue(path);
-            q.process(false, true);
+            q.run(false, true);
         }
         return null;
     }
@@ -465,6 +464,7 @@ public class CDBrowserController extends CDWindowController
             });
             return;
         }
+        log.debug("reloadData:"+preserveSelection);
         List selected = null;
         if(preserveSelection) {
             //Remember the selected paths
@@ -833,9 +833,7 @@ public class CDBrowserController extends CDWindowController
                                                     Object item, NSPoint mouseLocation) {
                 if(item instanceof Path) {
                     Path p = (Path) item;
-                    return p.getAbsolute() + "\n"
-                            + Status.getSizeAsString(p.attributes.getSize()) + "\n"
-                            + p.attributes.getTimestampAsString();
+                    return this.tooltipForPath(p);
                 }
                 return null;
             }
@@ -926,13 +924,10 @@ public class CDBrowserController extends CDWindowController
                                                   NSTableColumn tc, int row, NSPoint mouseLocation) {
                 if(row < getSelectedBrowserModel().childs(CDBrowserController.this.workdir()).size()) {
                     Path p = (Path) getSelectedBrowserModel().childs(CDBrowserController.this.workdir()).get(row);
-                    return p.getAbsolute() + "\n"
-                            + Status.getSizeAsString(p.attributes.getSize()) + "\n"
-                            + p.attributes.getTimestampAsString();
+                    return this.tooltipForPath(p);
                 }
                 return null;
             }
-
         });
         NSSelector setResizableMaskSelector
                 = new NSSelector("setResizingMask", new Class[]{int.class});
@@ -1032,7 +1027,8 @@ public class CDBrowserController extends CDWindowController
             }
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setAlignment(NSText.LeftTextAlignment);
-            c.dataCell().setFormatter(new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString),
+            c.dataCell().setFormatter(
+                    new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString),
                     true));
             table.addTableColumn(c);
         }
@@ -1642,6 +1638,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
+     *
      * @param path
      * @param renamed
      */
@@ -1656,7 +1653,6 @@ public class CDBrowserController extends CDWindowController
             CDSheetController c = new CDSheetController(this, sheet) {
                 public void callback(int returncode) {
                     if(returncode == DEFAULT_OPTION) {
-                        renamed.delete();
                         path.rename(renamed.getAbsolute());
                     }
                 }
@@ -1879,10 +1875,10 @@ public class CDBrowserController extends CDWindowController
                 selection.setLocal(new Local((String) sheet.filenames().lastObject()));
                 final Queue q = new SyncQueue();
                 q.addListener(new QueueListener() {
-                    public void queueStarted() {
+                    public void queueStarted(boolean headless) {
                     }
 
-                    public void queueStopped() {
+                    public void queueStopped(boolean headless) {
                         if(isMounted()) {
                             getSession().cache().invalidate(q.getRoot().getParent());
                             reloadData(true);
@@ -1934,10 +1930,10 @@ public class CDBrowserController extends CDWindowController
             java.util.Enumeration iterator = selected.objectEnumerator();
             final Queue q = new UploadQueue();
             q.addListener(new QueueListener() {
-                public void queueStarted() {
+                public void queueStarted(boolean headless) {
                 }
 
-                public void queueStopped() {
+                public void queueStopped(boolean headless) {
                     if(isMounted()) {
                         getSession().cache().invalidate(q.getRoot().getParent());
                         reloadData(true);
@@ -2055,8 +2051,7 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
-    public void pasteFromFinder(final Object sender
-    ) {
+    public void pasteFromFinder(final Object sender) {
         NSPasteboard pboard = NSPasteboard.generalPasteboard();
         if(pboard.availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
             Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
@@ -2073,10 +2068,10 @@ public class CDBrowserController extends CDWindowController
                 if(q.numberOfRoots() > 0) {
                     CDQueueController.instance().startItem(q);
                     q.addListener(new QueueListener() {
-                        public void queueStarted() {
+                        public void queueStarted(boolean headless) {
                         }
 
-                        public void queueStopped() {
+                        public void queueStopped(boolean headless) {
                             if(isMounted()) {
                                 getSession().cache().invalidate(q.getRoot().getParent());
                                 reloadData(true);
@@ -2131,6 +2126,12 @@ public class CDBrowserController extends CDWindowController
         return this.workdir;
     }
 
+//    /**
+//     * To lock to protect the update of the current working directory
+//     * to be synchroneous
+//     */
+//    private final Object workdirLock = new Object();
+
     /**
      * Sets the current working directory. This will udpate the path selection dropdown button
      * and also add this path to the browsing history. If the path cannot be a working directory (e.g. permission
@@ -2140,20 +2141,30 @@ public class CDBrowserController extends CDWindowController
      * @param path The new working directory to display or null to detach any working directory from the browser
      */
     protected void setWorkdir(Path path) {
+        log.debug("setWorkdir:"+path);
         if(!this.hasSession()) {
-            path = null;
+            // The connection has already been closed asynchronously
+            log.warn("Delayed notification to set current working directory - session already closed asynchronously");
+            return;
         }
         this.setFileFilter(null); // Remove any custom file filter
         if(null == path) {
+            // Clear the browser view if no working directory is given
             this.workdir = null;
             this.pathPopupItems.clear();
             this.pathPopupButton.removeAllItems();
             this.reloadData(false);
             return;
         }
-        if(null == path.list()) {//TODO: should be threaded to be interruptable by the main thread
+        if(null == path.list()) {
+            // Invalid path given; don't update browser view
             return;
         }
+//            if(!this.hasSession() || !this.session.isConnected()) {
+//                // The connection has already been closed asynchronous
+//                log.warn("Got new directory listing but session already closed asynchronously");
+//                return;
+//            }
         this.workdir = path;
         this.session.addPathToHistory(this.workdir);
         this.pathPopupItems.clear();
@@ -2195,24 +2206,55 @@ public class CDBrowserController extends CDWindowController
         this.window.setTitle(host.getProtocol() + ":" + host.getHostname());
         this.bookmarkModel.exportBookmark(host, this.getRepresentedFile());
         if(this.getRepresentedFile().exists()) {
+            // Set the window title
             this.window.setRepresentedFilename(this.getRepresentedFile().getAbsolutePath());
         }
         session.addConnectionListener(listener = new ConnectionListener() {
+            /**
+             * The listener used to watch for messages and errors during the session
+             */
             private ProgressListener progress;
+            /**
+             * Only used for connection errors upon the initial handshake
+             */
+            private ProgressListener error;
+            /**
+             * Writes the transcript to the log viewer
+             */
             private TranscriptListener transcript;
 
             public void connectionWillOpen() {
+                session.addProgressListener(error = new ProgressListener() {
+                    public void message(final String message) {
+                        ;
+                    }
+
+                    public void error(final Exception e) {
+                        if(e instanceof IOException) {
+                            if(hasSession()) {
+                                final File bookmark = getRepresentedFile();
+                                if(bookmark.exists()) {
+                                    // Delete this history bookmark if there was any error connecting
+                                    bookmark.delete();
+                                }
+                                window.setRepresentedFilename(""); //can't send null
+                            }
+                        }
+                    }
+                });
                 session.addProgressListener(progress = new ProgressListener() {
                     public void message(final String msg) {
                         if(!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
                         {
                             invoke(new Runnable() {
                                 public void run() {
+                                    //Run in main thread
                                     message(msg);
                                 }
                             });
                             return;
                         }
+                        // Update the status label at the bottom of the browser window
                         statusLabel.setAttributedStringValue(new NSAttributedString(msg,
                                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                         statusLabel.display();
@@ -2224,6 +2266,7 @@ public class CDBrowserController extends CDWindowController
                         {
                             invoke(new Runnable() {
                                 public void run() {
+                                    //Run in main thread
                                     error(e);
                                 }
                             });
@@ -2238,8 +2281,6 @@ public class CDBrowserController extends CDWindowController
                         else if(e instanceof SshException) {
                             title = "SSH " + NSBundle.localizedString("Error", "");
                         }
-//                        else if(e instanceof UnknownHostException) {
-//                        }
                         else if(e instanceof SocketException) {
                             title = "Network " + NSBundle.localizedString("Error", "");
                             diagnostics = true;
@@ -2276,6 +2317,7 @@ public class CDBrowserController extends CDWindowController
                 {
                     invoke(new Runnable() {
                         public void run() {
+                            //Run in main thread
                             connectionDidOpen();
                         }
                     });
@@ -2286,18 +2328,12 @@ public class CDBrowserController extends CDWindowController
                 if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                     window.setDocumentEdited(true);
                 }
+                // This progress listener was only used to handle initial connection errors
+                session.removeProgressListener(error);
             }
 
             public void connectionWillClose() {
-                if(!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
-                {
-                    invoke(new Runnable() {
-                        public void run() {
-                            connectionWillClose();
-                        }
-                    });
-                    return;
-                }
+                ;
             }
 
             public void connectionDidClose() {
@@ -2305,6 +2341,7 @@ public class CDBrowserController extends CDWindowController
                 {
                     invoke(new Runnable() {
                         public void run() {
+                            //Run in main thread
                             connectionDidClose();
                         }
                     });
@@ -2321,6 +2358,7 @@ public class CDBrowserController extends CDWindowController
                 {
                     invoke(new Runnable() {
                         public void run() {
+                            //Run in main thread
                             activityStarted();
                         }
                     });
@@ -2335,6 +2373,7 @@ public class CDBrowserController extends CDWindowController
                 {
                     invoke(new Runnable() {
                         public void run() {
+                            //Run in main thread
                             activityStopped();
                         }
                     });
@@ -2364,16 +2403,16 @@ public class CDBrowserController extends CDWindowController
     private Session session;
 
     /**
-     * A lock object used to make sure only one session can use this browser at once.
+     * A mountingLock object used to make sure only one session can use this browser at once.
      */
-    private final Object lock = new Object();
+    private final Object mountingLock = new Object();
 
     /**
      * @param host
      * @return
      */
     protected Session mount(final Host host) {
-        synchronized(lock) {
+        synchronized(mountingLock) {
             log.debug("mount:" + host);
             if(this.isMounted()) {
                 if(this.session.getHost().getURL().equals(host.getURL())) {
@@ -2397,28 +2436,11 @@ public class CDBrowserController extends CDWindowController
                 final Session session = this.init(host);
                 new Thread(session.toString()) {
                     public void run() {
-                        synchronized(lock) {
-                            ProgressListener listener;
-                            session.addProgressListener(listener = new ProgressListener() {
-                                public void message(final String message) {
-                                    ;
-                                }
-
-                                public void error(final Exception e) {
-                                    if(e instanceof IOException) {
-                                        File bookmark = getRepresentedFile();
-                                        if(bookmark.exists()) {
-                                            // Delete this history bookmark if there was any error connecting
-                                            bookmark.delete();
-                                        }
-                                        window.setRepresentedFilename(""); //can't send null
-                                    }
-                                }
-                            });
+                        // Synchronize so that no other session can be mounted
+                        // if we haven't finished here yet.
+                        synchronized(mountingLock) {
                             // Mount this session and set the working directory
                             setWorkdir(session.mount());
-                            // This progress listener was only used to handle initial connection errors
-                            session.removeProgressListener(listener);
                         }
                     }
                 }.start();
@@ -2429,25 +2451,23 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
-     * Close the underlying socket regardless of its state; will throw a socket exception
-     * on the thread owning the socket
-     */
-    protected void interrupt() {
-    }
-
-    /**
      * Will close the session but still display the current working directory without any confirmation
      * from the user
      */
     public void unmount() {
-        synchronized(lock) {
-            if(this.hasSession()) {
-                if(this.activityRunning) {
-                    this.session.interrupt();
-                }
+        // This is not synchronized to the <code>mountingLock</code> intentionally; this allows to unmount
+        // sessions not yet connected
+        if(this.hasSession()) {
+            if(this.activityRunning) {
+                //Interrupt any operation in progress; just closes the socket without any goodbye message
+                this.session.interrupt();
+            }
+            else {
+                //Close the connection gracefully
                 this.session.close();
             }
         }
+        this.reloadData(true);
     }
 
     /**
@@ -2472,60 +2492,9 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
-     * Can't remember if this is ever used because we have our own document handling and
-     * aren't a NSDocuemnt
      *
-     * @param data
-     * @param type
-     * @return True if we succeeded opening the bookmark
+     * @param sender
      */
-    public boolean loadDataRepresentation(NSData data, String type) {
-        if(type.equals("Cyberduck Bookmark")) {
-            String[] errorString = new String[]{null};
-            Object propertyListFromXMLData =
-                    NSPropertyListSerialization.propertyListFromData(data,
-                            NSPropertyListSerialization.PropertyListImmutable,
-                            new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-                            errorString);
-            if(errorString[0] != null) {
-                log.error("Problem reading bookmark file: " + errorString[0]);
-            }
-            else {
-                log.debug("Successfully read bookmark file: " + propertyListFromXMLData);
-            }
-            if(propertyListFromXMLData instanceof NSDictionary) {
-                this.mount(new Host((NSDictionary) propertyListFromXMLData));
-            }
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Can't remember if this is ever used because we have our own document handling and
-     * aren't a NSDocuemnt
-     *
-     * @param type
-     * @return The bookmark data of this browser
-     */
-    public NSData dataRepresentationOfType(String type) {
-        if(this.isMounted()) {
-            if(type.equals("Cyberduck Bookmark")) {
-                Host bookmark = this.session.getHost();
-                NSMutableData collection = new NSMutableData();
-                String[] errorString = new String[]{null};
-                collection.appendData(NSPropertyListSerialization.dataFromPropertyList(bookmark.getAsDictionary(),
-                        NSPropertyListSerialization.PropertyListXMLFormat,
-                        errorString));
-                if(errorString[0] != null) {
-                    log.error("Problem writing bookmark file: " + errorString[0]);
-                }
-                return collection;
-            }
-        }
-        return null;
-    }
-
     public void printDocument(final Object sender) {
         NSPrintOperation op = NSPrintOperation.printOperationWithView(this.getSelectedBrowserView());
         op.runModalOperation(this.window, this,
@@ -2539,6 +2508,11 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
+    /**
+     *
+     * @param app
+     * @return NSApplication.TerminateLater if the application should not yet be terminated
+     */
     public static int applicationShouldTerminate(NSApplication app) {
         // Determine if there are any open connections
         NSArray windows = NSApplication.sharedApplication().windows();

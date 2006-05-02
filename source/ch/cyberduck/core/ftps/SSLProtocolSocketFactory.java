@@ -66,7 +66,7 @@ public class SSLProtocolSocketFactory implements SecureProtocolSocketFactory {
     }
 
     private SSLContext getSSLContext() {
-        if (this.sslcontext == null) {
+        if (null == this.sslcontext) {
             this.sslcontext = createEasySSLContext();
         }
         return this.sslcontext;
@@ -113,5 +113,4 @@ public class SSLProtocolSocketFactory implements SecureProtocolSocketFactory {
     public int hashCode() {
         return SSLProtocolSocketFactory.class.hashCode();
     }
-
 }

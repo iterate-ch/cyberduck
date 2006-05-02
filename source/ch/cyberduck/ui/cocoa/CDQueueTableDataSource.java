@@ -46,7 +46,7 @@ public class CDQueueTableDataSource extends Collection {
     private static CDQueueTableDataSource instance;
 
     public static CDQueueTableDataSource instance() {
-        if (instance == null) {
+        if (null == instance) {
             instance = new CDQueueTableDataSource();
         }
         return instance;

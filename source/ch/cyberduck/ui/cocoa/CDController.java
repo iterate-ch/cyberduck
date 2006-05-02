@@ -49,8 +49,6 @@ public abstract class CDController extends NSObject {
 
     protected static NSMutableArray instances;
 
-    private static final Object lock = new Object();
-
     protected synchronized void invoke(Runnable thread) {
         mainRunLoop.addTimerForMode(new NSTimer(0f, this,
                 new NSSelector("post", new Class[]{NSTimer.class}),

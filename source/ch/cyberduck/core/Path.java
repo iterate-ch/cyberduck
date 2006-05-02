@@ -28,6 +28,8 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.TimeZone;
+import java.util.Calendar;
 
 /**
  * @version $Id$
@@ -217,7 +219,7 @@ public abstract class Path extends NSObject {
 
     /**
      * @param recursive Create intermediate directories as required.  If this option is
-     *                  not specified, the full path prefix of each operand must already exist
+     * not specified, the full path prefix of each operand must already exist
      */
     public abstract void mkdir(boolean recursive);
 
@@ -301,19 +303,37 @@ public abstract class Path extends NSObject {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     public abstract Session getSession();
 
+    /**
+     *
+     */
     public abstract void download();
 
+    /**
+     *
+     */
     public abstract void upload();
 
     private boolean skip = false;
 
+    /**
+     *
+     * @param ignoreTransferRequests
+     */
     public void setSkipped(boolean ignoreTransferRequests) {
         log.debug("setSkipped:" + ignoreTransferRequests);
         this.skip = ignoreTransferRequests;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isSkipped() {
         return this.skip;
     }
@@ -398,29 +418,10 @@ public abstract class Path extends NSObject {
         this.status.setComplete(complete);
     }
 
-    public void sync() {
-        Preferences.instance().setProperty("queue.upload.preserveDate.fallback", true);
-        if (this.getRemote().exists() && this.getLocal().exists()) {
-            if (this.attributes.isFile()) {
-                log.info("Remote timestamp:" + this.attributes.getTimestampAsCalendar());
-                log.info("Local timestamp:" + this.getLocal().getTimestampAsCalendar());
-                if (this.getLocal().getTimestampAsCalendar().before(this.attributes.getTimestampAsCalendar())) {
-                    this.download();
-                }
-                if (this.getLocal().getTimestampAsCalendar().after(this.attributes.getTimestampAsCalendar())) {
-                    this.upload();
-                }
-            }
-        }
-        else if (this.getRemote().exists()) {
-            this.download();
-        }
-        else if (this.getLocal().exists()) {
-            this.upload();
-        }
-        Preferences.instance().setProperty("queue.upload.preserveDate.fallback", false);
-    }
-
+    /**
+     *
+     * @return true if the path exists (or is cached!)
+     */
     public boolean exists() {
         if (this.isRoot()) {
             return true;
@@ -436,11 +437,12 @@ public abstract class Path extends NSObject {
         return this.getAbsolute().hashCode();
     }
 
-    public boolean equals(Object other) { //todo
+    public boolean equals(Object other) {
         if (null == other) {
             return false;
         }
         if (other instanceof Path) {
+            //case sensitive comparison; incompatibility with non-case sensitive systems!
             return this.getAbsolute().equals(((Path) other).getAbsolute());
         }
         return false;
