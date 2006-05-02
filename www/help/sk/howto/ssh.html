@@ -1,70 +1,111 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta name="generator" content="HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
-    <title>Nápoveda pre Cyberduck</title>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <link href="../../css/style.css" rel="stylesheet" media="all" type="text/css" />
+	<meta name="generator" content=
+	"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+
+	<title>Nápoveda pre Cyberduck</title>
+	<meta http-equiv="Content-type" content=
+	"text/html; charset=utf-8" />
+	<link href="../../style.css" rel="stylesheet" media="all" type=
+	"text/css" />
 </head>
 
 <body>
-    <h2><a href="..">Nápoveda pre Cyberduck</a><br />
-    Ako na to</h2>
+	<h2><a href="..">Nápoveda pre Cyberduck</a><br />
+	Ako na to</h2>
 
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-        <tr>
-            <td class="menu" valign="top" width="120">
-                <p><a href="index.html">Nadviazanie spojenia</a></p>
-                <p><a href="bookmark.html">Záložky</a></p>
-                <p><a href="download.html">Prevzatie</a></p>
-                <p><a href="upload.html">Odoslanie</a></p>
-                <p><a href="editing.html">Úprava súborov</a></p>
-                <p><a href="synchronization.html">Synchronizácia</a></p>
-                <p class="bold">Konfigurácia SSH&nbsp;overenia totožnosti verejným kľúčom</p>
-            </td>
+	<div id="menu">
+		<ul class="noindent">
+			<li><a href="index.html">Nadviazanie spojenia</a></li>
 
-            <td class="content">
-                <p>Overenie totožnosti verejným kľúčom vám umožní spojenie so&nbsp;vzdialeným serverom bez&nbsp;odoslania vášho hesla cez&nbsp;internet.
-		Takéto overenie totožnosti používa dva kľúče - súkromný, ktorý máte len vy (mali&nbsp;by&nbsp;ste ho uschovávať na&nbsp;bezpečnom mieste
-		chránenom heslom) a&nbsp;verejný, ktorý je&nbsp;uložený na&nbsp;serveri s&nbsp;ktorým sa&nbsp;chcete spojiť (uložený zvyčajne systémovým
-		administrátorom pri&nbsp;založení vášho účtu).</p>
+			<li><a href="bookmark.html">Záložky</a></li>
 
-                <ul>
-                    <li>
-                        <p class="bold">Ako nakonfigurovať overovanie totožnosti verejným kľúčom?</p>
+			<li><a href="download.html">Prevzatie</a></li>
 
-                        <p>1. Pre vytvorenie páru verejného a&nbsp;súkromného kľúča spustite príkaz „ssh-keygen“ v&nbsp;aplikácii <i>Terminal.</i> Kľúče budú
-			umiestnené do&nbsp;vašej ~/.ssh zložky, prípadne budete môcť upraviť alebo zmeniť túto polohu.<br />
-                        Pri vytvorení kľúčov budete vyzvaný na&nbsp;zadanie „passphrase“. Ak&nbsp;ju&nbsp;zadáte, budete ju musieť zadávať pri&nbsp;každom použití
-			kľúčov pri&nbsp;overovaní totožnosti (teda pri každom nalogovaní, rovnako ako v&nbsp;prípde hesla).<br />
-                        Ak&nbsp;„passphrase“ nezadáte (jednoducho stlačíte klávesu return), budete sa môcť nalogoať bez jej zadávania. Je&nbsp;to&nbsp;menej bezpečné,
-			ale&nbsp;môže to byť naozaj užitočné.<br /></p>
+			<li><a href="upload.html">Odoslanie</a></li>
 
-                        <div>
-                            <code>jungle:~/.ssh dkocher$ ssh-keygen -t rsa</code>
-                        </div>
+			<li><a href="editing.html">Úprava súborov</a></li>
 
-                        <p>2. Skopírujte verejný kľúč na&nbsp;vzdialený server, s&nbsp;ktorým sa chcete spojiť a&nbsp;pridajte&nbsp;ho do&nbsp;súboru
-			authorized_keys vo vašej ~/.ssh zložke (ak&nbsp;tento súbor nejestvuje, vytvorte&nbsp;ho). Ktokoľvek uvedený v&nbsp;súbore authorized_keys
-			(ako&nbsp;váš&nbsp;verejný kľúč) má&nbsp;dovolené nalogovať&nbsp;sa za&nbsp;predpokladu, že&nbsp;môže preukázať vlastníctvo príslušného
-			súkromného kľúča. Teda, ak&nbsp;máte súkromný kľúč vo&nbsp;vašej .ssh zložke na&nbsp;vašom lokálnom počítači, budete vpustený.<br /></p>
+			<li><a href=
+			"synchronization.html">Synchronizácia</a></li>
 
-                        <div>
-                            <code>jungle:~/.ssh dkocher$ ssh hostname &lt; id_rsa.pub 'cat &gt;&gt; .ssh/authorized_keys'</code>
-                        </div>
+			<li>
+				<p class="bold">Konfigurácia SSH overenia
+				totožnosti verejným kľúčom</p>
+			</li>
+		</ul>
+	</div>
 
-                        <p>3. V&nbsp;dialógovom okne Spojenie alebo v&nbsp;dialógu úprav záložky v&nbsp;aplikácii Cyberduck zvoľte
-			„Overiť&nbsp;verejným&nbsp;kľúčom“ a&nbsp;vyberte súkromný kľúč vo&nbsp;vašej .ssh zložke.</p>
-                    </li>
-                </ul>
-            </td>
-        </tr>
-    </table>
+	<div id="content">
+		<p>Overenie totožnosti verejným kľúčom vám umožní spojenie
+		so vzdialeným serverom bez odoslania vášho hesla
+		cez internet. Takéto overenie totožnosti používa dva
+		kľúče - súkromný, ktorý máte len vy (mali by ste
+		ho uschovávať na bezpečnom mieste chránenom heslom)
+		a verejný, ktorý je uložený na serveri
+		s ktorým sa chcete spojiť (uložený zvyčajne
+		systémovým administrátorom pri založení vášho
+		účtu).</p>
 
-    <div id="footer">
-        $Id: ssh.html,v 1.13 2005/12/21 16:55:48 dkocher Exp $
-    </div>
+		<ul>
+			<li>
+				<p class="bold">Ako nakonfigurovať overovanie
+				totožnosti verejným kľúčom?</p>
+
+				<p>1. Pre vytvorenie páru verejného
+				a súkromného kľúča spustite príkaz
+				„ssh-keygen“ v aplikácii <i>Terminal.</i>
+				Kľúče budú umiestnené do vašej ~/.ssh zložky,
+				prípadne budete môcť upraviť alebo zmeniť túto
+				polohu.<br />
+				Pri vytvorení kľúčov budete vyzvaný na zadanie
+				„passphrase“. Ak ju zadáte, budete ju
+				musieť zadávať pri každom použití kľúčov
+				pri overovaní totožnosti (teda pri každom
+				nalogovaní, rovnako ako v prípde hesla).<br />
+				Ak „passphrase“ nezadáte (jednoducho stlačíte
+				klávesu return), budete sa môcť nalogoať bez jej
+				zadávania. Je to menej bezpečné,
+				ale môže to byť naozaj užitočné.<br /></p>
+
+				<div>
+					<code>jungle:~/.ssh dkocher$ ssh-keygen -t
+					rsa</code>
+				</div>
+
+				<p>2. Skopírujte verejný kľúč na vzdialený
+				server, s ktorým sa chcete spojiť
+				a pridajte ho do súboru
+				authorized_keys vo vašej ~/.ssh zložke
+				(ak tento súbor nejestvuje, vytvorte ho).
+				Ktokoľvek uvedený v súbore authorized_keys
+				(ako váš verejný kľúč) má dovolené
+				nalogovať sa za predpokladu, že môže
+				preukázať vlastníctvo príslušného súkromného kľúča.
+				Teda, ak máte súkromný kľúč vo vašej .ssh
+				zložke na vašom lokálnom počítači, budete
+				vpustený.<br /></p>
+
+				<div>
+					<code>jungle:~/.ssh dkocher$ ssh hostname <
+					id_rsa.pub 'cat >>
+					.ssh/authorized_keys'</code>
+				</div>
+
+				<p>3. V dialógovom okne Spojenie alebo
+				v dialógu úprav záložky v aplikácii
+				Cyberduck zvoľte „Overiť verejným kľúčom“
+				a vyberte súkromný kľúč vo vašej .ssh
+				zložke.</p>
+			</li>
+		</ul>
+	</div>
+
+	<div id="footer">
+		$Id: ssh.html,v 1.13 2005/12/21 16:55:48 dkocher Exp $
+	</div>
 </body>
 </html>

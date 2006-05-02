@@ -1724,8 +1724,6 @@ www/help/ca/howto/upload.html -text
 www/help/ca/index.html -text
 www/help/ca/problems/index.html -text
 www/help/cs/.htaccess -text
-www/help/css/index.css -text
-www/help/css/style.css -text
 www/help/da/.htaccess -text
 www/help/de/faq/index.html -text
 www/help/de/howto/bookmark.html -text
@@ -1786,6 +1784,7 @@ www/help/images/synchronize.png -text svneol=unset#image/png
 www/help/images/toolbar.png -text svneol=unset#image/png
 www/help/images/transfer.png -text svneol=unset#image/png
 www/help/images/upload.png -text svneol=unset#image/png
+www/help/index.css -text
 www/help/it/.htaccess -text
 www/help/ja/.htaccess -text
 www/help/ko/.htaccess -text
@@ -1804,6 +1803,7 @@ www/help/sk/howto/synchronization.html -text
 www/help/sk/howto/upload.html -text
 www/help/sk/index.html -text
 www/help/sk/problems/index.html -text
+www/help/style.css -text
 www/help/sv/.htaccess -text
 www/help/th/.htaccess -text
 www/help/zh_CN/.htaccess -text

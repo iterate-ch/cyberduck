@@ -1,1 +1,123 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr"><head>    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />    <meta name="generator" content=    "HTML Tidy for Linux/x86 (vers 1st November 2002), see www.w3.org" />    <title>Aide de Cyberduck</title>    <link href="../../css/style.css" rel="stylesheet" media="all"    type="text/css" /></head><body>    <h2><a href="..">Aide de Cyberduck</a><br />    Problèmes connus</h2>    <table border="0" cellpadding="0" cellspacing="0" width="100%">        <tr>          <td class="content">            <!-- <p><b>The application doesn't launch; it crashes            immediatly</b><br />            Make sure to install the latest Java Update            available in Software Update. Refer to <a class=            "ext-link" href=            "http://docs.info.apple.com/article.html?artnum=301382">            this article.</a></p>            -->            <!-- <p><b>I can't add a password to a            bookmark!</b><br />            Passwords aren't saved with bookmarks but in the            Keychain. Select the checkbox "Add Password to            Keychain" upon login.</p>            -->            <p><b>Des caractères spéciaux comme les trémas ne            s'affichent pas correctement dans le navigateur.</b><br />            Essayez de changer l'encodage de caractères utilisé. Voyez            &ldquo;Présentation&rdquo; &gt; &ldquo;Encodage&rdquo;.            Essayez UTF-8 (par défaut), ISO-8859-1 et Windows-1252.</p>            <p><b>La taille du dossier ne s'affiche pas            correctement.</b><br />            Ce n'est pas la taille de son contenu mais celle du dossier            lui-même.</p>            <p><b>Lors du listage d'un dossier sur un             serveur FTP j'obtiens ce message d'erreur en            réponse à la&nbsp;commande 'LIST -a'&nbsp;: 550 Directory            not found.</b><br />            Décochez l'option &ldquo;FTP&rdquo; &gt; &ldquo;Envoyer la            commande 'LIST -a'&rdquo; dans les Préférences.</p>            <p><b>Il n'est pas possible de changer les permissions. Le            message d'erreur 'FTP Error: SITE not understood' ou            similaire s'affiche.</b><br />            Le serveur ne supporte pas cette caractéristique (qui est            une extension optionnelle du protocole FTP). Elle ne peut            pas être utilisée.</p>            <p><b>Le serveur n'autorise qu'une seule connexion&nbsp;;            je ne peux transférer aucun fichier&nbsp;!</b><br />            Limitez le &ldquo;Nombre maximal de connexions simultanées            à un serveur&rdquo; dans l'onglet &ldquo;Avancé&rdquo; des            Préférences. Le transfert d'un fichier attendra alors que            vous vous déconnectiez. Si la connexion doit être fermée            automatiquement, cochez aussi &ldquo;Forcer la fermeture            des autres connexions quand le maximum est            atteint&rdquo;.</p>            <p><b>La connexion s'interrompt fréquemment&nbsp;; si c'est            possible, j'aimerais qu'elle reste active&nbsp;!</b><br />            Vous pouvez obliger Cyberduck à &ldquo;Ne pas envoyer            d'opération&rdquo; à un interval régulier. Voyez l'onglet            &ldquo;Avancé&rdquo; dans les Préférences.</p>            <p><b>J'obtiens souvent une erreur intitulée <code>IO            Error: Broken pipe</code>.</b><br />            Un problème est survenu dans l'accès au réseau parce que            soit la connexion était trop lente, soit le serveur ne            répondait pas. Vérifiez aussi le câble, le routeur…</p>            <p><b>J'obtiens une erreur intitulée</b><b>&nbsp;<code>IO            Error: Read Timed Out</code> en essayant d'ouvrir une            connexion.</b><br />            Soit un firewall&nbsp;bloque les requêtes, soit aucun            serveur n'est actif à l'adresse et par le protocole            indiqués.</p>            <!-- <p><b>I have installed the Java 5 Developer Preview            and now Cyberduck doesn't launch anymore.</b><br />            There was a bug in DP1 and DP2. Pleae upgrade to            DP3.</p>            -->            <p><b>Je ne peux choisir aucun éditeur externe.</b><br />            Installez un éditeur compatible et lancez-le d'abord. Si            aucun éditeur ne peut encore&nbsp;être sélectionné,            relancer aussi Cyberduck. Si ça ne marche toujours pas,            consultez&nbsp;<a href=            "http://www.macosxhints.com/article.php?story=20031215144430486">            cet article</a>.</p>            <p><b>Mon éditeur préféré n'est pas accepté.</b><br />            Un éditeur doit pouvoir supporter le protocole pour éditeur            externe (ODB).</p>            <!--> <p><b>I want ot use the latest beta of skEdit which            supports the external editor protocol as an            editor.</b><br />            Issue the following commands in a Terminal.app            window (copy &amp; paste) and relaunch            Cyberduck:</p>            <p><code>defaults write ch.sudo.cyberduck            editor.name skEdit<br />            defaults write ch.sudo.cyberduck            editor.bundleIdentifier org.skti.skEdit</code></p>            -->            <p><b>Je ne veux pas synchroniser de fichiers si, p. ex.,            seules les minutes diffèrent&nbsp; dans l'heure de            modification !</b><br />            Vous pouvez configurer Cyberduck pour qu'il ignore            certaines valeurs lorsqu'il&nbsp;compare les dates et            heures de modification des fichiers. Lancez le Terminal et            tapez&nbsp;:</p>            <p><code>defaults write ch.sudo.cyberduck            queue.sync.ignore.second true</code><br />             <code>defaults write ch.sudo.cyberduck            queue.sync.ignore.minute true<br />             defaults write ch.sudo.cyberduck queue.sync.ignore.hour            false</code><br />            </p>            <p>Par défaut, les millisecondes et les secondes ne sont            pas prises en compte.</p>          </td>        </tr>    </table>    <div id="footer">      $Id: index.html,v 1.15 2005/12/21 16:42:25 dkocher Exp $    </div></body></html>
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+<head>
+	<meta http-equiv="Content-Type" content=
+	"text/html; charset=utf-8" />
+	<meta name="generator" content=
+	"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+
+	<title>Aide de Cyberduck</title>
+	<link href="../../style.css" rel="stylesheet" media="all" type=
+	"text/css" />
+</head>
+
+<body>
+	<h2><a href="..">Aide de Cyberduck</a><br />
+	Problèmes connus</h2>
+
+	<div id="content">
+		<!-- <p><b>The application doesn't launch; it crashes
+			immediatly</b><br />
+			Make sure to install the latest Java Update
+			available in Software Update. Refer to <a class=
+			"ext-link" href=
+			"http://docs.info.apple.com/article.html?artnum=301382">
+			this article.</a></li>
+			-->
+		<!-- <p><b>I can't add a password to a
+			bookmark!</b><br />
+			Passwords aren't saved with bookmarks but in the
+			Keychain. Select the checkbox "Add Password to
+			Keychain" upon login.</p>
+			-->
+
+		<p><b>Des caractères spéciaux comme les trémas ne
+		s'affichent pas correctement dans le navigateur.</b><br />
+		Essayez de changer l'encodage de caractères utilisé. Voyez
+		“Présentation” &gt; “Encodage”. Essayez UTF-8 (par défaut),
+		ISO-8859-1 et Windows-1252.</p>
+
+		<p><b>La taille du dossier ne s'affiche pas
+		correctement.</b><br />
+		Ce n'est pas la taille de son contenu mais celle du dossier
+		lui-même.</p>
+
+		<p><b>Lors du listage d'un dossier sur un serveur FTP
+		j'obtiens ce message d'erreur en réponse à la&nbsp;commande
+		'LIST -a'&nbsp;: 550 Directory not found.</b><br />
+		Décochez l'option “FTP” &gt; “Envoyer la commande 'LIST
+		-a'” dans les Préférences.</p>
+
+		<p><b>Il n'est pas possible de changer les permissions. Le
+		message d'erreur 'FTP Error: SITE not understood' ou
+		similaire s'affiche.</b><br />
+		Le serveur ne supporte pas cette caractéristique (qui est
+		une extension optionnelle du protocole FTP). Elle ne peut
+		pas être utilisée.</p>
+
+		<p><b>Le serveur n'autorise qu'une seule connexion&nbsp;;
+		je ne peux transférer aucun fichier&nbsp;!</b><br />
+		Limitez le “Nombre maximal de connexions simultanées à un
+		serveur” dans l'onglet “Avancé” des Préférences. Le
+		transfert d'un fichier attendra alors que vous vous
+		déconnectiez. Si la connexion doit être fermée
+		automatiquement, cochez aussi “Forcer la fermeture des
+		autres connexions quand le maximum est atteint”.</p>
+
+		<p><b>La connexion s'interrompt fréquemment&nbsp;; si c'est
+		possible, j'aimerais qu'elle reste active&nbsp;!</b><br />
+		Vous pouvez obliger Cyberduck à “Ne pas envoyer
+		d'opération” à un interval régulier. Voyez l'onglet
+		“Avancé” dans les Préférences.</p>
+
+		<p><b>J'obtiens souvent une erreur intitulée <code>IO
+		Error: Broken pipe</code>.</b><br />
+		Un problème est survenu dans l'accès au réseau parce que
+		soit la connexion était trop lente, soit le serveur ne
+		répondait pas. Vérifiez aussi le câble, le routeur…</p>
+
+		<p><b>J'obtiens une erreur intitulée</b><b>&nbsp;<code>IO
+		Error: Read Timed Out</code> en essayant d'ouvrir une
+		connexion.</b><br />
+		Soit un firewall&nbsp;bloque les requêtes, soit aucun
+		serveur n'est actif à l'adresse et par le protocole
+		indiqués.</p>
+
+		<p><b>Je ne peux choisir aucun éditeur externe.</b><br />
+		Installez un éditeur compatible et lancez-le d'abord. Si
+		aucun éditeur ne peut encore&nbsp;être sélectionné,
+		relancer aussi Cyberduck. Si ça ne marche toujours pas,
+		consultez&nbsp; <a href=
+		"http://www.macosxhints.com/article.php?story=20031215144430486">
+		cet article</a>.</p>
+
+		<p><b>Mon éditeur préféré n'est pas accepté.</b><br />
+		Un éditeur doit pouvoir supporter le protocole pour éditeur
+		externe (ODB).</p>
+
+		<p><b>Je ne veux pas synchroniser de fichiers si, p. ex.,
+		seules les minutes diffèrent&nbsp; dans l'heure de
+		modification !</b><br />
+		Vous pouvez configurer Cyberduck pour qu'il ignore
+		certaines valeurs lorsqu'il&nbsp;compare les dates et
+		heures de modification des fichiers. Lancez le Terminal et
+		tapez&nbsp;:</p>
+
+		<p><code>defaults write ch.sudo.cyberduck
+		queue.sync.ignore.second true</code><br />
+		<code>defaults write ch.sudo.cyberduck
+		queue.sync.ignore.minute true<br />
+		defaults write ch.sudo.cyberduck queue.sync.ignore.hour
+		false</code><br /></p>
+
+		<p>Par défaut, les millisecondes et les secondes ne sont
+		pas prises en compte.</p>
+	</div>
+
+	<div id="footer">
+		$Id: index.html,v 1.15 2005/12/21 16:42:25 dkocher Exp $
+	</div>
+</body>
+</html>
