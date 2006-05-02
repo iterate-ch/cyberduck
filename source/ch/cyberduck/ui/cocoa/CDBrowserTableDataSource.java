@@ -55,7 +55,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
      * @return The cached or newly fetched file listing of the directory
      */
     protected List childs(Path path) {
-        List childs = path.list(controller.getComparator(), controller.getFileFilter());
+        List childs = path.list(controller.getComparator(), controller.getFileFilter(), false);
         if(null == childs) {
             return new ArrayList();
         }
@@ -102,20 +102,15 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     icon = SYMLINK_ICON;
                 }
                 else if (item.attributes.isDirectory()) {
-					Permission perm = item.attributes.getPermission();
-					if (false == perm.getOwnerPermissions()[Permission.EXECUTE]
-							&& false == perm.getGroupPermissions()[Permission.EXECUTE]
-							&& false == perm.getOtherPermissions()[Permission.EXECUTE]) {
+                    icon = FOLDER_ICON;
+					if (!item.attributes.isExecutable()) {
 						icon = FOLDER_NOACCESS_ICON;
 					}
-                    else if (false == perm.getOwnerPermissions()[Permission.READ]
-                            && false == perm.getGroupPermissions()[Permission.READ]
-                            && false == perm.getOtherPermissions()[Permission.READ]) {
-                        icon = FOLDER_WRITEONLY_ICON;
+                    else if (!item.attributes.isReadable()) {
+                        if (item.attributes.isWritable()) {
+                            icon = FOLDER_WRITEONLY_ICON;
+                        }
                     }
-					else {
-	                    icon = FOLDER_ICON;
-					}
                 }
                 else if (item.attributes.isFile()) {
                     icon = CDIconCache.instance().get(item.getExtension());
@@ -138,7 +133,6 @@ public abstract class CDBrowserTableDataSource extends CDController {
             }
             if (identifier.equals(MODIFIED_COLUMN)) {
                 if (item.attributes.getTimestamp() != -1) {
-                    //todo optimization
                     return new NSGregorianDate((double) item.attributes.getTimestamp() / 1000,
                             NSDate.DateFor1970);
                 }
@@ -241,6 +235,12 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     return NSDraggingInfo.DragOperationCopy;
                 }
                 if (destination.attributes.isDirectory()) {
+                    if(!destination.attributes.isExecutable()) {
+                        return NSDraggingInfo.DragOperationNone;
+                    }
+                    if(!destination.attributes.isReadable()) {
+                        return NSDraggingInfo.DragOperationNone;
+                    }
                     view.setDropRowAndDropOperation(row, NSTableView.DropOn);
                     return NSDraggingInfo.DragOperationCopy;
                 }
@@ -276,6 +276,12 @@ public abstract class CDBrowserTableDataSource extends CDController {
                             return NSDraggingInfo.DragOperationMove;
                         }
                         if (destination.attributes.isDirectory()) {
+                            if(!destination.attributes.isExecutable()) {
+                                return NSDraggingInfo.DragOperationNone;
+                            }
+                            if(!destination.attributes.isReadable()) {
+                                return NSDraggingInfo.DragOperationNone;
+                            }
                             view.setDropRowAndDropOperation(row, NSTableView.DropOn);
                             return NSDraggingInfo.DragOperationMove;
                         }

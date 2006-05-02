@@ -107,7 +107,7 @@ public class SFTPPath extends Path {
         return this.session;
     }
 
-    public AttributedList list(Comparator comparator, Filter filter) {
+    public AttributedList list(Comparator comparator, Filter filter, boolean verbosity) {
         synchronized (session) {
             if (!session.cache().containsKey(this) || session.cache().isInvalid(this)) {
                 AttributedList files = new AttributedList();
@@ -153,7 +153,9 @@ public class SFTPPath extends Path {
                     session.cache().put(this, files);
                 }
                 catch (SshException e) {
-                    session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
+                    if(verbosity)
+                        session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
+
                 }
                 catch (IOException e) {
                     session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));

@@ -121,7 +121,7 @@ public class FTPPath extends Path {
         return this.session;
     }
 
-    public AttributedList list(Comparator comparator, Filter filter) {
+    public AttributedList list(Comparator comparator, Filter filter, boolean verbosity) {
         synchronized(session) {
             if(!session.cache().containsKey(this) || session.cache().isInvalid(this)) {
                 AttributedList files = new AttributedList();
@@ -141,7 +141,8 @@ public class FTPPath extends Path {
                     session.cache().put(this, files);
                 }
                 catch(FTPException e) {
-                    session.error(new FTPException(e.getMessage() + " (" + this.getName() + ")", e.getReplyCode()));
+                    if(verbosity)
+                        session.error(new FTPException(e.getMessage() + " (" + this.getName() + ")", e.getReplyCode()));
                 }
                 catch(IOException e) {
                     session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));

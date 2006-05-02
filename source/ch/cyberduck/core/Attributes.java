@@ -18,13 +18,11 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import org.apache.log4j.Logger;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * Attributes of a remote directory or file.
@@ -57,21 +55,21 @@ public class Attributes implements IAttributes {
     public Object clone() {
         Attributes copy = new Attributes(this.getAsDictionary());
         copy.size = this.getSize();
-        copy.permission = (Permission)this.getPermission().clone();
+        copy.permission = (Permission) this.getPermission().clone();
         copy.modified = this.getTimestamp();
         return copy;
     }
 
     public boolean isUndefined() {
         boolean defined = (-1 == this.modified || -1 == this.size);
-        if (!defined)
+        if(!defined)
             log.info("Undefined file attributes");
         return defined;
     }
 
     public Attributes(NSDictionary dict) {
         Object typeObj = dict.objectForKey("Type");
-        if (typeObj != null) {
+        if(typeObj != null) {
             this.type = Integer.parseInt((String) typeObj);
         }
     }
@@ -104,7 +102,6 @@ public class Attributes implements IAttributes {
     }
 
     /**
-     *
      * @return in milliseconds
      */
     public long getTimestamp() {
@@ -112,7 +109,6 @@ public class Attributes implements IAttributes {
     }
 
     /**
-     *
      * @param p
      */
     public void setPermission(Permission p) {
@@ -120,13 +116,45 @@ public class Attributes implements IAttributes {
     }
 
     /**
-     *
      * @return
      */
     public Permission getPermission() {
-        if (null == this.permission)
+        if(null == this.permission)
             return new Permission();
         return this.permission;
+    }
+
+    /**
+     *
+     * @return true if executable for user, group and world
+     */
+    public boolean isExecutable() {
+        Permission perm = this.getPermission();
+        return perm.getOwnerPermissions()[Permission.EXECUTE]
+                && perm.getGroupPermissions()[Permission.EXECUTE]
+                && perm.getOtherPermissions()[Permission.EXECUTE];
+    }
+
+    /**
+     *
+     * @return true if readable for user, group and world
+     */
+    public boolean isReadable() {
+        Permission perm = this.getPermission();
+        return perm.getOwnerPermissions()[Permission.READ]
+                && perm.getGroupPermissions()[Permission.READ]
+                && perm.getOtherPermissions()[Permission.READ];
+    }
+
+    /**
+     *
+     * @return true if writable for user, group and world
+     */
+    public boolean isWritable() {
+        Permission perm = this.getPermission();
+        return perm.getOwnerPermissions()[Permission.WRITE]
+                && perm.getGroupPermissions()[Permission.WRITE]
+                && perm.getOtherPermissions()[Permission.WRITE];
     }
 
     public void setType(int type) {
@@ -154,11 +182,10 @@ public class Attributes implements IAttributes {
     }
 
     /**
-     *
      * @return The owner of the file or 'Unknown' if not set
      */
     public String getOwner() {
-        if (null == this.owner)
+        if(null == this.owner)
             return NSBundle.localizedString("Unknown", "");
         return this.owner;
     }
@@ -168,11 +195,10 @@ public class Attributes implements IAttributes {
     }
 
     /**
-     *
      * @return
      */
     public String getGroup() {
-        if (null == this.group)
+        if(null == this.group)
             return NSBundle.localizedString("Unknown", "");
         return this.group;
     }

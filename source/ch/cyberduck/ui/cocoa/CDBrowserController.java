@@ -2467,7 +2467,7 @@ public class CDBrowserController extends CDWindowController
                 this.session.close();
             }
         }
-        this.reloadData(true);
+        this.getSelectedBrowserView().setNeedsDisplay(true);
     }
 
     /**

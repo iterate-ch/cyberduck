@@ -201,7 +201,18 @@ public abstract class Path extends NSObject {
      * @param filter     The filter to exlude certain files
      * @return
      */
-    public abstract AttributedList list(Comparator comparator, Filter filter);
+    public AttributedList list(Comparator comparator, Filter filter) {
+        return this.list(comparator, filter, true);
+    }
+
+    /**
+     *
+     * @param comparator
+     * @param filter
+     * @param verbosity
+     * @return
+     */
+    public abstract AttributedList list(Comparator comparator, Filter filter, boolean verbosity);
 
     /**
      * Remove this file from the remote host. Does not affect any corresponding local file
