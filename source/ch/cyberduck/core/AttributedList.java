@@ -1,22 +1,22 @@
 package ch.cyberduck.core;
 
 /*
-*  Copyright (c) 2005 David Kocher. All rights reserved.
-*  http://cyberduck.ch/
-*
-*  This program is free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  This program is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  Bug fixes, suggestions and comments should be sent to:
-*  dkocher@cyberduck.ch
-*/
+ *  Copyright (c) 2005 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  Bug fixes, suggestions and comments should be sent to:
+ *  dkocher@cyberduck.ch
+ */
 
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSMutableArray;
@@ -109,7 +109,7 @@ public class AttributedList extends NSObject implements List {
             }
 
             public Object next() {
-                if (pos == size) {
+                if(pos == size) {
                     throw new NoSuchElementException();
                 }
                 last = pos;
@@ -117,7 +117,7 @@ public class AttributedList extends NSObject implements List {
             }
 
             public void remove() {
-                if (last < 0) {
+                if(last < 0) {
                     throw new IllegalStateException();
                 }
                 AttributedList.this.remove(last);
@@ -134,7 +134,7 @@ public class AttributedList extends NSObject implements List {
     public Object[] toArray() {
         Object[] array = new Object[this.size()];
         int i = 0;
-        for (Iterator iter = this.iterator(); iter.hasNext(); i++) {
+        for(Iterator iter = this.iterator(); iter.hasNext(); i++) {
             array[i] = iter.next();
         }
         return array;
@@ -142,14 +142,14 @@ public class AttributedList extends NSObject implements List {
 
     public Object[] toArray(Object[] objects) {
         int size = this.size();
-        if (objects.length < size) {
+        if(objects.length < size) {
             objects = (Object[]) Array.newInstance(objects.getClass().getComponentType(), size);
         }
-        else if (objects.length > size) {
+        else if(objects.length > size) {
             objects[size] = null;
         }
         Iterator iter = iterator();
-        for (int pos = 0; pos < size; pos++) {
+        for(int pos = 0; pos < size; pos++) {
             objects[pos] = iter.next();
         }
         return objects;
@@ -178,8 +178,8 @@ public class AttributedList extends NSObject implements List {
      * @return true if this collection contains all of the elements in the specified collection
      */
     public boolean containsAll(java.util.Collection collection) {
-        for (Iterator iter = collection.iterator(); iter.hasNext();) {
-            if (!this.contains(iter.next())) {
+        for(Iterator iter = collection.iterator(); iter.hasNext();) {
+            if(!this.contains(iter.next())) {
                 return false;
             }
         }
@@ -196,7 +196,7 @@ public class AttributedList extends NSObject implements List {
     }
 
     public boolean addAll(int i, java.util.Collection collection) {
-        for (Iterator iter = collection.iterator(); iter.hasNext();) {
+        for(Iterator iter = collection.iterator(); iter.hasNext();) {
             this.content.insertObjectAtIndex(iter.next(), i);
             i++;
         }
@@ -218,8 +218,8 @@ public class AttributedList extends NSObject implements List {
      */
     public boolean retainAll(java.util.Collection collection) {
         boolean changed = false;
-        for (Iterator iter = this.iterator(); iter.hasNext();) {
-            if (!collection.contains(iter.next())) {
+        for(Iterator iter = this.iterator(); iter.hasNext();) {
+            if(!collection.contains(iter.next())) {
                 iter.remove();
                 changed = true;
             }
@@ -273,7 +273,7 @@ public class AttributedList extends NSObject implements List {
 
     public int indexOf(Object object) {
         int i = this.content.indexOfObject(object);
-        if (i == NSArray.NotFound) {
+        if(i == NSArray.NotFound) {
             return -1;
         }
         return i;
@@ -282,8 +282,8 @@ public class AttributedList extends NSObject implements List {
     public int lastIndexOf(Object o) {
         int pos = size();
         ListIterator itr = listIterator(pos);
-        while (--pos >= 0) {
-            if (o.equals(itr.previous())) {
+        while(--pos >= 0) {
+            if(o.equals(itr.previous())) {
                 return pos;
             }
         }
@@ -318,7 +318,7 @@ public class AttributedList extends NSObject implements List {
             }
 
             public Object next() {
-                if (position == size) {
+                if(position == size) {
                     throw new NoSuchElementException();
                 }
                 lastReturned = position;
@@ -326,7 +326,7 @@ public class AttributedList extends NSObject implements List {
             }
 
             public Object previous() {
-                if (position == 0) {
+                if(position == 0) {
                     throw new NoSuchElementException();
                 }
                 lastReturned = --position;
@@ -342,7 +342,7 @@ public class AttributedList extends NSObject implements List {
             }
 
             public void remove() {
-                if (lastReturned < 0) {
+                if(lastReturned < 0) {
                     throw new IllegalStateException();
                 }
                 AttributedList.this.remove(lastReturned);
@@ -352,7 +352,7 @@ public class AttributedList extends NSObject implements List {
             }
 
             public void set(Object o) {
-                if (lastReturned < 0) {
+                if(lastReturned < 0) {
                     throw new IllegalStateException();
                 }
                 AttributedList.this.set(lastReturned, o);
