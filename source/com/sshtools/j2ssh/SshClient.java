@@ -761,7 +761,7 @@ public class SshClient {
                 return;
             }
             socket.close();
-            log.info("Forced to close socket "+socket.toString());
+            log.warn("Forced to close socket "+socket.toString());
         }
         finally {
             this.disconnect();
