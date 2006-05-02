@@ -1727,7 +1727,16 @@ www/help/cs/.htaccess -text
 www/help/css/index.css -text
 www/help/css/style.css -text
 www/help/da/.htaccess -text
-www/help/de/.htaccess -text
+www/help/de/faq/index.html -text
+www/help/de/howto/bookmark.html -text
+www/help/de/howto/download.html -text
+www/help/de/howto/editing.html -text
+www/help/de/howto/index.html -text
+www/help/de/howto/ssh.html -text
+www/help/de/howto/synchronization.html -text
+www/help/de/howto/upload.html -text
+www/help/de/index.html -text
+www/help/de/problems/index.html -text
 www/help/en/faq/index.html -text
 www/help/en/howto/bookmark.html -text
 www/help/en/howto/download.html -text
