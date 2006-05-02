@@ -131,8 +131,7 @@ public class FTPControlSocket {
     private void validateConnection()
 	    throws IOException, FTPException {
 
-		FTPReply reply = this.readReply();
-		this.validateReply(reply, "220");
+		this.validateReply(this.readReply(), "220");
 	}
 
 
@@ -398,9 +397,9 @@ public class FTPControlSocket {
 
 		this.writeCommand(command);
 
-		// and read the result
-		return this.readReply();
-	}
+        // and read the result
+        return this.readReply();
+    }
 
 	/**
 	 * Send a command to the FTP server. Don't
@@ -432,8 +431,9 @@ public class FTPControlSocket {
 	    throws IOException {
 
 		String line = reader.readLine();
-		if(line == null || line.length() == 0)
-			throw new FTPNullReplyException();
+		if(null == line || line.length() == 0) {
+            throw new FTPNullReplyException(); //TODO
+        }
 
 		this.log(line, false);
 
@@ -451,9 +451,9 @@ public class FTPControlSocket {
 			boolean complete = false;
 			while(!complete) {
 				line = reader.readLine();
-				if(line == null)
-					throw new FTPNullReplyException();
-
+				if(null == line) {
+                    throw new FTPNullReplyException(); //TODO
+                }
                 if (line.length() == 0)
                     continue;
 
@@ -555,8 +555,8 @@ public class FTPControlSocket {
 	 * @return reply object
 	 */
 	public FTPReply validateReply(FTPReply reply, String expectedReplyCode)
-	    throws FTPException {
-
+	    throws FTPException
+    {
 		if(validateReplyCode(reply, expectedReplyCode))
 			return reply;
 
@@ -571,8 +571,8 @@ public class FTPControlSocket {
 	 * @param expectedReplyCode expect reply code
 	 * @return true if valid, false if invalid
 	 */
-	private boolean validateReplyCode(FTPReply reply, String expectedReplyCode) {
-
+	private boolean validateReplyCode(FTPReply reply, String expectedReplyCode)
+    {
 		String replyCode = reply.getReplyCode();
 		if(strictReturnCodes) {
 			return replyCode.equals(expectedReplyCode);
@@ -588,7 +588,8 @@ public class FTPControlSocket {
 	 *
 	 * @param msg   message to log
 	 */
-	protected void log(String msg, boolean command) {
+	protected void log(String msg, boolean command)
+    {
 		if(msg.startsWith("PASS"))
 			msg = "PASS ********";
 		if(listener != null) {
@@ -600,4 +601,15 @@ public class FTPControlSocket {
 			}
 		}
 	}
+
+    public void interrupt()
+            throws IOException
+    {
+        if(null == controlSock) {
+            log.warn("Cannot interrupt; no socket");
+            return;
+        }
+        controlSock.close();
+        log.warn("Forced to close socket "+controlSock.toString());
+    }
 }
