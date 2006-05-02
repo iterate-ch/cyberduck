@@ -1119,6 +1119,20 @@ public class CDPreferencesController extends CDWindowController {
         Preferences.instance().setProperty("queue.orderFrontOnStart", enabled);
     }
 
+    private NSButton bringQueueToBackCheckbox; //IBOutlet
+
+    public void setBringQueueToBackCheckbox(NSButton bringQueueToBackCheckbox) {
+        this.bringQueueToBackCheckbox = bringQueueToBackCheckbox;
+        this.bringQueueToBackCheckbox.setTarget(this);
+        this.bringQueueToBackCheckbox.setAction(new NSSelector("bringQueueToBackCheckboxClicked", new Class[]{NSButton.class}));
+        this.bringQueueToBackCheckbox.setState(Preferences.instance().getBoolean("queue.orderBackOnStop") ? NSCell.OnState : NSCell.OffState);
+    }
+
+    public void bringQueueToBackCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.OnState;
+        Preferences.instance().setProperty("queue.orderBackOnStop", enabled);
+    }
+
     private NSButton removeFromQueueCheckbox; //IBOutlet
 
     public void setRemoveFromQueueCheckbox(NSButton removeFromQueueCheckbox) {
