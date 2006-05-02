@@ -19,11 +19,13 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.UploadQueue;
-import ch.cyberduck.core.Validator;
-import ch.cyberduck.core.ValidatorFactory;
+import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Status;
 
 import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSTableView;
+import com.apple.cocoa.application.NSTableColumn;
+import com.apple.cocoa.application.NSImage;
 
 import org.apache.log4j.Logger;
 
@@ -34,21 +36,8 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
 
     private static Logger log = Logger.getLogger(CDUploadQueueValidatorController.class);
 
-    static {
-        ValidatorFactory.addFactory(UploadQueue.class, new Factory());
-    }
-
-    private static class Factory extends ValidatorFactory {
-        protected Validator create() {
-            return new CDUploadQueueValidatorController(CDQueueController.instance());
-        }
-    }
-
-    private CDUploadQueueValidatorController(CDWindowController windowController) {
-        super(windowController);
-    }
-
-    protected void load() {
+    public CDUploadQueueValidatorController(final Queue queue) {
+        super(queue);
         synchronized(CDQueueController.instance()) {
             if (!NSApplication.loadNibNamed("Validator", this)) {
                 log.fatal("Couldn't load Validator.nib");
@@ -92,5 +81,27 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
             }
         }
         while (path.exists());
+    }
+
+    public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
+        if (row < this.numberOfRowsInTableView(view)) {
+            String identifier = (String) tableColumn.identifier();
+            Path p = (Path) this.workList.get(row);
+            if (p != null) {
+                if (identifier.equals("WARNING")) {
+                    if(p.getLocal().attributes.getSize() == 0) {
+                        return NSImage.imageNamed("alert.tiff");
+                    }
+                    if(p.getRemote().attributes.getSize() >= p.getLocal().attributes.getSize()) {
+                        return NSImage.imageNamed("alert.tiff");
+                    }
+                }
+                if (identifier.equals("SIZE")) {
+                    return Status.getSizeAsString(p.getLocal().attributes.getSize());
+                }
+            }
+            return super.tableViewObjectValueForLocation(view, tableColumn, row);
+        }
+        return null;
     }
 }

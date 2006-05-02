@@ -18,46 +18,25 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.SyncQueue;
-import ch.cyberduck.core.Validator;
-import ch.cyberduck.core.ValidatorFactory;
+import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSTimeZone;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @version $Id$
  */
-public class CDSyncQueueValidatorController extends CDValidatorController {
+public class
+        CDSyncQueueValidatorController extends CDValidatorController {
     private static Logger log = Logger.getLogger(CDSyncQueueValidatorController.class);
 
-    static {
-        ValidatorFactory.addFactory(SyncQueue.class, new Factory());
-    }
-
-    private static class Factory extends ValidatorFactory {
-        protected Validator create() {
-            return new CDSyncQueueValidatorController(CDQueueController.instance());
-        }
-    }
-
-    private CDSyncQueueValidatorController(CDWindowController windowController) {
-        super(windowController);
-    }
-
-    /**
-     *
-     */
-    protected List promptList = new ArrayList();
-
-    protected void load() {
+    public CDSyncQueueValidatorController(final Queue queue) {
+        super(queue);
         synchronized(CDQueueController.instance()) {
             if(!NSApplication.loadNibNamed("Sync", this)) {
                 log.fatal("Couldn't load Sync.nib");
@@ -65,6 +44,11 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
             this.setEnabled(false);
         }
     }
+
+    /**
+     *
+     */
+    protected List promptList = new ArrayList();
 
     public void awakeFromNib() {
         this.mirrorRadioCell.setTarget(this);
@@ -116,8 +100,13 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
     protected boolean validateFile(Path p, boolean resume) {
         if(p.getRemote().exists() && p.getLocal().exists()) {
-            //todo:bug equals returns false because of different timezone!
-            if(!(p.getRemote().attributes.getTimestampAsCalendar().equals(p.getLocal().getTimestampAsCalendar()))) {
+            Calendar remote = ((SyncQueue)queue).getCalendar(
+                    p.getRemote().attributes.getTimestamp(),
+                    Calendar.MINUTE);
+            Calendar local = ((SyncQueue)queue).getCalendar(
+                    p.getLocal().getTimestamp(),
+                    Calendar.MINUTE);
+            if(!(remote.equals(local))) {
                 this.prompt(p);
             }
         }
@@ -232,23 +221,22 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
         }
     }
 
-    //todo - add timezone support
-//	private NSPopUpButton timezonePopupButton;
+//    private NSPopUpButton timezonePopupButton;
 //
-//	public void setTimezonePopupButton(NSPopUpButton timezonePopupButton) {
-//		this.timezonePopupButton = timezonePopupButton;
-//		this.timezonePopupButton.setTarget(this);
-//		this.timezonePopupButton.setAction(new NSSelector("timezonePopupButtonClicked", new Class[]{NSPopUpButton.class}));
-//		this.timezonePopupButton.removeAllItems();
-//		this.timezonePopupButton.addItemsWithTitles(new NSArray(TimeZone.getAvailableIDs()));
-//		this.timezonePopupButton.setTitle(TimeZone.getDefault().getID());
-//	}
+//    public void setTimezonePopupButton(NSPopUpButton timezonePopupButton) {
+//        this.timezonePopupButton = timezonePopupButton;
+//        this.timezonePopupButton.setTarget(this);
+//        this.timezonePopupButton.setAction(new NSSelector("timezonePopupButtonClicked", new Class[]{NSPopUpButton.class}));
+//        this.timezonePopupButton.removeAllItems();
+//        this.timezonePopupButton.addItemsWithTitles(NSTimeZone.knownTimeZoneNames());
+//        this.timezonePopupButton.setTitle(NSTimeZone.defaultTimeZone().name());
+//    }
 //
-//	public void timezonePopupButtonClicked(NSPopUpButton sender) {
-//		Preferences.instance().setProperty("queue.sync.timezone",
-//                sender.titleOfSelectedItem());
-//		super.fireDataChanged();
-//	}
+//    public void timezonePopupButtonClicked(NSPopUpButton sender) {
+//        ((SyncQueue)this.queue).setRemoteTimezone(TimeZone.getTimeZone(
+//                sender.titleOfSelectedItem()));
+//        this.fireDataChanged();
+//    }
 
     // ----------------------------------------------------------
     // NSTableView.DataSource
@@ -258,21 +246,23 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
     private static final NSImage ARROW_DOWN_ICON = NSImage.imageNamed("arrowDown16.tiff");
     private static final NSImage PLUS_ICON = NSImage.imageNamed("plus.tiff");
 
-    public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-        if(row < this.numberOfRowsInTableView(tableView)) {
-            String identifier = (String) tableColumn.identifier();
+    public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn column, int row) {
+        if(row < this.numberOfRowsInTableView(view)) {
+            String identifier = (String) column.identifier();
             Path p = (Path) this.workList.get(row);
             if(p != null) {
                 if(identifier.equals("TYPE")) {
                     if(p.getRemote().exists() && p.getLocal().exists()) {
-                        if(p.getLocal().getTimestampAsCalendar().before(p.getRemote().attributes.getTimestampAsCalendar()))
-                        {
+                        Calendar remote = ((SyncQueue)queue).getCalendar(
+                                p.getRemote().attributes.getTimestamp(),
+                                Calendar.MINUTE);
+                        Calendar local = ((SyncQueue)queue).getCalendar(
+                                p.getLocal().getTimestamp(),
+                                Calendar.MINUTE);
+                        if(local.before(remote)) {
                             return ARROW_DOWN_ICON;
                         }
-                        if(p.getLocal().getTimestampAsCalendar().after(p.getRemote().attributes.getTimestampAsCalendar()))
-                        {
-                            return ARROW_UP_ICON;
-                        }
+                        return ARROW_UP_ICON;
                     }
                     if(p.getRemote().exists()) {
                         return ARROW_DOWN_ICON;
@@ -280,7 +270,13 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
                     if(p.getLocal().exists()) {
                         return ARROW_UP_ICON;
                     }
-                    throw new IllegalArgumentException("The file must exist either locally or on the server");
+                    return null;
+                }
+                if(identifier.equals("WARNING")) {
+                    if(p.getRemote().attributes.getSize() == 0 ||
+                            p.getLocal().attributes.getSize() == 0)
+                        return NSImage.imageNamed("alert.tiff");
+                    return null;
                 }
                 if(identifier.equals("NEW")) {
                     if(!(p.getRemote().exists() && p.getLocal().exists())) {
@@ -288,7 +284,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
                     }
                     return null;
                 }
-                return super.tableViewObjectValueForLocation(tableView, tableColumn, row);
+                return super.tableViewObjectValueForLocation(view, column, row);
             }
         }
         return null;

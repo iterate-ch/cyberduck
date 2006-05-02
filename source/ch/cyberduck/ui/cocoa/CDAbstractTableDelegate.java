@@ -21,17 +21,16 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.BrowserComparator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Status;
 
 import com.apple.cocoa.application.NSOutlineView;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSObject;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
 import java.util.Comparator;
-import java.util.Date;
 
 /**
  * @version $Id$
@@ -54,6 +53,13 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         }
         //return previously set custom sorting preference
         return (String) this.selectedColumn.identifier();
+    }
+
+
+    protected String tooltipForPath(Path p) {
+        return p.getAbsolute() + "\n"
+                + Status.getSizeAsString(p.attributes.getSize()) + "\n"
+                + CDDateFormatter.getLongFormat(p.attributes.getTimestamp());
     }
 
     public boolean isColumnEditable(NSTableColumn column) {
@@ -241,18 +247,18 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         public int compare(Object o1, Object o2) {
             Path p1 = (Path) o1;
             Path p2 = (Path) o2;
-            Date d1 = p1.attributes.getTimestamp();
-            if(null == d1) {
+            long d1 = p1.attributes.getTimestamp();
+            if(-1 == d1) {
                 return 0;
             }
-            Date d2 = p2.attributes.getTimestamp();
-            if(null == d2) {
+            long d2 = p2.attributes.getTimestamp();
+            if(-1 == d2) {
                 return 0;
             }
             if (ascending) {
-                return d1.compareTo(d2);
+                return d1 > d2 ? 1 : -1;
             }
-            return -d1.compareTo(d2);
+            return d1 > d2 ? -1 : 1;
         }
 
         public String toString() {

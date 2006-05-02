@@ -18,13 +18,17 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DownloadQueue;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Validator;
-import ch.cyberduck.core.ValidatorFactory;
+import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Status;
 
 import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSTableView;
+import com.apple.cocoa.application.NSTableColumn;
+import com.apple.cocoa.application.NSCell;
+import com.apple.cocoa.application.NSImage;
+import com.apple.cocoa.foundation.NSSize;
 
 import org.apache.log4j.Logger;
 
@@ -34,27 +38,13 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class CDDownloadQueueValidatorController extends CDValidatorController
-{
+public class CDDownloadQueueValidatorController extends CDValidatorController {
     private static Logger log = Logger.getLogger(CDDownloadQueueValidatorController.class);
 
-    static {
-        ValidatorFactory.addFactory(DownloadQueue.class, new Factory());
-    }
-
-    private static class Factory extends ValidatorFactory {
-        protected Validator create() {
-            return new CDDownloadQueueValidatorController(CDQueueController.instance());
-        }
-    }
-
-    private CDDownloadQueueValidatorController(CDWindowController windowController) {
-        super(windowController);
-    }
-
-    protected void load() {
+    public CDDownloadQueueValidatorController(Queue queue) {
+        super(queue);
         synchronized(CDQueueController.instance()) {
-            if (!NSApplication.loadNibNamed("Validator", this)) {
+            if(!NSApplication.loadNibNamed("Validator", this)) {
                 log.fatal("Couldn't load Validator.nib");
             }
             this.setEnabled(false);
@@ -90,13 +80,35 @@ public class CDDownloadQueueValidatorController extends CDValidatorController
         do {
             path.setLocal(new Local(parent, proposal));
             no++;
-            if (index != -1) {
+            if(index != -1) {
                 proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
             }
             else {
                 proposal = filename + "-" + no;
             }
         }
-        while (path.getLocal().exists());
+        while(path.getLocal().exists());
+    }
+
+    public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
+        if (row < this.numberOfRowsInTableView(view)) {
+            String identifier = (String) tableColumn.identifier();
+            Path p = (Path) this.workList.get(row);
+            if (p != null) {
+                if (identifier.equals("WARNING")) {
+                    if(p.getRemote().attributes.getSize() == 0) {
+                        return NSImage.imageNamed("alert.tiff");
+                    }
+                    if(p.getLocal().attributes.getSize() >= p.getRemote().attributes.getSize()) {
+                        return NSImage.imageNamed("alert.tiff");
+                    }
+                }
+                if (identifier.equals("SIZE")) {
+                    return Status.getSizeAsString(p.getRemote().attributes.getSize());
+                }
+            }
+            return super.tableViewObjectValueForLocation(view, tableColumn, row);
+        }
+        return null;
     }
 }

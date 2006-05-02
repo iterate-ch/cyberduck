@@ -18,10 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Status;
-import ch.cyberduck.core.Validator;
+import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -37,6 +34,7 @@ import java.util.List;
  */
 public abstract class CDValidatorController
         extends CDSheetController implements Validator {
+
     private static Logger log = Logger.getLogger(CDValidatorController.class);
 
     private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
@@ -49,9 +47,11 @@ public abstract class CDValidatorController
             new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
 
-    public CDValidatorController(CDWindowController parent) {
-        super(parent);
-        this.load();
+    protected Queue queue;
+
+    public CDValidatorController(Queue queue) {
+        super(CDQueueController.instance());
+        this.queue = queue;
     }
 
     public void callback(int returncode) {
@@ -86,8 +86,6 @@ public abstract class CDValidatorController
         }
     }
 
-    protected abstract void load();
-
     /**
      *
      */
@@ -113,8 +111,9 @@ public abstract class CDValidatorController
 
     protected abstract boolean isExisting(Path p);
 
-    public boolean validate(List files, boolean resumeRequested) {
-        for (Iterator iter = files.iterator(); iter.hasNext() && !this.isCanceled();) {
+    public boolean validate(final boolean resumeRequested) {
+        List childs = this.queue.getChilds();
+        for (Iterator iter = childs.iterator(); iter.hasNext() && !this.isCanceled();) {
             Path child = (Path) iter.next();
             log.debug("Validating:" + child);
             if (this.validate(child, resumeRequested)) {
@@ -188,7 +187,7 @@ public abstract class CDValidatorController
     }
 
     protected void adjustFilename(Path path) {
-        //        
+        //
     }
 
     protected boolean hasPrompt = false;
@@ -199,6 +198,7 @@ public abstract class CDValidatorController
 
     protected void prompt(Path p) {
         if (!this.hasPrompt()) {
+            //todo call from the main thread
             this.beginSheet(false);
             this.statusIndicator.startAnimation(null);
             this.hasPrompt = true;
@@ -212,26 +212,51 @@ public abstract class CDValidatorController
 
     protected NSTextField infoLabel; // IBOutlet
 
-    public void setInfoLabel(NSTextField infoLabel) {
-        this.infoLabel = infoLabel;
+    public void setInfoLabel(NSTextField f) {
+        this.infoLabel = f;
     }
 
-    private NSTextField urlField; // IBOutlet
+    private NSTextField remoteURLField; // IBOutlet
 
-    public void setUrlField(NSTextField urlField) {
-        this.urlField = urlField;
+    public void setRemoteURLField(NSTextField f) {
+        this.remoteURLField = f;
     }
 
-    private NSTextField localField; // IBOutlet
+    private NSTextField remoteSizeField; // IBOutlet
 
-    public void setLocalField(NSTextField localField) {
-        this.localField = localField;
+    public void setRemoteSizeField(NSTextField f) {
+        this.remoteSizeField = f;
     }
+
+    private NSTextField remoteModificationField; // IBOutlet
+
+    public void setRemoteModificationField(NSTextField f) {
+        this.remoteModificationField = f;
+    }
+
+    private NSTextField localURLField; // IBOutlet
+
+    public void setLocalURLField(NSTextField f) {
+        this.localURLField = f;
+    }
+
+    private NSTextField localSizeField; // IBOutlet
+
+    public void setLocalSizeField(NSTextField f) {
+        this.localSizeField = f;
+    }
+
+    private NSTextField localModificationField; // IBOutlet
+
+    public void setLocalModificationField(NSTextField f) {
+        this.localModificationField = f;
+    }
+
 
     private NSProgressIndicator statusIndicator; // IBOutlet
 
-    public void setStatusIndicator(NSProgressIndicator statusIndicator) {
-        this.statusIndicator = statusIndicator;
+    public void setStatusIndicator(NSProgressIndicator f) {
+        this.statusIndicator = f;
         this.statusIndicator.setUsesThreadedAnimation(true);
     }
 
@@ -246,7 +271,7 @@ public abstract class CDValidatorController
             public String tableViewToolTipForCell(NSTableView tableView, NSCell cell, NSMutableRect rect,
                                                   NSTableColumn tc, int row, NSPoint mouseLocation) {
                 if (row < numberOfRowsInTableView(tableView)) {
-                    return workList.get(row).toString();
+                    return super.tooltipForPath((Path)workList.get(row));
                 }
                 return null;
             }
@@ -272,24 +297,46 @@ public abstract class CDValidatorController
                     Path p = (Path) workList.get(fileTableView.selectedRow());
                     if (p != null) {
                         if (p.getLocal().exists()) {
-                            localField.setAttributedStringValue(new NSAttributedString(p.getLocal().getAbsolute(),
+                            localURLField.setAttributedStringValue(
+                                    new NSAttributedString(p.getLocal().getAbsolute(),
+                                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                            localSizeField.setAttributedStringValue(
+                                    new NSAttributedString(Status.getSizeAsString(p.getLocal().attributes.getSize()),
+                                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                            localModificationField.setAttributedStringValue(
+                                    new NSAttributedString(CDDateFormatter.getLongFormat(p.getLocal().attributes.getTimestamp()),
                                     TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                         }
                         else {
-                            localField.setStringValue("-");
+                            localURLField.setStringValue("");
+                            localSizeField.setStringValue("");
+                            localModificationField.setStringValue("");
                         }
                         if (p.getRemote().exists()) {
-                            urlField.setAttributedStringValue(new NSAttributedString(p.getRemote().getHost().getURL() + p.getRemote().getAbsolute(),
+                            remoteURLField.setAttributedStringValue(
+                                    new NSAttributedString(p.getRemote().getHost().getURL() + p.getRemote().getAbsolute(),
+                                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                            remoteSizeField.setAttributedStringValue(
+                                    new NSAttributedString(Status.getSizeAsString(p.getRemote().attributes.getSize()),
+                                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                            remoteModificationField.setAttributedStringValue(
+                                    new NSAttributedString(CDDateFormatter.getLongFormat(p.getRemote().attributes.getTimestamp()),
                                     TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                         }
                         else {
-                            urlField.setStringValue("-");
+                            remoteURLField.setStringValue("");
+                            remoteSizeField.setStringValue("");
+                            remoteModificationField.setStringValue("");
                         }
                     }
                 }
                 else {
-                    urlField.setStringValue("-");
-                    localField.setStringValue("-");
+                    remoteURLField.setStringValue("");
+                    remoteSizeField.setStringValue("");
+                    remoteModificationField.setStringValue("");
+                    localURLField.setStringValue("");
+                    localSizeField.setStringValue("");
+                    localModificationField.setStringValue("");
                 }
             }
         });
@@ -377,36 +424,38 @@ public abstract class CDValidatorController
         }
         {
             NSTableColumn c = new NSTableColumn();
-            c.headerCell().setStringValue(NSBundle.localizedString("Server File", ""));
-            c.setIdentifier("REMOTE");
-            c.setMinWidth(100f);
-            c.setWidth(200f);
-            c.setMaxWidth(600f);
+            c.setIdentifier("SIZE");
+            c.headerCell().setStringValue("");
+            c.setMinWidth(50f);
+            c.setWidth(80f);
+            c.setMaxWidth(100f);
             if (setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
             else {
                 c.setResizable(true);
             }
+            c.setEditable(false);
             c.setDataCell(new NSTextFieldCell());
-            c.dataCell().setAlignment(NSText.LeftTextAlignment);
+            c.dataCell().setAlignment(NSText.RightTextAlignment);
             this.fileTableView.addTableColumn(c);
         }
         {
             NSTableColumn c = new NSTableColumn();
-            c.headerCell().setStringValue(NSBundle.localizedString("Local File", ""));
-            c.setIdentifier("LOCAL");
-            c.setMinWidth(100f);
-            c.setWidth(200f);
-            c.setMaxWidth(600f);
+            c.setIdentifier("WARNING");
+            c.headerCell().setStringValue("");
+            c.setMinWidth(20f);
+            c.setWidth(20f);
+            c.setMaxWidth(20f);
             if (setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
             else {
                 c.setResizable(true);
             }
-            c.setDataCell(new NSTextFieldCell());
-            c.dataCell().setAlignment(NSText.LeftTextAlignment);
+            c.setEditable(false);
+            c.setDataCell(new NSImageCell());
+            c.dataCell().setAlignment(NSText.CenterTextAlignment);
             this.fileTableView.addTableColumn(c);
         }
         this.fileTableView.sizeToFit();
@@ -460,62 +509,30 @@ public abstract class CDValidatorController
     private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
 
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
-        if (row < this.numberOfRowsInTableView(view)) {
-            String identifier = (String) tableColumn.identifier();
-            Path p = (Path) this.workList.get(row);
-            if (p != null) {
-                if (identifier.equals("INCLUDE")) {
-                    if (p.isSkipped())
-                        return new Integer(NSCell.OffState);
-                    return new Integer(NSCell.OnState);
-                }
-                if (identifier.equals("ICON")) {
-                    if (p.attributes.isDirectory()) {
-                        return FOLDER_ICON;
-                    }
-                    if (p.attributes.isFile()) {
-                        NSImage icon = CDIconCache.instance().get(p.getExtension());
-                        icon.setSize(new NSSize(16f, 16f));
-                        return icon;
-                    }
-                    return NSImage.imageNamed("notfound.tiff");
-                }
-                if (identifier.equals("FILENAME")) {
-                    return new NSAttributedString(p.getRemote().getName(),
-                            CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
-                }
-                if (identifier.equals("TYPEAHEAD")) {
-                    return p.getRemote().getName();
-                }
-                if (identifier.equals("REMOTE")) {
-                    if (p.getRemote().exists()) {
-                        if (p.attributes.isFile()) {
-                            return new NSAttributedString(Status.getSizeAsString(p.attributes.getSize()) + ", "
-                                    + p.attributes.getTimestampAsShortString(),
-                                    CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
-                        }
-                        if (p.attributes.isDirectory()) {
-                            return new NSAttributedString(p.attributes.getTimestampAsShortString(),
-                                    CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
-                        }
-                    }
-                    return null;
-                }
-                if (identifier.equals("LOCAL")) {
-                    if (p.getLocal().exists()) {
-                        if (p.attributes.isFile()) {
-                            return new NSAttributedString(Status.getSizeAsString(p.getLocal().getSize()) + ", "
-                                    + p.getLocal().getTimestampAsShortString(),
-                                    CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
-                        }
-                        if (p.attributes.isDirectory()) {
-                            return new NSAttributedString(p.getLocal().getTimestampAsShortString(),
-                                    CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
-                        }
-                    }
-                    return null;
-                }
+        String identifier = (String) tableColumn.identifier();
+        Path p = (Path) this.workList.get(row);
+        if (identifier.equals("INCLUDE")) {
+            if (p.isSkipped())
+                return new Integer(NSCell.OffState);
+            return new Integer(NSCell.OnState);
+        }
+        if (identifier.equals("ICON")) {
+            if (p.attributes.isDirectory()) {
+                return FOLDER_ICON;
             }
+            if (p.attributes.isFile()) {
+                NSImage icon = CDIconCache.instance().get(p.getExtension());
+                icon.setSize(new NSSize(16f, 16f));
+                return icon;
+            }
+            return NSImage.imageNamed("notfound.tiff");
+        }
+        if (identifier.equals("FILENAME")) {
+            return new NSAttributedString(p.getRemote().getName(),
+                    CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+        }
+        if (identifier.equals("TYPEAHEAD")) {
+            return p.getRemote().getName();
         }
         return null;
     }

@@ -185,7 +185,7 @@ public class SyncQueue extends Queue {
         }
     }
 
-    private Calendar getCalendar(final long timestamp, final int precision) {
+    public Calendar getCalendar(final long timestamp, final int precision) {
         Calendar c = Calendar.getInstance(); //default timezone
         c.setTimeInMillis(timestamp); //UTC milliseconds!
         if(precision == Calendar.MILLISECOND) {

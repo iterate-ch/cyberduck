@@ -392,10 +392,10 @@ public class CDMainController extends CDController {
                             Path workdir = controller.workdir();
                             final Queue q = new UploadQueue();
                             q.addListener(new QueueListener() {
-                                public void queueStarted() {
+                                public void queueStarted(boolean headless) {
                                 }
 
-                                public void queueStopped() {
+                                public void queueStopped(boolean headless) {
                                     if (controller.isMounted()) {
                                         controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
                                         controller.reloadData(true);
@@ -431,7 +431,7 @@ public class CDMainController extends CDController {
     public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
         log.debug("applicationShouldHandleReopen");
         if (this.orderedBrowsers().count() == 0 && this.orderedTransfers().count() == 0) {
-            return this.newDocument() == null;
+            return null == this.newDocument();
         }
         return false;
     }

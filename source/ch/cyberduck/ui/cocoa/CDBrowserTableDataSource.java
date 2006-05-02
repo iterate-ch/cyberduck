@@ -137,8 +137,9 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
             }
             if (identifier.equals(MODIFIED_COLUMN)) {
-                if (item.attributes.getTimestamp() != null) {
-                    return new NSGregorianDate((double) item.attributes.getTimestamp().getTime() / 1000,
+                if (item.attributes.getTimestamp() != -1) {
+                    //todo optimization
+                    return new NSGregorianDate((double) item.attributes.getTimestamp() / 1000,
                             NSDate.DateFor1970);
                 }
                 return null;
@@ -189,10 +190,10 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 if (q.numberOfRoots() > 0) {
                     CDQueueController.instance().startItem(q);
                     q.addListener(new QueueListener() {
-                        public void queueStarted() {
+                        public void queueStarted(boolean headless) {
                         }
 
-                        public void queueStopped() {
+                        public void queueStopped(boolean headless) {
                             if (controller.isMounted()) {
                                 controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
                                 controller.reloadData(true);
@@ -256,6 +257,9 @@ public abstract class CDBrowserTableDataSource extends CDController {
                             Queue q = QueueFactory.createQueue(dict);
                             for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                                 Path item = (Path) iter.next();
+//                                if(!item.getSession().equals(this.controller.getSession())) {
+//                                    return NSDraggingInfo.DragOperationNone;
+//                                }
                                 if (destination.equals(item)) {
                                     return NSDraggingInfo.DragOperationNone;
                                 }
@@ -332,7 +336,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
         return false;
     }
 
-    // @see http://www.cocoabuilder.com/archive/message/2005/10/5/118857
+    //see http://www.cocoabuilder.com/archive/message/2005/10/5/118857
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
         log.debug("finishedDraggingImage:" + operation);
         this.promisedDragPaths = null;

@@ -224,21 +224,13 @@ public class CDInfoController extends CDWindowController {
                     this.kindField.setStringValue(NSBundle.localizedString("Unknown", ""));
                 }
             }
-
-            try {
-                if (this.numberOfFiles() > 1) {
-                    this.modifiedField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
-                }
-                else {
-                    NSGregorianDateFormatter formatter = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.TimeDateFormatString), false);
-                    String timestamp = formatter.stringForObjectValue(new NSGregorianDate((double) file.attributes.getTimestamp().getTime() / 1000,
-                            NSDate.DateFor1970));
-                    this.modifiedField.setAttributedStringValue(new NSAttributedString(timestamp,
-                            TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                }
+            if (this.numberOfFiles() > 1) {
+                this.modifiedField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
             }
-            catch (NSFormatter.FormattingException e) {
-                log.error(e.toString());
+            else {
+                this.modifiedField.setAttributedStringValue(new NSAttributedString(
+                        CDDateFormatter.getLongFormat(file.attributes.getTimestamp()),
+                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
             }
             this.ownerField.setStringValue(this.numberOfFiles() > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.attributes.getOwner());
