@@ -102,33 +102,6 @@
 		això encara no us funciona, consulteu&nbsp; <a href=
 		"http://www.macosxhints.com/article.php?story=20031215144430486">
 		aquest article</a> [anglès].</p>
-
-		<p><b>Vull utilitzar la darrera versió beta del&nbsp;skEdit
-		que ja suporta el protocol d'editor extern.</b><br />
-		Escriviu les següents comandes en la finestra de la
-		terminal (copieu i enganxeu) i a continuació reinicieu el
-		Cyberduck:</p>
-
-		<p><code>defaults write ch.sudo.cyberduck editor.name
-		skEdit<br />
-		defaults write ch.sudo.cyberduck editor.bundleIdentifier
-		org.skti.skEdit</code></p>
-
-		<p><b>No vull sincronitzar els fitxers si per exemple només
-		difereixen en la data per segons, o minuts!</b><br />
-		Podeu configurar el Cybreduck per a que ignori determinats
-		valors quan compari la data de modificació dels fitxers.
-		Obriu una terminal i escriviu:</p>
-
-		<p><code>defaults write ch.sudo.cyberduck
-		queue.sync.ignore.second true</code><br />
-		<code>defaults write ch.sudo.cyberduck
-		queue.sync.ignore.minute true<br />
-		defaults write ch.sudo.cyberduck queue.sync.ignore.hour
-		false</code><br /></p>
-
-		<p>Per defecte, s'ignoran els fitxers que difereixin en
-		segons i mil·lisegons.</p>
 	</div>
 
 	<div id="footer">
