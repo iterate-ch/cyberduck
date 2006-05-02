@@ -50,18 +50,24 @@ public class CDApplescriptabilityController extends NSScriptCommand {
         }
         log.debug("Received URL from Apple Event:" + arg);
         try {
-            Host h = Host.parse(arg);
+            final Host h = Host.parse(arg);
             if (h.getDefaultPath().length() > 1) {
-                Path p = PathFactory.createPath(SessionFactory.createSession(h), h.getDefaultPath());
-				if(null != p.getExtension()) {
-                    Queue q = new DownloadQueue();
-                    q.addRoot(p);
-                    CDQueueController.instance().startItem(q);
-                    return null;
-                }
+                // We have to add this to the end of the main thread; there is some obscure
+                // concurrency issue with the rendezvous initialization
+                // running in CDMainController.applicationDidFinishLaunching, see ticket #????
+                ((CDMainController) NSApplication.sharedApplication().delegate()).invoke(new Runnable() {
+                    public void run() {
+                        Path p = PathFactory.createPath(SessionFactory.createSession(h), h.getDefaultPath());
+                        if(null != p.getExtension()) {
+                            CDQueueController.instance().startItem(new DownloadQueue(p));
+                        }
+                    }
+                });
             }
-            CDBrowserController doc = ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
-            doc.mount(h);
+            else {
+                CDBrowserController doc = ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
+                doc.mount(h);
+            }
         }
         catch (java.net.MalformedURLException e) {
             log.error(e.getMessage());
