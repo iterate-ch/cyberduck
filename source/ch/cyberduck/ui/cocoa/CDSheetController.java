@@ -18,14 +18,17 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSButton;
+import com.apple.cocoa.application.NSModalSession;
+import com.apple.cocoa.application.NSPanel;
+import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSSelector;
 
 /**
  * @version $Id$
  */
-public abstract class CDSheetController extends CDWindowController implements CDSheetCallback
-{
+public abstract class CDSheetController extends CDWindowController implements CDSheetCallback {
 
     /**
      * The controller of the parent window
@@ -34,6 +37,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
 
     /**
      * The sheet window must be provided later with #setWindow (usually called when loading the NIB file)
+     *
      * @param parent The controller of the parent window
      */
     public CDSheetController(CDWindowController parent) {
@@ -42,8 +46,9 @@ public abstract class CDSheetController extends CDWindowController implements CD
 
     /**
      * Use this if no custom sheet is given (and no NIB file loaded)
+     *
      * @param parent The controller of the parent window
-     * @param sheet The window to attach as the sheet
+     * @param sheet  The window to attach as the sheet
      */
     public CDSheetController(CDWindowController parent, NSWindow sheet) {
         this.parent = parent;
@@ -62,10 +67,11 @@ public abstract class CDSheetController extends CDWindowController implements CD
     /**
      * This must be the target action for any button in the sheet dialog. Will validate the input
      * and close the sheet; #sheetDidClose will be called afterwards
+     *
      * @param sender A button in the sheet dialog
      */
     public void closeSheet(final NSButton sender) {
-        log.debug("closeSheet:"+sender);
+        log.debug("closeSheet:" + sender);
         if(sender.tag() == DEFAULT_OPTION
                 || sender.tag() == ALTERNATE_OPTION) {
             if(!this.validateInput()) {
@@ -78,6 +84,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
 
     /**
      * Check input fields for any errors
+     *
      * @return true if a valid input has been given
      */
     protected boolean validateInput() {
@@ -89,16 +96,16 @@ public abstract class CDSheetController extends CDWindowController implements CD
      * attached to this window has been dismissed by the user
      */
     protected void waitForSheetEnd() {
-        synchronized (lock) {
-            while (parent.hasSheet()) {
+        synchronized(lock) {
+            while(parent.hasSheet()) {
                 try {
-                    if (Thread.currentThread().getName().equals("main")
+                    if(Thread.currentThread().getName().equals("main")
                             || Thread.currentThread().getName().equals("AWT-AppKit")) {
                         log.warn("Waiting on main thread; will run modal!");
                         NSApplication app = NSApplication.sharedApplication();
                         NSModalSession modalSession = app.beginModalSessionForWindow(
                                 this.parent.window().attachedSheet());
-                        while (parent.hasSheet()) {
+                        while(parent.hasSheet()) {
                             app.runModalSession(modalSession);
                         }
                         app.endModalSession(modalSession);
@@ -108,7 +115,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
                     lock.wait();
                     log.debug("Awakened:waitForSheetEnd");
                 }
-                catch (InterruptedException e) {
+                catch(InterruptedException e) {
                     log.error(e.getMessage());
                 }
             }
@@ -118,18 +125,20 @@ public abstract class CDSheetController extends CDWindowController implements CD
     /**
      * Called after the sheet has been dismissed by the user. The returncodes are defined in
      * <code>ch.cyberduck.ui.cooca.CDSheetCallback</code>
+     *
      * @param returncode
      */
     public abstract void callback(int returncode);
 
     /**
      * Will attach the sheet to the parent window
+     *
      * @param blocking will wait for the sheet to end if true
      */
     protected void beginSheet(boolean blocking) {
         log.debug("beginSheet:" + this.window());
-        synchronized (lock) {
-            if (!this.parent.window().isKeyWindow()) {
+        synchronized(lock) {
+            if(!this.parent.window().isKeyWindow()) {
                 this.parent.window().makeKeyAndOrderFront(null);
             }
             this.waitForSheetEnd();
@@ -144,6 +153,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
             if(blocking) {
                 this.waitForSheetEnd();
             }
+            lock.notifyAll();
         }
     }
 
@@ -151,16 +161,17 @@ public abstract class CDSheetController extends CDWindowController implements CD
      * Called by the runtime after a sheet has been dismissed. Ends any modal session and
      * sends the returncode to the callback implementation. Also invalidates this controller to be
      * garbage collected and notifies the lock object
+     *
      * @param sheet
      * @param returncode Identifier for the button clicked by the user
-     * @param context Not used
+     * @param context    Not used
      */
     public void sheetDidClose(NSPanel sheet, int returncode, Object context) {
         log.debug("sheetDidClose:" + sheet);
         sheet.orderOut(null);
         this.callback(returncode);
         this.invalidate();
-        synchronized (lock) {
+        synchronized(lock) {
             lock.notifyAll();
         }
     }
