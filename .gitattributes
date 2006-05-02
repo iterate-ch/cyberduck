@@ -1775,6 +1775,7 @@ www/help/images/edit.png -text svneol=unset#image/png
 www/help/images/history.png -text svneol=unset#image/png
 www/help/images/inetloc.png -text svneol=unset#image/png
 www/help/images/move.png -text svneol=unset#image/png
+www/help/images/navigation.png -text svneol=unset#image/png
 www/help/images/paste.png -text svneol=unset#image/png
 www/help/images/permissions.png -text svneol=unset#image/png
 www/help/images/quick.png -text svneol=unset#image/png
