@@ -150,8 +150,6 @@
 		47649EDD08E563D600207DC9 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479982AF05F54B1600F81519 /* Carbon.framework */; };
 		4764B48108B7835E00441096 /* SKWSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 4764B47D08B7835E00441096 /* SKWSegmentedControl.m */; };
 		4764B48208B7835E00441096 /* SKWSegmentedControlWindowProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4764B47E08B7835E00441096 /* SKWSegmentedControlWindowProxy.m */; };
-		4764B48308B7835E00441096 /* SKWSegmentedControlWindowProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4764B47F08B7835E00441096 /* SKWSegmentedControlWindowProxy.h */; };
-		4764B48408B7835E00441096 /* SKWSegmentedControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 4764B48008B7835E00441096 /* SKWSegmentedControl.h */; };
 		476C7C1907F5A2A700CF6032 /* File.nib in Resources */ = {isa = PBXBuildFile; fileRef = 476C7C1707F5A2A700CF6032 /* File.nib */; };
 		47723BC8096072B800B47E99 /* cancel.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47723BC7096072B800B47E99 /* cancel.tiff */; };
 		47748981085825460030AED1 /* Cyberduck.scriptTerminology in Resources */ = {isa = PBXBuildFile; fileRef = 4774897F085825460030AED1 /* Cyberduck.scriptTerminology */; };
@@ -160,6 +158,10 @@
 		4781AF410828423100B3E0FA /* download0.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4781AF400828423100B3E0FA /* download0.icns */; };
 		4784DAAB07AEFB5900A8FC38 /* transparent.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4784DAAA07AEFB5900A8FC38 /* transparent.tiff */; };
 		4785B6060806FC6500F4E71F /* download10.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4785B6050806FC6500F4E71F /* download10.icns */; };
+		478B36340A07C395000F11F2 /* SKWSegmentedControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 478B36300A07C395000F11F2 /* SKWSegmentedControl.h */; };
+		478B36350A07C395000F11F2 /* SKWSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 478B36310A07C395000F11F2 /* SKWSegmentedControl.m */; };
+		478B36360A07C395000F11F2 /* SKWSegmentedControlWindowProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 478B36320A07C395000F11F2 /* SKWSegmentedControlWindowProxy.h */; };
+		478B36370A07C395000F11F2 /* SKWSegmentedControlWindowProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 478B36330A07C395000F11F2 /* SKWSegmentedControlWindowProxy.m */; };
 		478B71F0089FEB4E003B512A /* arrowRightBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 478B71EF089FEB4E003B512A /* arrowRightBlack16.tiff */; };
 		479734DB077B735A0027370F /* arrowLeftBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479734D9077B735A0027370F /* arrowLeftBlack16.tiff */; };
 		4798363E072AC0FA00FA3CDB /* Progress.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4798363C072AC0FA00FA3CDB /* Progress.nib */; };
@@ -1351,6 +1353,10 @@
 		4781AF400828423100B3E0FA /* download0.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download0.icns; sourceTree = "<group>"; };
 		4784DAAA07AEFB5900A8FC38 /* transparent.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = transparent.tiff; sourceTree = "<group>"; };
 		4785B6050806FC6500F4E71F /* download10.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download10.icns; sourceTree = "<group>"; };
+		478B36300A07C395000F11F2 /* SKWSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControl.h; sourceTree = "<group>"; };
+		478B36310A07C395000F11F2 /* SKWSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControl.m; sourceTree = "<group>"; };
+		478B36320A07C395000F11F2 /* SKWSegmentedControlWindowProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControlWindowProxy.h; sourceTree = "<group>"; };
+		478B36330A07C395000F11F2 /* SKWSegmentedControlWindowProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControlWindowProxy.m; sourceTree = "<group>"; };
 		478B71EF089FEB4E003B512A /* arrowRightBlack16.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowRightBlack16.tiff; sourceTree = "<group>"; };
 		4790762A0764903900676C18 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		479734D9077B735A0027370F /* arrowLeftBlack16.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowLeftBlack16.tiff; sourceTree = "<group>"; };
@@ -2014,6 +2020,7 @@
 		4741532B06C4F08A00AC0BD2 /* com */ = {
 			isa = PBXGroup;
 			children = (
+				478B362F0A07C395000F11F2 /* macfoh */,
 				4727224509F51F2600136347 /* adiumx */,
 				4741532C06C4F08A00AC0BD2 /* enterprisedt */,
 				4741533806C4F08A00AC0BD2 /* sshtools */,
@@ -2660,6 +2667,17 @@
 			name = bookmark;
 			sourceTree = "<group>";
 		};
+		478B362F0A07C395000F11F2 /* macfoh */ = {
+			isa = PBXGroup;
+			children = (
+				478B36300A07C395000F11F2 /* SKWSegmentedControl.h */,
+				478B36310A07C395000F11F2 /* SKWSegmentedControl.m */,
+				478B36320A07C395000F11F2 /* SKWSegmentedControlWindowProxy.h */,
+				478B36330A07C395000F11F2 /* SKWSegmentedControlWindowProxy.m */,
+			);
+			path = macfoh;
+			sourceTree = "<group>";
+		};
 		479815EA0728DCA000FA3CDB /* growl */ = {
 			isa = PBXGroup;
 			children = (
@@ -2914,11 +2932,11 @@
 			files = (
 				47494C4107EC6B4200B34D53 /* CDOutlineView.h in Headers */,
 				47494C4307EC6B4200B34D53 /* CDListView.h in Headers */,
-				4764B48308B7835E00441096 /* SKWSegmentedControlWindowProxy.h in Headers */,
-				4764B48408B7835E00441096 /* SKWSegmentedControl.h in Headers */,
 				47457F8E09980270002C93C3 /* UKCrashReporter.h in Headers */,
 				475E53F709AD1B48007CFC2B /* UKPrefsPanel.h in Headers */,
 				4727223409F51EB600136347 /* AIAutoScrollView.h in Headers */,
+				478B36340A07C395000F11F2 /* SKWSegmentedControl.h in Headers */,
+				478B36360A07C395000F11F2 /* SKWSegmentedControlWindowProxy.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3593,6 +3611,8 @@
 				47457F8F09980270002C93C3 /* UKCrashReporter.m in Sources */,
 				475E53F809AD1B48007CFC2B /* UKPrefsPanel.m in Sources */,
 				4727223309F51EB600136347 /* AIAutoScrollView.m in Sources */,
+				478B36350A07C395000F11F2 /* SKWSegmentedControl.m in Sources */,
+				478B36370A07C395000F11F2 /* SKWSegmentedControlWindowProxy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
