@@ -50,12 +50,17 @@ public abstract class CDBrowserTableDataSource extends CDController {
     public static final String PERMISSIONS_COLUMN = "PERMISSIONS";
 
     /**
+     * Must be efficient; called very frequently by the table view
      *
      * @param path The directory to fetch the childs from
      * @return The cached or newly fetched file listing of the directory
      */
     protected List childs(Path path) {
-        List childs = path.list(controller.getComparator(), controller.getFileFilter(), false);
+        List childs = null;
+        if(path.attributes.getPermission().isUndefined()
+            || (path.attributes.isExecutable() && path.attributes.isReadable())) {
+            childs = path.list(controller.getComparator(), controller.getFileFilter());
+        }
         if(null == childs) {
             return new ArrayList();
         }

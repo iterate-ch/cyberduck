@@ -552,33 +552,35 @@ public class CDBrowserController extends CDWindowController
      * @return All selected paths or an empty list if there is no selection
      */
     protected List getSelectedPaths() {
-        switch(this.browserSwitchView.selectedSegment()) {
-            case LIST_VIEW: {
-                NSEnumerator iterator = this.browserListView.selectedRowEnumerator();
-                List selectedFiles = new ArrayList();
-                List childs = this.browserListModel.childs(this.workdir());
-                while(iterator.hasMoreElements()) {
-                    int row = ((Integer) iterator.nextElement()).intValue();
-                    Path selected = (Path) childs.get(row);
-                    if(null == selected) {
-                        break;
+        if(this.isMounted()) {
+            switch(this.browserSwitchView.selectedSegment()) {
+                case LIST_VIEW: {
+                    NSEnumerator iterator = this.browserListView.selectedRowEnumerator();
+                    List selectedFiles = new ArrayList();
+                    List childs = this.browserListModel.childs(this.workdir());
+                    while(iterator.hasMoreElements()) {
+                        int row = ((Integer) iterator.nextElement()).intValue();
+                        Path selected = (Path) childs.get(row);
+                        if(null == selected) {
+                            break;
+                        }
+                        selectedFiles.add(selected);
                     }
-                    selectedFiles.add(selected);
+                    return selectedFiles;
                 }
-                return selectedFiles;
-            }
-            case OUTLINE_VIEW: {
-                NSEnumerator iterator = this.browserOutlineView.selectedRowEnumerator();
-                List selectedFiles = new ArrayList();
-                while(iterator.hasMoreElements()) {
-                    int row = ((Integer) iterator.nextElement()).intValue();
-                    Path selected = (Path) this.browserOutlineView.itemAtRow(row);
-                    if(null == selected) {
-                        break;
+                case OUTLINE_VIEW: {
+                    NSEnumerator iterator = this.browserOutlineView.selectedRowEnumerator();
+                    List selectedFiles = new ArrayList();
+                    while(iterator.hasMoreElements()) {
+                        int row = ((Integer) iterator.nextElement()).intValue();
+                        Path selected = (Path) this.browserOutlineView.itemAtRow(row);
+                        if(null == selected) {
+                            break;
+                        }
+                        selectedFiles.add(this.browserOutlineView.itemAtRow(row));
                     }
-                    selectedFiles.add(this.browserOutlineView.itemAtRow(row));
+                    return selectedFiles;
                 }
-                return selectedFiles;
             }
         }
         return null;
@@ -787,14 +789,14 @@ public class CDBrowserController extends CDWindowController
                             icon = CDBrowserTableDataSource.SYMLINK_ICON;
                         }
                         else if(item.attributes.isDirectory()) {
-                            Permission perm = item.attributes.getPermission();
-                            if(false == perm.getOwnerPermissions()[Permission.EXECUTE]
-                                    && false == perm.getGroupPermissions()[Permission.EXECUTE]
-                                    && false == perm.getOtherPermissions()[Permission.EXECUTE]) {
+                            icon = FOLDER_ICON;
+                            if (!item.attributes.isExecutable()) {
                                 icon = CDBrowserTableDataSource.FOLDER_NOACCESS_ICON;
                             }
-                            else {
-                                icon = CDBrowserTableDataSource.FOLDER_ICON;
+                            else if (!item.attributes.isReadable()) {
+                                if (item.attributes.isWritable()) {
+                                    icon = CDBrowserTableDataSource.FOLDER_WRITEONLY_ICON;
+                                }
                             }
                         }
                         else if(item.attributes.isFile()) {
