@@ -353,7 +353,7 @@ public class CDQueueController extends CDWindowController
         queue.addListener(new QueueListener() {
             private TranscriptListener transcript;
 
-            public void queueStarted() {
+            public void queueStarted(boolean headless) {
                 CDQueueController.this.invoke(new Runnable() {
                     public void run() {
                         toolbar.validateVisibleItems();
@@ -367,7 +367,7 @@ public class CDQueueController extends CDWindowController
                 });
             }
 
-            public void queueStopped() {
+            public void queueStopped(boolean headless) {
                 CDQueueController.this.invoke(new Runnable() {
                     public void run() {
                         toolbar.validateVisibleItems();
@@ -398,7 +398,7 @@ public class CDQueueController extends CDWindowController
         queue.getSession().setLoginController(new CDLoginController(this));
         new Thread() {
             public void run() {
-                queue.process(resumeRequested, false);
+                queue.run(resumeRequested, false);
             }
         }.start();
     }
