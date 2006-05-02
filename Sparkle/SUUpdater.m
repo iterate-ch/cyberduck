@@ -123,11 +123,9 @@
 // This is generally useful for a menu item--when the check is explicitly invoked.
 - (void)checkForUpdatesAndNotify:(BOOL)verbosity
 {	
-	verbose = verbosity;
-	
 	if (updateInProgress)
 	{
-		if (verbose)
+		if (verbosity)
 		{
 			NSBeep();
 			if ([[statusController window] isVisible])
@@ -139,6 +137,8 @@
 		}
 		return;
 	}
+	verbose = verbosity;
+	
 	updateInProgress = YES;
 	
 	// A value in the user defaults overrides one in the Info.plist (so preferences panels can be created wherein users choose between beta / release feeds).
