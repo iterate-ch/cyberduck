@@ -89,7 +89,7 @@ public class FTPActiveDataSocket implements FTPDataSocket {
      *                     a connection from the server.
      */
     protected void acceptConnection() throws IOException {
-        if(acceptedSock == null) {
+        if(null == acceptedSock) {
             acceptedSock = sock.accept();
             try {
                 acceptedSock.setSoTimeout(sock.getSoTimeout());
