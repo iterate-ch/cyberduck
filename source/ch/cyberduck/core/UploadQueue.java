@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.CDUploadQueueValidatorController;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.foundation.NSBundle;
@@ -51,8 +52,8 @@ public class UploadQueue extends Queue {
         return dict;
     }
 
-    protected void finish(boolean headless) {
-        super.finish(headless);
+    public void queueStopped(boolean headless) {
+        super.queueStopped(headless);
         if(this.isComplete() && !this.isCanceled()) {
             this.getSession().message(
                     NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"));
@@ -60,7 +61,6 @@ public class UploadQueue extends Queue {
                     NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"),
                     this.getName());
         }
-        this.queueStopped();
     }
 
     protected List getChilds(List childs, Path p) {
@@ -97,7 +97,11 @@ public class UploadQueue extends Queue {
         }
     }
 
-    protected void process(Path p) {
+    protected void transfer(Path p) {
         p.upload();
+    }
+
+    protected Validator getValidator() {
+        return new CDUploadQueueValidatorController(this);
     }
 }

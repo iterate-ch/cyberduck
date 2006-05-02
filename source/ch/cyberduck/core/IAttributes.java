@@ -18,29 +18,18 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.List;
-
 /**
  * @version $Id$
  */
-public interface Validator {
+public interface IAttributes {
 
-    /**
-     *
-     * @param resumeRequested
-     * @return
-     */
-    public boolean validate(boolean resumeRequested);
+    double getSize();
 
-    /**
-     *
-     * @return
-     */
-    public List getValidated();
+    long getTimestamp();
 
-    /**
-     * 
-     * @return
-     */
-    public boolean isCanceled();
+    Permission getPermission();
+
+    boolean isDirectory();
+
+    boolean isFile();
 }

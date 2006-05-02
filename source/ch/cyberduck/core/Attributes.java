@@ -31,7 +31,7 @@ import java.util.TimeZone;
  *
  * @version $Id$
  */
-public class Attributes {
+public class Attributes implements IAttributes {
     private static Logger log = Logger.getLogger(Attributes.class);
 
     /**
@@ -41,7 +41,7 @@ public class Attributes {
     /**
      *
      */
-    private Date modified = null;
+    private long modified = -1;
     private String owner = null;
     private String group = null;
     /**
@@ -58,14 +58,12 @@ public class Attributes {
         Attributes copy = new Attributes(this.getAsDictionary());
         copy.size = this.getSize();
         copy.permission = (Permission)this.getPermission().clone();
-        if(this.getTimestamp() != null) {
-            copy.modified = (Date)this.getTimestamp().clone();
-        }
+        copy.modified = this.getTimestamp();
         return copy;
     }
 
     public boolean isUndefined() {
-        boolean defined = (null == this.modified || -1 == this.size);
+        boolean defined = (-1 == this.modified || -1 == this.size);
         if (!defined)
             log.info("Undefined file attributes");
         return defined;
@@ -99,88 +97,18 @@ public class Attributes {
     }
 
     /**
-     * Set the modfication returned by ftp directory listings
+     * Set the modfication date iN UTC milliseconds
      */
     public void setTimestamp(long m) {
-        this.setTimestamp(new Date(m));
+        this.modified = m;
     }
 
     /**
      *
-     * @param d
+     * @return in milliseconds
      */
-    public void setTimestamp(Date d) {
-        this.modified = d;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public Date getTimestamp() {
+    public long getTimestamp() {
         return this.modified;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public Calendar getTimestampAsCalendar() {
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone(Preferences.instance().getProperty("queue.sync.timezone")));
-        if (this.getTimestamp() != null) {
-            c.setTime(this.getTimestamp());
-        }
-        if (Preferences.instance().getBoolean("queue.sync.ignore.millisecond"))
-            c.clear(Calendar.MILLISECOND);
-        if (Preferences.instance().getBoolean("queue.sync.ignore.second"))
-            c.clear(Calendar.SECOND);
-        if (Preferences.instance().getBoolean("queue.sync.ignore.minute"))
-            c.clear(Calendar.MINUTE);
-        if (Preferences.instance().getBoolean("queue.sync.ignore.hour"))
-            c.clear(Calendar.HOUR);
-        return c;
-    }
-
-    private static final NSGregorianDateFormatter longDateFormatter
-            = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(
-            NSUserDefaults.TimeDateFormatString), false);
-    private static final NSGregorianDateFormatter shortDateFormatter
-            = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(
-            NSUserDefaults.ShortTimeDateFormatString), false);
-
-    /**
-     * @return the modification date of this file
-     */
-    public String getTimestampAsString() {
-        if (this.getTimestamp() != null) {
-            try {
-                return longDateFormatter.stringForObjectValue(
-                        new NSGregorianDate((double) this.getTimestampAsCalendar().getTime().getTime() / 1000,
-                                NSDate.DateFor1970));
-            }
-            catch (NSFormatter.FormattingException e) {
-                e.printStackTrace();
-            }
-        }
-        return NSBundle.localizedString("Unknown", "");
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String getTimestampAsShortString() {
-        if (this.getTimestamp() != null) {
-            try {
-                return shortDateFormatter.stringForObjectValue(
-                        new NSGregorianDate((double) this.getTimestampAsCalendar().getTime().getTime() / 1000,
-                                NSDate.DateFor1970));
-            }
-            catch (NSFormatter.FormattingException e) {
-                e.printStackTrace();
-            }
-        }
-        return NSBundle.localizedString("Unknown", "");
     }
 
     /**

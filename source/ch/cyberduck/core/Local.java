@@ -36,10 +36,12 @@ import java.util.TimeZone;
 /**
  * @version $Id$
  */
-public class Local extends File {
+public class Local extends File implements IAttributes {
     private static Logger log = Logger.getLogger(Local.class);
 
     static boolean JNI_LOADED = false;
+
+    public IAttributes attributes = this;
 
     private boolean jni_load() {
         if(!JNI_LOADED) {
@@ -52,7 +54,7 @@ public class Local extends File {
 
             }
             catch (UnsatisfiedLinkError e) {
-                log.error("Could not load the alias resolving library:" + e.getMessage());
+                log.error("Could not load the libLocal.dylib library:" + e.getMessage());
             }
         }
         return JNI_LOADED;
@@ -162,66 +164,11 @@ public class Local extends File {
         log.debug("Setting permissions on local file suceeded:" + success);
     }
 
-    /**
-     *
-     * @return The timestamp as a calendar with the current timezone
-     */
-    public Calendar getTimestampAsCalendar() {
-        Calendar c = Calendar.getInstance(TimeZone.getDefault());
-        c.setTime(this.getTimestamp());
-        if (Preferences.instance().getBoolean("queue.sync.ignore.millisecond"))
-            c.clear(Calendar.MILLISECOND);
-        if (Preferences.instance().getBoolean("queue.sync.ignore.second"))
-            c.clear(Calendar.SECOND);
-        if (Preferences.instance().getBoolean("queue.sync.ignore.minute"))
-            c.clear(Calendar.MINUTE);
-        if (Preferences.instance().getBoolean("queue.sync.ignore.hour"))
-            c.clear(Calendar.HOUR);
-        return c;
+    public long getTimestamp() {
+        return super.lastModified();
     }
 
-    private static final NSGregorianDateFormatter longDateFormatter
-            = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(
-            NSUserDefaults.TimeDateFormatString), false);
-    private static final NSGregorianDateFormatter shortDateFormatter
-            = new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(
-            NSUserDefaults.ShortTimeDateFormatString), false);
-
-    /**
-     * Modification date represented as NSUserDefaults.TimeDateFormatString
-     * @return the modification date of this file or null if there is a problem converting the time to a string
-     */
-    public String getTimestampAsString() {
-        try {
-            return longDateFormatter.stringForObjectValue(
-                    new NSGregorianDate((double) this.getTimestamp().getTime() / 1000, NSDate.DateFor1970));
-        }
-        catch (NSFormatter.FormattingException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * Modification date represented as NSUserDefaults.ShortTimeDateFormatString
-     * @return The teimestamp as a short string or null if there is a problem convertign the time to a string
-     */
-    public String getTimestampAsShortString() {
-        try {
-            return shortDateFormatter.stringForObjectValue(
-                    new NSGregorianDate((double) this.getTimestamp().getTime() / 1000, NSDate.DateFor1970));
-        }
-        catch (NSFormatter.FormattingException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public Date getTimestamp() {
-        return new Date(super.lastModified());
-    }
-
-    public long getSize() {
+    public double getSize() {
         if (this.isDirectory()) {
             return 0;
         }

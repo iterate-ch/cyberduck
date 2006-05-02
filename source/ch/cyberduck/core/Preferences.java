@@ -240,12 +240,6 @@ public abstract class Preferences {
         defaults.put("queue.download.updateIcon", "true");
         defaults.put("queue.download.skip", ".DS_Store");
 
-        defaults.put("queue.sync.ignore.hour", "false");
-        defaults.put("queue.sync.ignore.minute", "false");
-        defaults.put("queue.sync.ignore.second", "true");
-        defaults.put("queue.sync.ignore.millisecond", "true");
-        defaults.put("queue.sync.timezone", java.util.TimeZone.getDefault().getID());
-
         //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");
         defaults.put("ftp.anonymous.pass", "cyberduck@example.net");

@@ -122,7 +122,7 @@ public class SFTPPath extends Path {
                     }
                     workingDirectory.close();
                     java.util.Iterator i = children.iterator();
-                    while (i.hasNext()) {
+                    while (i.hasNext() && session.isConnected()) {
                         SftpFile x = (SftpFile) i.next();
                         if (!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
                             Path p = PathFactory.createPath(session, this.getAbsolute(), x.getFilename());
@@ -186,7 +186,7 @@ public class SFTPPath extends Path {
                 session.check();
                 session.message(NSBundle.localizedString("Make directory", "Status", "") + " " + this.getName());
                 session.SFTP.makeDirectory(this.getAbsolute());
-                session.cache().put(this, new AttributedList());//todo
+                session.cache().put(this, new AttributedList());
                 this.getParent().invalidate();
             }
             catch (SshException e) {
@@ -401,16 +401,16 @@ public class SFTPPath extends Path {
                 if (this.attributes.isFile()) {
                     session.check();
                     out = new FileOutputStream(this.getLocal(), this.status.isResume());
-                    if (out == null) {
+                    if (null == out) {
                         throw new IOException("Unable to buffer data");
                     }
                     SftpFile f = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
                     in = new SftpFileInputStream(f);
-                    if (in == null) {
+                    if (null == in) {
                         throw new IOException("Unable opening data stream");
                     }
                     if (this.status.isResume()) {
-                        this.status.setCurrent(this.getLocal().getSize());
+                        this.status.setCurrent((long)this.getLocal().getSize());
                         long skipped = in.skip(this.status.getCurrent());
                         log.info("Skipping " + skipped + " bytes");
                         if (skipped < this.status.getCurrent()) {
@@ -438,9 +438,9 @@ public class SFTPPath extends Path {
                     }
                 }
                 if (Preferences.instance().getBoolean("queue.download.preserveDate")) {
-                    if (this.attributes.getTimestamp() != null) {
+                    if (this.attributes.getTimestamp() != -1) {
                         log.info("Updating timestamp");
-                        this.getLocal().setLastModified(this.attributes.getTimestamp().getTime());
+                        this.getLocal().setLastModified(this.attributes.getTimestamp());
                     }
                 }
             }
@@ -486,7 +486,7 @@ public class SFTPPath extends Path {
                 if (this.attributes.isFile()) {
                     session.check();
                     in = new FileInputStream(this.getLocal());
-                    if (in == null) {
+                    if (null == in) {
                         throw new IOException("Unable to buffer data");
                     }
                     if (this.status.isResume()) {
@@ -524,7 +524,7 @@ public class SFTPPath extends Path {
                         this.status.setCurrent(f.getAttributes().getSize().intValue());
                     }
                     out = new SftpFileOutputStream(f);
-                    if (out == null) {
+                    if (null == out) {
                         throw new IOException("Unable opening data stream");
                     }
                     if (this.status.isResume()) {
@@ -550,8 +550,8 @@ public class SFTPPath extends Path {
                 if (Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                     try {
                         FileAttributes attrs = new FileAttributes();
-                        attrs.setTimes(f.getAttributes().getAccessedTime(),
-                                new UnsignedInteger32(this.getLocal().getTimestamp().getTime() / 1000));
+                        attrs.setTimes(f.getAttributes().getModifiedTime(),
+                                new UnsignedInteger32(this.getLocal().getTimestamp() / 1000));
                         session.SFTP.setAttributes(this.getAbsolute(), attrs);
                     }
                     catch(SshException e) {

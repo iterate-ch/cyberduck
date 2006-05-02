@@ -212,8 +212,20 @@ public abstract class Queue extends NSObject implements QueueListener {
         return childs;
     }
 
+    /**
+     *
+     * @param childs
+     * @param root
+     * @return
+     */
     protected abstract List getChilds(List childs, Path root);
 
+    /**
+     *
+     * @param tokenizer
+     * @param filename
+     * @return
+     */
     protected boolean isSkipped(StringTokenizer tokenizer, String filename) {
         while(tokenizer.hasMoreTokens()) {
             if(tokenizer.nextToken().equals(filename)) {
@@ -222,7 +234,11 @@ public abstract class Queue extends NSObject implements QueueListener {
         }
         return false;
     }
-        
+
+    /**
+     *
+     * @param p
+     */
     protected abstract void transfer(Path p);
 
     /**

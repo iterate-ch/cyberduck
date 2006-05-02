@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.CDDownloadQueueValidatorController;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -51,8 +52,8 @@ public class DownloadQueue extends Queue {
         super(dict);
     }
 
-    protected void finish(boolean headless) {
-        super.finish(headless);
+    public void queueStopped(boolean headless) {
+        super.queueStopped(headless);
         if(this.isComplete() && !this.isCanceled()) {
             this.getSession().message(
                     NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
@@ -60,7 +61,6 @@ public class DownloadQueue extends Queue {
                     NSBundle.localizedString("Download complete", "Growl", "Growl Notification"),
                     this.getName());
         }
-        this.queueStopped();
     }
 
     protected List getChilds(List childs, Path p) {
@@ -92,7 +92,11 @@ public class DownloadQueue extends Queue {
         }
     }
 
-    protected void process(Path p) {
+    protected void transfer(Path p) {
         p.download();
+    }
+
+    protected Validator getValidator() {
+        return new CDDownloadQueueValidatorController(this);
     }
 }

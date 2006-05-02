@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.CDSyncQueueValidatorController;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -28,6 +29,8 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -57,8 +60,8 @@ public class SyncQueue extends Queue {
                 + NSBundle.localizedString("with", "") + " " + this.getRoot().getLocal().getName();
     }
 
-    protected void finish(boolean headless) {
-        super.finish(headless);
+    public void queueStopped(boolean headless) {
+        super.queueStopped(headless);
         if(this.isComplete() && !this.isCanceled()) {
             this.getSession().message(
                     NSBundle.localizedString("Synchronization complete", "Growl", "Growl Notification"));
@@ -66,7 +69,6 @@ public class SyncQueue extends Queue {
                     NSBundle.localizedString("Synchronization complete", "Growl", "Growl Notification"),
                     this.getName());
         }
-        this.queueStopped();
     }
 
     private void addLocalChilds(List childs, Path p) {
@@ -128,25 +130,84 @@ public class SyncQueue extends Queue {
     protected void reset() {
         this.size = 0;
         for(Iterator iter = this.jobs.iterator(); iter.hasNext();) {
-            Path path = ((Path) iter.next());
-            if(path.getRemote().exists() && path.getLocal().exists()) {
-                if(path.getLocal().getTimestampAsCalendar().before(path.attributes.getTimestampAsCalendar())) {
-                    this.size += path.getRemote().attributes.getSize();
+            Path p = ((Path) iter.next());
+            if(p.getRemote().exists() && p.getLocal().exists()) {
+                Calendar remote = this.getCalendar(
+                        p.getRemote().attributes.getTimestamp(),
+                        Calendar.MINUTE);
+                Calendar local = this.getCalendar(
+                        p.getLocal().getTimestamp(),
+                        Calendar.MINUTE);
+                if(local.before(remote)) {
+                    this.size += p.getRemote().attributes.getSize();
                 }
-                if(path.getLocal().getTimestampAsCalendar().after(path.attributes.getTimestampAsCalendar())) {
-                    this.size += path.getLocal().getSize();
+                if(local.after(remote)) {
+                    this.size += p.getLocal().getSize();
                 }
             }
-            else if(path.getRemote().exists()) {
-                this.size += path.getRemote().attributes.getSize();
+            else if(p.getRemote().exists()) {
+                this.size += p.getRemote().attributes.getSize();
             }
-            else if(path.getLocal().exists()) {
-                this.size += path.getLocal().getSize();
+            else if(p.getLocal().exists()) {
+                this.size += p.getLocal().getSize();
             }
         }
     }
 
-    protected void process(Path p) {
-        p.sync();
+    protected void transfer(Path p) {
+        try {
+            Preferences.instance().setProperty("queue.upload.preserveDate.fallback", true);
+            if (p.getRemote().exists() && p.getLocal().exists()) {
+                if (p.attributes.isFile()) {
+                    Calendar remote = this.getCalendar(
+                            p.getRemote().attributes.getTimestamp(),
+                            Calendar.MINUTE);
+                    Calendar local = this.getCalendar(
+                            p.getLocal().getTimestamp(),
+                            Calendar.MINUTE);
+                    if (local.before(remote)) {
+                        p.download();
+                    }
+                    if (local.after(remote)) {
+                        p.upload();
+                    }
+                }
+            }
+            else if (p.getRemote().exists()) {
+                p.download();
+            }
+            else if (p.getLocal().exists()) {
+                p.upload();
+            }
+        }
+        finally {
+            Preferences.instance().setProperty("queue.upload.preserveDate.fallback", false);
+        }
+    }
+
+    private Calendar getCalendar(final long timestamp, final int precision) {
+        Calendar c = Calendar.getInstance(); //default timezone
+        c.setTimeInMillis(timestamp); //UTC milliseconds!
+        if(precision == Calendar.MILLISECOND) {
+            return c;
+        }
+        c.clear(Calendar.MILLISECOND);
+        if(precision == Calendar.SECOND) {
+            return c;
+        }
+        c.clear(Calendar.SECOND);
+        if(precision == Calendar.MINUTE) {
+            return c;
+        }
+        c.clear(Calendar.MINUTE);
+        if(precision == Calendar.HOUR) {
+            return c;
+        }
+        c.clear(Calendar.HOUR);
+        return c;
+    }
+
+    protected Validator getValidator() {
+        return new CDSyncQueueValidatorController(this);
     }
 }

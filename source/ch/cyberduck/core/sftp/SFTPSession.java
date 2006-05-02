@@ -70,23 +70,23 @@ public class SFTPSession extends Session {
     }
 
     public void close() {
-        synchronized (this) {
+        synchronized(this) {
             this.activityStarted();
             this.connectionWillClose();
             try {
-                if (SFTP != null) {
+                if(SFTP != null) {
                     SFTP.close();
                     SFTP = null;
                 }
-                if (SSH != null) {
+                if(SSH != null) {
                     SSH.disconnect();
                     SSH = null;
                 }
             }
-            catch (SshException e) {
+            catch(SshException e) {
                 log.error("SSH Error: " + e.getMessage());
             }
-            catch (IOException e) {
+            catch(IOException e) {
                 log.error("IO Error: " + e.getMessage());
             }
             finally {
@@ -98,7 +98,7 @@ public class SFTPSession extends Session {
 
     public void interrupt() {
         try {
-            if (null == this.SSH) {
+            if(null == this.SSH) {
                 return;
             }
             this.SSH.interrupt();
@@ -126,7 +126,7 @@ public class SFTPSession extends Session {
     }
 
     protected void connect() throws IOException, SshException, LoginCanceledException {
-        synchronized (this) {
+        synchronized(this) {
             SessionPool.instance().add(this);
             this.connectionWillOpen();
             this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getHostname() + "...");
@@ -160,14 +160,14 @@ public class SFTPSession extends Session {
             // Set the zlib compression
             properties.setPrefSCComp(Preferences.instance().getProperty("ssh.compression"));
             properties.setPrefCSComp(Preferences.instance().getProperty("ssh.compression"));
-            if (Proxy.isSOCKSProxyEnabled()) {
+            if(Proxy.isSOCKSProxyEnabled()) {
                 log.info("Using SOCKS Proxy");
                 properties.setTransportProvider(SshConnectionProperties.USE_SOCKS4_PROXY);
                 properties.setProxyHost(Proxy.getSOCKSProxyHost());
                 properties.setProxyPort(Proxy.getSOCKSProxyPort());
             }
             SSH.connect(properties, this.getHostKeyVerificationController());
-            if (SSH.isConnected()) {
+            if(SSH.isConnected()) {
                 this.message(NSBundle.localizedString("SSH connection opened", "Status", ""));
                 String id = SSH.getServerId();
                 this.log(id);
@@ -199,8 +199,8 @@ public class SFTPSession extends Session {
                                     KBIPrompt[] prompts) {
                 log.info(name);
                 log.info(instructions);
-                if (prompts != null) {
-                    for (int i = 0; i < prompts.length; i++) {
+                if(prompts != null) {
+                    for(int i = 0; i < prompts.length; i++) {
                         log.info(prompts[i].getPrompt());
                         prompts[i].setResponse(credentials.getPassword());
                     }
@@ -229,18 +229,18 @@ public class SFTPSession extends Session {
         SshPrivateKeyFile keyFile = SshPrivateKeyFile.parse(new java.io.File(credentials.getPrivateKeyFile()));
         // If the private key is passphrase protected then ask for the passphrase
         String passphrase = null;
-        if (keyFile.isPassphraseProtected()) {
+        if(keyFile.isPassphraseProtected()) {
             int pool = NSAutoreleasePool.push();
             passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
-            if (null == passphrase || passphrase.equals("")) {
+            if(null == passphrase || passphrase.equals("")) {
                 loginController.promptUser(host.getCredentials(),
                         NSBundle.localizedString("Private key password protected", "Credentials", ""),
                         NSBundle.localizedString("Enter the passphrase for the private key file", "Credentials", "")
                                 + " (" + credentials.getPrivateKeyFile() + ")");
-                if (host.getCredentials().tryAgain()) {
+                if(host.getCredentials().tryAgain()) {
                     passphrase = credentials.getPassword();
-                    if (keyFile.isPassphraseProtected()) {
-                        if (credentials.usesKeychain()) {
+                    if(keyFile.isPassphraseProtected()) {
+                        if(credentials.usesKeychain()) {
                             Keychain.instance().addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(),
                                     passphrase);
                         }
@@ -261,18 +261,18 @@ public class SFTPSession extends Session {
 
     protected void login() throws IOException, SshException, LoginCanceledException {
         log.debug("login");
-        if (host.getCredentials().check(this.loginController)) {
+        if(host.getCredentials().check(this.loginController)) {
             this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " '"
                     + host.getCredentials().getUsername() + "'");
-            if (host.getCredentials().usesPublicKeyAuthentication()) {
-                if (AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(host.getCredentials()))
+            if(host.getCredentials().usesPublicKeyAuthentication()) {
+                if(AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(host.getCredentials()))
                 {
                     this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
                     return;
                 }
             }
             else {
-                if (AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(host.getCredentials()) ||
+                if(AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(host.getCredentials()) ||
                         AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(host.getCredentials()))
                 {
                     this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
@@ -284,7 +284,7 @@ public class SFTPSession extends Session {
             loginController.promptUser(host.getCredentials(),
                     NSBundle.localizedString("Login failed", "Credentials", ""),
                     NSBundle.localizedString("Login with username and password", "Credentials", ""));
-            if (!host.getCredentials().tryAgain()) {
+            if(!host.getCredentials().tryAgain()) {
                 throw new LoginCanceledException();
             }
             this.login();
@@ -300,15 +300,15 @@ public class SFTPSession extends Session {
             workdir.attributes.setType(Path.DIRECTORY_TYPE);
             return workdir;
         }
-        catch (IOException e) {
+        catch(IOException e) {
             this.error(e);
         }
         return null;
     }
 
     protected void noop() throws IOException, SshException {
-        synchronized (this) {
-            if (this.isConnected()) {
+        synchronized(this) {
+            if(this.isConnected()) {
                 this.SSH.noop();
             }
         }
@@ -316,12 +316,12 @@ public class SFTPSession extends Session {
 
     public void check() throws IOException {
         this.activityStarted();
-        if (null == this.SSH) {
+        if(null == this.SSH) {
             this.connect();
             return;
         }
         this.host.getIp();
-        if (!this.SSH.isConnected()) {
+        if(!this.SSH.isConnected()) {
             this.close();
             this.connect();
         }
