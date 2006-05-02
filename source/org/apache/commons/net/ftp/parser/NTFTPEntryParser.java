@@ -126,7 +126,7 @@ public class NTFTPEntryParser extends RegexFTPFileEntryParserImpl {
 			cal.set(Calendar.HOUR_OF_DAY, hour);
 
 			cal.getTimeInMillis();
-			f.attributes.setTimestamp(cal.getTime());
+			f.attributes.setTimestamp(cal.getTime().getTime());
 
 			if("<DIR>".equals(dirString)) {
 				f.attributes.setType(Path.DIRECTORY_TYPE);

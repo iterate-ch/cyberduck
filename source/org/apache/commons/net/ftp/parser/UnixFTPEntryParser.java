@@ -177,7 +177,7 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
 				cal.set(Calendar.MONTH, month);
 
 				cal.set(Calendar.DATE, Integer.parseInt(da));
-				f.attributes.setTimestamp(cal.getTime());
+				f.attributes.setTimestamp(cal.getTime().getTime());
 			}
 			catch(NumberFormatException e) {
 				// do nothing, date will be uninitialized

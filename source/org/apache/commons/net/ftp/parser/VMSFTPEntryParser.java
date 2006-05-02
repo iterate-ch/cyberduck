@@ -157,7 +157,7 @@ public class VMSFTPEntryParser extends RegexFTPFileEntryParserImpl {
 			cal.set(Calendar.HOUR_OF_DAY, new Integer(hr).intValue());
 			cal.set(Calendar.MINUTE, new Integer(min).intValue());
 			//            cal.set(Calendar.SECOND, new Integer(sec).intValue());
-			f.attributes.setTimestamp(cal.getTime());
+            f.attributes.setTimestamp(cal.getTime().getTime());
 
 			//            f.attributes.setGroup(grp);
 			//            f.attributes.setOwner(user);
