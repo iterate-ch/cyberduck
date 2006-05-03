@@ -56,6 +56,8 @@ public class CDQueueController extends CDWindowController
      */
     public void windowDidBecomeKey(NSNotification notification) {
         this.updateTableViewSelection();
+        //Saving state of transfer window
+        Preferences.instance().setProperty("queue.openByDefault", true);
     }
 
     /**
@@ -66,8 +68,14 @@ public class CDQueueController extends CDWindowController
         this.updateTableViewSelection();
     }
 
+    /**
+     *
+     * @param notification
+     */
     public void windowWillClose(NSNotification notification) {
         this.queueModel.save();
+        //Saving state of transfer window
+        Preferences.instance().setProperty("queue.openByDefault", false);
     }
 
     // ----------------------------------------------------------
