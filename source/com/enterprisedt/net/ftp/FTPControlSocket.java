@@ -120,10 +120,6 @@ public class FTPControlSocket {
 		this.validateConnection();
 	}
 	
-	public Socket getSocket() {
-		return this.controlSock;
-	}
-
 	/**
 	 * Checks that the standard 220 reply is returned
 	 * following the initiated connection
@@ -133,7 +129,6 @@ public class FTPControlSocket {
 
 		this.validateReply(this.readReply(), "220");
 	}
-
 
 	/**
 	 * Obtain the reader/writer streams for this
@@ -171,7 +166,6 @@ public class FTPControlSocket {
 		this.strictReturnCodes = strict;
 	}
 
-
 	/**
 	 * Set the TCP timeout on the underlying control socket.
 	 * If a timeout is set, then any operation which
@@ -187,29 +181,29 @@ public class FTPControlSocket {
 	/**
 	 * Quit this FTP session and clean up.
 	 */
-	public void logout() throws IOException {
-
+	public void logout() {
 		IOException ex = null;
 		try {
-			writer.close();
+            if(writer != null)
+                writer.close();
 		}
 		catch(IOException e) {
-			ex = e;
+            ; //ignore
+        }
+		try {
+            if(reader != null)
+                reader.close();
+		}
+		catch(IOException e) {
+            ; //ignore
 		}
 		try {
-			reader.close();
+            if(controlSock != null)
+                controlSock.close();
 		}
 		catch(IOException e) {
-			ex = e;
+            ; //ignore
 		}
-		try {
-			controlSock.close();
-		}
-		catch(IOException e) {
-			ex = e;
-		}
-		if(ex != null)
-			throw ex;
 	}
 
 	/**
@@ -611,5 +605,12 @@ public class FTPControlSocket {
         }
         controlSock.close();
         log.warn("Forced to close socket "+controlSock.toString());
+    }
+
+    public boolean isConnected() {
+        if(null == controlSock) {
+            return false;
+        }
+        return !(null == reader || null == writer);
     }
 }

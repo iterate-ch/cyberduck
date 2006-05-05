@@ -31,6 +31,7 @@ import org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 /**
  * Opens a connection to the remote server via ftp protocol
@@ -61,14 +62,21 @@ public class FTPSession extends Session {
         return false;
     }
 
+    public boolean isConnected() {
+        if(FTP != null) {
+            return this.FTP.isConnected();
+        }
+        return false;
+    }
+
     public void close() {
         synchronized(this) {
             this.activityStarted();
-            this.connectionWillClose();
             try {
-                if(FTP != null) {
+                if(this.isConnected()) {
+                    this.connectionWillClose();
                     FTP.quit();
-                    FTP = null;
+                    this.connectionDidClose();
                 }
             }
             catch(FTPException e) {
@@ -78,8 +86,8 @@ public class FTPSession extends Session {
                 log.error("IO Error: " + e.getMessage());
             }
             finally {
+                FTP = null;
                 this.activityStopped();
-                this.connectionDidClose();
             }
         }
     }
@@ -96,6 +104,7 @@ public class FTPSession extends Session {
         }
         finally {
             this.connectionDidClose();
+            this.activityStopped();
         }
     }
 
@@ -175,7 +184,7 @@ public class FTPSession extends Session {
         }
         catch(IOException e) {
             this.error(e);
-            this.close();
+            this.interrupt();
         }
         return null;
     }
@@ -197,20 +206,7 @@ public class FTPSession extends Session {
         }
         catch(IOException e) {
             this.error(e);
-            this.close();
-        }
-    }
-
-    public void check() throws IOException {
-        this.activityStarted();
-        if(null == this.FTP) {
-            this.connect();
-            return;
-        }
-        this.host.getIp();
-        if(!this.FTP.isAlive()) {
-            this.close();
-            this.connect();
+            this.interrupt();
         }
     }
 }

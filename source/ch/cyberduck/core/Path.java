@@ -28,8 +28,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
-import java.util.TimeZone;
-import java.util.Calendar;
 
 /**
  * @version $Id$
@@ -113,6 +111,11 @@ public abstract class Path extends NSObject {
         this.setPath(parent, local);
     }
 
+    /**
+     *
+     * @param parent
+     * @param file
+     */
     public void setPath(String parent, Local file) {
         this.setPath(parent, file.getName());
         this.setLocal(file);
@@ -134,6 +137,10 @@ public abstract class Path extends NSObject {
         }
     }
 
+    /**
+     *
+     * @param p
+     */
     public void setPath(String p) {
         if ((p.charAt(p.length() - 1) == '/') && (p.length() > 1)) {
             this.path = p.substring(0, p.length() - 1);
@@ -144,13 +151,19 @@ public abstract class Path extends NSObject {
         this.parent = null;
     }
 
+    /**
+     *
+     */
     public abstract void reset();
 
+    /**
+     * Reference to the parent created lazily if needed
+     */
     private Path parent;
 
-    /*
-      * @return My parent directory
-      */
+    /**
+     * @return My parent directory
+     */
     public Path getParent() {
         if (null == parent) {
             int index = this.getAbsolute().length() - 1;
@@ -244,6 +257,11 @@ public abstract class Path extends NSObject {
         return this.getAbsolute().equals(DELIMITER) || this.getAbsolute().indexOf('/') == -1;
     }
 
+    /**
+     *
+     * @param p
+     * @return true if p is a child of me in the path hierarchy
+     */
     public boolean isChild(Path p) {
         for (Path parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
             if (parent.equals(p)) {
@@ -272,6 +290,10 @@ public abstract class Path extends NSObject {
         return this.path;
     }
 
+    /**
+     * Set the local equivalent of this path (used if downloaded or synced)
+     * @param file
+     */
     public void setLocal(Local file) {
         this.local = file;
     }
@@ -287,6 +309,10 @@ public abstract class Path extends NSObject {
         return this.local;
     }
 
+    /**
+     *
+     * @return reference to myself
+     */
     public Path getRemote() {
         return this;
     }
@@ -305,7 +331,7 @@ public abstract class Path extends NSObject {
 
     /**
      *
-     * @return
+     * @return The session this path uses to send commands
      */
     public abstract Session getSession();
 
@@ -319,20 +345,23 @@ public abstract class Path extends NSObject {
      */
     public abstract void upload();
 
+    /**
+     * A state variable to mark this path if it should not be considered for file transfers
+     */
     private boolean skip = false;
 
     /**
      *
-     * @param ignoreTransferRequests
+     * @param ignore
      */
-    public void setSkipped(boolean ignoreTransferRequests) {
-        log.debug("setSkipped:" + ignoreTransferRequests);
-        this.skip = ignoreTransferRequests;
+    public void setSkipped(boolean ignore) {
+        log.debug("setSkipped:" + ignore);
+        this.skip = ignore;
     }
 
     /**
      *
-     * @return
+     * @return true if this path should not be added to any queue
      */
     public boolean isSkipped() {
         return this.skip;
@@ -437,6 +466,11 @@ public abstract class Path extends NSObject {
         return this.getAbsolute().hashCode();
     }
 
+    /**
+     *
+     * @param other
+     * @return true if the other path has the same absolute path name
+     */
     public boolean equals(Object other) {
         if (null == other) {
             return false;
@@ -448,6 +482,10 @@ public abstract class Path extends NSObject {
         return false;
     }
 
+    /**
+     *
+     * @return The absolute path name
+     */
     public String toString() {
         return this.getAbsolute();
     }

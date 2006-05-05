@@ -144,8 +144,9 @@ public class FTPPath extends Path {
                     session.error(new FTPException(e.getMessage() + " (" + this.getName() + ")", e.getReplyCode()));
                 }
                 catch(IOException e) {
+                    session.cache().put(this, files);
                     session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
-                    session.close();
+                    session.interrupt();
                 }
                 finally {
                     session.activityStopped();
@@ -182,7 +183,7 @@ public class FTPPath extends Path {
             }
             catch(IOException e) {
                 session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
-                session.close();
+                session.interrupt();
             }
             finally {
                 session.activityStopped();
@@ -206,7 +207,7 @@ public class FTPPath extends Path {
             }
             catch(IOException e) {
                 session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
-                session.close();
+                session.interrupt();
             }
             finally {
                 session.activityStopped();
@@ -253,7 +254,7 @@ public class FTPPath extends Path {
                     }
                     catch(IOException e) {
                         session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
-                        session.close();
+                        session.interrupt();
                     }
                 }
             }
@@ -295,7 +296,7 @@ public class FTPPath extends Path {
             }
             catch(IOException e) {
                 session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
-                session.close();
+                session.interrupt();
             }
             finally {
                 session.activityStopped();
@@ -331,7 +332,7 @@ public class FTPPath extends Path {
             }
             catch(IOException e) {
                 session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
-                session.close();
+                session.interrupt();
             }
             finally {
                 session.activityStopped();
@@ -367,7 +368,7 @@ public class FTPPath extends Path {
             }
             catch(IOException e) {
                 session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
-                session.close();
+                session.interrupt();
             }
             finally {
                 session.activityStopped();
@@ -404,7 +405,7 @@ public class FTPPath extends Path {
             }
             catch(IOException e) {
                 session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
-                session.close();
+                session.interrupt();
             }
             finally {
                 session.activityStopped();
@@ -472,7 +473,7 @@ public class FTPPath extends Path {
                 Growl.instance().notify(
                         NSBundle.localizedString("Download failed", "Growl", "Growl Notification"),
                         this.getName());
-                session.close();
+                session.interrupt();
             }
             finally {
                 session.activityStopped();
@@ -689,7 +690,7 @@ public class FTPPath extends Path {
                 Growl.instance().notify(
                         NSBundle.localizedString("Upload failed", "Growl", "Growl Notification"),
                         this.getName());
-                session.close();
+                session.interrupt();
             }
             finally {
                 session.activityStopped();

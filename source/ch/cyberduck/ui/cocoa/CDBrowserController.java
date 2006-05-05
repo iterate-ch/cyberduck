@@ -475,6 +475,7 @@ public class CDBrowserController extends CDWindowController
         // which will refetch paths from the server marked as invalid.
         final NSTableView browser = this.getSelectedBrowserView();
         browser.reloadData();
+        browser.setNeedsDisplay(true); //TODO
         if(this.isMounted()) {
             this.infoLabel.setStringValue(this.getSelectedBrowserView().numberOfRows() + " " +
                     NSBundle.localizedString("files", ""));
@@ -527,7 +528,11 @@ public class CDBrowserController extends CDWindowController
             case OUTLINE_VIEW: {
                 for(int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
                     Path p = (Path) this.browserOutlineView.itemAtRow(i);
-                    //selection handling
+                    if(null == p) {
+                        //TODO
+                        this.browserOutlineView.setNeedsDisplay(true);
+                        break;
+                    }
                     if(selected.contains(p)) {
                         this.selectRow(p, true);
                     }
@@ -575,9 +580,11 @@ public class CDBrowserController extends CDWindowController
                         int row = ((Integer) iterator.nextElement()).intValue();
                         Path selected = (Path) this.browserOutlineView.itemAtRow(row);
                         if(null == selected) {
+                            //TODO
+                            this.browserOutlineView.setNeedsDisplay(true);
                             break;
                         }
-                        selectedFiles.add(this.browserOutlineView.itemAtRow(row));
+                        selectedFiles.add(selected);
                     }
                     return selectedFiles;
                 }
@@ -1626,6 +1633,11 @@ public class CDBrowserController extends CDWindowController
                     this.workdir().invalidate();
                     for(int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
                         Path p = (Path) this.browserOutlineView.itemAtRow(i);
+                        if(null == p) {
+                            //TODO
+                            this.browserOutlineView.setNeedsDisplay(true);
+                            break;
+                        }
                         if(p.attributes.isDirectory()) {
                             if(this.browserOutlineView.isItemExpanded(p)) {
                                 p.invalidate();
@@ -2179,6 +2191,9 @@ public class CDBrowserController extends CDWindowController
         this.reloadData(false);
     }
 
+    /**
+     *
+     */
     private ConnectionListener listener = null;
 
     /**
@@ -2242,6 +2257,7 @@ public class CDBrowserController extends CDWindowController
                                 window.setRepresentedFilename(""); //can't send null
                             }
                         }
+                        session.removeProgressListener(this);
                     }
                 });
                 session.addProgressListener(progress = new ProgressListener() {
@@ -3099,6 +3115,7 @@ public class CDBrowserController extends CDWindowController
         if(this.hasSession()) {
             this.session.removeConnectionListener(this.listener);
             this.session.getHost().getCredentials().setPassword(null);
+            this.session.cache().clear(); //TODO
             this.session = null;
         }
         this.toolbar.setDelegate(null);

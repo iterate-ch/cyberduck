@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -72,11 +73,6 @@ public abstract class Session extends NSObject
 
     private List forwardHistory = new ArrayList();
 
-    /**
-     *
-     */
-    private boolean connected;
-
     public Object clone() {
         return SessionFactory.createSession((Host) this.host.clone());
     }
@@ -92,7 +88,23 @@ public abstract class Session extends NSObject
      * @throws IOException The connection to the remote host failed.
      * @see Host
      */
-    public abstract void check() throws IOException;
+    public void check() throws IOException {
+        try {
+            this.activityStarted();
+            this.host.getIp();
+            if(!this.isConnected()) {
+                this.interrupt();
+                this.connect();
+            }
+            else {
+                this.noop();
+            }
+        }
+        catch(SocketTimeoutException e) {
+            this.interrupt();
+            this.connect();
+        }
+    }
 
     /**
      * @return true if the control channel is either tunneled using TLS or SSH
@@ -158,7 +170,7 @@ public abstract class Session extends NSObject
                 Growl.instance().notify(
                         NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
                         host.getHostname());
-                this.close();
+                this.interrupt();
             }
             return null;
         }
@@ -203,9 +215,7 @@ public abstract class Session extends NSObject
     /**
      * @return boolean True if the session has not yet been closed.
      */
-    public boolean isConnected() {
-        return this.connected;
-    }
+    public abstract boolean isConnected();
 
     private Timer keepAliveTimer = null;
 
@@ -229,7 +239,6 @@ public abstract class Session extends NSObject
 
     public void connectionDidOpen() {
         log.debug("connectionDidOpen");
-        this.connected = true;
         if(Preferences.instance().getBoolean("connection.keepalive")) {
             this.keepAliveTimer = new Timer();
             this.keepAliveTimer.scheduleAtFixedRate(new KeepAliveTask(),
@@ -254,11 +263,10 @@ public abstract class Session extends NSObject
 
     public void connectionDidClose() {
         log.debug("connectionDidClose");
-        this.connected = false;
-        if(Preferences.instance().getBoolean("connection.keepalive") && this.keepAliveTimer != null) {
+        if(this.keepAliveTimer != null) {
             this.keepAliveTimer.cancel();
         }
-        this.cache().clear();
+//        this.cache().clear(); //TODO
         SessionPool.instance().release(this);
 
         this.message(NSBundle.localizedString("Disconnected", "Status", ""));

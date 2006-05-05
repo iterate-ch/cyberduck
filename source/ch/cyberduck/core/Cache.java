@@ -68,6 +68,10 @@ public class Cache extends HashMap {
         return (AttributedList) super.get(path.getAbsolute());
     }
 
+    public Object get(Object key) {
+        return this.get((Path)key);
+    }
+
     /**
      * @param path
      * @param comparator
@@ -112,6 +116,7 @@ public class Cache extends HashMap {
     }
 
     public Object put(Path path, AttributedList childs) {
+        childs.getAttributes().put(AttributedList.INVALID, Boolean.FALSE);
         return super.put(path.getAbsolute(), childs);
     }
 

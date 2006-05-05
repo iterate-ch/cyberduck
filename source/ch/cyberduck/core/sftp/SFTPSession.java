@@ -39,6 +39,7 @@ import com.apple.cocoa.foundation.NSBundle;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 /**
  * Opens a connection to the remote server via sftp protocol
@@ -69,18 +70,26 @@ public class SFTPSession extends Session {
         return true;
     }
 
+    public boolean isConnected() {
+        if(SSH != null) {
+            if(SSH.isConnected()) {
+                if(SFTP != null) {
+                    return SFTP.isOpen();
+                }
+            }
+        }
+        return false;
+    }
+
     public void close() {
         synchronized(this) {
             this.activityStarted();
-            this.connectionWillClose();
             try {
-                if(SFTP != null) {
+                if(this.isConnected()) {
+                    this.connectionWillClose();
                     SFTP.close();
-                    SFTP = null;
-                }
-                if(SSH != null) {
                     SSH.disconnect();
-                    SSH = null;
+                    this.connectionDidClose();
                 }
             }
             catch(SshException e) {
@@ -90,8 +99,9 @@ public class SFTPSession extends Session {
                 log.error("IO Error: " + e.getMessage());
             }
             finally {
+                SFTP = null;
+                SSH = null;
                 this.activityStopped();
-                this.connectionDidClose();
             }
         }
     }
@@ -108,6 +118,7 @@ public class SFTPSession extends Session {
         }
         finally {
             this.connectionDidClose();
+            this.activityStopped();
         }
     }
 
@@ -311,19 +322,6 @@ public class SFTPSession extends Session {
             if(this.isConnected()) {
                 this.SSH.noop();
             }
-        }
-    }
-
-    public void check() throws IOException {
-        this.activityStarted();
-        if(null == this.SSH) {
-            this.connect();
-            return;
-        }
-        this.host.getIp();
-        if(!this.SSH.isConnected()) {
-            this.close();
-            this.connect();
         }
     }
 }

@@ -26,12 +26,10 @@
 
 package com.enterprisedt.net.ftp;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -145,35 +143,13 @@ public class FTPClient {
     }
 
     /**
-     * Checks if the client has connected to the server and throws an exception if it hasn't.
-     * This is only intended to be used by subclasses
-     *
-     * @throws FTPException Thrown if the client has not connected to the server.
-     */
-    protected void checkConnection(boolean shouldBeConnected) throws FTPException {
-        if(shouldBeConnected && null == control)
-            throw new FTPException("The FTP client has not yet connected to the server.  "
-                +"The requested action cannot be performed until after a connection has been established.");
-        else if(!shouldBeConnected && control != null)
-            throw new FTPException("The FTP client has already been connected to the server.  "
-                +"The requested action must be performed before a connection is established.");
-    }
-
-    /**
      * @return true if the control socket isn't null
      */
-    public boolean isAlive() {
+    public boolean isConnected() {
         if(null == this.control) {
             return false;
         }
-        try {
-            this.noop();
-            return true;
-        }
-        catch(IOException e) {
-            this.control = null;
-            return false;
-        }
+        return this.control.isConnected();
     }
 
     /**
@@ -251,8 +227,6 @@ public class FTPClient {
     }
 
     public void noop() throws IOException, FTPException {
-        this.checkConnection(true);
-
         FTPReply reply = control.sendCommand("NOOP");
         lastValidReply = control.validateReply(reply, "200");
     }
@@ -265,8 +239,6 @@ public class FTPClient {
      * @param password user's password
      */
     public void login(String user, String password) throws IOException, FTPException {
-        this.checkConnection(true);
-
         FTPReply reply = control.sendCommand("USER "+user);
         // we allow for a site with no password - 230 response
         String[] validCodes = {"230", "331"};
@@ -286,8 +258,6 @@ public class FTPClient {
      * @param user user name
      */
     public void user(String user) throws IOException, FTPException {
-        this.checkConnection(true);
-
         FTPReply reply = control.sendCommand("USER "+user);
         // we allow for a site with no password - 230 response
         String[] validCodes = {"230", "331"};
@@ -303,8 +273,6 @@ public class FTPClient {
      * @param password The password.
      */
     public void password(String password) throws IOException, FTPException {
-        this.checkConnection(true);
-
         FTPReply reply = control.sendCommand("PASS "+password);
         // we allow for a site with no passwords (202)
         String[] validCodes = {"230", "202"};
@@ -370,8 +338,6 @@ public class FTPClient {
      * @return the text returned by the FTP server
      */
     public String quote(String command) throws IOException, FTPException {
-        this.checkConnection(true);
-
         FTPReply reply = control.sendCommand(command);
         return reply.getReplyText();
     }
@@ -386,8 +352,6 @@ public class FTPClient {
      * @return size of file in bytes
      */
     public long size(String remoteFile) throws IOException, FTPException {
-        this.checkConnection(true);
-
         FTPReply reply = control.sendCommand("SIZE "+remoteFile);
         lastValidReply = control.validateReply(reply, "213");
 
@@ -429,8 +393,6 @@ public class FTPClient {
      * for general use.
      */
     public void validateTransfer() throws IOException, FTPException {
-        this.checkConnection(true);
-
         // check the control response
         String[] validCodes = {"225", "226", "250", "426", "450"};
         FTPReply reply = control.readReply();
@@ -535,8 +497,6 @@ public class FTPClient {
      *         command not implemented
      */
     public boolean site(String command) throws IOException, FTPException {
-        this.checkConnection(true);
-
         // send the retrieve command
         FTPReply reply = control.sendCommand("SITE "+command);
 
@@ -560,8 +520,6 @@ public class FTPClient {
      * @return an array of directory listing strings
      */
     public String[] dir(String encoding) throws IOException, FTPException {
-        this.checkConnection(true);
-
         // set up data channel
         data = control.createDataSocket(connectMode);
         data.setTimeout(timeout);
@@ -659,8 +617,6 @@ public class FTPClient {
      */
     public void setTransferType(FTPTransferType type) throws IOException, FTPException {
         if(!type.equals(this.transferType)) {
-            this.checkConnection(true);
-
             // determine the character to send
             String typeStr = FTPTransferType.ASCII_CHAR;
             if(type.equals(FTPTransferType.BINARY))
@@ -682,8 +638,6 @@ public class FTPClient {
      *                   delete
      */
     public void delete(String remoteFile) throws IOException, FTPException {
-        this.checkConnection(true);
-
         FTPReply reply = control.sendCommand("DELE "+remoteFile);
         lastValidReply = control.validateReply(reply, new String[]{"200", "250"});
     }
@@ -696,8 +650,6 @@ public class FTPClient {
      * @param to   intended name
      */
     public void rename(String from, String to) throws IOException, FTPException {
-        this.checkConnection(true);
-
         FTPReply reply = control.sendCommand("RNFR "+from);
         lastValidReply = control.validateReply(reply, "350");
 
@@ -713,8 +665,6 @@ public class FTPClient {
      *            delete
      */
     public void rmdir(String dir) throws IOException, FTPException {
-        this.checkConnection(true);
-
         FTPReply reply = control.sendCommand("RMD "+dir);
         // some servers return 200,257, technically incorrect but
         // we cater for it ...
@@ -729,8 +679,6 @@ public class FTPClient {
      *            create
      */
     public void mkdir(String dir) throws IOException, FTPException {
-        this.checkConnection(true);
-
         FTPReply reply = control.sendCommand("MKD "+dir);
         // some servers return 200,257, technically incorrect but
         // we cater for it ...
@@ -746,8 +694,6 @@ public class FTPClient {
      *            change to
      */
     public void chdir(String dir) throws IOException, FTPException {
-        this.checkConnection(true);
-
         FTPReply reply = control.sendCommand("CWD "+dir);
         lastValidReply = control.validateReply(reply, new String[]{"200", "250"});
     }
@@ -757,8 +703,6 @@ public class FTPClient {
      * the enclosing folder
      */
     public void cdup() throws IOException, FTPException {
-        this.checkConnection(true);
-
         FTPReply reply = control.sendCommand("CDUP");
         lastValidReply = control.validateReply(reply, new String[]{"200", "250"});
     }
@@ -770,8 +714,6 @@ public class FTPClient {
      * @return modification time of file as a date
      */
     public Date modtime(String remoteFile) throws IOException, FTPException {
-        this.checkConnection(true);
-
         FTPReply reply = control.sendCommand("MDTM "+remoteFile);
         lastValidReply = control.validateReply(reply, "213");
 
@@ -828,8 +770,6 @@ public class FTPClient {
      * @return the current working directory
      */
     public String pwd() throws IOException, FTPException {
-        this.checkConnection(true);
-
         FTPReply reply = control.sendCommand("PWD");
         lastValidReply = control.validateReply(reply, "257");
 
@@ -889,8 +829,6 @@ public class FTPClient {
      *         supported
      */
     public String[] features() throws IOException, FTPException {
-        this.checkConnection(true);
-
         FTPReply reply = control.sendCommand("FEAT");
         lastValidReply = control.validateReply(reply, new String[]{"211", "500", "502"});
         if(lastValidReply.getReplyCode().equals("211"))
@@ -905,8 +843,6 @@ public class FTPClient {
      * @return the type of server OS
      */
     public String system() throws IOException, FTPException {
-        this.checkConnection(true);
-
         FTPReply reply = control.sendCommand("SYST");
         lastValidReply = control.validateReply(reply, new String[]{"200", "213", "215"});
         return lastValidReply.getReplyText();
@@ -916,9 +852,6 @@ public class FTPClient {
      * Quit the FTP session
      */
     public void quit() throws IOException, FTPException {
-        if(null == control) {
-            return;
-        }
         try {
             FTPReply reply = control.sendCommand("QUIT");
             lastValidReply = control.validateReply(reply, new String[]{"221", "226"});

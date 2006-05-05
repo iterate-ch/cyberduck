@@ -126,6 +126,7 @@ public abstract class Queue extends NSObject implements QueueListener {
         this.running = false;
         if (!headless) {
             this.getRoot().getSession().close();
+            this.getRoot().getSession().cache().clear(); //TODO
             this.progressTimer.stop();
         }
 

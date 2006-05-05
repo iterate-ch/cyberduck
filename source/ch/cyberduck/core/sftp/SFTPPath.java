@@ -157,8 +157,9 @@ public class SFTPPath extends Path {
 
                 }
                 catch (IOException e) {
+                    session.cache().put(this, files);
                     session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
-                    session.close();
+                    session.interrupt();
                 }
 	            finally {
 	                session.activityStopped();
@@ -195,7 +196,7 @@ public class SFTPPath extends Path {
             }
             catch (IOException e) {
                 session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
-                session.close();
+                session.interrupt();
             }
             finally {
                 session.activityStopped();
@@ -218,7 +219,7 @@ public class SFTPPath extends Path {
             }
             catch (IOException e) {
                 session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
-                session.close();
+                session.interrupt();
             }
             finally {
                 session.activityStopped();
@@ -244,7 +245,7 @@ public class SFTPPath extends Path {
                     }
                     catch (IOException e) {
                         session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
-                        session.close();
+                        session.interrupt();
                     }
                 }
             }
@@ -277,7 +278,7 @@ public class SFTPPath extends Path {
             }
             catch (IOException e) {
                 session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
-                session.close();
+                session.interrupt();
             }
             finally {
                 session.activityStopped();
@@ -313,7 +314,7 @@ public class SFTPPath extends Path {
             }
             catch (IOException e) {
                 session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
-                session.close();
+                session.interrupt();
             }
             finally {
                 session.activityStopped();
@@ -349,7 +350,7 @@ public class SFTPPath extends Path {
             }
             catch (IOException e) {
                 session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
-                session.close();
+                session.interrupt();
             }
             finally {
                 session.activityStopped();
@@ -385,7 +386,7 @@ public class SFTPPath extends Path {
             }
             catch (IOException e) {
                 session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
-                session.close();
+                session.interrupt();
             }
             finally {
                 session.activityStopped();
@@ -456,7 +457,7 @@ public class SFTPPath extends Path {
                 Growl.instance().notify(
                         NSBundle.localizedString("Download failed", "Growl", "Growl Notification"),
                         this.getName());
-                session.close();
+                session.interrupt();
             }
             finally {
                 session.activityStopped();
@@ -572,7 +573,7 @@ public class SFTPPath extends Path {
                 Growl.instance().notify(
                         NSBundle.localizedString("Upload failed", "Growl", "Growl Notification"),
                         this.getName());
-                session.close();
+                session.interrupt();
             }
             finally {
                 session.activityStopped();
