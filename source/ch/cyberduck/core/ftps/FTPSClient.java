@@ -46,8 +46,6 @@ public class FTPSClient extends FTPClient {
      * @throws FTPException
      */
     public void auth() throws IOException, FTPException {
-        this.checkConnection(true);
-
         lastValidReply = control.validateReply(control.sendCommand("AUTH TLS"), "234");
 
         ((FTPSControlSocket) this.control).startHandshake();

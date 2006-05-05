@@ -27,10 +27,10 @@ public interface QueueListener {
     /**
      *
      */
-    public void queueStarted(boolean headless);
+    public void queueStarted();
 
     /**
      *
      */
-    public void queueStopped(boolean headless);
+    public void queueStopped();
 }

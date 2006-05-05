@@ -29,8 +29,6 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Calendar;
-import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -60,8 +58,8 @@ public class SyncQueue extends Queue {
                 + NSBundle.localizedString("with", "") + " " + this.getRoot().getLocal().getName();
     }
 
-    public void queueStopped(boolean headless) {
-        super.queueStopped(headless);
+    public void queueStopped() {
+        super.queueStopped();
         if(this.isComplete() && !this.isCanceled()) {
             this.getSession().message(
                     NSBundle.localizedString("Synchronization complete", "Growl", "Growl Notification"));
@@ -131,25 +129,11 @@ public class SyncQueue extends Queue {
         this.size = 0;
         for(Iterator iter = this.jobs.iterator(); iter.hasNext();) {
             Path p = ((Path) iter.next());
-            if(p.getRemote().exists() && p.getLocal().exists()) {
-                Calendar remote = this.getCalendar(
-                        p.getRemote().attributes.getTimestamp(),
-                        Calendar.MINUTE);
-                Calendar local = this.getCalendar(
-                        p.getLocal().getTimestamp(),
-                        Calendar.MINUTE);
-                if(local.before(remote)) {
-                    this.size += p.getRemote().attributes.getSize();
-                }
-                if(local.after(remote)) {
-                    this.size += p.getLocal().getSize();
-                }
-            }
-            else if(p.getRemote().exists()) {
+            if(p.compare() > 0) {
                 this.size += p.getRemote().attributes.getSize();
             }
-            else if(p.getLocal().exists()) {
-                this.size += p.getLocal().getSize();
+            else {
+                this.size += p.getLocal().attributes.getSize();
             }
         }
     }
@@ -157,54 +141,16 @@ public class SyncQueue extends Queue {
     protected void transfer(Path p) {
         try {
             Preferences.instance().setProperty("queue.upload.preserveDate.fallback", true);
-            if (p.getRemote().exists() && p.getLocal().exists()) {
-                if (p.attributes.isFile()) {
-                    Calendar remote = this.getCalendar(
-                            p.getRemote().attributes.getTimestamp(),
-                            Calendar.MINUTE);
-                    Calendar local = this.getCalendar(
-                            p.getLocal().getTimestamp(),
-                            Calendar.MINUTE);
-                    if (local.before(remote)) {
-                        p.download();
-                    }
-                    if (local.after(remote)) {
-                        p.upload();
-                    }
-                }
-            }
-            else if (p.getRemote().exists()) {
+            if(p.compare() > 0) {
                 p.download();
             }
-            else if (p.getLocal().exists()) {
+            else {
                 p.upload();
             }
         }
         finally {
             Preferences.instance().setProperty("queue.upload.preserveDate.fallback", false);
         }
-    }
-
-    public Calendar getCalendar(final long timestamp, final int precision) {
-        Calendar c = Calendar.getInstance(); //default timezone
-        c.setTimeInMillis(timestamp); //UTC milliseconds!
-        if(precision == Calendar.MILLISECOND) {
-            return c;
-        }
-        c.clear(Calendar.MILLISECOND);
-        if(precision == Calendar.SECOND) {
-            return c;
-        }
-        c.clear(Calendar.SECOND);
-        if(precision == Calendar.MINUTE) {
-            return c;
-        }
-        c.clear(Calendar.MINUTE);
-        if(precision == Calendar.HOUR) {
-            return c;
-        }
-        c.clear(Calendar.HOUR);
-        return c;
     }
 
     protected Validator getValidator() {

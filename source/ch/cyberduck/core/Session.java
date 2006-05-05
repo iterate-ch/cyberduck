@@ -131,7 +131,7 @@ public abstract class Session extends NSObject
             this.message(NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname() + "...");
             try {
                 try {
-                    this.check();
+                    this.connect();
                     if(!this.isConnected()) {
                         return null;
                     }

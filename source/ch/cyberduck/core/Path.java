@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Calendar;
 
 /**
  * @version $Id$
@@ -480,6 +481,59 @@ public abstract class Path extends NSObject {
             return this.getAbsolute().equals(((Path) other).getAbsolute());
         }
         return false;
+    }
+
+    private Calendar getCalendar(final long timestamp, final int precision) {
+        Calendar c = Calendar.getInstance(); //default timezone
+        c.setTimeInMillis(timestamp); //UTC milliseconds!
+        if(precision == Calendar.MILLISECOND) {
+            return c;
+        }
+        c.clear(Calendar.MILLISECOND);
+        if(precision == Calendar.SECOND) {
+            return c;
+        }
+        c.clear(Calendar.SECOND);
+        if(precision == Calendar.MINUTE) {
+            return c;
+        }
+        c.clear(Calendar.MINUTE);
+        if(precision == Calendar.HOUR) {
+            return c;
+        }
+        c.clear(Calendar.HOUR);
+        return c;
+    }
+
+    /**
+     *
+     * @return > 0 if the remote path exists and is newer than
+     * the local file; < 0 if the local path exists and is newer than
+     * the remote file; 0 if both files don't exist or have an equal timestamp
+     */
+    public int compare() {
+        if(this.getRemote().exists() && this.getLocal().exists()) {
+            Calendar remote = this.getCalendar(
+                    this.getRemote().attributes.getTimestamp(),
+                    Calendar.MINUTE);
+            Calendar local = this.getCalendar(
+                    this.getLocal().getTimestamp(),
+                    Calendar.MINUTE);
+            if(local.before(remote)) {
+                return 1;
+            }
+            if(local.after(remote)) {
+                return -1;
+            }
+            return 0;
+        }
+        if(this.getRemote().exists()) {
+            return 1;
+        }
+        if(this.getLocal().exists()) {
+            return -1;
+        }
+        return 0;
     }
 
     /**

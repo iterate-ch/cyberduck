@@ -28,19 +28,7 @@ public interface Validator {
     /**
      *
      * @param resumeRequested
-     * @return
+     * @return true if the user hasn't canceled the confirmation sheet
      */
-    public boolean validate(boolean resumeRequested);
-
-    /**
-     *
-     * @return
-     */
-    public List getValidated();
-
-    /**
-     * 
-     * @return
-     */
-    public boolean isCanceled();
+    public List validate(boolean resumeRequested);
 }
