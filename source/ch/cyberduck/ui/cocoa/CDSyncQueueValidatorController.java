@@ -22,7 +22,6 @@ import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSTimeZone;
 
 import org.apache.log4j.Logger;
 
@@ -31,8 +30,7 @@ import java.util.*;
 /**
  * @version $Id$
  */
-public class
-        CDSyncQueueValidatorController extends CDValidatorController {
+public class CDSyncQueueValidatorController extends CDValidatorController {
     private static Logger log = Logger.getLogger(CDSyncQueueValidatorController.class);
 
     public CDSyncQueueValidatorController(final Queue queue) {
@@ -46,7 +44,8 @@ public class
     }
 
     /**
-     *
+     * The list of files for possibly synchronisationw
+     * using either the mirror, download or upload option
      */
     protected List promptList = new ArrayList();
 
@@ -61,7 +60,7 @@ public class
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {
             NSTableColumn c = new NSTableColumn();
-            c.setIdentifier("NEW");
+            c.setIdentifier(NEW_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
@@ -79,7 +78,7 @@ public class
         }
         {
             NSTableColumn c = new NSTableColumn();
-            c.setIdentifier("TYPE");
+            c.setIdentifier(TYPE_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
@@ -99,29 +98,15 @@ public class
     }
 
     protected boolean validateFile(Path p, boolean resume) {
-        if(p.getRemote().exists() && p.getLocal().exists()) {
-            Calendar remote = ((SyncQueue)queue).getCalendar(
-                    p.getRemote().attributes.getTimestamp(),
-                    Calendar.MINUTE);
-            Calendar local = ((SyncQueue)queue).getCalendar(
-                    p.getLocal().getTimestamp(),
-                    Calendar.MINUTE);
-            if(!(remote.equals(local))) {
-                this.prompt(p);
-            }
-        }
-        else {
+        if(p.compare() != 0) {
+            // The timestamps are different or either the remote or local file doesn't exist 
             this.prompt(p);
         }
         return false;
     }
 
     protected boolean validateDirectory(Path p) {
-        if(!(p.getRemote().exists() && p.getLocal().exists())) {
-            //List the directory in the validation window that the user sees it will get created
-            this.prompt(p);
-        }
-        return false;
+        return !p.getRemote().exists() || !p.getLocal().exists();
     }
 
     protected void prompt(Path p) {
@@ -217,7 +202,9 @@ public class
                     this.validatedList.add(p);
                 }
             }
-            this.setCanceled(false);
+        }
+        else {
+            super.callback(returncode);
         }
     }
 
@@ -242,6 +229,9 @@ public class
     // NSTableView.DataSource
     // ----------------------------------------------------------
 
+    protected static final String TYPE_COLUMN = "TYPE";
+    protected static final String NEW_COLUMN = "NEW";
+
     private static final NSImage ARROW_UP_ICON = NSImage.imageNamed("arrowUp16.tiff");
     private static final NSImage ARROW_DOWN_ICON = NSImage.imageNamed("arrowDown16.tiff");
     private static final NSImage PLUS_ICON = NSImage.imageNamed("plus.tiff");
@@ -251,34 +241,24 @@ public class
             String identifier = (String) column.identifier();
             Path p = (Path) this.workList.get(row);
             if(p != null) {
-                if(identifier.equals("TYPE")) {
-                    if(p.getRemote().exists() && p.getLocal().exists()) {
-                        Calendar remote = ((SyncQueue)queue).getCalendar(
-                                p.getRemote().attributes.getTimestamp(),
-                                Calendar.MINUTE);
-                        Calendar local = ((SyncQueue)queue).getCalendar(
-                                p.getLocal().getTimestamp(),
-                                Calendar.MINUTE);
-                        if(local.before(remote)) {
-                            return ARROW_DOWN_ICON;
-                        }
-                        return ARROW_UP_ICON;
-                    }
-                    if(p.getRemote().exists()) {
-                        return ARROW_DOWN_ICON;
-                    }
+                if (identifier.equals(SIZE_COLUMN)) {
+                    return Status.getSizeAsString(
+                            p.compare() > 0 ? p.getRemote().attributes.getSize() : p.getLocal().attributes.getSize());
+                }
+                if(identifier.equals(TYPE_COLUMN)) {
+                    return p.compare() > 0 ? ARROW_DOWN_ICON : ARROW_UP_ICON;
+                }
+                if(identifier.equals(WARNING_COLUMN)) {
+                    if(p.getRemote().exists())
+                        if(p.getRemote().attributes.getSize() == 0)
+                            return ALERT_ICON;
                     if(p.getLocal().exists()) {
-                        return ARROW_UP_ICON;
+                        if(p.getLocal().attributes.getSize() == 0)
+                            return ALERT_ICON;
                     }
                     return null;
                 }
-                if(identifier.equals("WARNING")) {
-                    if(p.getRemote().attributes.getSize() == 0 ||
-                            p.getLocal().attributes.getSize() == 0)
-                        return NSImage.imageNamed("alert.tiff");
-                    return null;
-                }
-                if(identifier.equals("NEW")) {
+                if(identifier.equals(NEW_COLUMN)) {
                     if(!(p.getRemote().exists() && p.getLocal().exists())) {
                         return PLUS_ICON;
                     }

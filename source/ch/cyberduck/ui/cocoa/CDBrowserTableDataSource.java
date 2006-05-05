@@ -189,10 +189,10 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 if (q.numberOfRoots() > 0) {
                     CDQueueController.instance().startItem(q);
                     q.addListener(new QueueListener() {
-                        public void queueStarted(boolean headless) {
+                        public void queueStarted() {
                         }
 
-                        public void queueStopped(boolean headless) {
+                        public void queueStopped() {
                             if (controller.isMounted()) {
                                 controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
                                 controller.reloadData(true);

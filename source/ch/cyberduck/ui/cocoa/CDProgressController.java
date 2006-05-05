@@ -18,11 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DownloadQueue;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.QueueListener;
+import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -60,7 +56,7 @@ public class CDProgressController extends CDController {
     public CDProgressController(Queue queue) {
         this.queue = queue;
         synchronized(lock) {
-            if (!NSApplication.loadNibNamed("Progress", this)) {
+            if(!NSApplication.loadNibNamed("Progress", this)) {
                 log.fatal("Couldn't load Progress.nib");
             }
         }
@@ -68,9 +64,9 @@ public class CDProgressController extends CDController {
 
     public void init() {
         this.queue.addListener(new QueueListener() {
-            ProgressListener progress;
+            private ProgressListener progress;
 
-            public void queueStarted(boolean headless) {
+            public void queueStarted() {
                 invoke(new Runnable() {
                     public void run() {
                         progressBar.setHidden(false);
@@ -82,13 +78,13 @@ public class CDProgressController extends CDController {
                         progressTimer = new NSTimer(0.5, //seconds
                                 CDProgressController.this, //target
                                 new NSSelector("update", new Class[]{NSTimer.class}),
-                                getQueue(), //userInfo
+                                queue, //userInfo
                                 true); //repeating
                         NSRunLoop.currentRunLoop().addTimerForMode(progressTimer,
                                 NSRunLoop.DefaultRunLoopMode);
                     }
                 });
-                queue.getSession().addProgressListener(new ProgressListener() {
+                queue.getSession().addProgressListener(progress = new ProgressListener() {
                     public void message(final String message) {
                         statusText = message;
                         invoke(new Runnable() {
@@ -102,10 +98,10 @@ public class CDProgressController extends CDController {
                         invoke(new Runnable() {
                             public void run() {
                                 int l = errorText.toString().split("\n").length;
-                                if (l == 10) {
+                                if(l == 10) {
                                     errorText.append("\n- (...)");
                                 }
-                                if (l < 10) {
+                                if(l < 10) {
                                     errorText.append("\n" + e.getMessage());
                                 }
                                 alertIcon.setHidden(false);
@@ -115,7 +111,7 @@ public class CDProgressController extends CDController {
                 });
             }
 
-            public void queueStopped(boolean headless) {
+            public void queueStopped() {
                 invoke(new Runnable() {
                     public void run() {
                         progressTimer.invalidate();
@@ -123,14 +119,14 @@ public class CDProgressController extends CDController {
                         progressBar.setIndeterminate(true);
                         progressBar.stopAnimation(null);
                         progressBar.setHidden(true);
-                        if (queue.isComplete() && !queue.isCanceled()) {
-                            if (queue instanceof DownloadQueue) {
-                                if (Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
+                        if(queue.isComplete() && !queue.isCanceled()) {
+                            if(queue instanceof DownloadQueue) {
+                                if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
                                     boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
                                     log.info("Success opening file:" + success);
                                 }
                             }
-                            if (Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
+                            if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
                                 CDQueueController.instance().removeItem(queue);
                             }
                         }
@@ -154,15 +150,15 @@ public class CDProgressController extends CDController {
     }
 
     private void updateProgressbar() {
-        if (queue.isInitialized()) {
-            if (queue.getSize() != -1) {
+        if(queue.isInitialized()) {
+            if(queue.getSize() != -1) {
                 this.progressBar.setIndeterminate(false);
                 this.progressBar.setMinValue(0);
                 this.progressBar.setMaxValue(queue.getSize());
                 this.progressBar.setDoubleValue(queue.getCurrent());
             }
         }
-        else if (queue.isRunning()) {
+        else if(queue.isRunning()) {
             this.progressBar.setIndeterminate(true);
         }
     }
@@ -173,13 +169,19 @@ public class CDProgressController extends CDController {
     }
 
     private String getProgressText() {
-        if (this.queue.isRunning()) {
-            return this.queue.getCurrentAsString()
-                    + " " + NSBundle.localizedString("of", "1.2MB of 3.4MB") + " " + this.queue.getSizeAsString()
-                    + " " + this.queue.getSpeedAsString() + " " + this.statusText;
+        StringBuffer b = new StringBuffer();
+        b.append(Status.getSizeAsString(this.queue.getCurrent()));
+        b.append(" ");
+        b.append(NSBundle.localizedString("of", "1.2MB of 3.4MB"));
+        b.append(" ");
+        b.append(Status.getSizeAsString(this.queue.getSize()));
+        if(this.queue.isRunning()) {
+            b.append(" ");
+            b.append(this.queue.getSpeedAsString());
         }
-        return this.queue.getCurrentAsString()
-                + " " + NSBundle.localizedString("of", "1.2MB of 3.4MB") + " " + this.queue.getSizeAsString() + "  " + this.statusText;
+        b.append(" ");
+        b.append(this.statusText);
+        return b.toString();
     }
 
     private String getErrorText() {
@@ -204,7 +206,7 @@ public class CDProgressController extends CDController {
 
     public void setHighlighted(boolean highlighted) {
         this.highlighted = highlighted;
-        if (highlighted) {
+        if(highlighted) {
             this.filenameField.setTextColor(NSColor.whiteColor());
             this.progressField.setTextColor(NSColor.whiteColor());
         }

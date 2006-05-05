@@ -392,10 +392,10 @@ public class CDMainController extends CDController {
                             Path workdir = controller.workdir();
                             final Queue q = new UploadQueue();
                             q.addListener(new QueueListener() {
-                                public void queueStarted(boolean headless) {
+                                public void queueStarted() {
                                 }
 
-                                public void queueStopped(boolean headless) {
+                                public void queueStopped() {
                                     if (controller.isMounted()) {
                                         controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
                                         controller.reloadData(true);

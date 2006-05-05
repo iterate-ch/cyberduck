@@ -361,7 +361,7 @@ public class CDQueueController extends CDWindowController
         queue.addListener(new QueueListener() {
             private TranscriptListener transcript;
 
-            public void queueStarted(boolean headless) {
+            public void queueStarted() {
                 CDQueueController.this.invoke(new Runnable() {
                     public void run() {
                         toolbar.validateVisibleItems();
@@ -375,7 +375,7 @@ public class CDQueueController extends CDWindowController
                 });
             }
 
-            public void queueStopped(boolean headless) {
+            public void queueStopped() {
                 CDQueueController.this.invoke(new Runnable() {
                     public void run() {
                         toolbar.validateVisibleItems();

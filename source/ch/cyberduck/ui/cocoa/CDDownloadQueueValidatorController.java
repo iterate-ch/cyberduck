@@ -95,15 +95,15 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
             String identifier = (String) tableColumn.identifier();
             Path p = (Path) this.workList.get(row);
             if (p != null) {
-                if (identifier.equals("WARNING")) {
+                if (identifier.equals(WARNING_COLUMN)) {
                     if(p.getRemote().attributes.getSize() == 0) {
-                        return NSImage.imageNamed("alert.tiff");
+                        return ALERT_ICON;
                     }
-                    if(p.getLocal().attributes.getSize() >= p.getRemote().attributes.getSize()) {
-                        return NSImage.imageNamed("alert.tiff");
+                    if(p.getLocal().attributes.getSize() > p.getRemote().attributes.getSize()) {
+                        return ALERT_ICON;
                     }
                 }
-                if (identifier.equals("SIZE")) {
+                if (identifier.equals(SIZE_COLUMN)) {
                     return Status.getSizeAsString(p.getRemote().attributes.getSize());
                 }
             }

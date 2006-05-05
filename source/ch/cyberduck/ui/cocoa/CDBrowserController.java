@@ -1538,6 +1538,11 @@ public class CDBrowserController extends CDWindowController
             return;
         }
         this.setEncoding(encoding);
+        if(this.isMounted()) {
+            this.unmount();
+            this.session.getHost().setEncoding(encoding);
+            this.reloadButtonClicked(sender);
+        }
     }
 
     /**
@@ -1545,11 +1550,6 @@ public class CDBrowserController extends CDWindowController
      */
     private void setEncoding(final String encoding) {
         this.encodingPopup.setTitle(encoding);
-        if(this.isMounted()) {
-            this.unmount();
-            this.session.getHost().setEncoding(encoding);
-            this.reloadData(true);
-        }
     }
 
     // ----------------------------------------------------------
@@ -1889,10 +1889,10 @@ public class CDBrowserController extends CDWindowController
                 selection.setLocal(new Local((String) sheet.filenames().lastObject()));
                 final Queue q = new SyncQueue();
                 q.addListener(new QueueListener() {
-                    public void queueStarted(boolean headless) {
+                    public void queueStarted() {
                     }
 
-                    public void queueStopped(boolean headless) {
+                    public void queueStopped() {
                         if(isMounted()) {
                             getSession().cache().invalidate(q.getRoot().getParent());
                             reloadData(true);
@@ -1944,10 +1944,10 @@ public class CDBrowserController extends CDWindowController
             java.util.Enumeration iterator = selected.objectEnumerator();
             final Queue q = new UploadQueue();
             q.addListener(new QueueListener() {
-                public void queueStarted(boolean headless) {
+                public void queueStarted() {
                 }
 
-                public void queueStopped(boolean headless) {
+                public void queueStopped() {
                     if(isMounted()) {
                         getSession().cache().invalidate(q.getRoot().getParent());
                         reloadData(true);
@@ -2082,10 +2082,10 @@ public class CDBrowserController extends CDWindowController
                 if(q.numberOfRoots() > 0) {
                     CDQueueController.instance().startItem(q);
                     q.addListener(new QueueListener() {
-                        public void queueStarted(boolean headless) {
+                        public void queueStarted() {
                         }
 
-                        public void queueStopped(boolean headless) {
+                        public void queueStopped() {
                             if(isMounted()) {
                                 getSession().cache().invalidate(q.getRoot().getParent());
                                 reloadData(true);

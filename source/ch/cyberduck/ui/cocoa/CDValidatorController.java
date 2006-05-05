@@ -55,65 +55,40 @@ public abstract class CDValidatorController
     }
 
     public void callback(int returncode) {
-        if (returncode == DEFAULT_OPTION) { //overwrite
+        if (returncode == DEFAULT_OPTION || returncode == ALTERNATE_OPTION) { //overwrite || resume
             for (Iterator i = workList.iterator(); i.hasNext();) {
                 Path p = (Path) i.next();
                 if (!p.isSkipped()) {
-                    p.status.setResume(false);
+                    p.status.setResume(returncode == ALTERNATE_OPTION);
                     this.validatedList.add(p);
                 }
             }
-            this.setCanceled(false);
-        }
-        if (returncode == ALTERNATE_OPTION) { //resume
-            for (Iterator i = workList.iterator(); i.hasNext();) {
-                Path p = (Path) i.next();
-                if (!p.isSkipped()) {
-                    p.status.setResume(true);
-                    this.validatedList.add(p);
-                }
-            }
-            this.setCanceled(false);
         }
         if (returncode == SKIP_OPTION) { //skip
             this.workList.clear();
-            this.setCanceled(false);
         }
         if (returncode == CANCEL_OPTION) {
             this.validatedList.clear();
             this.workList.clear();
-            this.setCanceled(true);
+            this.queue.cancel();
         }
     }
 
     /**
-     *
+     * The list of files ready to transfer
      */
     protected List validatedList = new ArrayList();
 
     /**
-     *
+     * The list of files displayed in the table to be included or excluded by the user
      */
     protected List workList = new ArrayList();
 
-    /**
-     * The user canceled this request, no further validation should be taken
-     */
-    private boolean canceled = false;
-
-    public boolean isCanceled() {
-        return this.canceled;
-    }
-
-    protected void setCanceled(boolean c) {
-        this.canceled = c;
-    }
-
     protected abstract boolean isExisting(Path p);
 
-    public boolean validate(final boolean resumeRequested) {
+    public List validate(final boolean resumeRequested) {
         List childs = this.queue.getChilds();
-        for (Iterator iter = childs.iterator(); iter.hasNext() && !this.isCanceled();) {
+        for (Iterator iter = childs.iterator(); iter.hasNext() && !this.queue.isCanceled();) {
             Path child = (Path) iter.next();
             log.debug("Validating:" + child);
             if (this.validate(child, resumeRequested)) {
@@ -121,15 +96,21 @@ public abstract class CDValidatorController
                 this.validatedList.add(child);
             }
         }
-        if (this.hasPrompt() && !this.isCanceled()) {
+        if (this.hasPrompt()) {
             this.statusIndicator.stopAnimation(null);
             this.setEnabled(true);
             this.fireDataChanged();
             this.waitForSheetEnd();
         }
-        return !this.isCanceled();
+        return this.validatedList;
     }
 
+    /**
+     *
+     * @param p
+     * @param resumeRequested
+     * @return true if the file can be added to the queue withtout confirmation
+     */
     protected boolean validate(Path p, boolean resumeRequested) {
         if (p.attributes.isFile()) {
             return this.validateFile(p, resumeRequested);
@@ -140,9 +121,19 @@ public abstract class CDValidatorController
         throw new IllegalArgumentException(p.getName() + " is neither file nor directory");
     }
 
-
+    /**
+     *
+     * @param path
+     * @return true if the directory should be added to the queue
+     */
     protected abstract boolean validateDirectory(Path path);
 
+    /**
+     *
+     * @param path
+     * @param resumeRequested
+     * @return true if the file should be added to the queue
+     */
     protected boolean validateFile(Path path, boolean resumeRequested) {
         if (resumeRequested) { // resume existing files independant of settings in preferences
             path.reset();
@@ -182,20 +173,31 @@ public abstract class CDValidatorController
         }
     }
 
-    public List getValidated() {
-        return this.validatedList;
-    }
-
+    /**
+     *
+     * @param path
+     */
     protected void adjustFilename(Path path) {
         //
     }
 
+    /**
+     * true if some files need confirmation from the user
+     */
     protected boolean hasPrompt = false;
 
+    /**
+     *
+     * @return true if the sheet dialog is displayed
+     */
     protected boolean hasPrompt() {
         return this.hasPrompt;
     }
 
+    /**
+     * Add the file to the dialog requesting the user to decide for includsion
+     * @param p
+     */
     protected void prompt(Path p) {
         if (!this.hasPrompt()) {
             //todo call from the main thread
@@ -209,12 +211,6 @@ public abstract class CDValidatorController
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
-
-    protected NSTextField infoLabel; // IBOutlet
-
-    public void setInfoLabel(NSTextField f) {
-        this.infoLabel = f;
-    }
 
     private NSTextField remoteURLField; // IBOutlet
 
@@ -365,7 +361,7 @@ public abstract class CDValidatorController
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {
             NSTableColumn c = new NSTableColumn();
-            c.setIdentifier("INCLUDE");
+            c.setIdentifier(INCLUDE_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
@@ -388,7 +384,7 @@ public abstract class CDValidatorController
         }
         {
             NSTableColumn c = new NSTableColumn();
-            c.setIdentifier("ICON");
+            c.setIdentifier(ICON_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
@@ -407,7 +403,7 @@ public abstract class CDValidatorController
         {
             NSTableColumn c = new NSTableColumn();
             c.headerCell().setStringValue(NSBundle.localizedString("Filename", "A column in the browser"));
-            c.setIdentifier("FILENAME");
+            c.setIdentifier(FILENAME_COLUMN);
             c.setMinWidth(100f);
             c.setWidth(220f);
             c.setMaxWidth(500f);
@@ -424,7 +420,7 @@ public abstract class CDValidatorController
         }
         {
             NSTableColumn c = new NSTableColumn();
-            c.setIdentifier("SIZE");
+            c.setIdentifier(SIZE_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(50f);
             c.setWidth(80f);
@@ -442,7 +438,7 @@ public abstract class CDValidatorController
         }
         {
             NSTableColumn c = new NSTableColumn();
-            c.setIdentifier("WARNING");
+            c.setIdentifier(WARNING_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
@@ -488,13 +484,18 @@ public abstract class CDValidatorController
     protected void fireDataChanged() {
         if (this.hasPrompt()) {
             this.fileTableView.reloadData();
-            this.infoLabel.setStringValue(this.workList.size() + " " + NSBundle.localizedString("files", ""));
         }
     }
 
     // ----------------------------------------------------------
     // NSTableView.DataSource
     // ----------------------------------------------------------
+
+    protected static final String INCLUDE_COLUMN = "INCLUDE";
+    protected static final String ICON_COLUMN = "ICON";
+    protected static final String WARNING_COLUMN = "WARNING";
+    public static final String FILENAME_COLUMN = "FILENAME";
+    public static final String SIZE_COLUMN = "SIZE";
 
     public void tableViewSetObjectValueForLocation(NSTableView view, Object object, NSTableColumn tableColumn, int row) {
         if (row < this.numberOfRowsInTableView(view)) {
@@ -506,17 +507,19 @@ public abstract class CDValidatorController
         }
     }
 
-    private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
+    protected static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
+    protected static final NSImage ALERT_ICON = NSImage.imageNamed("alert.tiff");
+    protected static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
         String identifier = (String) tableColumn.identifier();
         Path p = (Path) this.workList.get(row);
-        if (identifier.equals("INCLUDE")) {
+        if (identifier.equals(INCLUDE_COLUMN)) {
             if (p.isSkipped())
                 return new Integer(NSCell.OffState);
             return new Integer(NSCell.OnState);
         }
-        if (identifier.equals("ICON")) {
+        if (identifier.equals(ICON_COLUMN)) {
             if (p.attributes.isDirectory()) {
                 return FOLDER_ICON;
             }
@@ -525,9 +528,9 @@ public abstract class CDValidatorController
                 icon.setSize(new NSSize(16f, 16f));
                 return icon;
             }
-            return NSImage.imageNamed("notfound.tiff");
+            return NOT_FOUND_ICON;
         }
-        if (identifier.equals("FILENAME")) {
+        if (identifier.equals(FILENAME_COLUMN)) {
             return new NSAttributedString(p.getRemote().getName(),
                     CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
         }
