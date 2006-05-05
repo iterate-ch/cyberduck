@@ -17,6 +17,7 @@ package org.apache.commons.net.ftp.parser;
 
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Date;
 import java.text.SimpleDateFormat;
 
 import junit.framework.TestSuite;
@@ -80,7 +81,7 @@ public class NTFTPEntryParserTest extends TestCase
         Path dir = parser.parseFTPEntry(parent, "12-05-96  05:03PM       <DIR>          absoft2");
         assertNotNull("Could not parse entry.", dir);
         assertEquals("Thu Dec 05 17:03:00 1996",
-                     df.format(dir.attributes.getTimestamp()));
+                     df.format(new Date(dir.attributes.getTimestamp())));
         assertTrue("Should have been a directory.",
                    dir.attributes.isDirectory());
         assertEquals("absoft2", dir.getName());
@@ -102,7 +103,7 @@ public class NTFTPEntryParserTest extends TestCase
                 "05-22-97  12:08AM                  5000000000 AUTOEXEC.BAK");
         assertNotNull("Could not parse entry.", f);
         assertEquals("Thu May 22 00:08:00 1997",
-                df.format(f.attributes.getTimestamp()));
+                df.format(new Date(f.attributes.getTimestamp())));
         assertTrue("Should have been a file.",
                    f.attributes.isFile());
         assertEquals("AUTOEXEC.BAK", f.getName());

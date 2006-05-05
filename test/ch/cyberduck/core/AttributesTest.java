@@ -45,8 +45,6 @@ public class AttributesTest extends TestCase {
 
         assertNotSame(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getPermission(), attributes.getPermission());
-
-        assertNotSame(clone.getTimestamp(), attributes.getTimestamp());
         assertEquals(clone.getTimestamp(), attributes.getTimestamp());
     }
 
@@ -58,32 +56,15 @@ public class AttributesTest extends TestCase {
         ;
     }
 
-    public void testSetGetTimestamp() throws Exception {
-        ;
-    }
-
-    public void testSetTimestamp1() throws Exception {
-        ;
-    }
-
-    public void testGetTimestampAsCalendar() throws Exception {
-        ;
-    }
-
-    public void testGetTimestampAsString() throws Exception {
-        ;
-    }
-
-    public void testGetTimestampAsShortString() throws Exception {
-        ;
-    }
-
-    public void testSetGetPermission() throws Exception {
-        ;
-    }
-
     public void testSetGetType() throws Exception {
-        ;
+        attributes.setType(Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
+        assertTrue(attributes.isFile());
+        assertTrue(attributes.isSymbolicLink());
+        assertFalse(attributes.isDirectory());
+        attributes.setType(Path.DIRECTORY_TYPE | Path.SYMBOLIC_LINK_TYPE);
+        assertFalse(attributes.isFile());
+        assertTrue(attributes.isSymbolicLink());
+        assertTrue(attributes.isDirectory());
     }
 
     public void testSetGetOwner() throws Exception {
