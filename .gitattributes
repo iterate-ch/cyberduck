@@ -52,6 +52,7 @@ Dashboard[!!-~]Widget/Plugin/Info.plist -text
 Dashboard[!!-~]Widget/Plugin/Plugin.xcodeproj/project.pbxproj -text
 /Donate.url -text
 Download[!!-~]Automator[!!-~]Action/English.lproj/InfoPlist.strings svneol=native#unset
+/LICENSE -text
 Sparkle/Info.plist -text
 Sparkle/NSApplication+AppCopies.m -text
 Sparkle/NSFileManager+Authentication.m -text
