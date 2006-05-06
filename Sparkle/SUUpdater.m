@@ -36,6 +36,13 @@
 
 @implementation SUUpdater
 
+- init
+{
+	[super init];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidFinishLaunching:) name:@"NSApplicationDidFinishLaunchingNotification" object:NSApp];	
+	return self;
+}
+
 - (void)scheduleCheckWithInterval:(NSTimeInterval)interval
 {
 	if (checkTimer)
@@ -49,7 +56,7 @@
 		checkTimer = [NSTimer scheduledTimerWithTimeInterval:interval target:self selector:@selector(checkForUpdatesInBackground) userInfo:nil repeats:YES];
 }
 
-- (void)awakeFromNib
+- (void)applicationDidFinishLaunching:(NSNotification *)note
 {
 	// If there's a scheduled interval, we see if it's been longer than that interval since the last
 	// check. If so, we perform a startup check; if not, we don't.	
@@ -106,6 +113,8 @@
 	
 	if (checkTimer)
 		[checkTimer invalidate];
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[super dealloc];
 }
 
@@ -138,7 +147,6 @@
 		return;
 	}
 	verbose = verbosity;
-	
 	updateInProgress = YES;
 	
 	// A value in the user defaults overrides one in the Info.plist (so preferences panels can be created wherein users choose between beta / release feeds).
@@ -242,7 +250,7 @@
 	[ac autorelease];
 	updateInProgress = NO;
 	if (verbose)
-		[self showUpdateErrorAlertWithInfo:SULocalizedString(@"An error occurred in retrieving update information; are you connected to the internet? Please try again later.", nil)];
+		[self showUpdateErrorAlertWithInfo:SULocalizedString(@"An error occurred in retrieving update information. Please try again later.", nil)];
 }
 
 - (void)appcastDidFinishLoading:(SUAppcast *)ac
@@ -267,7 +275,7 @@
 		{
 			if (verbose) // We only notify on no new version when we're being verbose.
 			{
-				NSRunAlertPanel(SULocalizedString(@"You're up to date!", nil), [NSString stringWithFormat:SULocalizedString(@"%@ %@ is currently the newest version available.", nil), SUHostAppName(), SUHostAppVersion()], NSLocalizedString(@"OK", nil), nil, nil);
+				NSRunAlertPanel(SULocalizedString(@"You're up to date!", nil), [NSString stringWithFormat:SULocalizedString(@"%@ %@ is currently the newest version available.", nil), SUHostAppName(), SUHostAppVersionString()], NSLocalizedString(@"OK", nil), nil, nil);
 			}
 			updateInProgress = NO;
 		}
@@ -320,6 +328,7 @@
 		[download release];
 	}
 	
+	[downloadPath autorelease];
 	downloadPath = [[tempDir stringByAppendingPathComponent:name] retain];
 	[download setDestination:downloadPath allowOverwrite:YES];
 }
@@ -429,6 +438,8 @@
 		{
 			[statusController beginActionWithTitle:SULocalizedString(@"Installing update...", nil) maxProgressValue:0 statusText:nil];
 			[statusController setButtonEnabled:NO];
+			
+			// We have to wait for the UI to update.
 			NSEvent *event;
 			while((event = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:nil inMode:NSDefaultRunLoopMode dequeue:YES]))
 				[NSApp sendEvent:event];			
@@ -437,7 +448,17 @@
 		// We assume that the archive will contain a file named {CFBundleName}.app
 		// (where, obviously, CFBundleName comes from Info.plist)
 		if (!SUInfoValueForKey(@"CFBundleName")) { [NSException raise:@"SUInstallException" format:@"This application has no CFBundleName! This key must be set to the application's name."]; }
-		if (![[NSFileManager defaultManager] fileExistsAtPath:newAppDownloadPath])
+		
+		// Search subdirectories for the application
+		NSString *file, *appName = [SUInfoValueForKey(@"CFBundleName") stringByAppendingPathExtension:@"app"];
+		NSDirectoryEnumerator *dirEnum = [[NSFileManager defaultManager] enumeratorAtPath:[downloadPath stringByDeletingLastPathComponent]];
+		while ((file = [dirEnum nextObject]))
+		{
+			if ([[file lastPathComponent] isEqualToString:appName])
+				newAppDownloadPath = [[downloadPath stringByDeletingLastPathComponent] stringByAppendingPathComponent:file];
+		}
+		
+		if (!newAppDownloadPath || ![[NSFileManager defaultManager] fileExistsAtPath:newAppDownloadPath])
 		{
 			[NSException raise:@"SUInstallException" format:@"The update archive didn't contain an application with the proper name: %@. Remember, the updated app's file name must be identical to {CFBundleName}.app", [SUInfoValueForKey(@"CFBundleName") stringByAppendingPathExtension:@"app"]];
 		}
@@ -470,10 +491,7 @@
 			return;
 		}
 	}
-	
-	// Delete the temp folder where the archive was downloaded and extracted.
-	[[NSFileManager defaultManager] removeFileAtPath:[downloadPath stringByDeletingLastPathComponent] handler:nil];		
-	
+		
 	// Prompt for permission to restart if we're automatically updating.
 	if ([self isAutomaticallyUpdating])
 	{
@@ -489,12 +507,14 @@
 
 	// Thanks to Allan Odgaard for this restart code, which is much more clever than mine was.
 	setenv("LAUNCH_PATH", [currentAppPath UTF8String], 1);
+	setenv("TEMP_FOLDER", [[downloadPath stringByDeletingLastPathComponent] UTF8String], 1); // delete the temp stuff after it's all over
 	system("/bin/bash -c '{ for (( i = 0; i < 3000 && $(echo $(/bin/ps -xp $PPID|/usr/bin/wc -l))-1; i++ )); do\n"
 		   "    /bin/sleep .2;\n"
 		   "  done\n"
 		   "  if [[ $(/bin/ps -xp $PPID|/usr/bin/wc -l) -ne 2 ]]; then\n"
 		   "    /usr/bin/open \"${LAUNCH_PATH}\"\n"
 		   "  fi\n"
+		   "  rm -rf \"${TEMP_FOLDER}\"\n"
 		   "} &>/dev/null &'");
 	[NSApp terminate:self];	
 }

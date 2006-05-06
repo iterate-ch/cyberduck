@@ -40,6 +40,9 @@
 
 - (void)endWithSelection:(SUUpdateAlertChoice)choice
 {
+	[releaseNotesView stopLoading:self];
+	[releaseNotesView setFrameLoadDelegate:nil];
+	[releaseNotesView setPolicyDelegate:nil];
 	[self close];
 	if ([delegate respondsToSelector:@selector(updateAlert:finishedWithChoice:)])
 		[delegate updateAlert:self finishedWithChoice:choice];
@@ -92,6 +95,7 @@
 
 - (BOOL)allowsAutomaticUpdates
 {
+	if (!SUInfoValueForKey(SUExpectsDSASignatureKey)) { return NO; } // automatic updating requires DSA-signed updates
 	if (!SUInfoValueForKey(SUAllowsAutomaticUpdatesKey)) { return YES; } // defaults to YES
 	return [SUInfoValueForKey(SUAllowsAutomaticUpdatesKey) boolValue];
 }
@@ -143,7 +147,7 @@
 
 - (NSString *)descriptionText
 {
-	return [NSString stringWithFormat:SULocalizedString(@"%@ %@ is now available (you have %@). Would you like to download it now?", nil), SUHostAppName(), [updateItem fileVersion], SUHostAppVersion()];	
+	return [NSString stringWithFormat:SULocalizedString(@"%@ %@ is now available (you have %@). Would you like to download it now?", nil), SUHostAppName(), [updateItem fileVersion], SUHostAppVersionString()];	
 }
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:frame

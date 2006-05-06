@@ -26,3 +26,11 @@ NSString *SUHostAppVersion()
 {
 	return SUInfoValueForKey(@"CFBundleVersion");
 }
+
+NSString *SUHostAppVersionString()
+{
+	if (SUInfoValueForKey(@"CFBundleVersionString"))
+		return SUInfoValueForKey(@"CFBundleVersionString");	
+	// otherwise, fall back on the non-localized version string
+	return SUHostAppVersion();
+}

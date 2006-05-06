@@ -133,38 +133,36 @@ int compareNewsItems(id item1, id item2, void *context)
 	} /*initWithData*/
 
 
-- (RSS *) initWithURL: (NSURL *) url normalize: (BOOL) fl {
+- (RSS *) initWithURL: (NSURL *) url normalize: (BOOL) fl
+{
+	return [self initWithURL: url normalize: fl userAgent: nil];
+}
+
+	 
 	
-	NSURLHandle *urlHandle;
+- (RSS *) initWithURL: (NSURL *) url normalize: (BOOL) fl userAgent: (NSString*)userAgent
+{
 	NSData *rssData;
-	
-	urlHandle = [url URLHandleUsingCache: NO];
 
-	rssData = [urlHandle resourceData];
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL: url cachePolicy: NSURLRequestReloadIgnoringCacheData
+										timeoutInterval: 30.0];
+	if (userAgent)
+		[request setValue: userAgent forHTTPHeaderField: @"User-Agent"];
+			
+	NSURLResponse *response=0;
+	NSError *error=0;
+
+	rssData = [NSURLConnection sendSynchronousRequest: request returningResponse: &response error: &error];
 	
-	if ([urlHandle status] == NSURLHandleLoadFailed) {
-		
-		/*If there was a problem reading the RSS file,
-		raise an exception.*/
-		
+	if (rssData == nil)
+	{
 		NSException *exception = [NSException exceptionWithName: @"RSSDownloadFailed"
-			reason: [urlHandle failureReason] userInfo: nil];
-
+														 reason: [error localizedFailureReason] userInfo: [error userInfo] ];
 		[exception raise];
-		} /*if*/
-	
-	if (rssData == nil) {
-		
-		/*Another possible error.*/
-		
-		NSException *exception = [NSException exceptionWithName: @"RSSNoData"
-			reason: @"Couldn't retrieve update information from the server" userInfo: nil];
-
-		[exception raise];
-		} /*if*/
+	}
 	
 	return [self initWithData: rssData normalize: fl];	
-	} /*initWithUrl*/
+} /*initWithUrl*/
 
 
 - (NSDictionary *) headerItems {

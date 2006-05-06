@@ -11,6 +11,7 @@
 id SUInfoValueForKey(NSString *key);
 NSString *SUHostAppName();
 NSString *SUHostAppVersion();
+NSString *SUHostAppVersionString();
 
 // If running make localizable-strings for genstrings, ignore the error on this line.
 #define SULocalizedString(key, comment) NSLocalizedStringFromTable(key, @"Sparkle", comment)

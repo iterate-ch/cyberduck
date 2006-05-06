@@ -46,7 +46,9 @@
 	RSS *feed;
 	@try
 	{
-		feed = [[RSS alloc] initWithURL:url normalize:YES];
+		NSString *userAgent = [NSString stringWithFormat: @"%@/%@ (Mac OS X) Sparkle/1.0", SUHostAppName(), SUHostAppVersion()];
+		
+		feed = [[RSS alloc] initWithURL:url normalize:YES userAgent:userAgent];
 		// Set up all the appcast items
 		NSMutableArray *tempItems = [NSMutableArray array];
 		id enumerator = [[feed newsItems] objectEnumerator], current;

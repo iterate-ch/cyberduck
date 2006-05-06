@@ -52,7 +52,7 @@
 
 - (BOOL)_movePathWithForcedAuthentication:(NSString *)src toPath:(NSString *)dst
 {
-	NSString *tmp = [[src stringByDeletingPathExtension] stringByAppendingString:[[NSProcessInfo processInfo] globallyUniqueString]];
+	NSString *tmp = [[[dst stringByDeletingPathExtension] stringByAppendingString:@".old"] stringByAppendingPathExtension:[dst pathExtension]];
 	BOOL res = NO;
 	struct stat sb;
 	if((stat([src UTF8String], &sb) != 0) || (stat([tmp UTF8String], &sb) == 0) || stat([dst UTF8String], &sb) != 0)
@@ -85,6 +85,7 @@
 				res = YES;
 		}
 	}
+	AuthorizationFree(auth, 0);
 	free(buf);
 	return res;	
 }
