@@ -216,36 +216,42 @@ public abstract class CDValidatorController
 
     public void setRemoteURLField(NSTextField f) {
         this.remoteURLField = f;
+        this.remoteURLField.setHidden(true);
     }
 
     private NSTextField remoteSizeField; // IBOutlet
 
     public void setRemoteSizeField(NSTextField f) {
         this.remoteSizeField = f;
+        this.remoteSizeField.setHidden(true);
     }
 
     private NSTextField remoteModificationField; // IBOutlet
 
     public void setRemoteModificationField(NSTextField f) {
         this.remoteModificationField = f;
+        this.remoteModificationField.setHidden(true);
     }
 
     private NSTextField localURLField; // IBOutlet
 
     public void setLocalURLField(NSTextField f) {
         this.localURLField = f;
+        this.localURLField.setHidden(true);
     }
 
     private NSTextField localSizeField; // IBOutlet
 
     public void setLocalSizeField(NSTextField f) {
         this.localSizeField = f;
+        this.localSizeField.setHidden(true);
     }
 
     private NSTextField localModificationField; // IBOutlet
 
     public void setLocalModificationField(NSTextField f) {
         this.localModificationField = f;
+        this.localModificationField.setHidden(true);
     }
 
 
@@ -254,6 +260,7 @@ public abstract class CDValidatorController
     public void setStatusIndicator(NSProgressIndicator f) {
         this.statusIndicator = f;
         this.statusIndicator.setUsesThreadedAnimation(true);
+        this.statusIndicator.setDisplayedWhenStopped(false);
     }
 
     protected NSTableView fileTableView; // IBOutlet
@@ -296,43 +303,49 @@ public abstract class CDValidatorController
                             localURLField.setAttributedStringValue(
                                     new NSAttributedString(p.getLocal().getAbsolute(),
                                     TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                            localURLField.setHidden(false);
                             localSizeField.setAttributedStringValue(
                                     new NSAttributedString(Status.getSizeAsString(p.getLocal().attributes.getSize()),
                                     TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                            localSizeField.setHidden(false);
                             localModificationField.setAttributedStringValue(
                                     new NSAttributedString(CDDateFormatter.getLongFormat(p.getLocal().attributes.getTimestamp()),
                                     TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                            localModificationField.setHidden(false);
                         }
                         else {
-                            localURLField.setStringValue("");
-                            localSizeField.setStringValue("");
-                            localModificationField.setStringValue("");
+                            localURLField.setHidden(true);
+                            localSizeField.setHidden(true);
+                            localModificationField.setHidden(true);
                         }
                         if (p.getRemote().exists()) {
                             remoteURLField.setAttributedStringValue(
                                     new NSAttributedString(p.getRemote().getHost().getURL() + p.getRemote().getAbsolute(),
                                     TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                            remoteURLField.setHidden(false);
                             remoteSizeField.setAttributedStringValue(
                                     new NSAttributedString(Status.getSizeAsString(p.getRemote().attributes.getSize()),
                                     TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                            remoteSizeField.setHidden(false);
                             remoteModificationField.setAttributedStringValue(
                                     new NSAttributedString(CDDateFormatter.getLongFormat(p.getRemote().attributes.getTimestamp()),
                                     TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                            remoteModificationField.setHidden(false);
                         }
                         else {
-                            remoteURLField.setStringValue("");
-                            remoteSizeField.setStringValue("");
-                            remoteModificationField.setStringValue("");
+                            remoteURLField.setHidden(true);
+                            remoteSizeField.setHidden(true);
+                            remoteModificationField.setHidden(true);
                         }
                     }
                 }
                 else {
-                    remoteURLField.setStringValue("");
-                    remoteSizeField.setStringValue("");
-                    remoteModificationField.setStringValue("");
-                    localURLField.setStringValue("");
-                    localSizeField.setStringValue("");
-                    localModificationField.setStringValue("");
+                    remoteURLField.setHidden(true);
+                    remoteSizeField.setHidden(true);
+                    remoteModificationField.setHidden(true);
+                    localURLField.setHidden(true);
+                    localSizeField.setHidden(true);
+                    localModificationField.setHidden(true);
                 }
             }
         });
@@ -406,7 +419,7 @@ public abstract class CDValidatorController
             c.setIdentifier(FILENAME_COLUMN);
             c.setMinWidth(100f);
             c.setWidth(220f);
-            c.setMaxWidth(500f);
+            c.setMaxWidth(800f);
             if (setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
             }

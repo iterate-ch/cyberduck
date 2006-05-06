@@ -323,18 +323,6 @@ public abstract class Queue extends NSObject implements QueueListener {
     }
 
     /**
-     * @return double current bytes/second
-     */
-    public String getSpeedAsString() {
-        if(this.isRunning() && this.isInitialized()) {
-            if(this.getSpeed() > -1) {
-                return "(" + Status.getSizeAsString(this.getSpeed()) + "/sec)";
-            }
-        }
-        return "";
-    }
-
-    /**
      * @return The bytes being processed per second
      */
     public double getSpeed() {

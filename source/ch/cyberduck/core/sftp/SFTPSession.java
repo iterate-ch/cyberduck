@@ -39,7 +39,6 @@ import com.apple.cocoa.foundation.NSBundle;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 
 /**
  * Opens a connection to the remote server via sftp protocol
@@ -111,6 +110,7 @@ public class SFTPSession extends Session {
             if(null == this.SSH) {
                 return;
             }
+            this.connectionWillClose();
             this.SSH.interrupt();
         }
         catch(IOException e) {
@@ -118,12 +118,7 @@ public class SFTPSession extends Session {
         }
         finally {
             this.connectionDidClose();
-            this.activityStopped();
         }
-    }
-
-    public void sendCommand(String command) {
-        log.error("Not implemented");
     }
 
     private HostKeyVerification hostKeyVerification = new IgnoreHostKeyVerification();
@@ -311,8 +306,12 @@ public class SFTPSession extends Session {
             workdir.attributes.setType(Path.DIRECTORY_TYPE);
             return workdir;
         }
+        catch(SshException e) {
+            log.error("SSH Error: " + e.getMessage());
+        }
         catch(IOException e) {
             this.error(e);
+            this.interrupt();
         }
         return null;
     }
@@ -323,5 +322,9 @@ public class SFTPSession extends Session {
                 this.SSH.noop();
             }
         }
+    }
+
+    public void sendCommand(String command) {
+        log.error("Not implemented");
     }
 }

@@ -93,7 +93,6 @@ public abstract class Session extends NSObject
             this.activityStarted();
             this.host.getIp();
             if(!this.isConnected()) {
-                this.interrupt();
                 this.connect();
             }
             else {
@@ -124,14 +123,14 @@ public abstract class Session extends NSObject
     /**
      * Connect to the remote host and mount the home directory
      *
-     * @return
+     * @return null if we fail, the mounted directory if we succeed
      */
     public Path mount() {
         synchronized(this) {
             this.message(NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname() + "...");
             try {
                 try {
-                    this.connect();
+                    this.check();
                     if(!this.isConnected()) {
                         return null;
                     }
@@ -266,7 +265,6 @@ public abstract class Session extends NSObject
         if(this.keepAliveTimer != null) {
             this.keepAliveTimer.cancel();
         }
-//        this.cache().clear(); //TODO
         SessionPool.instance().release(this);
 
         this.message(NSBundle.localizedString("Disconnected", "Status", ""));
@@ -276,6 +274,9 @@ public abstract class Session extends NSObject
         }
     }
 
+    /**
+     * Must always be used in pair with #activityStopped
+     */
     public void activityStarted() {
         log.debug("activityStarted");
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
@@ -284,6 +285,9 @@ public abstract class Session extends NSObject
         }
     }
 
+    /**
+     * Must always be used in pair with #activityStarted
+     */
     public void activityStopped() {
         log.debug("activityStopped");
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});

@@ -122,7 +122,7 @@ public class SFTPPath extends Path {
                     }
                     workingDirectory.close();
                     java.util.Iterator i = children.iterator();
-                    while (i.hasNext() && session.isConnected()) {
+                    while (i.hasNext()) {
                         SftpFile x = (SftpFile) i.next();
                         if (!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
                             Path p = PathFactory.createPath(session, this.getAbsolute(), x.getFilename());
@@ -171,7 +171,6 @@ public class SFTPPath extends Path {
 
     public void cwdir() throws IOException {
         synchronized (session) {
-            session.check();
             session.SFTP.openDirectory(this.getAbsolute());
         }
     }

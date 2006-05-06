@@ -132,7 +132,7 @@ public class FTPPath extends Path {
                     session.FTP.chdir(this.getAbsolute());
                     String[] lines = session.FTP.dir(this.session.getHost().getEncoding());
                     // Read line for line if the connection hasn't been interrupted since
-                    for(int i = 0; i < lines.length && this.session.isConnected(); i++) {
+                    for(int i = 0; i < lines.length; i++) {
                         Path p = session.parser.parseFTPEntry(this, lines[i]);
                         if(p != null) {
                             files.add(p);
@@ -158,7 +158,6 @@ public class FTPPath extends Path {
 
     public void cwdir() throws IOException {
         synchronized(session) {
-            session.check();
             session.FTP.chdir(this.getAbsolute());
         }
     }

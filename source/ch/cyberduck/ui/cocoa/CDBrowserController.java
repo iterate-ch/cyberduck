@@ -55,7 +55,7 @@ public class CDBrowserController extends CDWindowController
     /**
      * Applescriptability
      *
-     * @return
+     * @return The NSIndexSpecifier for all browsers or null if there is none
      */
     public NSScriptObjectSpecifier objectSpecifier() {
         log.debug("objectSpecifier");
@@ -2024,14 +2024,14 @@ public class CDBrowserController extends CDWindowController
      * @return true if the remote file system has been mounted
      */
     public boolean isMounted() {
-        return this.workdir() != null;
+        return this.hasSession() && this.workdir() != null;
     }
 
     /**
      * @return true if mounted and the connection to the server is alive
      */
     public boolean isConnected() {
-        if(this.hasSession()) {
+        if(this.isMounted()) {
             return this.session.isConnected();
         }
         return false;
@@ -2139,12 +2139,6 @@ public class CDBrowserController extends CDWindowController
     protected Path workdir() {
         return this.workdir;
     }
-
-//    /**
-//     * To lock to protect the update of the current working directory
-//     * to be synchroneous
-//     */
-//    private final Object workdirLock = new Object();
 
     /**
      * Sets the current working directory. This will udpate the path selection dropdown button
@@ -2328,6 +2322,7 @@ public class CDBrowserController extends CDWindowController
                                 new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
                     }
                 });
+                window.toolbar().validateVisibleItems();
             }
 
             public void connectionDidOpen() {
@@ -2346,6 +2341,7 @@ public class CDBrowserController extends CDWindowController
                 if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                     window.setDocumentEdited(true);
                 }
+                window.toolbar().validateVisibleItems();
                 // This progress listener was only used to handle initial connection errors
                 session.removeProgressListener(error);
             }
@@ -2366,6 +2362,7 @@ public class CDBrowserController extends CDWindowController
                     return;
                 }
                 window.setDocumentEdited(false);
+                window.toolbar().validateVisibleItems();
                 session.removeProgressListener(progress);
                 session.removeTranscriptListener(transcript);
                 progressIndicator.stopAnimation(this);
@@ -2427,7 +2424,7 @@ public class CDBrowserController extends CDWindowController
 
     /**
      * @param host
-     * @return
+     * @return The session to be used for any further operations
      */
     protected Session mount(final Host host) {
         synchronized(mountingLock) {
@@ -2571,7 +2568,7 @@ public class CDBrowserController extends CDWindowController
 
     /**
      * @param item
-     * @return
+     * @return true if the menu should be enabled
      */
     public boolean validateMenuItem(NSMenuItem item) {
         String identifier = item.action().name();
@@ -2685,8 +2682,8 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
-     * @param identifier
-     * @return
+     * @param identifier the method selector
+     * @return true if the item by that identifier should be enabled
      */
     private boolean validateItem(String identifier) {
         if(identifier.equals("New Connection")) {

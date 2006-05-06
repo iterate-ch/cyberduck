@@ -176,8 +176,11 @@ public class CDProgressController extends CDController {
         b.append(" ");
         b.append(Status.getSizeAsString(this.queue.getSize()));
         if(this.queue.isRunning()) {
-            b.append(" ");
-            b.append(this.queue.getSpeedAsString());
+            if(this.queue.getSpeed() > -1) {
+                b.append(" (");
+                b.append(Status.getSizeAsString(this.queue.getSpeed()));
+                b.append("/sec)");
+            }
         }
         b.append(" ");
         b.append(this.statusText);

@@ -31,7 +31,6 @@ import org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 
 /**
  * Opens a connection to the remote server via ftp protocol
@@ -97,6 +96,7 @@ public class FTPSession extends Session {
             if(null == this.FTP) {
                 return;
             }
+            this.connectionWillClose();
             this.FTP.interrupt();
         }
         catch(IOException e) {
@@ -104,7 +104,6 @@ public class FTPSession extends Session {
         }
         finally {
             this.connectionDidClose();
-            this.activityStopped();
         }
     }
 
@@ -174,7 +173,6 @@ public class FTPSession extends Session {
 
     public Path workdir() {
         try {
-            this.check();
             Path workdir = PathFactory.createPath(this, this.FTP.pwd());
             workdir.attributes.setType(Path.DIRECTORY_TYPE);
             return workdir;
