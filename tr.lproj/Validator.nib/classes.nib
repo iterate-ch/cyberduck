@@ -9,13 +9,16 @@
             LANGUAGE = Java; 
             OUTLETS = {
                 fileTableView = NSTableView; 
-                infoLabel = NSTextField; 
-                localField = NSTextField; 
+                localModificationField = NSTextField; 
+                localSizeField = NSTextField; 
+                localURLField = NSTextField; 
                 overwriteButton = NSButton; 
+                remoteModificationField = NSTextField; 
+                remoteSizeField = NSTextField; 
+                remoteURLField = NSTextField; 
                 resumeButton = NSButton; 
                 skipButton = NSButton; 
                 statusIndicator = NSProgressIndicator; 
-                urlField = NSTextField; 
                 window = NSWindow; 
             }; 
             SUPERCLASS = NSObject; 
