@@ -32,9 +32,6 @@
 "An error occurred while trying to download the file. Please try again later." = "An error occurred while trying to download the file. Bitte später erneut versuchen.";
 
 /* No comment provided by engineer. */
-"An error occurred while trying to relaunch %@. The update will take effect next you run %@." = "An error occurred while trying to relaunch %1$@. The update will take effect next you run %2$@.";
-
-/* No comment provided by engineer. */
 "An update is already in progress!" = "An update is already in progress!";
 
 /* No comment provided by engineer. */
