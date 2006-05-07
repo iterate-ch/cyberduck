@@ -6,12 +6,15 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 
 2.5.6
 - [Localize] Turkish Localization
-- [Feature] Automatic software udpate with Sparkle (Thanks to Andy Matuschak!)
+- [Feature] Automatic software udpate with Sparkle.framework (Thanks to Andy Matuschak!)
 - [Feature] Dashboard Widget included (Thanks to Claudio Procida!)
 - [Feature] Marking write-only and non-accessible directories with special icon as in Finder.app
-- [Feature] Reintroduced transcript drawer
+- [Feature] Reintroduced transcript drawer in browser window
+- [Feature] Added transcript drawer to transfer window
 - [Feature] Option to use Network Diagnostics upon failed connections
-- [Bugfix] Connection and file transfer attempts can be interrupted [#55]
+- [Feature] New 'Download failed' and 'Upload failed' Growl notifications
+- [Feature] Display alert icon in the connection and bookmark dialog if server name cannot be resolved
+- [Bugfix] Stalled connection and file transfer attempts can be interrupted [#55]
 - [Bugfix] Cannot delete empty folders [#162]
 - [Bugfix] Cannot use login username with colon [#309]
 - [Bugfix] Certain operations trigger change of character encoding to default

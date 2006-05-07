@@ -14,12 +14,15 @@
 <b>Version 2.5.6</b>
 <ul>
 <li>[Localize] Turkish Localization</li>
-<li>[Feature] Automatic software udpate with Sparkle (Thanks to Andy Matuschak!)</li>
+<li>[Feature] Automatic software udpate with Sparkle.framework (Thanks to Andy Matuschak!)</li>
 <li>[Feature] Dashboard Widget included (Thanks to Claudio Procida!)</li>
 <li>[Feature] Marking write-only and non-accessible directories with special icon as in Finder.app</li>
-<li>[Feature] Reintroduced transcript drawer</li>
+<li>[Feature] Reintroduced transcript drawer in browser window</li>
+<li>[Feature] Added transcript drawer to transfer window</li>
 <li>[Feature] Option to use Network Diagnostics upon failed connections</li>
-<li>[Bugfix] Connection and file transfer attempts can be interrupted [#55]</li>
+<li>[Feature] New 'Download failed' and 'Upload failed' Growl notifications</li>
+<li>[Feature] Display alert icon in connection dialog if server name cannot be resolved</li>
+<li>[Bugfix] Stalled connection and file transfer attempts can be interrupted [#55]</li>
 <li>[Bugfix] Cannot delete empty folders [#162]</li>
 <li>[Bugfix] Cannot use login username with colon [#309]</li>
 <li>[Bugfix] Certain operations trigger change of character encoding to default</li>
