@@ -607,7 +607,6 @@ de.lproj/Queue.strings -text svneol=native#application/octet-stream
 de.lproj/Status.strings -text svneol=native#application/octet-stream
 de.lproj/Sync.nib/keyedobjects.nib -text
 de.lproj/Sync.strings -text svneol=native#application/octet-stream
-de.lproj/Update.strings -text svneol=native#application/octet-stream
 de.lproj/Validator.nib/keyedobjects.nib -text
 de.lproj/Validator.strings -text svneol=native#application/octet-stream
 en.lproj/Bookmark.nib/keyedobjects.nib -text
