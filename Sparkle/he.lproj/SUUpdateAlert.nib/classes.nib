@@ -6,7 +6,7 @@
             ACTIONS = {installUpdate = id; remindMeLater = id; skipThisVersion = id; }; 
             CLASS = SUUpdateAlert; 
             LANGUAGE = ObjC; 
-            OUTLETS = {delegate = id; description = id; releaseNotesView = WebView; }; 
+            OUTLETS = {description = NSTextField; releaseNotesView = WebView; }; 
             SUPERCLASS = NSWindowController; 
         }, 
         {
