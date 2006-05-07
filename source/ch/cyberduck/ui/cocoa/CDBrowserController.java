@@ -616,15 +616,6 @@ public class CDBrowserController extends CDWindowController
         this.logView = logView;
     }
 
-    /**
-     * Overwritten to clear the cache when the window closes
-     *
-     * @param notification
-     */
-    public void windowWillClose(NSNotification notification) {
-        this.invalidate();
-    }
-
     private NSDrawer logDrawer; // IBOutlet
 
     public void setLogDrawer(NSDrawer logDrawer) {
@@ -3113,7 +3104,7 @@ public class CDBrowserController extends CDWindowController
             this.session.removeConnectionListener(this.listener);
             this.session.getHost().getCredentials().setPassword(null);
             this.session.cache().clear(); //TODO
-            this.session = null;
+//            this.session = null;
         }
         this.toolbar.setDelegate(null);
 
