@@ -91,7 +91,6 @@ public abstract class Session extends NSObject
     public void check() throws IOException {
         try {
             this.activityStarted();
-            this.host.getIp();
             if(!this.isConnected()) {
                 this.connect();
             }
