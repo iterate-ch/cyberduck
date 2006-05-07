@@ -423,7 +423,6 @@ ca.lproj/Queue.strings -text svneol=native#application/octet-stream
 ca.lproj/Status.strings -text svneol=native#application/octet-stream
 ca.lproj/Sync.nib/keyedobjects.nib -text
 ca.lproj/Sync.strings -text svneol=native#application/octet-stream
-ca.lproj/Update.nib/keyedobjects.nib -text
 ca.lproj/Update.strings -text svneol=native#application/octet-stream
 ca.lproj/Validator.nib/keyedobjects.nib -text
 ca.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -469,7 +468,6 @@ cs.lproj/Queue.strings -text
 cs.lproj/Status.strings -text
 cs.lproj/Sync.nib/keyedobjects.nib -text
 cs.lproj/Sync.strings -text
-cs.lproj/Update.nib/keyedobjects.nib -text
 cs.lproj/Update.strings -text
 cs.lproj/Validator.nib/keyedobjects.nib -text
 cs.lproj/Validator.strings -text
@@ -515,7 +513,6 @@ cy.lproj/Queue.strings -text svneol=native#application/octet-stream
 cy.lproj/Status.strings -text svneol=native#application/octet-stream
 cy.lproj/Sync.nib/keyedobjects.nib -text
 cy.lproj/Sync.strings -text svneol=native#application/octet-stream
-cy.lproj/Update.nib/keyedobjects.nib -text
 cy.lproj/Update.strings -text svneol=native#application/octet-stream
 cy.lproj/Validator.nib/keyedobjects.nib -text
 cy.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -565,7 +562,6 @@ da.lproj/Queue.strings -text svneol=native#application/octet-stream
 da.lproj/Status.strings -text svneol=native#application/octet-stream
 da.lproj/Sync.nib/keyedobjects.nib -text
 da.lproj/Sync.strings -text svneol=native#application/octet-stream
-da.lproj/Update.nib/keyedobjects.nib -text
 da.lproj/Update.strings -text svneol=native#application/octet-stream
 da.lproj/Validator.nib/keyedobjects.nib -text
 da.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -611,7 +607,6 @@ de.lproj/Queue.strings -text svneol=native#application/octet-stream
 de.lproj/Status.strings -text svneol=native#application/octet-stream
 de.lproj/Sync.nib/keyedobjects.nib -text
 de.lproj/Sync.strings -text svneol=native#application/octet-stream
-de.lproj/Update.nib/keyedobjects.nib -text
 de.lproj/Update.strings -text svneol=native#application/octet-stream
 de.lproj/Validator.nib/keyedobjects.nib -text
 de.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -657,7 +652,6 @@ en.lproj/Queue.strings -text svneol=native#application/octet-stream
 en.lproj/Status.strings -text svneol=native#application/octet-stream
 en.lproj/Sync.nib/keyedobjects.nib -text
 en.lproj/Sync.strings -text svneol=native#application/octet-stream
-en.lproj/Update.nib/keyedobjects.nib -text
 en.lproj/Update.strings -text svneol=native#application/octet-stream
 en.lproj/Validator.nib/keyedobjects.nib -text
 en.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -703,7 +697,6 @@ es.lproj/Queue.strings -text svneol=native#application/octet-stream
 es.lproj/Status.strings -text svneol=native#application/octet-stream
 es.lproj/Sync.nib/keyedobjects.nib -text
 es.lproj/Sync.strings -text svneol=native#application/octet-stream
-es.lproj/Update.nib/keyedobjects.nib -text
 es.lproj/Update.strings -text svneol=native#application/octet-stream
 es.lproj/Validator.nib/keyedobjects.nib -text
 es.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -749,7 +742,6 @@ fi.lproj/Queue.strings -text svneol=native#application/octet-stream
 fi.lproj/Status.strings -text svneol=native#application/octet-stream
 fi.lproj/Sync.nib/keyedobjects.nib -text
 fi.lproj/Sync.strings -text svneol=native#application/octet-stream
-fi.lproj/Update.nib/keyedobjects.nib -text
 fi.lproj/Update.strings -text svneol=native#application/octet-stream
 fi.lproj/Validator.nib/keyedobjects.nib -text
 fi.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -795,7 +787,6 @@ fr.lproj/Queue.strings -text svneol=native#application/octet-stream
 fr.lproj/Status.strings -text svneol=native#application/octet-stream
 fr.lproj/Sync.nib/keyedobjects.nib -text
 fr.lproj/Sync.strings -text svneol=native#application/octet-stream
-fr.lproj/Update.nib/keyedobjects.nib -text
 fr.lproj/Update.strings -text svneol=native#application/octet-stream
 fr.lproj/Validator.nib/keyedobjects.nib -text
 fr.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -879,9 +870,6 @@ he.lproj/Sync.nib/classes.nib -text
 he.lproj/Sync.nib/info.nib -text
 he.lproj/Sync.nib/keyedobjects.nib -text
 he.lproj/Sync.strings -text
-he.lproj/Update.nib/classes.nib -text
-he.lproj/Update.nib/info.nib -text
-he.lproj/Update.nib/keyedobjects.nib -text
 he.lproj/Update.strings -text
 he.lproj/Validator.nib/classes.nib -text
 he.lproj/Validator.nib/info.nib -text
@@ -929,7 +917,6 @@ hu.lproj/Queue.strings -text svneol=native#application/octet-stream
 hu.lproj/Status.strings -text svneol=native#application/octet-stream
 hu.lproj/Sync.nib/keyedobjects.nib -text
 hu.lproj/Sync.strings -text svneol=native#application/octet-stream
-hu.lproj/Update.nib/keyedobjects.nib -text
 hu.lproj/Update.strings -text svneol=native#application/octet-stream
 hu.lproj/Validator.nib/keyedobjects.nib -text
 hu.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -975,7 +962,6 @@ id.lproj/Queue.strings -text svneol=native#application/octet-stream
 id.lproj/Status.strings -text svneol=native#application/octet-stream
 id.lproj/Sync.nib/keyedobjects.nib -text
 id.lproj/Sync.strings -text svneol=native#application/octet-stream
-id.lproj/Update.nib/keyedobjects.nib -text
 id.lproj/Update.strings -text svneol=native#application/octet-stream
 id.lproj/Validator.nib/keyedobjects.nib -text
 id.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -1111,7 +1097,6 @@ it.lproj/Queue.strings -text svneol=native#application/octet-stream
 it.lproj/Status.strings -text svneol=native#application/octet-stream
 it.lproj/Sync.nib/keyedobjects.nib -text
 it.lproj/Sync.strings -text svneol=native#application/octet-stream
-it.lproj/Update.nib/keyedobjects.nib -text
 it.lproj/Update.strings -text svneol=native#application/octet-stream
 it.lproj/Validator.nib/keyedobjects.nib -text
 it.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -1158,7 +1143,6 @@ ja.lproj/Queue.strings -text svneol=native#application/octet-stream
 ja.lproj/Status.strings -text svneol=native#application/octet-stream
 ja.lproj/Sync.nib/keyedobjects.nib -text
 ja.lproj/Sync.strings -text svneol=native#application/octet-stream
-ja.lproj/Update.nib/keyedobjects.nib -text
 ja.lproj/Update.strings -text svneol=native#application/octet-stream
 ja.lproj/Validator.nib/keyedobjects.nib -text
 ja.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -1204,7 +1188,6 @@ ko.lproj/Queue.strings -text svneol=native#application/octet-stream
 ko.lproj/Status.strings -text svneol=native#application/octet-stream
 ko.lproj/Sync.nib/keyedobjects.nib -text
 ko.lproj/Sync.strings -text svneol=native#application/octet-stream
-ko.lproj/Update.nib/keyedobjects.nib -text
 ko.lproj/Update.strings -text svneol=native#application/octet-stream
 ko.lproj/Validator.nib/keyedobjects.nib -text
 ko.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -1253,7 +1236,6 @@ nl.lproj/Queue.strings -text svneol=native#application/octet-stream
 nl.lproj/Status.strings -text svneol=native#application/octet-stream
 nl.lproj/Sync.nib/keyedobjects.nib -text
 nl.lproj/Sync.strings -text svneol=native#application/octet-stream
-nl.lproj/Update.nib/keyedobjects.nib -text
 nl.lproj/Update.strings -text svneol=native#application/octet-stream
 nl.lproj/Validator.nib/keyedobjects.nib -text
 nl.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -1300,7 +1282,6 @@ no.lproj/Queue.strings -text svneol=native#application/octet-stream
 no.lproj/Status.strings -text svneol=native#application/octet-stream
 no.lproj/Sync.nib/keyedobjects.nib -text
 no.lproj/Sync.strings -text svneol=native#application/octet-stream
-no.lproj/Update.nib/keyedobjects.nib -text
 no.lproj/Update.strings -text svneol=native#application/octet-stream
 no.lproj/Validator.nib/keyedobjects.nib -text
 no.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -1347,7 +1328,6 @@ pl.lproj/Queue.strings -text svneol=native#application/octet-stream
 pl.lproj/Status.strings -text svneol=native#application/octet-stream
 pl.lproj/Sync.nib/keyedobjects.nib -text
 pl.lproj/Sync.strings -text svneol=native#application/octet-stream
-pl.lproj/Update.nib/keyedobjects.nib -text
 pl.lproj/Update.strings -text svneol=native#application/octet-stream
 pl.lproj/Validator.nib/keyedobjects.nib -text
 pl.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -1392,7 +1372,6 @@ pt.lproj/Queue.strings -text svneol=native#application/octet-stream
 pt.lproj/Status.strings -text svneol=native#application/octet-stream
 pt.lproj/Sync.nib/keyedobjects.nib -text
 pt.lproj/Sync.strings -text svneol=native#application/octet-stream
-pt.lproj/Update.nib/keyedobjects.nib -text
 pt.lproj/Update.strings -text svneol=native#application/octet-stream
 pt.lproj/Validator.nib/keyedobjects.nib -text
 pt.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -1438,7 +1417,6 @@ ru.lproj/Queue.strings -text svneol=native#application/octet-stream
 ru.lproj/Status.strings -text svneol=native#application/octet-stream
 ru.lproj/Sync.nib/keyedobjects.nib -text
 ru.lproj/Sync.strings -text svneol=native#application/octet-stream
-ru.lproj/Update.nib/keyedobjects.nib -text
 ru.lproj/Update.strings -text svneol=native#application/octet-stream
 ru.lproj/Validator.nib/keyedobjects.nib -text
 ru.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -1484,7 +1462,6 @@ sk.lproj/Queue.strings -text
 sk.lproj/Status.strings -text
 sk.lproj/Sync.nib/keyedobjects.nib -text
 sk.lproj/Sync.strings -text
-sk.lproj/Update.nib/keyedobjects.nib -text
 sk.lproj/Update.strings -text
 sk.lproj/Validator.nib/keyedobjects.nib -text
 sk.lproj/Validator.strings -text
@@ -1536,7 +1513,6 @@ sv.lproj/Queue.strings -text svneol=native#application/octet-stream
 sv.lproj/Status.strings -text svneol=native#application/octet-stream
 sv.lproj/Sync.nib/keyedobjects.nib -text
 sv.lproj/Sync.strings -text svneol=native#application/octet-stream
-sv.lproj/Update.nib/keyedobjects.nib -text
 sv.lproj/Update.strings -text svneol=native#application/octet-stream
 sv.lproj/Validator.nib/keyedobjects.nib -text
 sv.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -1618,9 +1594,6 @@ th.lproj/Sync.nib/classes.nib -text
 th.lproj/Sync.nib/info.nib -text
 th.lproj/Sync.nib/keyedobjects.nib -text
 th.lproj/Sync.strings -text
-th.lproj/Update.nib/classes.nib -text
-th.lproj/Update.nib/info.nib -text
-th.lproj/Update.nib/keyedobjects.nib -text
 th.lproj/Update.strings -text
 th.lproj/Validator.nib/classes.nib -text
 th.lproj/Validator.nib/info.nib -text
@@ -1704,9 +1677,6 @@ tr.lproj/Sync.nib/classes.nib -text
 tr.lproj/Sync.nib/info.nib -text
 tr.lproj/Sync.nib/keyedobjects.nib -text
 tr.lproj/Sync.strings -text
-tr.lproj/Update.nib/classes.nib -text
-tr.lproj/Update.nib/info.nib -text
-tr.lproj/Update.nib/keyedobjects.nib -text
 tr.lproj/Update.strings -text
 tr.lproj/Validator.nib/classes.nib -text
 tr.lproj/Validator.nib/info.nib -text
@@ -1853,7 +1823,6 @@ zh_CN.lproj/Queue.strings -text svneol=native#application/octet-stream
 zh_CN.lproj/Status.strings -text svneol=native#application/octet-stream
 zh_CN.lproj/Sync.nib/keyedobjects.nib -text
 zh_CN.lproj/Sync.strings -text svneol=native#application/octet-stream
-zh_CN.lproj/Update.nib/keyedobjects.nib -text
 zh_CN.lproj/Update.strings -text svneol=native#application/octet-stream
 zh_CN.lproj/Validator.nib/keyedobjects.nib -text
 zh_CN.lproj/Validator.strings -text svneol=native#application/octet-stream
@@ -1899,7 +1868,6 @@ zh_TW.lproj/Queue.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Status.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Sync.nib/keyedobjects.nib -text
 zh_TW.lproj/Sync.strings -text svneol=native#application/octet-stream
-zh_TW.lproj/Update.nib/keyedobjects.nib -text
 zh_TW.lproj/Update.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Validator.nib/keyedobjects.nib -text
 zh_TW.lproj/Validator.strings -text svneol=native#application/octet-stream
