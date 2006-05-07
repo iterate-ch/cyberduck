@@ -80,9 +80,6 @@
 		476DD55E09D5B8D100636AD4 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/SUAutomaticUpdateAlert.nib; sourceTree = "<group>"; };
 		476DD55F09D5B8D100636AD4 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Sparkle.strings; sourceTree = "<group>"; };
 		476DD56009D5B8D100636AD4 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/SUUpdateAlert.nib; sourceTree = "<group>"; };
-		476DD56309D5B8E700636AD4 /* is */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = is; path = is.lproj/Sparkle.strings; sourceTree = "<group>"; };
-		476DD56409D5B8E700636AD4 /* is */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = is; path = is.lproj/SUAutomaticUpdateAlert.nib; sourceTree = "<group>"; };
-		476DD56509D5B8E700636AD4 /* is */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = is; path = is.lproj/SUUpdateAlert.nib; sourceTree = "<group>"; };
 		476DD56A09D5B8ED00636AD4 /* it */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = it; path = it.lproj/SUAutomaticUpdateAlert.nib; sourceTree = "<group>"; };
 		476DD56B09D5B8ED00636AD4 /* it */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = it; path = it.lproj/SUUpdateAlert.nib; sourceTree = "<group>"; };
 		476DD56C09D5B8ED00636AD4 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Sparkle.strings; sourceTree = "<group>"; };
@@ -490,7 +487,6 @@
 				476DD55409D5B8B400636AD4 /* fr */,
 				476DD55B09D5B8CA00636AD4 /* ca */,
 				476DD55F09D5B8D100636AD4 /* cs */,
-				476DD56309D5B8E700636AD4 /* is */,
 				476DD56C09D5B8ED00636AD4 /* it */,
 				476DD57009D5B8F300636AD4 /* ja */,
 				476DD57309D5B8FC00636AD4 /* pl */,
@@ -523,7 +519,6 @@
 				476DD55309D5B8B400636AD4 /* fr */,
 				476DD55A09D5B8CA00636AD4 /* ca */,
 				476DD55E09D5B8D100636AD4 /* cs */,
-				476DD56409D5B8E700636AD4 /* is */,
 				476DD56A09D5B8ED00636AD4 /* it */,
 				476DD56F09D5B8F300636AD4 /* ja */,
 				476DD57509D5B8FC00636AD4 /* pl */,
@@ -564,7 +559,6 @@
 				476DD55609D5B8B400636AD4 /* fr */,
 				476DD55C09D5B8CA00636AD4 /* ca */,
 				476DD56009D5B8D100636AD4 /* cs */,
-				476DD56509D5B8E700636AD4 /* is */,
 				476DD56B09D5B8ED00636AD4 /* it */,
 				476DD56D09D5B8F300636AD4 /* ja */,
 				476DD57409D5B8FC00636AD4 /* pl */,
