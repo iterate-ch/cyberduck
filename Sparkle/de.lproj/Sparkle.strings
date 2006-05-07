@@ -2,16 +2,16 @@
 "%.0lfk of %.0lfk" = "%1$.0lfk von %2$.0lfk";
 
 /* No comment provided by engineer. */
-"%@ %@ has been installed and will be ready to use next time %@ starts! Would you like to relaunch now?" = "%1$@ %2$@ has been installed and will be ready to use next time %3$@ starts! Would you like to relaunch now?";
+"%@ %@ has been installed and will be ready to use next time %@ starts! Would you like to relaunch now?" = "%1$@ %2$@ wurde installiert. Soll %3$@ jetzt neu gestartet werden?";
 
 /* No comment provided by engineer. */
 "%@ %@ is currently the newest version available." = "%1$@ %2$@ ist die neuste verfügbare Version.";
 
 /* No comment provided by engineer. */
-"%@ %@ is now available (you have %@). Would you like to download it now?" = "%1$@ %2$@ is now available (you have %3$@). Would you like to download it now?";
+"%@ %@ is now available (you have %@). Would you like to download it now?" = "%1$@ %2$@ ist jetzt verfügbar. (Sie haben %3$@). Möchten Sie die neue Version jetzt herunterladen?";
 
 /* No comment provided by engineer. */
-"%@ does not have permission to write to the application's directory! Are you running off a disk image? If not, ask your system administrator for help." = "%@ does not have permission to write to the application's directory! Are you running off a disk image? If not, ask your system administrator for help.";
+"%@ does not have permission to write to the application's directory! Are you running off a disk image? If not, ask your system administrator for help." = "%@ hat keine Schreibberechtigung!";
 
 /* No comment provided by engineer. */
 "A new version of %@ has been installed!" = "Eine neue Version von %@ wurde installiert!";
@@ -32,13 +32,13 @@
 "An error occurred while trying to download the file. Please try again later." = "An error occurred while trying to download the file. Bitte später erneut versuchen.";
 
 /* No comment provided by engineer. */
-"An update is already in progress!" = "An update is already in progress!";
+"An update is already in progress!" = "Ein Update wird bereits geladen!";
 
 /* No comment provided by engineer. */
 "Cancel" = "Abbrechen";
 
 /* No comment provided by engineer. */
-"Check for updates on startup?" = "Check for updates on startup?";
+"Check for updates on startup?" = "Beim Start nach Updates suchen?";
 
 /* No comment provided by engineer. */
 "Downloading update..." = "Aktualisierte Version herunterladen...";
@@ -65,14 +65,14 @@
 "Update Error!" = "Fehler bei der Aktualisierung!";
 
 /* No comment provided by engineer. */
-"Updating %@" = "Updating %@";
+"Updating %@" = "Aktualisieren von %@";
 
 /* No comment provided by engineer. */
-"Would you like %@ to check for updates on startup? If not, you can initiate the check manually from the application menu." = "Would you like %@ to check for updates on startup? If not, you can initiate the check manually from the application menu.";
+"Would you like %@ to check for updates on startup? If not, you can initiate the check manually from the application menu." = "Möchten Sie, dass %@ beim Start nach Updates sucht? Wenn nicht, können Sie auch manuell vom Programmmenü nach Updates suchen.";
 
 /* No comment provided by engineer. */
 "Yes" = "Ja";
 
 /* No comment provided by engineer. */
-"You're up to date!" = "You're up to date!";
+"You're up to date!" = "Sie sind auf dem neuesten Stand!";
 
