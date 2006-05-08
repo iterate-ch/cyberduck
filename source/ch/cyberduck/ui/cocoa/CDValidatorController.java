@@ -268,6 +268,7 @@ public abstract class CDValidatorController
 
     public void setFileTableView(NSTableView view) {
         this.fileTableView = view;
+        this.fileTableView.setHeaderView(null);
         this.fileTableView.setDataSource(this);
         this.fileTableView.setDelegate(this.fileTableViewDelegate = new CDAbstractTableDelegate() {
 
