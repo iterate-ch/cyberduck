@@ -46,6 +46,7 @@ public class CDDotMacController extends CDController {
             String lib = bundle.resourcePath() + "/Java/" + "libDotMac.dylib";
             log.info("Locating libDotMac.dylib at '" + lib + "'");
             System.load(lib);
+            log.info("libDotMac.dylib loaded");
         }
         catch (UnsatisfiedLinkError e) {
             log.error("Could not load the libDotMac.dylib library:" + e.getMessage());

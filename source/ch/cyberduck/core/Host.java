@@ -520,22 +520,27 @@ public class Host extends NSObject {
         super.finalize();
     }
 
-    static boolean JNI_LOADED = false;
+    private static boolean JNI_LOADED = false;
+
+    private static final Object lock = new Object();
 
     private boolean jni_load() {
-        if(!JNI_LOADED) {
-            try {
-                NSBundle bundle = NSBundle.mainBundle();
-                String lib = bundle.resourcePath() + "/Java/" + "libDiagnostics.dylib";
-                log.info("Locating libDiagnostics.dylib at '" + lib + "'");
-                System.load(lib);
-                JNI_LOADED = true;
+        synchronized(lock) {
+            if(!JNI_LOADED) {
+                try {
+                    NSBundle bundle = NSBundle.mainBundle();
+                    String lib = bundle.resourcePath() + "/Java/" + "libDiagnostics.dylib";
+                    log.info("Locating libDiagnostics.dylib at '" + lib + "'");
+                    System.load(lib);
+                    JNI_LOADED = true;
+                    log.info("libDiagnostics.dylib loaded");
+                }
+                catch (UnsatisfiedLinkError e) {
+                    log.error("Could not load the libDiagnostics.dylib library:" + e.getMessage());
+                }
             }
-            catch (UnsatisfiedLinkError e) {
-                log.error("Could not load the libDiagnostics.dylib library:" + e.getMessage());
-            }
+            return JNI_LOADED;
         }
-        return JNI_LOADED;
     }
 
     /**

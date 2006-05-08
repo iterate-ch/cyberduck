@@ -105,16 +105,21 @@ public class Editor extends CDController {
         }
     }
 
-    static boolean JNI_LOADED = false;
+    private static boolean JNI_LOADED = false;
+
+    private static final Object lock = new Object();
 
     private boolean jni_load() {
         if(!JNI_LOADED) {
             try {
-                NSBundle bundle = NSBundle.mainBundle();
-                String lib = bundle.resourcePath() + "/Java/" + "libODBEdit.dylib";
-                log.info("Locating libODBEdit.dylib at '" + lib + "'");
-                System.load(lib);
-                JNI_LOADED = true;
+                synchronized(lock) {
+                    NSBundle bundle = NSBundle.mainBundle();
+                    String lib = bundle.resourcePath() + "/Java/" + "libODBEdit.dylib";
+                    log.info("Locating libODBEdit.dylib at '" + lib + "'");
+                    System.load(lib);
+                    JNI_LOADED = true;
+                    log.info("libODBEdit.dylib loaded");
+                }
             }
             catch (UnsatisfiedLinkError e) {
                 log.error("Could not load the libODBEdit.dylib library:" + e.getMessage());

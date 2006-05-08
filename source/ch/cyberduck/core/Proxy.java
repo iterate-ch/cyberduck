@@ -34,6 +34,7 @@ public class Proxy {
             String lib = bundle.resourcePath() + "/Java/" + "libProxy.dylib";
             log.info("Locating libProxy.dylib at '" + lib + "'");
             System.load(lib);
+            log.info("libProxy.dylib loaded");
         }
         catch (UnsatisfiedLinkError e) {
             log.error("Could not load the libProxy.dylib library:" + e.getMessage());

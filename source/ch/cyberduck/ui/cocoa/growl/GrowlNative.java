@@ -31,6 +31,7 @@ public class GrowlNative extends Growl {
             String lib = bundle.resourcePath() + "/Java/" + "libGrowl.dylib";
             log.info("Locating libGrowl.dylib at '" + lib + "'");
             System.load(lib);
+            log.info("libGrowl.dylib loaded");
         }
         catch (UnsatisfiedLinkError e) {
             log.error("Could not load the libGrowl.dylib library:" + e.getMessage());

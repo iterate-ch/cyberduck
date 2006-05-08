@@ -48,6 +48,7 @@ public class Keychain {
             String lib = bundle.resourcePath() + "/Java/" + "libKeychain.dylib";
             log.info("Locating libKeychain.dylib at '" + lib + "'");
             System.load(lib);
+            log.info("libKeychain.dylib loaded");
         }
         catch (UnsatisfiedLinkError e) {
             log.error("Could not load the libKeychain.dylib library:" + e.getMessage());

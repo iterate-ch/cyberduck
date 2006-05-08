@@ -39,25 +39,27 @@ import java.util.TimeZone;
 public class Local extends File implements IAttributes {
     private static Logger log = Logger.getLogger(Local.class);
 
-    static boolean JNI_LOADED = false;
+    private static boolean JNI_LOADED = false;
 
     public IAttributes attributes = this;
 
     private boolean jni_load() {
-        if(!JNI_LOADED) {
-            try {
-                NSBundle bundle = NSBundle.mainBundle();
-                String lib = bundle.resourcePath() + "/Java/" + "libLocal.dylib";
-                log.info("Locating libLocal.dylib at '" + lib + "'");
-                System.load(lib);
-                JNI_LOADED = true;
-
+        synchronized(lock) {
+            if(!JNI_LOADED) {
+                try {
+                    NSBundle bundle = NSBundle.mainBundle();
+                    String lib = bundle.resourcePath() + "/Java/" + "libLocal.dylib";
+                    log.info("Locating libLocal.dylib at '" + lib + "'");
+                    System.load(lib);
+                    JNI_LOADED = true;
+                    log.info("libLocal.dylib loaded");
+                }
+                catch (UnsatisfiedLinkError e) {
+                    log.error("Could not load the libLocal.dylib library:" + e.getMessage());
+                }
             }
-            catch (UnsatisfiedLinkError e) {
-                log.error("Could not load the libLocal.dylib library:" + e.getMessage());
-            }
+            return JNI_LOADED;
         }
-        return JNI_LOADED;
     }
 
     public Local(File parent, String name) {
