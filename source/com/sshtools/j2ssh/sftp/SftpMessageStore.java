@@ -48,7 +48,9 @@ class SftpMessageStore extends SubsystemMessageStore {
 		super(encoding);
 	}
 
-	/**
+    private int timeout = Preferences.instance().getInteger("connection.timeout");
+
+    /**
 	 * @param requestId
 	 * @return
 	 * @throws InterruptedException
@@ -75,7 +77,7 @@ class SftpMessageStore extends SubsystemMessageStore {
 			log.debug("Waiting for new messages");
 			wait(5000);
 			waiting += 5000;
-			if(waiting >= Preferences.instance().getInteger("connection.timeout")) {
+			if(waiting >= timeout) {
 				throw new InterruptedException("Timeout waiting for server message");
 			}
 		}

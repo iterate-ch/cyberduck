@@ -26,8 +26,6 @@
  */
 package com.sshtools.j2ssh.io;
 
-import ch.cyberduck.core.Preferences;
-
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -55,9 +53,7 @@ public class DynamicBuffer {
 	/**
 	 * Buffer size when the dynamic buffer is opened
 	 */
-//    protected static final int DEFAULT_BUFFER_SIZE = 32768;
-	protected static final int DEFAULT_BUFFER_SIZE
-	    = Preferences.instance().getInteger("connection.buffer");
+    protected static final int DEFAULT_BUFFER_SIZE = 32768;
 
 	/**
 	 * The buffer
