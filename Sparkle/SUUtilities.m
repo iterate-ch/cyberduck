@@ -8,6 +8,10 @@
 
 #import "SUUtilities.h"
 
+@interface SUUtilities : NSObject
+	+(NSString *)localizedStringForKey:(NSString *)key withComment:(NSString *)comment;
+@end
+
 id SUInfoValueForKey(NSString *key)
 {
 	// InfoPlist.strings entries have priority over Info.plist ones.
@@ -34,3 +38,17 @@ NSString *SUHostAppVersionString()
 	// otherwise, fall back on the non-localized version string
 	return SUHostAppVersion();
 }
+
+NSString *SULocalizedString(NSString *key, NSString *comment) 
+{
+	return [SUUtilities localizedStringForKey:key withComment:comment];
+}
+
+@implementation SUUtilities
+
++ (NSString *)localizedStringForKey:(NSString *)key withComment:(NSString *)comment 
+{
+	return NSLocalizedStringFromTableInBundle(key, @"Sparkle", [NSBundle bundleForClass:[self class]], comment);
+}
+
+@end
