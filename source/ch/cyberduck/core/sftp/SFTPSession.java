@@ -98,8 +98,6 @@ public class SFTPSession extends Session {
                 log.error("IO Error: " + e.getMessage());
             }
             finally {
-                SFTP = null;
-                SSH = null;
                 this.activityStopped();
             }
         }
@@ -117,7 +115,11 @@ public class SFTPSession extends Session {
             log.error(e.getMessage());
         }
         finally {
-            this.connectionDidClose();
+            synchronized(this) {
+                SFTP = null;
+                SSH = null;
+                this.connectionDidClose();
+            }
         }
     }
 

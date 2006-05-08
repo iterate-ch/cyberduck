@@ -85,7 +85,6 @@ public class FTPSession extends Session {
                 log.error("IO Error: " + e.getMessage());
             }
             finally {
-                FTP = null;
                 this.activityStopped();
             }
         }
@@ -103,7 +102,10 @@ public class FTPSession extends Session {
             log.error(e.getMessage());
         }
         finally {
-            this.connectionDidClose();
+            synchronized(this) {
+                FTP = null;
+                this.connectionDidClose();
+            }
         }
     }
 

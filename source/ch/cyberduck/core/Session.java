@@ -208,6 +208,10 @@ public abstract class Session extends NSObject
      */
     public abstract void interrupt();
 
+    /**
+     * 
+     * @param command
+     */
     public abstract void sendCommand(String command);
 
     /**
