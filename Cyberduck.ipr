@@ -17,6 +17,12 @@
         <option name="WHILE_ON_NEW_LINE" value="true" />
         <option name="CATCH_ON_NEW_LINE" value="true" />
         <option name="FINALLY_ON_NEW_LINE" value="true" />
+        <option name="SPACE_BEFORE_IF_PARENTHESES" value="false" />
+        <option name="SPACE_BEFORE_WHILE_PARENTHESES" value="false" />
+        <option name="SPACE_BEFORE_FOR_PARENTHESES" value="false" />
+        <option name="SPACE_BEFORE_CATCH_PARENTHESES" value="false" />
+        <option name="SPACE_BEFORE_SWITCH_PARENTHESES" value="false" />
+        <option name="SPACE_BEFORE_SYNCHRONIZED_PARENTHESES" value="false" />
         <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="6" />
         <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="6" />
         <option name="IMPORT_LAYOUT_TABLE">
