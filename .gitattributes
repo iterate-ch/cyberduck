@@ -1628,7 +1628,7 @@ tr.lproj/Info.nib/classes.nib -text
 tr.lproj/Info.nib/info.nib -text
 tr.lproj/Info.nib/keyedobjects.nib -text
 tr.lproj/Info.strings -text
-tr.lproj/InfoPlist.strings -text
+tr.lproj/InfoPlist.strings -text svneol=unset#application/octet-stream
 tr.lproj/Localizable.strings -text
 tr.lproj/Login.nib/classes.nib -text
 tr.lproj/Login.nib/info.nib -text
