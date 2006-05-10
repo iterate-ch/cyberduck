@@ -92,7 +92,6 @@ h1 {
 
 div#footer {
 	width:100%;
-	margin-left:-2px;
 	font-size:8pt;
-	text-align:left;
+	text-align:center;
 }
