@@ -26,7 +26,6 @@ import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,11 +44,7 @@ public abstract class Queue extends NSObject implements QueueListener {
 
     protected double size = -1;
     private double current = 0;
-    private double speed;
 
-    private Timer progressTimer;
-
-    private boolean running;
     private boolean canceled;
 
     /**
@@ -81,35 +76,6 @@ public abstract class Queue extends NSObject implements QueueListener {
     }
 
     public void queueStarted() {
-        this.progressTimer = new Timer(500,
-                new java.awt.event.ActionListener() {
-                    int i = 0;
-                    double current;
-                    double last;
-                    double[] speeds = new double[8];
-
-                    public void actionPerformed(java.awt.event.ActionEvent e) {
-                        double diff = 0;
-                        current = getCurrent(); // Bytes
-                        if(current <= 0) {
-                            setSpeed(0);
-                        }
-                        else {
-                            speeds[i] = (current - last) * 2; // Bytes per second
-                            i++;
-                            last = current;
-                            if(i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
-                                i = 0;
-                            }
-                            for(int k = 0; k < speeds.length; k++) {
-                                diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
-                            }
-                            setSpeed((diff / speeds.length)); //Bytes per second
-                        }
-
-                    }
-                });
-        this.progressTimer.start();
         QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].queueStarted();
@@ -117,7 +83,6 @@ public abstract class Queue extends NSObject implements QueueListener {
     }
 
     public void queueStopped() {
-        this.progressTimer.stop();
         QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].queueStopped();
@@ -195,7 +160,7 @@ public abstract class Queue extends NSObject implements QueueListener {
 
     public List getChilds() {
         List childs = new ArrayList();
-        for(Iterator rootIter = this.getRoots().iterator(); rootIter.hasNext() && !this.isCanceled();) {
+        for(Iterator rootIter = this.getRoots().iterator(); rootIter.hasNext() && !canceled;) {
             this.getChilds(childs, (Path) rootIter.next());
         }
         return childs;
@@ -204,14 +169,12 @@ public abstract class Queue extends NSObject implements QueueListener {
     /**
      * @param childs
      * @param root
-     * @return
      */
     protected abstract List getChilds(List childs, Path root);
 
     /**
      * @param tokenizer
      * @param filename
-     * @return
      */
     protected boolean isSkipped(StringTokenizer tokenizer, String filename) {
         while(tokenizer.hasMoreTokens()) {
@@ -236,27 +199,38 @@ public abstract class Queue extends NSObject implements QueueListener {
     public void run(boolean resume, boolean headless) {
         try {
             this.canceled = false;
+            this.getSession().addConnectionListener(new ConnectionAdapter() {
+                public void connectionWillOpen() {
+                    running = true;
+                }
+
+                public void connectionDidClose() {
+                    running = false;
+                }
+            });
             this.queueStarted();
             if(headless) {
                 this.jobs = this.getChilds();
+                if(this.canceled) {
+                    return;
+                }
             }
             else {
                 Validator validator = this.getValidator();
-                this.jobs = validator.validate(resume);
+                List validated = validator.validate(resume);
+                if(this.canceled) {
+                    return;
+                }
+                this.jobs = validated;
             }
-            if(this.isCanceled())
-                return;
             this.reset();
-            for(Iterator iter = this.jobs.iterator(); iter.hasNext() && !this.isCanceled();) {
-                ((Path) iter.next()).status.reset();
-            }
-            for(Iterator iter = this.jobs.iterator(); iter.hasNext() && !this.isCanceled();) {
+            for(Iterator iter = this.jobs.iterator(); iter.hasNext() && !canceled;) {
                 this.transfer((Path) iter.next());
             }
         }
         finally {
             this.getSession().close();
-            this.getRoot().getSession().cache().clear(); //TODO
+            this.getRoot().getSession().cache().clear();
             this.queueStopped();
         }
     }
@@ -286,8 +260,10 @@ public abstract class Queue extends NSObject implements QueueListener {
         return this.canceled;
     }
 
+    private boolean running;
+
     public boolean isRunning() {
-        return this.getSession().isConnected();
+        return running;
     }
 
     /**
@@ -320,17 +296,6 @@ public abstract class Queue extends NSObject implements QueueListener {
             this.current = size;
         }
         return this.current; //cached value
-    }
-
-    /**
-     * @return The bytes being processed per second
-     */
-    public double getSpeed() {
-        return this.speed;
-    }
-
-    private void setSpeed(double s) {
-        this.speed = s;
     }
 
     public String toString() {

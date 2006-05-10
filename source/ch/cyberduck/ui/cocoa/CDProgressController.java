@@ -25,6 +25,8 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
+import java.util.Iterator;
+
 /**
  * @version $Id$
  */
@@ -144,9 +146,52 @@ public class CDProgressController extends CDController {
         this.updateProgressfield();
     }
 
+    private Speedometer meter = new Speedometer();
+
     public void update(NSTimer t) {
+        this.meter.update();
         this.updateProgressbar();
         this.updateProgressfield();
+    }
+
+    private class Speedometer {
+        private int i = 0;
+        private double current;
+        private double last;
+        private double[] speeds = new double[8];
+
+        public void update() {
+            double diff = 0;
+            current = queue.getCurrent(); // bytes
+            if(current <= 0) {
+                this.setSpeed(0);
+            }
+            else {
+                speeds[i] = (current - last) * 2; // bytes per second
+                i++;
+                last = current;
+                if(i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
+                    i = 0;
+                }
+                for(int k = 0; k < speeds.length; k++) {
+                    diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
+                }
+                this.setSpeed((diff / speeds.length)); //Bytes per second
+            }
+        }
+
+        private double speed;
+
+        /**
+         * @return The bytes being processed per second
+         */
+        private double getSpeed() {
+            return this.speed;
+        }
+
+        private void setSpeed(double s) {
+            this.speed = s;
+        }
     }
 
     private void updateProgressbar() {
@@ -171,14 +216,20 @@ public class CDProgressController extends CDController {
     private String getProgressText() {
         StringBuffer b = new StringBuffer();
         b.append(Status.getSizeAsString(this.queue.getCurrent()));
+//        if(this.queue.isRunning()) {
+//            b.append(Status.getSizeAsString(this.queue.getCurrent()));
+//        }
+//        else {
+//            b.append(Status.getSizeAsString(this.queue.getRoot().getLocal().getSize()));
+//        }
         b.append(" ");
         b.append(NSBundle.localizedString("of", "1.2MB of 3.4MB"));
         b.append(" ");
         b.append(Status.getSizeAsString(this.queue.getSize()));
         if(this.queue.isRunning()) {
-            if(this.queue.getSpeed() > -1) {
+            if(this.meter.getSpeed() > -1) {
                 b.append(" (");
-                b.append(Status.getSizeAsString(this.queue.getSpeed()));
+                b.append(Status.getSizeAsString(this.meter.getSpeed()));
                 b.append("/sec)");
             }
         }

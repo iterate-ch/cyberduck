@@ -77,44 +77,27 @@ public class CDIconCell extends CDTableCell {
     }
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
-        if (queue != null) {
+        if(queue != null) {
             NSPoint cellPoint = cellFrame.origin();
-
             // drawing file icon
             NSImage fileIcon = notFoundIcon;
+            if(queue.getRoot().getLocal().exists()) {
+                if(queue.numberOfRoots() == 1) {
+                    fileIcon = queue.getRoot().getLocal().isFile() ? NSWorkspace.sharedWorkspace().iconForFile(
+                            queue.getRoot().getLocal().getAbsolute()) : folderIcon;
+                }
+                else {
+                    fileIcon = multipleDocumentsIcon;
+                }
+            }
             NSImage arrowIcon = null;
-
-            if (queue instanceof DownloadQueue) {
+            if(queue instanceof DownloadQueue) {
                 arrowIcon = arrowDownIcon;
-                if (queue.numberOfRoots() == 1) {
-                    if (queue.getRoot().attributes.isFile()) {
-                        fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getRoot().getExtension());
-                    }
-                    else if (queue.getRoot().attributes.isDirectory()) {
-                        fileIcon = folderIcon;
-                    }
-                }
-                else {
-                    fileIcon = multipleDocumentsIcon;
-                }
             }
-            else if (queue instanceof UploadQueue) {
+            else if(queue instanceof UploadQueue) {
                 arrowIcon = arrowUpIcon;
-                if (queue.numberOfRoots() == 1) {
-                    if (queue.getRoot().getLocal().isFile()) {
-                        if (queue.getRoot().getLocal().exists()) {
-                            fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(queue.getRoot().getExtension());
-                        }
-                    }
-                    else if (queue.getRoot().getLocal().isDirectory()) {
-                        fileIcon = folderIcon;
-                    }
-                }
-                else {
-                    fileIcon = multipleDocumentsIcon;
-                }
             }
-            else if (queue instanceof SyncQueue) {
+            else if(queue instanceof SyncQueue) {
                 arrowIcon = syncIcon;
                 fileIcon = folderIcon;
             }
@@ -124,7 +107,7 @@ public class CDIconCell extends CDTableCell {
             fileIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE,
                     cellPoint.y() + 32 + SPACE),
                     NSImage.CompositeSourceOver);
-            if (arrowIcon != null) {
+            if(arrowIcon != null) {
                 arrowIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE * 3,
                         cellPoint.y() + 32 + SPACE * 4),
                         NSImage.CompositeSourceOver);

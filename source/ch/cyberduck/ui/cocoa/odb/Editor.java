@@ -21,7 +21,9 @@ package ch.cyberduck.ui.cocoa.odb;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UploadQueue;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.ui.cocoa.CDController;
+import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSBundle;
@@ -136,7 +138,11 @@ public class Editor extends CDController {
     }
 
     public void didModifyFile() {
-        UploadQueue q = new UploadQueue(this.path);
-        q.run(false, true);
+        this.path.upload();
+        if(this.path.status.isComplete()) {
+            Growl.instance().notify(
+                    NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"),
+                    path.getName());
+        }
     }
 }

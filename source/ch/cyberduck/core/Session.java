@@ -390,9 +390,6 @@ public abstract class Session extends NSObject
         return null;
     }
 
-    /**
-     * @return
-     */
     public Path getForwardPath() {
         int size = this.forwardHistory.size();
         if(size > 0) {

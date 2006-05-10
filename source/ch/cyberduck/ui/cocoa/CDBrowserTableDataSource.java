@@ -48,6 +48,8 @@ public abstract class CDBrowserTableDataSource extends CDController {
     public static final String MODIFIED_COLUMN = "MODIFIED";
     public static final String OWNER_COLUMN = "OWNER";
     public static final String PERMISSIONS_COLUMN = "PERMISSIONS";
+    // virtual column to implement keyboard selection
+    protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
 
     /**
      * Must be efficient; called very frequently by the table view
@@ -129,7 +131,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
             if (identifier.equals(FILENAME_COLUMN)) {
                 return new NSAttributedString(item.getName(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
             }
-            if (identifier.equals("TYPEAHEAD")) {
+            if (identifier.equals(TYPEAHEAD_COLUMN)) {
                 return item.getName();
             }
             if (identifier.equals(SIZE_COLUMN)) {

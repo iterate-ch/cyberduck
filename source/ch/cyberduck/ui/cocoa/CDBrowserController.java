@@ -475,7 +475,6 @@ public class CDBrowserController extends CDWindowController
         // which will refetch paths from the server marked as invalid.
         final NSTableView browser = this.getSelectedBrowserView();
         browser.reloadData();
-        browser.setNeedsDisplay(true); //TODO
         if(this.isMounted()) {
             this.infoLabel.setStringValue(this.getSelectedBrowserView().numberOfRows() + " " +
                     NSBundle.localizedString("files", ""));
@@ -529,8 +528,6 @@ public class CDBrowserController extends CDWindowController
                 for(int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
                     Path p = (Path) this.browserOutlineView.itemAtRow(i);
                     if(null == p) {
-                        //TODO
-                        this.browserOutlineView.setNeedsDisplay(true);
                         break;
                     }
                     if(selected.contains(p)) {
@@ -580,8 +577,6 @@ public class CDBrowserController extends CDWindowController
                         int row = ((Integer) iterator.nextElement()).intValue();
                         Path selected = (Path) this.browserOutlineView.itemAtRow(row);
                         if(null == selected) {
-                            //TODO
-                            this.browserOutlineView.setNeedsDisplay(true);
                             break;
                         }
                         selectedFiles.add(selected);
@@ -1142,7 +1137,7 @@ public class CDBrowserController extends CDWindowController
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {
             NSTableColumn c = new NSTableColumn();
-            c.setIdentifier("ICON");
+            c.setIdentifier(CDBookmarkTableDataSource.ICON_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(32f);
             c.setWidth(32f);
@@ -1158,7 +1153,7 @@ public class CDBrowserController extends CDWindowController
         }
         {
             NSTableColumn c = new NSTableColumn();
-            c.setIdentifier("BOOKMARK");
+            c.setIdentifier(CDBookmarkTableDataSource.BOOKMARK_COLUMN);
             c.headerCell().setStringValue(NSBundle.localizedString("Bookmarks", "A column in the browser"));
             c.setMinWidth(50f);
             c.setWidth(200f);
@@ -1625,8 +1620,6 @@ public class CDBrowserController extends CDWindowController
                     for(int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
                         Path p = (Path) this.browserOutlineView.itemAtRow(i);
                         if(null == p) {
-                            //TODO
-                            this.browserOutlineView.setNeedsDisplay(true);
                             break;
                         }
                         if(p.attributes.isDirectory()) {
@@ -2327,6 +2320,7 @@ public class CDBrowserController extends CDWindowController
                     });
                     return;
                 }
+                getSelectedBrowserView().setNeedsDisplay(true);
                 window.setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername()
                         + "@" + host.getHostname());
                 if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
@@ -2352,6 +2346,7 @@ public class CDBrowserController extends CDWindowController
                     });
                     return;
                 }
+                getSelectedBrowserView().setNeedsDisplay(true);
                 window.setDocumentEdited(false);
                 window.toolbar().validateVisibleItems();
                 session.removeProgressListener(progress);
@@ -2473,7 +2468,6 @@ public class CDBrowserController extends CDWindowController
                 this.session.close();
             }
         }
-        this.getSelectedBrowserView().setNeedsDisplay(true);
     }
 
     /**

@@ -56,6 +56,11 @@ public class CDQueueTableDataSource extends Collection {
         this.load();
     }
 
+    public static final String ICON_COLUMN = "ICON";
+    public static final String PROGRESS_COLUMN = "PROGRESS";
+    // virtual column to implement keyboard selection
+    protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
+
     public int numberOfRowsInTableView(NSTableView tableView) {
         return this.size();
     }
@@ -63,13 +68,13 @@ public class CDQueueTableDataSource extends Collection {
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
         if (row < numberOfRowsInTableView(tableView)) {
             String identifier = (String) tableColumn.identifier();
-            if (identifier.equals("ICON")) {
+            if (identifier.equals(ICON_COLUMN)) {
                 return this.get(row);
             }
-            if (identifier.equals("PROGRESS")) {
+            if (identifier.equals(PROGRESS_COLUMN)) {
                 return this.getController(row).view();
             }
-            if (identifier.equals("TYPEAHEAD")) {
+            if (identifier.equals(TYPEAHEAD_COLUMN)) {
                 return ((Queue) this.get(row)).getName();
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);

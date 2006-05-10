@@ -102,10 +102,7 @@ public class FTPSession extends Session {
             log.error(e.getMessage());
         }
         finally {
-            synchronized(this) {
-                FTP = null;
-                this.connectionDidClose();
-            }
+            this.connectionDidClose();
         }
     }
 

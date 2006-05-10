@@ -200,7 +200,6 @@ public abstract class CDValidatorController
      */
     protected void prompt(Path p) {
         if (!this.hasPrompt()) {
-            //todo call from the main thread
             this.beginSheet(false);
             this.statusIndicator.startAnimation(null);
             this.hasPrompt = true;
@@ -508,13 +507,15 @@ public abstract class CDValidatorController
     protected static final String INCLUDE_COLUMN = "INCLUDE";
     protected static final String ICON_COLUMN = "ICON";
     protected static final String WARNING_COLUMN = "WARNING";
-    public static final String FILENAME_COLUMN = "FILENAME";
-    public static final String SIZE_COLUMN = "SIZE";
+    protected static final String FILENAME_COLUMN = "FILENAME";
+    protected static final String SIZE_COLUMN = "SIZE";
+    // virtual column to implement keyboard selection
+    protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
 
     public void tableViewSetObjectValueForLocation(NSTableView view, Object object, NSTableColumn tableColumn, int row) {
         if (row < this.numberOfRowsInTableView(view)) {
             String identifier = (String) tableColumn.identifier();
-            if (identifier.equals("INCLUDE")) {
+            if (identifier.equals(INCLUDE_COLUMN)) {
                 Path p = (Path) this.workList.get(row);
                 p.setSkipped(((Integer) object).intValue() == NSCell.OffState);
             }
@@ -548,7 +549,7 @@ public abstract class CDValidatorController
             return new NSAttributedString(p.getRemote().getName(),
                     CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
         }
-        if (identifier.equals("TYPEAHEAD")) {
+        if (identifier.equals(TYPEAHEAD_COLUMN)) {
             return p.getRemote().getName();
         }
         return null;

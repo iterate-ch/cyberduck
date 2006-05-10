@@ -238,7 +238,7 @@ public class CDQueueController extends CDWindowController
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {
             NSTableColumn c = new NSTableColumn();
-            c.setIdentifier("ICON");
+            c.setIdentifier(CDQueueTableDataSource.ICON_COLUMN);
             c.setMinWidth(36f);
             c.setWidth(36f);
             c.setMaxWidth(36f);
@@ -254,7 +254,7 @@ public class CDQueueController extends CDWindowController
 
         {
             NSTableColumn c = new NSTableColumn();
-            c.setIdentifier("PROGRESS");
+            c.setIdentifier(CDQueueTableDataSource.PROGRESS_COLUMN);
             c.setMinWidth(80f);
             c.setWidth(300f);
             c.setMaxWidth(1000f);
@@ -365,12 +365,13 @@ public class CDQueueController extends CDWindowController
                 CDQueueController.this.invoke(new Runnable() {
                     public void run() {
                         toolbar.validateVisibleItems();
+                        queueTable.setNeedsDisplay(true);
                     }
                 });
                 queue.getSession().addTranscriptListener(transcript = new TranscriptListener() {
                     public void log(String message) {
-                        logView.textStorage().appendAttributedString(
-                                new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
+//                        logView.textStorage().appendAttributedString(
+//                                new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
                     }
                 });
             }
@@ -379,6 +380,7 @@ public class CDQueueController extends CDWindowController
                 CDQueueController.this.invoke(new Runnable() {
                     public void run() {
                         toolbar.validateVisibleItems();
+                        queueTable.setNeedsDisplay(true);
                         if(queue.isComplete()) {
                             if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
                                 if(!hasRunningTransfers()) {
@@ -764,10 +766,7 @@ public class CDQueueController extends CDWindowController
                 || identifier.equals("Show") || identifier.equals("revealButtonClicked:")) {
             if(this.queueTable.numberOfSelectedRows() == 1) {
                 Queue queue = (Queue) this.queueModel.get(this.queueTable.selectedRow());
-                if(queue instanceof DownloadQueue) {
-                    return queue.getCurrent() > 0;
-                }
-                return true;
+                return queue.getRoot().getLocal().exists();
             }
             return false;
         }

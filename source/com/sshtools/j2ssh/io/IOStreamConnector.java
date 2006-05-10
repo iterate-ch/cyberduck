@@ -30,7 +30,6 @@ import com.sshtools.j2ssh.SshThread;
 
 import org.apache.log4j.Logger;
 
-import javax.swing.event.EventListenerList;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,9 +49,6 @@ public class IOStreamConnector {
 	private boolean closeInput = true;
 	private boolean closeOutput = true;
 
-	/**  */
-	protected EventListenerList listenerList = new EventListenerList();
-
 	/**
 	 * Creates a new IOStreamConnector object.
 	 */
@@ -69,9 +65,6 @@ public class IOStreamConnector {
 		connect(in, out);
 	}
 
-	/**
-	 * @return
-	 */
 	public IOStreamConnectorState getState() {
 		return state;
 	}
@@ -122,25 +115,8 @@ public class IOStreamConnector {
 		thread.start();
 	}
 
-	/**
-	 * @return
-	 */
 	public long getBytes() {
 		return bytes;
-	}
-
-	/**
-	 * @param l
-	 */
-	public void addIOStreamConnectorListener(IOStreamConnectorListener l) {
-		listenerList.add(IOStreamConnectorListener.class, l);
-	}
-
-	/**
-	 * @param l
-	 */
-	public void removeIOStreamConnectorListener(IOStreamConnectorListener l) {
-		listenerList.remove(IOStreamConnectorListener.class, l);
 	}
 
 	class IOStreamConnectorThread implements Runnable {
@@ -182,13 +158,6 @@ public class IOStreamConnector {
 
 						// Flush it
 						out.flush();
-
-						// Inform all of the listeners
-						IOStreamConnectorListener[] l = (IOStreamConnectorListener[])listenerList.getListeners(IOStreamConnectorListener.class);
-
-						for(int i = (l.length-1); i >= 0; i--) {
-							l[i].data(buffer, count);
-						}
 					}
 					else {
 						log.debug("Blocking read returned with "+

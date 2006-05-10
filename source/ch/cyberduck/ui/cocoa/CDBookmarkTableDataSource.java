@@ -69,6 +69,11 @@ public class CDBookmarkTableDataSource extends Collection {
         DOCUMENT_ICON = NSImage.imageNamed("bookmark40.tiff");
     }
 
+    public static final String ICON_COLUMN = "ICON";
+    public static final String BOOKMARK_COLUMN = "BOOKMARK";
+    // virtual column to implement keyboard selection
+    protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
+
     /**
      * NSTableView.DataSource
      */
@@ -82,13 +87,13 @@ public class CDBookmarkTableDataSource extends Collection {
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
         if (row < this.size()) {
             String identifier = (String) tableColumn.identifier();
-            if (identifier.equals("ICON")) {
+            if (identifier.equals(ICON_COLUMN)) {
                 return DOCUMENT_ICON;
             }
-            if (identifier.equals("BOOKMARK")) {
+            if (identifier.equals(BOOKMARK_COLUMN)) {
                 return this.get(row);
             }
-            if (identifier.equals("TYPEAHEAD")) {
+            if (identifier.equals(TYPEAHEAD_COLUMN)) {
                 return ((Host) this.get(row)).getNickname();
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);

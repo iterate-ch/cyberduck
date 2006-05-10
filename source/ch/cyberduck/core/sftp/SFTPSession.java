@@ -115,11 +115,7 @@ public class SFTPSession extends Session {
             log.error(e.getMessage());
         }
         finally {
-            synchronized(this) {
-                SFTP = null;
-                SSH = null;
-                this.connectionDidClose();
-            }
+            this.connectionDidClose();
         }
     }
 
