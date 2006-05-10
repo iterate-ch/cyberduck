@@ -19,7 +19,7 @@ div#menu ul {
 }
 
 div#menu a:hover {
-	font-weight:bold; 
+	font-weight:normal; 
 	text-decoration:none; 
 }
 
