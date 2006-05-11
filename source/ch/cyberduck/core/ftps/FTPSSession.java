@@ -71,7 +71,7 @@ public class FTPSSession extends FTPSession {
     protected void connect() throws IOException, FTPException {
         synchronized (this) {
             SessionPool.instance().add(this);
-            this.connectionWillOpen();
+            this.fireConnectionWillOpenEvent();
             this.message(NSBundle.localizedString("Opening FTP-TLS connection to", "Status", "") + " " + host.getHostname() + "...");
             this.log("=====================================");
             this.log(new java.util.Date().toString());
@@ -104,7 +104,7 @@ public class FTPSSession extends FTPSession {
                 this.host.setIdentification(this.FTP.system());
             }
             this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.host.getIdentification());
-            this.connectionDidOpen();
+            this.fireConnectionDidOpenEvent();
         }
     }
 }

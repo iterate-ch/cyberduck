@@ -36,8 +36,7 @@ import java.util.Vector;
 /**
  * @version $Id$
  */
-public abstract class Session extends NSObject
-        implements ConnectionListener, ProgressListener, TranscriptListener {
+public abstract class Session extends NSObject {
 
     private static Logger log = Logger.getLogger(Session.class);
 
@@ -86,16 +85,18 @@ public abstract class Session extends NSObject
      * Assert that the connection to the remote host is still alive. Open connection if needed.
      *
      * @throws IOException The connection to the remote host failed.
-     * @see Host
      */
     public void check() throws IOException {
+        this.fireActivityStartedEvent();
         try {
-            this.activityStarted();
             if(!this.isConnected()) {
                 this.connect();
             }
             else {
                 this.noop();
+                if(!this.isConnected()) {
+                    this.connect();
+                }
             }
         }
         catch(SocketTimeoutException e) {
@@ -231,7 +232,7 @@ public abstract class Session extends NSObject
         connectionListners.remove(listener);
     }
 
-    public void connectionWillOpen() {
+    protected void fireConnectionWillOpenEvent() {
         log.debug("connectionWillOpen");
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
         for(int i = 0; i < l.length; i++) {
@@ -239,7 +240,7 @@ public abstract class Session extends NSObject
         }
     }
 
-    public void connectionDidOpen() {
+    protected void fireConnectionDidOpenEvent() {
         log.debug("connectionDidOpen");
         if(Preferences.instance().getBoolean("connection.keepalive")) {
             this.keepAliveTimer = new Timer();
@@ -254,7 +255,7 @@ public abstract class Session extends NSObject
         }
     }
 
-    public void connectionWillClose() {
+    protected void fireConnectionWillCloseEvent() {
         log.debug("connectionWillClose");
         this.message(NSBundle.localizedString("Disconnecting...", "Status", ""));
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
@@ -263,7 +264,7 @@ public abstract class Session extends NSObject
         }
     }
 
-    public void connectionDidClose() {
+    protected void fireConnectionDidCloseEvent() {
         log.debug("connectionDidClose");
         if(this.keepAliveTimer != null) {
             this.keepAliveTimer.cancel();
@@ -280,7 +281,7 @@ public abstract class Session extends NSObject
     /**
      * Must always be used in pair with #activityStopped
      */
-    public void activityStarted() {
+    public void fireActivityStartedEvent() {
         log.debug("activityStarted");
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
         for(int i = 0; i < l.length; i++) {
@@ -291,7 +292,7 @@ public abstract class Session extends NSObject
     /**
      * Must always be used in pair with #activityStarted
      */
-    public void activityStopped() {
+    public void fireActivityStoppedEvent() {
         log.debug("activityStopped");
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
         for(int i = 0; i < l.length; i++) {
@@ -309,7 +310,7 @@ public abstract class Session extends NSObject
         transcriptListeners.remove(listener);
     }
 
-    public void log(final String message) {
+    protected void log(final String message) {
         log.info(message);
         TranscriptListener[] l = (TranscriptListener[]) transcriptListeners.toArray(new TranscriptListener[]{});
         for(int i = 0; i < l.length; i++) {

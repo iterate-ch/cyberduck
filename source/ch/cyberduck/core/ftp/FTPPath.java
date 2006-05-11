@@ -149,7 +149,7 @@ public class FTPPath extends Path {
                     session.interrupt();
                 }
                 finally {
-                    session.activityStopped();
+                    session.fireActivityStoppedEvent();
                 }
             }
             return session.cache().get(this, comparator, filter);
@@ -185,7 +185,7 @@ public class FTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.activityStopped();
+                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -195,7 +195,7 @@ public class FTPPath extends Path {
             log.debug("rename:" + filename);
             try {
                 session.check();
-                session.message("Renaming " + this.getName() + " to " + filename); //todo localize
+                session.message(NSBundle.localizedString("Renaming to", "Status", "")+" "+filename+" ("+this.getName()+")");
                 session.FTP.rename(this.getAbsolute(), filename);
                 this.getParent().invalidate();
                 this.setPath(filename);
@@ -209,7 +209,7 @@ public class FTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.activityStopped();
+                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -271,7 +271,7 @@ public class FTPPath extends Path {
                 else if(this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
                     List files = this.list();
                     if(files != null && files.size() > 0) {
-                        for(Iterator iter = files.iterator(); iter.hasNext();) {
+                        for(Iterator iter = files.iterator(); iter.hasNext() && session.isConnected();) {
                             Path file = (Path) iter.next();
                             if(file.attributes.isFile()) {
                                 session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
@@ -296,7 +296,7 @@ public class FTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.activityStopped();
+                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -306,17 +306,16 @@ public class FTPPath extends Path {
             String command = "chown";
             try {
                 session.check();
+                session.message(NSBundle.localizedString("Changing owner to", "Status", "")+" "+this.attributes.getOwner()+" ("+this.getName()+")");
                 if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-                    session.message("Changing owner to " + this.attributes.getOwner() + " on " + this.getName()); //todo localize
                     session.FTP.site(command + " " + owner + " " + this.getAbsolute());
                 }
                 else if(this.attributes.isDirectory()) {
-                    session.message("Changing owner to " + this.attributes.getOwner() + " on " + this.getName()); //todo localize
                     session.FTP.site(command + " " + owner + " " + this.getAbsolute());
                     if(recursive) {
                         List files = this.list();
                         if(files != null) {
-                            for(Iterator iter = files.iterator(); iter.hasNext();) {
+                            for(Iterator iter = files.iterator(); iter.hasNext() && session.isConnected();) {
                                 ((Path) iter.next()).changeOwner(owner, recursive);
                             }
                         }
@@ -332,7 +331,7 @@ public class FTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.activityStopped();
+                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -342,17 +341,16 @@ public class FTPPath extends Path {
             String command = "chgrp";
             try {
                 session.check();
+                session.message(NSBundle.localizedString("Changing group to", "Status", "")+" "+this.attributes.getGroup()+" ("+this.getName()+")");
                 if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-                    session.message("Changing group to " + this.attributes.getGroup() + " on " + this.getName()); //todo localize
                     session.FTP.site(command + " " + group + " " + this.getAbsolute());
                 }
                 else if(this.attributes.isDirectory()) {
-                    session.message("Changing group to " + this.attributes.getGroup() + " on " + this.getName()); //todo localize
                     session.FTP.site(command + " " + group + " " + this.getAbsolute());
                     if(recursive) {
                         List files = this.list();
                         if(files != null) {
-                            for(Iterator iter = files.iterator(); iter.hasNext();) {
+                            for(Iterator iter = files.iterator(); iter.hasNext() && session.isConnected();) {
                                 ((Path) iter.next()).changeGroup(group, recursive);
                             }
                         }
@@ -368,7 +366,7 @@ public class FTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.activityStopped();
+                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -379,17 +377,16 @@ public class FTPPath extends Path {
             String command = "chmod";
             try {
                 session.check();
+                session.message(NSBundle.localizedString("Changing permission to", "Status", "")+" "+perm.getOctalCode()+" ("+this.getName()+")");
                 if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-                    session.message("Changing permission to " + perm.getOctalCode() + " on " + this.getName()); //todo localize
                     session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getAbsolute());
                 }
                 else if(this.attributes.isDirectory()) {
-                    session.message("Changing permission to " + perm.getOctalCode() + " on " + this.getName()); //todo localize
                     session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getAbsolute());
                     if(recursive) {
                         List files = this.list();
                         if(files != null) {
-                            for(Iterator iter = files.iterator(); iter.hasNext();) {
+                            for(Iterator iter = files.iterator(); iter.hasNext() && session.isConnected();) {
                                 ((Path) iter.next()).changePermissions(perm, recursive);
                             }
                         }
@@ -405,7 +402,7 @@ public class FTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.activityStopped();
+                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -474,7 +471,7 @@ public class FTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.activityStopped();
+                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -692,7 +689,7 @@ public class FTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.activityStopped();
+                session.fireActivityStoppedEvent();
             }
         }
     }

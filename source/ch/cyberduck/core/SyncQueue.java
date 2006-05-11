@@ -58,8 +58,8 @@ public class SyncQueue extends Queue {
                 + NSBundle.localizedString("with", "") + " " + this.getRoot().getLocal().getName();
     }
 
-    public void queueStopped() {
-        super.queueStopped();
+    public void fireQueueStoppedEvent() {
+        super.fireQueueStoppedEvent();
         if(this.isComplete() && !this.isCanceled()) {
             this.getSession().message(
                     NSBundle.localizedString("Synchronization complete", "Growl", "Growl Notification"));

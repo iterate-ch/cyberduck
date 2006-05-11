@@ -455,6 +455,10 @@ public class CDBrowserController extends CDWindowController
         this.window.makeFirstResponder(this.getSelectedBrowserView());
     }
 
+    /**
+     *
+     * @param preserveSelection All selected files should be reselected after reloading the view
+     */
     protected void reloadData(final boolean preserveSelection) {
         if(!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit")) {
             this.invoke(new Runnable() {
@@ -2287,7 +2291,7 @@ public class CDBrowserController extends CDWindowController
                         alert(NSAlertPanel.criticalAlertPanel(title, //title
                                 alert, // alert text
                                 NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                                null, //alternative button
+                                diagnostics ? null : NSBundle.localizedString("Disconnect", ""), //alternative button
                                 diagnostics ? NSBundle.localizedString("Open Network Diagnostics",
                                         "Run interactive network diagnostics") : null), //other button
                                 new CDSheetCallback() {
@@ -2295,8 +2299,11 @@ public class CDBrowserController extends CDWindowController
                                         if(returncode == ALTERNATE_OPTION) {
                                             host.diagnose();
                                         }
+                                        if(returncode == CANCEL_OPTION) {
+                                            session.interrupt();
+                                        }
                                     }
-                                });
+                                }, true);
                     }
                 });
                 session.addTranscriptListener(transcript = new TranscriptListener() {
@@ -3099,8 +3106,8 @@ public class CDBrowserController extends CDWindowController
         if(this.hasSession()) {
             this.session.removeConnectionListener(this.listener);
             this.session.getHost().getCredentials().setPassword(null);
-            this.session.cache().clear(); //TODO
-//            this.session = null;
+            this.session.cache().clear();
+            this.session = null;
         }
         this.toolbar.setDelegate(null);
 

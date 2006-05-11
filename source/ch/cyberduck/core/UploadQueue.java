@@ -52,8 +52,8 @@ public class UploadQueue extends Queue {
         return dict;
     }
 
-    public void queueStopped() {
-        super.queueStopped();
+    public void fireQueueStoppedEvent() {
+        super.fireQueueStoppedEvent();
         if(this.isComplete() && !this.isCanceled()) {
             this.getSession().message(
                     NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"));

@@ -370,8 +370,8 @@ public class CDQueueController extends CDWindowController
                 });
                 queue.getSession().addTranscriptListener(transcript = new TranscriptListener() {
                     public void log(String message) {
-//                        logView.textStorage().appendAttributedString(
-//                                new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
+                        logView.textStorage().appendAttributedString(
+                                new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
                     }
                 });
             }
@@ -392,6 +392,17 @@ public class CDQueueController extends CDWindowController
                 });
                 queue.getSession().removeTranscriptListener(transcript);
                 queue.removeListener(this);
+                if(queue.isComplete() && !queue.isCanceled()) {
+                    if(queue instanceof DownloadQueue) {
+                        if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
+                            boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
+                            log.info("Success opening file:" + success);
+                        }
+                    }
+                    if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
+                        removeItem(queue);
+                    }
+                }
             }
         });
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
@@ -509,44 +520,52 @@ public class CDQueueController extends CDWindowController
     }
 
     public void stopButtonClicked(final Object sender) {
-        NSEnumerator iterator = queueTable.selectedRowEnumerator();
-        while(iterator.hasMoreElements()) {
-            Queue queue = (Queue) this.queueModel.get(((Integer) iterator.nextElement()).intValue());
-            if(queue.isRunning()) {
-                queue.cancel();
+        synchronized(sender) {
+            NSEnumerator iterator = queueTable.selectedRowEnumerator();
+            while(iterator.hasMoreElements()) {
+                Queue queue = (Queue) this.queueModel.get(((Integer) iterator.nextElement()).intValue());
+                if(queue.isRunning()) {
+                    queue.cancel();
+                }
             }
         }
     }
 
     public void stopAllButtonClicked(final Object sender) {
-        for(int i = 0; i < this.queueModel.size(); i++) {
-            Queue queue = (Queue) this.queueModel.get(i);
-            if(queue.isRunning()) {
-                queue.cancel();
+        synchronized(sender) {
+            for(int i = 0; i < this.queueModel.size(); i++) {
+                Queue queue = (Queue) this.queueModel.get(i);
+                if(queue.isRunning()) {
+                    queue.cancel();
+                }
             }
         }
     }
 
     public void resumeButtonClicked(final Object sender) {
-        NSEnumerator iterator = queueTable.selectedRowEnumerator();
-        while(iterator.hasMoreElements()) {
-            int i = ((Integer) iterator.nextElement()).intValue();
-            this.queueModel.getController(i).init();
-            Queue queue = (Queue) this.queueModel.get(i);
-            if(!queue.isRunning()) {
-                this.startItem(queue, true);
+        synchronized(sender) {
+            NSEnumerator iterator = queueTable.selectedRowEnumerator();
+            while(iterator.hasMoreElements()) {
+                int i = ((Integer) iterator.nextElement()).intValue();
+                this.queueModel.getController(i).init();
+                Queue queue = (Queue) this.queueModel.get(i);
+                if(!queue.isRunning()) {
+                    this.startItem(queue, true);
+                }
             }
         }
     }
 
     public void reloadButtonClicked(final Object sender) {
-        NSEnumerator iterator = queueTable.selectedRowEnumerator();
-        while(iterator.hasMoreElements()) {
-            int i = ((Integer) iterator.nextElement()).intValue();
-            this.queueModel.getController(i).init();
-            Queue queue = (Queue) this.queueModel.get(i);
-            if(!queue.isRunning()) {
-                this.startItem(queue, false);
+        synchronized(sender) {
+            NSEnumerator iterator = queueTable.selectedRowEnumerator();
+            while(iterator.hasMoreElements()) {
+                int i = ((Integer) iterator.nextElement()).intValue();
+                this.queueModel.getController(i).init();
+                Queue queue = (Queue) this.queueModel.get(i);
+                if(!queue.isRunning()) {
+                    this.startItem(queue, false);
+                }
             }
         }
     }

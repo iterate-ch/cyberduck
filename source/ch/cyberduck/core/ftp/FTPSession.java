@@ -70,12 +70,12 @@ public class FTPSession extends Session {
 
     public void close() {
         synchronized(this) {
-            this.activityStarted();
+            this.fireActivityStartedEvent();
             try {
                 if(this.isConnected()) {
-                    this.connectionWillClose();
+                    this.fireConnectionWillCloseEvent();
                     FTP.quit();
-                    this.connectionDidClose();
+                    this.fireConnectionDidCloseEvent();
                 }
             }
             catch(FTPException e) {
@@ -85,7 +85,7 @@ public class FTPSession extends Session {
                 log.error("IO Error: " + e.getMessage());
             }
             finally {
-                this.activityStopped();
+                this.fireActivityStoppedEvent();
             }
         }
     }
@@ -95,21 +95,23 @@ public class FTPSession extends Session {
             if(null == this.FTP) {
                 return;
             }
-            this.connectionWillClose();
+            this.fireConnectionWillCloseEvent();
             this.FTP.interrupt();
         }
         catch(IOException e) {
             log.error(e.getMessage());
         }
         finally {
-            this.connectionDidClose();
+            FTP = null;
+            this.fireActivityStoppedEvent();
+            this.fireConnectionDidCloseEvent();
         }
     }
 
     protected void connect() throws IOException, FTPException, LoginCanceledException {
         synchronized(this) {
             SessionPool.instance().add(this);
-            this.connectionWillOpen();
+            this.fireConnectionWillOpenEvent();
             this.message(NSBundle.localizedString("Opening FTP connection to", "Status", "") + " " + host.getHostname() + "...");
             this.log("=====================================");
             this.log(new java.util.Date().toString());
@@ -133,14 +135,14 @@ public class FTPSession extends Session {
             else {
                 FTPClient.clearSOCKS();
             }
-            this.FTP.setConnectMode(this.host.getFTPConnectMode());
+            this.FTP.setConnectMode(host.getFTPConnectMode());
             this.message(NSBundle.localizedString("FTP connection opened", "Status", ""));
             this.login();
             if(Preferences.instance().getBoolean("ftp.sendSystemCommand")) {
-                this.host.setIdentification(this.FTP.system());
+                host.setIdentification(this.FTP.system());
             }
-            this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.host.getIdentification());
-            this.connectionDidOpen();
+            this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(host.getIdentification());
+            this.fireConnectionDidOpenEvent();
         }
     }
 
@@ -189,7 +191,12 @@ public class FTPSession extends Session {
     protected void noop() throws IOException {
         synchronized(this) {
             if(this.isConnected()) {
-                this.FTP.noop();
+                try {
+                    this.FTP.noop();
+                }
+                catch(FTPException e) {
+                    this.interrupt();
+                }
             }
         }
     }

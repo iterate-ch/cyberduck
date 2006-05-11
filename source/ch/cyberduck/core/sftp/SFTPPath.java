@@ -162,7 +162,7 @@ public class SFTPPath extends Path {
                     session.interrupt();
                 }
 	            finally {
-	                session.activityStopped();
+	                session.fireActivityStoppedEvent();
 	            }
             }
             return session.cache().get(this, comparator, filter);
@@ -198,7 +198,7 @@ public class SFTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.activityStopped();
+                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -207,7 +207,7 @@ public class SFTPPath extends Path {
         synchronized (session) {
             try {
                 session.check();
-                session.message("Renaming " + this.getName() + " to " + filename);
+                session.message(NSBundle.localizedString("Renaming to", "Status", "")+" "+filename+" ("+this.getName()+")");
                 session.SFTP.renameFile(this.getAbsolute(), filename);
                 this.getParent().invalidate();
                 this.setPath(filename);
@@ -221,7 +221,7 @@ public class SFTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.activityStopped();
+                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -261,7 +261,7 @@ public class SFTPPath extends Path {
                 else if (this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
                     List files = this.list();
                     if (files != null && files.size() > 0) {
-                        for (Iterator iter = files.iterator(); iter.hasNext();) {
+                        for (Iterator iter = files.iterator(); iter.hasNext() && session.isConnected();) {
                             ((Path) iter.next()).delete();
                         }
                     }
@@ -278,7 +278,7 @@ public class SFTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.activityStopped();
+                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -288,17 +288,16 @@ public class SFTPPath extends Path {
             log.debug("changeOwner");
             try {
                 session.check();
+                session.message(NSBundle.localizedString("Changing owner to", "Status", "")+" "+this.attributes.getOwner()+" ("+this.getName()+")");
                 if (this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-                    session.message("Changing owner to " + owner + " on " + this.getName()); //todo localize
                     //session.SFTP.changeOwner(this.getAbsolute(), owner);
                 }
                 else if (this.attributes.isDirectory()) {
-                    session.message("Changing owner to " + owner + " on " + this.getName()); //todo localize
                     //session.SFTP.changeOwner(this.getAbsolute(), owner);
                     if (recursive) {
                         List files = this.list();
                         if (files != null) {
-                            for (Iterator iter = files.iterator(); iter.hasNext();) {
+                            for (Iterator iter = files.iterator(); iter.hasNext() && session.isConnected();) {
                                 ((Path) iter.next()).changeOwner(owner, recursive);
                             }
                         }
@@ -314,7 +313,7 @@ public class SFTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.activityStopped();
+                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -324,17 +323,16 @@ public class SFTPPath extends Path {
             log.debug("changeGroup");
             try {
                 session.check();
+                session.message(NSBundle.localizedString("Changing group to", "Status", "")+" "+this.attributes.getGroup()+" ("+this.getName()+")");
                 if (this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-                    session.message("Changing group to " + group + " on " + this.getName()); //todo localize
                     //session.SFTP.changeGroup(this.getAbsolute(), group);
                 }
                 else if (this.attributes.isDirectory()) {
-                    session.message("Changing group to " + group + " on " + this.getName()); //todo localize
                     //session.SFTP.changeGroup(this.getAbsolute(), group);
                     if (recursive) {
                         List files = this.list();
                         if (files != null) {
-                            for (Iterator iter = files.iterator(); iter.hasNext();) {
+                            for (Iterator iter = files.iterator(); iter.hasNext() && session.isConnected();) {
                                 ((Path) iter.next()).changeGroup(group, recursive);
                             }
                         }
@@ -350,7 +348,7 @@ public class SFTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.activityStopped();
+                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -360,17 +358,16 @@ public class SFTPPath extends Path {
             log.debug("changePermissions");
             try {
                 session.check();
+                session.message(NSBundle.localizedString("Changing permission to", "Status", "")+" "+perm.getOctalCode()+" ("+this.getName()+")");
                 if (this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-	                session.message("Changing permission to " + perm.getOctalCode() + " on " + this.getName()); //todo localize
                     session.SFTP.changePermissions(this.getAbsolute(), perm.getMask());
                 }
                 else if (this.attributes.isDirectory()) {
-	                session.message("Changing permission to " + perm.getOctalCode() + " on " + this.getName()); //todo localize
                     session.SFTP.changePermissions(this.getAbsolute(), perm.getMask());
                     if (recursive) {
                         List files = this.list();
                         if (files != null) {
-                            for (Iterator iter = files.iterator(); iter.hasNext();) {
+                            for (Iterator iter = files.iterator(); iter.hasNext() && session.isConnected();) {
                                 ((Path) iter.next()).changePermissions(perm, recursive);
                             }
                         }
@@ -386,7 +383,7 @@ public class SFTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.activityStopped();
+                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -458,7 +455,7 @@ public class SFTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.activityStopped();
+                session.fireActivityStoppedEvent();
                 try {
                     if (in != null) {
                         in.close();
@@ -575,7 +572,7 @@ public class SFTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.activityStopped();
+                session.fireActivityStoppedEvent();
                 try {
                     if (in != null) {
                         in.close();

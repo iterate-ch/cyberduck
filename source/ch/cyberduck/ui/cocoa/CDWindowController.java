@@ -113,7 +113,7 @@ public abstract class CDWindowController extends CDController
      *
      * @param sheet
      */
-    protected void alert(NSWindow sheet) {
+    protected void alert(final NSWindow sheet) {
         this.alert(sheet, new CDSheetCallback() {
             public void callback(int returncode) {
                 ;
@@ -121,12 +121,16 @@ public abstract class CDWindowController extends CDController
         });
     }
 
-    protected void alert(NSWindow sheet, final CDSheetCallback callback) {
+    protected void alert(final NSWindow sheet, final CDSheetCallback callback) {
+        this.alert(sheet, callback, false);
+    }
+
+    protected void alert(final NSWindow sheet, final CDSheetCallback callback, final boolean blocking) {
         CDSheetController c = new CDSheetController(this, sheet) {
             public void callback(final int returncode) {
                 callback.callback(returncode);
             }
         };
-        c.beginSheet(false);
+        c.beginSheet(blocking);
     }
 }

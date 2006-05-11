@@ -389,6 +389,9 @@ public class CDInfoController extends CDWindowController {
         Path f = null;
         for (Iterator i = files.iterator(); i.hasNext();) {
             f = (Path) i.next();
+            if(!f.getSession().isConnected()) {
+                break;
+            }
             f.changePermissions(permission,
                     this.recursiveCheckbox.state() == NSCell.OnState);
         }

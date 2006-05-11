@@ -82,13 +82,13 @@ public class SFTPSession extends Session {
 
     public void close() {
         synchronized(this) {
-            this.activityStarted();
+            this.fireActivityStartedEvent();
             try {
                 if(this.isConnected()) {
-                    this.connectionWillClose();
+                    this.fireConnectionWillCloseEvent();
                     SFTP.close();
                     SSH.disconnect();
-                    this.connectionDidClose();
+                    this.fireConnectionDidCloseEvent();
                 }
             }
             catch(SshException e) {
@@ -98,7 +98,7 @@ public class SFTPSession extends Session {
                 log.error("IO Error: " + e.getMessage());
             }
             finally {
-                this.activityStopped();
+                this.fireActivityStoppedEvent();
             }
         }
     }
@@ -108,14 +108,17 @@ public class SFTPSession extends Session {
             if(null == this.SSH) {
                 return;
             }
-            this.connectionWillClose();
+            this.fireConnectionWillCloseEvent();
             this.SSH.interrupt();
         }
         catch(IOException e) {
             log.error(e.getMessage());
         }
         finally {
-            this.connectionDidClose();
+            SFTP = null;
+            SSH = null;
+            this.fireActivityStoppedEvent();
+            this.fireConnectionDidCloseEvent();
         }
     }
 
@@ -132,7 +135,7 @@ public class SFTPSession extends Session {
     protected void connect() throws IOException, SshException, LoginCanceledException {
         synchronized(this) {
             SessionPool.instance().add(this);
-            this.connectionWillOpen();
+            this.fireConnectionWillOpenEvent();
             this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getHostname() + "...");
             this.log("=====================================");
             this.log(new java.util.Date().toString());
@@ -188,7 +191,7 @@ public class SFTPSession extends Session {
                     }
                 }, host.getEncoding());
                 this.message(NSBundle.localizedString("SFTP subsystem ready", "Status", ""));
-                this.connectionDidOpen();
+                this.fireConnectionDidOpenEvent();
             }
         }
     }
@@ -317,7 +320,12 @@ public class SFTPSession extends Session {
     protected void noop() throws IOException, SshException {
         synchronized(this) {
             if(this.isConnected()) {
-                this.SSH.noop();
+                try {
+                    this.SSH.noop();
+                }
+                catch(SshException e) {
+                    this.close();
+                }
             }
         }
     }

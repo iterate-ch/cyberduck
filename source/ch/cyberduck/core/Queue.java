@@ -35,7 +35,7 @@ import java.util.Vector;
 /**
  * @version $Id$
  */
-public abstract class Queue extends NSObject implements QueueListener {
+public abstract class Queue extends NSObject {
     protected static Logger log = Logger.getLogger(Queue.class);
 
     //	private Worker worker;
@@ -75,14 +75,14 @@ public abstract class Queue extends NSObject implements QueueListener {
         queueListeners.remove(listener);
     }
 
-    public void queueStarted() {
+    protected void fireQueueStartedEvent() {
         QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].queueStarted();
         }
     }
 
-    public void queueStopped() {
+    protected void fireQueueStoppedEvent() {
         QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].queueStopped();
@@ -208,7 +208,7 @@ public abstract class Queue extends NSObject implements QueueListener {
                     running = false;
                 }
             });
-            this.queueStarted();
+            this.fireQueueStartedEvent();
             if(headless) {
                 this.jobs = this.getChilds();
                 if(this.canceled) {
@@ -231,7 +231,7 @@ public abstract class Queue extends NSObject implements QueueListener {
         finally {
             this.getSession().close();
             this.getRoot().getSession().cache().clear();
-            this.queueStopped();
+            this.fireQueueStoppedEvent();
         }
     }
 

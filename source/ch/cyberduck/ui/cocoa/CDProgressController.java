@@ -18,14 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.QueueListener;
+import ch.cyberduck.core.Status;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
-
-import java.util.Iterator;
 
 /**
  * @version $Id$
@@ -33,7 +34,7 @@ import java.util.Iterator;
 public class CDProgressController extends CDController {
     private static Logger log = Logger.getLogger(CDProgressController.class);
 
-    private String statusText = "";
+    private String statusText;
     private StringBuffer errorText;
 
     private NSTimer progressTimer;
@@ -77,7 +78,8 @@ public class CDProgressController extends CDController {
                         progressBar.setNeedsDisplay(true);
                         errorText = new StringBuffer();
                         alertIcon.setHidden(true);
-                        progressTimer = new NSTimer(0.5, //seconds
+                        meter = new Speedometer();
+                        progressTimer = new NSTimer(0.2, //seconds
                                 CDProgressController.this, //target
                                 new NSSelector("update", new Class[]{NSTimer.class}),
                                 queue, //userInfo
@@ -121,17 +123,6 @@ public class CDProgressController extends CDController {
                         progressBar.setIndeterminate(true);
                         progressBar.stopAnimation(null);
                         progressBar.setHidden(true);
-                        if(queue.isComplete() && !queue.isCanceled()) {
-                            if(queue instanceof DownloadQueue) {
-                                if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
-                                    boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
-                                    log.info("Success opening file:" + success);
-                                }
-                            }
-                            if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
-                                CDQueueController.instance().removeItem(queue);
-                            }
-                        }
                     }
                 });
                 queue.removeListener(this);
@@ -146,53 +137,49 @@ public class CDProgressController extends CDController {
         this.updateProgressfield();
     }
 
-    private Speedometer meter = new Speedometer();
+    private Speedometer meter;
 
     public void update(NSTimer t) {
-        this.meter.update();
         this.updateProgressbar();
         this.updateProgressfield();
     }
 
     private class Speedometer {
-        private int i = 0;
-        private double current;
-        private double last;
-        private double[] speeds = new double[8];
-
-        public void update() {
-            double diff = 0;
-            current = queue.getCurrent(); // bytes
-            if(current <= 0) {
-                this.setSpeed(0);
-            }
-            else {
-                speeds[i] = (current - last) * 2; // bytes per second
-                i++;
-                last = current;
-                if(i == 8) { // wir wollen immer den schnitt der letzten vier sekunden
-                    i = 0;
-                }
-                for(int k = 0; k < speeds.length; k++) {
-                    diff = diff + speeds[k]; // summe der differenzen zwischen einer halben sekunde
-                }
-                this.setSpeed((diff / speeds.length)); //Bytes per second
-            }
-        }
-
-        private double speed;
+        //the time to start counting bytes transfered
+        private long timestamp = -1;
+        //initial data already transfered
+        private double initialBytesTransfered = queue.getCurrent();
 
         /**
+         * Returns the data transfer rate. The rate should depend on the transfer
+         * rate timestamp.
+         *
          * @return The bytes being processed per second
          */
-        private double getSpeed() {
-            return this.speed;
-        }
-
-        private void setSpeed(double s) {
-            this.speed = s;
+        public int getSpeed() {
+            double bytesTransferred = queue.getCurrent();
+            if(bytesTransferred > initialBytesTransfered) {
+                if(-1 == timestamp) {
+                    //no bytes transferred yet; reset the clock
+                    timestamp = System.currentTimeMillis();
+                }
+                // number of seconds data was actually transferred
+                double sec = (System.currentTimeMillis() - timestamp) / 1000;
+                // bytes per second
+                return (int) (bytesTransferred / sec);
+            }
+            return -1;
         }
     }
+
+//    private int getPercent() {
+//        int percentage = 0;
+//        double transferDataSize = queue.getSize();
+//        if(transferDataSize > 0) {
+//            percentage = (int) (queue.getCurrent() * 100L / transferDataSize);
+//        }
+//        return percentage;
+//    }
 
     private void updateProgressbar() {
         if(queue.isInitialized()) {
@@ -216,25 +203,20 @@ public class CDProgressController extends CDController {
     private String getProgressText() {
         StringBuffer b = new StringBuffer();
         b.append(Status.getSizeAsString(this.queue.getCurrent()));
-//        if(this.queue.isRunning()) {
-//            b.append(Status.getSizeAsString(this.queue.getCurrent()));
-//        }
-//        else {
-//            b.append(Status.getSizeAsString(this.queue.getRoot().getLocal().getSize()));
-//        }
         b.append(" ");
         b.append(NSBundle.localizedString("of", "1.2MB of 3.4MB"));
         b.append(" ");
         b.append(Status.getSizeAsString(this.queue.getSize()));
+//        b.append(" (");b.append(this.getPercent());b.append("%)");
         if(this.queue.isRunning()) {
-            if(this.meter.getSpeed() > -1) {
-                b.append(" (");
-                b.append(Status.getSizeAsString(this.meter.getSpeed()));
-                b.append("/sec)");
+            int speed = this.meter.getSpeed();
+            if(speed > -1) {
+                b.append(" (");b.append(Status.getSizeAsString(speed));b.append("/sec)");
+//                b.append(" ");b.append((int)(queue.getSize() - initialBytesTransfered)/speed);b.append("s remaining");
             }
+            b.append(" ");
+            b.append(this.statusText);
         }
-        b.append(" ");
-        b.append(this.statusText);
         return b.toString();
     }
 

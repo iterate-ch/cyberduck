@@ -52,8 +52,8 @@ public class DownloadQueue extends Queue {
         super(dict);
     }
 
-    public void queueStopped() {
-        super.queueStopped();
+    public void fireQueueStoppedEvent() {
+        super.fireQueueStoppedEvent();
         if(this.isComplete() && !this.isCanceled()) {
             this.getSession().message(
                     NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
