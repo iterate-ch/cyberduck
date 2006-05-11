@@ -554,11 +554,11 @@ public class CDBrowserController extends CDWindowController
      * @return All selected paths or an empty list if there is no selection
      */
     protected List getSelectedPaths() {
+        List selectedFiles = new ArrayList();
         if(this.isMounted()) {
             switch(this.browserSwitchView.selectedSegment()) {
                 case LIST_VIEW: {
                     NSEnumerator iterator = this.browserListView.selectedRowEnumerator();
-                    List selectedFiles = new ArrayList();
                     List childs = this.browserListModel.childs(this.workdir());
                     while(iterator.hasMoreElements()) {
                         int row = ((Integer) iterator.nextElement()).intValue();
@@ -568,11 +568,10 @@ public class CDBrowserController extends CDWindowController
                         }
                         selectedFiles.add(selected);
                     }
-                    return selectedFiles;
+                    break;
                 }
                 case OUTLINE_VIEW: {
                     NSEnumerator iterator = this.browserOutlineView.selectedRowEnumerator();
-                    List selectedFiles = new ArrayList();
                     while(iterator.hasMoreElements()) {
                         int row = ((Integer) iterator.nextElement()).intValue();
                         Path selected = (Path) this.browserOutlineView.itemAtRow(row);
@@ -581,11 +580,11 @@ public class CDBrowserController extends CDWindowController
                         }
                         selectedFiles.add(selected);
                     }
-                    return selectedFiles;
+                    break;
                 }
             }
         }
-        return null;
+        return selectedFiles;
     }
 
     protected int getSelectionCount() {
@@ -2787,7 +2786,10 @@ public class CDBrowserController extends CDWindowController
             return this.isMounted();
         }
         if(identifier.equals("Disconnect") || identifier.equals("disconnectButtonClicked:")) {
-            return this.isConnected() || this.activityRunning;
+            if(!this.isConnected()) {
+                return this.activityRunning;
+            }
+            return this.isConnected();
         }
         if(identifier.equals("printDocument:")) {
             return this.isMounted();
