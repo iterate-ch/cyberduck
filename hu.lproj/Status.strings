@@ -67,3 +67,15 @@
 /* No comment provided by engineer. */
 "Uploading" = "Feltöltés";
 
+/* Renaming file status message; Renaming to <new filename>. */
+"Renaming to" = "Renaming to";
+
+/* Changing the owner of a file */
+"Changing owner to" = "Changing owner to";
+
+/* Changing the group owner of a file */
+"Changing group to" = "Changing group to";
+
+/* Changing UNIX file permissions */
+"Changing permission to" = "Changing permission to";
+
