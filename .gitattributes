@@ -1798,7 +1798,7 @@ zh_CN.lproj/Queue.nib/keyedobjects.nib -text
 zh_CN.lproj/Queue.strings -text svneol=native#application/octet-stream
 zh_CN.lproj/Status.strings -text svneol=native#application/octet-stream
 zh_CN.lproj/Sync.nib/keyedobjects.nib -text
-zh_CN.lproj/Sync.strings -text svneol=native#application/octet-stream
+zh_CN.lproj/Sync.strings -text
 zh_CN.lproj/Validator.nib/keyedobjects.nib -text
 zh_CN.lproj/Validator.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Bookmark.nib/keyedobjects.nib -text
