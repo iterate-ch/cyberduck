@@ -13,9 +13,11 @@ default:
 	xcodebuild -project $(PROJECT) -target build -configuration $(BUILDSTYLE)
 
 release:
+	find $(BUILD_DIR)/$(BUILDSTYLE) -name Info.plist -ls -exec rm {} \;
+	find $(BUILD_DIR)/$(BUILDSTYLE) -name InfoPlist.strings -ls -exec rm {} \;
 	cd Sparkle; make release
 	cd Spotlight\ Importer; make release
-	cd Dashboard\ Widget; make clean; make release
+	cd Dashboard\ Widget; make release
 	xcodebuild -project $(PROJECT) -target release -configuration $(BUILDSTYLE)
 	cd $(BUILD_DIR)/$(BUILDSTYLE); tar -czf ../Cyberduck-`svnversion ..`.tar.gz Cyberduck.app
 
