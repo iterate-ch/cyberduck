@@ -346,7 +346,9 @@ public class CDConnectionController extends CDSheetController
             NSArray selected = window.filenames();
             java.util.Enumeration enumerator = selected.objectEnumerator();
             while (enumerator.hasMoreElements()) {
-                this.pkLabel.setStringValue((String) enumerator.nextElement());
+                String pk = NSPathUtilities.stringByAbbreviatingWithTildeInPath(
+                        (String) enumerator.nextElement());
+                this.pkLabel.setStringValue(pk);
             }
             this.passField.setEnabled(false);
         }
@@ -518,7 +520,8 @@ public class CDConnectionController extends CDSheetController
         this.pkCheckbox.setEnabled(selectedItem.getProtocol().equals(Session.SFTP));
         if (selectedItem.getCredentials().getPrivateKeyFile() != null) {
             this.pkCheckbox.setState(NSCell.OnState);
-            this.pkLabel.setStringValue(selectedItem.getCredentials().getPrivateKeyFile());
+            this.pkLabel.setStringValue(
+                    selectedItem.getCredentials().getPrivateKeyFile());
         }
         else {
             this.pkCheckbox.setState(NSCell.OffState);

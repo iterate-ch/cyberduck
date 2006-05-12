@@ -35,6 +35,7 @@ import ch.cyberduck.core.*;
 
 import com.apple.cocoa.foundation.NSAutoreleasePool;
 import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
 
@@ -233,7 +234,9 @@ public class SFTPSession extends Session {
         PublicKeyAuthenticationClient pk = new PublicKeyAuthenticationClient();
         pk.setUsername(credentials.getUsername());
         // Get the private key file
-        SshPrivateKeyFile keyFile = SshPrivateKeyFile.parse(new java.io.File(credentials.getPrivateKeyFile()));
+        SshPrivateKeyFile keyFile = SshPrivateKeyFile.parse(
+                new java.io.File(NSPathUtilities.stringByExpandingTildeInPath(credentials.getPrivateKeyFile()))
+        );
         // If the private key is passphrase protected then ask for the passphrase
         String passphrase = null;
         if(keyFile.isPassphraseProtected()) {

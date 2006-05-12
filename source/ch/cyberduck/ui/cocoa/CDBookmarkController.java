@@ -22,11 +22,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSNotificationCenter;
-import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -252,7 +248,8 @@ public class CDBookmarkController extends CDWindowController {
             NSArray selected = sheet.filenames();
             java.util.Enumeration enumerator = selected.objectEnumerator();
             while (enumerator.hasMoreElements()) {
-                String pk = (String) enumerator.nextElement();
+                String pk = NSPathUtilities.stringByAbbreviatingWithTildeInPath(
+                        (String) enumerator.nextElement());
                 this.host.getCredentials().setPrivateKeyFile(pk);
                 this.pkLabel.setStringValue(pk);
             }
