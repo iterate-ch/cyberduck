@@ -23,6 +23,12 @@ import com.apple.cocoa.application.NSFont;
 
 import org.apache.log4j.Logger;
 
+import java.util.Map;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * @version $Id$
  */
@@ -31,6 +37,18 @@ public abstract class CDController extends NSObject {
 
     protected static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)},
             new Object[]{NSAttributedString.FontAttributeName});
+
+    protected static String[] availableCharsets() {
+        List charsets = new ArrayList();
+        for (Iterator iter = java.nio.charset.Charset.availableCharsets().values().iterator(); iter.hasNext(); ) {
+            String name = ((java.nio.charset.Charset) iter.next()).displayName();
+            if(!(name.startsWith("IBM") || name.startsWith("x-"))) {
+                charsets.add(name);
+            }
+        }
+        return (String[])charsets.toArray(new String[0]);
+    }
+
 
     public CDController() {
         //Assuming this is always called from the main thread #currentRunLoop will return the main run loop

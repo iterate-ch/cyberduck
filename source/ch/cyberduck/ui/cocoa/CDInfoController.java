@@ -307,6 +307,7 @@ public class CDInfoController extends CDWindowController {
                     filenameField);
 
         }
+        this.applyButton.setEnabled(controller.isConnected());
     }
 
     private void update(NSButton checkbox, boolean condition) {
@@ -389,7 +390,7 @@ public class CDInfoController extends CDWindowController {
         Path f = null;
         for (Iterator i = files.iterator(); i.hasNext();) {
             f = (Path) i.next();
-            if(!f.getSession().isConnected()) {
+            if(!controller.isConnected()) {
                 break;
             }
             f.changePermissions(permission,

@@ -1503,15 +1503,7 @@ public class CDBrowserController extends CDWindowController
         this.encodingPopup.setTarget(this);
         this.encodingPopup.setAction(new NSSelector("encodingButtonClicked", new Class[]{Object.class}));
         this.encodingPopup.removeAllItems();
-        java.util.SortedMap charsets = java.nio.charset.Charset.availableCharsets();
-        String[] items = new String[charsets.size()];
-        java.util.Iterator iterator = charsets.values().iterator();
-        int i = 0;
-        while(iterator.hasNext()) {
-            items[i] = ((java.nio.charset.Charset) iterator.next()).name();
-            i++;
-        }
-        this.encodingPopup.addItemsWithTitles(new NSArray(items));
+        this.encodingPopup.addItemsWithTitles(new NSArray(CDController.availableCharsets()));
         this.encodingPopup.setTitle(Preferences.instance().getProperty("browser.charset.encoding"));
     }
 
@@ -2717,7 +2709,7 @@ public class CDBrowserController extends CDWindowController
             return true;
         }
         if(identifier.equals("encodingButtonClicked:")) {
-            return true;
+            return !activityRunning;
         }
         if(identifier.equals("addBookmarkButtonClicked:")) {
             return true;
@@ -2821,6 +2813,7 @@ public class CDBrowserController extends CDWindowController
 
         this.pathPopupButton.setEnabled(this.isMounted());
         this.searchField.setEnabled(this.isMounted());
+        this.encodingPopup.setEnabled(!this.activityRunning);
 
         String identifier = item.itemIdentifier();
         if(identifier.equals("Edit")) {
@@ -2928,11 +2921,10 @@ public class CDBrowserController extends CDWindowController
             NSMenuItem encodingMenu = new NSMenuItem(NSBundle.localizedString("Encoding", "Toolbar item"),
                     new NSSelector("encodingButtonClicked", new Class[]{Object.class}),
                     "");
-            java.util.SortedMap charsets = java.nio.charset.Charset.availableCharsets();
-            java.util.Iterator iter = charsets.values().iterator();
+            String[] charsets = CDController.availableCharsets();
             NSMenu charsetMenu = new NSMenu();
-            while(iter.hasNext()) {
-                charsetMenu.addItem(new NSMenuItem(((java.nio.charset.Charset) iter.next()).name(),
+            for(int i = 0; i < charsets.length; i++) {
+                charsetMenu.addItem(new NSMenuItem(charsets[i],
                         new NSSelector("encodingButtonClicked", new Class[]{Object.class}),
                         ""));
             }

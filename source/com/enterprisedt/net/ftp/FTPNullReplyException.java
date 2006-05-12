@@ -5,7 +5,7 @@ import java.io.IOException;
 /**
  * @version $Id$
  */
-public class FTPNullReplyException extends IOException {
+public class FTPNullReplyException extends FTPException {
 
     public FTPNullReplyException() {
         super("Unexpected null reply received");

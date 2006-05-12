@@ -306,15 +306,7 @@ public class CDPreferencesController extends CDWindowController {
         this.encodingCombobox.setTarget(this);
         this.encodingCombobox.setAction(new NSSelector("encodingComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.encodingCombobox.removeAllItems();
-        java.util.SortedMap charsets = java.nio.charset.Charset.availableCharsets();
-        String[] items = new String[charsets.size()];
-        java.util.Iterator iterator = charsets.values().iterator();
-        int i = 0;
-        while (iterator.hasNext()) {
-            items[i] = ((java.nio.charset.Charset) iterator.next()).name();
-            i++;
-        }
-        this.encodingCombobox.addItemsWithTitles(new NSArray(items));
+        this.encodingCombobox.addItemsWithTitles(new NSArray(CDController.availableCharsets()));
         this.encodingCombobox.setTitle(Preferences.instance().getProperty("browser.charset.encoding"));
     }
 

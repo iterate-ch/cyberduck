@@ -66,10 +66,9 @@ public class CDMainController extends CDController {
 
     public void setEncodingMenu(NSMenu encodingMenu) {
         this.encodingMenu = encodingMenu;
-        java.util.SortedMap charsets = java.nio.charset.Charset.availableCharsets();
-        java.util.Iterator iterator = charsets.values().iterator();
-        while (iterator.hasNext()) {
-            this.encodingMenu.addItem(new NSMenuItem(((java.nio.charset.Charset) iterator.next()).name(),
+        String[] charsets = CDController.availableCharsets();
+        for(int i = 0; i < charsets.length; i++) {
+            this.encodingMenu.addItem(new NSMenuItem(charsets[i],
                     new NSSelector("encodingButtonClicked", new Class[]{Object.class}),
                     ""));
         }

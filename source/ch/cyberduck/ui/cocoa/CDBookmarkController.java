@@ -68,15 +68,7 @@ public class CDBookmarkController extends CDWindowController {
         this.encodingPopup = encodingPopup;
         this.encodingPopup.setEnabled(true);
         this.encodingPopup.removeAllItems();
-        java.util.SortedMap charsets = java.nio.charset.Charset.availableCharsets();
-        String[] items = new String[charsets.size()];
-        java.util.Iterator iterator = charsets.values().iterator();
-        int i = 0;
-        while (iterator.hasNext()) {
-            items[i] = ((java.nio.charset.Charset) iterator.next()).name();
-            i++;
-        }
-        this.encodingPopup.addItemsWithTitles(new NSArray(items));
+        this.encodingPopup.addItemsWithTitles(new NSArray(CDConnectionController.availableCharsets()));
         this.encodingPopup.setTitle(this.host.getEncoding());
         this.encodingPopup.setTarget(this);
         this.encodingPopup.setAction(new NSSelector("encodingSelectionChanged", new Class[]{Object.class}));
