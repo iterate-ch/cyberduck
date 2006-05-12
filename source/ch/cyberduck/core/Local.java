@@ -23,15 +23,14 @@ import glguerin.io.Pathname;
 import glguerin.io.imp.mac.macosx.MacOSXForker;
 
 import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -107,11 +106,11 @@ public class Local extends File implements IAttributes {
     public void setProgress(int progress) {
         if (Preferences.instance().getBoolean("queue.download.updateIcon")) {
 			synchronized(lock) {
+                this.jni_load();
 	            if (-1 == progress) {
 	                this.removeResourceFork();
 	            }
 	            else {
-                    this.jni_load();
                     this.setIconFromFile(this.getAbsolute(), "download" + progress + ".icns");
 	            }
 	        }
