@@ -442,16 +442,16 @@ public class SFTPPath extends Path {
                 }
             }
             catch (SshException e) {
-                session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
                 Growl.instance().notify(
                         NSBundle.localizedString("Download failed", "Growl", "Growl Notification"),
                         this.getName());
+                session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 Growl.instance().notify(
                         NSBundle.localizedString("Download failed", "Growl", "Growl Notification"),
                         this.getName());
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.interrupt();
             }
             finally {
@@ -559,16 +559,16 @@ public class SFTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch (SshException e) {
-                session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
                 Growl.instance().notify(
                         NSBundle.localizedString("Upload failed", "Growl", "Growl Notification"),
                         this.getName());
+                session.error(new SshException(e.getMessage()+" (" + this.getName() + ")"));
             }
             catch (IOException e) {
-                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 Growl.instance().notify(
                         NSBundle.localizedString("Upload failed", "Growl", "Growl Notification"),
                         this.getName());
+                session.error(new IOException(e.getMessage()+" ("+this.getName()+")"));
                 session.interrupt();
             }
             finally {
