@@ -243,7 +243,7 @@ public class CDQueueController extends CDWindowController
             c.setWidth(36f);
             c.setMaxWidth(36f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
                 c.setResizable(true);
@@ -259,7 +259,7 @@ public class CDQueueController extends CDWindowController
             c.setWidth(300f);
             c.setMaxWidth(1000f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
                 c.setResizable(true);

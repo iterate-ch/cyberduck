@@ -845,7 +845,7 @@ public class CDBrowserController extends CDWindowController
             c.setWidth(250f);
             c.setMaxWidth(1000f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
                 c.setResizable(true);
@@ -937,7 +937,7 @@ public class CDBrowserController extends CDWindowController
             c.setWidth(20f);
             c.setMaxWidth(20f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
                 c.setResizable(true);
@@ -954,7 +954,7 @@ public class CDBrowserController extends CDWindowController
             c.setWidth(250f);
             c.setMaxWidth(1000f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
                 c.setResizable(true);
@@ -1018,7 +1018,7 @@ public class CDBrowserController extends CDWindowController
             c.setWidth(180f);
             c.setMaxWidth(500f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
                 c.setResizable(true);
@@ -1039,7 +1039,7 @@ public class CDBrowserController extends CDWindowController
             c.setWidth(80f);
             c.setMaxWidth(500f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
                 c.setResizable(true);
@@ -1146,7 +1146,7 @@ public class CDBrowserController extends CDWindowController
             c.setWidth(32f);
             c.setMaxWidth(32f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
                 c.setResizable(true);
@@ -1162,7 +1162,7 @@ public class CDBrowserController extends CDWindowController
             c.setWidth(200f);
             c.setMaxWidth(500f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
                 c.setResizable(true);

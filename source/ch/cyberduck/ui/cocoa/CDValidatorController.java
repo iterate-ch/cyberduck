@@ -380,7 +380,7 @@ public abstract class CDValidatorController
             c.setWidth(20f);
             c.setMaxWidth(20f);
             if (setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
                 c.setResizable(true);
@@ -403,7 +403,7 @@ public abstract class CDValidatorController
             c.setWidth(20f);
             c.setMaxWidth(20f);
             if (setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
                 c.setResizable(true);
@@ -421,7 +421,7 @@ public abstract class CDValidatorController
             c.setWidth(220f);
             c.setMaxWidth(800f);
             if (setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
                 c.setResizable(true);
@@ -439,7 +439,7 @@ public abstract class CDValidatorController
             c.setWidth(80f);
             c.setMaxWidth(100f);
             if (setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
                 c.setResizable(true);
@@ -457,7 +457,7 @@ public abstract class CDValidatorController
             c.setWidth(20f);
             c.setMaxWidth(20f);
             if (setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
                 c.setResizable(true);
