@@ -1528,6 +1528,9 @@ public class CDBrowserController extends CDWindowController
         }
         this.setEncoding(encoding);
         if(this.isMounted()) {
+            if(this.session.getHost().getEncoding().equals(encoding)) {
+                return;
+            }
             this.unmount();
             this.session.getHost().setEncoding(encoding);
             this.reloadButtonClicked(sender);
