@@ -636,6 +636,9 @@ en.lproj/Main.nib/keyedobjects.nib -text
 en.lproj/Main.strings -text svneol=native#application/octet-stream
 en.lproj/Preferences.nib/keyedobjects.nib -text
 en.lproj/Preferences.strings -text svneol=native#application/octet-stream
+en.lproj/Progress.nib/classes.nib -text
+en.lproj/Progress.nib/info.nib -text
+en.lproj/Progress.nib/keyedobjects.nib -text
 en.lproj/Queue.nib/keyedobjects.nib -text
 en.lproj/Queue.strings -text svneol=native#application/octet-stream
 en.lproj/Status.strings -text svneol=native#application/octet-stream
