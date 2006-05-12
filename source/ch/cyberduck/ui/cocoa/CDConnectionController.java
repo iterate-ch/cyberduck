@@ -167,10 +167,6 @@ public class CDConnectionController extends CDSheetController
         this.protocolPopup.setEnabled(true);
         this.protocolPopup.removeAllItems();
         this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{Session.FTP_STRING, Session.FTP_TLS_STRING, Session.SFTP_STRING}));
-        this.protocolPopup.itemWithTitle(Session.FTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-        this.protocolPopup.itemWithTitle(Session.FTP_STRING).setKeyEquivalent("f");
-        this.protocolPopup.itemWithTitle(Session.SFTP_STRING).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-        this.protocolPopup.itemWithTitle(Session.SFTP_STRING).setKeyEquivalent("s");
         this.protocolPopup.setTarget(this);
         this.protocolPopup.setAction(new NSSelector("protocolSelectionDidChange", new Class[]{Object.class}));
     }
