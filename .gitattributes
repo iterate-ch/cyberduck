@@ -63,6 +63,9 @@ Sparkle/SUAppcast.m -text
 Sparkle/SUAppcastItem.m -text
 Sparkle/SUAutomaticUpdateAlert.m -text
 Sparkle/SUConstants.m -text
+Sparkle/SUStatus.nib/classes.nib -text
+Sparkle/SUStatus.nib/info.nib -text
+Sparkle/SUStatus.nib/keyedobjects.nib -text
 Sparkle/SUStatusController.m -text
 Sparkle/SUUnarchiver.m -text
 Sparkle/SUUpdateAlert.m -text
@@ -121,9 +124,6 @@ Sparkle/en.lproj/SUAutomaticUpdateAlert.nib/classes.nib -text
 Sparkle/en.lproj/SUAutomaticUpdateAlert.nib/info.nib -text
 Sparkle/en.lproj/SUAutomaticUpdateAlert.nib/keyedobjects.nib -text
 Sparkle/en.lproj/SUAutomaticUpdateAlert.strings -text
-Sparkle/en.lproj/SUStatus.nib/classes.nib -text
-Sparkle/en.lproj/SUStatus.nib/info.nib -text
-Sparkle/en.lproj/SUStatus.nib/keyedobjects.nib -text
 Sparkle/en.lproj/SUStatus.strings -text
 Sparkle/en.lproj/SUUpdateAlert.nib/classes.nib -text
 Sparkle/en.lproj/SUUpdateAlert.nib/info.nib -text
