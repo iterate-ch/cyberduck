@@ -14,13 +14,6 @@
 - init
 {
 	NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"SUStatus" ofType:@"nib"];
-	if (!path) // slight hack to resolve issues with running in debug configurations
-	{
-		NSBundle *current = [NSBundle bundleForClass:[self class]];
-		NSString *frameworkPath = [[[NSBundle mainBundle] sharedFrameworksPath] stringByAppendingFormat:@"/Sparkle.framework", [current bundleIdentifier]];
-		NSBundle *framework = [NSBundle bundleWithPath:frameworkPath];
-		path = [framework pathForResource:@"SUStatus" ofType:@"nib"];
-	}
 	[super initWithWindowNibPath:path owner:self];
 	[self setShouldCascadeWindows:NO];
 	return self;

@@ -33,14 +33,15 @@ NSString *SUHostAppVersion()
 
 NSString *SUHostAppVersionString()
 {
-	if (SUInfoValueForKey(@"CFBundleVersionString"))
-		return SUInfoValueForKey(@"CFBundleVersionString");	
+	if (SUInfoValueForKey(@"CFBundleShortVersionString"))
+	{
+		return [[[SUInfoValueForKey(@"CFBundleShortVersionString") stringByAppendingString:@" ("] stringByAppendingString:SUHostAppVersion()] stringByAppendingString:@")"];
+	}
 	// otherwise, fall back on the non-localized version string
 	return SUHostAppVersion();
 }
 
-NSString *SULocalizedString(NSString *key, NSString *comment) 
-{
+NSString *SULocalizedString(NSString *key, NSString *comment) {
 	return [SUUtilities localizedStringForKey:key withComment:comment];
 }
 
