@@ -1,5 +1,5 @@
 /* Localized versions of Info.plist keys */
 
-CFBundleShortVersionString = "Versió *version*";
+CFBundleShortVersionString = "Versió *version* (*revision*)";
 CFBundleGetInfoString = "Cyberduck *version* (*revision*), Copyright 2005 David V. Kocher.";
 NSHumanReadableCopyright = "Copyright 2005 David V. Kocher";

@@ -1,5 +1,5 @@
 /* Localized versions of Info.plist keys */
 
-CFBundleShortVersionString = "Fersiwn *version*";
+CFBundleShortVersionString = "Fersiwn *version* (*revision*)";
 CFBundleGetInfoString = "Cyberduck *version* (*revision*), Hawlfraint 2005 David V. Kocher.";
 NSHumanReadableCopyright = "Hawlfraint 2005 David V. Kocher";
