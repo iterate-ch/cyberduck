@@ -102,10 +102,7 @@
 
 - (void)awakeFromNib
 {	
-	// We're gonna do some frame magic to match the window's size to the description field and the presence of the release notes view.
 	NSRect frame = [[self window] frame];
-	frame.size.width = ceilf(MAX(frame.size.width - [description frame].size.width - [description frame].size.width, [[self window] minSize].width));
-
 	if (![self showsReleaseNotes])
 	{
 		// Resize the window to be appropriate for not having a huge release notes view.

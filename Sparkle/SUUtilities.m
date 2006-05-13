@@ -35,7 +35,7 @@ NSString *SUHostAppVersionString()
 {
 	if (SUInfoValueForKey(@"CFBundleShortVersionString"))
 	{
-		return [[[SUInfoValueForKey(@"CFBundleShortVersionString") stringByAppendingString:@" ("] stringByAppendingString:SUHostAppVersion()] stringByAppendingString:@")"];
+		return [[SUInfoValueForKey(@"CFBundleShortVersionString") stringByAppendingString:@"/"] stringByAppendingString:SUHostAppVersion()];
 	}
 	// otherwise, fall back on the non-localized version string
 	return SUHostAppVersion();
