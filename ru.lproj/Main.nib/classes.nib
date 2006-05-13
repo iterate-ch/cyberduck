@@ -46,6 +46,7 @@
         {CLASS = UKCrashReporter; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {
+                aboutMenuClicked = id; 
                 bugreportMenuClicked = id; 
                 donateMenuClicked = id; 
                 downloadBookmarksFromDotMacClicked = id; 

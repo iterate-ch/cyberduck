@@ -323,6 +323,14 @@ public class CDMainController extends CDController {
         }
     }
 
+    public void aboutMenuClicked(final Object sender) {
+        NSDictionary dict = new NSDictionary(
+                new String[]{(String) NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString"), ""},
+                new String[]{"ApplicationVersion", "Version"}
+        );
+        NSApplication.sharedApplication().orderFrontStandardAboutPanelWithOptions(dict);
+    }
+
     public void feedbackMenuClicked(final Object sender) {
         try {
             String versionString = (String) NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
