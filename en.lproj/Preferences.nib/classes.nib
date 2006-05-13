@@ -19,6 +19,7 @@
                 acceptAnyCertificateCheckbox = NSButton; 
                 alternatingRowBackgroundCheckbox = NSButton; 
                 anonymousField = NSTextField; 
+                bringQueueToBackCheckbox = NSButton; 
                 bringQueueToFrontCheckbox = NSButton; 
                 bufferField = NSTextField; 
                 chmodDownloadCheckbox = NSButton; 
