@@ -57,6 +57,7 @@
 			[tempItems addObject:[[[SUAppcastItem alloc] initWithDictionary:current] autorelease]];
 		}
 		items = [[NSArray arrayWithArray:tempItems] retain];
+		[feed release];
 		
 		if ([delegate respondsToSelector:@selector(appcastDidFinishLoading:)])
 			[delegate performSelectorOnMainThread:@selector(appcastDidFinishLoading:) withObject:self waitUntilDone:NO];

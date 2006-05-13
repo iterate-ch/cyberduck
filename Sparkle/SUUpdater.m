@@ -253,6 +253,14 @@
 		[self showUpdateErrorAlertWithInfo:SULocalizedString(@"An error occurred in retrieving update information. Please try again later.", nil)];
 }
 
+// Override this to change the new version comparison logic!
+- (BOOL)newVersionAvailable
+{
+	return SUStandardVersionComparison([updateItem fileVersion], SUHostAppVersion()) == NSOrderedAscending;
+	// Want straight-up string comparison like Sparkle 1.0b3 and earlier? Uncomment the line below and comment the one above.
+	// return ![SUHostAppVersion() isEqualToString:[updateItem fileVersion]];
+}
+
 - (void)appcastDidFinishLoading:(SUAppcast *)ac
 {
 	@try
@@ -260,6 +268,7 @@
 		if (!ac) { [NSException raise:@"SUAppcastException" format:@"Couldn't get a valid appcast from the server."]; }
 
 		updateItem = [[ac newestItem] retain];
+		[ac autorelease];
 
 		// Record the time of the check for host app use and for interval checks on startup.
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:SULastCheckTimeKey];
@@ -271,15 +280,7 @@
 
 		if (!verbose && [[[NSUserDefaults standardUserDefaults] objectForKey:SUSkippedVersionKey] isEqualToString:[updateItem fileVersion]]) { updateInProgress = NO; return; }
 
-		if ([SUHostAppVersion() isEqualToString:[updateItem fileVersion]])
-		{
-			if (verbose) // We only notify on no new version when we're being verbose.
-			{
-				NSRunAlertPanel(SULocalizedString(@"You're up to date!", nil), [NSString stringWithFormat:SULocalizedString(@"%@ %@ is currently the newest version available.", nil), SUHostAppName(), SUHostAppVersionString()], NSLocalizedString(@"OK", nil), nil, nil);
-			}
-			updateInProgress = NO;
-		}
-		else
+		if ([self newVersionAvailable])
 		{
 			if (checkTimer)	// There's a new version! Let's disable the automated checking timer unless the user cancels.
 			{
@@ -295,6 +296,14 @@
 			{
 				[self showUpdatePanel];
 			}
+		}
+		else
+		{
+			if (verbose) // We only notify on no new version when we're being verbose.
+			{
+				NSRunAlertPanel(SULocalizedString(@"You're up to date!", nil), [NSString stringWithFormat:SULocalizedString(@"%@ %@ is currently the newest version available.", nil), SUHostAppName(), SUHostAppVersionString()], NSLocalizedString(@"OK", nil), nil, nil);
+			}
+			updateInProgress = NO;
 		}
 	}
 	@catch (NSException *e)
@@ -415,6 +424,7 @@
 
 - (void)abandonUpdate
 {
+	[updateItem release];
 	[statusController close];
 	[statusController release];
 	updateInProgress = NO;	
