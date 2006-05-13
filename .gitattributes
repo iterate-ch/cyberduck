@@ -1813,6 +1813,6 @@ zh_TW.lproj/Queue.nib/keyedobjects.nib -text
 zh_TW.lproj/Queue.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Status.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Sync.nib/keyedobjects.nib -text
-zh_TW.lproj/Sync.strings -text svneol=native#application/octet-stream
+zh_TW.lproj/Sync.strings -text
 zh_TW.lproj/Validator.nib/keyedobjects.nib -text
 zh_TW.lproj/Validator.strings -text svneol=native#application/octet-stream
