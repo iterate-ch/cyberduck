@@ -638,16 +638,16 @@ public class FTPPath extends Path {
                 }
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     try {
+                        Permission perm = null;
                         if(this.attributes.isFile()
                                 && Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                            Permission perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
-                            session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
+                            perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
                         }
                         else {
-                            Permission perm = this.getLocal().getPermission();
-                            if(!perm.isUndefined()) {
-                                session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
-                            }
+                            perm = this.getLocal().getPermission();
+                        }
+                        if(!perm.isUndefined()) {
+                            session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
                         }
                     }
                     catch(FTPException e) {
@@ -659,7 +659,6 @@ public class FTPPath extends Path {
                         session.FTP.setmodtime(this.getLocal().getTimestamp(), this.getAbsolute());
                     }
                     catch(FTPException e) {
-                        log.warn(e.getMessage());
                         try {
                             if(Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
                                 if(!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
@@ -668,7 +667,7 @@ public class FTPPath extends Path {
                             }
                         }
                         catch(FTPException ignore) {
-                            //MDTM not supported
+                            //MDTM not supported; ignore
                             log.warn(ignore.getMessage());
                         }
                     }

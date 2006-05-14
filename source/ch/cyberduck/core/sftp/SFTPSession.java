@@ -89,7 +89,6 @@ public class SFTPSession extends Session {
                     this.fireConnectionWillCloseEvent();
                     SFTP.close();
                     SSH.disconnect();
-                    this.fireConnectionDidCloseEvent();
                 }
             }
             catch(SshException e) {
@@ -99,6 +98,7 @@ public class SFTPSession extends Session {
                 log.error("IO Error: " + e.getMessage());
             }
             finally {
+                this.fireConnectionDidCloseEvent();
                 this.fireActivityStoppedEvent();
             }
         }

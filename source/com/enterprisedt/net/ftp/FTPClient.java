@@ -279,6 +279,12 @@ public class FTPClient {
         lastValidReply = control.validateReply(reply, validCodes);
     }
 
+    public void reinitialize() throws IOException, FTPException {
+        FTPReply reply = control.sendCommand("REIN");
+        String[] validCodes = {"120", "220"};
+        lastValidReply = control.validateReply(reply, validCodes);
+    }
+
     /**
      * Set up SOCKS v4/v5 proxy settings. This can be used if there
      * is a SOCKS proxy server in place that must be connected thru.
@@ -707,6 +713,8 @@ public class FTPClient {
         lastValidReply = control.validateReply(reply, new String[]{"200", "250"});
     }
 
+    private boolean getModtimeSupported = true;
+
     /**
      * Get modification time for a remote file
      *
@@ -714,12 +722,21 @@ public class FTPClient {
      * @return modification time of file as a date
      */
     public Date modtime(String remoteFile) throws IOException, FTPException {
-        FTPReply reply = control.sendCommand("MDTM "+remoteFile);
-        lastValidReply = control.validateReply(reply, "213");
+        if(getModtimeSupported) {
+            try {
+                FTPReply reply = control.sendCommand("MDTM "+remoteFile);
+                lastValidReply = control.validateReply(reply, "213");
 
-        // parse the reply string ...
-        return tsFormat.parse(lastValidReply.getReplyText(),
-            new ParsePosition(0));
+                // parse the reply string ...
+                return tsFormat.parse(lastValidReply.getReplyText(),
+                        new ParsePosition(0));
+            }
+            catch(FTPException e) {
+                this.getModtimeSupported = false;
+                throw e;
+            }
+        }
+        throw new FTPException("MDTM not supported");
     }
 
     private boolean setChmodSupported = true;
@@ -736,10 +753,11 @@ public class FTPClient {
             }
             catch(FTPException e) {
                 this.setChmodSupported = false;
+                this.getModtimeSupported = false; // http://trac.cyberduck.ch/ticket/352
                 throw e;
             }
         }
-        throw new FTPException("Change of permissions not supported");
+        throw new FTPException("CHMOD not supported");
     }
 
     private boolean setModtimeSupported = true;
@@ -752,8 +770,6 @@ public class FTPClient {
     public void setmodtime(long modtime, String remoteFile) throws IOException, FTPException {
         if(setModtimeSupported) {
             try {
-                //		FTPReply reply = control.sendCommand("MDTM "+tsFormat.format(modtime)+" "+remoteFile);
-                //		lastValidReply = control.validateReply(reply, "213");
                 this.site("UTIME "+tsFormat.format(new Date(modtime))+" "+remoteFile);
             }
             catch(FTPException e) {
@@ -761,7 +777,7 @@ public class FTPClient {
                 throw e;
             }
         }
-        throw new FTPException("Change of modification date not supported");
+        throw new FTPException("UTIME not supported");
     }
 
     /**

@@ -21,6 +21,7 @@ package ch.cyberduck.core.ftp;
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPMessageListener;
+import com.enterprisedt.net.ftp.FTPNullReplyException;
 
 import ch.cyberduck.core.*;
 
@@ -75,7 +76,6 @@ public class FTPSession extends Session {
                 if(this.isConnected()) {
                     this.fireConnectionWillCloseEvent();
                     FTP.quit();
-                    this.fireConnectionDidCloseEvent();
                 }
             }
             catch(FTPException e) {
@@ -85,6 +85,7 @@ public class FTPSession extends Session {
                 log.error("IO Error: " + e.getMessage());
             }
             finally {
+                this.fireConnectionDidCloseEvent();
                 this.fireActivityStoppedEvent();
             }
         }
@@ -165,6 +166,11 @@ public class FTPSession extends Session {
                     throw new LoginCanceledException();
                 }
                 this.login();
+            }
+            catch(FTPNullReplyException e) {
+                log.warn(e.getMessage()); // http://trac.cyberduck.ch/ticket/307
+                this.close();
+                this.connect();
             }
         }
         else {
