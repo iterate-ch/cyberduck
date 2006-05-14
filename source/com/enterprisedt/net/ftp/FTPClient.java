@@ -753,7 +753,6 @@ public class FTPClient {
             }
             catch(FTPException e) {
                 this.setChmodSupported = false;
-                this.getModtimeSupported = false; // http://trac.cyberduck.ch/ticket/352
                 throw e;
             }
         }
