@@ -114,23 +114,19 @@
             <arg value="."/>
         </exec>
         <property name="svn.revision" value="${svn.revision}"/>
-        <echo message="Replacing version string with ${cyberduck.version.major}.${cyberduck.version.minor}..." />
 
+        <echo message="Replacing version string with ${cyberduck.version.major}.${cyberduck.version.minor} in **/InfoPlist.strings..." />
         <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
             <include name="**/InfoPlist.strings" />
             <replacefilter token="*version*" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
         </replace>
-        <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
-            <include name="**/Info.plist" />
-            <replacefilter token="*version*" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
-        </replace>
 
-        <echo message="Replacing revision string with ${svn.revision}..." />
-
+        <echo message="Replacing revision string with ${svn.revision} in **/InfoPlist.strings..." />
         <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
             <include name="**/InfoPlist.strings" />
             <replacefilter token="*revision*" value="${svn.revision}" />
         </replace>
+        <echo message="Replacing revision string with ${svn.revision} in **/Info.plist..." />
         <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
             <include name="**/Info.plist" />
             <replacefilter token="*revision*" value="${svn.revision}" />
