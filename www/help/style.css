@@ -9,11 +9,13 @@ body {
 
 div#menu {
 	width:100%;
+	color: #4e4e4e;
+	border: 1px solid #e2e2e2;
+	background: #e5e5db;
 }
 
 div#menu ul {
 	padding-left:0px;
-	background:#fff url(./images/navigation.png) repeat-x;
 	height:17px;
 	overflow:hidden;
 }
