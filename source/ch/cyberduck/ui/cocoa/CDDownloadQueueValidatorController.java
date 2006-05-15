@@ -26,9 +26,6 @@ import ch.cyberduck.core.Status;
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSTableView;
 import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSCell;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.foundation.NSSize;
 
 import org.apache.log4j.Logger;
 
@@ -58,7 +55,7 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
         return result;
     }
 
-    protected boolean isExisting(Path p) {
+    protected boolean exists(Path p) {
         return p.getLocal().exists() && p.getLocal().getSize() > 0;
     }
 

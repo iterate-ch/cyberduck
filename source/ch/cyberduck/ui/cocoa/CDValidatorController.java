@@ -84,7 +84,7 @@ public abstract class CDValidatorController
      */
     protected List workList = new ArrayList();
 
-    protected abstract boolean isExisting(Path p);
+    protected abstract boolean exists(Path p);
 
     public List validate(final boolean resumeRequested) {
         List childs = this.queue.getChilds();
@@ -137,7 +137,7 @@ public abstract class CDValidatorController
     protected boolean validateFile(Path path, boolean resumeRequested) {
         if (resumeRequested) { // resume existing files independant of settings in preferences
             path.reset();
-            path.status.setResume(this.isExisting(path));
+            path.status.setResume(this.exists(path));
             return true;
         }
         // When overwriting file anyway we don't have to check if the file already exists
@@ -147,7 +147,7 @@ public abstract class CDValidatorController
             return true;
         }
         path.reset();
-        if (this.isExisting(path)) {
+        if (this.exists(path)) {
             if (Preferences.instance().getProperty("queue.fileExists").equals("resume")) {
                 log.debug("Apply validation rule to resume:" + path.getName());
                 path.status.setResume(true);

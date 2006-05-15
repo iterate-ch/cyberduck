@@ -25,7 +25,6 @@ import ch.cyberduck.core.Status;
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSTableView;
 import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSImage;
 
 import org.apache.log4j.Logger;
 
@@ -46,7 +45,7 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
         }
     }
 
-    protected boolean isExisting(Path p) {
+    protected boolean exists(Path p) {
         return p.exists();
     }
 

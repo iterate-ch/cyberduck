@@ -60,7 +60,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {
             NSTableColumn c = new NSTableColumn();
-            c.setIdentifier(NEW_COLUMN);
+            c.setIdentifier(TYPE_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
@@ -78,7 +78,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
         }
         {
             NSTableColumn c = new NSTableColumn();
-            c.setIdentifier(TYPE_COLUMN);
+            c.setIdentifier(NEW_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
@@ -127,7 +127,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
         super.prompt(p);
     }
 
-    protected boolean isExisting(Path p) {
+    protected boolean exists(Path p) {
         return p.getRemote().exists() || p.getLocal().exists();
     }
 
