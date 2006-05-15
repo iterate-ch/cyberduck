@@ -79,3 +79,9 @@
 /* Changing UNIX file permissions */
 "Changing permission to" = "Changing permission to";
 
+/* Indicates remaining time needed for files to transfer */
+"seconds remaining" = "seconds remaining";
+
+/* Indicates remaining time needed for files to transfer */
+"minutes remaining" = "minutes remaining";
+
