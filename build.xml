@@ -178,13 +178,18 @@
 		</exec>
 	</target>
 
-	<target name="scp">
+	<target name="scp" depends="revision">
 		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"
 		       todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
 		       keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
 		       passphrase="">
 		</scp>
 		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.md5"
+		       todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
+		       keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
+		       passphrase="">
+		</scp>
+		<scp file="${build}/${app.name}-${svn.revision}.tar.gz"
 		       todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
 		       keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
 		       passphrase="">
