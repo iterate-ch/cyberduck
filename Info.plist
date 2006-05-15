@@ -57,7 +57,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>*revision*</string>
+	<string>_REVISION_</string>
 	<key>Java</key>
 	<dict>
 		<key>JVMVersion</key>

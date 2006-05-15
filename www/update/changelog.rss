@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+<rss version="2.0" 
+		xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+		xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
 	<channel>
 		<title>Cyberduck Changelog</title>
 		<link>http://cyberduck.ch/changelog.php</link>
@@ -7,30 +9,12 @@
 		<language>en-us</language>
 		<copyright>Copyright 2006, David V. Kocher</copyright>
 		<item>
-			<title>Cyberduck 2.5.6</title>
-			<pubDate>Wed, 15 May 2006 00:00:00 +0100</pubDate>
-			<enclosure sparkle:version="2011" url="http://update.cyberduck.ch/Cyberduck-2011.tar.gz" length="8420087" type="application/octet-stream"/>
-			<description><![CDATA[
-<b>Version 2.5.6</b>
-<ul>
-<li>[Localize] Turkish Localization</li>
-<li>[Feature] Automatic software udpate with Sparkle.framework (Thanks to Andy Matuschak!)</li>
-<li>[Feature] Dashboard Widget included (Thanks to Claudio Procida!)</li>
-<li>[Feature] Marking write-only and non-accessible directories with special icon as in Finder.app</li>
-<li>[Feature] Reintroduced transcript drawer in browser window</li>
-<li>[Feature] Added transcript drawer to transfer window</li>
-<li>[Feature] Option to use Network Diagnostics upon failed connections</li>
-<li>[Feature] New 'Download failed' and 'Upload failed' Growl notifications</li>
-<li>[Feature] Display alert icon in connection dialog if server name cannot be resolved</li>
-<li>[Bugfix] Stalled connection and file transfer attempts can be interrupted [#55]</li>
-<li>[Bugfix] Cannot delete empty folders [#162]</li>
-<li>[Bugfix] Cannot use login username with colon [#309]</li>
-<li>[Bugfix] Certain operations trigger change of character encoding to default</li>
-<li>[Bugfix] Unable to delete directory from server [#256]</li>
-<li>[Bugfix] Permission errors when downloading files from read-only directories [#264]</li>
-<li>[Bugfix] Change download keyboad shortcut [#277]</li>
-</ul>
-			]]></description>
+			<title>Cyberduck _VERSION_ (Revision _REVISION_)</title>
+			<pubDate>_TIMESTAMP_</pubDate>
+			<enclosure sparkle:version="_REVISION_" 
+				url="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz" 
+				type="application/octet-stream"/>
+			<sparkle:releaseNotesLink>http://update.cyberduck.ch/changelog.html</sparkle:releaseNotesLink>
 		</item>
 	</channel>
 </rss>

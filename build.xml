@@ -109,27 +109,34 @@
                     timezone="GMT+1"
                     locale="en"/>
         </tstamp>
-        <mkdir dir="${build}"/>
+        <echo message="Calculating revision..." />
         <exec executable="svnversion" outputproperty="svn.revision">
             <arg value="."/>
         </exec>
         <property name="svn.revision" value="${svn.revision}"/>
 
-        <echo message="Replacing version string with ${cyberduck.version.major}.${cyberduck.version.minor} in **/InfoPlist.strings..." />
+		<copy todir="${build}" overwrite="true">
+	    	<fileset dir="${home}/www/update/">
+				<include name="changelog.rss"/>
+				<include name="versionlist.xml"/>
+			</fileset>
+		</copy>
+        <echo message="_TIMESTAMP_=${touch.time}" />
+        <echo message="_VERSION_=${cyberduck.version.major}.${cyberduck.version.minor}" />
+        <echo message="_REVISION_=${svn.revision}" />
+        <replace dir="${build}" summary="true" encoding="UTF-8">
+            <include name="changelog.rss" />
+            <include name="versionlist.xml" />
+            <replacefilter token="_TIMESTAMP_" value="${touch.time}" />
+            <replacefilter token="_REVISION_" value="${svn.revision}" />
+            <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
+        </replace>
         <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
             <include name="**/InfoPlist.strings" />
-            <replacefilter token="*version*" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
-        </replace>
-
-        <echo message="Replacing revision string with ${svn.revision} in **/InfoPlist.strings..." />
-        <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
-            <include name="**/InfoPlist.strings" />
-            <replacefilter token="*revision*" value="${svn.revision}" />
-        </replace>
-        <echo message="Replacing revision string with ${svn.revision} in **/Info.plist..." />
-        <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
             <include name="**/Info.plist" />
-            <replacefilter token="*revision*" value="${svn.revision}" />
+            <replacefilter token="_TIMESTAMP_" value="${touch.time}" />
+            <replacefilter token="_REVISION_" value="${svn.revision}" />
+            <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
         </replace>
      </target>
 
@@ -144,7 +151,6 @@
 		</copy>
 		<copy todir="${app.bundle.loc}">
 	    	<fileset dir="${app.bundle}">
-				<!--<include name="**/en.lproj/**"/>-->
 				<include name="**/${localization}.lproj/**"/>
 			</fileset>
 		</copy>
@@ -181,6 +187,11 @@
 		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.md5"
 		       todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
 		       keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
+		       passphrase="">
+		</scp>
+		<scp file="${build}/changelog.rss"
+		       todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
+		       keyfile="${user.home}/.ssh/82.195.231.218-rsa"
 		       passphrase="">
 		</scp>
 	</target>

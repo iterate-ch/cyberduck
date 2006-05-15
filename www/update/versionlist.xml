@@ -3,9 +3,9 @@
 <plist version="1.0">
    <dict>
       <key>version</key>
-      <string>2.5.6</string>
+      <string>_VERSION_</string>
       <key>file</key>
-      <string>Cyberduck-2.5.6.dmg</string>
+      <string>Cyberduck-_VERSION_.dmg</string>
       <key>comment</key>
       <string>Changelog:
 2.5.6
@@ -17,14 +17,14 @@
 - [Feature] Added transcript drawer to transfer window
 - [Feature] Option to use Network Diagnostics upon failed connections
 - [Feature] New 'Download failed' and 'Upload failed' Growl notifications
-- [Feature] Display alert icon in connection dialog if server name cannot be resolved
+- [Feature] Display alert icon in the connection and bookmark dialog if server name cannot be resolved
 - [Bugfix] Stalled connection and file transfer attempts can be interrupted [#55]
 - [Bugfix] Cannot delete empty folders [#162]
 - [Bugfix] Cannot use login username with colon [#309]
-- [Bugfix] Certain operations trigger change of character encoding to default
 - [Bugfix] Unable to delete directory from server [#256]
 - [Bugfix] Permission errors when downloading files from read-only directories [#264]
-- [Bugfix] Change download keyboad shortcut [#277]
+- [Bugfix] Interrupt recursive operations upon error [#25]
+- [Bugfix] Character encoding issues [#238, #333, #361, #390]
 
 2.5.5
 - [Localize] Hebrew Localization
