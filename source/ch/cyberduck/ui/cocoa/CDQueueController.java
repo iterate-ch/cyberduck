@@ -361,11 +361,18 @@ public class CDQueueController extends CDWindowController
         queue.addListener(new QueueAdapter() {
             private TranscriptListener transcript;
 
+            public void transferStarted() {
+                queueTable.setNeedsDisplay(true);
+            }
+
+            public void transferStopped() {
+                queueTable.setNeedsDisplay(true);
+            }
+
             public void queueStarted() {
                 CDQueueController.this.invoke(new Runnable() {
                     public void run() {
                         toolbar.validateVisibleItems();
-                        queueTable.setNeedsDisplay(true);
                     }
                 });
                 queue.getSession().addTranscriptListener(transcript = new TranscriptListener() {
@@ -380,7 +387,6 @@ public class CDQueueController extends CDWindowController
                 CDQueueController.this.invoke(new Runnable() {
                     public void run() {
                         toolbar.validateVisibleItems();
-                        queueTable.setNeedsDisplay(true);
                         if(queue.isComplete()) {
                             if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
                                 if(!hasRunningTransfers()) {

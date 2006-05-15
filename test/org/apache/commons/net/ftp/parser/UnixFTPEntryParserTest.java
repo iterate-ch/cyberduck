@@ -58,8 +58,10 @@ public class UnixFTPEntryParserTest extends TestCase
 
     public void testParseFTPEntry() throws Exception
     {
-        Path parsed = parser.parseFTPEntry(parent,
+        Path parsed = null;
+        parsed = parser.parseFTPEntry(parent,
                 "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 ADMIN_Documentation");
+        assertNotNull(parsed);
         assertEquals(parsed.attributes.getType(), Path.DIRECTORY_TYPE);
         assertEquals(parsed.attributes.getPermission().getMask(), "rw-rw-rw-");
         assertEquals(parsed.attributes.getOwner(), "ftp");
@@ -77,6 +79,10 @@ public class UnixFTPEntryParserTest extends TestCase
 //        "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 Test
 //        "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 TestCollaba
 //        "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 TestCSSH
+        parsed = parser.parseFTPEntry(parent,
+                "drwxr--r--   1 user     group          0 Feb 14 18:14 Downloads");
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), "Downloads");
     }
 
     public static Test suite()
