@@ -33,4 +33,15 @@ public interface QueueListener {
      *
      */
     public void queueStopped();
+
+    /**
+     *
+     */
+    public void transferStarted();
+
+    /**
+     *
+     */
+    public void transferStopped();
+
 }

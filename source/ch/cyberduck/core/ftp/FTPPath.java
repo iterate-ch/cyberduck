@@ -315,8 +315,11 @@ public class FTPPath extends Path {
                     if(recursive) {
                         List files = this.list();
                         if(files != null) {
-                            for(Iterator iter = files.iterator(); iter.hasNext() && session.isConnected();) {
+                            for(Iterator iter = files.iterator(); iter.hasNext(); ) {
                                 ((Path) iter.next()).changeOwner(owner, recursive);
+                                if(!session.isConnected()) {
+                                    break;
+                                }
                             }
                         }
                     }

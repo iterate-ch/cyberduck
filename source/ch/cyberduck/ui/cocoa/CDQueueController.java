@@ -358,7 +358,7 @@ public class CDQueueController extends CDWindowController
      * @param resumeRequested
      */
     private void startItem(final Queue queue, final boolean resumeRequested) {
-        queue.addListener(new QueueListener() {
+        queue.addListener(new QueueAdapter() {
             private TranscriptListener transcript;
 
             public void queueStarted() {

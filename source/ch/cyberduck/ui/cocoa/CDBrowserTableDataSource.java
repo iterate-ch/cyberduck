@@ -190,10 +190,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 }
                 if (q.numberOfRoots() > 0) {
                     CDQueueController.instance().startItem(q);
-                    q.addListener(new QueueListener() {
-                        public void queueStarted() {
-                        }
-
+                    q.addListener(new QueueAdapter() {
                         public void queueStopped() {
                             if (controller.isMounted()) {
                                 controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
@@ -220,6 +217,9 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         Path renamed = PathFactory.createPath(controller.workdir().getSession(),
                                 destination.getAbsolute(), current.getName());
                         controller.renamePath(current, renamed);
+                        if(!controller.isConnected()) {
+                            break;
+                        }
                         selected.add(renamed);
                     }
                 }

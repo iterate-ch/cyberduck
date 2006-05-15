@@ -89,6 +89,20 @@ public abstract class Queue extends NSObject {
         }
     }
 
+    protected void fireTransferStartedEvent() {
+        QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].transferStarted();
+        }
+    }
+
+    protected void fireTransferStoppedEvent() {
+        QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].transferStopped();
+        }
+    }
+
     public Queue(NSDictionary dict) {
         Object hostObj = dict.objectForKey("Host");
         if(hostObj != null) {
@@ -225,7 +239,9 @@ public abstract class Queue extends NSObject {
             }
             this.reset();
             for(Iterator iter = this.jobs.iterator(); iter.hasNext() && !canceled;) {
+                this.fireTransferStartedEvent();
                 this.transfer((Path) iter.next());
+                this.fireTransferStoppedEvent();
             }
         }
         finally {

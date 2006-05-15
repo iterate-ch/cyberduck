@@ -21,23 +21,17 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public class ConnectionAdapter implements ConnectionListener {
+public class QueueAdapter implements QueueListener {
 
-    public void connectionWillOpen() {
+    public void queueStarted() {
     }
 
-    public void connectionDidOpen() {
+    public void queueStopped() {
     }
 
-    public void connectionWillClose() {
+    public void transferStarted() {
     }
 
-    public void connectionDidClose() {
-    }
-
-    public void activityStarted() {
-    }
-
-    public void activityStopped() {
+    public void transferStopped() {
     }
 }

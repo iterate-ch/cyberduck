@@ -78,14 +78,6 @@ public class CDProgressController extends CDController {
                         progressBar.setNeedsDisplay(true);
                         errorText = new StringBuffer();
                         alertIcon.setHidden(true);
-                        meter = new Speedometer();
-                        progressTimer = new NSTimer(0.2, //seconds
-                                CDProgressController.this, //target
-                                new NSSelector("update", new Class[]{NSTimer.class}),
-                                queue, //userInfo
-                                true); //repeating
-                        NSRunLoop.currentRunLoop().addTimerForMode(progressTimer,
-                                NSRunLoop.DefaultRunLoopMode);
                     }
                 });
                 queue.getSession().addProgressListener(progress = new ProgressListener() {
@@ -118,7 +110,6 @@ public class CDProgressController extends CDController {
             public void queueStopped() {
                 invoke(new Runnable() {
                     public void run() {
-                        progressTimer.invalidate();
                         updateProgressfield();
                         progressBar.setIndeterminate(true);
                         progressBar.stopAnimation(null);
@@ -127,6 +118,21 @@ public class CDProgressController extends CDController {
                 });
                 queue.removeListener(this);
                 queue.getSession().removeProgressListener(progress);
+            }
+
+            public void transferStarted() {
+                meter = new Speedometer();
+                progressTimer = new NSTimer(0.1, //seconds
+                        CDProgressController.this, //target
+                        new NSSelector("update", new Class[]{NSTimer.class}),
+                        queue, //userInfo
+                        true); //repeating
+                mainRunLoop.addTimerForMode(progressTimer,
+                        NSRunLoop.DefaultRunLoopMode);
+            }
+
+            public void transferStopped() {
+                progressTimer.invalidate();
             }
         });
     }
@@ -146,9 +152,10 @@ public class CDProgressController extends CDController {
 
     private class Speedometer {
         //the time to start counting bytes transfered
-        private long timestamp = -1;
+        private long timestamp = System.currentTimeMillis();
         //initial data already transfered
-        private double initialBytesTransfered = queue.getCurrent();
+        private final double initialBytesTransfered = queue.getCurrent();
+        private double bytesTransferred = 0;
 
         /**
          * Returns the data transfer rate. The rate should depend on the transfer
@@ -156,30 +163,23 @@ public class CDProgressController extends CDController {
          *
          * @return The bytes being processed per second
          */
-        public int getSpeed() {
-            double bytesTransferred = queue.getCurrent();
+        public float getSpeed() {
+            bytesTransferred = queue.getCurrent();
             if(bytesTransferred > initialBytesTransfered) {
-                if(-1 == timestamp) {
-                    //no bytes transferred yet; reset the clock
-                    timestamp = System.currentTimeMillis();
-                }
                 // number of seconds data was actually transferred
-                double sec = (System.currentTimeMillis() - timestamp) / 1000;
-                // bytes per second
-                return (int) (bytesTransferred / sec);
+                double elapsedTime = (System.currentTimeMillis() - timestamp) / 1000;
+                if(elapsedTime > 1) {
+                    // bytes per second
+                    return (float) ((bytesTransferred-initialBytesTransfered) / (elapsedTime));
+                }
             }
             return -1;
         }
-    }
 
-//    private int getPercent() {
-//        int percentage = 0;
-//        double transferDataSize = queue.getSize();
-//        if(transferDataSize > 0) {
-//            percentage = (int) (queue.getCurrent() * 100L / transferDataSize);
-//        }
-//        return percentage;
-//    }
+        public double getBytesTransfered() {
+            return bytesTransferred;
+        }
+    }
 
     private void updateProgressbar() {
         if(queue.isInitialized()) {
@@ -200,6 +200,9 @@ public class CDProgressController extends CDController {
                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
     }
 
+    private static final String SEC_REMAINING = NSBundle.localizedString("seconds remaining", "Status", "");
+    private static final String MIN_REMAINING = NSBundle.localizedString("minutes remaining", "Status", "");
+
     private String getProgressText() {
         StringBuffer b = new StringBuffer();
         b.append(Status.getSizeAsString(this.queue.getCurrent()));
@@ -207,12 +210,19 @@ public class CDProgressController extends CDController {
         b.append(NSBundle.localizedString("of", "1.2MB of 3.4MB"));
         b.append(" ");
         b.append(Status.getSizeAsString(this.queue.getSize()));
-//        b.append(" (");b.append(this.getPercent());b.append("%)");
-        if(this.queue.isRunning()) {
-            int speed = this.meter.getSpeed();
+        if(queue.isRunning() && null != meter) {
+            float speed = this.meter.getSpeed();
             if(speed > -1) {
-                b.append(" (");b.append(Status.getSizeAsString(speed));b.append("/sec)");
-//                b.append(" ");b.append((int)(queue.getSize() - initialBytesTransfered)/speed);b.append("s remaining");
+                b.append(" (");b.append(Status.getSizeAsString(speed));b.append("/sec, ");
+                int remaining = (int)((queue.getSize()-meter.getBytesTransfered())/speed);
+                if(remaining > 60) {
+                    b.append(remaining/60);b.append(" ");b.append(MIN_REMAINING);
+                }
+                else {
+                    b.append(remaining);b.append(" ");b.append(SEC_REMAINING);
+
+                }
+                b.append(")");
             }
             b.append(" ");
             b.append(this.statusText);

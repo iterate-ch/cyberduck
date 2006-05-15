@@ -63,7 +63,7 @@ public abstract class CDController extends NSObject {
     /**
      * Reference to the main graphical user interface thread
      */
-    private NSRunLoop mainRunLoop;
+    protected NSRunLoop mainRunLoop;
 
     protected static NSMutableArray instances;
 
