@@ -88,7 +88,10 @@ public abstract class CDValidatorController
 
     public List validate(final boolean resumeRequested) {
         List childs = this.queue.getChilds();
-        for (Iterator iter = childs.iterator(); iter.hasNext() && !this.queue.isCanceled();) {
+        for (Iterator iter = childs.iterator(); iter.hasNext();) {
+            if(this.queue.isCanceled()) {
+                break;
+            }
             Path child = (Path) iter.next();
             log.debug("Validating:" + child);
             if (this.validate(child, resumeRequested)) {

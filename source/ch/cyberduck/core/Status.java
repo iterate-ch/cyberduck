@@ -113,7 +113,9 @@ public class Status {
      * @param resume
      */
     public void setResume(boolean resume) {
-        log.info("setResume:" + resume);
+        if(!resume) {
+            this.current = 0;
+        }
         this.resume = resume;
     }
 
@@ -125,9 +127,7 @@ public class Status {
      *
      */
     public void reset() {
-        log.debug("reset (resume=" + resume + ")");
         this.complete = false;
         this.canceled = false;
-        this.setCurrent(this.isResume() ? this.getCurrent() : 0);
     }
 }

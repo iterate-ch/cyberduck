@@ -143,12 +143,12 @@ public class CDProgressController extends CDController {
         this.updateProgressfield();
     }
 
-    private Speedometer meter;
-
     public void update(NSTimer t) {
         this.updateProgressbar();
         this.updateProgressfield();
     }
+
+    private Speedometer meter;
 
     private class Speedometer {
         //the time to start counting bytes transfered
@@ -211,11 +211,11 @@ public class CDProgressController extends CDController {
         b.append(" ");
         b.append(Status.getSizeAsString(this.queue.getSize()));
         if(queue.isRunning() && null != meter) {
-            float speed = this.meter.getSpeed();
+            float speed = meter.getSpeed();
             if(speed > -1) {
                 b.append(" (");b.append(Status.getSizeAsString(speed));b.append("/sec, ");
                 int remaining = (int)((queue.getSize()-meter.getBytesTransfered())/speed);
-                if(remaining > 60) {
+                if(remaining > 120) {
                     b.append(remaining/60);b.append(" ");b.append(MIN_REMAINING);
                 }
                 else {

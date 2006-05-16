@@ -251,7 +251,6 @@ public class CDQueueController extends CDWindowController
             c.setDataCell(new CDIconCell());
             this.queueTable.addTableColumn(c);
         }
-
         {
             NSTableColumn c = new NSTableColumn();
             c.setIdentifier(CDQueueTableDataSource.PROGRESS_COLUMN);
@@ -360,14 +359,6 @@ public class CDQueueController extends CDWindowController
     private void startItem(final Queue queue, final boolean resumeRequested) {
         queue.addListener(new QueueAdapter() {
             private TranscriptListener transcript;
-
-            public void transferStarted() {
-                queueTable.setNeedsDisplay(true);
-            }
-
-            public void transferStopped() {
-                queueTable.setNeedsDisplay(true);
-            }
 
             public void queueStarted() {
                 CDQueueController.this.invoke(new Runnable() {

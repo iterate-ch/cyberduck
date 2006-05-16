@@ -56,20 +56,20 @@ public class CDIconCell extends CDTableCell {
         this.queue = (Queue) q;
     }
 
-    private static final NSImage arrowUpIcon = NSImage.imageNamed("arrowUp.tiff");
-    private static final NSImage arrowDownIcon = NSImage.imageNamed("arrowDown.tiff");
-    private static final NSImage syncIcon = NSImage.imageNamed("sync32.tiff");
-    private static final NSImage multipleDocumentsIcon = NSImage.imageNamed("multipleDocuments32.tiff");
-    private static final NSImage folderIcon = NSImage.imageNamed("folder32.tiff");
-    private static final NSImage notFoundIcon = NSImage.imageNamed("notfound.tiff");
+    private static final NSImage ARROW_UP_ICON = NSImage.imageNamed("arrowUp.tiff");
+    private static final NSImage ARROW_DOWN_ICON = NSImage.imageNamed("arrowDown.tiff");
+    private static final NSImage SYNC_ICON = NSImage.imageNamed("sync32.tiff");
+    private static final NSImage MULTIPLE_DOCUMENTS_ICON = NSImage.imageNamed("multipleDocuments32.tiff");
+    private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder32.tiff");
+    private static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
     private static final float SPACE = 4;
 
     static {
-        arrowUpIcon.setSize(new NSSize(32f, 32f));
-        arrowDownIcon.setSize(new NSSize(32f, 32f));
-        syncIcon.setSize(new NSSize(32f, 32f));
-        notFoundIcon.setSize(new NSSize(32f, 32f));
+        ARROW_UP_ICON.setSize(new NSSize(32f, 32f));
+        ARROW_DOWN_ICON.setSize(new NSSize(32f, 32f));
+        SYNC_ICON.setSize(new NSSize(32f, 32f));
+        NOT_FOUND_ICON.setSize(new NSSize(32f, 32f));
     }
 
     public void editWithFrameInView(NSRect nsRect, NSView nsView, NSText nsText, Object object, NSEvent nsEvent) {
@@ -79,31 +79,40 @@ public class CDIconCell extends CDTableCell {
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
         if(queue != null) {
             NSPoint cellPoint = cellFrame.origin();
-            // drawing file icon
-            NSImage fileIcon = notFoundIcon;
+            NSImage fileIcon = NOT_FOUND_ICON;
             if(queue.getRoot().getLocal().exists()) {
                 if(queue.numberOfRoots() == 1) {
-                    fileIcon = queue.getRoot().getLocal().isFile() ? NSWorkspace.sharedWorkspace().iconForFile(
-                            queue.getRoot().getLocal().getAbsolute()) : folderIcon;
+                    if(queue.getRoot().attributes.isDirectory()) {
+                        fileIcon = FOLDER_ICON;
+                    }
+                    else {
+                        if(queue instanceof DownloadQueue) {
+                            fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(
+                                    queue.getRoot().getRemote().getExtension());
+                        }
+                        else if(queue instanceof UploadQueue) {
+                            fileIcon = NSWorkspace.sharedWorkspace().iconForFile(
+                                    queue.getRoot().getLocal().getAbsolute());
+                        }
+                    }
                 }
                 else {
-                    fileIcon = multipleDocumentsIcon;
+                    fileIcon = MULTIPLE_DOCUMENTS_ICON;
                 }
             }
             NSImage arrowIcon = null;
             if(queue instanceof DownloadQueue) {
-                arrowIcon = arrowDownIcon;
+                arrowIcon = ARROW_DOWN_ICON;
             }
             else if(queue instanceof UploadQueue) {
-                arrowIcon = arrowUpIcon;
+                arrowIcon = ARROW_UP_ICON;
             }
             else if(queue instanceof SyncQueue) {
-                arrowIcon = syncIcon;
-                fileIcon = folderIcon;
+                arrowIcon = SYNC_ICON;
+                fileIcon = FOLDER_ICON;
             }
             fileIcon.setScalesWhenResized(true);
             fileIcon.setSize(new NSSize(32f, 32f));
-
             fileIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE,
                     cellPoint.y() + 32 + SPACE),
                     NSImage.CompositeSourceOver);

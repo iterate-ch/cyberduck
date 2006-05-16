@@ -76,6 +76,7 @@ public abstract class Queue extends NSObject {
     }
 
     protected void fireQueueStartedEvent() {
+        running = true;
         QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].queueStarted();
@@ -83,6 +84,7 @@ public abstract class Queue extends NSObject {
     }
 
     protected void fireQueueStoppedEvent() {
+        running = false;
         QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].queueStopped();
@@ -213,15 +215,6 @@ public abstract class Queue extends NSObject {
     public void run(boolean resume, boolean headless) {
         try {
             this.canceled = false;
-            this.getSession().addConnectionListener(new ConnectionAdapter() {
-                public void connectionWillOpen() {
-                    running = true;
-                }
-
-                public void connectionDidClose() {
-                    running = false;
-                }
-            });
             this.fireQueueStartedEvent();
             if(headless) {
                 this.jobs = this.getChilds();
@@ -238,7 +231,10 @@ public abstract class Queue extends NSObject {
                 this.jobs = validated;
             }
             this.reset();
-            for(Iterator iter = this.jobs.iterator(); iter.hasNext() && !canceled;) {
+            for(Iterator iter = this.jobs.iterator(); iter.hasNext();) {
+                if(this.canceled) {
+                    return;
+                }
                 this.fireTransferStartedEvent();
                 this.transfer((Path) iter.next());
                 this.fireTransferStoppedEvent();
@@ -276,6 +272,9 @@ public abstract class Queue extends NSObject {
         return this.canceled;
     }
 
+    /**
+     *
+     */
     private boolean running;
 
     public boolean isRunning() {
