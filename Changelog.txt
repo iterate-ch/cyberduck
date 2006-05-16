@@ -6,21 +6,22 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 
 2.5.6 [http://trac.cyberduck.ch/query?status=closed&milestone=2.5.6]
 - [Localize] Turkish Localization
-- [Feature] Automatic software udpate with Sparkle.framework (Thanks to Andy Matuschak!)
+- [Feature] Automatic software udpate with Sparkle.framework (Thanks to Andy Matuschak!) [#300]
 - [Feature] Dashboard Widget included (Thanks to Claudio Procida!)
 - [Feature] Marking write-only and non-accessible directories with special icon as in Finder.app
-- [Feature] Reintroduced transcript drawer in browser window
-- [Feature] Added transcript drawer to transfer window
+- [Feature] Reintroduced transcript drawer in browser window [#104]
+- [Feature] Added transcript drawer to transfer window [#375]
 - [Feature] Option to use Network Diagnostics upon failed connections
-- [Feature] New 'Download failed' and 'Upload failed' Growl notifications
-- [Feature] Display alert icon in the connection and bookmark dialog if server name cannot be resolved
+- [Feature] New 'Download failed' and 'Upload failed' Growl notifications [#362]
+- [Feature] Display alert icon in connection dialog if server name cannot be resolved
+- [Feature] Indicate estimated remaining time left for transfers [#43]
 - [Bugfix] Stalled connection and file transfer attempts can be interrupted [#55]
 - [Bugfix] Cannot delete empty folders [#162]
 - [Bugfix] Cannot use login username with colon [#309]
 - [Bugfix] Certain operations trigger change of character encoding to default
 - [Bugfix] Unable to delete directory from server [#256]
 - [Bugfix] Permission errors when downloading files from read-only directories [#264]
-- [Bugfix] Interrupt recursive operations upon error [#25]
+- [Bugfix] Change download keyboad shortcut [#277]
 - [Bugfix] Character encoding issues [#238, #333, #361, #390]
 
 2.5.5 [http://trac.cyberduck.ch/query?status=closed&milestone=2.5.5]
