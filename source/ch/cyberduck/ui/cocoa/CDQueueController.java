@@ -357,8 +357,19 @@ public class CDQueueController extends CDWindowController
      * @param resumeRequested
      */
     private void startItem(final Queue queue, final boolean resumeRequested) {
-        queue.addListener(new QueueAdapter() {
+        queue.addListener(new QueueListener() {
             private TranscriptListener transcript;
+
+            public void transferStarted(Path path) {
+                if(!path.getLocal().exists()) {
+                    path.getLocal().createNewFile(); //hack to display actual icon #CDIconCell
+                }
+                queueTable.setNeedsDisplay(true);
+            }
+
+            public void transferStopped(Path path) {
+                queueTable.setNeedsDisplay(true);
+            }
 
             public void queueStarted() {
                 CDQueueController.this.invoke(new Runnable() {

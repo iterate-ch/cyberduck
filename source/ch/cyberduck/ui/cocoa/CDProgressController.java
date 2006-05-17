@@ -22,6 +22,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.QueueListener;
 import ch.cyberduck.core.Status;
+import ch.cyberduck.core.Path;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -120,7 +121,7 @@ public class CDProgressController extends CDController {
                 queue.getSession().removeProgressListener(progress);
             }
 
-            public void transferStarted() {
+            public void transferStarted(Path path) {
                 meter = new Speedometer();
                 progressTimer = new NSTimer(0.1, //seconds
                         CDProgressController.this, //target
@@ -131,7 +132,7 @@ public class CDProgressController extends CDController {
                         NSRunLoop.DefaultRunLoopMode);
             }
 
-            public void transferStopped() {
+            public void transferStopped(Path path) {
                 progressTimer.invalidate();
             }
         });

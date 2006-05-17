@@ -227,7 +227,6 @@
 			<include name="**/MacOS/*"/>
 		  </fileset>
 		</chmod>
-		<antcall target="revision" />
     </target>
 
 	<target name="compile" depends="init" description="Compile the source tree">

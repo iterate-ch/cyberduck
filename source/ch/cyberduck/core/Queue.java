@@ -91,17 +91,17 @@ public abstract class Queue extends NSObject {
         }
     }
 
-    protected void fireTransferStartedEvent() {
+    protected void fireTransferStartedEvent(Path path) {
         QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
         for(int i = 0; i < l.length; i++) {
-            l[i].transferStarted();
+            l[i].transferStarted(path);
         }
     }
 
-    protected void fireTransferStoppedEvent() {
+    protected void fireTransferStoppedEvent(Path path) {
         QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
         for(int i = 0; i < l.length; i++) {
-            l[i].transferStopped();
+            l[i].transferStopped(path);
         }
     }
 
@@ -235,9 +235,10 @@ public abstract class Queue extends NSObject {
                 if(this.canceled) {
                     return;
                 }
-                this.fireTransferStartedEvent();
-                this.transfer((Path) iter.next());
-                this.fireTransferStoppedEvent();
+                final Path path = (Path)iter.next();
+                this.fireTransferStartedEvent(path);
+                this.transfer(path);
+                this.fireTransferStoppedEvent(path);
             }
         }
         finally {

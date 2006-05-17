@@ -36,12 +36,14 @@ public interface QueueListener {
 
     /**
      *
+     * @param path
      */
-    public void transferStarted();
+    public void transferStarted(Path path);
 
     /**
      *
+     * @param path
      */
-    public void transferStopped();
+    public void transferStopped(Path path);
 
 }

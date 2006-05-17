@@ -82,19 +82,8 @@ public class CDIconCell extends CDTableCell {
             NSImage fileIcon = NOT_FOUND_ICON;
             if(queue.getRoot().getLocal().exists()) {
                 if(queue.numberOfRoots() == 1) {
-                    if(queue.getRoot().attributes.isDirectory()) {
-                        fileIcon = FOLDER_ICON;
-                    }
-                    else {
-                        if(queue instanceof DownloadQueue) {
-                            fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(
-                                    queue.getRoot().getRemote().getExtension());
-                        }
-                        else if(queue instanceof UploadQueue) {
-                            fileIcon = NSWorkspace.sharedWorkspace().iconForFile(
-                                    queue.getRoot().getLocal().getAbsolute());
-                        }
-                    }
+                    fileIcon = queue.getRoot().getLocal().attributes.isFile() ? NSWorkspace.sharedWorkspace().iconForFile(
+                            queue.getRoot().getLocal().getAbsolute()) : FOLDER_ICON;
                 }
                 else {
                     fileIcon = MULTIPLE_DOCUMENTS_ICON;
