@@ -62,6 +62,29 @@ public class CDMainController extends CDController {
     // Outlets
     // ----------------------------------------------------------
 
+    private NSMenu dockMenu;
+    private Map dockMenuBookmarkItems = new HashMap();
+
+    public void setDockMenu(NSMenu dockMenu) {
+        this.dockMenu = dockMenu;
+        this.dockMenu.addItem(new NSMenuItem().separatorItem());
+        for(int i = 0; i < CDBookmarkTableDataSource.instance().size(); i++) {
+            Host h = (Host) CDBookmarkTableDataSource.instance().get(i);
+            NSMenuItem item  = new NSMenuItem(h.getNickname(),
+                    new NSSelector("dockBookmarkMenuClicked", new Class[]{Object.class}), "");
+            item.setTarget(this);
+            item.setImage(NSImage.imageNamed("bookmark16.tiff"));
+            dockMenuBookmarkItems.put(item, h);
+            dockMenu.addItem(item);
+        }
+    }
+
+    public void dockBookmarkMenuClicked(final Object sender) {
+        log.debug("dockBookmarkMenuClicked:" + sender);
+        CDBrowserController controller = CDMainController.this.newDocument();
+        controller.mount((Host) dockMenuBookmarkItems.get(sender));
+    }
+
     private NSMenu encodingMenu;
 
     public void setEncodingMenu(NSMenu encodingMenu) {
