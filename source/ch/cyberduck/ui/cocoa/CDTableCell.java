@@ -42,17 +42,6 @@ public class CDTableCell extends NSCell {
     protected NSDictionary normalFont;
     protected NSDictionary tinyFont;
     protected NSDictionary tinyFontRight;
-    private static NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT;
-    private static NSMutableParagraphStyle PARAGRAPH_STYLE_RIGHT_ALIGNMENT;
-
-    private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
-
-    static {
-        lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
-    }
-
-    public static final NSDictionary TABLE_CELL_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
-            new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
     public CDTableCell() {
         super();
@@ -66,19 +55,41 @@ public class CDTableCell extends NSCell {
         super.encodeWithCoder(encoder);
     }
 
-    static {
-        PARAGRAPH_STYLE_LEFT_ALIGNMENT = new NSMutableParagraphStyle();
-        PARAGRAPH_STYLE_LEFT_ALIGNMENT.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle());
-        PARAGRAPH_STYLE_LEFT_ALIGNMENT.setAlignment(NSText.LeftTextAlignment);
-        PARAGRAPH_STYLE_LEFT_ALIGNMENT.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
-    }
+    private static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE;
 
     static {
-        PARAGRAPH_STYLE_RIGHT_ALIGNMENT = new NSMutableParagraphStyle();
-        PARAGRAPH_STYLE_RIGHT_ALIGNMENT.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle());
-        PARAGRAPH_STYLE_RIGHT_ALIGNMENT.setAlignment(NSText.RightTextAlignment);
-        PARAGRAPH_STYLE_RIGHT_ALIGNMENT.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE = new NSMutableParagraphStyle();
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle());
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE.setAlignment(NSText.LeftTextAlignment);
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
     }
+
+    private static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL;
+
+    static {
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL = new NSMutableParagraphStyle();
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle());
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL.setAlignment(NSText.LeftTextAlignment);
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
+    }
+
+    private static final NSMutableParagraphStyle PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL;
+
+    static {
+        PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL = new NSMutableParagraphStyle();
+        PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle());
+        PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL.setAlignment(NSText.RightTextAlignment);
+        PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
+    }
+
+    public static final NSDictionary PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT = new NSDictionary(
+            new Object[]{PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE},
+            new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+
+    public static final NSDictionary PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT = new NSDictionary(
+            new Object[]{PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL},
+            new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+
 
     public void editWithFrameInView(NSRect nsRect, NSView nsView, NSText nsText, Object object, NSEvent nsEvent) {
         super.editWithFrameInView(nsRect, nsView, nsText, object, nsEvent);
@@ -106,7 +117,7 @@ public class CDTableCell extends NSCell {
     static protected NSDictionary BOLD_FONT = new NSDictionary(new Object[]{
             NSFont.boldSystemFontOfSize(11.0f),
             //								   NSColor.darkGrayColor(),
-            PARAGRAPH_STYLE_LEFT_ALIGNMENT}, //objects
+            PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
             new Object[]{
                     NSAttributedString.FontAttributeName,
                     //								   NSAttributedString.ForegroundColorAttributeName,
@@ -116,7 +127,7 @@ public class CDTableCell extends NSCell {
     static protected NSDictionary NORMAL_FONT = new NSDictionary(new Object[]{
             NSFont.systemFontOfSize(10.0f),
             //								   NSColor.darkGrayColor(),
-            PARAGRAPH_STYLE_LEFT_ALIGNMENT}, //objects
+            PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
             new Object[]{
                     NSAttributedString.FontAttributeName,
                     //								   NSAttributedString.ForegroundColorAttributeName,
@@ -126,7 +137,7 @@ public class CDTableCell extends NSCell {
     static protected NSDictionary TINY_FONT = new NSDictionary(new Object[]{
             NSFont.systemFontOfSize(10.0f),
             NSColor.darkGrayColor(),
-            PARAGRAPH_STYLE_LEFT_ALIGNMENT},
+            PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL},
             new Object[]{
                     NSAttributedString.FontAttributeName,
                     NSAttributedString.ForegroundColorAttributeName,
@@ -135,7 +146,7 @@ public class CDTableCell extends NSCell {
     static protected NSDictionary TINY_FONT_RIGHT = new NSDictionary(new Object[]{
             NSFont.systemFontOfSize(10.0f),
             NSColor.darkGrayColor(),
-            PARAGRAPH_STYLE_RIGHT_ALIGNMENT},
+            PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL},
             new Object[]{
                     NSAttributedString.FontAttributeName,
                     NSAttributedString.ForegroundColorAttributeName,
@@ -144,7 +155,7 @@ public class CDTableCell extends NSCell {
     static protected NSDictionary BOLD_FONT_HIGHLIGHTED = new NSDictionary(new Object[]{
             NSFont.boldSystemFontOfSize(11.0f),
             NSColor.whiteColor(),
-            PARAGRAPH_STYLE_LEFT_ALIGNMENT}, //objects
+            PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
             new Object[]{
                     NSAttributedString.FontAttributeName,
                     NSAttributedString.ForegroundColorAttributeName,
@@ -154,7 +165,7 @@ public class CDTableCell extends NSCell {
     static protected NSDictionary NORMAL_FONT_HIGHLIGHTED = new NSDictionary(new Object[]{
             NSFont.systemFontOfSize(10.0f),
             NSColor.whiteColor(),
-            PARAGRAPH_STYLE_LEFT_ALIGNMENT}, //objects
+            PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
             new Object[]{
                     NSAttributedString.FontAttributeName,
                     NSAttributedString.ForegroundColorAttributeName,
@@ -164,7 +175,7 @@ public class CDTableCell extends NSCell {
     static protected NSDictionary TINY_FONT_HIGHLIGHTED = new NSDictionary(new Object[]{
             NSFont.systemFontOfSize(10.0f),
             NSColor.whiteColor(),
-            PARAGRAPH_STYLE_LEFT_ALIGNMENT},
+            PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL},
             new Object[]{
                     NSAttributedString.FontAttributeName,
                     NSAttributedString.ForegroundColorAttributeName,
@@ -173,7 +184,7 @@ public class CDTableCell extends NSCell {
     static protected NSDictionary TINY_FONT_HIGHLIGHTED_RIGHT = new NSDictionary(new Object[]{
             NSFont.systemFontOfSize(10.0f),
             NSColor.whiteColor(),
-            PARAGRAPH_STYLE_RIGHT_ALIGNMENT},
+            PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL},
             new Object[]{
                     NSAttributedString.FontAttributeName,
                     NSAttributedString.ForegroundColorAttributeName,

@@ -22,6 +22,7 @@ import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSAttributedString;
 
 import org.apache.log4j.Logger;
 
@@ -242,8 +243,9 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
             Path p = (Path) this.workList.get(row);
             if(p != null) {
                 if (identifier.equals(SIZE_COLUMN)) {
-                    return Status.getSizeAsString(
-                            p.compare() > 0 ? p.getRemote().attributes.getSize() : p.getLocal().attributes.getSize());
+                    return new NSAttributedString(Status.getSizeAsString(
+                            p.compare() > 0 ? p.getRemote().attributes.getSize() : p.getLocal().attributes.getSize()),
+                            CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
                 }
                 if(identifier.equals(TYPE_COLUMN)) {
                     return p.compare() > 0 ? ARROW_DOWN_ICON : ARROW_UP_ICON;

@@ -804,7 +804,7 @@ public class CDBrowserController extends CDWindowController
                         icon.setSize(new NSSize(16f, 16f));
                         ((CDOutlineCell) cell).setIcon(icon);
                         ((CDOutlineCell) cell).setAttributedStringValue(new NSAttributedString(item.getName(),
-                                CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY));
+                                CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT));
                     }
                     if(cell instanceof NSTextFieldCell) {
                         if(CDBrowserController.this.isConnected()) {
@@ -867,7 +867,6 @@ public class CDBrowserController extends CDWindowController
                 cell.setAction(browserListView.action());
             }
             c.setDataCell(cell);
-            c.dataCell().setAlignment(NSText.LeftTextAlignment);
             this.browserOutlineView.addTableColumn(c);
             this.browserOutlineView.setOutlineTableColumn(c);
         }
@@ -949,7 +948,7 @@ public class CDBrowserController extends CDWindowController
         {
             NSTableColumn c = new NSTableColumn();
             c.headerCell().setStringValue(NSBundle.localizedString("Filename", "A column in the browser"));
-            c.setIdentifier("FILENAME");
+            c.setIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN);
             c.setMinWidth(100f);
             c.setWidth(250f);
             c.setMaxWidth(1000f);
@@ -966,7 +965,6 @@ public class CDBrowserController extends CDWindowController
                 cell.setAction(view.action());
             }
             c.setDataCell(cell);
-            c.dataCell().setAlignment(NSText.LeftTextAlignment);
             this.browserListView.addTableColumn(c);
         }
     }
@@ -1006,7 +1004,6 @@ public class CDBrowserController extends CDWindowController
                 c.setResizable(true);
             }
             c.setDataCell(new NSTextFieldCell());
-            c.dataCell().setAlignment(NSText.RightTextAlignment);
             table.addTableColumn(c);
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.MODIFIED_COLUMN));
@@ -1024,7 +1021,6 @@ public class CDBrowserController extends CDWindowController
                 c.setResizable(true);
             }
             c.setDataCell(new NSTextFieldCell());
-            c.dataCell().setAlignment(NSText.LeftTextAlignment);
             c.dataCell().setFormatter(
                     new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString),
                     true));
@@ -1045,7 +1041,6 @@ public class CDBrowserController extends CDWindowController
                 c.setResizable(true);
             }
             c.setDataCell(new NSTextFieldCell());
-            c.dataCell().setAlignment(NSText.LeftTextAlignment);
             table.addTableColumn(c);
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.PERMISSIONS_COLUMN));
@@ -1063,7 +1058,6 @@ public class CDBrowserController extends CDWindowController
                 c.setResizable(true);
             }
             c.setDataCell(new NSTextFieldCell());
-            c.dataCell().setAlignment(NSText.LeftTextAlignment);
             table.addTableColumn(c);
         }
         table.setIndicatorImage(((CDTableDelegate) table.delegate()).isSortedAscending() ?

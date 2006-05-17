@@ -63,21 +63,21 @@ public class Status {
             return NSBundle.localizedString("Unknown size", "");
         }
         if (size < KILO) {
-            return (int) size + "B";
+            return (int) size + " B";
         }
         if (size < MEGA) {
             return new BigDecimal(size).divide(new BigDecimal(KILO),
                     1,
-                    BigDecimal.ROUND_FLOOR).toString() + "kB";
+                    BigDecimal.ROUND_FLOOR).toString() + " KB";
         }
         if (size < GIGA) {
             return new BigDecimal(size).divide(new BigDecimal(MEGA),
                     1,
-                    BigDecimal.ROUND_FLOOR).toString() + "MB";
+                    BigDecimal.ROUND_FLOOR).toString() + " MB";
         }
         return new BigDecimal(size).divide(new BigDecimal(GIGA),
                 1,
-                BigDecimal.ROUND_FLOOR).toString() + "GB";
+                BigDecimal.ROUND_FLOOR).toString() + " GB";
     }
 
     public void setComplete(boolean complete) {

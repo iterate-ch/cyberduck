@@ -431,7 +431,6 @@ public abstract class CDValidatorController
             }
             c.setEditable(false);
             c.setDataCell(new NSTextFieldCell());
-            c.dataCell().setAlignment(NSText.LeftTextAlignment);
             this.fileTableView.addTableColumn(c);
         }
         {
@@ -449,7 +448,6 @@ public abstract class CDValidatorController
             }
             c.setEditable(false);
             c.setDataCell(new NSTextFieldCell());
-            c.dataCell().setAlignment(NSText.RightTextAlignment);
             this.fileTableView.addTableColumn(c);
         }
         {
@@ -550,7 +548,7 @@ public abstract class CDValidatorController
         }
         if (identifier.equals(FILENAME_COLUMN)) {
             return new NSAttributedString(p.getRemote().getName(),
-                    CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+                    CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
         }
         if (identifier.equals(TYPEAHEAD_COLUMN)) {
             return p.getRemote().getName();

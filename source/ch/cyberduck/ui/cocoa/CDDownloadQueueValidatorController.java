@@ -26,6 +26,7 @@ import ch.cyberduck.core.Status;
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSTableView;
 import com.apple.cocoa.application.NSTableColumn;
+import com.apple.cocoa.foundation.NSAttributedString;
 
 import org.apache.log4j.Logger;
 
@@ -101,7 +102,8 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
                     }
                 }
                 if (identifier.equals(SIZE_COLUMN)) {
-                    return Status.getSizeAsString(p.getRemote().attributes.getSize());
+                    return new NSAttributedString(Status.getSizeAsString(p.attributes.getSize()),
+                            CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
                 }
             }
             return super.tableViewObjectValueForLocation(view, tableColumn, row);

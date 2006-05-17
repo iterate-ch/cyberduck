@@ -129,14 +129,14 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 return icon;
             }
             if (identifier.equals(FILENAME_COLUMN)) {
-                return new NSAttributedString(item.getName(), CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+                return new NSAttributedString(item.getName(), CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
             }
             if (identifier.equals(TYPEAHEAD_COLUMN)) {
                 return item.getName();
             }
             if (identifier.equals(SIZE_COLUMN)) {
                 return new NSAttributedString(Status.getSizeAsString(item.attributes.getSize()),
-                        CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+                        CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
             }
             if (identifier.equals(MODIFIED_COLUMN)) {
                 if (item.attributes.getTimestamp() != -1) {
@@ -147,11 +147,11 @@ public abstract class CDBrowserTableDataSource extends CDController {
             }
             if (identifier.equals(OWNER_COLUMN)) {
                 return new NSAttributedString(item.attributes.getOwner(),
-                        CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+                        CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
             }
             if (identifier.equals(PERMISSIONS_COLUMN)) {
                 return new NSAttributedString(item.attributes.getPermission().toString(),
-                        CDTableCell.TABLE_CELL_PARAGRAPH_DICTIONARY);
+                        CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
