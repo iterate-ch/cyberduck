@@ -361,7 +361,7 @@ public class CDQueueController extends CDWindowController
             private TranscriptListener transcript;
 
             public void transferStarted(Path path) {
-                if(!path.getLocal().exists()) {
+                if(path.attributes.isFile() && !path.getLocal().exists()) {
                     path.getLocal().createNewFile(); //hack to display actual icon #CDIconCell
                 }
                 queueTable.setNeedsDisplay(true);
