@@ -15,6 +15,7 @@
       <excludeFolder url="file://$MODULE_DIR$/Spotlight Importer" />
       <excludeFolder url="file://$MODULE_DIR$/Upload Automator Action" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/source_refactored" />
       <excludeFolder url="file://$MODULE_DIR$/www" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -62,17 +63,6 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/commons-net-1.4.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/../../Sandbox/commons-net/src/java" />
-        </SOURCES>
       </library>
     </orderEntry>
     <orderEntryProperties />
