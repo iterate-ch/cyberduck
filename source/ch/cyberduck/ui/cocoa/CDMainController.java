@@ -63,26 +63,46 @@ public class CDMainController extends CDController {
     // ----------------------------------------------------------
 
     private NSMenu dockMenu;
-    private Map dockMenuBookmarkItems = new HashMap();
+    private NSMenu dockBookmarkMenu;
+    private DockBookmarkMenuDelegate dockBookmarkMenuDelegate;
 
     public void setDockMenu(NSMenu dockMenu) {
         this.dockMenu = dockMenu;
-        this.dockMenu.addItem(new NSMenuItem().separatorItem());
-        for(int i = 0; i < CDBookmarkTableDataSource.instance().size(); i++) {
-            Host h = (Host) CDBookmarkTableDataSource.instance().get(i);
-            NSMenuItem item  = new NSMenuItem(h.getNickname(),
-                    new NSSelector("dockBookmarkMenuClicked", new Class[]{Object.class}), "");
-            item.setTarget(this);
-            item.setImage(NSImage.imageNamed("bookmark16.tiff"));
-            dockMenuBookmarkItems.put(item, h);
-            dockMenu.addItem(item);
-        }
+        this.dockBookmarkMenu = new NSMenu();
+        this.dockBookmarkMenu.setDelegate(this.dockBookmarkMenuDelegate = new DockBookmarkMenuDelegate());
+        this.dockMenu.setSubmenuForItem(dockBookmarkMenu, this.dockMenu.itemAtIndex(2));
     }
 
-    public void dockBookmarkMenuClicked(final Object sender) {
-        log.debug("dockBookmarkMenuClicked:" + sender);
-        CDBrowserController controller = CDMainController.this.newDocument();
-        controller.mount((Host) dockMenuBookmarkItems.get(sender));
+    private class DockBookmarkMenuDelegate extends NSObject {
+        private Map items = new HashMap();
+
+        public int numberOfItemsInMenu(NSMenu menu) {
+            return CDBookmarkTableDataSource.instance().size();
+        }
+
+        /**
+         * Called to let you update a menu item before it is displayed. If your
+         * numberOfItemsInMenu delegate method returns a positive value,
+         * then your menuUpdateItemAtIndex method is called for each item in the menu.
+         * You can then update the menu title, image, and so forth for the menu item.
+         * Return true to continue the process. If you return false, your menuUpdateItemAtIndex
+         * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
+         */
+        public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
+            Host h = (Host) CDBookmarkTableDataSource.instance().get(index);
+            item.setTitle(h.getNickname());
+            item.setTarget(this);
+            item.setImage(NSImage.imageNamed("bookmark16.tiff"));
+            item.setAction(new NSSelector("bookmarkMenuItemClicked", new Class[]{Object.class}));
+            items.put(item, h);
+            return true;
+        }
+
+        public void bookmarkMenuItemClicked(final Object sender) {
+            log.debug("bookmarkMenuItemClicked:" + sender);
+            CDBrowserController controller = CDMainController.this.newDocument();
+            controller.mount((Host) items.get(sender));
+        }
     }
 
     private NSMenu encodingMenu;
@@ -113,12 +133,11 @@ public class CDMainController extends CDController {
         this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
         this.historyMenu.setDelegate(this.historyMenuDelegate = new HistoryMenuDelegate());
         this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = new RendezvousMenuDelegate());
-        this.bookmarkMenu.itemWithTitle(NSBundle.localizedString("History", "")).setAction(
+        this.bookmarkMenu.itemAtIndex(5).setAction(
                 new NSSelector("historyMenuClicked", new Class[]{NSMenuItem.class})
         );
-        this.bookmarkMenu.setSubmenuForItem(historyMenu, this.bookmarkMenu.itemWithTitle(
-                NSBundle.localizedString("History", "")));
-        this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemWithTitle("Bonjour"));
+        this.bookmarkMenu.setSubmenuForItem(historyMenu, this.bookmarkMenu.itemAtIndex(5));
+        this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemAtIndex(6));
     }
 
     public void historyMenuClicked(NSMenuItem sender) {
@@ -130,8 +149,8 @@ public class CDMainController extends CDController {
 
         public int numberOfItemsInMenu(NSMenu menu) {
             return CDBookmarkTableDataSource.instance().size() + 8;
-            //index 0-2 are static menu items, 3 is sepeartor, 4 is iDisk with submenu, 5 is Rendezvous with submenu,
-            // 6 is History with submenu, 7 is sepearator
+            //index 0-2 are static menu items, 3 is sepeartor, 4 is iDisk with submenu, 5 is History with submenu,
+            // 6 is Bonjour with submenu, 7 is sepearator
         }
 
         /**

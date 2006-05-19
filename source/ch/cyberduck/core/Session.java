@@ -417,6 +417,16 @@ public abstract class Session extends NSObject {
         return this.cache;
     }
 
+    public boolean equals(Object other) {
+        if (null == other) {
+            return false;
+        }
+        if (other instanceof Session) {
+            return this.getHost().equals(((Session)other).getHost());
+        }
+        return false;
+    }
+
     protected void finalize() throws java.lang.Throwable {
         log.debug("finalize:" + super.toString());
         super.finalize();

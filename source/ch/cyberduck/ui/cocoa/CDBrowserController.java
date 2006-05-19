@@ -2659,9 +2659,6 @@ public class CDBrowserController extends CDWindowController
      * @return true if the item by that identifier should be enabled
      */
     private boolean validateItem(String identifier) {
-        if(identifier.equals("New Connection")) {
-            return true;
-        }
         if(identifier.equals("copy:")) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
@@ -2692,14 +2689,8 @@ public class CDBrowserController extends CDWindowController
             }
             return false;
         }
-        if(identifier.equals("showHiddenFilesClicked:")) {
-            return true;
-        }
         if(identifier.equals("encodingButtonClicked:")) {
             return !activityRunning;
-        }
-        if(identifier.equals("addBookmarkButtonClicked:")) {
-            return true;
         }
         if(identifier.equals("deleteBookmarkButtonClicked:")) {
             return bookmarkTable.selectedRow() != -1;
@@ -2707,7 +2698,7 @@ public class CDBrowserController extends CDWindowController
         if(identifier.equals("editBookmarkButtonClicked:")) {
             return bookmarkTable.numberOfSelectedRows() == 1;
         }
-        if(identifier.equals("Edit") || identifier.equals("editButtonClicked:")) {
+        if(identifier.equals("editButtonClicked:")) {
             if(this.isMounted() && this.getSelectionCount() > 0) {
                 String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                         Preferences.instance().getProperty("editor.bundleIdentifier"));
@@ -2729,34 +2720,34 @@ public class CDBrowserController extends CDWindowController
         if(identifier.equals("gotoButtonClicked:")) {
             return this.isMounted();
         }
-        if(identifier.equals("Get Info") || identifier.equals("infoButtonClicked:")) {
+        if(identifier.equals("infoButtonClicked:")) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
-        if(identifier.equals("New Folder") || identifier.equals("createFolderButtonClicked:")) {
+        if(identifier.equals("createFolderButtonClicked:")) {
             return this.isMounted();
         }
-        if(identifier.equals("New File") || identifier.equals("createFileButtonClicked:")) {
+        if(identifier.equals("createFileButtonClicked:")) {
             return this.isMounted();
         }
-        if(identifier.equals("Duplicate File") || identifier.equals("duplicateFileButtonClicked:")) {
+        if(identifier.equals("duplicateFileButtonClicked:")) {
             return this.isMounted() && this.getSelectionCount() > 0 && this.getSelectedPath().attributes.isFile();
         }
-        if(identifier.equals("Delete") || identifier.equals("deleteFileButtonClicked:")) {
+        if(identifier.equals("deleteFileButtonClicked:")) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
-        if(identifier.equals("Refresh") || identifier.equals("reloadButtonClicked:")) {
+        if(identifier.equals("reloadButtonClicked:")) {
             return this.isMounted();
         }
-        if(identifier.equals("Download") || identifier.equals("downloadButtonClicked:")) {
+        if(identifier.equals("downloadButtonClicked:")) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
-        if(identifier.equals("Upload") || identifier.equals("uploadButtonClicked:")) {
+        if(identifier.equals("uploadButtonClicked:")) {
             return this.isMounted();
         }
-        if(identifier.equals("Synchronize") || identifier.equals("syncButtonClicked:")) {
+        if(identifier.equals("syncButtonClicked:")) {
             return this.isMounted();
         }
-        if(identifier.equals("Download As") || identifier.equals("downloadAsButtonClicked:")) {
+        if(identifier.equals("downloadAsButtonClicked:")) {
             return this.isMounted() && this.getSelectionCount() == 1;
         }
         if(identifier.equals("insideButtonClicked:")) {
@@ -2774,7 +2765,7 @@ public class CDBrowserController extends CDWindowController
         if(identifier.equals("copyURLButtonClicked:")) {
             return this.isMounted();
         }
-        if(identifier.equals("Disconnect") || identifier.equals("disconnectButtonClicked:")) {
+        if(identifier.equals("disconnectButtonClicked:")) {
             if(!this.isConnected()) {
                 return this.activityRunning;
             }
@@ -2802,8 +2793,8 @@ public class CDBrowserController extends CDWindowController
         this.searchField.setEnabled(this.isMounted());
         this.encodingPopup.setEnabled(!this.activityRunning);
 
-        String identifier = item.itemIdentifier();
-        if(identifier.equals("Edit")) {
+        String identifier = item.action().name();
+        if(identifier.equals("editButtonClicked:")) {
             String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                     Preferences.instance().getProperty("editor.bundleIdentifier"));
             if(editorPath != null) {
@@ -2817,9 +2808,26 @@ public class CDBrowserController extends CDWindowController
         return this.validateItem(identifier);
     }
 
+    private static final String TOOLBAR_NEW_CONNECTION = "New Connection";
+    private static final String TOOLBAR_BROWSER_VIEW = "Browser View";
+    private static final String TOOLBAR_BOOKMARKS = "Bookmarks";
+    private static final String TOOLBAR_TRANSFERS = "Transfers";
+    private static final String TOOLBAR_QUICK_CONNECT = "Quick Connect";
+    private static final String TOOLBAR_TOOLS = "Tools";
+    private static final String TOOLBAR_REFRESH = "Refresh";
+    private static final String TOOLBAR_ENCODING = "Encoding";
+    private static final String TOOLBAR_SYNCHRONIZE = "Synchronize";
+    private static final String TOOLBAR_DOWNLOAD = "Download";
+    private static final String TOOLBAR_UPLOAD = "Upload";
+    private static final String TOOLBAR_EDIT = "Edit";
+    private static final String TOOLBAR_DELETE = "Delete";
+    private static final String TOOLBAR_NEW_FOLDER = "New Folder";
+    private static final String TOOLBAR_GET_INFO = "Get Info";
+    private static final String TOOLBAR_DISCONNECT = "Disconnect";
+
     public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
         NSToolbarItem item = new NSToolbarItem(itemIdentifier);
-        if(itemIdentifier.equals("Browser View")) {
+        if(itemIdentifier.equals(TOOLBAR_BROWSER_VIEW)) {
             item.setLabel(NSBundle.localizedString("View", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("View", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Switch Browser View", "Toolbar item tooltip"));
@@ -2845,34 +2853,34 @@ public class CDBrowserController extends CDWindowController
             item.setMaxSize(this.browserSwitchView.frame().size());
             return item;
         }
-        if(itemIdentifier.equals("New Connection")) {
-            item.setLabel(NSBundle.localizedString("New Connection", "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString("New Connection", "Toolbar item"));
+        if(itemIdentifier.equals(TOOLBAR_NEW_CONNECTION)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_NEW_CONNECTION, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_NEW_CONNECTION, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Connect to server", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("connect.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("connectButtonClicked", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals("Bookmarks")) {
-            item.setLabel(NSBundle.localizedString("Bookmarks", "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString("Bookmarks", "Toolbar item"));
+        if(itemIdentifier.equals(TOOLBAR_BOOKMARKS)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_BOOKMARKS, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_BOOKMARKS, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Toggle Bookmarks", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("drawer.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("toggleBookmarkDrawer", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals("Transfers")) {
-            item.setLabel(NSBundle.localizedString("Transfers", "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString("Transfers", "Toolbar item"));
+        if(itemIdentifier.equals(TOOLBAR_TRANSFERS)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_TRANSFERS, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_TRANSFERS, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Show Transfers window", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("queue.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("showTransferQueueClicked", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals("Tools")) {
+        if(itemIdentifier.equals(TOOLBAR_TOOLS)) {
             item.setLabel(NSBundle.localizedString("Action", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Action", "Toolbar item"));
             item.setView(this.actionPopupButton);
@@ -2891,21 +2899,21 @@ public class CDBrowserController extends CDWindowController
             item.setMaxSize(this.actionPopupButton.frame().size());
             return item;
         }
-        if(itemIdentifier.equals("Quick Connect")) {
-            item.setLabel(NSBundle.localizedString("Quick Connect", "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString("Quick Connect", "Toolbar item"));
+        if(itemIdentifier.equals(TOOLBAR_QUICK_CONNECT)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_QUICK_CONNECT, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_QUICK_CONNECT, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Connect to server", "Toolbar item tooltip"));
             item.setView(this.quickConnectPopup);
             item.setMinSize(this.quickConnectPopup.frame().size());
             item.setMaxSize(this.quickConnectPopup.frame().size());
             return item;
         }
-        if(itemIdentifier.equals("Encoding")) {
-            item.setLabel(NSBundle.localizedString("Encoding", "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString("Encoding", "Toolbar item"));
+        if(itemIdentifier.equals(TOOLBAR_ENCODING)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_ENCODING, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_ENCODING, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Character Encoding", "Toolbar item tooltip"));
             item.setView(this.encodingPopup);
-            NSMenuItem encodingMenu = new NSMenuItem(NSBundle.localizedString("Encoding", "Toolbar item"),
+            NSMenuItem encodingMenu = new NSMenuItem(NSBundle.localizedString(TOOLBAR_ENCODING, "Toolbar item"),
                     new NSSelector("encodingButtonClicked", new Class[]{Object.class}),
                     "");
             String[] charsets = CDController.availableCharsets();
@@ -2921,54 +2929,54 @@ public class CDBrowserController extends CDWindowController
             item.setMaxSize(this.encodingPopup.frame().size());
             return item;
         }
-        if(itemIdentifier.equals("Refresh")) {
-            item.setLabel(NSBundle.localizedString("Refresh", "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString("Refresh", "Toolbar item"));
+        if(itemIdentifier.equals(TOOLBAR_REFRESH)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_REFRESH, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_REFRESH, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Refresh directory listing", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("reload.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("reloadButtonClicked", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals("Download")) {
-            item.setLabel(NSBundle.localizedString("Download", "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString("Download", "Toolbar item"));
+        if(itemIdentifier.equals(TOOLBAR_DOWNLOAD)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_DOWNLOAD, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_DOWNLOAD, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Download file", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("downloadFile.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("downloadButtonClicked", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals("Upload")) {
-            item.setLabel(NSBundle.localizedString("Upload", "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString("Upload", "Toolbar item"));
+        if(itemIdentifier.equals(TOOLBAR_UPLOAD)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_UPLOAD, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_UPLOAD, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Upload local file to the remote host", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("uploadFile.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("uploadButtonClicked", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals("Synchronize")) {
-            item.setLabel(NSBundle.localizedString("Synchronize", "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString("Synchronize", "Toolbar item"));
+        if(itemIdentifier.equals(TOOLBAR_SYNCHRONIZE)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_SYNCHRONIZE, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_SYNCHRONIZE, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Synchronize files", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("sync32.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("syncButtonClicked", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals("Get Info")) {
-            item.setLabel(NSBundle.localizedString("Get Info", "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString("Get Info", "Toolbar item"));
+        if(itemIdentifier.equals(TOOLBAR_GET_INFO)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_GET_INFO, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_GET_INFO, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Show file attributes", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("info.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("infoButtonClicked", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals("Edit")) {
-            item.setLabel(NSBundle.localizedString("Edit", "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString("Edit", "Toolbar item"));
+        if(itemIdentifier.equals(TOOLBAR_EDIT)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_EDIT, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_EDIT, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Edit file in external editor", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("pencil.tiff"));
             String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
@@ -2978,7 +2986,7 @@ public class CDBrowserController extends CDWindowController
             }
             item.setTarget(this);
             item.setAction(new NSSelector("editButtonClicked", new Class[]{Object.class}));
-            NSMenuItem toolbarMenu = new NSMenuItem(NSBundle.localizedString("Edit", "Toolbar item"),
+            NSMenuItem toolbarMenu = new NSMenuItem(NSBundle.localizedString(TOOLBAR_EDIT, "Toolbar item"),
                     new NSSelector("editButtonClicked", new Class[]{Object.class}),
                     "");
             NSMenu editMenu = new NSMenu();
@@ -3001,27 +3009,27 @@ public class CDBrowserController extends CDWindowController
             item.setMenuFormRepresentation(toolbarMenu);
             return item;
         }
-        if(itemIdentifier.equals("Delete")) {
-            item.setLabel(NSBundle.localizedString("Delete", "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString("Delete", "Toolbar item"));
+        if(itemIdentifier.equals(TOOLBAR_DELETE)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_DELETE, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_DELETE, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Delete file", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("deleteFile.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("deleteFileButtonClicked", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals("New Folder")) {
-            item.setLabel(NSBundle.localizedString("New Folder", "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString("New Folder", "Toolbar item"));
+        if(itemIdentifier.equals(TOOLBAR_NEW_FOLDER)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_NEW_FOLDER, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_NEW_FOLDER, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Create New Folder", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("folder_new.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("createFolderButtonClicked", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals("Disconnect")) {
-            item.setLabel(NSBundle.localizedString("Disconnect", "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString("Disconnect", "Toolbar item"));
+        if(itemIdentifier.equals(TOOLBAR_DISCONNECT)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_DISCONNECT, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_DISCONNECT, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Disconnect from server", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("eject.tiff"));
             item.setTarget(this);
@@ -3039,16 +3047,16 @@ public class CDBrowserController extends CDWindowController
      */
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return new NSArray(new Object[]{
-                "New Connection",
+                TOOLBAR_NEW_CONNECTION,
                 NSToolbarItem.SeparatorItemIdentifier,
-                "Bookmarks",
-                "Quick Connect",
-                "Tools",
+                TOOLBAR_BOOKMARKS,
+                TOOLBAR_QUICK_CONNECT,
+                TOOLBAR_TOOLS,
                 NSToolbarItem.SeparatorItemIdentifier,
-                "Refresh",
-                "Edit",
+                TOOLBAR_REFRESH,
+                TOOLBAR_EDIT,
                 NSToolbarItem.FlexibleSpaceItemIdentifier,
-                "Disconnect"
+                TOOLBAR_DISCONNECT
         });
     }
 
@@ -3058,22 +3066,22 @@ public class CDBrowserController extends CDWindowController
      */
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
         return new NSArray(new Object[]{
-                "New Connection",
-                "Browser View",
-                "Bookmarks",
-                "Transfers",
-                "Quick Connect",
-                "Tools",
-                "Refresh",
-                "Encoding",
-                "Synchronize",
-                "Download",
-                "Upload",
-                "Edit",
-                "Delete",
-                "New Folder",
-                "Get Info",
-                "Disconnect",
+                TOOLBAR_NEW_CONNECTION,
+                TOOLBAR_BROWSER_VIEW,
+                TOOLBAR_BOOKMARKS,
+                TOOLBAR_TRANSFERS,
+                TOOLBAR_QUICK_CONNECT,
+                TOOLBAR_TOOLS,
+                TOOLBAR_REFRESH,
+                TOOLBAR_ENCODING,
+                TOOLBAR_SYNCHRONIZE,
+                TOOLBAR_DOWNLOAD,
+                TOOLBAR_UPLOAD,
+                TOOLBAR_EDIT,
+                TOOLBAR_DELETE,
+                TOOLBAR_NEW_FOLDER,
+                TOOLBAR_GET_INFO,
+                TOOLBAR_DISCONNECT,
                 NSToolbarItem.CustomizeToolbarItemIdentifier,
                 NSToolbarItem.SpaceItemIdentifier,
                 NSToolbarItem.SeparatorItemIdentifier,
