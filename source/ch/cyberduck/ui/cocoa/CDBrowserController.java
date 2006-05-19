@@ -1549,7 +1549,9 @@ public class CDBrowserController extends CDWindowController
                 this.getFocus();
             }
             else {
-                this.window.makeFirstResponder(this.quickConnectPopup);
+                if(this.window.toolbar().isVisible()) {
+                    this.window.makeFirstResponder(this.quickConnectPopup);
+                }
             }
         }
     }
@@ -2539,12 +2541,26 @@ public class CDBrowserController extends CDWindowController
         });
     }
 
+    private void validateNavigationButtons() {
+        this.navigationButton.setEnabled(this.isMounted() && session.getBackHistory().length > 1,
+                NAVIGATION_LEFT_SEGMENT_BUTTON);
+        this.navigationButton.setEnabled(this.isMounted() && session.getForwardHistory().length > 0,
+                NAVIGATION_RIGHT_SEGMENT_BUTTON);
+        this.upButton.setEnabled(this.isMounted() && !this.workdir().isRoot(),
+                NAVIGATION_UP_SEGMENT_BUTTON);
+
+        this.pathPopupButton.setEnabled(this.isMounted());
+        this.searchField.setEnabled(this.isMounted());
+        this.encodingPopup.setEnabled(!this.activityRunning);
+    }
+
     /**
      * @param item
      * @return true if the menu should be enabled
      */
     public boolean validateMenuItem(NSMenuItem item) {
         String identifier = item.action().name();
+        log.debug("validateMenuItem:"+identifier);
         if(identifier.equals("pasteFromFinder:")) {
             boolean valid = false;
             if(this.isMounted()) {
@@ -2774,7 +2790,7 @@ public class CDBrowserController extends CDWindowController
         if(identifier.equals("printDocument:")) {
             return this.isMounted();
         }
-        return true; // by default everything is enabled
+        this.validateNavigationButtons(); return true; // by default everything is enabled
     }
 
     // ----------------------------------------------------------
@@ -2782,17 +2798,6 @@ public class CDBrowserController extends CDWindowController
     // ----------------------------------------------------------
 
     public boolean validateToolbarItem(NSToolbarItem item) {
-        this.navigationButton.setEnabled(this.isMounted() && session.getBackHistory().length > 1,
-                NAVIGATION_LEFT_SEGMENT_BUTTON);
-        this.navigationButton.setEnabled(this.isMounted() && session.getForwardHistory().length > 0,
-                NAVIGATION_RIGHT_SEGMENT_BUTTON);
-        this.upButton.setEnabled(this.isMounted() && !this.workdir().isRoot(),
-                NAVIGATION_UP_SEGMENT_BUTTON);
-
-        this.pathPopupButton.setEnabled(this.isMounted());
-        this.searchField.setEnabled(this.isMounted());
-        this.encodingPopup.setEnabled(!this.activityRunning);
-
         String identifier = item.action().name();
         if(identifier.equals("editButtonClicked:")) {
             String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
