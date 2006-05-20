@@ -139,18 +139,7 @@ public class SyncQueue extends Queue {
     }
 
     protected void transfer(Path p) {
-        try {
-            Preferences.instance().setProperty("queue.upload.preserveDate.fallback", true);
-            if(p.compare() > 0) {
-                p.download();
-            }
-            else {
-                p.upload();
-            }
-        }
-        finally {
-            Preferences.instance().setProperty("queue.upload.preserveDate.fallback", false);
-        }
+        p.sync();
     }
 
     protected Validator getValidator() {

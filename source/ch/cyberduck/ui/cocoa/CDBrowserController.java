@@ -23,6 +23,7 @@ import com.sshtools.j2ssh.SshException;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.odb.Editor;
+import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -246,8 +247,12 @@ public class CDBrowserController extends CDWindowController
             if(localObj != null) {
                 path.setLocal(new Local((String) localObj));
             }
-            Queue q = new SyncQueue(path);
-            q.run(false, true);
+            path.sync();
+            if(path.status.isComplete()) {
+                Growl.instance().notify(
+                        NSBundle.localizedString("Synchronization complete", "Growl", "Growl Notification"),
+                        path.getName());
+            }
         }
         return null;
     }
@@ -274,8 +279,12 @@ public class CDBrowserController extends CDWindowController
             if(nameObj != null) {
                 path.setLocal(new Local(path.getLocal().getParent(), (String) nameObj));
             }
-            Queue q = new DownloadQueue(path);
-            q.run(false, true);
+            path.download();
+            if(path.status.isComplete()) {
+                Growl.instance().notify(
+                        NSBundle.localizedString("Download complete", "Growl", "Growl Notification"),
+                        path.getName());
+            }
         }
         return null;
     }
@@ -301,8 +310,12 @@ public class CDBrowserController extends CDWindowController
             if(nameObj != null) {
                 path.setPath(this.workdir().getAbsolute(), (String) nameObj);
             }
-            Queue q = new UploadQueue(path);
-            q.run(false, true);
+            path.upload();
+            if(path.status.isComplete()) {
+                Growl.instance().notify(
+                        NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"),
+                        path.getName());
+            }
         }
         return null;
     }

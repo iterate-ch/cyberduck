@@ -427,7 +427,7 @@ public class CDQueueController extends CDWindowController
         queue.getSession().setLoginController(new CDLoginController(this));
         new Thread() {
             public void run() {
-                queue.run(resumeRequested, false);
+                queue.run(resumeRequested);
             }
         }.start();
     }

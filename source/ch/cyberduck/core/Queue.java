@@ -210,26 +210,17 @@ public abstract class Queue extends NSObject {
      * Process the queue. All files will be downloaded/uploaded/synced rerspectively.
      *
      * @param resume   The user requested to resume the transfer
-     * @param headless No validation of items in the queue; don't show dialog
      */
-    public void run(boolean resume, boolean headless) {
+    public void run(final boolean resume) {
         try {
             this.canceled = false;
             this.fireQueueStartedEvent();
-            if(headless) {
-                this.jobs = this.getChilds();
-                if(this.canceled) {
-                    return;
-                }
+            Validator validator = this.getValidator();
+            List validated = validator.validate(resume);
+            if(this.canceled) {
+                return;
             }
-            else {
-                Validator validator = this.getValidator();
-                List validated = validator.validate(resume);
-                if(this.canceled) {
-                    return;
-                }
-                this.jobs = validated;
-            }
+            this.jobs = validated;
             this.reset();
             for(Iterator iter = this.jobs.iterator(); iter.hasNext();) {
                 if(this.canceled) {

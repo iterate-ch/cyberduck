@@ -346,6 +346,22 @@ public abstract class Path extends NSObject {
      */
     public abstract void upload();
 
+
+    public void sync() {
+        try {
+            Preferences.instance().setProperty("queue.upload.preserveDate.fallback", true);
+            if(this.compare() > 0) {
+                this.download();
+            }
+            else {
+                this.upload();
+            }
+        }
+        finally {
+            Preferences.instance().setProperty("queue.upload.preserveDate.fallback", false);
+        }
+    }
+    
     /**
      * A state variable to mark this path if it should not be considered for file transfers
      */
