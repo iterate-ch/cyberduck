@@ -1022,8 +1022,10 @@ public class CDBrowserController extends CDWindowController
             }
             c.setDataCell(new NSTextFieldCell());
             c.dataCell().setFormatter(
-                    new NSGregorianDateFormatter((String) NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString),
-                    true));
+                    new NSGregorianDateFormatter(
+                            (String) NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString),
+                            true)
+            );
             table.addTableColumn(c);
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.OWNER_COLUMN));
@@ -1031,7 +1033,7 @@ public class CDBrowserController extends CDWindowController
             NSTableColumn c = new NSTableColumn();
             c.headerCell().setStringValue(NSBundle.localizedString("Owner", "A column in the browser"));
             c.setIdentifier(CDBrowserTableDataSource.OWNER_COLUMN);
-            c.setMinWidth(100f);
+            c.setMinWidth(50f);
             c.setWidth(80f);
             c.setMaxWidth(500f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
@@ -1625,7 +1627,7 @@ public class CDBrowserController extends CDWindowController
                     break;
                 }
             }
-            this.reloadData(true);
+            this.setWorkdir(this.workdir());
         }
     }
 
@@ -1652,7 +1654,9 @@ public class CDBrowserController extends CDWindowController
             c.beginSheet(true);
         }
         else {
-            path.rename(renamed.getAbsolute());
+            if(this.isConnected()) {
+                path.rename(renamed.getAbsolute());
+            }
         }
     }
 
@@ -2139,11 +2143,6 @@ public class CDBrowserController extends CDWindowController
             // Invalid path given; don't update browser view
             return;
         }
-//            if(!this.hasSession() || !this.session.isConnected()) {
-//                // The connection has already been closed asynchronous
-//                log.warn("Got new directory listing but session already closed asynchronously");
-//                return;
-//            }
         this.workdir = path;
         this.session.addPathToHistory(this.workdir);
         this.pathPopupItems.clear();

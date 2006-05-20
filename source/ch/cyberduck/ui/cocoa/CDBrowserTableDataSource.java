@@ -59,9 +59,11 @@ public abstract class CDBrowserTableDataSource extends CDController {
      */
     protected List childs(Path path) {
         List childs = null;
-        if(path.attributes.getPermission().isUndefined()
-            || (path.attributes.isExecutable() && path.attributes.isReadable())) {
+        if(controller.isConnected()) {
             childs = path.list(controller.getComparator(), controller.getFileFilter());
+        }
+        else {
+            childs = controller.getSession().cache().get(path, controller.getComparator(), controller.getFileFilter());
         }
         if(null == childs) {
             return new ArrayList();

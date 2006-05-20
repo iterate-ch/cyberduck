@@ -210,7 +210,7 @@ public class CDProgressController extends CDController {
         b.append(" ");
         b.append(NSBundle.localizedString("of", "1.2MB of 3.4MB"));
         b.append(" ");
-        b.append(Status.getSizeAsString(this.queue.getSize()));
+        b.append(Status.getSizeAsString(queue.getSize()));
         if(queue.isRunning() && null != meter) {
             float speed = meter.getSpeed();
             if(speed > -1) {
@@ -226,7 +226,9 @@ public class CDProgressController extends CDController {
                 b.append(")");
             }
             b.append(" ");
-            b.append(this.statusText);
+            if(statusText != null) {
+                b.append(this.statusText);
+            }
         }
         return b.toString();
     }
