@@ -89,6 +89,10 @@ public class CDMainController extends CDController {
          * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
          */
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
+            if(index >= this.numberOfItemsInMenu(menu)) {
+                log.warn("Invalid index in menuUpdateItemAtIndex:"+index);
+                return false;
+            }
             Host h = (Host) CDBookmarkTableDataSource.instance().get(index);
             item.setTitle(h.getNickname());
             item.setTarget(this);
@@ -162,6 +166,10 @@ public class CDMainController extends CDController {
          * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
          */
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
+            if(index >= this.numberOfItemsInMenu(menu)) {
+                log.warn("Invalid index in menuUpdateItemAtIndex:"+index);
+                return false;
+            }
             if (index == 4) {
                 item.setEnabled(true);
                 NSImage icon = NSImage.imageNamed("idisk.tiff");
@@ -243,6 +251,10 @@ public class CDMainController extends CDController {
                 sender.setEnabled(false);
                 return false;
             }
+            if(index >= this.numberOfItemsInMenu(menu)) {
+                log.warn("Invalid index in menuUpdateItemAtIndex:"+index);
+                return false;
+            }
             Host h = ((Host[]) cache.values().toArray(new Host[]{}))[index];
             sender.setTitle(h.getNickname());
             sender.setTarget(this);
@@ -283,6 +295,10 @@ public class CDMainController extends CDController {
                 return !shouldCancel;
             }
             else {
+                if(index >= this.numberOfItemsInMenu(menu)) {
+                    log.warn("Invalid index in menuUpdateItemAtIndex:"+index);
+                    return false;
+                }
                 String title = Rendezvous.instance().getDisplayedName(index);
                 sender.setTitle(title);
                 sender.setTarget(this);

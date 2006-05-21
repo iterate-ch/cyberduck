@@ -245,10 +245,17 @@ public class CDQueueTableDataSource extends Collection {
         for (int i = 0; i < this.size(); i++) {
             CDProgressController c = this.getController(i);
             if (c.getQueue().equals(item)) {
+                c.invalidate();
                 super.remove(i);
             }
         }
         return true;
+    }
+
+    public Object remove(int row) {
+        CDProgressController c = this.getController(row);
+        c.invalidate();
+        return super.remove(row);
     }
 
     /**

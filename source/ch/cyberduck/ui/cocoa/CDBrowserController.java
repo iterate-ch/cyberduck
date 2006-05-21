@@ -2158,13 +2158,17 @@ public class CDBrowserController extends CDWindowController
         }
         this.workdir = path;
         this.session.addPathToHistory(this.workdir);
-        this.pathPopupItems.clear();
-        this.pathPopupButton.removeAllItems();
-        this.addPathToPopup(this.workdir);
-        for(Path p = this.workdir; !p.isRoot();) {
-            p = p.getParent();
-            this.addPathToPopup(p);
-        }
+        this.invoke(new Runnable() {
+            public void run() {
+                pathPopupItems.clear();
+                pathPopupButton.removeAllItems();
+                addPathToPopup(workdir);
+                for(Path p = workdir; !p.isRoot();) {
+                    p = p.getParent();
+                    addPathToPopup(p);
+                }
+            }
+        });
         this.reloadData(false);
     }
 
@@ -2572,7 +2576,6 @@ public class CDBrowserController extends CDWindowController
      */
     public boolean validateMenuItem(NSMenuItem item) {
         String identifier = item.action().name();
-        log.debug("validateMenuItem:"+identifier);
         if(identifier.equals("pasteFromFinder:")) {
             boolean valid = false;
             if(this.isMounted()) {

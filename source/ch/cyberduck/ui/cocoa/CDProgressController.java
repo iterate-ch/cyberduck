@@ -64,60 +64,44 @@ public class CDProgressController extends CDController {
                 log.fatal("Couldn't load Progress.nib");
             }
         }
+        this.init();
     }
 
-    public void init() {
+    private void init() {
         this.queue.addListener(new QueueListener() {
             private ProgressListener progress;
 
             public void queueStarted() {
-                invoke(new Runnable() {
-                    public void run() {
-                        progressBar.setHidden(false);
-                        progressBar.setIndeterminate(true);
-                        progressBar.startAnimation(null);
-                        progressBar.setNeedsDisplay(true);
-                        errorText = new StringBuffer();
-                        alertIcon.setHidden(true);
-                    }
-                });
+                progressBar.setHidden(false);
+                progressBar.setIndeterminate(true);
+                progressBar.startAnimation(null);
+                progressBar.setNeedsDisplay(true);
+                errorText = new StringBuffer();
+                alertIcon.setHidden(true);
                 queue.getSession().addProgressListener(progress = new ProgressListener() {
                     public void message(final String message) {
                         statusText = message;
-                        invoke(new Runnable() {
-                            public void run() {
-                                updateProgressfield();
-                            }
-                        });
+                        updateProgressfield();
                     }
 
                     public void error(final Exception e) {
-                        invoke(new Runnable() {
-                            public void run() {
-                                int l = errorText.toString().split("\n").length;
-                                if(l == 10) {
-                                    errorText.append("\n- (...)");
-                                }
-                                if(l < 10) {
-                                    errorText.append("\n" + e.getMessage());
-                                }
-                                alertIcon.setHidden(false);
-                            }
-                        });
+                        int l = errorText.toString().split("\n").length;
+                        if(l == 10) {
+                            errorText.append("\n- (...)");
+                        }
+                        if(l < 10) {
+                            errorText.append("\n" + e.getMessage());
+                        }
+                        alertIcon.setHidden(false);
                     }
                 });
             }
 
             public void queueStopped() {
-                invoke(new Runnable() {
-                    public void run() {
-                        updateProgressfield();
-                        progressBar.setIndeterminate(true);
-                        progressBar.stopAnimation(null);
-                        progressBar.setHidden(true);
-                    }
-                });
-                queue.removeListener(this);
+                updateProgressfield();
+                progressBar.setIndeterminate(true);
+                progressBar.stopAnimation(null);
+                progressBar.setHidden(true);
                 queue.getSession().removeProgressListener(progress);
             }
 
@@ -134,6 +118,7 @@ public class CDProgressController extends CDController {
 
             public void transferStopped(Path path) {
                 progressTimer.invalidate();
+                meter = null;
             }
         });
     }
@@ -319,5 +304,16 @@ public class CDProgressController extends CDController {
 
     public NSView view() {
         return this.progressView;
+    }
+
+    protected void invalidate() {
+        this.progressView = null;
+        this.progressField = null;
+        this.progressBar = null;
+        this.progressTimer = null;
+        this.filenameField = null;
+        this.alertIcon = null;
+        this.queue = null;
+        super.invalidate();
     }
 }

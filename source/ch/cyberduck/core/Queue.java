@@ -212,31 +212,40 @@ public abstract class Queue extends NSObject {
      * @param resume   The user requested to resume the transfer
      */
     public void run(final boolean resume) {
-        try {
-            this.canceled = false;
-            this.fireQueueStartedEvent();
-            Validator validator = this.getValidator();
-            List validated = validator.validate(resume);
-            if(this.canceled) {
-                return;
-            }
-            this.jobs = validated;
-            this.reset();
-            for(Iterator iter = this.jobs.iterator(); iter.hasNext();) {
-                if(this.canceled) {
-                    return;
+        new Thread() {
+            public void run() {
+                try {
+                    canceled = false;
+                    fireQueueStartedEvent();
+                    Validator validator = getValidator();
+                    List validated = validator.validate(resume);
+                    if(canceled) {
+                        return;
+                    }
+                    jobs = validated;
+                    reset();
+                    for(Iterator iter = jobs.iterator(); iter.hasNext();) {
+                        if(canceled) {
+                            return;
+                        }
+                        final Path path = (Path)iter.next();
+                        fireTransferStartedEvent(path);
+                        transfer(path);
+                        fireTransferStoppedEvent(path);
+                    }
                 }
-                final Path path = (Path)iter.next();
-                this.fireTransferStartedEvent(path);
-                this.transfer(path);
-                this.fireTransferStoppedEvent(path);
+                finally {
+                    getSession().close();
+                    getSession().getHost().getCredentials().setPassword(null);
+                    getSession().cache().clear();
+                    if(isInitialized()) {
+                        jobs.clear();
+                        jobs = null;
+                    }
+                    fireQueueStoppedEvent();
+                }
             }
-        }
-        finally {
-            this.getSession().close();
-            this.getRoot().getSession().cache().clear();
-            this.fireQueueStoppedEvent();
-        }
+        }.start();
     }
 
     protected abstract Validator getValidator();
@@ -307,5 +316,10 @@ public abstract class Queue extends NSObject {
 
     public String toString() {
         return this.getName();
+    }
+
+    protected void finalize() throws java.lang.Throwable {
+        log.debug("finalize:" + super.toString());
+        super.finalize();
     }
 }

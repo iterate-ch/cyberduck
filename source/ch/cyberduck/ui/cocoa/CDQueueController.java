@@ -284,7 +284,6 @@ public class CDQueueController extends CDWindowController
         for(int i = 0; i < queueModel.size(); i++) {
             queueModel.getController(i).setHighlighted(queueTable.isRowSelected(i) && key);
         }
-        toolbar.validateVisibleItems();
         if(queueTable.selectedRow() != -1) {
             Queue q = (Queue) queueModel.get(queueTable.selectedRow());
             if(q.numberOfRoots() == 1) {
@@ -305,6 +304,7 @@ public class CDQueueController extends CDWindowController
             urlField.setStringValue("");
             localField.setStringValue("");
         }
+        toolbar.validateVisibleItems();
     }
 
     // ----------------------------------------------------------
@@ -312,12 +312,14 @@ public class CDQueueController extends CDWindowController
     // ----------------------------------------------------------
 
     private void reloadQueueTable() {
-        this.queueTable.deselectAll(null);
-        while(this.queueTable.subviews().count() > 0) {
-            ((NSView) this.queueTable.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
+        synchronized(CDQueueController.instance()) {
+            this.queueTable.deselectAll(null);
+            while(this.queueTable.subviews().count() > 0) {
+                ((NSView) this.queueTable.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
+            }
+            this.queueTable.reloadData();
+            this.updateTableViewSelection();
         }
-        this.queueTable.reloadData();
-        this.updateTableViewSelection();
     }
 
     /**
@@ -338,7 +340,6 @@ public class CDQueueController extends CDWindowController
     public void addItem(Queue queue) {
         int row = this.queueModel.size();
         this.queueModel.add(row, queue);
-        this.queueModel.getController(row).init();
         this.reloadQueueTable();
         this.queueTable.selectRow(row, false);
         this.queueTable.scrollRowToVisible(row);
@@ -372,23 +373,28 @@ public class CDQueueController extends CDWindowController
             }
 
             public void queueStarted() {
-                CDQueueController.this.invoke(new Runnable() {
-                    public void run() {
-                        toolbar.validateVisibleItems();
-                    }
-                });
+                toolbar.validateVisibleItems();
                 queue.getSession().addTranscriptListener(transcript = new TranscriptListener() {
                     public void log(String message) {
                         logView.textStorage().appendAttributedString(
                                 new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
                     }
                 });
+                if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
+                    ((ch.cyberduck.core.sftp.SFTPSession) queue.getSession()).setHostKeyVerificationController(
+                            new CDHostKeyController(CDQueueController.instance()));
+                }
+                if(queue.getSession() instanceof ch.cyberduck.core.ftps.FTPSSession) {
+                    ((ch.cyberduck.core.ftps.FTPSSession) queue.getSession()).setTrustManager(
+                            new CDX509TrustManagerController(CDQueueController.instance()));
+                }
+                queue.getSession().setLoginController(new CDLoginController(CDQueueController.instance()));
             }
 
             public void queueStopped() {
+                toolbar.validateVisibleItems();
                 CDQueueController.this.invoke(new Runnable() {
                     public void run() {
-                        toolbar.validateVisibleItems();
                         if(queue.isComplete()) {
                             if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
                                 if(!hasRunningTransfers()) {
@@ -411,26 +417,28 @@ public class CDQueueController extends CDWindowController
                         removeItem(queue);
                     }
                 }
+                if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
+                    ((ch.cyberduck.core.sftp.SFTPSession) queue.getSession()).setHostKeyVerificationController(null);
+                }
+                if(queue.getSession() instanceof ch.cyberduck.core.ftps.FTPSSession) {
+                    ((ch.cyberduck.core.ftps.FTPSSession) queue.getSession()).setTrustManager(null);
+                }
+                queue.getSession().setLoginController(null);
             }
         });
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
             this.window.makeKeyAndOrderFront(null);
         }
-        if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
-            ((ch.cyberduck.core.sftp.SFTPSession) queue.getSession()).setHostKeyVerificationController(
-                    new CDHostKeyController(this));
-        }
-        if(queue.getSession() instanceof ch.cyberduck.core.ftps.FTPSSession) {
-            ((ch.cyberduck.core.ftps.FTPSSession) queue.getSession()).setTrustManager(
-                    new CDX509TrustManagerController(this));
-        }
-        queue.getSession().setLoginController(new CDLoginController(this));
-        new Thread() {
-            public void run() {
-                queue.run(resumeRequested);
-            }
-        }.start();
+        queue.run(resumeRequested);
     }
+
+    private static final String TOOLBAR_RESUME = "Resume";
+    private static final String TOOLBAR_RELOAD = "Reload";
+    private static final String TOOLBAR_STOP = "Stop";
+    private static final String TOOLBAR_REMOVE = "Remove";
+    private static final String TOOLBAR_CLEAN_UP = "Clean Up";
+    private static final String TOOLBAR_OPEN = "Open";
+    private static final String TOOLBAR_SHOW = "Show";
 
     /**
      * NSToolbar.Delegate
@@ -438,39 +446,38 @@ public class CDQueueController extends CDWindowController
      * @param toolbar
      * @param itemIdentifier
      * @param flag
-     * @return
      */
     public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
         NSToolbarItem item = new NSToolbarItem(itemIdentifier);
-        if(itemIdentifier.equals("Stop")) {
-            item.setLabel(NSBundle.localizedString("Stop", ""));
-            item.setPaletteLabel(NSBundle.localizedString("Stop", ""));
-            item.setToolTip(NSBundle.localizedString("Stop", ""));
+        if(itemIdentifier.equals(TOOLBAR_STOP)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_STOP, ""));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_STOP, ""));
+            item.setToolTip(NSBundle.localizedString(TOOLBAR_STOP, ""));
             item.setImage(NSImage.imageNamed("stop.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("stopButtonClicked", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals("Resume")) {
-            item.setLabel(NSBundle.localizedString("Resume", ""));
-            item.setPaletteLabel(NSBundle.localizedString("Resume", ""));
-            item.setToolTip(NSBundle.localizedString("Resume", ""));
+        if(itemIdentifier.equals(TOOLBAR_RESUME)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_RESUME, ""));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_RESUME, ""));
+            item.setToolTip(NSBundle.localizedString(TOOLBAR_RESUME, ""));
             item.setImage(NSImage.imageNamed("resume.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("resumeButtonClicked", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals("Reload")) {
-            item.setLabel(NSBundle.localizedString("Reload", ""));
-            item.setPaletteLabel(NSBundle.localizedString("Reload", ""));
-            item.setToolTip(NSBundle.localizedString("Reload", ""));
+        if(itemIdentifier.equals(TOOLBAR_RELOAD)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_RELOAD, ""));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_RELOAD, ""));
+            item.setToolTip(NSBundle.localizedString(TOOLBAR_RELOAD, ""));
             item.setImage(NSImage.imageNamed("reload.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("reloadButtonClicked", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals("Show")) {
-            item.setLabel(NSBundle.localizedString("Show", ""));
+        if(itemIdentifier.equals(TOOLBAR_SHOW)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_SHOW, ""));
             item.setPaletteLabel(NSBundle.localizedString("Show in Finder", ""));
             item.setToolTip(NSBundle.localizedString("Show in Finder", ""));
             item.setImage(NSImage.imageNamed("reveal.tiff"));
@@ -478,28 +485,28 @@ public class CDQueueController extends CDWindowController
             item.setAction(new NSSelector("revealButtonClicked", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals("Open")) {
-            item.setLabel(NSBundle.localizedString("Open", ""));
-            item.setPaletteLabel(NSBundle.localizedString("Open", ""));
-            item.setToolTip(NSBundle.localizedString("Open", ""));
+        if(itemIdentifier.equals(TOOLBAR_OPEN)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_OPEN, ""));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_OPEN, ""));
+            item.setToolTip(NSBundle.localizedString(TOOLBAR_OPEN, ""));
             item.setImage(NSImage.imageNamed("open.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("openButtonClicked", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals("Remove")) {
-            item.setLabel(NSBundle.localizedString("Remove", ""));
-            item.setPaletteLabel(NSBundle.localizedString("Remove", ""));
-            item.setToolTip(NSBundle.localizedString("Remove", ""));
+        if(itemIdentifier.equals(TOOLBAR_REMOVE)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_REMOVE, ""));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_REMOVE, ""));
+            item.setToolTip(NSBundle.localizedString(TOOLBAR_REMOVE, ""));
             item.setImage(NSImage.imageNamed("clean.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("deleteButtonClicked", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals("Clean Up")) {
-            item.setLabel(NSBundle.localizedString("Clean Up", ""));
-            item.setPaletteLabel(NSBundle.localizedString("Clean Up", ""));
-            item.setToolTip(NSBundle.localizedString("Clean Up", ""));
+        if(itemIdentifier.equals(TOOLBAR_CLEAN_UP)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_CLEAN_UP, ""));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_CLEAN_UP, ""));
+            item.setToolTip(NSBundle.localizedString(TOOLBAR_CLEAN_UP, ""));
             item.setImage(NSImage.imageNamed("cleanAll.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("clearButtonClicked", new Class[]{Object.class}));
@@ -555,7 +562,6 @@ public class CDQueueController extends CDWindowController
             NSEnumerator iterator = queueTable.selectedRowEnumerator();
             while(iterator.hasMoreElements()) {
                 int i = ((Integer) iterator.nextElement()).intValue();
-                this.queueModel.getController(i).init();
                 Queue queue = (Queue) this.queueModel.get(i);
                 if(!queue.isRunning()) {
                     this.startItem(queue, true);
@@ -569,7 +575,6 @@ public class CDQueueController extends CDWindowController
             NSEnumerator iterator = queueTable.selectedRowEnumerator();
             while(iterator.hasMoreElements()) {
                 int i = ((Integer) iterator.nextElement()).intValue();
-                this.queueModel.getController(i).init();
                 Queue queue = (Queue) this.queueModel.get(i);
                 if(!queue.isRunning()) {
                     this.startItem(queue, false);
@@ -665,18 +670,17 @@ public class CDQueueController extends CDWindowController
      * NSToolbar.Delegate
      *
      * @param toolbar
-     * @return
      */
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return new NSArray(new Object[]{
-                "Resume",
-                "Reload",
-                "Stop",
-                "Remove",
-                "Clean Up",
+                TOOLBAR_RESUME,
+                TOOLBAR_RELOAD,
+                TOOLBAR_STOP,
+                TOOLBAR_REMOVE,
+                TOOLBAR_CLEAN_UP,
                 NSToolbarItem.FlexibleSpaceItemIdentifier,
-                "Open",
-                "Show"
+                TOOLBAR_OPEN,
+                TOOLBAR_SHOW
         });
     }
 
@@ -684,17 +688,16 @@ public class CDQueueController extends CDWindowController
      * NSToolbar.Delegate
      *
      * @param toolbar
-     * @return
      */
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
         return new NSArray(new Object[]{
-                "Resume",
-                "Reload",
-                "Stop",
-                "Remove",
-                "Clean Up",
-                "Show",
-                "Open",
+                TOOLBAR_RESUME,
+                TOOLBAR_RELOAD,
+                TOOLBAR_STOP,
+                TOOLBAR_REMOVE,
+                TOOLBAR_CLEAN_UP,
+                TOOLBAR_SHOW,
+                TOOLBAR_OPEN,
                 NSToolbarItem.CustomizeToolbarItemIdentifier,
                 NSToolbarItem.SpaceItemIdentifier,
                 NSToolbarItem.SeparatorItemIdentifier,
@@ -704,7 +707,6 @@ public class CDQueueController extends CDWindowController
 
     /**
      * @param item
-     * @return
      */
     public boolean validateMenuItem(NSMenuItem item) {
         String identifier = item.action().name();
@@ -739,10 +741,9 @@ public class CDQueueController extends CDWindowController
 
     /**
      * @param item
-     * @return
      */
     public boolean validateToolbarItem(NSToolbarItem item) {
-        return this.validateItem(item.itemIdentifier());
+        return this.validateItem(item.action().name());
     }
 
     /**
@@ -755,58 +756,70 @@ public class CDQueueController extends CDWindowController
         if(identifier.equals("paste:")) {
             NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
             if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-                Object o = pboard.propertyListForType("QueuePBoardType");
-                if(o != null) {
-                    return true;
-                }
+                return pboard.propertyListForType("QueuePBoardType") != null;
             }
             return false;
         }
-        if(identifier.equals("Stop") || identifier.equals("stopButtonClicked:")) {
+        if(identifier.equals("stopButtonClicked:")) {
             if(this.queueTable.numberOfSelectedRows() < 1) {
                 return false;
             }
             NSEnumerator iterator = queueTable.selectedRowEnumerator();
             while(iterator.hasMoreElements()) {
                 Queue queue = (Queue) this.queueModel.get(((Integer) iterator.nextElement()).intValue());
+                if(null == queue) {
+                    return false;
+                }
                 if(!queue.isRunning()) {
                     return false;
                 }
             }
             return true;
         }
-        if(identifier.equals("Resume") || identifier.equals("resumeButtonClicked:")) {
+        if(identifier.equals("resumeButtonClicked:")) {
             if(this.queueTable.numberOfSelectedRows() > 0) {
                 Queue queue = (Queue) this.queueModel.get(this.queueTable.selectedRow());
+                if(null == queue) {
+                    return false;
+                }
                 return !queue.isRunning() && !queue.isComplete();
             }
             return false;
         }
-        if(identifier.equals("Reload") || identifier.equals("reloadButtonClicked:")) {
+        if(identifier.equals("reloadButtonClicked:")) {
             if(this.queueTable.numberOfSelectedRows() > 0) {
                 Queue queue = (Queue) this.queueModel.get(this.queueTable.selectedRow());
+                if(null == queue) {
+                    return false;
+                }
                 return !queue.isRunning();
             }
             return false;
         }
-        if(identifier.equals("Open") || identifier.equals("openButtonClicked:")
-                || identifier.equals("Show") || identifier.equals("revealButtonClicked:")) {
+        if(identifier.equals("openButtonClicked:")
+                || identifier.equals(TOOLBAR_SHOW) || identifier.equals("revealButtonClicked:")) {
             if(this.queueTable.numberOfSelectedRows() == 1) {
                 Queue queue = (Queue) this.queueModel.get(this.queueTable.selectedRow());
+                if(null == queue) {
+                    return false;
+                }
                 return queue.getRoot().getLocal().exists();
             }
             return false;
         }
-        if(identifier.equals("Clean Up")) {
+        if(identifier.equals("clearButtonClicked:")) {
             return this.queueTable.numberOfRows() > 0;
         }
-        if(identifier.equals("Remove") || identifier.equals("deleteButtonClicked:")) {
+        if(identifier.equals("deleteButtonClicked:")) {
             if(this.queueTable.numberOfSelectedRows() < 1) {
                 return false;
             }
             NSEnumerator iterator = queueTable.selectedRowEnumerator();
             while(iterator.hasMoreElements()) {
                 Queue queue = (Queue) this.queueModel.get(((Integer) iterator.nextElement()).intValue());
+                if(null == queue) {
+                    return false;
+                }
                 if(queue.isRunning()) {
                     return false;
                 }
