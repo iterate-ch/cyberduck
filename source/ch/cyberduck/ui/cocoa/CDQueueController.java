@@ -328,8 +328,10 @@ public class CDQueueController extends CDWindowController
      * @param queue
      */
     public void removeItem(Queue queue) {
-        this.queueModel.remove(queue);
-        this.reloadQueueTable();
+        synchronized(CDQueueController.instance()) {
+            this.queueModel.remove(queue);
+            this.reloadQueueTable();
+        }
     }
 
     /**
@@ -338,11 +340,13 @@ public class CDQueueController extends CDWindowController
      * @param queue
      */
     public void addItem(Queue queue) {
-        int row = this.queueModel.size();
-        this.queueModel.add(row, queue);
-        this.reloadQueueTable();
-        this.queueTable.selectRow(row, false);
-        this.queueTable.scrollRowToVisible(row);
+        synchronized(CDQueueController.instance()) {
+            int row = this.queueModel.size();
+            this.queueModel.add(row, queue);
+            this.reloadQueueTable();
+            this.queueTable.selectRow(row, false);
+            this.queueTable.scrollRowToVisible(row);
+        }
     }
 
     /**
