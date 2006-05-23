@@ -54,13 +54,16 @@ public class CDBookmarkCell extends CDTableCell {
         if (bookmark != null) {
             NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getNickname(),
                     boldFont),
-                    new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 1, cellFrame.size().width() - 5, cellFrame.size().height()));
+                    new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 1,
+                            cellFrame.size().width() - 5, cellFrame.size().height()));
             NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getCredentials().getUsername(),
                     tinyFont),
-                    new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 14, cellFrame.size().width() - 5, cellFrame.size().height()));
+                    new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 14,
+                            cellFrame.size().width() - 5, cellFrame.size().height()));
             NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getProtocol() + "://" + bookmark.getHostname() + bookmark.getDefaultPath(),
                     tinyFont),
-                    new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 27, cellFrame.size().width() - 5, cellFrame.size().height()));
+                    new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 27,
+                            cellFrame.size().width() - 5, cellFrame.size().height()));
         }
     }
 }

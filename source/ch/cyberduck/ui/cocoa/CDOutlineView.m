@@ -22,6 +22,7 @@
 - (NSTableColumn *)_typeAheadSelectionColumn;
 - (void)selectRow;
 - (void)selectRowWithTimer:(NSTimer *)sender;
+- (void)_scheduleAutoExpandTimerForItem:(id)object;
 @end
 
 @implementation CDOutlineView

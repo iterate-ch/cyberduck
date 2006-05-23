@@ -2288,22 +2288,26 @@ public class CDBrowserController extends CDWindowController
                             title = "I/O " + NSBundle.localizedString("Error", "");
                             diagnostics = true;
                         }
-                        alert(NSAlertPanel.criticalAlertPanel(title, //title
-                                alert, // alert text
-                                NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                                diagnostics ? null : NSBundle.localizedString("Disconnect", ""), //alternative button
-                                diagnostics ? NSBundle.localizedString("Open Network Diagnostics",
-                                        "Run interactive network diagnostics") : null), //other button
-                                new CDSheetCallback() {
-                                    public void callback(int returncode) {
-                                        if(returncode == ALTERNATE_OPTION) {
-                                            host.diagnose();
-                                        }
-                                        if(returncode == CANCEL_OPTION) {
-                                            session.interrupt();
-                                        }
-                                    }
-                                }, true);
+                        CDErrorController error = new CDErrorController(
+                                CDBrowserController.this, title+": "+alert);
+                        error.display();
+//                        alert(NSAlertPanel.criticalAlertPanel(title, //title
+//                                alert, // alert text
+//                                NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
+//                                diagnostics ? null : NSBundle.localizedString("Disconnect", ""), //alternative button
+//                                diagnostics ? NSBundle.localizedString("Open Network Diagnostics",
+//                                        "Run interactive network diagnostics") : null), //other button
+//                                new CDSheetCallback() {
+//                                    public void callback(int returncode) {
+//                                        if(returncode == ALTERNATE_OPTION) {
+//                                            host.diagnose();
+//                                        }
+//                                        if(returncode == CANCEL_OPTION) {
+//                                            session.interrupt();
+//                                        }
+//                                    }
+//                                }, true
+//                        );
                     }
                 });
                 session.addTranscriptListener(transcript = new TranscriptListener() {

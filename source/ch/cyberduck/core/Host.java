@@ -482,7 +482,7 @@ public class Host extends NSObject {
             return InetAddress.getByName(hostname).toString();
         }
         catch (UnknownHostException e) {
-            throw new UnknownHostException("Hostname cannot be resolved");
+            throw new UnknownHostException(hostname+" cannot be resolved");
         }
     }
 

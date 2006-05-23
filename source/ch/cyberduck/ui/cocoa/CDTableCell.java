@@ -97,7 +97,10 @@ public class CDTableCell extends NSCell {
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
         super.drawInteriorWithFrameInView(cellFrame, controlView);
-        this.highlighted = this.isHighlighted() && !this.highlightColorWithFrameInView(cellFrame, controlView).equals(NSColor.secondarySelectedControlColor());
+        this.highlighted = this.isHighlighted()
+                && !this.highlightColorWithFrameInView(cellFrame, controlView).equals(
+                NSColor.secondarySelectedControlColor()
+        );
 
         //		Methods supporting the drawing of NSAttributedStrings are found in the Application Kit class NSGraphics.
         if (highlighted) { // cell is selected (white font)
