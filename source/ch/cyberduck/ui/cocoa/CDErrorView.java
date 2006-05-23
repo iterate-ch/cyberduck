@@ -30,14 +30,10 @@ public class CDErrorView extends NSView {
 
     public CDErrorView() {
         super();
-//        this.setBorderType(NSView.LineBorder);
-//        this.setTitlePosition(NSBox.NoTitle);
     }
 
     public CDErrorView(NSRect rect) {
         super(rect);
-//        this.setBorderType(NSView.LineBorder);
-//        this.setTitlePosition(NSBox.NoTitle);
     }
 
     public void drawRect(NSRect rect) {

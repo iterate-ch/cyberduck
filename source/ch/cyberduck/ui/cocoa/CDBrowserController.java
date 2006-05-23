@@ -2243,71 +2243,41 @@ public class CDBrowserController extends CDWindowController
                 });
                 session.addProgressListener(progress = new ProgressListener() {
                     public void message(final String msg) {
-                        if(!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
-                        {
-                            invoke(new Runnable() {
-                                public void run() {
-                                    //Run in main thread
-                                    message(msg);
-                                }
-                            });
-                            return;
-                        }
-                        // Update the status label at the bottom of the browser window
-                        statusLabel.setAttributedStringValue(new NSAttributedString(msg,
-                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                        statusLabel.display();
+                        invoke(new Runnable() {
+                            public void run() {
+                                // Update the status label at the bottom of the browser window
+                                statusLabel.setAttributedStringValue(new NSAttributedString(msg,
+                                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                                statusLabel.display();
+                            }
+                        });
                     }
 
-
                     public void error(final Exception e) {
-                        if(!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
-                        {
-                            invoke(new Runnable() {
-                                public void run() {
-                                    //Run in main thread
-                                    error(e);
+                        invoke(new Runnable() {
+                            public void run() {
+                                String alert = e.getMessage();
+                                String title = NSBundle.localizedString("Error", "");
+                                boolean diagnostics = false;
+                                if(e instanceof FTPException) {
+                                    title = "FTP " + NSBundle.localizedString("Error", "");
                                 }
-                            });
-                            return;
-                        }
-                        String alert = e.getMessage();
-                        String title = NSBundle.localizedString("Error", "");
-                        boolean diagnostics = false;
-                        if(e instanceof FTPException) {
-                            title = "FTP " + NSBundle.localizedString("Error", "");
-                        }
-                        else if(e instanceof SshException) {
-                            title = "SSH " + NSBundle.localizedString("Error", "");
-                        }
-                        else if(e instanceof SocketException) {
-                            title = "Network " + NSBundle.localizedString("Error", "");
-                            diagnostics = true;
-                        }
-                        else if(e instanceof IOException) {
-                            title = "I/O " + NSBundle.localizedString("Error", "");
-                            diagnostics = true;
-                        }
-                        CDErrorController error = new CDErrorController(
-                                CDBrowserController.this, title+": "+alert);
-                        error.display();
-//                        alert(NSAlertPanel.criticalAlertPanel(title, //title
-//                                alert, // alert text
-//                                NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-//                                diagnostics ? null : NSBundle.localizedString("Disconnect", ""), //alternative button
-//                                diagnostics ? NSBundle.localizedString("Open Network Diagnostics",
-//                                        "Run interactive network diagnostics") : null), //other button
-//                                new CDSheetCallback() {
-//                                    public void callback(int returncode) {
-//                                        if(returncode == ALTERNATE_OPTION) {
-//                                            host.diagnose();
-//                                        }
-//                                        if(returncode == CANCEL_OPTION) {
-//                                            session.interrupt();
-//                                        }
-//                                    }
-//                                }, true
-//                        );
+                                else if(e instanceof SshException) {
+                                    title = "SSH " + NSBundle.localizedString("Error", "");
+                                }
+                                else if(e instanceof SocketException) {
+                                    title = "Network " + NSBundle.localizedString("Error", "");
+                                    diagnostics = true;
+                                }
+                                else if(e instanceof IOException) {
+                                    title = "I/O " + NSBundle.localizedString("Error", "");
+                                    diagnostics = true;
+                                }
+                                CDErrorController error = new CDErrorController(
+                                        CDBrowserController.this, title+": "+alert);
+                                error.display();
+                            }
+                        });
                     }
                 });
                 session.addTranscriptListener(transcript = new TranscriptListener() {
@@ -2320,25 +2290,19 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void connectionDidOpen() {
-                if(!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
-                {
-                    invoke(new Runnable() {
-                        public void run() {
-                            //Run in main thread
-                            connectionDidOpen();
+                invoke(new Runnable() {
+                    public void run() {
+                        getSelectedBrowserView().setNeedsDisplay(true);
+                        window.setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername()
+                                + "@" + host.getHostname());
+                        if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
+                            window.setDocumentEdited(true);
                         }
-                    });
-                    return;
-                }
-                getSelectedBrowserView().setNeedsDisplay(true);
-                window.setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername()
-                        + "@" + host.getHostname());
-                if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
-                    window.setDocumentEdited(true);
-                }
-                window.toolbar().validateVisibleItems();
-                // This progress listener was only used to handle initial connection errors
-                session.removeProgressListener(error);
+                        window.toolbar().validateVisibleItems();
+                        // This progress listener was only used to handle initial connection errors
+                        session.removeProgressListener(error);
+                    }
+                });
             }
 
             public void connectionWillClose() {
@@ -2346,55 +2310,38 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void connectionDidClose() {
-                if(!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
-                {
-                    invoke(new Runnable() {
-                        public void run() {
-                            //Run in main thread
-                            connectionDidClose();
-                        }
-                    });
-                    return;
-                }
-                getSelectedBrowserView().setNeedsDisplay(true);
-                window.setDocumentEdited(false);
-                window.toolbar().validateVisibleItems();
-                session.removeProgressListener(progress);
-                session.removeTranscriptListener(transcript);
-                progressIndicator.stopAnimation(this);
+                invoke(new Runnable() {
+                    public void run() {
+                        getSelectedBrowserView().setNeedsDisplay(true);
+                        window.setDocumentEdited(false);
+                        window.toolbar().validateVisibleItems();
+                        session.removeProgressListener(progress);
+                        session.removeTranscriptListener(transcript);
+                        progressIndicator.stopAnimation(this);
+                    }
+                });
             }
 
             public void activityStarted() {
-                if(!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
-                {
-                    invoke(new Runnable() {
-                        public void run() {
-                            //Run in main thread
-                            activityStarted();
-                        }
-                    });
-                    return;
-                }
                 activityRunning = true;
-                progressIndicator.startAnimation(this);
+                invoke(new Runnable() {
+                    public void run() {
+                        progressIndicator.startAnimation(this);
+                    }
+                });
+                return;
             }
 
             public void activityStopped() {
-                if(!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit"))
-                {
-                    invoke(new Runnable() {
-                        public void run() {
-                            //Run in main thread
-                            activityStopped();
-                        }
-                    });
-                    return;
-                }
                 activityRunning = false;
-                progressIndicator.stopAnimation(this);
-                statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "Status", ""),
-                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                statusLabel.display();
+                invoke(new Runnable() {
+                    public void run() {
+                        progressIndicator.stopAnimation(this);
+                        statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "Status", ""),
+                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                        statusLabel.display();
+                    }
+                });
             }
         });
         this.getFocus();
