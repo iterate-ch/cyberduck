@@ -417,7 +417,6 @@ ca.lproj/Main.nib/keyedobjects.nib -text
 ca.lproj/Main.strings -text svneol=native#application/octet-stream
 ca.lproj/Preferences.nib/keyedobjects.nib -text
 ca.lproj/Preferences.strings -text svneol=native#application/octet-stream
-ca.lproj/Queue.strings -text svneol=native#application/octet-stream
 ca.lproj/Status.strings -text svneol=native#application/octet-stream
 ca.lproj/Sync.nib/keyedobjects.nib -text
 ca.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -459,7 +458,6 @@ cs.lproj/Main.nib/keyedobjects.nib -text
 cs.lproj/Main.strings -text
 cs.lproj/Preferences.nib/keyedobjects.nib -text
 cs.lproj/Preferences.strings -text
-cs.lproj/Queue.strings -text
 cs.lproj/Status.strings -text
 cs.lproj/Sync.nib/keyedobjects.nib -text
 cs.lproj/Sync.strings -text
@@ -501,7 +499,6 @@ cy.lproj/Main.nib/keyedobjects.nib -text
 cy.lproj/Main.strings -text svneol=native#application/octet-stream
 cy.lproj/Preferences.nib/keyedobjects.nib -text
 cy.lproj/Preferences.strings -text svneol=native#application/octet-stream
-cy.lproj/Queue.strings -text svneol=native#application/octet-stream
 cy.lproj/Status.strings -text svneol=native#application/octet-stream
 cy.lproj/Sync.nib/keyedobjects.nib -text
 cy.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -547,7 +544,6 @@ da.lproj/Main.nib/keyedobjects.nib -text
 da.lproj/Main.strings -text svneol=native#application/octet-stream
 da.lproj/Preferences.nib/keyedobjects.nib -text
 da.lproj/Preferences.strings -text svneol=native#application/octet-stream
-da.lproj/Queue.strings -text svneol=native#application/octet-stream
 da.lproj/Status.strings -text svneol=native#application/octet-stream
 da.lproj/Sync.nib/keyedobjects.nib -text
 da.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -589,7 +585,6 @@ de.lproj/Main.nib/keyedobjects.nib -text
 de.lproj/Main.strings -text svneol=native#application/octet-stream
 de.lproj/Preferences.nib/keyedobjects.nib -text
 de.lproj/Preferences.strings -text svneol=native#application/octet-stream
-de.lproj/Queue.strings -text svneol=native#application/octet-stream
 de.lproj/Status.strings -text svneol=native#application/octet-stream
 de.lproj/Sync.nib/keyedobjects.nib -text
 de.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -638,7 +633,6 @@ en.lproj/Progress.nib/classes.nib -text
 en.lproj/Progress.nib/info.nib -text
 en.lproj/Progress.nib/keyedobjects.nib -text
 en.lproj/Queue.nib/keyedobjects.nib -text
-en.lproj/Queue.strings -text svneol=native#application/octet-stream
 en.lproj/Status.strings -text svneol=native#application/octet-stream
 en.lproj/Sync.nib/keyedobjects.nib -text
 en.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -680,7 +674,6 @@ es.lproj/Main.nib/keyedobjects.nib -text
 es.lproj/Main.strings -text svneol=native#application/octet-stream
 es.lproj/Preferences.nib/keyedobjects.nib -text
 es.lproj/Preferences.strings -text svneol=native#application/octet-stream
-es.lproj/Queue.strings -text svneol=native#application/octet-stream
 es.lproj/Status.strings -text svneol=native#application/octet-stream
 es.lproj/Sync.nib/keyedobjects.nib -text
 es.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -722,7 +715,6 @@ fi.lproj/Main.nib/keyedobjects.nib -text
 fi.lproj/Main.strings -text svneol=native#application/octet-stream
 fi.lproj/Preferences.nib/keyedobjects.nib -text
 fi.lproj/Preferences.strings -text svneol=native#application/octet-stream
-fi.lproj/Queue.strings -text svneol=native#application/octet-stream
 fi.lproj/Status.strings -text svneol=native#application/octet-stream
 fi.lproj/Sync.nib/keyedobjects.nib -text
 fi.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -764,7 +756,6 @@ fr.lproj/Main.nib/keyedobjects.nib -text
 fr.lproj/Main.strings -text svneol=native#application/octet-stream
 fr.lproj/Preferences.nib/keyedobjects.nib -text
 fr.lproj/Preferences.strings -text svneol=native#application/octet-stream
-fr.lproj/Queue.strings -text svneol=native#application/octet-stream
 fr.lproj/Status.strings -text svneol=native#application/octet-stream
 fr.lproj/Sync.nib/keyedobjects.nib -text
 fr.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -838,7 +829,6 @@ he.lproj/Preferences.nib/classes.nib -text
 he.lproj/Preferences.nib/info.nib -text
 he.lproj/Preferences.nib/keyedobjects.nib -text
 he.lproj/Preferences.strings -text
-he.lproj/Queue.strings -text
 he.lproj/Status.strings -text
 he.lproj/Sync.nib/classes.nib -text
 he.lproj/Sync.nib/info.nib -text
@@ -884,7 +874,6 @@ hu.lproj/Main.nib/keyedobjects.nib -text
 hu.lproj/Main.strings -text svneol=native#application/octet-stream
 hu.lproj/Preferences.nib/keyedobjects.nib -text
 hu.lproj/Preferences.strings -text svneol=native#application/octet-stream
-hu.lproj/Queue.strings -text svneol=native#application/octet-stream
 hu.lproj/Status.strings -text svneol=native#application/octet-stream
 hu.lproj/Sync.nib/keyedobjects.nib -text
 hu.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -926,7 +915,6 @@ id.lproj/Main.nib/keyedobjects.nib -text
 id.lproj/Main.strings -text svneol=native#application/octet-stream
 id.lproj/Preferences.nib/keyedobjects.nib -text
 id.lproj/Preferences.strings -text svneol=native#application/octet-stream
-id.lproj/Queue.strings -text svneol=native#application/octet-stream
 id.lproj/Status.strings -text svneol=native#application/octet-stream
 id.lproj/Sync.nib/keyedobjects.nib -text
 id.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -1058,7 +1046,6 @@ it.lproj/Main.nib/keyedobjects.nib -text
 it.lproj/Main.strings -text svneol=native#application/octet-stream
 it.lproj/Preferences.nib/keyedobjects.nib -text
 it.lproj/Preferences.strings -text svneol=native#application/octet-stream
-it.lproj/Queue.strings -text svneol=native#application/octet-stream
 it.lproj/Status.strings -text svneol=native#application/octet-stream
 it.lproj/Sync.nib/keyedobjects.nib -text
 it.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -1101,7 +1088,6 @@ ja.lproj/Main.nib/keyedobjects.nib -text
 ja.lproj/Main.strings -text
 ja.lproj/Preferences.nib/keyedobjects.nib -text
 ja.lproj/Preferences.strings -text svneol=native#application/octet-stream
-ja.lproj/Queue.strings -text svneol=native#application/octet-stream
 ja.lproj/Status.strings -text svneol=native#application/octet-stream
 ja.lproj/Sync.nib/keyedobjects.nib -text
 ja.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -1143,7 +1129,6 @@ ko.lproj/Main.nib/keyedobjects.nib -text
 ko.lproj/Main.strings -text svneol=native#application/octet-stream
 ko.lproj/Preferences.nib/keyedobjects.nib -text
 ko.lproj/Preferences.strings -text svneol=native#application/octet-stream
-ko.lproj/Queue.strings -text svneol=native#application/octet-stream
 ko.lproj/Status.strings -text svneol=native#application/octet-stream
 ko.lproj/Sync.nib/keyedobjects.nib -text
 ko.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -1188,7 +1173,6 @@ nl.lproj/Main.nib/keyedobjects.nib -text
 nl.lproj/Main.strings -text svneol=native#application/octet-stream
 nl.lproj/Preferences.nib/keyedobjects.nib -text
 nl.lproj/Preferences.strings -text svneol=native#application/octet-stream
-nl.lproj/Queue.strings -text svneol=native#application/octet-stream
 nl.lproj/Status.strings -text svneol=native#application/octet-stream
 nl.lproj/Sync.nib/keyedobjects.nib -text
 nl.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -1230,7 +1214,6 @@ no.lproj/Main.nib/keyedobjects.nib -text
 no.lproj/Main.strings -text svneol=native#application/octet-stream
 no.lproj/Preferences.nib/keyedobjects.nib -text
 no.lproj/Preferences.strings -text svneol=native#application/octet-stream
-no.lproj/Queue.strings -text svneol=native#application/octet-stream
 no.lproj/Status.strings -text svneol=native#application/octet-stream
 no.lproj/Sync.nib/keyedobjects.nib -text
 no.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -1273,7 +1256,6 @@ pl.lproj/Main.nib/keyedobjects.nib -text
 pl.lproj/Main.strings -text svneol=native#application/octet-stream
 pl.lproj/Preferences.nib/keyedobjects.nib -text
 pl.lproj/Preferences.strings -text svneol=native#application/octet-stream
-pl.lproj/Queue.strings -text svneol=native#application/octet-stream
 pl.lproj/Status.strings -text svneol=native#application/octet-stream
 pl.lproj/Sync.nib/keyedobjects.nib -text
 pl.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -1314,7 +1296,6 @@ pt.lproj/Main.nib/keyedobjects.nib -text
 pt.lproj/Main.strings -text svneol=native#application/octet-stream
 pt.lproj/Preferences.nib/keyedobjects.nib -text
 pt.lproj/Preferences.strings -text svneol=native#application/octet-stream
-pt.lproj/Queue.strings -text svneol=native#application/octet-stream
 pt.lproj/Status.strings -text svneol=native#application/octet-stream
 pt.lproj/Sync.nib/keyedobjects.nib -text
 pt.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -1356,7 +1337,6 @@ ru.lproj/Main.nib/keyedobjects.nib -text
 ru.lproj/Main.strings -text svneol=native#application/octet-stream
 ru.lproj/Preferences.nib/keyedobjects.nib -text
 ru.lproj/Preferences.strings -text svneol=native#application/octet-stream
-ru.lproj/Queue.strings -text svneol=native#application/octet-stream
 ru.lproj/Status.strings -text svneol=native#application/octet-stream
 ru.lproj/Sync.nib/keyedobjects.nib -text
 ru.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -1398,7 +1378,6 @@ sk.lproj/Main.nib/keyedobjects.nib -text
 sk.lproj/Main.strings -text
 sk.lproj/Preferences.nib/keyedobjects.nib -text
 sk.lproj/Preferences.strings -text
-sk.lproj/Queue.strings -text
 sk.lproj/Status.strings -text
 sk.lproj/Sync.nib/keyedobjects.nib -text
 sk.lproj/Sync.strings -text
@@ -1446,7 +1425,6 @@ sv.lproj/Main.nib/keyedobjects.nib -text
 sv.lproj/Main.strings -text svneol=native#application/octet-stream
 sv.lproj/Preferences.nib/keyedobjects.nib -text
 sv.lproj/Preferences.strings -text svneol=native#application/octet-stream
-sv.lproj/Queue.strings -text svneol=native#application/octet-stream
 sv.lproj/Status.strings -text svneol=native#application/octet-stream
 sv.lproj/Sync.nib/keyedobjects.nib -text
 sv.lproj/Sync.strings -text svneol=native#application/octet-stream
@@ -1518,7 +1496,6 @@ th.lproj/Preferences.nib/classes.nib -text
 th.lproj/Preferences.nib/info.nib -text
 th.lproj/Preferences.nib/keyedobjects.nib -text
 th.lproj/Preferences.strings -text
-th.lproj/Queue.strings -text
 th.lproj/Status.strings -text
 th.lproj/Sync.nib/classes.nib -text
 th.lproj/Sync.nib/info.nib -text
@@ -1594,7 +1571,6 @@ tr.lproj/Preferences.nib/classes.nib -text
 tr.lproj/Preferences.nib/info.nib -text
 tr.lproj/Preferences.nib/keyedobjects.nib -text
 tr.lproj/Preferences.strings -text
-tr.lproj/Queue.strings -text
 tr.lproj/Status.strings -text
 tr.lproj/Sync.nib/classes.nib -text
 tr.lproj/Sync.nib/info.nib -text
@@ -1738,7 +1714,6 @@ zh_CN.lproj/Main.nib/keyedobjects.nib -text
 zh_CN.lproj/Main.strings -text
 zh_CN.lproj/Preferences.nib/keyedobjects.nib -text
 zh_CN.lproj/Preferences.strings -text svneol=native#application/octet-stream
-zh_CN.lproj/Queue.strings -text svneol=native#application/octet-stream
 zh_CN.lproj/Status.strings -text
 zh_CN.lproj/Sync.nib/keyedobjects.nib -text
 zh_CN.lproj/Sync.strings -text
@@ -1780,7 +1755,6 @@ zh_TW.lproj/Main.nib/keyedobjects.nib -text
 zh_TW.lproj/Main.strings -text
 zh_TW.lproj/Preferences.nib/keyedobjects.nib -text
 zh_TW.lproj/Preferences.strings -text
-zh_TW.lproj/Queue.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Status.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Sync.nib/keyedobjects.nib -text
 zh_TW.lproj/Sync.strings -text
