@@ -36,7 +36,6 @@ public class CDProgressController extends CDController {
     private static Logger log = Logger.getLogger(CDProgressController.class);
 
     private String statusText;
-    private StringBuffer errorText;
 
     private NSTimer progressTimer;
 
@@ -76,29 +75,21 @@ public class CDProgressController extends CDController {
                 progressBar.setIndeterminate(true);
                 progressBar.startAnimation(null);
                 progressBar.setNeedsDisplay(true);
-                errorText = new StringBuffer();
                 alertIcon.setHidden(true);
                 queue.getSession().addProgressListener(progress = new ProgressListener() {
                     public void message(final String message) {
                         statusText = message;
-                        updateProgressfield();
+                        progressField.setAttributedStringValue(new NSAttributedString(getProgressText(),
+                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                     }
 
                     public void error(final Exception e) {
-                        int l = errorText.toString().split("\n").length;
-                        if(l == 10) {
-                            errorText.append("\n- (...)");
-                        }
-                        if(l < 10) {
-                            errorText.append("\n" + e.getMessage());
-                        }
                         alertIcon.setHidden(false);
                     }
                 });
             }
 
             public void queueStopped() {
-                updateProgressfield();
                 progressBar.setIndeterminate(true);
                 progressBar.stopAnimation(null);
                 progressBar.setHidden(true);
@@ -126,12 +117,14 @@ public class CDProgressController extends CDController {
     public void awakeFromNib() {
         this.filenameField.setAttributedStringValue(new NSAttributedString(this.queue.getName(),
                 TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
-        this.updateProgressfield();
+        this.progressField.setAttributedStringValue(new NSAttributedString(this.getProgressText(),
+                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
     }
 
     public void update(NSTimer t) {
         this.updateProgressbar();
-        this.updateProgressfield();
+        this.progressField.setAttributedStringValue(new NSAttributedString(this.getProgressText(),
+                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
     }
 
     private Speedometer meter;
@@ -181,11 +174,6 @@ public class CDProgressController extends CDController {
         }
     }
 
-    private void updateProgressfield() {
-        this.progressField.setAttributedStringValue(new NSAttributedString(this.getProgressText(),
-                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-    }
-
     private static final String SEC_REMAINING = NSBundle.localizedString("seconds remaining", "Status", "");
     private static final String MIN_REMAINING = NSBundle.localizedString("minutes remaining", "Status", "");
 
@@ -218,22 +206,8 @@ public class CDProgressController extends CDController {
         return b.toString();
     }
 
-    private String getErrorText() {
-        return this.errorText.toString();
-    }
-
     public Queue getQueue() {
         return this.queue;
-    }
-
-    public void alertButtonClicked(final Object sender) {
-        CDQueueController.instance().alert(
-                NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"),
-                        this.getErrorText(), // message
-                        NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                        null, //alternative button
-                        null //other button
-                ));
     }
 
     private boolean highlighted;
@@ -287,13 +261,11 @@ public class CDProgressController extends CDController {
         this.progressBar.setUsesThreadedAnimation(true);
     }
 
-    private NSButton alertIcon; // IBOutlet
+    private NSImageView alertIcon; // IBOutlet
 
-    public void setAlertIcon(NSButton alertIcon) {
+    public void setAlertIcon(NSImageView alertIcon) {
         this.alertIcon = alertIcon;
         this.alertIcon.setHidden(true);
-        this.alertIcon.setTarget(this);
-        this.alertIcon.setAction(new NSSelector("alertButtonClicked", new Class[]{Object.class}));
     }
 
     private NSView progressView; // IBOutlet

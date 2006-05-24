@@ -1416,6 +1416,12 @@ public class CDBrowserController extends CDWindowController
     // Browser navigation
     // ----------------------------------------------------------
 
+    private NSView navigationView; // IBOutlet
+
+    public void setNavigationView(NSView navigationView) {
+        this.navigationView = navigationView;
+    }
+
     private static final int NAVIGATION_LEFT_SEGMENT_BUTTON = 0;
     private static final int NAVIGATION_RIGHT_SEGMENT_BUTTON = 1;
 
@@ -2258,7 +2264,6 @@ public class CDBrowserController extends CDWindowController
                             public void run() {
                                 String alert = e.getMessage();
                                 String title = NSBundle.localizedString("Error", "");
-                                boolean diagnostics = false;
                                 if(e instanceof FTPException) {
                                     title = "FTP " + NSBundle.localizedString("Error", "");
                                 }
@@ -2267,14 +2272,14 @@ public class CDBrowserController extends CDWindowController
                                 }
                                 else if(e instanceof SocketException) {
                                     title = "Network " + NSBundle.localizedString("Error", "");
-                                    diagnostics = true;
                                 }
                                 else if(e instanceof IOException) {
                                     title = "I/O " + NSBundle.localizedString("Error", "");
-                                    diagnostics = true;
                                 }
                                 CDErrorController error = new CDErrorController(
-                                        CDBrowserController.this, title+": "+alert);
+                                        getSelectedBrowserView().superview().superview().superview(),
+                                        getSelectedBrowserView().superview().superview(),
+                                        title+": "+alert);
                                 error.display();
                             }
                         });

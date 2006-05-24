@@ -48,6 +48,7 @@ public class CDQueueController extends CDWindowController
         this.window = window;
         this.window.setReleasedWhenClosed(false);
         this.window.setDelegate(this);
+        this.window.setTitle(NSBundle.localizedString("Transfers", ""));
     }
 
     /**
@@ -98,10 +99,26 @@ public class CDQueueController extends CDWindowController
         this.logDrawer.toggle(this);
     }
 
+    private NSTextField urlLabel;
+
+    public void setUrlLabel(NSTextField urlLabel) {
+        this.urlLabel = urlLabel;
+        this.urlLabel.setTextColor(NSColor.darkGrayColor());
+        this.urlLabel.setStringValue("URL:");
+    }
+
     private NSTextField urlField;
 
     public void setUrlField(NSTextField urlField) {
         this.urlField = urlField;
+    }
+
+    private NSTextField localLabel;
+
+    public void setLocalLabel(NSTextField localLabel) {
+        this.localLabel = localLabel;
+        this.localLabel.setTextColor(NSColor.darkGrayColor());
+        this.localLabel.setStringValue(NSBundle.localizedString("Local File", "")+":");
     }
 
     private NSTextField localField;
@@ -364,6 +381,7 @@ public class CDQueueController extends CDWindowController
     private void startItem(final Queue queue, final boolean resumeRequested) {
         queue.addListener(new QueueListener() {
             private TranscriptListener transcript;
+            private ProgressListener progress;
 
             public void transferStarted(Path path) {
                 if(path.attributes.isFile() && !path.getLocal().exists()) {
@@ -393,6 +411,23 @@ public class CDQueueController extends CDWindowController
                             new CDX509TrustManagerController(CDQueueController.instance()));
                 }
                 queue.getSession().setLoginController(new CDLoginController(CDQueueController.instance()));
+                queue.getSession().addProgressListener(progress = new ProgressListener() {
+                    public void message(final String message) {
+                        ;
+                    }
+
+                    public void error(final Exception e) {
+                        invoke(new Runnable() {
+                            public void run() {
+                                CDErrorController error = new CDErrorController(
+                                        queueTable.superview().superview().superview(),
+                                        queueTable.superview().superview(),
+                                        e.getMessage());
+                                error.display();
+                            }
+                        });
+                    }
+                });
             }
 
             public void queueStopped() {
@@ -428,6 +463,7 @@ public class CDQueueController extends CDWindowController
                     ((ch.cyberduck.core.ftps.FTPSSession) queue.getSession()).setTrustManager(null);
                 }
                 queue.getSession().setLoginController(null);
+                queue.getSession().removeProgressListener(progress);
             }
         });
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {

@@ -29,6 +29,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+import java.net.MalformedURLException;
 
 /**
  * @version $Id$
@@ -229,11 +230,22 @@ public class CDConnectionController extends CDSheetController
         }
     }
 
-    private NSImageView alertIcon; // IBOutlet
+    private NSButton alertIcon; // IBOutlet
 
-    public void setAlertIcon(NSImageView alertIcon) {
+    public void setAlertIcon(NSButton alertIcon) {
         this.alertIcon = alertIcon;
         this.alertIcon.setHidden(true);
+        this.alertIcon.setTarget(this);
+        this.alertIcon.setAction(new NSSelector("launchNetworkAssistant", new Class[]{NSButton.class}));
+    }
+
+    public void launchNetworkAssistant(final NSButton sender) {
+        try {
+            Host.parse(urlLabel.stringValue()).diagnose();
+        }
+        catch(MalformedURLException e) {
+            new Host(hostPopup.stringValue()).diagnose();
+        }
     }
 
     private NSTextField pathField;
@@ -536,7 +548,7 @@ public class CDConnectionController extends CDSheetController
         urlLabel.setStringValue(protocol + usernameField.stringValue()
                 + "@" + hostPopup.stringValue() + ":" + portField.stringValue()
                 + pathField.stringValue());
-        this.alertIcon.setHidden(new Host(hostPopup.stringValue()).isReachable());
+        this.alertIcon.setHidden(new Host(protocol, hostPopup.stringValue()).isReachable());
     }
 
     public void callback(int returncode) {

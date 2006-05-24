@@ -26,6 +26,8 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
+import java.net.MalformedURLException;
+
 /**
  * @version $Id$
  */
@@ -91,11 +93,17 @@ public class CDBookmarkController extends CDWindowController {
         this.hostField = hostField;
     }
 
-    private NSImageView alertIcon; // IBOutlet
+    private NSButton alertIcon; // IBOutlet
 
-    public void setAlertIcon(NSImageView alertIcon) {
+    public void setAlertIcon(NSButton alertIcon) {
         this.alertIcon = alertIcon;
         this.alertIcon.setHidden(true);
+        this.alertIcon.setTarget(this);
+        this.alertIcon.setAction(new NSSelector("launchNetworkAssistant", new Class[]{NSButton.class}));
+    }
+
+    public void launchNetworkAssistant(final NSButton sender) {
+        this.host.diagnose();
     }
 
     private NSTextField portField; // IBOutlet
@@ -300,8 +308,8 @@ public class CDBookmarkController extends CDWindowController {
         if (this.host.getProtocol().equals(Session.SFTP)) {
             this.protocolPopup.setTitle(Session.SFTP_STRING);
         }
-        this.connectmodePopup.setEnabled(this.host.getProtocol().equals(Session.FTP) || 
-			this.host.getProtocol().equals(Session.FTP_TLS));
+        this.connectmodePopup.setEnabled(this.host.getProtocol().equals(Session.FTP) ||
+            this.host.getProtocol().equals(Session.FTP_TLS));
         this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Session.SFTP));
         if (this.host.getCredentials().usesPublicKeyAuthentication()) {
             this.pkCheckbox.setState(NSCell.OnState);

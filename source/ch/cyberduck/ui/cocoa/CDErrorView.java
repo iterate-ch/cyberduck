@@ -38,12 +38,17 @@ public class CDErrorView extends NSView {
 
     public void drawRect(NSRect rect) {
         super.drawRect(rect);
-        NSColor.selectedControlColor().set();
+        rect = this.bounds();
+        NSColor.alternateSelectedControlColor().set();
         NSBezierPath.fillRect(rect);
     }
 
+    /**
+     *
+     * @return True if the the whole rect of this view is painted by ourself
+     */
     public boolean isOpaque() {
         // If the background color is opaque, return YES otherwise, return NO
-        return NSColor.selectedControlColor().alphaComponent() >= 1.0;
+        return NSColor.alternateSelectedControlColor().alphaComponent() >= 1.0;
     }
 }

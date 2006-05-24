@@ -31,14 +31,10 @@ import com.apple.cocoa.foundation.NSSize;
 import org.apache.log4j.Logger;
 
 /**
- *
+ * @version $Id$
  */
-public class CDErrorController extends CDWindowController {
+public class CDErrorController extends CDController {
     private static Logger log = Logger.getLogger(CDErrorController.class);
-
-    public void awakeFromNib() {
-        ;
-    }
 
     public void setErrorField(NSTextField errorField) {
         this.errorField = errorField;
@@ -63,16 +59,24 @@ public class CDErrorController extends CDWindowController {
     private NSView view;
 
     /**
-     *
+     * The parent view
      */
-    private CDBrowserController parent;
+    private NSView container;
 
     /**
-     * @param parent
+     * The neighbouring view the error view should be attached to
+     */
+    private NSView neighbour;
+
+    /**
+     *
+     * @param container
+     * @param neighbour
      * @param message
      */
-    public CDErrorController(CDBrowserController parent, String message) {
-        this.parent = parent;
+    public CDErrorController(NSView container, NSView neighbour, String message) {
+        this.container = container;
+        this.neighbour = neighbour;
         if(!NSApplication.loadNibNamed("Error", this)) {
             log.fatal("Couldn't load Error.nib");
         }
@@ -84,11 +88,9 @@ public class CDErrorController extends CDWindowController {
      * @param sender
      */
     public void close(NSButton sender) {
-        // nstableview > nsclipview > nsscrollview > nsview
-        NSView superview = parent.getSelectedBrowserView().superview().superview().superview();
         NSView subview = null;
-        for(int i = 0; i < superview.subviews().count(); i++) {
-            subview = (NSView) superview.subviews().objectAtIndex(i);
+        for(int i = 0; i < container.subviews().count(); i++) {
+            subview = (NSView) container.subviews().objectAtIndex(i);
             if(subview.frame().origin().y() < view.frame().origin().y()) {
                 subview.setFrameOrigin(
                         new NSPoint(subview.frame().origin().x(),
@@ -106,19 +108,29 @@ public class CDErrorController extends CDWindowController {
             );
         }
         view.removeFromSuperview();
-        superview.superview().setNeedsDisplay(true);
+        container.setNeedsDisplay(true);
+        this.invalidate();
     }
 
     public void display() {
-        NSView browser = parent.getSelectedBrowserView().superview().superview();
-        browser.setFrameSize(new NSSize(
-                new NSSize(browser.frame().width(), browser.frame().height() - this.getView().frame().size().height()))
+        NSWindow window = null;
+        NSView parent = container;
+        while(null == (window = parent.window())) {
+            parent = parent.superview();
+        }
+        if(neighbour.frame().height() < window.minSize().height()) {
+            NSRect frame = new NSRect(window.frame().origin(),
+                    new NSSize(window.frame().width(), window.frame().height()+view.frame().height()));
+            window.setFrame(frame, true, true);
+        }
+        neighbour.setFrameSize(new NSSize(
+                new NSSize(neighbour.frame().width(), neighbour.frame().height() - this.getView().frame().size().height()))
         );
         this.getView().setFrame(new NSRect(
-                new NSPoint(browser.frame().origin().x(), browser.frame().size().height()),
-                new NSSize(browser.frame().size().width(), this.getView().frame().size().height())
+                new NSPoint(neighbour.frame().origin().x(), neighbour.frame().size().height()),
+                new NSSize(neighbour.frame().size().width(), this.getView().frame().size().height())
         ));
-        browser.superview().addSubview(this.getView(), NSWindow.Below, browser);
-        browser.superview().superview().setNeedsDisplay(true);
+        container.addSubview(this.getView(), NSWindow.Below, neighbour);
+        container.setNeedsDisplay(true);
     }
 }
