@@ -69,6 +69,7 @@ public class CDMainController extends CDController {
     public void setDockMenu(NSMenu dockMenu) {
         this.dockMenu = dockMenu;
         this.dockBookmarkMenu = new NSMenu();
+		this.dockBookmarkMenu.setAutoenablesItems(false);
         this.dockBookmarkMenu.setDelegate(this.dockBookmarkMenuDelegate = new DockBookmarkMenuDelegate());
         this.dockMenu.setSubmenuForItem(dockBookmarkMenu, this.dockMenu.itemAtIndex(2));
     }
