@@ -193,32 +193,6 @@
 		47FF630407F34E6100C0BDB9 /* gear.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FF630307F34E6100C0BDB9 /* gear.tiff */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXBuildStyle section */
-		4A9504D3FFE6A4CB11CA0CBA /* Development */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GENERATE_PROFILING_CODE = YES;
-				OPTIMIZATION_CFLAGS = "-O0";
-				ZERO_LINK = YES;
-			};
-			name = Development;
-		};
-		4A9504D4FFE6A4CB11CA0CBA /* Deployment */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				ZERO_LINK = NO;
-			};
-			name = Deployment;
-		};
-/* End PBXBuildStyle section */
-
 /* Begin PBXContainerItemProxy section */
 		471E214B0A1734D7009E164E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -395,7 +369,6 @@
 		470FDC76099E4A9C008DE09C /* he */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = he; path = he.lproj/Browser.nib; sourceTree = "<group>"; };
 		470FDC77099E4A9C008DE09C /* he */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = he; path = he.lproj/Command.nib; sourceTree = "<group>"; };
 		470FDC78099E4A9C008DE09C /* he */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = he; path = he.lproj/Duplicate.nib; sourceTree = "<group>"; };
-		470FDC79099E4A9C008DE09C /* he */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = he; path = he.lproj/Queue.nib; sourceTree = "<group>"; };
 		470FDC7A099E4A9C008DE09C /* he */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = he; path = he.lproj/Bookmark.nib; sourceTree = "<group>"; };
 		470FDC7B099E4AA8008DE09C /* he */ = {isa = PBXFileReference; lastKnownFileType = text; name = he; path = he.lproj/License.txt; sourceTree = "<group>"; };
 		470FDC7C099E4AC5008DE09C /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -443,7 +416,6 @@
 		47271DA209F4050B00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Validator.nib; sourceTree = "<group>"; };
 		47271DA309F4050B00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		47271DA409F4050B00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/File.nib; sourceTree = "<group>"; };
-		47271DA509F4050B00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Queue.nib; sourceTree = "<group>"; };
 		47271DA609F4050B00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Credentials.strings; sourceTree = "<group>"; };
 		47271DA709F4050B00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Sync.nib; sourceTree = "<group>"; };
 		47271DA809F4050B00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Bookmark.nib; sourceTree = "<group>"; };
@@ -793,7 +765,6 @@
 		474163BE06C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Preferences.nib; sourceTree = "<group>"; };
 		474163C006C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Bookmark.nib; sourceTree = "<group>"; };
 		474163FC06C4F77300AC0BD2 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/Validator.nib; sourceTree = "<group>"; };
-		474163FE06C4F77300AC0BD2 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/Queue.nib; sourceTree = "<group>"; };
 		474163FF06C4F77300AC0BD2 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/Preferences.nib; sourceTree = "<group>"; };
 		4741640006C4F77300AC0BD2 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/Main.nib; sourceTree = "<group>"; };
 		4741640106C4F77300AC0BD2 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/Login.nib; sourceTree = "<group>"; };
@@ -812,7 +783,6 @@
 		4741641D06C4F7A000AC0BD2 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/Download.nib; sourceTree = "<group>"; };
 		4741641E06C4F7A000AC0BD2 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/Connection.nib; sourceTree = "<group>"; };
 		4741641F06C4F7A000AC0BD2 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/Validator.nib; sourceTree = "<group>"; };
-		4741642106C4F7A000AC0BD2 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/Queue.nib; sourceTree = "<group>"; };
 		4741642206C4F7A000AC0BD2 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/Preferences.nib; sourceTree = "<group>"; };
 		4741642306C4F7A000AC0BD2 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/Main.nib; sourceTree = "<group>"; };
 		4741642406C4F7A000AC0BD2 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/Login.nib; sourceTree = "<group>"; };
@@ -822,7 +792,6 @@
 		4741642806C4F7A000AC0BD2 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/Goto.nib; sourceTree = "<group>"; };
 		4741642906C4F7C100AC0BD2 /* fi */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fi; path = fi.lproj/Validator.nib; sourceTree = "<group>"; };
 		4741642A06C4F7C100AC0BD2 /* fi */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fi; path = fi.lproj/Bookmark.nib; sourceTree = "<group>"; };
-		4741642C06C4F7C100AC0BD2 /* fi */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fi; path = fi.lproj/Queue.nib; sourceTree = "<group>"; };
 		4741642D06C4F7C100AC0BD2 /* fi */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fi; path = fi.lproj/Preferences.nib; sourceTree = "<group>"; };
 		4741642E06C4F7C100AC0BD2 /* fi */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fi; path = fi.lproj/Donate.nib; sourceTree = "<group>"; };
 		4741642F06C4F7C100AC0BD2 /* fi */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fi; path = fi.lproj/Browser.nib; sourceTree = "<group>"; };
@@ -838,7 +807,6 @@
 		4741643A06C4F7ED00AC0BD2 /* fr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fr; path = fr.lproj/Download.nib; sourceTree = "<group>"; };
 		4741643B06C4F7ED00AC0BD2 /* fr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fr; path = fr.lproj/Info.nib; sourceTree = "<group>"; };
 		4741643C06C4F7ED00AC0BD2 /* fr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fr; path = fr.lproj/Browser.nib; sourceTree = "<group>"; };
-		4741643D06C4F7ED00AC0BD2 /* fr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fr; path = fr.lproj/Queue.nib; sourceTree = "<group>"; };
 		4741643E06C4F7ED00AC0BD2 /* fr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fr; path = fr.lproj/Validator.nib; sourceTree = "<group>"; };
 		4741643F06C4F7ED00AC0BD2 /* fr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fr; path = fr.lproj/Connection.nib; sourceTree = "<group>"; };
 		4741644006C4F7ED00AC0BD2 /* fr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fr; path = fr.lproj/Main.nib; sourceTree = "<group>"; };
@@ -848,7 +816,6 @@
 		4741644406C4F7ED00AC0BD2 /* fr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fr; path = fr.lproj/Goto.nib; sourceTree = "<group>"; };
 		4741644506C4F7ED00AC0BD2 /* fr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fr; path = fr.lproj/Folder.nib; sourceTree = "<group>"; };
 		4741644606C4F7ED00AC0BD2 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text; name = fr; path = fr.lproj/License.txt; sourceTree = "<group>"; };
-		4741644706C4F80D00AC0BD2 /* de */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = de; path = de.lproj/Queue.nib; sourceTree = "<group>"; };
 		4741644806C4F80D00AC0BD2 /* de */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = de; path = de.lproj/Bookmark.nib; sourceTree = "<group>"; };
 		4741644906C4F80D00AC0BD2 /* de */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = de; path = de.lproj/Validator.nib; sourceTree = "<group>"; };
 		4741644A06C4F80D00AC0BD2 /* de */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = de; path = de.lproj/Goto.nib; sourceTree = "<group>"; };
@@ -863,7 +830,6 @@
 		4741645406C4F80D00AC0BD2 /* de */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = de; path = de.lproj/Login.nib; sourceTree = "<group>"; };
 		4741645506C4F80D00AC0BD2 /* de */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = de; path = de.lproj/Folder.nib; sourceTree = "<group>"; };
 		4741645606C4F83900AC0BD2 /* it */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = it; path = it.lproj/Validator.nib; sourceTree = "<group>"; };
-		4741645806C4F83900AC0BD2 /* it */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = it; path = it.lproj/Queue.nib; sourceTree = "<group>"; };
 		4741645906C4F83900AC0BD2 /* it */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = it; path = it.lproj/Preferences.nib; sourceTree = "<group>"; };
 		4741645A06C4F83A00AC0BD2 /* it */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = it; path = it.lproj/Main.nib; sourceTree = "<group>"; };
 		4741645B06C4F83A00AC0BD2 /* it */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = it; path = it.lproj/Login.nib; sourceTree = "<group>"; };
@@ -882,7 +848,6 @@
 		4741646806C4F86300AC0BD2 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ja; path = ja.lproj/Validator.nib; sourceTree = "<group>"; };
 		4741646906C4F86300AC0BD2 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ja; path = ja.lproj/Bookmark.nib; sourceTree = "<group>"; };
 		4741646B06C4F86300AC0BD2 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ja; path = ja.lproj/Login.nib; sourceTree = "<group>"; };
-		4741646C06C4F86300AC0BD2 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ja; path = ja.lproj/Queue.nib; sourceTree = "<group>"; };
 		4741646D06C4F86300AC0BD2 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ja; path = ja.lproj/Download.nib; sourceTree = "<group>"; };
 		4741646E06C4F86300AC0BD2 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ja; path = ja.lproj/Preferences.nib; sourceTree = "<group>"; };
 		4741646F06C4F86300AC0BD2 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ja; path = ja.lproj/Goto.nib; sourceTree = "<group>"; };
@@ -891,7 +856,6 @@
 		4741647206C4F86300AC0BD2 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ja; path = ja.lproj/Info.nib; sourceTree = "<group>"; };
 		4741647306C4F86300AC0BD2 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ja; path = ja.lproj/Connection.nib; sourceTree = "<group>"; };
 		4741647406C4F88400AC0BD2 /* ko */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ko; path = ko.lproj/Login.nib; sourceTree = "<group>"; };
-		4741647506C4F88400AC0BD2 /* ko */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ko; path = ko.lproj/Queue.nib; sourceTree = "<group>"; };
 		4741647606C4F88400AC0BD2 /* ko */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ko; path = ko.lproj/Goto.nib; sourceTree = "<group>"; };
 		4741647706C4F88400AC0BD2 /* ko */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ko; path = ko.lproj/Main.nib; sourceTree = "<group>"; };
 		4741647806C4F88400AC0BD2 /* ko */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ko; path = ko.lproj/Info.nib; sourceTree = "<group>"; };
@@ -908,7 +872,6 @@
 		4741649406C4F91700AC0BD2 /* sk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sk; path = sk.lproj/Connection.nib; sourceTree = "<group>"; };
 		4741649506C4F91700AC0BD2 /* sk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sk; path = sk.lproj/Browser.nib; sourceTree = "<group>"; };
 		4741649606C4F91700AC0BD2 /* sk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sk; path = sk.lproj/Folder.nib; sourceTree = "<group>"; };
-		4741649706C4F91700AC0BD2 /* sk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sk; path = sk.lproj/Queue.nib; sourceTree = "<group>"; };
 		4741649806C4F91700AC0BD2 /* sk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sk; path = sk.lproj/Goto.nib; sourceTree = "<group>"; };
 		4741649906C4F91700AC0BD2 /* sk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sk; path = sk.lproj/Login.nib; sourceTree = "<group>"; };
 		4741649A06C4F91700AC0BD2 /* sk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sk; path = sk.lproj/Bookmark.nib; sourceTree = "<group>"; };
@@ -919,7 +882,6 @@
 		4741649F06C4F91700AC0BD2 /* sk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sk; path = sk.lproj/Preferences.nib; sourceTree = "<group>"; };
 		474164A006C4F91700AC0BD2 /* sk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sk; path = sk.lproj/Download.nib; sourceTree = "<group>"; };
 		474164A106C4F98300AC0BD2 /* es */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = es; path = es.lproj/Validator.nib; sourceTree = "<group>"; };
-		474164A306C4F98300AC0BD2 /* es */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = es; path = es.lproj/Queue.nib; sourceTree = "<group>"; };
 		474164A406C4F98300AC0BD2 /* es */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = es; path = es.lproj/Preferences.nib; sourceTree = "<group>"; };
 		474164A506C4F98300AC0BD2 /* es */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = es; path = es.lproj/Main.nib; sourceTree = "<group>"; };
 		474164A606C4F98300AC0BD2 /* es */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = es; path = es.lproj/Login.nib; sourceTree = "<group>"; };
@@ -944,10 +906,8 @@
 		474164B906C4FA0500AC0BD2 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_CN; path = zh_CN.lproj/Bookmark.nib; sourceTree = "<group>"; };
 		474164BA06C4FA0500AC0BD2 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_CN; path = zh_CN.lproj/Preferences.nib; sourceTree = "<group>"; };
 		474164BB06C4FA0500AC0BD2 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_CN; path = zh_CN.lproj/Main.nib; sourceTree = "<group>"; };
-		474164BD06C4FA0500AC0BD2 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_CN; path = zh_CN.lproj/Queue.nib; sourceTree = "<group>"; };
 		474164BE06C4FA0500AC0BD2 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_CN; path = zh_CN.lproj/Validator.nib; sourceTree = "<group>"; };
 		474164BF06C4FA2600AC0BD2 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_TW; path = zh_TW.lproj/Validator.nib; sourceTree = "<group>"; };
-		474164C106C4FA2600AC0BD2 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_TW; path = zh_TW.lproj/Queue.nib; sourceTree = "<group>"; };
 		474164C206C4FA2600AC0BD2 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_TW; path = zh_TW.lproj/Preferences.nib; sourceTree = "<group>"; };
 		474164C306C4FA2600AC0BD2 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_TW; path = zh_TW.lproj/Main.nib; sourceTree = "<group>"; };
 		474164C406C4FA2600AC0BD2 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_TW; path = zh_TW.lproj/Login.nib; sourceTree = "<group>"; };
@@ -1031,7 +991,6 @@
 		4741B64907DD124F00FDC650 /* InfTree.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = InfTree.java; sourceTree = "<group>"; };
 		4743001809596BB600848A35 /* cy */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cy; path = cy.lproj/Connection.nib; sourceTree = "<group>"; };
 		4743001909596BB600848A35 /* cy */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cy; path = cy.lproj/Donate.nib; sourceTree = "<group>"; };
-		4743001A09596BB700848A35 /* cy */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cy; path = cy.lproj/Queue.nib; sourceTree = "<group>"; };
 		4743001B09596BB700848A35 /* cy */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cy; path = cy.lproj/Validator.nib; sourceTree = "<group>"; };
 		4743001C09596BB700848A35 /* cy */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cy; path = cy.lproj/Goto.nib; sourceTree = "<group>"; };
 		4743001D09596BB700848A35 /* cy */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cy; path = cy.lproj/Main.nib; sourceTree = "<group>"; };
@@ -1096,7 +1055,6 @@
 		4749574A07EDECD500B34D53 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sv; path = sv.lproj/Validator.nib; sourceTree = "<group>"; };
 		4749574B07EDECDF00B34D53 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sv; path = sv.lproj/Goto.nib; sourceTree = "<group>"; };
 		4749574C07EDECE500B34D53 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sv; path = sv.lproj/Connection.nib; sourceTree = "<group>"; };
-		4749574E07EDECF200B34D53 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sv; path = sv.lproj/Queue.nib; sourceTree = "<group>"; };
 		4749574F07EDECF800B34D53 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sv; path = sv.lproj/Login.nib; sourceTree = "<group>"; };
 		4749575007EDED0000B34D53 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sv; path = sv.lproj/Preferences.nib; sourceTree = "<group>"; };
 		4749575107EDED0600B34D53 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sv; path = sv.lproj/Bookmark.nib; sourceTree = "<group>"; };
@@ -1140,7 +1098,6 @@
 		475465860841C071009A1734 /* id */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = id; path = id.lproj/Goto.nib; sourceTree = "<group>"; };
 		475465890841C075009A1734 /* id */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = id; path = id.lproj/Connection.nib; sourceTree = "<group>"; };
 		4754658C0841C079009A1734 /* id */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = id; path = id.lproj/Donate.nib; sourceTree = "<group>"; };
-		4754658F0841C07D009A1734 /* id */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = id; path = id.lproj/Queue.nib; sourceTree = "<group>"; };
 		475465920841C081009A1734 /* id */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = id; path = id.lproj/Login.nib; sourceTree = "<group>"; };
 		475465950841C085009A1734 /* id */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = id; path = id.lproj/Preferences.nib; sourceTree = "<group>"; };
 		475465980841C089009A1734 /* id */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = id; path = id.lproj/Bookmark.nib; sourceTree = "<group>"; };
@@ -1177,7 +1134,6 @@
 		47562B31081D835D002849AB /* da */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = da; path = da.lproj/Goto.nib; sourceTree = "<group>"; };
 		47562B32081D835D002849AB /* da */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = da; path = da.lproj/Connection.nib; sourceTree = "<group>"; };
 		47562B33081D835D002849AB /* da */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = da; path = da.lproj/Donate.nib; sourceTree = "<group>"; };
-		47562B34081D835D002849AB /* da */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = da; path = da.lproj/Queue.nib; sourceTree = "<group>"; };
 		47562B35081D835D002849AB /* da */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = da; path = da.lproj/Login.nib; sourceTree = "<group>"; };
 		47562B36081D835D002849AB /* da */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = da; path = da.lproj/Preferences.nib; sourceTree = "<group>"; };
 		47562B37081D835D002849AB /* da */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = da; path = da.lproj/Bookmark.nib; sourceTree = "<group>"; };
@@ -1197,7 +1153,6 @@
 		47562B88081D998C002849AB /* pl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pl; path = pl.lproj/Goto.nib; sourceTree = "<group>"; };
 		47562B89081D998C002849AB /* pl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pl; path = pl.lproj/Connection.nib; sourceTree = "<group>"; };
 		47562B8A081D998C002849AB /* pl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pl; path = pl.lproj/Donate.nib; sourceTree = "<group>"; };
-		47562B8B081D998C002849AB /* pl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pl; path = pl.lproj/Queue.nib; sourceTree = "<group>"; };
 		47562B8C081D998C002849AB /* pl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pl; path = pl.lproj/Login.nib; sourceTree = "<group>"; };
 		47562B8D081D998C002849AB /* pl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pl; path = pl.lproj/Preferences.nib; sourceTree = "<group>"; };
 		47562B8E081D998C002849AB /* pl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pl; path = pl.lproj/Bookmark.nib; sourceTree = "<group>"; };
@@ -1224,7 +1179,6 @@
 		4764B47E08B7835E00441096 /* SKWSegmentedControlWindowProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControlWindowProxy.m; sourceTree = "<group>"; };
 		4764B47F08B7835E00441096 /* SKWSegmentedControlWindowProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControlWindowProxy.h; sourceTree = "<group>"; };
 		4764B48008B7835E00441096 /* SKWSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControl.h; sourceTree = "<group>"; };
-		476565150981349B00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Queue.nib; sourceTree = "<group>"; };
 		476565160981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Login.nib; sourceTree = "<group>"; };
 		476565170981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Preferences.nib; sourceTree = "<group>"; };
 		476565180981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Download.nib; sourceTree = "<group>"; };
@@ -1288,7 +1242,6 @@
 		477C3A3007FDFD6E000FD967 /* hu */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = hu; path = hu.lproj/Bookmark.nib; sourceTree = "<group>"; };
 		477C3A3107FDFD79000FD967 /* hu */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = hu; path = hu.lproj/Preferences.nib; sourceTree = "<group>"; };
 		477C3A3207FDFD7D000FD967 /* hu */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = hu; path = hu.lproj/Login.nib; sourceTree = "<group>"; };
-		477C3A3307FDFD84000FD967 /* hu */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = hu; path = hu.lproj/Queue.nib; sourceTree = "<group>"; };
 		477C3A3407FDFD88000FD967 /* hu */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = hu; path = hu.lproj/Donate.nib; sourceTree = "<group>"; };
 		477C3A3507FDFD8B000FD967 /* hu */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = hu; path = hu.lproj/Connection.nib; sourceTree = "<group>"; };
 		477C3A3607FDFD8F000FD967 /* hu */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = hu; path = hu.lproj/Goto.nib; sourceTree = "<group>"; };
@@ -1325,7 +1278,6 @@
 		479814FF07280BAB00FA3CDB /* no */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = no; path = no.lproj/Main.nib; sourceTree = "<group>"; };
 		4798150007280BAB00FA3CDB /* no */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = no; path = no.lproj/Info.nib; sourceTree = "<group>"; };
 		4798150107280BAB00FA3CDB /* no */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = no; path = no.lproj/Validator.nib; sourceTree = "<group>"; };
-		4798150307280BAB00FA3CDB /* no */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = no; path = no.lproj/Queue.nib; sourceTree = "<group>"; };
 		479815B60728D6DC00FA3CDB /* NetwareFTPEntryParser.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NetwareFTPEntryParser.java; sourceTree = "<group>"; };
 		4798163F0728DF9E00FA3CDB /* Growl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Growl.h; path = growl/Growl.h; sourceTree = "<group>"; };
 		479816400728DF9E00FA3CDB /* Growl.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; name = Growl.java; path = growl/Growl.java; sourceTree = "<group>"; };
@@ -1351,7 +1303,6 @@
 		47B19B4C07AA60CD0064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Goto.nib; sourceTree = "<group>"; };
 		47B19B4D07AA60CD0064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Connection.nib; sourceTree = "<group>"; };
 		47B19B4E07AA60CD0064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Donate.nib; sourceTree = "<group>"; };
-		47B19B4F07AA60CD0064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Queue.nib; sourceTree = "<group>"; };
 		47B19B5007AA60CD0064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Login.nib; sourceTree = "<group>"; };
 		47B19B5107AA60CD0064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Preferences.nib; sourceTree = "<group>"; };
 		47B19B5207AA60CD0064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Bookmark.nib; sourceTree = "<group>"; };
@@ -1392,7 +1343,6 @@
 		47C4E8000879EBDF007A1D39 /* ca */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ca; path = ca.lproj/Bookmark.nib; sourceTree = "<group>"; };
 		47C4E8030879EBE6007A1D39 /* ca */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ca; path = ca.lproj/Preferences.nib; sourceTree = "<group>"; };
 		47C4E8060879EBED007A1D39 /* ca */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ca; path = ca.lproj/Login.nib; sourceTree = "<group>"; };
-		47C4E80B0879EBF5007A1D39 /* ca */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ca; path = ca.lproj/Queue.nib; sourceTree = "<group>"; };
 		47C4E80E0879EBFB007A1D39 /* ca */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ca; path = ca.lproj/Donate.nib; sourceTree = "<group>"; };
 		47C4E8110879EC01007A1D39 /* ca */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ca; path = ca.lproj/Connection.nib; sourceTree = "<group>"; };
 		47C4E8140879EC2F007A1D39 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sv; path = sv.lproj/Donate.nib; sourceTree = "<group>"; };
@@ -2450,6 +2400,7 @@
 			children = (
 				475478840A232CA700CD6EAC /* Error.nib */,
 				4759C93B0A1476E500C5980A /* Progress.nib */,
+				474163B906C4F64100AC0BD2 /* Queue.nib */,
 				4741653C06C4FC3F00AC0BD2 /* img */,
 				47FC190A099FB8AF0082431D /* Crash.strings */,
 				479C4229097AB2BB00DDE88A /* Credits.rtf */,
@@ -2474,7 +2425,6 @@
 				474163B306C4F64100AC0BD2 /* Goto.nib */,
 				474163B506C4F64100AC0BD2 /* Connection.nib */,
 				474163B706C4F64100AC0BD2 /* Donate.nib */,
-				474163B906C4F64100AC0BD2 /* Queue.nib */,
 				474163BB06C4F64100AC0BD2 /* Login.nib */,
 				474163BD06C4F64100AC0BD2 /* Preferences.nib */,
 				474163BF06C4F64100AC0BD2 /* Bookmark.nib */,
@@ -2939,18 +2889,6 @@
 			buildConfigurationList = 47D286DD0855740C008142CF /* Build configuration list for PBXLegacyTarget "build" */;
 			buildPhases = (
 			);
-			buildSettings = {
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = Cyberduck;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
 			buildToolPath = /usr/bin/ant;
 			dependencies = (
 				47CD9C500739339B00E9379E /* PBXTargetDependency */,
@@ -2965,18 +2903,6 @@
 			buildConfigurationList = 47D286E50855740C008142CF /* Build configuration list for PBXLegacyTarget "release" */;
 			buildPhases = (
 			);
-			buildSettings = {
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = Cyberduck;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
 			buildToolPath = /usr/bin/ant;
 			dependencies = (
 				471E21640A1734E8009E164E /* PBXTargetDependency */,
@@ -2999,23 +2925,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = (
-					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers",
-					source/ch/cyberduck/core,
-				);
-				LIBRARY_SEARCH_PATHS = "";
-				LIBRARY_STYLE = DYNAMIC;
-				PREBINDING = NO;
-				PRODUCT_NAME = libKeychain.jnilib;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
 			dependencies = (
 			);
 			name = libDotMac;
@@ -3036,26 +2945,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				INFOPLIST_FILE = Info.plist;
-				JAVA_COMPILER_DEBUGGING_SYMBOLS = NO;
-				JAVA_COMPILER_DEPRECATED_WARNINGS = YES;
-				JAVA_COMPILER_TARGET_VM_VERSION = 1.4;
-				MACOSX_DEPLOYMENT_TARGET = 10.2;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = Cyberduck;
-				SECTORDER_FLAGS = "";
-				SRCROOT = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				WRAPPER_EXTENSION = app;
-			};
 			dependencies = (
 				471E214C0A1734D7009E164E /* PBXTargetDependency */,
 				471E214E0A1734D7009E164E /* PBXTargetDependency */,
@@ -3082,23 +2971,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = (
-					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers",
-					source/ch/cyberduck/core,
-				);
-				LIBRARY_SEARCH_PATHS = "";
-				LIBRARY_STYLE = DYNAMIC;
-				PREBINDING = NO;
-				PRODUCT_NAME = libKeychain.jnilib;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
 			dependencies = (
 			);
 			name = libKeychain;
@@ -3118,23 +2990,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = (
-					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers",
-					source/ch/cyberduck/core,
-				);
-				LIBRARY_STYLE = DYNAMIC;
-				PREBINDING = NO;
-				PRODUCT_NAME = libODBEdit.jnilib;
-				REZ_EXECUTABLE = YES;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
 			dependencies = (
 			);
 			name = libODBEdit;
@@ -3154,20 +3009,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
-				LIBRARY_STYLE = DYNAMIC;
-				PREBINDING = NO;
-				PRODUCT_NAME = libGrowl.jnilib;
-				REZ_EXECUTABLE = YES;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
 			dependencies = (
 			);
 			name = libGrowl;
@@ -3187,23 +3028,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = (
-					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers",
-					source/ch/cyberduck/core,
-				);
-				LIBRARY_STYLE = DYNAMIC;
-				PREBINDING = NO;
-				PRODUCT_NAME = libProxy.jnilib;
-				REZ_EXECUTABLE = YES;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
 			dependencies = (
 			);
 			name = libProxy;
@@ -3223,23 +3047,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = (
-					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers",
-					source/ch/cyberduck/core,
-				);
-				LIBRARY_STYLE = DYNAMIC;
-				PREBINDING = NO;
-				PRODUCT_NAME = libLocal.jnilib;
-				REZ_EXECUTABLE = YES;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
 			dependencies = (
 			);
 			name = libLocal;
@@ -3259,23 +3066,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = (
-					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers",
-					source/ch/cyberduck/core,
-				);
-				LIBRARY_STYLE = DYNAMIC;
-				PREBINDING = NO;
-				PRODUCT_NAME = libProxy.jnilib;
-				REZ_EXECUTABLE = YES;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
 			dependencies = (
 			);
 			name = libDiagnostics;
@@ -3290,12 +3080,6 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 47D286ED0855740D008142CF /* Build configuration list for PBXProject "Cyberduck" */;
-			buildSettings = {
-			};
-			buildStyles = (
-				4A9504D3FFE6A4CB11CA0CBA /* Development */,
-				4A9504D4FFE6A4CB11CA0CBA /* Deployment */,
-			);
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				en,
@@ -4068,30 +3852,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				474163BA06C4F64100AC0BD2 /* en */,
-				474163FE06C4F77300AC0BD2 /* cs */,
-				4741642106C4F7A000AC0BD2 /* nl */,
-				4741642C06C4F7C100AC0BD2 /* fi */,
-				4741643D06C4F7ED00AC0BD2 /* fr */,
-				4741644706C4F80D00AC0BD2 /* de */,
-				4741645806C4F83900AC0BD2 /* it */,
-				4741646C06C4F86300AC0BD2 /* ja */,
-				4741647506C4F88400AC0BD2 /* ko */,
-				4741649706C4F91700AC0BD2 /* sk */,
-				474164A306C4F98300AC0BD2 /* es */,
-				474164BD06C4FA0500AC0BD2 /* zh_CN */,
-				474164C106C4FA2600AC0BD2 /* zh_TW */,
-				4798150307280BAB00FA3CDB /* no */,
-				47B19B4F07AA60CD0064740E /* ru */,
-				4749574E07EDECF200B34D53 /* sv */,
-				477C3A3307FDFD84000FD967 /* hu */,
-				47562B34081D835D002849AB /* da */,
-				47562B8B081D998C002849AB /* pl */,
-				4754658F0841C07D009A1734 /* id */,
-				47C4E80B0879EBF5007A1D39 /* ca */,
-				4743001A09596BB700848A35 /* cy */,
-				476565150981349B00633FD8 /* th */,
-				470FDC79099E4A9C008DE09C /* he */,
-				47271DA509F4050B00136347 /* tr */,
 			);
 			name = Queue.nib;
 			sourceTree = "<group>";
