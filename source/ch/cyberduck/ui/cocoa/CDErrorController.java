@@ -30,6 +30,8 @@ import com.apple.cocoa.foundation.NSSize;
 
 import org.apache.log4j.Logger;
 
+import java.util.Enumeration;
+
 /**
  * @version $Id$
  */
@@ -89,8 +91,9 @@ public class CDErrorController extends CDController {
      */
     public void close(NSButton sender) {
         NSView subview = null;
-        for(int i = 0; i < container.subviews().count(); i++) {
-            subview = (NSView) container.subviews().objectAtIndex(i);
+        Enumeration iter = container.subviews().objectEnumerator();
+        while(iter.hasMoreElements()) {
+            subview = (NSView) iter.nextElement();
             if(subview.frame().origin().y() < view.frame().origin().y()) {
                 subview.setFrameOrigin(
                         new NSPoint(subview.frame().origin().x(),
@@ -109,20 +112,24 @@ public class CDErrorController extends CDController {
         }
         view.removeFromSuperview();
         container.setNeedsDisplay(true);
+        NSWindow window = this.window();
+        window.setContentMinSize(
+                new NSSize(window.contentMinSize().width(), window.contentMinSize().height()-view.frame().height()));
         this.invalidate();
     }
 
+    /**
+     *
+     */
     public void display() {
-        NSWindow window = null;
-        NSView parent = container;
-        while(null == (window = parent.window())) {
-            parent = parent.superview();
-        }
+        NSWindow window = this.window();
         if(neighbour.frame().height() < window.minSize().height()) {
             NSRect frame = new NSRect(window.frame().origin(),
                     new NSSize(window.frame().width(), window.frame().height()+view.frame().height()));
             window.setFrame(frame, true, true);
         }
+        window.setContentMinSize(
+                new NSSize(window.contentMinSize().width(), window.contentMinSize().height()+view.frame().height()));
         neighbour.setFrameSize(new NSSize(
                 new NSSize(neighbour.frame().width(), neighbour.frame().height() - this.getView().frame().size().height()))
         );
@@ -132,5 +139,18 @@ public class CDErrorController extends CDController {
         ));
         container.addSubview(this.getView(), NSWindow.Below, neighbour);
         container.setNeedsDisplay(true);
+    }
+
+    /**
+     *
+     * @return The parent window
+     */
+    private NSWindow window() {
+        NSWindow window = null;
+        NSView parent = container;
+        while(null == (window = parent.window())) {
+            parent = parent.superview();
+        }
+        return window;
     }
 }

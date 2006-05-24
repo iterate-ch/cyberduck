@@ -74,7 +74,6 @@ public class CDMainController extends CDController {
     }
 
     private class DockBookmarkMenuDelegate extends NSObject {
-        private Map items = new HashMap();
 
         public int numberOfItemsInMenu(NSMenu menu) {
             return CDBookmarkTableDataSource.instance().size();
@@ -98,14 +97,14 @@ public class CDMainController extends CDController {
             item.setTarget(this);
             item.setImage(NSImage.imageNamed("bookmark16.tiff"));
             item.setAction(new NSSelector("bookmarkMenuItemClicked", new Class[]{Object.class}));
-            items.put(item, h);
+            item.setRepresentedObject(h);
             return true;
         }
 
-        public void bookmarkMenuItemClicked(final Object sender) {
+        public void bookmarkMenuItemClicked(final NSMenuItem sender) {
             log.debug("bookmarkMenuItemClicked:" + sender);
             CDBrowserController controller = CDMainController.this.newDocument();
-            controller.mount((Host) items.get(sender));
+            controller.mount((Host) sender.representedObject());
         }
     }
 
@@ -149,7 +148,6 @@ public class CDMainController extends CDController {
     }
 
     private class BookmarkMenuDelegate extends NSObject {
-        private Map items = new HashMap();
 
         public int numberOfItemsInMenu(NSMenu menu) {
             return CDBookmarkTableDataSource.instance().size() + 8;
@@ -191,15 +189,15 @@ public class CDMainController extends CDController {
                 item.setTarget(this);
                 item.setImage(NSImage.imageNamed("bookmark16.tiff"));
                 item.setAction(new NSSelector("bookmarkMenuItemClicked", new Class[]{Object.class}));
-                items.put(item, h);
+                item.setRepresentedObject(h);
             }
             return true;
         }
 
-        public void bookmarkMenuItemClicked(final Object sender) {
+        public void bookmarkMenuItemClicked(final NSMenuItem sender) {
             log.debug("bookmarkMenuItemClicked:" + sender);
             CDBrowserController controller = CDMainController.this.newDocument();
-            controller.mount((Host) items.get(sender));
+            controller.mount((Host) sender.representedObject());
         }
     }
 
@@ -304,17 +302,14 @@ public class CDMainController extends CDController {
                 sender.setTarget(this);
                 sender.setEnabled(true);
                 sender.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
+                sender.setRepresentedObject(Rendezvous.instance().getServiceWithDisplayedName(title));
                 return !shouldCancel;
             }
         }
 
         public void rendezvousMenuClicked(NSMenuItem sender) {
-            Host host = Rendezvous.instance().getServiceWithDisplayedName(sender.title());
-            if (null == host) {
-                return;
-            }
             CDBrowserController controller = CDMainController.this.newDocument();
-            controller.mount(host);
+            controller.mount((Host)sender.representedObject());
         }
     }
 
