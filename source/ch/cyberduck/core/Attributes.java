@@ -131,8 +131,8 @@ public class Attributes implements IAttributes {
     public boolean isExecutable() {
         Permission perm = this.getPermission();
         return perm.getOwnerPermissions()[Permission.EXECUTE]
-                && perm.getGroupPermissions()[Permission.EXECUTE]
-                && perm.getOtherPermissions()[Permission.EXECUTE];
+                || perm.getGroupPermissions()[Permission.EXECUTE]
+                || perm.getOtherPermissions()[Permission.EXECUTE];
     }
 
     /**
@@ -142,8 +142,8 @@ public class Attributes implements IAttributes {
     public boolean isReadable() {
         Permission perm = this.getPermission();
         return perm.getOwnerPermissions()[Permission.READ]
-                && perm.getGroupPermissions()[Permission.READ]
-                && perm.getOtherPermissions()[Permission.READ];
+                || perm.getGroupPermissions()[Permission.READ]
+                || perm.getOtherPermissions()[Permission.READ];
     }
 
     /**
@@ -153,8 +153,8 @@ public class Attributes implements IAttributes {
     public boolean isWritable() {
         Permission perm = this.getPermission();
         return perm.getOwnerPermissions()[Permission.WRITE]
-                && perm.getGroupPermissions()[Permission.WRITE]
-                && perm.getOtherPermissions()[Permission.WRITE];
+                || perm.getGroupPermissions()[Permission.WRITE]
+                || perm.getOtherPermissions()[Permission.WRITE];
     }
 
     public void setType(int type) {
