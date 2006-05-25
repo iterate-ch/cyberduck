@@ -1056,7 +1056,7 @@ it.lproj/Validator.strings -text svneol=native#application/octet-stream
 ja.lproj/Bookmark.nib/keyedobjects.nib -text
 ja.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 ja.lproj/Browser.nib/keyedobjects.nib -text
-ja.lproj/Browser.strings -text svneol=native#application/octet-stream
+ja.lproj/Browser.strings -text
 ja.lproj/Certificate.nib/keyedobjects.nib -text
 ja.lproj/Certificate.strings -text svneol=native#application/octet-stream
 ja.lproj/Command.nib/keyedobjects.nib -text
