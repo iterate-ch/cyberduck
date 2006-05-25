@@ -165,6 +165,11 @@
 		479C422A097AB2BB00DDE88A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 479C4229097AB2BB00DDE88A /* Credits.rtf */; };
 		479D64A70752257400FE6086 /* arrowUpBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479D64A50752257400FE6086 /* arrowUpBlack16.tiff */; };
 		47A61DCA076C854A00B535D6 /* generic-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A61DC9076C854A00B535D6 /* generic-document.icns */; };
+		47BA61740A2501C40034AB18 /* CDErrorView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47BA61720A2501C30034AB18 /* CDErrorView.h */; };
+		47BA61750A2501C40034AB18 /* CDErrorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BA61730A2501C30034AB18 /* CDErrorView.m */; };
+		47BA61C70A2507320034AB18 /* CDNavigationView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47BA61C50A2507320034AB18 /* CDNavigationView.h */; };
+		47BA61C80A2507320034AB18 /* CDNavigationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BA61C60A2507320034AB18 /* CDNavigationView.m */; };
+		47BA622D0A25127B0034AB18 /* navigation.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47BA622C0A25127B0034AB18 /* navigation.tiff */; };
 		47C261A90859014400765C4A /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739F03D08569B5E00405FD3 /* Growl.framework */; };
 		47C261AA0859014400765C4A /* Keychain.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EFFB08569A8100405FD3 /* Keychain.framework */; };
 		47CD32A10751163400B82A2B /* plus.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CD32A00751163400B82A2B /* plus.tiff */; };
@@ -1175,10 +1180,6 @@
 		4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libDiagnostics.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4762DB8309FC47380034C662 /* Host.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Host.m; sourceTree = "<group>"; };
 		4762DB8409FC47380034C662 /* Host.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Host.h; sourceTree = "<group>"; };
-		4764B47D08B7835E00441096 /* SKWSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControl.m; sourceTree = "<group>"; };
-		4764B47E08B7835E00441096 /* SKWSegmentedControlWindowProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControlWindowProxy.m; sourceTree = "<group>"; };
-		4764B47F08B7835E00441096 /* SKWSegmentedControlWindowProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControlWindowProxy.h; sourceTree = "<group>"; };
-		4764B48008B7835E00441096 /* SKWSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControl.h; sourceTree = "<group>"; };
 		476565160981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Login.nib; sourceTree = "<group>"; };
 		476565170981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Preferences.nib; sourceTree = "<group>"; };
 		476565180981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Download.nib; sourceTree = "<group>"; };
@@ -1311,6 +1312,12 @@
 		47B19B5607AA60E90064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47B19B5707AA60E90064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		47B6A3C1074F8EAF00B9F16C /* SessionPool.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SessionPool.java; sourceTree = "<group>"; };
+		47BA614A0A24E93E0034AB18 /* CDErrorController.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CDErrorController.java; sourceTree = "<group>"; };
+		47BA61720A2501C30034AB18 /* CDErrorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDErrorView.h; sourceTree = "<group>"; };
+		47BA61730A2501C30034AB18 /* CDErrorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDErrorView.m; sourceTree = "<group>"; };
+		47BA61C50A2507320034AB18 /* CDNavigationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDNavigationView.h; sourceTree = "<group>"; };
+		47BA61C60A2507320034AB18 /* CDNavigationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDNavigationView.m; sourceTree = "<group>"; };
+		47BA622C0A25127B0034AB18 /* navigation.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = navigation.tiff; sourceTree = "<group>"; };
 		47C4D6CB08798D0C007A1D39 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/Command.nib; sourceTree = "<group>"; };
 		47C4D6CC08798D10007A1D39 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/Command.nib; sourceTree = "<group>"; };
 		47C4D6CD08798D14007A1D39 /* fi */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fi; path = fi.lproj/Command.nib; sourceTree = "<group>"; };
@@ -1882,6 +1889,7 @@
 				4741531306C4F08A00AC0BD2 /* CDPreferencesController.java */,
 				4741531406C4F08A00AC0BD2 /* CDPreferencesImpl.java */,
 				4741531106C4F08A00AC0BD2 /* CDMainController.java */,
+				47BA614A0A24E93E0034AB18 /* CDErrorController.java */,
 				47F20F1B07551A84009192FF /* browser */,
 				4798434E072B0DAA00FA3CDB /* view */,
 				47CD9B6E07392A0100E9379E /* queue */,
@@ -2437,6 +2445,7 @@
 		4741653C06C4FC3F00AC0BD2 /* img */ = {
 			isa = PBXGroup;
 			children = (
+				47BA622C0A25127B0034AB18 /* navigation.tiff */,
 				4754786A0A232C9A00CD6EAC /* cancel.tiff */,
 				47239F2409FAFC4E006361C6 /* folder_new.tiff */,
 				47239F2809FAFC5D006361C6 /* folder_writeonly.tiff */,
@@ -2577,10 +2586,6 @@
 		4798434E072B0DAA00FA3CDB /* view */ = {
 			isa = PBXGroup;
 			children = (
-				4764B47D08B7835E00441096 /* SKWSegmentedControl.m */,
-				4764B48008B7835E00441096 /* SKWSegmentedControl.h */,
-				4764B47F08B7835E00441096 /* SKWSegmentedControlWindowProxy.h */,
-				4764B47E08B7835E00441096 /* SKWSegmentedControlWindowProxy.m */,
 				4741531A06C4F08A00AC0BD2 /* CDTableCell.java */,
 				4741531506C4F08A00AC0BD2 /* CDProgressCell.java */,
 				4741530306C4F08A00AC0BD2 /* CDBookmarkCell.java */,
@@ -2590,6 +2595,10 @@
 				47494C3D07EC6B4200B34D53 /* CDOutlineView.h */,
 				47494C3E07EC6B4200B34D53 /* CDListView.m */,
 				47494C3F07EC6B4200B34D53 /* CDListView.h */,
+				47BA61730A2501C30034AB18 /* CDErrorView.m */,
+				47BA61720A2501C30034AB18 /* CDErrorView.h */,
+				47BA61C60A2507320034AB18 /* CDNavigationView.m */,
+				47BA61C50A2507320034AB18 /* CDNavigationView.h */,
 			);
 			name = view;
 			sourceTree = "<group>";
@@ -2820,6 +2829,8 @@
 				4727223409F51EB600136347 /* AIAutoScrollView.h in Headers */,
 				478B36340A07C395000F11F2 /* SKWSegmentedControl.h in Headers */,
 				478B36360A07C395000F11F2 /* SKWSegmentedControlWindowProxy.h in Headers */,
+				47BA61740A2501C40034AB18 /* CDErrorView.h in Headers */,
+				47BA61C70A2507320034AB18 /* CDNavigationView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3247,6 +3258,7 @@
 				4759C93D0A1476E500C5980A /* Progress.nib in Resources */,
 				4754786B0A232C9A00CD6EAC /* cancel.tiff in Resources */,
 				475478860A232CA700CD6EAC /* Error.nib in Resources */,
+				47BA622D0A25127B0034AB18 /* navigation.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3325,6 +3337,8 @@
 				4727223309F51EB600136347 /* AIAutoScrollView.m in Sources */,
 				478B36350A07C395000F11F2 /* SKWSegmentedControl.m in Sources */,
 				478B36370A07C395000F11F2 /* SKWSegmentedControlWindowProxy.m in Sources */,
+				47BA61750A2501C40034AB18 /* CDErrorView.m in Sources */,
+				47BA61C80A2507320034AB18 /* CDNavigationView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
