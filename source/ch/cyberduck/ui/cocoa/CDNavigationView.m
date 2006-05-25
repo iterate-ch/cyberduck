@@ -37,7 +37,7 @@
 }
 
 - (BOOL)isOpaque {
-	return false;
+	return YES;
 }
 
 -(void)dealloc
