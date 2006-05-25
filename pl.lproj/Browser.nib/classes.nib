@@ -2,6 +2,7 @@
     IBClasses = (
         {CLASS = AIAutoScrollView; LANGUAGE = ObjC; SUPERCLASS = NSScrollView; }, 
         {CLASS = CDListView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
+        {CLASS = CDNavigationView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
         {CLASS = CDOutlineView; LANGUAGE = ObjC; SUPERCLASS = NSOutlineView; }, 
         {
             ACTIONS = {
