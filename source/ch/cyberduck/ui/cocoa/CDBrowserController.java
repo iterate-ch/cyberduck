@@ -619,6 +619,7 @@ public class CDBrowserController extends CDWindowController
     public void setWindow(NSWindow window) {
         super.setWindow(window);
         this.window.setDelegate(this);
+		this.window.setTitle((String)NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
     }
 
     private NSTextView logView;
