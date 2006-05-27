@@ -89,16 +89,12 @@ public abstract class CDBrowserTableDataSource extends CDController {
         log.debug("setObjectValueForItem:" + item);
         if (identifier.equals(FILENAME_COLUMN)) {
             if (!item.getName().equals(value) && !value.equals("")) {
-                controller.invoke(new Runnable() {
-                    public void run() {
-                        Path renamed = PathFactory.createPath(controller.workdir().getSession(),
-                                item.getParent().getAbsolute(), value.toString());
-                        controller.renamePath(item, renamed);
-                        item.getParent().invalidate();
-                        controller.reloadData(false);
-                        controller.setSelectedPath(renamed);
-                    }
-                });
+                Path renamed = PathFactory.createPath(controller.workdir().getSession(),
+                        item.getParent().getAbsolute(), value.toString());
+                controller.renamePath(item, renamed);
+                item.getParent().invalidate();
+                controller.reloadData(false);
+                controller.setSelectedPath(renamed);
             }
         }
     }
