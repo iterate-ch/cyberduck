@@ -79,7 +79,7 @@
 	// If there's a release notes URL, load it; otherwise, just stick the contents of the description into the web view.
 	if ([updateItem releaseNotesURL])
 	{
-		[[releaseNotesView mainFrame] loadRequest:[NSURLRequest requestWithURL:[updateItem releaseNotesURL]]];
+		[[releaseNotesView mainFrame] loadRequest:[NSURLRequest requestWithURL:[updateItem releaseNotesURL] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:30]];
 	}
 	else
 	{
@@ -102,7 +102,9 @@
 
 - (void)awakeFromNib
 {	
+	// We're gonna do some frame magic to match the window's size to the description field and the presence of the release notes view.
 	NSRect frame = [[self window] frame];
+	
 	if (![self showsReleaseNotes])
 	{
 		// Resize the window to be appropriate for not having a huge release notes view.
