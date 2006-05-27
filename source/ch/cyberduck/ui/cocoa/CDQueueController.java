@@ -383,23 +383,30 @@ public class CDQueueController extends CDWindowController
             private TranscriptListener transcript;
             private ProgressListener progress;
 
-            public void transferStarted(Path path) {
+            public void transferStarted(final Path path) {
                 if(path.attributes.isFile() && !path.getLocal().exists()) {
-                    path.getLocal().createNewFile(); //hack to display actual icon #CDIconCell
+                    invoke(new Runnable() {
+                        public void run() {
+                            path.getLocal().createNewFile(); //hack to display actual icon #CDIconCell
+                        }
+                    });
                 }
                 queueTable.setNeedsDisplay(true);
             }
 
-            public void transferStopped(Path path) {
+            public void transferStopped(final Path path) {
                 queueTable.setNeedsDisplay(true);
             }
 
             public void queueStarted() {
                 toolbar.validateVisibleItems();
                 queue.getSession().addTranscriptListener(transcript = new TranscriptListener() {
+
                     public void log(String message) {
-                        logView.textStorage().appendAttributedString(
-                                new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
+                        synchronized(lock) {
+                            logView.textStorage().appendAttributedString(
+                                    new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
+                        }
                     }
                 });
                 if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {

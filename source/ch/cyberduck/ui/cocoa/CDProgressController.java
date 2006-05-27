@@ -104,7 +104,7 @@ public class CDProgressController extends CDController {
                 queue.getSession().removeProgressListener(progress);
             }
 
-            public void transferStarted(Path path) {
+            public void transferStarted(final Path path) {
                 meter = new Speedometer();
                 progressTimer = new NSTimer(0.1, //seconds
                         CDProgressController.this, //target
@@ -115,7 +115,7 @@ public class CDProgressController extends CDController {
                         NSRunLoop.DefaultRunLoopMode);
             }
 
-            public void transferStopped(Path path) {
+            public void transferStopped(final Path path) {
                 progressTimer.invalidate();
                 meter = null;
             }

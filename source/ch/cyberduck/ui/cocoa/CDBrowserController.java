@@ -2162,9 +2162,9 @@ public class CDBrowserController extends CDWindowController
                     p = p.getParent();
                     addPathToPopup(p);
                 }
+                reloadData(false);
             }
         });
-        this.reloadData(false);
     }
 
     /**
@@ -2271,9 +2271,13 @@ public class CDBrowserController extends CDWindowController
                     }
                 });
                 session.addTranscriptListener(transcript = new TranscriptListener() {
+                    private final Object lock = new Object();
+
                     public void log(String message) {
-                        logView.textStorage().appendAttributedString(
-                                new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
+                        synchronized(lock) {
+                            logView.textStorage().appendAttributedString(
+                                    new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
+                        }
                     }
                 });
                 window.toolbar().validateVisibleItems();

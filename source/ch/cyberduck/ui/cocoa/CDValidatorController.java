@@ -134,7 +134,8 @@ public abstract class CDValidatorController
     /**
      *
      * @param path
-     * @param resumeRequested
+     * @param resumeRequested                        path.getLocal().createNewFile(); //hack to display actual icon #CDIconCell
+
      * @return true if the file should be added to the queue
      */
     protected boolean validateFile(Path path, boolean resumeRequested) {

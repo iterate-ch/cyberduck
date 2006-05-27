@@ -101,7 +101,7 @@ public class Local extends File implements IAttributes {
         return super.getAbsolutePath();
     }
 
-	private final Object lock = new Object();
+	private final static Object lock = new Object();
 		
     public void setProgress(int progress) {
         if (Preferences.instance().getBoolean("queue.download.updateIcon")) {

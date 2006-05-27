@@ -29,9 +29,9 @@ public class QueueAdapter implements QueueListener {
     public void queueStopped() {
     }
 
-    public void transferStarted(Path path) {
+    public void transferStarted(final Path path) {
     }
 
-    public void transferStopped(Path path) {
+    public void transferStopped(final Path path) {
     }
 }
