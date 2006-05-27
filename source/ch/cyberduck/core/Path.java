@@ -213,7 +213,7 @@ public abstract class Path extends NSObject {
      *
      * @param comparator The comparator to sort the listing with
      * @param filter     The filter to exlude certain files
-     * @return null if there is an error accessing this directory
+     * @return The children of this path or an empty list if it is not accessible for some reason
      */
     public abstract AttributedList list(Comparator comparator, Filter filter);
 
@@ -472,11 +472,7 @@ public abstract class Path extends NSObject {
         if (this.isRoot()) {
             return true;
         }
-        List listing = this.getParent().list();
-        if (null == listing) {
-            return false;
-        }
-        return listing.contains(this);
+        return this.getParent().list().contains(this);
     }
 
     public int hashCode() {

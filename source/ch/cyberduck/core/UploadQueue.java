@@ -75,6 +75,9 @@ public class UploadQueue extends Queue {
                     p.attributes.setSize(0);
                     File[] files = p.getLocal().listFiles();
                     for(int i = 0; i < files.length; i++) {
+                        if(this.isCanceled()) {
+                            break;
+                        }
                         if(files[i].canRead()) {
                             Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(),
                                     new Local(files[i].getAbsolutePath()));

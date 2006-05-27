@@ -51,12 +51,10 @@ public class CDGotoController extends CDSheetController
 
             {
                 List files =  ((CDBrowserController)parent).workdir().list();
-                if(null != files) {
-                    for (Iterator iter = files.iterator(); iter.hasNext();) {
-                        Path p = (Path) iter.next();
-                        if (p.attributes.isDirectory()) {
-                            directories.add(p.getName());
-                        }
+                for (Iterator iter = files.iterator(); iter.hasNext();) {
+                    Path p = (Path) iter.next();
+                    if (p.attributes.isDirectory()) {
+                        directories.add(p.getName());
                     }
                 }
             }

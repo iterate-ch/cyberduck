@@ -41,7 +41,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.StringTokenizer;
 
 /**
@@ -124,7 +123,7 @@ public class FTPPath extends Path {
     public AttributedList list(Comparator comparator, Filter filter) {
         synchronized(session) {
             if(!session.cache().containsKey(this) || session.cache().isInvalid(this)) {
-                AttributedList files = new AttributedList();
+                AttributedList childs = new AttributedList();
                 session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
                 try {
                     session.check();
@@ -135,20 +134,21 @@ public class FTPPath extends Path {
                     for(int i = 0; i < lines.length; i++) {
                         Path p = session.parser.parseFTPEntry(this, lines[i]);
                         if(p != null) {
-                            files.add(p);
+                            childs.add(p);
                         }
                     }
-                    session.cache().put(this, files);
                 }
                 catch(FTPException e) {
+                    childs.getAttributes().setReadable(false);
                     session.error(new FTPException(e.getMessage() + " (" + this.getName() + ")", e.getReplyCode()));
                 }
                 catch(IOException e) {
-                    session.cache().put(this, files);
+                    childs.getAttributes().setReadable(false);
                     session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
                     session.interrupt();
                 }
                 finally {
+                    session.cache().put(this, childs);
                     session.fireActivityStoppedEvent();
                 }
             }
@@ -195,7 +195,7 @@ public class FTPPath extends Path {
             log.debug("rename:" + filename);
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Renaming to", "Status", "")+" "+filename+" ("+this.getName()+")");
+                session.message(NSBundle.localizedString("Renaming to", "Status", "") + " " + filename + " (" + this.getName() + ")");
                 session.FTP.rename(this.getAbsolute(), filename);
                 this.getParent().invalidate();
                 this.setPath(filename);
@@ -269,17 +269,17 @@ public class FTPPath extends Path {
                     session.FTP.delete(this.getName());
                 }
                 else if(this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
-                    List files = this.list();
-                    if(files != null && files.size() > 0) {
-                        for(Iterator iter = files.iterator(); iter.hasNext() && session.isConnected();) {
-                            Path file = (Path) iter.next();
-                            if(file.attributes.isFile()) {
-                                session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
-                                session.FTP.delete(file.getName());
-                            }
-                            else if(file.attributes.isDirectory()) {
-                                file.delete();
-                            }
+                    for(Iterator iter = this.list().iterator(); iter.hasNext() && session.isConnected();) {
+                        if(!session.isConnected()) {
+                            break;
+                        }
+                        Path file = (Path) iter.next();
+                        if(file.attributes.isFile()) {
+                            session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
+                            session.FTP.delete(file.getName());
+                        }
+                        else if(file.attributes.isDirectory()) {
+                            file.delete();
                         }
                     }
                     session.FTP.chdir(this.getParent().getAbsolute());
@@ -306,21 +306,18 @@ public class FTPPath extends Path {
             String command = "chown";
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Changing owner to", "Status", "")+" "+this.attributes.getOwner()+" ("+this.getName()+")");
+                session.message(NSBundle.localizedString("Changing owner to", "Status", "") + " " + this.attributes.getOwner() + " (" + this.getName() + ")");
                 if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
                     session.FTP.site(command + " " + owner + " " + this.getAbsolute());
                 }
                 else if(this.attributes.isDirectory()) {
                     session.FTP.site(command + " " + owner + " " + this.getAbsolute());
                     if(recursive) {
-                        List files = this.list();
-                        if(files != null) {
-                            for(Iterator iter = files.iterator(); iter.hasNext(); ) {
-                                ((Path) iter.next()).changeOwner(owner, recursive);
-                                if(!session.isConnected()) {
-                                    break;
-                                }
+                        for(Iterator iter = this.list().iterator(); iter.hasNext();) {
+                            if(!session.isConnected()) {
+                                break;
                             }
+                            ((Path) iter.next()).changeOwner(owner, recursive);
                         }
                     }
                 }
@@ -344,18 +341,18 @@ public class FTPPath extends Path {
             String command = "chgrp";
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Changing group to", "Status", "")+" "+this.attributes.getGroup()+" ("+this.getName()+")");
+                session.message(NSBundle.localizedString("Changing group to", "Status", "") + " " + this.attributes.getGroup() + " (" + this.getName() + ")");
                 if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
                     session.FTP.site(command + " " + group + " " + this.getAbsolute());
                 }
                 else if(this.attributes.isDirectory()) {
                     session.FTP.site(command + " " + group + " " + this.getAbsolute());
                     if(recursive) {
-                        List files = this.list();
-                        if(files != null) {
-                            for(Iterator iter = files.iterator(); iter.hasNext() && session.isConnected();) {
-                                ((Path) iter.next()).changeGroup(group, recursive);
+                        for(Iterator iter = this.list().iterator(); iter.hasNext();) {
+                            if(!session.isConnected()) {
+                                break;
                             }
+                            ((Path) iter.next()).changeGroup(group, recursive);
                         }
                     }
                 }
@@ -380,18 +377,18 @@ public class FTPPath extends Path {
             String command = "chmod";
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Changing permission to", "Status", "")+" "+perm.getOctalCode()+" ("+this.getName()+")");
+                session.message(NSBundle.localizedString("Changing permission to", "Status", "") + " " + perm.getOctalCode() + " (" + this.getName() + ")");
                 if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
                     session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getAbsolute());
                 }
                 else if(this.attributes.isDirectory()) {
                     session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getAbsolute());
                     if(recursive) {
-                        List files = this.list();
-                        if(files != null) {
-                            for(Iterator iter = files.iterator(); iter.hasNext() && session.isConnected();) {
-                                ((Path) iter.next()).changePermissions(perm, recursive);
+                        for(Iterator iter = this.list().iterator(); iter.hasNext() && session.isConnected();) {
+                            if(!session.isConnected()) {
+                                break;
                             }
+                            ((Path) iter.next()).changePermissions(perm, recursive);
                         }
                     }
                 }

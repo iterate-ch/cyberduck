@@ -426,7 +426,7 @@ public class FTPControlSocket {
 
 		String line = reader.readLine();
 		if(null == line || line.length() == 0) {
-            throw new FTPNullReplyException(); //TODO
+            throw new FTPNullReplyException();
         }
 
 		this.log(line, false);
@@ -446,7 +446,7 @@ public class FTPControlSocket {
 			while(!complete) {
 				line = reader.readLine();
 				if(null == line) {
-                    throw new FTPNullReplyException(); //TODO
+                    throw new FTPNullReplyException();
                 }
                 if (line.length() == 0)
                     continue;

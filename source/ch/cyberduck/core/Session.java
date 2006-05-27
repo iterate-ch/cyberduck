@@ -138,8 +138,8 @@ public abstract class Session extends NSObject {
                     if(host.hasReasonableDefaultPath()) {
                         home = PathFactory.createPath(this, host.getDefaultPath());
                         home.attributes.setType(Path.DIRECTORY_TYPE);
-                        if(null == home.list()) {
-                            // the default path does not exist
+                        if(home.list().getAttributes().get(AttributedList.READABLE).equals(Boolean.FALSE)) {
+                            // the default path does not exist or is not readable due to permission issues
                             home = workdir();
                         }
                     }
@@ -152,7 +152,6 @@ public abstract class Session extends NSObject {
                     return home;
                 }
                 catch(LoginCanceledException e) {
-                    Growl.instance().notify(e.getMessage(), host.getHostname());
                     this.close();
                 }
                 catch(SocketException e) {

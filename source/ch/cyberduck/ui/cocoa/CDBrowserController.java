@@ -149,11 +149,7 @@ public class CDBrowserController extends CDWindowController
                             folder);
                 }
             }
-            List childs = path.list();
-            if(null == childs) {
-                return result;
-            }
-            for(Iterator i = childs.iterator(); i.hasNext();) {
+            for(Iterator i = path.list().iterator(); i.hasNext();) {
                 result.addObject(((Path) i.next()).getName());
             }
         }
@@ -2150,7 +2146,6 @@ public class CDBrowserController extends CDWindowController
             log.warn("Delayed notification to set current working directory - session already closed asynchronously");
             return;
         }
-        this.setFileFilter(null); // Remove any custom file filter
         if(null == path) {
             // Clear the browser view if no working directory is given
             this.workdir = null;
@@ -2159,10 +2154,11 @@ public class CDBrowserController extends CDWindowController
             this.reloadData(false);
             return;
         }
-        if(null == path.list()) {
+        if(path.list().getAttributes().get(AttributedList.READABLE).equals(Boolean.FALSE)) {
             // Invalid path given; don't update browser view
             return;
         }
+        this.setFileFilter(null); // Remove any custom file filter
         this.workdir = path;
         this.session.addPathToHistory(this.workdir);
         this.invoke(new Runnable() {

@@ -40,9 +40,15 @@ public class AttributedList extends NSObject implements List {
 
     protected static final String HIDDEN = "HIDDEN";
 
-    //file listing has changed
+    /**
+     * file listing has changed; the cached version should be considered invalid
+     */
     public static final String INVALID = "INVALID";
 
+    /**
+     * file listing is not readable; permission issue
+     */
+    public static final String READABLE = "READABLE";
 
     private Attributes attributes;
 
@@ -59,7 +65,7 @@ public class AttributedList extends NSObject implements List {
      * @see Filter
      * @see BrowserComparator
      */
-    protected class Attributes extends HashMap {
+    public class Attributes extends HashMap {
         /**
          * Initialize with default values
          */
@@ -68,6 +74,7 @@ public class AttributedList extends NSObject implements List {
             this.put(COMPARATOR, new NullComparator());
             this.put(HIDDEN, new HashSet());
             this.put(INVALID, Boolean.FALSE);
+            this.put(READABLE, Boolean.TRUE);
         }
 
         public Attributes(Comparator comparator, Filter filter) {
@@ -75,10 +82,15 @@ public class AttributedList extends NSObject implements List {
             this.put(FILTER, filter);
             this.put(HIDDEN, new java.util.HashSet());
             this.put(INVALID, Boolean.FALSE);
+            this.put(READABLE, Boolean.TRUE);
         }
 
         public void addHidden(Path child) {
             ((Set) this.get(HIDDEN)).add(child);
+        }
+
+        public void setReadable(boolean readable) {
+            this.put(READABLE, Boolean.valueOf(readable));
         }
     }
 

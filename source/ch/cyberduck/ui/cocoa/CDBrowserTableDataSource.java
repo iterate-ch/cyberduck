@@ -244,12 +244,6 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     return NSDraggingInfo.DragOperationCopy;
                 }
                 if (destination.attributes.isDirectory()) {
-                    if(!destination.attributes.isExecutable()) {
-                        return NSDraggingInfo.DragOperationNone;
-                    }
-                    if(!destination.attributes.isReadable()) {
-                        return NSDraggingInfo.DragOperationNone;
-                    }
                     view.setDropRowAndDropOperation(row, NSTableView.DropOn);
                     return NSDraggingInfo.DragOperationCopy;
                 }
@@ -283,12 +277,6 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         return NSDraggingInfo.DragOperationMove;
                     }
                     if (destination.attributes.isDirectory()) {
-                        if(!destination.attributes.isExecutable()) {
-                            return NSDraggingInfo.DragOperationNone;
-                        }
-                        if(!destination.attributes.isReadable()) {
-                            return NSDraggingInfo.DragOperationNone;
-                        }
                         view.setDropRowAndDropOperation(row, NSTableView.DropOn);
                         return NSDraggingInfo.DragOperationMove;
                     }

@@ -102,11 +102,10 @@ public class SyncQueue extends Queue {
                 }
                 if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
                     p.attributes.setSize(0);
-                    List files = p.list();
-                    if(null == files) {
-                        return;
-                    }
-                    for(Iterator i = files.iterator(); i.hasNext();) {
+                    for(Iterator i = p.list().iterator(); i.hasNext();) {
+                        if(this.isCanceled()) {
+                            break;
+                        }
                         Path child = (Path) i.next();
                         child.setLocal(new Local(p.getLocal(), child.getName()));
                         if(!this.isSkipped(new StringTokenizer(
