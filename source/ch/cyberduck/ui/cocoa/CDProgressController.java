@@ -82,13 +82,22 @@ public class CDProgressController extends CDController {
                 });
                 queue.getSession().addProgressListener(progress = new ProgressListener() {
                     public void message(final String message) {
-                        statusText = message;
-                        progressField.setAttributedStringValue(new NSAttributedString(getProgressText(),
-                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                        invoke(new Runnable() {
+                            public void run() {
+                                statusText = message;
+                                progressField.setAttributedStringValue(new NSAttributedString(getProgressText(),
+                                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                                progressField.display();
+                            }
+                        });
                     }
 
                     public void error(final Exception e) {
-                        alertIcon.setHidden(false);
+                        invoke(new Runnable() {
+                            public void run() {
+                                alertIcon.setHidden(false);
+                            };
+                        });
                     }
                 });
             }
@@ -206,10 +215,10 @@ public class CDProgressController extends CDController {
                 }
                 b.append(")");
             }
+        }
+        if(statusText != null) {
             b.append(" ");
-            if(statusText != null) {
-                b.append(this.statusText);
-            }
+            b.append(this.statusText);
         }
         return b.toString();
     }

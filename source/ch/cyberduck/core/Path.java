@@ -437,7 +437,7 @@ public abstract class Path extends NSObject {
         int amount = 0;
         long current = this.status.getCurrent();
         boolean complete = false;
-        boolean updateProgress = this.attributes.getSize() > Status.MEGA * 5;
+        final boolean updateProgress = this.attributes.getSize() > Status.MEGA * 5;
         int step = 0;
         this.getLocal().setProgress(step);
         // read from socket (bytes) & write to file in chunks

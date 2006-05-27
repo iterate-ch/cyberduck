@@ -67,6 +67,10 @@ public abstract class CDController extends NSObject {
 
     protected static NSMutableArray instances;
 
+    /**
+     * Run the argument on the main thread
+     * @param thread
+     */
     protected synchronized void invoke(Runnable thread) {
         mainRunLoop.addTimerForMode(new NSTimer(0f, this,
                 new NSSelector("post", new Class[]{NSTimer.class}),

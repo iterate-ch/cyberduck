@@ -401,11 +401,12 @@ public class CDQueueController extends CDWindowController
             public void queueStarted() {
                 toolbar.validateVisibleItems();
                 queue.getSession().addTranscriptListener(transcript = new TranscriptListener() {
-
                     public void log(String message) {
                         synchronized(lock) {
+                            logView.textStorage().beginEditing();
                             logView.textStorage().appendAttributedString(
                                     new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
+                            logView.textStorage().endEditing();
                         }
                     }
                 });
