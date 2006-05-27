@@ -71,11 +71,15 @@ public class CDProgressController extends CDController {
             private ProgressListener progress;
 
             public void queueStarted() {
-                progressBar.setHidden(false);
-                progressBar.setIndeterminate(true);
-                progressBar.startAnimation(null);
-                progressBar.setNeedsDisplay(true);
-                alertIcon.setHidden(true);
+                invoke(new Runnable() {
+                    public void run() {
+                        progressBar.setHidden(false);
+                        progressBar.setIndeterminate(true);
+                        progressBar.startAnimation(null);
+                        progressBar.setNeedsDisplay(true);
+                        alertIcon.setHidden(true);
+                    }
+                });
                 queue.getSession().addProgressListener(progress = new ProgressListener() {
                     public void message(final String message) {
                         statusText = message;
@@ -90,9 +94,13 @@ public class CDProgressController extends CDController {
             }
 
             public void queueStopped() {
-                progressBar.setIndeterminate(true);
-                progressBar.stopAnimation(null);
-                progressBar.setHidden(true);
+                invoke(new Runnable() {
+                    public void run() {
+                        progressBar.setIndeterminate(true);
+                        progressBar.stopAnimation(null);
+                        progressBar.setHidden(true);
+                    }
+                });
                 queue.getSession().removeProgressListener(progress);
             }
 

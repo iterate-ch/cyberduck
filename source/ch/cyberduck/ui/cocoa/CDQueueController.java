@@ -432,17 +432,17 @@ public class CDQueueController extends CDWindowController
 
             public void queueStopped() {
                 toolbar.validateVisibleItems();
-                CDQueueController.this.invoke(new Runnable() {
-                    public void run() {
-                        if(queue.isComplete()) {
-                            if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
-                                if(!hasRunningTransfers()) {
+                if(queue.isComplete()) {
+                    if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
+                        if(!hasRunningTransfers()) {
+                            CDQueueController.this.invoke(new Runnable() {
+                                public void run() {
                                     window().close();
                                 }
-                            }
+                            });
                         }
                     }
-                });
+                }
                 queue.getSession().removeTranscriptListener(transcript);
                 queue.removeListener(this);
                 if(queue.isComplete() && !queue.isCanceled()) {

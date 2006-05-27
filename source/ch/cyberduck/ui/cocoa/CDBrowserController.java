@@ -469,14 +469,6 @@ public class CDBrowserController extends CDWindowController
      * @param preserveSelection All selected files should be reselected after reloading the view
      */
     protected void reloadData(final boolean preserveSelection) {
-        if(!Thread.currentThread().getName().equals("main") && !Thread.currentThread().getName().equals("AWT-AppKit")) {
-            this.invoke(new Runnable() {
-                public void run() {
-                    CDBrowserController.this.reloadData(preserveSelection);
-                }
-            });
-            return;
-        }
         log.debug("reloadData:"+preserveSelection);
         List selected = null;
         if(preserveSelection) {
@@ -2246,14 +2238,10 @@ public class CDBrowserController extends CDWindowController
                 });
                 session.addProgressListener(progress = new ProgressListener() {
                     public void message(final String msg) {
-                        invoke(new Runnable() {
-                            public void run() {
-                                // Update the status label at the bottom of the browser window
-                                statusLabel.setAttributedStringValue(new NSAttributedString(msg,
-                                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                                statusLabel.display();
-                            }
-                        });
+                        // Update the status label at the bottom of the browser window
+                        statusLabel.setAttributedStringValue(new NSAttributedString(msg,
+                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                        statusLabel.display();
                     }
 
                     public void error(final Exception e) {
@@ -2292,17 +2280,17 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void connectionDidOpen() {
+                getSelectedBrowserView().setNeedsDisplay(true);
+                // This progress listener was only used to handle initial connection errors
+                session.removeProgressListener(error);
                 invoke(new Runnable() {
                     public void run() {
-                        getSelectedBrowserView().setNeedsDisplay(true);
                         window.setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername()
                                 + "@" + host.getHostname());
                         if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                             window.setDocumentEdited(true);
                         }
                         window.toolbar().validateVisibleItems();
-                        // This progress listener was only used to handle initial connection errors
-                        session.removeProgressListener(error);
                     }
                 });
             }
@@ -2312,38 +2300,30 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void connectionDidClose() {
+                getSelectedBrowserView().setNeedsDisplay(true);
+                session.removeProgressListener(progress);
+                session.removeTranscriptListener(transcript);
+                progressIndicator.stopAnimation(this);
                 invoke(new Runnable() {
                     public void run() {
-                        getSelectedBrowserView().setNeedsDisplay(true);
                         window.setDocumentEdited(false);
                         window.toolbar().validateVisibleItems();
-                        session.removeProgressListener(progress);
-                        session.removeTranscriptListener(transcript);
-                        progressIndicator.stopAnimation(this);
                     }
                 });
             }
 
             public void activityStarted() {
                 activityRunning = true;
-                invoke(new Runnable() {
-                    public void run() {
-                        progressIndicator.startAnimation(this);
-                    }
-                });
+                progressIndicator.startAnimation(this);
                 return;
             }
 
             public void activityStopped() {
                 activityRunning = false;
-                invoke(new Runnable() {
-                    public void run() {
-                        progressIndicator.stopAnimation(this);
-                        statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "Status", ""),
-                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                        statusLabel.display();
-                    }
-                });
+                progressIndicator.stopAnimation(this);
+                statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "Status", ""),
+                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                statusLabel.display();
             }
         });
         this.getFocus();
