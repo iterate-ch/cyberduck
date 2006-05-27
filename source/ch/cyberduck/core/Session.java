@@ -99,6 +99,10 @@ public abstract class Session extends NSObject {
                 }
             }
         }
+        catch(SocketException e) {
+            this.interrupt();
+            this.connect();
+        }
         catch(SocketTimeoutException e) {
             this.interrupt();
             this.connect();
