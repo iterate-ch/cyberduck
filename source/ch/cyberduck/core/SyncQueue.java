@@ -59,7 +59,6 @@ public class SyncQueue extends Queue {
     }
 
     public void fireQueueStoppedEvent() {
-        super.fireQueueStoppedEvent();
         if(this.isComplete() && !this.isCanceled()) {
             this.getSession().message(
                     NSBundle.localizedString("Synchronization complete", "Growl", "Growl Notification"));
@@ -67,6 +66,7 @@ public class SyncQueue extends Queue {
                     NSBundle.localizedString("Synchronization complete", "Growl", "Growl Notification"),
                     this.getName());
         }
+        super.fireQueueStoppedEvent();
     }
 
     private void addLocalChilds(List childs, Path p) {

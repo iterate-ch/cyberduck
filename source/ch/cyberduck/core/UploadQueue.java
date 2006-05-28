@@ -53,7 +53,6 @@ public class UploadQueue extends Queue {
     }
 
     public void fireQueueStoppedEvent() {
-        super.fireQueueStoppedEvent();
         if(this.isComplete() && !this.isCanceled()) {
             this.getSession().message(
                     NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"));
@@ -61,6 +60,7 @@ public class UploadQueue extends Queue {
                     NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"),
                     this.getName());
         }
+        super.fireQueueStoppedEvent();
     }
 
     protected List getChilds(List childs, Path p) {

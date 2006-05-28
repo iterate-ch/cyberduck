@@ -109,6 +109,16 @@ public class FTPSession extends Session {
         }
     }
 
+    public void check() throws IOException {
+        try {
+            super.check();
+        }
+        catch(FTPNullReplyException e) {
+            this.interrupt();
+            this.connect();
+        }
+    }
+
     protected void connect() throws IOException, FTPException, LoginCanceledException {
         synchronized(this) {
             SessionPool.instance().add(this);

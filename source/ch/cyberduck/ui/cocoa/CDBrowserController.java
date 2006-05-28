@@ -2133,21 +2133,26 @@ public class CDBrowserController extends CDWindowController
      */
     protected void setWorkdir(Path path) {
         log.debug("setWorkdir:"+path);
-        if(!this.hasSession()) {
-            // The connection has already been closed asynchronously
-            log.warn("Delayed notification to set current working directory - session already closed asynchronously");
-            return;
-        }
         if(null == path) {
             // Clear the browser view if no working directory is given
             this.workdir = null;
-            this.pathPopupItems.clear();
-            this.pathPopupButton.removeAllItems();
+            this.invoke(new Runnable() {
+                public void run() {
+                    pathPopupItems.clear();
+                    pathPopupButton.removeAllItems();
+                }
+            });
             this.reloadData(false);
             return;
         }
-        if(path.list().getAttributes().get(AttributedList.READABLE).equals(Boolean.FALSE)) {
-            // Invalid path given; don't update browser view
+        if(!this.hasSession()) {
+            // The connection has already been closed asynchronously;
+            // this can happen if the user closes a connection that is about to be opened
+            return;
+        }
+        if(!path.list().getAttributes().isReadable()) {
+            // the path given cannot be read either because it doesn't exist
+            // or you don't have permission; don't update browser view
             return;
         }
         this.setFileFilter(null); // Remove any custom file filter
@@ -2162,9 +2167,10 @@ public class CDBrowserController extends CDWindowController
                     p = p.getParent();
                     addPathToPopup(p);
                 }
-                reloadData(false);
             }
         });
+        // Mark the browser data source as dirty
+        this.reloadData(false);
     }
 
     /**

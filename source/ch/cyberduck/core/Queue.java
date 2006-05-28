@@ -238,10 +238,6 @@ public abstract class Queue extends NSObject {
                     getSession().close();
                     getSession().getHost().getCredentials().setPassword(null);
                     getSession().cache().clear();
-                    if(isInitialized()) {
-                        jobs.clear();
-                        jobs = null;
-                    }
                     fireQueueStoppedEvent();
                 }
             }

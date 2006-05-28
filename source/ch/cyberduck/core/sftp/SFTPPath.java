@@ -111,9 +111,9 @@ public class SFTPPath extends Path {
         synchronized(session) {
             if(!session.cache().containsKey(this) || session.cache().isInvalid(this)) {
                 AttributedList childs = new AttributedList();
-                session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
                 try {
                     session.check();
+                    session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
                     SftpFile workingDirectory = session.SFTP.openDirectory(this.getAbsolute());
                     List children = new ArrayList();
                     int read = 1;

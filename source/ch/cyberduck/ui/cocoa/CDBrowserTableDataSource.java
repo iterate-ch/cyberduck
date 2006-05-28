@@ -58,13 +58,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
      * @return The cached or newly fetched file listing of the directory
      */
     protected List childs(Path path) {
-        List childs = null;
-        if(controller.isConnected()) {
-            childs = path.list(controller.getComparator(), controller.getFileFilter());
-        }
-        else {
-            childs = controller.getSession().cache().get(path, controller.getComparator(), controller.getFileFilter());
-        }
+        List childs = path.list(controller.getComparator(), controller.getFileFilter());
         if(null == childs) {
             return new ArrayList();
         }

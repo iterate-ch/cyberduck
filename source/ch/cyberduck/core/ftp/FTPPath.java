@@ -124,9 +124,9 @@ public class FTPPath extends Path {
         synchronized(session) {
             if(!session.cache().containsKey(this) || session.cache().isInvalid(this)) {
                 AttributedList childs = new AttributedList();
-                session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
                 try {
                     session.check();
+                    session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
                     session.FTP.setTransferType(FTPTransferType.ASCII);
                     session.FTP.chdir(this.getAbsolute());
                     String[] lines = session.FTP.dir(this.session.getHost().getEncoding());

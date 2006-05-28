@@ -142,7 +142,7 @@ public abstract class Session extends NSObject {
                     if(host.hasReasonableDefaultPath()) {
                         home = PathFactory.createPath(this, host.getDefaultPath());
                         home.attributes.setType(Path.DIRECTORY_TYPE);
-                        if(home.list().getAttributes().get(AttributedList.READABLE).equals(Boolean.FALSE)) {
+                        if(!home.list().getAttributes().isReadable()) {
                             // the default path does not exist or is not readable due to permission issues
                             home = workdir();
                         }
@@ -332,6 +332,7 @@ public abstract class Session extends NSObject {
     }
 
     public void error(final Exception e) {
+        log.info(e.getMessage());
         ProgressListener[] l = (ProgressListener[]) progressListeners.toArray(new ProgressListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].error(e);
@@ -339,6 +340,7 @@ public abstract class Session extends NSObject {
     }
 
     public void message(final String message) {
+        log.info(message);
         ProgressListener[] l = (ProgressListener[]) progressListeners.toArray(new ProgressListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].message(message);

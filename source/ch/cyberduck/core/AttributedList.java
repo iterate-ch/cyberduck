@@ -41,14 +41,14 @@ public class AttributedList extends NSObject implements List {
     protected static final String HIDDEN = "HIDDEN";
 
     /**
-     * file listing has changed; the cached version should be considered invalid
+     * file listing has changed; the cached version should be superseded
      */
-    public static final String INVALID = "INVALID";
+    private static final String INVALID = "INVALID";
 
     /**
      * file listing is not readable; permission issue
      */
-    public static final String READABLE = "READABLE";
+    private static final String READABLE = "READABLE";
 
     private Attributes attributes;
 
@@ -91,6 +91,25 @@ public class AttributedList extends NSObject implements List {
 
         public void setReadable(boolean readable) {
             this.put(READABLE, Boolean.valueOf(readable));
+        }
+
+        public boolean isReadable() {
+            return this.get(READABLE).equals(Boolean.TRUE);
+        }
+
+        /**
+         * Mark as superseded
+         */
+        public void setDirty(boolean dirty) {
+            this.put(INVALID, Boolean.valueOf(dirty));
+        }
+
+        /**
+         *
+         * @return true if the listing should be superseded
+         */
+        public boolean isDirty() {
+            return this.get(INVALID).equals(Boolean.TRUE);
         }
     }
 
