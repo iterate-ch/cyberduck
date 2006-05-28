@@ -18,12 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPException;
-import com.sshtools.j2ssh.SshException;
-
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.odb.Editor;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -32,7 +29,6 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -465,11 +461,10 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
-     *
      * @param preserveSelection All selected files should be reselected after reloading the view
      */
     protected void reloadData(final boolean preserveSelection) {
-        log.debug("reloadData:"+preserveSelection);
+        log.debug("reloadData:" + preserveSelection);
         List selected = null;
         if(preserveSelection) {
             //Remember the selected paths
@@ -607,7 +602,7 @@ public class CDBrowserController extends CDWindowController
     public void setWindow(NSWindow window) {
         super.setWindow(window);
         this.window.setDelegate(this);
-		this.window.setTitle((String)NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
+        this.window.setTitle((String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
     }
 
     private NSTextView logView;
@@ -788,11 +783,11 @@ public class CDBrowserController extends CDWindowController
                         }
                         else if(item.attributes.isDirectory()) {
                             icon = FOLDER_ICON;
-                            if (!item.attributes.isExecutable()) {
+                            if(!item.attributes.isExecutable()) {
                                 icon = CDBrowserTableDataSource.FOLDER_NOACCESS_ICON;
                             }
-                            else if (!item.attributes.isReadable()) {
-                                if (item.attributes.isWritable()) {
+                            else if(!item.attributes.isReadable()) {
+                                if(item.attributes.isWritable()) {
                                     icon = CDBrowserTableDataSource.FOLDER_WRITEONLY_ICON;
                                 }
                             }
@@ -1640,7 +1635,6 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
-     *
      * @param path
      * @param renamed
      */
@@ -1797,7 +1791,7 @@ public class CDBrowserController extends CDWindowController
                     if(returncode == DEFAULT_OPTION) {
                         if(files.size() > 0) {
                             Path p;
-                            for(Iterator iter = files.iterator(); iter.hasNext(); ) {
+                            for(Iterator iter = files.iterator(); iter.hasNext();) {
                                 p = (Path) iter.next();
                                 p.delete();
                                 if(!isConnected()) {
@@ -2132,7 +2126,7 @@ public class CDBrowserController extends CDWindowController
      * @param path The new working directory to display or null to detach any working directory from the browser
      */
     protected void setWorkdir(Path path) {
-        log.debug("setWorkdir:"+path);
+        log.debug("setWorkdir:" + path);
         if(null == path) {
             // Clear the browser view if no working directory is given
             this.workdir = null;
@@ -2253,24 +2247,11 @@ public class CDBrowserController extends CDWindowController
                     public void error(final Exception e) {
                         invoke(new Runnable() {
                             public void run() {
-                                String alert = e.getMessage();
-                                String title = NSBundle.localizedString("Error", "");
-                                if(e instanceof FTPException) {
-                                    title = "FTP " + NSBundle.localizedString("Error", "");
-                                }
-                                else if(e instanceof SshException) {
-                                    title = "SSH " + NSBundle.localizedString("Error", "");
-                                }
-                                else if(e instanceof SocketException) {
-                                    title = "Network " + NSBundle.localizedString("Error", "");
-                                }
-                                else if(e instanceof IOException) {
-                                    title = "I/O " + NSBundle.localizedString("Error", "");
-                                }
                                 CDErrorController error = new CDErrorController(
                                         getSelectedBrowserView().superview().superview().superview(),
                                         getSelectedBrowserView().superview().superview(),
-                                        title+": "+alert);
+                                        e,
+                                        host);
                                 error.display();
                             }
                         });
@@ -2281,7 +2262,7 @@ public class CDBrowserController extends CDWindowController
 
                     public void log(String message) {
                         synchronized(lock) {
-                            logView.textStorage().beginEditing(); 
+                            logView.textStorage().beginEditing();
                             logView.textStorage().appendAttributedString(
                                     new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
                             logView.textStorage().endEditing();
@@ -2443,7 +2424,6 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
-     *
      * @param sender
      */
     public void printDocument(final Object sender) {
@@ -2460,7 +2440,6 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
-     *
      * @param app
      * @return NSApplication.TerminateLater if the application should not yet be terminated
      */
@@ -2750,7 +2729,8 @@ public class CDBrowserController extends CDWindowController
         if(identifier.equals("printDocument:")) {
             return this.isMounted();
         }
-        this.validateNavigationButtons(); return true; // by default everything is enabled
+        this.validateNavigationButtons();
+        return true; // by default everything is enabled
     }
 
     // ----------------------------------------------------------

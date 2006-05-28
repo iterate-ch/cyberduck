@@ -217,7 +217,7 @@ public class CDProgressController extends CDController {
             }
         }
         if(statusText != null) {
-            b.append(" ");
+            b.append(" - ");
             b.append(this.statusText);
         }
         return b.toString();

@@ -6,7 +6,7 @@
             ACTIONS = {close = id; }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDErrorController"; 
             LANGUAGE = Java; 
-            OUTLETS = {errorField = NSTextField; view = NSView; }; 
+            OUTLETS = {alertIcon = NSButton; errorField = NSTextField; view = NSView; }; 
             SUPERCLASS = NSObject; 
         }
     ); 

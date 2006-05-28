@@ -18,18 +18,22 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.enterprisedt.net.ftp.FTPException;
+import com.sshtools.j2ssh.SshException;
+
+import ch.cyberduck.core.Host;
+
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.application.NSWindow;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSPoint;
-import com.apple.cocoa.foundation.NSRect;
-import com.apple.cocoa.foundation.NSSize;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.net.SocketException;
 import java.util.Enumeration;
 
 /**
@@ -38,27 +42,39 @@ import java.util.Enumeration;
 public class CDErrorController extends CDController {
     private static Logger log = Logger.getLogger(CDErrorController.class);
 
-    public void setErrorField(NSTextField errorField) {
-        this.errorField = errorField;
-    }
-
-    public void setView(NSView view) {
-        this.view = view;
-    }
-
     /**
      *
      */
     private NSTextField errorField;
 
+    public void setErrorField(NSTextField errorField) {
+        this.errorField = errorField;
+    }
+
     public NSView getView() {
         return view;
+    }
+
+    private NSButton alertIcon; // IBOutlet
+
+    public void setAlertIcon(NSButton alertIcon) {
+        this.alertIcon = alertIcon;
+        this.alertIcon.setTarget(this);
+        this.alertIcon.setAction(new NSSelector("launchNetworkAssistant", new Class[]{NSButton.class}));
+    }
+
+    public void launchNetworkAssistant(final NSButton sender) {
+        this.host.diagnose();
     }
 
     /**
      *
      */
     private NSView view;
+
+    public void setView(NSView view) {
+        this.view = view;
+    }
 
     /**
      * The parent view
@@ -70,20 +86,37 @@ public class CDErrorController extends CDController {
      */
     private NSView neighbour;
 
+    private Host host;
+
     /**
-     *
      * @param container
      * @param neighbour
-     * @param message
+     * @param e
+     * @param host
      */
-    public CDErrorController(NSView container, NSView neighbour, String message) {
+    public CDErrorController(NSView container, NSView neighbour, Exception e, Host host) {
         this.container = container;
         this.neighbour = neighbour;
         if(!NSApplication.loadNibNamed("Error", this)) {
             log.fatal("Couldn't load Error.nib");
         }
+        String alert = e.getMessage();
+        String title = NSBundle.localizedString("Error", "");
+        if(e instanceof FTPException) {
+            title = "FTP " + NSBundle.localizedString("Error", "");
+        }
+        else if(e instanceof SshException) {
+            title = "SSH " + NSBundle.localizedString("Error", "");
+        }
+        else if(e instanceof SocketException) {
+            title = "Network " + NSBundle.localizedString("Error", "");
+        }
+        else if(e instanceof IOException) {
+            title = "I/O " + NSBundle.localizedString("Error", "");
+        }
         this.errorField.setAttributedStringValue(
-                new NSAttributedString(message, CDTableCell.BOLD_FONT_HIGHLIGHTED));
+                new NSAttributedString(title + ": " + alert, CDTableCell.BOLD_FONT_HIGHLIGHTED));
+        this.host = host;
     }
 
     /**
@@ -114,7 +147,7 @@ public class CDErrorController extends CDController {
         container.setNeedsDisplay(true);
         NSWindow window = this.window();
         window.setContentMinSize(
-                new NSSize(window.contentMinSize().width(), window.contentMinSize().height()-view.frame().height()));
+                new NSSize(window.contentMinSize().width(), window.contentMinSize().height() - view.frame().height()));
         this.invalidate();
     }
 
@@ -125,11 +158,11 @@ public class CDErrorController extends CDController {
         NSWindow window = this.window();
         if(neighbour.frame().height() < window.minSize().height()) {
             NSRect frame = new NSRect(window.frame().origin(),
-                    new NSSize(window.frame().width(), window.frame().height()+view.frame().height()));
+                    new NSSize(window.frame().width(), window.frame().height() + view.frame().height()));
             window.setFrame(frame, true, true);
         }
         window.setContentMinSize(
-                new NSSize(window.contentMinSize().width(), window.contentMinSize().height()+view.frame().height()));
+                new NSSize(window.contentMinSize().width(), window.contentMinSize().height() + view.frame().height()));
         neighbour.setFrameSize(new NSSize(
                 new NSSize(neighbour.frame().width(), neighbour.frame().height() - this.getView().frame().size().height()))
         );
@@ -142,7 +175,6 @@ public class CDErrorController extends CDController {
     }
 
     /**
-     *
      * @return The parent window
      */
     private NSWindow window() {

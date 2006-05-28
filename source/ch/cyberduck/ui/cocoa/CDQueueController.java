@@ -52,7 +52,6 @@ public class CDQueueController extends CDWindowController
     }
 
     /**
-     *
      * @param notification
      */
     public void windowDidBecomeKey(NSNotification notification) {
@@ -62,7 +61,6 @@ public class CDQueueController extends CDWindowController
     }
 
     /**
-     *
      * @param notification
      */
     public void windowDidResignKey(NSNotification notification) {
@@ -70,7 +68,6 @@ public class CDQueueController extends CDWindowController
     }
 
     /**
-     *
      * @param notification
      */
     public void windowWillClose(NSNotification notification) {
@@ -118,7 +115,7 @@ public class CDQueueController extends CDWindowController
     public void setLocalLabel(NSTextField localLabel) {
         this.localLabel = localLabel;
         this.localLabel.setTextColor(NSColor.darkGrayColor());
-        this.localLabel.setStringValue(NSBundle.localizedString("Local File", "")+":");
+        this.localLabel.setStringValue(NSBundle.localizedString("Local File", "") + ":");
     }
 
     private NSTextField localField;
@@ -430,7 +427,8 @@ public class CDQueueController extends CDWindowController
                                 CDErrorController error = new CDErrorController(
                                         queueTable.superview().superview().superview(),
                                         queueTable.superview().superview(),
-                                        e.getMessage());
+                                        e,
+                                        queue.getSession().getHost());
                                 error.display();
                             }
                         });
