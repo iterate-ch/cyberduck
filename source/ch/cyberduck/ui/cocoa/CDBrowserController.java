@@ -2373,7 +2373,12 @@ public class CDBrowserController extends CDWindowController
                         // if we haven't finished here yet.
                         synchronized(mountingLock) {
                             // Mount this session and set the working directory
-                            setWorkdir(session.mount());
+                            final Path workdir = session.mount();
+                            invoke(new Runnable() {
+                                public void run() {
+                                    setWorkdir(workdir);
+                                }
+                            });
                         }
                     }
                 }.start();
