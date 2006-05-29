@@ -14,10 +14,7 @@
 
 id SUInfoValueForKey(NSString *key)
 {
-	// InfoPlist.strings entries have priority over Info.plist ones.
-	if ([[[NSBundle mainBundle] localizedInfoDictionary] objectForKey:key])
-		return [[[NSBundle mainBundle] localizedInfoDictionary] objectForKey:key];
-	return [[[NSBundle mainBundle] infoDictionary] objectForKey:key];
+	return [[NSBundle mainBundle] objectForInfoDictionaryKey:key];
 }
 
 NSString *SUHostAppName()
@@ -34,9 +31,7 @@ NSString *SUHostAppVersion()
 NSString *SUHostAppVersionString()
 {
 	if (SUInfoValueForKey(@"CFBundleShortVersionString"))
-	{
-		return SUInfoValueForKey(@"CFBundleShortVersionString");
-	}
+		return SUInfoValueForKey(@"CFBundleShortVersionString");	
 	// otherwise, fall back on the non-localized version string
 	return SUHostAppVersion();
 }
