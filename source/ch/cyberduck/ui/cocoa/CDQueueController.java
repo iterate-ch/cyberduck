@@ -704,7 +704,7 @@ public class CDQueueController extends CDWindowController
     public void clearButtonClicked(final Object sender) {
         for(int i = 0; i < this.queueModel.size(); i++) {
             Queue q = (Queue) this.queueModel.get(i);
-            if(q.isComplete()) {
+            if(!q.isRunning()) {
                 this.queueModel.remove(i);
                 i--;
             }
