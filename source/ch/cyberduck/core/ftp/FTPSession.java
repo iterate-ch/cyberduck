@@ -177,11 +177,6 @@ public class FTPSession extends Session {
                 }
                 this.login();
             }
-            catch(FTPNullReplyException e) {
-                log.warn(e.getMessage()); // http://trac.cyberduck.ch/ticket/307
-                this.interrupt();
-                this.connect();
-            }
         }
         else {
             throw new LoginCanceledException();
