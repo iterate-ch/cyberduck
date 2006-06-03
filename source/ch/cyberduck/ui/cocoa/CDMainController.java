@@ -29,10 +29,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -69,7 +66,7 @@ public class CDMainController extends CDController {
     public void setDockMenu(NSMenu dockMenu) {
         this.dockMenu = dockMenu;
         this.dockBookmarkMenu = new NSMenu();
-		this.dockBookmarkMenu.setAutoenablesItems(false);
+        this.dockBookmarkMenu.setAutoenablesItems(false);
         this.dockBookmarkMenu.setDelegate(this.dockBookmarkMenuDelegate = new DockBookmarkMenuDelegate());
         this.dockMenu.setSubmenuForItem(dockBookmarkMenu, this.dockMenu.itemAtIndex(2));
     }
@@ -110,14 +107,18 @@ public class CDMainController extends CDController {
     }
 
     private NSMenu encodingMenu;
+    private List encodingMenuItems;
 
     public void setEncodingMenu(NSMenu encodingMenu) {
         this.encodingMenu = encodingMenu;
         String[] charsets = CDController.availableCharsets();
+        this.encodingMenuItems = new ArrayList(charsets.length);
         for(int i = 0; i < charsets.length; i++) {
-            this.encodingMenu.addItem(new NSMenuItem(charsets[i],
+            NSMenuItem item = new NSMenuItem(charsets[i],
                     new NSSelector("encodingButtonClicked", new Class[]{Object.class}),
-                    ""));
+                    "");
+            this.encodingMenu.addItem(item);
+            this.encodingMenuItems.add(item);
         }
     }
 
@@ -204,37 +205,34 @@ public class CDMainController extends CDController {
 
     private class HistoryMenuDelegate extends NSObject {
 
-        private Map cache = new HashMap();
+        private List cache = new ArrayList();
 
         private File[] listFiles() {
-            File[] files = CDBrowserController.HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
+            return CDBrowserController.HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
                 public boolean accept(File dir, String name) {
                     return name.endsWith(".duck");
                 }
             });
-            Arrays.sort(files, new Comparator() {
-                public int compare(Object o1, Object o2) {
-                    File f1 = (File) o1;
-                    File f2 = (File) o2;
-                    if (f1.lastModified() < f2.lastModified()) {
-                        return 1;
-                    }
-                    if (f1.lastModified() > f2.lastModified()) {
-                        return -1;
-                    }
-                    return 0;
-                }
-            });
-            return files;
         }
 
         public int numberOfItemsInMenu(NSMenu menu) {
             File[] files = this.listFiles();
             if (cache.size() != files.length) {
-                cache.clear();
+                Arrays.sort(files, new Comparator() {
+                    public int compare(Object o1, Object o2) {
+                        File f1 = (File) o1;
+                        File f2 = (File) o2;
+                        if (f1.lastModified() < f2.lastModified()) {
+                            return 1;
+                        }
+                        if (f1.lastModified() > f2.lastModified()) {
+                            return -1;
+                        }
+                        return 0;
+                    }
+                });
                 for (int i = 0; i < files.length; i++) {
-                    Host h = CDBookmarkTableDataSource.instance().importBookmark(files[i]);
-                    cache.put(h.getNickname(), h);
+                    cache.add(CDBookmarkTableDataSource.instance().importBookmark(files[i]));
                 }
             }
             if (cache.size() > 0) {
@@ -250,12 +248,13 @@ public class CDMainController extends CDController {
                 sender.setEnabled(false);
                 return false;
             }
-            if(index >= this.numberOfItemsInMenu(menu)) {
+            if(index >= cache.size()) {
                 log.warn("Invalid index in menuUpdateItemAtIndex:"+index);
                 return false;
             }
-            Host h = ((Host[]) cache.values().toArray(new Host[]{}))[index];
+            Host h = (Host)cache.get(index);
             sender.setTitle(h.getNickname());
+            sender.setRepresentedObject(h);
             sender.setTarget(this);
             sender.setEnabled(true);
             sender.setImage(NSImage.imageNamed("bookmark16.tiff"));
@@ -265,7 +264,7 @@ public class CDMainController extends CDController {
 
         public void historyMenuItemClicked(NSMenuItem sender) {
             CDBrowserController controller = CDMainController.this.newDocument();
-            controller.mount((Host) cache.get(sender.title()));
+            controller.mount((Host) sender.representedObject());
         }
     }
 
