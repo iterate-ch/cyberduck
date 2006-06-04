@@ -313,6 +313,7 @@ Sparkle/zh_TW.lproj/SUUpdateAlert.strings -text
 Sparkle/zh_TW.lproj/Sparkle.strings -text
 Spotlight[!!-~]Importer/English.lproj/schema.strings svneol=native#unset
 Upload[!!-~]Automator[!!-~]Action/English.lproj/InfoPlist.strings svneol=native#unset
+/build.xml.debug -text
 build/DotMacKit.framework/DotMacKit -text
 build/DotMacKit.framework/Resources/English.lproj/InfoPlist.strings -text
 build/DotMacKit.framework/Resources/English.lproj/locversion.plist -text
