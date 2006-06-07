@@ -2156,10 +2156,12 @@ public class CDBrowserController extends CDWindowController
             public void run() {
                 pathPopupItems.clear();
                 pathPopupButton.removeAllItems();
-                addPathToPopup(workdir);
-                for(Path p = workdir; !p.isRoot();) {
-                    p = p.getParent();
-                    addPathToPopup(p);
+                if(isMounted()) {
+                    addPathToPopup(workdir);
+                    for(Path p = workdir; !p.isRoot();) {
+                        p = p.getParent();
+                        addPathToPopup(p);
+                    }
                 }
             }
         });
@@ -2373,10 +2375,10 @@ public class CDBrowserController extends CDWindowController
                         // if we haven't finished here yet.
                         synchronized(mountingLock) {
                             // Mount this session and set the working directory
-                            final Path workdir = session.mount();
+                            setWorkdir(session.mount());
                             invoke(new Runnable() {
                                 public void run() {
-                                    setWorkdir(workdir);
+                                    getSelectedBrowserView().setNeedsDisplay(true);
                                 }
                             });
                         }
@@ -2793,10 +2795,6 @@ public class CDBrowserController extends CDWindowController
                     new NSSelector("browserSwitchClicked", new Class[]{Object.class}),
                     ""));
             viewSubmenu.itemWithTitle(NSBundle.localizedString("Outline", "Toolbar item")).setTag(1);
-//			viewSubmenu.addItem(new NSMenuItem(NSBundle.localizedString("Column", "Toolbar item"),
-//											   new NSSelector("browserSwitchClicked", new Class[]{Object.class}),
-//											   ""));
-//			viewSubmenu.itemWithTitle(NSBundle.localizedString("Column", "Toolbar item")).setTag(2);
             viewMenu.setSubmenu(viewSubmenu);
             item.setMenuFormRepresentation(viewMenu);
             item.setMinSize(this.browserSwitchView.frame().size());

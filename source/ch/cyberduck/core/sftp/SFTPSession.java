@@ -305,17 +305,19 @@ public class SFTPSession extends Session {
     }
 
     public Path workdir() {
-        try {
-            Path workdir = PathFactory.createPath(this, SFTP.getDefaultDirectory());
-            workdir.attributes.setType(Path.DIRECTORY_TYPE);
-            return workdir;
-        }
-        catch(SshException e) {
-            log.error("SSH Error: " + e.getMessage());
-        }
-        catch(IOException e) {
-            this.error(e);
-            this.interrupt();
+        if(this.isConnected()) {
+            try {
+                Path workdir = PathFactory.createPath(this, SFTP.getDefaultDirectory());
+                workdir.attributes.setType(Path.DIRECTORY_TYPE);
+                return workdir;
+            }
+            catch(SshException e) {
+                log.error("SSH Error: " + e.getMessage());
+            }
+            catch(IOException e) {
+                this.error(e);
+                this.interrupt();
+            }
         }
         return null;
     }

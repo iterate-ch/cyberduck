@@ -184,17 +184,19 @@ public class FTPSession extends Session {
     }
 
     public Path workdir() {
-        try {
-            Path workdir = PathFactory.createPath(this, this.FTP.pwd());
-            workdir.attributes.setType(Path.DIRECTORY_TYPE);
-            return workdir;
-        }
-        catch(FTPException e) {
-            this.error(e);
-        }
-        catch(IOException e) {
-            this.error(e);
-            this.interrupt();
+        if(this.isConnected()) {
+            try {
+                Path workdir = PathFactory.createPath(this, this.FTP.pwd());
+                workdir.attributes.setType(Path.DIRECTORY_TYPE);
+                return workdir;
+            }
+            catch(FTPException e) {
+                this.error(e);
+            }
+            catch(IOException e) {
+                this.error(e);
+                this.interrupt();
+            }
         }
         return null;
     }
