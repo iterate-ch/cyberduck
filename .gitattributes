@@ -1091,7 +1091,7 @@ ja.lproj/Main.nib/keyedobjects.nib -text
 ja.lproj/Main.strings -text
 ja.lproj/Preferences.nib/keyedobjects.nib -text
 ja.lproj/Preferences.strings -text svneol=native#application/octet-stream
-ja.lproj/Status.strings -text svneol=native#application/octet-stream
+ja.lproj/Status.strings -text
 ja.lproj/Sync.nib/keyedobjects.nib -text
 ja.lproj/Sync.strings -text svneol=native#application/octet-stream
 ja.lproj/Validator.nib/keyedobjects.nib -text
