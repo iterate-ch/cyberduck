@@ -385,14 +385,9 @@ public class Host extends NSObject {
      */
     public void setProtocol(String protocol) {
         this.protocol = protocol != null ? protocol : Preferences.instance().getProperty("connection.protocol.default");
-        if (this.getProtocol().equals(Session.FTP) || this.getProtocol().equals(Session.FTP_TLS)) {
-            if (Preferences.instance().getProperty("ftp.connectmode").equals("active"))
-                this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE;
-            if (Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
-                this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.PASV;
-        }
-        if (null == this.login)
+        if (null == this.login) {
             return;
+        }
         this.login.setProtocol(this.protocol);
     }
 

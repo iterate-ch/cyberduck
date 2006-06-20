@@ -142,9 +142,7 @@ public class CDBookmarkController extends CDWindowController {
         this.connectmodePopup.removeAllItems();
         this.connectmodePopup.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
         this.connectmodePopup.itemWithTitle(CONNECTMODE_PASSIVE).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-        this.connectmodePopup.itemWithTitle(CONNECTMODE_PASSIVE).setKeyEquivalent("p");
         this.connectmodePopup.itemWithTitle(CONNECTMODE_ACTIVE).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-        this.connectmodePopup.itemWithTitle(CONNECTMODE_ACTIVE).setKeyEquivalent("a");
         if (this.host.getProtocol().equals(Session.FTP) || this.host.getProtocol().equals(Session.FTP_TLS)) {
             if (host.getFTPConnectMode().equals(com.enterprisedt.net.ftp.FTPConnectMode.PASV)) {
                 this.connectmodePopup.setTitle(CONNECTMODE_PASSIVE);
