@@ -106,8 +106,7 @@ public class FTPControlSocket {
     protected void connect(final InetAddress remoteAddr, int controlPort, int timeout)
             throws IOException, FTPException {
 
-        this.controlSock = new Socket();
-        this.controlSock.connect(new InetSocketAddress(remoteAddr, controlPort));
+        this.controlSock = new Socket(remoteAddr, controlPort);
         try {
             this.controlSock.setKeepAlive(true);
         }
