@@ -534,26 +534,28 @@ public class SFTPPath extends Path {
                     }
                     this.upload(out, in);
                 }
-                if(this.attributes.isDirectory()) {
-                    this.mkdir();
-                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        Permission perm = this.getLocal().getPermission();
-                        if(!perm.isUndefined()) {
-                            session.SFTP.changePermissions(this.getAbsolute(), perm.getMask());
+                if(session.isConnected()) {
+                    if(this.attributes.isDirectory()) {
+                        this.mkdir();
+                        if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                            Permission perm = this.getLocal().getPermission();
+                            if(!perm.isUndefined()) {
+                                session.SFTP.changePermissions(this.getAbsolute(), perm.getMask());
+                            }
                         }
+                        f = session.SFTP.openFile(this.getAbsolute(),
+                                SftpSubsystemClient.OPEN_READ);
                     }
-                    f = session.SFTP.openFile(this.getAbsolute(),
-                            SftpSubsystemClient.OPEN_READ);
-                }
-                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    try {
-                        FileAttributes attrs = new FileAttributes();
-                        attrs.setTimes(f.getAttributes().getModifiedTime(),
-                                new UnsignedInteger32(this.getLocal().getTimestamp() / 1000));
-                        session.SFTP.setAttributes(this.getAbsolute(), attrs);
-                    }
-                    catch(SshException e) {
-                        log.warn(e.getMessage());
+                    if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                        try {
+                            FileAttributes attrs = new FileAttributes();
+                            attrs.setTimes(f.getAttributes().getModifiedTime(),
+                                    new UnsignedInteger32(this.getLocal().getTimestamp() / 1000));
+                            session.SFTP.setAttributes(this.getAbsolute(), attrs);
+                        }
+                        catch(SshException e) {
+                            log.warn(e.getMessage());
+                        }
                     }
                 }
                 this.getParent().invalidate();

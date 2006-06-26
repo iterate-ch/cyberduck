@@ -120,7 +120,9 @@ public class Host extends NSObject {
     }
 
     public Object clone() {
-        return new Host(this.getAsDictionary());
+        Host h = new Host(this.getAsDictionary());
+        h.setCredentials(this.getCredentials());
+        return h;
     }
 
     /**

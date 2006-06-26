@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.io.IOException;
 
 /**
  * @version $Id$
@@ -217,6 +218,18 @@ public abstract class Queue extends NSObject {
                 try {
                     canceled = false;
                     fireQueueStartedEvent();
+                    try {
+                        getSession().connect();
+                    }
+                    catch(LoginCanceledException e) {
+                        cancel();
+                    }
+                    catch(IOException e) {
+                        cancel();
+                    }
+                    if(canceled) {
+                        return;
+                    }
                     Validator validator = getValidator();
                     List validated = validator.validate(resume);
                     if(canceled) {
@@ -225,6 +238,9 @@ public abstract class Queue extends NSObject {
                     jobs = validated;
                     reset();
                     for(Iterator iter = jobs.iterator(); iter.hasNext();) {
+                        if(!getSession().isConnected()) {
+                            cancel();
+                        }
                         if(canceled) {
                             return;
                         }
@@ -236,7 +252,6 @@ public abstract class Queue extends NSObject {
                 }
                 finally {
                     getSession().close();
-                    getSession().getHost().getCredentials().setPassword(null);
                     getSession().cache().clear();
                     fireQueueStoppedEvent();
                 }

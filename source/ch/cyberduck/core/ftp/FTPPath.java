@@ -636,39 +636,41 @@ public class FTPPath extends Path {
                 if(this.attributes.isDirectory()) {
                     this.mkdir();
                 }
-                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                    try {
-                        Permission perm = null;
-                        if(this.attributes.isFile()
-                                && Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                            perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
-                        }
-                        else {
-                            perm = this.getLocal().getPermission();
-                        }
-                        if(!perm.isUndefined()) {
-                            session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
-                        }
-                    }
-                    catch(FTPException e) {
-                        log.warn(e.getMessage());
-                    }
-                }
-                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    try {
-                        session.FTP.setmodtime(this.getLocal().getTimestamp(), this.getAbsolute());
-                    }
-                    catch(FTPException e) {
+                if(session.isConnected()) {
+                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                         try {
-                            if(Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
-                                if(!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
-                                    this.getLocal().setLastModified(session.FTP.modtime(this.getAbsolute()).getTime());
-                                }
+                            Permission perm = null;
+                            if(this.attributes.isFile()
+                                    && Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                                perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
+                            }
+                            else {
+                                perm = this.getLocal().getPermission();
+                            }
+                            if(!perm.isUndefined()) {
+                                session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
                             }
                         }
-                        catch(FTPException ignore) {
-                            //MDTM not supported; ignore
-                            log.warn(ignore.getMessage());
+                        catch(FTPException e) {
+                            log.warn(e.getMessage());
+                        }
+                    }
+                    if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                        try {
+                            session.FTP.setmodtime(this.getLocal().getTimestamp(), this.getAbsolute());
+                        }
+                        catch(FTPException e) {
+                            try {
+                                if(Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
+                                    if(!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
+                                        this.getLocal().setLastModified(session.FTP.modtime(this.getAbsolute()).getTime());
+                                    }
+                                }
+                            }
+                            catch(FTPException ignore) {
+                                //MDTM not supported; ignore
+                                log.warn(ignore.getMessage());
+                            }
                         }
                     }
                 }
