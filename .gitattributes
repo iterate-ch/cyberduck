@@ -942,6 +942,7 @@ img/arrowUpBlack16.tiff -text
 img/bookmark16.tiff -text
 img/bookmark40.tiff -text
 img/bookmarks.tiff svneol=native#unset
+img/bottom.tiff -text svneol=unset#image/tiff
 img/browser.tiff -text
 img/cancel.tiff -text
 img/certificate.tiff -text
