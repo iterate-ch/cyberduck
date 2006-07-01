@@ -222,9 +222,11 @@ public abstract class Queue extends NSObject {
                         getSession().connect();
                     }
                     catch(LoginCanceledException e) {
+                        getSession().error(e);
                         cancel();
                     }
                     catch(IOException e) {
+                        getSession().error(e);
                         cancel();
                     }
                     if(canceled) {
