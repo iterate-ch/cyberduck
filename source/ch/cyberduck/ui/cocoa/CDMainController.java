@@ -455,7 +455,11 @@ public class CDMainController extends CDController {
                                 public void queueStopped() {
                                     if (controller.isMounted()) {
                                         controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
-                                        controller.reloadData(true);
+                                        invoke(new Runnable() {
+                                            public void run() {
+                                                controller.reloadData(true);
+                                            }
+                                        });
                                     }
                                     q.removeListener(this);
                                 }
