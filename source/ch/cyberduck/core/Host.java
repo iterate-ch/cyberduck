@@ -18,16 +18,16 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 import com.apple.cocoa.foundation.NSObject;
-import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.net.InetAddress;
 
 /**
  * @version $Id$
@@ -57,37 +57,37 @@ public class Host extends NSObject {
 
     public Host(NSDictionary dict) {
         Object protocolObj = dict.objectForKey(Host.PROTOCOL);
-        if (protocolObj != null) {
+        if(protocolObj != null) {
             this.setProtocol((String) protocolObj);
         }
         Object hostnameObj = dict.objectForKey(Host.HOSTNAME);
-        if (hostnameObj != null) {
+        if(hostnameObj != null) {
             this.setHostname((String) hostnameObj);
             Object usernameObj = dict.objectForKey(Host.USERNAME);
-            if (usernameObj != null) {
+            if(usernameObj != null) {
                 this.setCredentials((String) usernameObj, null);
             }
             this.getCredentials().setPrivateKeyFile((String) dict.objectForKey(Host.KEYFILE));
         }
         Object portObj = dict.objectForKey(Host.PORT);
-        if (portObj != null) {
+        if(portObj != null) {
             this.setPort(Integer.parseInt((String) portObj));
         }
         Object pathObj = dict.objectForKey(Host.PATH);
-        if (pathObj != null) {
+        if(pathObj != null) {
             this.setDefaultPath((String) pathObj);
         }
         Object nicknameObj = dict.objectForKey(Host.NICKNAME);
-        if (nicknameObj != null) {
+        if(nicknameObj != null) {
             this.setNickname((String) nicknameObj);
         }
         Object encodingObj = dict.objectForKey(Host.ENCODING);
-        if (encodingObj != null) {
+        if(encodingObj != null) {
             this.setEncoding((String) encodingObj);
         }
         Object connectModeObj = dict.objectForKey(Host.FTPCONNECTMODE);
-        if (connectModeObj != null) {
-            if (connectModeObj.equals("active")) {
+        if(connectModeObj != null) {
+            if(connectModeObj.equals("active")) {
                 this.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
             }
             else {
@@ -105,11 +105,11 @@ public class Host extends NSObject {
         dict.setObjectForKey(this.getCredentials().getUsername(), Host.USERNAME);
         dict.setObjectForKey(this.getDefaultPath(), Host.PATH);
         dict.setObjectForKey(this.getEncoding(), Host.ENCODING);
-        if (this.getCredentials().getPrivateKeyFile() != null) {
+        if(this.getCredentials().getPrivateKeyFile() != null) {
             dict.setObjectForKey(this.getCredentials().getPrivateKeyFile(), Host.KEYFILE);
         }
-        if (this.getProtocol().equals(Session.FTP) || this.getProtocol().equals(Session.FTP_TLS)) {
-            if (this.getFTPConnectMode().equals(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE)) {
+        if(this.getProtocol().equals(Session.FTP) || this.getProtocol().equals(Session.FTP_TLS)) {
+            if(this.getFTPConnectMode().equals(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE)) {
                 dict.setObjectForKey("active", Host.FTPCONNECTMODE);
             }
             else {
@@ -145,7 +145,6 @@ public class Host extends NSObject {
     }
 
     /**
-     *
      * @param protocol
      * @param hostname
      */
@@ -163,7 +162,6 @@ public class Host extends NSObject {
     }
 
     /**
-     *
      * @param protocol
      * @param hostname
      * @param port
@@ -186,35 +184,35 @@ public class Host extends NSObject {
      * @throws MalformedURLException
      */
     public static Host parse(String input) throws MalformedURLException {
-        if (null == input || input.length() == 0)
+        if(null == input || input.length() == 0)
             throw new MalformedURLException("No hostname given");
         int begin = 0;
         int cut = 0;
-        if (input.indexOf("://", begin) == -1 && input.indexOf('@', begin) == -1) {
+        if(input.indexOf("://", begin) == -1 && input.indexOf('@', begin) == -1) {
             throw new MalformedURLException("No protocol or user delimiter");
         }
         String protocol = Preferences.instance().getProperty("connection.protocol.default");
-        if (input.indexOf("://", begin) != -1) {
+        if(input.indexOf("://", begin) != -1) {
             cut = input.indexOf("://", begin);
             protocol = input.substring(begin, cut);
             begin += protocol.length() + 3;
         }
         String username = null;
         String password = null;
-        if (protocol.equals(Session.FTP)) {
+        if(protocol.equals(Session.FTP)) {
             username = Preferences.instance().getProperty("ftp.anonymous.name");
         }
-        else if (protocol.equals(Session.FTP_TLS)) {
+        else if(protocol.equals(Session.FTP_TLS)) {
             username = Preferences.instance().getProperty("connection.login.name");
         }
-        else if (protocol.equals(Session.SFTP)) {
+        else if(protocol.equals(Session.SFTP)) {
             username = Preferences.instance().getProperty("connection.login.name");
         }
         else {
             throw new MalformedURLException("Unknown protocol: " + protocol);
         }
-        if (input.indexOf('@', begin) != -1) {
-            if (input.indexOf(':', begin) != -1 && input.indexOf('@', begin) > input.indexOf(':', begin)) {
+        if(input.indexOf('@', begin) != -1) {
+            if(input.indexOf(':', begin) != -1 && input.indexOf('@', begin) > input.indexOf(':', begin)) {
                 // ':' is not for the port number but username:pass seperator
                 cut = input.indexOf(':', begin);
                 username = input.substring(begin, cut);
@@ -233,13 +231,13 @@ public class Host extends NSObject {
         String hostname = input.substring(begin, input.length());
         String path = null;
         int port = getDefaultPort(protocol);
-        if (input.indexOf(':', begin) != -1) {
+        if(input.indexOf(':', begin) != -1) {
             cut = input.indexOf(':', begin);
             hostname = input.substring(begin, cut);
             begin += hostname.length() + 1;
             try {
                 String portString;
-                if (input.indexOf('/', begin) != -1) {
+                if(input.indexOf('/', begin) != -1) {
                     portString = input.substring(begin, input.indexOf('/', begin));
                     begin += portString.length();
                     path = input.substring(begin, input.length());
@@ -249,11 +247,11 @@ public class Host extends NSObject {
                 }
                 port = Integer.parseInt(portString);
             }
-            catch (NumberFormatException e) {
+            catch(NumberFormatException e) {
                 throw new MalformedURLException("Invalid port number given");
             }
         }
-        else if (input.indexOf('/', begin) != -1) {
+        else if(input.indexOf('/', begin) != -1) {
             cut = input.indexOf('/', begin);
             hostname = input.substring(begin, cut);
             begin += hostname.length();
@@ -270,7 +268,6 @@ public class Host extends NSObject {
     // ----------------------------------------------------------
 
     /**
-     *
      * @param defaultpath The path to change the working directory to upon connecting
      */
     public void setDefaultPath(String defaultpath) {
@@ -281,20 +278,19 @@ public class Host extends NSObject {
      * @return empty string if no default path is set
      */
     public String getDefaultPath() {
-        if (null == this.defaultpath) {
+        if(null == this.defaultpath) {
             return "";
         }
-        if (this.defaultpath.equals("")) {
+        if(this.defaultpath.equals("")) {
             return "";
         }
-        if (this.defaultpath.charAt(0) == '/') {
+        if(this.defaultpath.charAt(0) == '/') {
             return this.defaultpath;
         }
         return Path.DELIMITER + this.defaultpath;
     }
 
     /**
-     *
      * @return Has a non empty default path set
      */
     public boolean hasReasonableDefaultPath() {
@@ -302,12 +298,11 @@ public class Host extends NSObject {
     }
 
     /**
-     *
      * @param port
      * @return The standard protocol for this port number
      */
     protected static String getDefaultProtocol(int port) {
-        switch (port) {
+        switch(port) {
             case Session.FTP_PORT:
                 return Session.FTP;
             case Session.SSH_PORT:
@@ -318,28 +313,27 @@ public class Host extends NSObject {
     }
 
     /**
-     *
      * @param protocol
      * @return The default port for this protocol
      */
     private static int getDefaultPort(String protocol) {
-        if (protocol.equals(Session.FTP)) {
+        if(protocol.equals(Session.FTP)) {
             return Session.FTP_PORT;
         }
-        if (protocol.equals(Session.FTP_TLS)) {
+        if(protocol.equals(Session.FTP_TLS)) {
             return Session.FTP_PORT;
         }
-        if (protocol.equals(Session.SFTP)) {
+        if(protocol.equals(Session.SFTP)) {
             return Session.SSH_PORT;
         }
         log.warn("Cannot find default port number for protocol " + protocol);
-        if (Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP)) {
+        if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP)) {
             return Session.FTP_PORT;
         }
-        if (Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP_TLS)) {
+        if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP_TLS)) {
             return Session.FTP_PORT;
         }
-        if (Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP)) {
+        if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP)) {
             return Session.SSH_PORT;
         }
         throw new IllegalArgumentException("Unsupported protocol: " + protocol);
@@ -350,7 +344,6 @@ public class Host extends NSObject {
     // ----------------------------------------------------------
 
     /**
-     *
      * @param login
      */
     public void setCredentials(Login login) {
@@ -358,7 +351,6 @@ public class Host extends NSObject {
     }
 
     /**
-     *
      * @param username
      * @param password
      */
@@ -369,7 +361,6 @@ public class Host extends NSObject {
     }
 
     /**
-     *
      * @param username
      * @param password
      * @param addToKeychain
@@ -387,7 +378,7 @@ public class Host extends NSObject {
      */
     public void setProtocol(String protocol) {
         this.protocol = protocol != null ? protocol : Preferences.instance().getProperty("connection.protocol.default");
-        if (null == this.login) {
+        if(null == this.login) {
             return;
         }
         this.login.setProtocol(this.protocol);
@@ -405,7 +396,6 @@ public class Host extends NSObject {
     }
 
     /**
-     *
      * @param id
      */
     public void setIdentification(String id) {
@@ -413,7 +403,7 @@ public class Host extends NSObject {
     }
 
     public String getNickname() {
-        if (this.nickname != null)
+        if(this.nickname != null)
             return this.nickname;
         return this.getHostname() + " (" + this.getProtocol().toUpperCase() + ")";
     }
@@ -428,7 +418,7 @@ public class Host extends NSObject {
 
     public void setHostname(String hostname) {
         this.hostname = hostname;
-        if (null == this.login)
+        if(null == this.login)
             return;
         this.login.setHostname(hostname);
     }
@@ -438,7 +428,7 @@ public class Host extends NSObject {
      */
     public void setPort(int port) {
         this.port = port;
-        if (-1 == port) {
+        if(-1 == port) {
             this.port = Host.getDefaultPort(this.getProtocol());
         }
     }
@@ -452,7 +442,7 @@ public class Host extends NSObject {
     }
 
     public String getEncoding() {
-        if (null == this.encoding)
+        if(null == this.encoding)
             this.encoding = Preferences.instance().getProperty("browser.charset.encoding");
         return this.encoding;
     }
@@ -462,10 +452,10 @@ public class Host extends NSObject {
     }
 
     public com.enterprisedt.net.ftp.FTPConnectMode getFTPConnectMode() {
-        if (null == this.connectMode) {
-            if (Preferences.instance().getProperty("ftp.connectmode").equals("active"))
+        if(null == this.connectMode) {
+            if(Preferences.instance().getProperty("ftp.connectmode").equals("active"))
                 this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE;
-            if (Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
+            if(Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
                 this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.PASV;
         }
         return this.connectMode;
@@ -478,8 +468,8 @@ public class Host extends NSObject {
         try {
             return InetAddress.getByName(hostname).toString();
         }
-        catch (UnknownHostException e) {
-            throw new UnknownHostException(hostname+" cannot be resolved");
+        catch(UnknownHostException e) {
+            throw new UnknownHostException(hostname + " cannot be resolved");
         }
     }
 
@@ -497,10 +487,10 @@ public class Host extends NSObject {
     }
 
     public boolean equals(Object other) {
-        if (null == other) {
+        if(null == other) {
             return false;
         }
-        if (other instanceof Host) {
+        if(other instanceof Host) {
             Host o = (Host) other;
             return this.getProtocol().equals(o.getProtocol())
                     && this.getCredentials().getUsername().equals(o.getCredentials().getUsername())
@@ -532,7 +522,7 @@ public class Host extends NSObject {
                     JNI_LOADED = true;
                     log.info("libDiagnostics.dylib loaded");
                 }
-                catch (UnsatisfiedLinkError e) {
+                catch(UnsatisfiedLinkError e) {
                     log.error("Could not load the libDiagnostics.dylib library:" + e.getMessage());
                 }
             }
@@ -549,13 +539,12 @@ public class Host extends NSObject {
         }
         boolean available = this.isReachable(this.getURL());
         if(!available) {
-            log.warn("Unreachable hostname:"+this.getHostname());
+            log.warn("Unreachable hostname:" + this.getHostname());
         }
         return available;
     }
 
     /**
-     *
      * @param url
      * @return
      */
@@ -572,7 +561,6 @@ public class Host extends NSObject {
     }
 
     /**
-     *
      * @param url
      */
     private native void diagnose(String url);
