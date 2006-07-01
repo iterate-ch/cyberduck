@@ -445,6 +445,7 @@ public class FTPPath extends Path {
                     else {
                         perm = this.attributes.getPermission();
                         perm.getOwnerPermissions()[Permission.WRITE] = true;
+                        perm.getOwnerPermissions()[Permission.EXECUTE] = true;
                     }
                     if(!perm.isUndefined()) {
                         this.getLocal().setPermission(perm);
