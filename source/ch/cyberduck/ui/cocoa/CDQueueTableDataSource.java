@@ -20,10 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 
-import com.apple.cocoa.application.NSDraggingInfo;
-import com.apple.cocoa.application.NSPasteboard;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSTableView;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
@@ -61,21 +58,32 @@ public class CDQueueTableDataSource extends Collection {
     // virtual column to implement keyboard selection
     protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
 
+    /**
+     *
+     * @param tableView
+     */
     public int numberOfRowsInTableView(NSTableView tableView) {
         return this.size();
     }
 
+    /**
+     *
+     * @param tableView
+     * @param tableColumn
+     * @param row
+     */
     public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
         if (row < numberOfRowsInTableView(tableView)) {
-            String identifier = (String) tableColumn.identifier();
+            final String identifier = (String) tableColumn.identifier();
+            final Queue queue = (Queue)this.get(row);
             if (identifier.equals(ICON_COLUMN)) {
-                return this.get(row);
+                return queue;
             }
             if (identifier.equals(PROGRESS_COLUMN)) {
                 return this.getController(row).view();
             }
             if (identifier.equals(TYPEAHEAD_COLUMN)) {
-                return ((Queue) this.get(row)).getName();
+                return queue.getName();
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
