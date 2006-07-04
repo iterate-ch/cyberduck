@@ -23,11 +23,7 @@ import com.sshtools.j2ssh.SshException;
 
 import ch.cyberduck.core.Host;
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.application.NSView;
-import com.apple.cocoa.application.NSWindow;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
@@ -39,90 +35,60 @@ import java.util.Enumeration;
 /**
  * @version $Id$
  */
-public class CDErrorController extends CDController {
-    private static Logger log = Logger.getLogger(CDErrorController.class);
-
-    /**
-     *
-     */
-    private NSTextField errorField;
-
-    public void setErrorField(NSTextField errorField) {
-        this.errorField = errorField;
-    }
-
-    public NSView getView() {
-        return view;
-    }
-
-    private NSButton alertIcon; // IBOutlet
-
-    public void setAlertIcon(NSButton alertIcon) {
-        this.alertIcon = alertIcon;
-        this.alertIcon.setTarget(this);
-        this.alertIcon.setAction(new NSSelector("launchNetworkAssistant", new Class[]{NSButton.class}));
-    }
-
-    public void launchNetworkAssistant(final NSButton sender) {
-        this.host.diagnose();
-    }
-
-    /**
-     *
-     */
-    private NSView view;
-
-    public void setView(NSView view) {
-        this.view = view;
-    }
+public abstract class CDErrorController extends CDController {
+    protected static Logger log = Logger.getLogger(CDErrorController.class);
 
     /**
      * The parent view
      */
-    private NSView container;
+    protected NSView container;
 
-    /**
-     * The neighbouring view the error view should be attached to
-     */
-    private NSView neighbour;
+    protected Host host;
 
-    private Host host;
+    protected Exception failure;
 
     /**
      * @param container
-     * @param neighbour
-     * @param e
+     * @param failure
      * @param host
      */
-    public CDErrorController(NSView container, NSView neighbour, Exception e, Host host) {
+    public CDErrorController(NSView container, Exception failure, Host host) {
         this.container = container;
-        this.neighbour = neighbour;
-        if(!NSApplication.loadNibNamed("Error", this)) {
-            log.fatal("Couldn't load Error.nib");
-        }
-        String alert = e.getMessage();
+        this.host = host;
+        this.failure = failure;
+    }
+
+    protected String getErrorText() {
+        String alert = failure.getMessage();
         String title = NSBundle.localizedString("Error", "");
-        if(e instanceof FTPException) {
+        if(failure instanceof FTPException) {
             title = "FTP " + NSBundle.localizedString("Error", "");
         }
-        else if(e instanceof SshException) {
+        else if(failure instanceof SshException) {
             title = "SSH " + NSBundle.localizedString("Error", "");
         }
-        else if(e instanceof SocketException) {
+        else if(failure instanceof SocketException) {
             title = "Network " + NSBundle.localizedString("Error", "");
         }
-        else if(e instanceof IOException) {
+        else if(failure instanceof IOException) {
             title = "I/O " + NSBundle.localizedString("Error", "");
         }
-        this.errorField.setAttributedStringValue(
-                new NSAttributedString(title + ": " + alert, CDTableCell.BOLD_FONT_HIGHLIGHTED));
-        this.host = host;
+        return title + ": " + alert;
+    }
+
+    public void setHighlighted(boolean highlighted) {
+        this.errorField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.blackColor());
     }
 
     /**
-     * @param sender
+     * Called before the view is removed from the parent view
      */
-    public void close(NSButton sender) {
+    protected abstract void viewWillClose();
+
+    private void close() {
+        if(null == view.superview()) {
+            return; //as the view has already been removed from its superview
+        }
         NSView subview = null;
         Enumeration iter = container.subviews().objectEnumerator();
         while(iter.hasMoreElements()) {
@@ -130,59 +96,74 @@ public class CDErrorController extends CDController {
             if(subview.frame().origin().y() < view.frame().origin().y()) {
                 subview.setFrameOrigin(
                         new NSPoint(subview.frame().origin().x(),
-                                subview.frame().origin().y() + this.getView().frame().size().height())
+                                subview.frame().origin().y() + view.frame().size().height())
                 );
             }
         }
-        if(subview != null) {
-            // Resize the last component; usually the browser view to fit the window
-            subview.setFrame(new NSRect(
-                    subview.frame().origin().x(),
-                    subview.frame().origin().y() - this.getView().frame().size().height(),
-                    subview.frame().size().width(),
-                    subview.frame().size().height() + this.getView().frame().size().height())
-            );
-        }
+        this.viewWillClose();
         view.removeFromSuperview();
+        this.viewDidClose();
         container.setNeedsDisplay(true);
-        NSWindow window = this.window();
-        window.setContentMinSize(
-                new NSSize(window.contentMinSize().width(), window.contentMinSize().height() - view.frame().height()));
         this.invalidate();
     }
 
     /**
-     *
+     * Called after the view has been removed from the parent view
      */
-    public void display() {
-        NSWindow window = this.window();
-        if(neighbour.frame().height() < window.minSize().height()) {
-            NSRect frame = new NSRect(window.frame().origin(),
-                    new NSSize(window.frame().width(), window.frame().height() + view.frame().height()));
-            window.setFrame(frame, true, true);
-        }
-        window.setContentMinSize(
-                new NSSize(window.contentMinSize().width(), window.contentMinSize().height() + view.frame().height()));
-        neighbour.setFrameSize(new NSSize(
-                new NSSize(neighbour.frame().width(), neighbour.frame().height() - this.getView().frame().size().height()))
-        );
-        this.getView().setFrame(new NSRect(
-                new NSPoint(neighbour.frame().origin().x(), neighbour.frame().size().height()),
-                new NSSize(neighbour.frame().size().width(), this.getView().frame().size().height())
-        ));
-        container.addSubview(this.getView(), NSWindow.Below, neighbour);
-        container.setNeedsDisplay(true);
+    protected abstract void viewDidClose();
+
+    /**
+     * @param sender
+     */
+    public void close(NSButton sender) {
+        this.close();
     }
+
+    public abstract void display();
 
     /**
      * @return The parent window
      */
-    private NSWindow window() {
+    protected NSWindow window() {
         NSWindow window = null;
         NSView parent = container;
         while(null == (window = parent.window())) {
             parent = parent.superview();
         }
         return window;
+    }
+
+    /**
+     *
+     */
+    protected NSTextField errorField; //IBOutlet
+
+    public void setErrorField(NSTextField errorField) {
+        this.errorField = errorField;
+    }
+
+    protected NSButton alertIcon; //IBOutlet
+
+    public void setAlertIcon(NSButton alertIcon) {
+        this.alertIcon = alertIcon;
+        this.alertIcon.setTarget(this);
+        this.alertIcon.setAction(new NSSelector("launchNetworkAssistant", new Class[]{NSButton.class}));
+    }
+
+    /**
+     * Run the network diagnostics assistant
+     * @param sender
+     */
+    public void launchNetworkAssistant(final NSButton sender) {
+        this.host.diagnose();
+    }
+
+    /**
+     *
+     */
+    protected NSView view; //IBOutlet
+
+    public void setView(NSView view) {
+        this.view = view;
     }
 }
