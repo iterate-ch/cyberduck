@@ -154,6 +154,13 @@
 				<include name="**/${localization}.lproj/**"/>
 			</fileset>
 		</copy>
+		<copy todir="${app.bundle.loc}/Contents/Resources/${localization}.lproj">
+			<fileset dir="${app.resources}/en.lproj">
+				<include name="Queue.nib/**"/>
+				<include name="TransferError.nib/**"/>
+				<include name="BrowserError.nib/**"/>
+			</fileset>
+		</copy>
 		<chmod perm="a+x" type="file">
 			<fileset dir="${app.bundle.loc}">
 				<include name="**/*.framework/*"/>
@@ -164,7 +171,7 @@
 		<exec executable="./buildDMG.pl" spawn="false">
 			<arg line="-dmgName '${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg' -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor} (${localization})' -buildDir ${build} -compressionLevel 9 ${app.bundle.loc} ${app.name}\ Website.url Donate.url ${localization}.lproj/License.txt Credits.rtf  AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
 		</exec>
-		<exec executable="md5sum" spawn="false" output="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg.md5">
+		<exec executable="md5" spawn="false" output="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg.md5">
 			<arg line="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg"/>
 		</exec>
 	</target>
@@ -173,7 +180,7 @@
 		<exec executable="./buildDMG.pl" spawn="false">
 			<arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor}' -buildDir ${build} -compressionLevel 9 ${app.bundle} ${app.name}\ Website.url Donate.url en.lproj/License.txt Credits.rtf	 AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
 		</exec>
-		<exec executable="md5sum" spawn="false" output="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.md5">
+		<exec executable="md5" spawn="false" output="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.md5">
 			<arg line="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"/>
 		</exec>
 	</target>
