@@ -227,23 +227,25 @@ public class SFTPPath extends Path {
     }
 
     public void reset() {
-        if(this.attributes.isFile() && this.attributes.isUndefined()) {
-            if(this.exists()) {
-                try {
-                    session.check();
-                    session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
-                    SftpFile f = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-                    this.attributes.setTimestamp(Long.parseLong(f.getAttributes().getModifiedTime().toString()) * 1000L);
-                    session.message(NSBundle.localizedString("Getting size of", "Status", "") + " " + this.getName());
-                    this.attributes.setSize(f.getAttributes().getSize().doubleValue());
-                    f.close();
-                }
-                catch(SshException e) {
-                    session.error(new SshException(e.getMessage() + " (" + this.getName() + ")"));
-                }
-                catch(IOException e) {
-                    session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
-                    session.interrupt();
+        synchronized(session) {
+            if(this.attributes.isFile() && this.attributes.isUndefined()) {
+                if(this.exists()) {
+                    try {
+                        session.check();
+                        session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
+                        SftpFile f = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
+                        this.attributes.setTimestamp(Long.parseLong(f.getAttributes().getModifiedTime().toString()) * 1000L);
+                        session.message(NSBundle.localizedString("Getting size of", "Status", "") + " " + this.getName());
+                        this.attributes.setSize(f.getAttributes().getSize().doubleValue());
+                        f.close();
+                    }
+                    catch(SshException e) {
+                        session.error(new SshException(e.getMessage() + " (" + this.getName() + ")"));
+                    }
+                    catch(IOException e) {
+                        session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
+                        session.interrupt();
+                    }
                 }
             }
         }
@@ -259,7 +261,7 @@ public class SFTPPath extends Path {
                     session.SFTP.removeFile(this.getAbsolute());
                 }
                 else if(this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
-                    for(Iterator iter = this.list().iterator(); iter.hasNext() && session.isConnected();) {
+                    for(Iterator iter = this.list().iterator(); iter.hasNext();) {
                         if(!session.isConnected()) {
                             break;
                         }
@@ -330,7 +332,7 @@ public class SFTPPath extends Path {
                 else if(this.attributes.isDirectory()) {
                     //session.SFTP.changeGroup(this.getAbsolute(), group);
                     if(recursive) {
-                        for(Iterator iter = this.list().iterator(); iter.hasNext() && session.isConnected();) {
+                        for(Iterator iter = this.list().iterator(); iter.hasNext();) {
                             if(!session.isConnected()) {
                                 break;
                             }
