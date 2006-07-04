@@ -18,16 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.QueueListener;
-import ch.cyberduck.core.Status;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * @version $Id$
@@ -56,7 +56,7 @@ public class CDProgressController extends CDController {
 
     private static final Object lock = new Object();
 
-    public CDProgressController(Queue queue) {
+    public CDProgressController(final Queue queue) {
         this.queue = queue;
         synchronized(lock) {
             if(!NSApplication.loadNibNamed("Progress", this)) {
@@ -66,6 +66,18 @@ public class CDProgressController extends CDController {
         this.init();
     }
 
+    /**
+     * Remove any error messages
+     */
+    public void clear() {
+        for(Iterator i = errors.iterator(); i.hasNext(); ) {
+            ((CDErrorController)i.next()).close(null);
+        }
+        errors.clear();
+    }
+
+    private List errors = new ArrayList();
+
     private void init() {
         this.queue.addListener(new QueueListener() {
             private ProgressListener progress;
@@ -73,11 +85,11 @@ public class CDProgressController extends CDController {
             public void queueStarted() {
                 invoke(new Runnable() {
                     public void run() {
+                        clear();
                         progressBar.setHidden(false);
                         progressBar.setIndeterminate(true);
                         progressBar.startAnimation(null);
                         progressBar.setNeedsDisplay(true);
-                        alertIcon.setHidden(true);
                     }
                 });
                 queue.getSession().addProgressListener(progress = new ProgressListener() {
@@ -95,8 +107,12 @@ public class CDProgressController extends CDController {
                     public void error(final Exception e) {
                         invoke(new Runnable() {
                             public void run() {
-                                alertIcon.setHidden(false);
-                            };
+                                CDErrorController error = null;
+                                errors.add(error = new CDTransferErrorController(progressView, e,
+                                        queue.getSession().getHost()));
+                                error.setHighlighted(highlighted);
+                                error.display();
+                            }
                         });
                     }
                 });
@@ -138,10 +154,20 @@ public class CDProgressController extends CDController {
                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
     }
 
-    public void update(NSTimer t) {
-        this.updateProgressbar();
+    public void update(final NSTimer t) {
         this.progressField.setAttributedStringValue(new NSAttributedString(this.getProgressText(),
                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+        if(queue.isInitialized()) {
+            if(queue.getSize() != -1) {
+                this.progressBar.setIndeterminate(false);
+                this.progressBar.setMinValue(0);
+                this.progressBar.setMaxValue(queue.getSize());
+                this.progressBar.setDoubleValue(queue.getCurrent());
+            }
+        }
+        else if(queue.isRunning()) {
+            this.progressBar.setIndeterminate(true);
+        }
     }
 
     private Speedometer meter;
@@ -174,20 +200,6 @@ public class CDProgressController extends CDController {
 
         public double getBytesTransfered() {
             return bytesTransferred;
-        }
-    }
-
-    private void updateProgressbar() {
-        if(queue.isInitialized()) {
-            if(queue.getSize() != -1) {
-                this.progressBar.setIndeterminate(false);
-                this.progressBar.setMinValue(0);
-                this.progressBar.setMaxValue(queue.getSize());
-                this.progressBar.setDoubleValue(queue.getCurrent());
-            }
-        }
-        else if(queue.isRunning()) {
-            this.progressBar.setIndeterminate(true);
         }
     }
 
@@ -229,7 +241,7 @@ public class CDProgressController extends CDController {
 
     private boolean highlighted;
 
-    public void setHighlighted(boolean highlighted) {
+    public void setHighlighted(final boolean highlighted) {
         this.highlighted = highlighted;
         if(highlighted) {
             this.filenameField.setTextColor(NSColor.whiteColor());
@@ -238,6 +250,9 @@ public class CDProgressController extends CDController {
         else {
             this.filenameField.setTextColor(NSColor.blackColor());
             this.progressField.setTextColor(NSColor.darkGrayColor());
+        }
+        for(Iterator iter = this.errors.iterator(); iter.hasNext(); ) {
+            ((CDErrorController)iter.next()).setHighlighted(highlighted);
         }
     }
 
@@ -260,7 +275,7 @@ public class CDProgressController extends CDController {
 
     private NSTextField progressField; // IBOutlet
 
-    public void setProgressField(NSTextField progressField) {
+    public void setProgressField(final NSTextField progressField) {
         this.progressField = progressField;
         this.progressField.setEditable(false);
         this.progressField.setSelectable(false);
@@ -269,7 +284,7 @@ public class CDProgressController extends CDController {
 
     private NSProgressIndicator progressBar; // IBOutlet
 
-    public void setProgressBar(NSProgressIndicator progressBar) {
+    public void setProgressBar(final NSProgressIndicator progressBar) {
         this.progressBar = progressBar;
         this.progressBar.setDisplayedWhenStopped(false);
         this.progressBar.setControlTint(NSProgressIndicator.BlueControlTint);
@@ -278,17 +293,39 @@ public class CDProgressController extends CDController {
         this.progressBar.setUsesThreadedAnimation(true);
     }
 
-    private NSImageView alertIcon; // IBOutlet
+    private NSImageView typeIconView; //IBOutlet
 
-    public void setAlertIcon(NSImageView alertIcon) {
-        this.alertIcon = alertIcon;
-        this.alertIcon.setHidden(true);
+    private static final NSImage ARROW_UP_ICON = NSImage.imageNamed("arrowUp.tiff");
+    private static final NSImage ARROW_DOWN_ICON = NSImage.imageNamed("arrowDown.tiff");
+    private static final NSImage SYNC_ICON = NSImage.imageNamed("sync32.tiff");
+
+    static {
+        ARROW_UP_ICON.setSize(new NSSize(32f, 32f));
+        ARROW_DOWN_ICON.setSize(new NSSize(32f, 32f));
+        SYNC_ICON.setSize(new NSSize(32f, 32f));
     }
 
+    public void setTypeIconView(final NSImageView typeIconView) {
+        this.typeIconView = typeIconView;
+        NSImage icon = ARROW_DOWN_ICON;
+        if(queue instanceof UploadQueue) {
+            icon = ARROW_UP_ICON;
+        }
+        else if(queue instanceof SyncQueue) {
+            icon = SYNC_ICON;
+        }
+        icon.setScalesWhenResized(true);
+        icon.setSize(new NSSize(32f, 32f));
+        this.typeIconView.setImage(icon);
+    }
+
+    /**
+     * The view drawn in the table cell
+     */
     private NSView progressView; // IBOutlet
 
-    public void setProgressSubview(NSView progressView) {
-        this.progressView = progressView;
+    public void setProgressView(final NSView v) {
+        this.progressView = v;
     }
 
     public NSView view() {
@@ -301,7 +338,6 @@ public class CDProgressController extends CDController {
         this.progressBar = null;
         this.progressTimer = null;
         this.filenameField = null;
-        this.alertIcon = null;
         this.queue = null;
         super.invalidate();
     }

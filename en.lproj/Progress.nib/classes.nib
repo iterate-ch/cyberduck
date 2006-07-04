@@ -1,18 +1,6 @@
 {
     IBClasses = (
         {
-            CLASS = CDProgressController; 
-            LANGUAGE = ObjC; 
-            OUTLETS = {
-                alertIcon = NSImageView; 
-                filenameField = NSTextField; 
-                progressBar = NSProgressIndicator; 
-                progressField = NSTextField; 
-                progressSubview = NSView; 
-            }; 
-            SUPERCLASS = NSObject; 
-        }, 
-        {
             ACTIONS = {
                 reloadButtonClicked = id; 
                 removeButtonClicked = id; 
@@ -22,6 +10,18 @@
             }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            CLASS = "ch.cyberduck.ui.cocoa.CDProgressController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {
+                filenameField = NSTextField; 
+                progressBar = NSProgressIndicator; 
+                progressField = NSTextField; 
+                progressView = NSView; 
+                typeIconView = NSImageView; 
+            }; 
             SUPERCLASS = NSObject; 
         }
     ); 
