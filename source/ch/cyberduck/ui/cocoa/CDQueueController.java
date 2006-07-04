@@ -230,6 +230,21 @@ public class CDQueueController extends CDWindowController
                 return null;
             }
 
+            /**
+             *
+             * @param view
+             * @param i
+             * @return The height of the particular view in this row
+             */
+            public float tableViewHeightOfRow(NSTableView view, int i) {
+                final CDProgressController c = queueModel.getController(i);
+                if(null == c) {
+                    log.warn("No progress controller at index "+i);
+                    return 0;
+                }
+                return c.view().frame().size().height();
+            }
+
             public void tableViewSelectionIsChanging(NSNotification aNotification) {
                 updateTableViewSelection();
             }
@@ -247,15 +262,14 @@ public class CDQueueController extends CDWindowController
                 NSPasteboard.StringPboardType,
                 NSPasteboard.FilesPromisePboardType}));
 
-        this.queueTable.setRowHeight(50f);
         NSSelector setResizableMaskSelector
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {
             NSTableColumn c = new NSTableColumn();
             c.setIdentifier(CDQueueTableDataSource.ICON_COLUMN);
-            c.setMinWidth(36f);
-            c.setWidth(36f);
-            c.setMaxWidth(36f);
+            c.setMinWidth(32f);
+            c.setWidth(32f);
+            c.setMaxWidth(32f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
@@ -280,7 +294,6 @@ public class CDQueueController extends CDWindowController
             c.setDataCell(new CDProgressCell());
             this.queueTable.addTableColumn(c);
         }
-        this.queueTable.setUsesAlternatingRowBackgroundColors(true);
         this.queueTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
 
         //selection properties
@@ -327,7 +340,6 @@ public class CDQueueController extends CDWindowController
 
     private void reloadQueueTable() {
         synchronized(CDQueueController.instance()) {
-            this.queueTable.deselectAll(null);
             while(this.queueTable.subviews().count() > 0) {
                 ((NSView) this.queueTable.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
             }
@@ -378,21 +390,13 @@ public class CDQueueController extends CDWindowController
     private void startItem(final Queue queue, final boolean resumeRequested) {
         queue.addListener(new QueueListener() {
             private TranscriptListener transcript;
-            private ProgressListener progress;
 
             public void transferStarted(final Path path) {
-                if(path.attributes.isFile() && !path.getLocal().exists()) {
-                    invoke(new Runnable() {
-                        public void run() {
-                            path.getLocal().createNewFile(); //hack to display actual icon #CDIconCell
-                        }
-                    });
-                }
-                queueTable.setNeedsDisplay(true);
+                queueTable.setNeedsDisplay();
             }
 
             public void transferStopped(final Path path) {
-                queueTable.setNeedsDisplay(true);
+                queueTable.setNeedsDisplay();
             }
 
             public void queueStarted() {
@@ -416,24 +420,6 @@ public class CDQueueController extends CDWindowController
                             new CDX509TrustManagerController(CDQueueController.instance()));
                 }
                 queue.getSession().setLoginController(new CDLoginController(CDQueueController.instance()));
-                queue.getSession().addProgressListener(progress = new ProgressListener() {
-                    public void message(final String message) {
-                        ;
-                    }
-
-                    public void error(final Exception e) {
-                        invoke(new Runnable() {
-                            public void run() {
-                                CDErrorController error = new CDErrorController(
-                                        queueTable.superview().superview().superview(),
-                                        queueTable.superview().superview(),
-                                        e,
-                                        queue.getSession().getHost());
-                                error.display();
-                            }
-                        });
-                    }
-                });
             }
 
             public void queueStopped() {
@@ -469,7 +455,6 @@ public class CDQueueController extends CDWindowController
                     ((ch.cyberduck.core.ftps.FTPSSession) queue.getSession()).setTrustManager(null);
                 }
                 queue.getSession().setLoginController(null);
-                queue.getSession().removeProgressListener(progress);
             }
         });
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
@@ -703,8 +688,9 @@ public class CDQueueController extends CDWindowController
 
     public void clearButtonClicked(final Object sender) {
         for(int i = 0; i < this.queueModel.size(); i++) {
-            Queue q = (Queue) this.queueModel.get(i);
-            if(!q.isRunning()) {
+            CDProgressController c = this.queueModel.getController(i);
+            c.clear();
+            if(!c.getQueue().isRunning() && c.getQueue().isComplete()) {
                 this.queueModel.remove(i);
                 i--;
             }
