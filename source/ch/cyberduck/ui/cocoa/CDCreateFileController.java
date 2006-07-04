@@ -35,19 +35,19 @@ public class CDCreateFileController extends CDFileController {
     public CDCreateFileController(CDWindowController parent) {
         super(parent);
         synchronized(parent) {
-            if (!NSApplication.loadNibNamed("File", this)) {
+            if(!NSApplication.loadNibNamed("File", this)) {
                 log.fatal("Couldn't load File.nib");
             }
         }
     }
 
     public void callback(int returncode) {
-        if (returncode == DEFAULT_OPTION) {
+        if(returncode == DEFAULT_OPTION) {
             this.createFile(this.getWorkdir(), filenameField.stringValue());
         }
-        if (returncode == ALTERNATE_OPTION) {
+        if(returncode == ALTERNATE_OPTION) {
             Path path = createFile(this.getWorkdir(), filenameField.stringValue());
-            if (path != null) {
+            if(path != null) {
                 Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
                 editor.open(path);
             }
@@ -61,9 +61,9 @@ public class CDCreateFileController extends CDFileController {
         String proposal;
         int no = 0;
         int index = filename.lastIndexOf(".");
-        while (file.getLocal().exists()) {
+        while(file.getLocal().exists()) {
             no++;
-            if (index != -1) {
+            if(index != -1) {
                 proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
             }
             else {
@@ -74,7 +74,7 @@ public class CDCreateFileController extends CDFileController {
         file.getLocal().createNewFile();
         file.upload();
         file.getLocal().delete();
-        if (file.exists()) {
+        if(file.exists()) {
             if(filename.charAt(0) == '.') {
                 ((CDBrowserController) parent).setShowHiddenFiles(true);
             }
