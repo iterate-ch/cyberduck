@@ -1878,7 +1878,11 @@ public class CDBrowserController extends CDWindowController
                     public void queueStopped() {
                         if(isMounted()) {
                             getSession().cache().invalidate(q.getRoot().getParent());
-                            reloadData(true);
+                            invoke(new Runnable() {
+                                public void run() {
+                                    reloadData(true);
+                                }
+                            });
                         }
                         q.removeListener(this);
                     }
@@ -1930,7 +1934,11 @@ public class CDBrowserController extends CDWindowController
                 public void queueStopped() {
                     if(isMounted()) {
                         getSession().cache().invalidate(q.getRoot().getParent());
-                        reloadData(true);
+                        invoke(new Runnable() {
+                            public void run() {
+                                reloadData(true);
+                            }
+                        });
                     }
                     q.removeListener(this);
                 }
@@ -2065,7 +2073,11 @@ public class CDBrowserController extends CDWindowController
                         public void queueStopped() {
                             if(isMounted()) {
                                 getSession().cache().invalidate(q.getRoot().getParent());
-                                reloadData(true);
+                                invoke(new Runnable() {
+                                    public void run() {
+                                        reloadData(true);
+                                    }
+                                });
                             }
                             q.removeListener(this);
                         }
@@ -2175,6 +2187,11 @@ public class CDBrowserController extends CDWindowController
     private ConnectionListener listener = null;
 
     /**
+     * References to all the error controllers attached to the window
+     */
+    private List errors = new ArrayList();
+
+    /**
      * Initializes a session for the passed host. Setting up the listeners and adding any callback
      * controllers needed for login, trust management and hostkey verification.
      *
@@ -2219,6 +2236,12 @@ public class CDBrowserController extends CDWindowController
             private TranscriptListener transcript;
 
             public void connectionWillOpen() {
+                for(Iterator i = errors.iterator(); i.hasNext(); ) {
+                    // First remove any previous error message
+                    ((CDErrorController)i.next()).close(null);
+                }
+                // Clear all previous error messages
+                errors.clear();
                 session.addProgressListener(error = new ProgressListener() {
                     public void message(final String message) {
                         ;
@@ -2249,11 +2272,11 @@ public class CDBrowserController extends CDWindowController
                     public void error(final Exception e) {
                         invoke(new Runnable() {
                             public void run() {
-                                CDErrorController error = new CDErrorController(
+                                CDErrorController error = null;
+                                errors.add(error = new CDBrowserErrorController(
                                         getSelectedBrowserView().superview().superview().superview(),
                                         getSelectedBrowserView().superview().superview(),
-                                        e,
-                                        host);
+                                        e, host));
                                 error.display();
                             }
                         });
@@ -2275,7 +2298,7 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void connectionDidOpen() {
-                getSelectedBrowserView().setNeedsDisplay(true);
+                getSelectedBrowserView().setNeedsDisplay();
                 // This progress listener was only used to handle initial connection errors
                 session.removeProgressListener(error);
                 invoke(new Runnable() {
@@ -2295,7 +2318,7 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void connectionDidClose() {
-                getSelectedBrowserView().setNeedsDisplay(true);
+                getSelectedBrowserView().setNeedsDisplay();
                 session.removeProgressListener(progress);
                 session.removeTranscriptListener(transcript);
                 progressIndicator.stopAnimation(this);
@@ -2378,7 +2401,7 @@ public class CDBrowserController extends CDWindowController
                             setWorkdir(session.mount());
                             invoke(new Runnable() {
                                 public void run() {
-                                    getSelectedBrowserView().setNeedsDisplay(true);
+                                    getSelectedBrowserView().setNeedsDisplay();
                                 }
                             });
                         }
