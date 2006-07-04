@@ -125,9 +125,10 @@
 		47494C8507EC6C3C00B34D53 /* Duplicate.nib in Resources */ = {isa = PBXBuildFile; fileRef = 47494C8107EC6C3C00B34D53 /* Duplicate.nib */; };
 		4749575F07EDED4600B34D53 /* outline.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4749575E07EDED4600B34D53 /* outline.tiff */; };
 		4749576607EDED4E00B34D53 /* list.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4749576507EDED4E00B34D53 /* list.tiff */; };
+		474C7B480A55CF2D000F600A /* BrowserError.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474C7B440A55CF2D000F600A /* BrowserError.nib */; };
+		474C7B490A55CF2D000F600A /* TransferError.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474C7B460A55CF2D000F600A /* TransferError.nib */; };
 		4751799E097943FA008F671F /* Credentials.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4751799C097943FA008F671F /* Credentials.strings */; };
 		4754786B0A232C9A00CD6EAC /* cancel.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4754786A0A232C9A00CD6EAC /* cancel.tiff */; };
-		475478860A232CA700CD6EAC /* Error.nib in Resources */ = {isa = PBXBuildFile; fileRef = 475478840A232CA700CD6EAC /* Error.nib */; };
 		4759C93D0A1476E500C5980A /* Progress.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4759C93B0A1476E500C5980A /* Progress.nib */; };
 		475D17B90805D54C00166B8A /* download5.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17AF0805D54C00166B8A /* download5.icns */; };
 		475D17BA0805D54C00166B8A /* download7.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B00805D54C00166B8A /* download7.icns */; };
@@ -1070,6 +1071,8 @@
 		4749575E07EDED4600B34D53 /* outline.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = outline.tiff; sourceTree = "<group>"; };
 		4749576507EDED4E00B34D53 /* list.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = list.tiff; sourceTree = "<group>"; };
 		47497C1D073F9618009BF63D /* Changelog.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Changelog.txt; sourceTree = "<group>"; };
+		474C7B450A55CF2D000F600A /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/BrowserError.nib; sourceTree = "<group>"; };
+		474C7B470A55CF2D000F600A /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/TransferError.nib; sourceTree = "<group>"; };
 		4751799D097943FA008F671F /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Credentials.strings; sourceTree = "<group>"; };
 		475179A409794467008F671F /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Credentials.strings; sourceTree = "<group>"; };
 		475179A509794472008F671F /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Credentials.strings; sourceTree = "<group>"; };
@@ -1127,7 +1130,6 @@
 		475465B60841C0DD009A1734 /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Certificate.nib; sourceTree = "<group>"; };
 		475465B70841C0DF009A1734 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sv; path = sv.lproj/Certificate.nib; sourceTree = "<group>"; };
 		4754786A0A232C9A00CD6EAC /* cancel.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = cancel.tiff; sourceTree = "<group>"; };
-		475478850A232CA700CD6EAC /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Error.nib; sourceTree = "<group>"; };
 		47562B25081D835D002849AB /* da */ = {isa = PBXFileReference; lastKnownFileType = text; name = da; path = da.lproj/License.txt; sourceTree = "<group>"; };
 		47562B26081D835D002849AB /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47562B27081D835D002849AB /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -2412,7 +2414,8 @@
 		4741639206C4F58D00AC0BD2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				475478840A232CA700CD6EAC /* Error.nib */,
+				474C7B440A55CF2D000F600A /* BrowserError.nib */,
+				474C7B460A55CF2D000F600A /* TransferError.nib */,
 				4759C93B0A1476E500C5980A /* Progress.nib */,
 				474163B906C4F64100AC0BD2 /* Queue.nib */,
 				4741653C06C4FC3F00AC0BD2 /* img */,
@@ -3267,9 +3270,10 @@
 				47239F2909FAFC5D006361C6 /* folder_writeonly.tiff in Resources */,
 				4759C93D0A1476E500C5980A /* Progress.nib in Resources */,
 				4754786B0A232C9A00CD6EAC /* cancel.tiff in Resources */,
-				475478860A232CA700CD6EAC /* Error.nib in Resources */,
 				47BA622D0A25127B0034AB18 /* navigation.tiff in Resources */,
 				4799CE110A29EEF700AA4E59 /* bottom.tiff in Resources */,
+				474C7B480A55CF2D000F600A /* BrowserError.nib in Resources */,
+				474C7B490A55CF2D000F600A /* TransferError.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4074,6 +4078,22 @@
 			name = Duplicate.nib;
 			sourceTree = "<group>";
 		};
+		474C7B440A55CF2D000F600A /* BrowserError.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				474C7B450A55CF2D000F600A /* en */,
+			);
+			name = BrowserError.nib;
+			sourceTree = "<group>";
+		};
+		474C7B460A55CF2D000F600A /* TransferError.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				474C7B470A55CF2D000F600A /* en */,
+			);
+			name = TransferError.nib;
+			sourceTree = "<group>";
+		};
 		4751799C097943FA008F671F /* Credentials.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -4104,14 +4124,6 @@
 				47271DA609F4050B00136347 /* tr */,
 			);
 			name = Credentials.strings;
-			sourceTree = "<group>";
-		};
-		475478840A232CA700CD6EAC /* Error.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				475478850A232CA700CD6EAC /* en */,
-			);
-			name = Error.nib;
 			sourceTree = "<group>";
 		};
 		4759C93B0A1476E500C5980A /* Progress.nib */ = {
