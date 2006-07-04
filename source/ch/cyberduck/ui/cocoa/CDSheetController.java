@@ -138,9 +138,6 @@ public abstract class CDSheetController extends CDWindowController implements CD
     protected void beginSheet(boolean blocking) {
         log.debug("beginSheet:" + this.window());
         synchronized(lock) {
-            if(!this.parent.window().isKeyWindow()) {
-                this.parent.window().makeKeyAndOrderFront(null);
-            }
             this.waitForSheetEnd();
             NSApplication app = NSApplication.sharedApplication();
             app.beginSheet(this.window(), //window
