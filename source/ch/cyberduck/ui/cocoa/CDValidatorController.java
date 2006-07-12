@@ -101,8 +101,8 @@ public abstract class CDValidatorController
         }
         if (this.hasPrompt()) {
             this.statusIndicator.stopAnimation(null);
+            this.fileTableView.reloadData();
             this.setEnabled(true);
-            this.fireDataChanged();
             this.waitForSheetEnd();
         }
         return this.validatedList;
@@ -498,7 +498,7 @@ public abstract class CDValidatorController
 
     protected void fireDataChanged() {
         if (this.hasPrompt()) {
-            this.fileTableView.reloadData();
+            this.fileTableView.noteNumberOfRowsChanged();
         }
     }
 

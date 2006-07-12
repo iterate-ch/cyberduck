@@ -35,8 +35,6 @@ import java.util.Iterator;
 public class CDProgressController extends CDController {
     private static Logger log = Logger.getLogger(CDProgressController.class);
 
-    private String statusText;
-
     private NSTimer progressTimer;
 
     private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
@@ -69,7 +67,7 @@ public class CDProgressController extends CDController {
     /**
      * Remove any error messages
      */
-    public void clear() {
+    public void closeErrorMessages() {
         for(Iterator i = errors.iterator(); i.hasNext(); ) {
             ((CDErrorController)i.next()).close(null);
         }
@@ -85,7 +83,7 @@ public class CDProgressController extends CDController {
             public void queueStarted() {
                 invoke(new Runnable() {
                     public void run() {
-                        clear();
+                        closeErrorMessages();
                         progressBar.setHidden(false);
                         progressBar.setIndeterminate(true);
                         progressBar.startAnimation(null);
@@ -96,8 +94,7 @@ public class CDProgressController extends CDController {
                     public void message(final String message) {
                         invoke(new Runnable() {
                             public void run() {
-                                statusText = message;
-                                progressField.setAttributedStringValue(new NSAttributedString(getProgressText(),
+                                progressField.setAttributedStringValue(new NSAttributedString(getProgressText(message),
                                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                                 progressField.display();
                             }
@@ -150,12 +147,18 @@ public class CDProgressController extends CDController {
     public void awakeFromNib() {
         this.filenameField.setAttributedStringValue(new NSAttributedString(this.queue.getName(),
                 TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
-        this.progressField.setAttributedStringValue(new NSAttributedString(this.getProgressText(),
+        this.progressField.setAttributedStringValue(new NSAttributedString(
+                this.getProgressText(this.progressField.stringValue()),
                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
     }
 
+    /**
+     * Called from the main run loop using a NSTimer #progressTimer
+     * @param t
+     */
     public void update(final NSTimer t) {
-        this.progressField.setAttributedStringValue(new NSAttributedString(this.getProgressText(),
+        this.progressField.setAttributedStringValue(new NSAttributedString(
+                this.getProgressText(this.progressField.stringValue()),
                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
         if(queue.isInitialized()) {
             if(queue.getSize() != -1) {
@@ -206,7 +209,7 @@ public class CDProgressController extends CDController {
     private static final String SEC_REMAINING = NSBundle.localizedString("seconds remaining", "Status", "");
     private static final String MIN_REMAINING = NSBundle.localizedString("minutes remaining", "Status", "");
 
-    private String getProgressText() {
+    private String getProgressText(String message) {
         StringBuffer b = new StringBuffer();
         b.append(Status.getSizeAsString(this.queue.getCurrent()));
         b.append(" ");
@@ -228,9 +231,9 @@ public class CDProgressController extends CDController {
                 b.append(")");
             }
         }
-        if(statusText != null) {
+        if(message != null) {
             b.append(" - ");
-            b.append(this.statusText);
+            b.append(message);
         }
         return b.toString();
     }
@@ -330,15 +333,5 @@ public class CDProgressController extends CDController {
 
     public NSView view() {
         return this.progressView;
-    }
-
-    protected void invalidate() {
-        this.progressView = null;
-        this.progressField = null;
-        this.progressBar = null;
-        this.progressTimer = null;
-        this.filenameField = null;
-        this.queue = null;
-        super.invalidate();
     }
 }

@@ -231,7 +231,15 @@ public class CDQueueController extends CDWindowController
             }
 
             /**
-             *
+             * You should implement this method if your table supports varying row heights.
+             * The height returned should not include intercell spacing and must be greater
+             * than zero.
+             * Although NSTableViews may cache the returned values, you should ensure
+             * that this method is efficient. When you change a row's height you must
+             * invalidate the existing row height by calling noteHeightOfRowsWithIndexesChanged.
+             * NSTableView automatically invalidates its entire row height cache when
+             * reloadData and noteNumberOfRowsChanged are called.
+             * TODO: ONLY CALLED FOR 10.4 OR LATER
              * @param view
              * @param i
              * @return The height of the particular view in this row
@@ -240,7 +248,7 @@ public class CDQueueController extends CDWindowController
                 final CDProgressController c = queueModel.getController(i);
                 if(null == c) {
                     log.warn("No progress controller at index "+i);
-                    return 0;
+                    return 1;
                 }
                 return c.view().frame().size().height();
             }
@@ -445,7 +453,11 @@ public class CDQueueController extends CDWindowController
                         }
                     }
                     if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
-                        removeItem(queue);
+                        invoke(new Runnable() {
+                            public void run() {
+                                removeItem(queue);
+                            }
+                        });
                     }
                 }
                 if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
@@ -689,7 +701,7 @@ public class CDQueueController extends CDWindowController
     public void clearButtonClicked(final Object sender) {
         for(int i = 0; i < this.queueModel.size(); i++) {
             CDProgressController c = this.queueModel.getController(i);
-            c.clear();
+            c.closeErrorMessages();
             if(!c.getQueue().isRunning() && c.getQueue().isComplete()) {
                 this.queueModel.remove(i);
                 i--;
