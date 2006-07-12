@@ -255,8 +255,8 @@ public class SFTPPath extends Path {
         synchronized(session) {
             log.debug("delete:" + this.toString());
             try {
+                session.check();
                 if(this.attributes.isFile()) {
-                    session.check();
                     session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
                     session.SFTP.removeFile(this.getAbsolute());
                 }
