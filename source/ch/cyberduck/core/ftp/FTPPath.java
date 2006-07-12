@@ -128,7 +128,7 @@ public class FTPPath extends Path {
                     session.check();
                     session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
                     session.FTP.setTransferType(FTPTransferType.ASCII);
-                    session.FTP.chdir(this.getAbsolute());
+                    this.cwdir();
                     String[] lines = session.FTP.dir(this.session.getHost().getEncoding());
                     // Read line for line if the connection hasn't been interrupted since
                     for(int i = 0; i < lines.length; i++) {
@@ -264,13 +264,14 @@ public class FTPPath extends Path {
         synchronized(session) {
             log.debug("delete:" + this.toString());
             try {
+                session.check();
                 if(this.attributes.isFile()) {
-                    session.check();
-                    session.FTP.chdir(this.getParent().getAbsolute());
+                    this.getParent().cwdir();
                     session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
                     session.FTP.delete(this.getName());
                 }
                 else if(this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
+                    this.cwdir();
                     for(Iterator iter = this.list().iterator(); iter.hasNext();) {
                         if(!session.isConnected()) {
                             break;
@@ -284,7 +285,7 @@ public class FTPPath extends Path {
                             file.delete();
                         }
                     }
-                    session.FTP.chdir(this.getParent().getAbsolute());
+                    this.getParent().cwdir();
                     session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
                     session.FTP.rmdir(this.getName());
                 }

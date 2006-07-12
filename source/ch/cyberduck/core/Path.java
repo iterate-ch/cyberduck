@@ -202,7 +202,7 @@ public abstract class Path extends NSObject {
     /**
      * Request a unsorted and unfiltered file listing from the server.
      *
-     * @return null if there is an error accessing this directory
+     * @return The children of this path or an empty list if it is not accessible for some reason
      */
     public AttributedList list() {
         return this.list(new NullComparator(), new NullFilter());
