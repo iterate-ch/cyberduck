@@ -273,6 +273,8 @@ public abstract class Preferences {
         defaults.put("connection.keepalive", "false");
         defaults.put("connection.keepalive.interval", "30000");
 
+        defaults.put("connection.hostname.check", "true"); //Check hostname reachability using NSNetworkDiagnostics
+
         /**
          * Locatoin of the openssh known_hosts file
          */

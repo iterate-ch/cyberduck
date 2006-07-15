@@ -537,6 +537,9 @@ public class Host extends NSObject {
         if(!this.jni_load()) {
             return false;
         }
+        if(!Preferences.instance().getBoolean("connection.hostname.check")) {
+            return true;
+        }
         boolean available = this.isReachable(this.getURL());
         if(!available) {
             log.warn("Unreachable hostname:" + this.getHostname());
