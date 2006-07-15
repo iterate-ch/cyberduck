@@ -92,9 +92,9 @@ public class CDQueueController extends CDWindowController
         this.logView = logView;
     }
 
-    public void toggleLogDrawer(final Object sender) {
-        this.logDrawer.toggle(this);
-    }
+//    public void toggleLogDrawer(final Object sender) {
+//        this.logDrawer.toggle(this);
+//    }
 
     private NSTextField urlLabel;
 
@@ -411,12 +411,16 @@ public class CDQueueController extends CDWindowController
                 toolbar.validateVisibleItems();
                 queue.getSession().addTranscriptListener(transcript = new TranscriptListener() {
                     public void log(String message) {
-                        synchronized(lock) {
-                            logView.textStorage().beginEditing();
-                            logView.textStorage().appendAttributedString(
-                                    new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
-                            logView.textStorage().endEditing();
-                        }
+                        // Currently no logging because of many crashes; must be some concurrency
+                        // issue I am not aware of. A solution would be to run this on the main thread
+                        // but that gives a huge performance issue possibly because of frequent
+                        // thread switching required
+//                        synchronized(lock) {
+//                            logView.textStorage().beginEditing();
+//                            logView.textStorage().appendAttributedString(
+//                                    new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
+//                            logView.textStorage().endEditing();
+//                        }
                     }
                 });
                 if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
