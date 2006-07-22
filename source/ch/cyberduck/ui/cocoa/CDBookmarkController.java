@@ -62,6 +62,7 @@ public class CDBookmarkController extends CDWindowController {
             this.host.setPort(Session.FTP_PORT);
         }
         this.updateFields();
+        CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
     }
 
     private NSPopUpButton encodingPopup; // IBOutlet
@@ -260,36 +261,58 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     public void hostInputDidEndEditing(NSNotification sender) {
-        log.debug("hostInputDidEndEditing");
+        new Thread() {
+            public void run() {
+                int pool = NSAutoreleasePool.push();
+                final boolean reachable = new Host(hostField.stringValue()).isReachable();
+                NSAutoreleasePool.pop(pool);
+                invoke(new Runnable() {
+                    public void run() {
+                        alertIcon.setHidden(reachable);
+                    }
+                });
+            }
+        }.start();
         this.host.setHostname(hostField.stringValue());
         this.updateFields();
+        CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
     }
 
     public void portInputDidEndEditing(NSNotification sender) {
         log.debug("hostInputDidEndEditing");
         this.host.setPort(Integer.parseInt(portField.stringValue()));
         this.updateFields();
+        CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
     }
 
     public void pathInputDidEndEditing(NSNotification sender) {
         log.debug("pathInputDidEndEditing");
         this.host.setDefaultPath(pathField.stringValue());
         this.updateFields();
+        CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
     }
 
     public void nicknameInputDidEndEditing(NSNotification sender) {
         log.debug("nicknameInputDidEndEditing");
         this.host.setNickname(nicknameField.stringValue());
         this.updateFields();
+        CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
     }
 
     public void usernameInputDidEndEditing(NSNotification sender) {
         log.debug("usernameInputDidEndEditing");
         this.host.getCredentials().setUsername(usernameField.stringValue());
         this.updateFields();
+        CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
     }
 
     private void updateFields() {
+        try {
+            this.host = Host.parse(hostField.stringValue());
+        }
+        catch(MalformedURLException e) {
+            // ignore; just a hostname has been entered
+        }
         this.window.setTitle(this.host.getNickname());
         this.urlField.setStringValue(this.host.getURL() + host.getDefaultPath());
         this.hostField.setStringValue(this.host.getHostname());
@@ -317,7 +340,5 @@ public class CDBookmarkController extends CDWindowController {
             this.pkCheckbox.setState(NSCell.OffState);
             this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
         }
-        CDBookmarkTableDataSource.instance().collectionItemChanged(host);
-        this.alertIcon.setHidden(new Host(hostField.stringValue()).isReachable());
     }
 }
