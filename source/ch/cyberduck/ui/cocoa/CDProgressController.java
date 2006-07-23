@@ -35,6 +35,8 @@ import java.util.Iterator;
 public class CDProgressController extends CDController {
     private static Logger log = Logger.getLogger(CDProgressController.class);
 
+    private String statusText;
+
     private NSTimer progressTimer;
 
     private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
@@ -94,7 +96,8 @@ public class CDProgressController extends CDController {
                     public void message(final String message) {
                         invoke(new Runnable() {
                             public void run() {
-                                progressField.setAttributedStringValue(new NSAttributedString(getProgressText(message),
+                                statusText = message;
+                                progressField.setAttributedStringValue(new NSAttributedString(getProgressText(),
                                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                                 progressField.display();
                             }
@@ -148,7 +151,7 @@ public class CDProgressController extends CDController {
         this.filenameField.setAttributedStringValue(new NSAttributedString(this.queue.getName(),
                 TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
         this.progressField.setAttributedStringValue(new NSAttributedString(
-                this.getProgressText(this.progressField.stringValue()),
+                this.getProgressText(),
                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
     }
 
@@ -157,8 +160,8 @@ public class CDProgressController extends CDController {
      * @param t
      */
     public void update(final NSTimer t) {
-        this.progressField.setAttributedStringValue(new NSAttributedString(
-                this.getProgressText(this.progressField.stringValue()),
+        this.progressField.setAttributedStringValue(
+                new NSAttributedString(this.getProgressText(),
                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
         if(queue.isInitialized()) {
             if(queue.getSize() != -1) {
@@ -209,7 +212,7 @@ public class CDProgressController extends CDController {
     private static final String SEC_REMAINING = NSBundle.localizedString("seconds remaining", "Status", "");
     private static final String MIN_REMAINING = NSBundle.localizedString("minutes remaining", "Status", "");
 
-    private String getProgressText(String message) {
+    private String getProgressText() {
         StringBuffer b = new StringBuffer();
         b.append(Status.getSizeAsString(this.queue.getCurrent()));
         b.append(" ");
@@ -231,9 +234,9 @@ public class CDProgressController extends CDController {
                 b.append(")");
             }
         }
-        if(message != null) {
+        if(this.statusText != null) {
             b.append(" - ");
-            b.append(message);
+            b.append(this.statusText);
         }
         return b.toString();
     }
