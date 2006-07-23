@@ -129,11 +129,6 @@
 		474C7B490A55CF2D000F600A /* TransferError.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474C7B460A55CF2D000F600A /* TransferError.nib */; };
 		4751799E097943FA008F671F /* Credentials.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4751799C097943FA008F671F /* Credentials.strings */; };
 		4754786B0A232C9A00CD6EAC /* cancel.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4754786A0A232C9A00CD6EAC /* cancel.tiff */; };
-		4755986D0A72A5F700B5DCDB /* RowResizableTableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 475598680A72A5F700B5DCDB /* RowResizableTableView.h */; };
-		4755986E0A72A5F700B5DCDB /* RowResizableTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 475598690A72A5F700B5DCDB /* RowResizableTableView.m */; };
-		4755986F0A72A5F700B5DCDB /* RowResizableViewImplementation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4755986A0A72A5F700B5DCDB /* RowResizableViewImplementation.h */; };
-		475598700A72A5F700B5DCDB /* RowResizableViewMethods.h in Headers */ = {isa = PBXBuildFile; fileRef = 4755986B0A72A5F700B5DCDB /* RowResizableViewMethods.h */; };
-		475598710A72A5F700B5DCDB /* RowResizableViewVars.h in Headers */ = {isa = PBXBuildFile; fileRef = 4755986C0A72A5F700B5DCDB /* RowResizableViewVars.h */; };
 		47559A160A72AE7A00B5DCDB /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 475599FD0A72AE6200B5DCDB /* Sparkle.framework */; };
 		4759C93D0A1476E500C5980A /* Progress.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4759C93B0A1476E500C5980A /* Progress.nib */; };
 		475D17B90805D54C00166B8A /* download5.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17AF0805D54C00166B8A /* download5.icns */; };
@@ -157,6 +152,7 @@
 		47649E4508E563D000207DC9 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 476DEBE10629C6FB005EF4B1 /* CoreFoundation.framework */; };
 		47649EDD08E563D600207DC9 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479982AF05F54B1600F81519 /* Carbon.framework */; };
 		476C7C1907F5A2A700CF6032 /* File.nib in Resources */ = {isa = PBXBuildFile; fileRef = 476C7C1707F5A2A700CF6032 /* File.nib */; };
+		4773DCC90A73C0C600AB81E6 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 475599FD0A72AE6200B5DCDB /* Sparkle.framework */; };
 		47748981085825460030AED1 /* Cyberduck.scriptTerminology in Resources */ = {isa = PBXBuildFile; fileRef = 4774897F085825460030AED1 /* Cyberduck.scriptTerminology */; };
 		47748982085825460030AED1 /* Cyberduck.scriptSuite in Resources */ = {isa = PBXBuildFile; fileRef = 47748980085825460030AED1 /* Cyberduck.scriptSuite */; };
 		477BB1A10824E95C0094BCF5 /* arrowDown16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477BB1A00824E95C0094BCF5 /* arrowDown16.tiff */; };
@@ -279,6 +275,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				4773DCC90A73C0C600AB81E6 /* Sparkle.framework in CopyFiles */,
 				47DC8F0D0869A44E00B9DD7D /* DotMacKit.framework in CopyFiles */,
 				47C261A90859014400765C4A /* Growl.framework in CopyFiles */,
 				47C261AA0859014400765C4A /* Keychain.framework in CopyFiles */,
@@ -1133,11 +1130,6 @@
 		475465B60841C0DD009A1734 /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Certificate.nib; sourceTree = "<group>"; };
 		475465B70841C0DF009A1734 /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sv; path = sv.lproj/Certificate.nib; sourceTree = "<group>"; };
 		4754786A0A232C9A00CD6EAC /* cancel.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = cancel.tiff; sourceTree = "<group>"; };
-		475598680A72A5F700B5DCDB /* RowResizableTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RowResizableTableView.h; sourceTree = "<group>"; };
-		475598690A72A5F700B5DCDB /* RowResizableTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RowResizableTableView.m; sourceTree = "<group>"; };
-		4755986A0A72A5F700B5DCDB /* RowResizableViewImplementation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RowResizableViewImplementation.h; sourceTree = "<group>"; };
-		4755986B0A72A5F700B5DCDB /* RowResizableViewMethods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RowResizableViewMethods.h; sourceTree = "<group>"; };
-		4755986C0A72A5F700B5DCDB /* RowResizableViewVars.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RowResizableViewVars.h; sourceTree = "<group>"; };
 		475599FD0A72AE6200B5DCDB /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = build/Sparkle.framework; sourceTree = "<group>"; };
 		47562B25081D835D002849AB /* da */ = {isa = PBXFileReference; lastKnownFileType = text; name = da; path = da.lproj/License.txt; sourceTree = "<group>"; };
 		47562B26081D835D002849AB /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1800,7 +1792,6 @@
 			children = (
 				29B97316FDCFA39411CA2CEA /* main.m */,
 				47457F8A09980270002C93C3 /* de */,
-				475598660A72A5F700B5DCDB /* ca */,
 				474152D806C4F08A00AC0BD2 /* ch */,
 				4741532B06C4F08A00AC0BD2 /* com */,
 				470E570508BE4A6000BDF3CD /* glguerin */,
@@ -2581,26 +2572,6 @@
 			name = bookmark;
 			sourceTree = "<group>";
 		};
-		475598660A72A5F700B5DCDB /* ca */ = {
-			isa = PBXGroup;
-			children = (
-				475598670A72A5F700B5DCDB /* evanjones */,
-			);
-			path = ca;
-			sourceTree = "<group>";
-		};
-		475598670A72A5F700B5DCDB /* evanjones */ = {
-			isa = PBXGroup;
-			children = (
-				475598680A72A5F700B5DCDB /* RowResizableTableView.h */,
-				475598690A72A5F700B5DCDB /* RowResizableTableView.m */,
-				4755986A0A72A5F700B5DCDB /* RowResizableViewImplementation.h */,
-				4755986B0A72A5F700B5DCDB /* RowResizableViewMethods.h */,
-				4755986C0A72A5F700B5DCDB /* RowResizableViewVars.h */,
-			);
-			path = evanjones;
-			sourceTree = "<group>";
-		};
 		478B362F0A07C395000F11F2 /* macfoh */ = {
 			isa = PBXGroup;
 			children = (
@@ -2873,10 +2844,6 @@
 				47BA61740A2501C40034AB18 /* CDErrorView.h in Headers */,
 				47BA61C70A2507320034AB18 /* CDNavigationView.h in Headers */,
 				4799CE260A29EF5600AA4E59 /* CDBottomView.h in Headers */,
-				4755986D0A72A5F700B5DCDB /* RowResizableTableView.h in Headers */,
-				4755986F0A72A5F700B5DCDB /* RowResizableViewImplementation.h in Headers */,
-				475598700A72A5F700B5DCDB /* RowResizableViewMethods.h in Headers */,
-				475598710A72A5F700B5DCDB /* RowResizableViewVars.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3388,7 +3355,6 @@
 				47BA61750A2501C40034AB18 /* CDErrorView.m in Sources */,
 				47BA61C80A2507320034AB18 /* CDNavigationView.m in Sources */,
 				4799CE270A29EF5600AA4E59 /* CDBottomView.m in Sources */,
-				4755986E0A72A5F700B5DCDB /* RowResizableTableView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
