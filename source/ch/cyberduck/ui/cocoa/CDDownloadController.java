@@ -53,21 +53,12 @@ public class CDDownloadController extends CDSheetController {
 
     public void callback(int returncode) {
         if (returncode == DEFAULT_OPTION) {
-            Host host = null;
             try {
-                host = Host.parse(urlField.stringValue());
-                Path path = PathFactory.createPath(SessionFactory.createSession(host),
-                        host.getDefaultPath());
-                try {
-                    path.cwdir();
-                    CDBrowserController controller = new CDBrowserController();
-                    controller.mount(host);
-                }
-                catch (IOException e) {
-                    Queue queue = new DownloadQueue();
-                    queue.addRoot(path);
-                    CDQueueController.instance().startItem(queue);
-                }
+                Host host = Host.parse(urlField.stringValue());
+                Queue queue = new DownloadQueue();
+                queue.addRoot(PathFactory.createPath(SessionFactory.createSession(host),
+                        host.getDefaultPath()));
+                CDQueueController.instance().startItem(queue);
             }
             catch (MalformedURLException e) {
                 log.error(e.getMessage());
