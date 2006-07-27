@@ -106,6 +106,9 @@ public abstract class CDWindowController extends CDController
     }
 
     public boolean hasSheet() {
+        if(null == this.window) {
+            return false;
+        }
         return this.window.attachedSheet() != null;
     }
 
