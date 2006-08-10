@@ -52,22 +52,24 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Host_diagnose
 @implementation Host
 
 + (void)diagnose:(NSString*)urlString {
-	CFURLRef url;
-	CFNetDiagnosticRef myDiagnostics;
-	CFNetDiagnosticStatus myStatus;
-	
-	//First get the CFURLRef
-	url = CFURLCreateWithString(kCFAllocatorDefault, (CFStringRef)urlString, NULL);
-	
-	if(url) {
-		//Now create the CFNetDiagnosticRef then release url since we are done with it
-		myDiagnostics = CFNetDiagnosticCreateWithURL(kCFAllocatorDefault, url);
-		CFRelease(url);
+	if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_3) {
+		CFURLRef url;
+		CFNetDiagnosticRef myDiagnostics;
+		CFNetDiagnosticStatus myStatus;
 		
-		if(myDiagnostics) {
-			//Call the interactive diagnose call
-			myStatus = CFNetDiagnosticDiagnoseProblemInteractively(myDiagnostics);
-			CFRelease(myDiagnostics);
+		//First get the CFURLRef
+		url = CFURLCreateWithString(kCFAllocatorDefault, (CFStringRef)urlString, NULL);
+		
+		if(url) {
+			//Now create the CFNetDiagnosticRef then release url since we are done with it
+			myDiagnostics = CFNetDiagnosticCreateWithURL(kCFAllocatorDefault, url);
+			CFRelease(url);
+			
+			if(myDiagnostics) {
+				//Call the interactive diagnose call
+				myStatus = CFNetDiagnosticDiagnoseProblemInteractively(myDiagnostics);
+				CFRelease(myDiagnostics);
+			}
 		}
 	}
 }
