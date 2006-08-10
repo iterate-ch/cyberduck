@@ -221,10 +221,6 @@ public abstract class Queue extends NSObject {
                     try {
                         getSession().connect();
                     }
-                    catch(LoginCanceledException e) {
-                        getSession().error(e);
-                        cancel();
-                    }
                     catch(IOException e) {
                         getSession().error(e);
                         cancel();
