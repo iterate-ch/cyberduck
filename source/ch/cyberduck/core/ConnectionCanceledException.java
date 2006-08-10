@@ -25,9 +25,13 @@ import java.io.IOException;
 /**
  * @version $Id$
  */
-public class LoginCanceledException extends ConnectionCanceledException {
+public class ConnectionCanceledException extends IOException {
 
-    public LoginCanceledException() {
-        super(NSBundle.localizedString("Login canceled", "Credentials", ""));
+    public ConnectionCanceledException() {
+        super(NSBundle.localizedString("Connection attempt canceled", "Credentials", ""));
+    }
+
+    public ConnectionCanceledException(String s) {
+        super(s);
     }
 }

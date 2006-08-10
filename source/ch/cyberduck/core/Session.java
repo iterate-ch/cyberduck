@@ -155,7 +155,7 @@ public abstract class Session extends NSObject {
                             host.getHostname());
                     return home;
                 }
-                catch(LoginCanceledException e) {
+                catch(ConnectionCanceledException e) {
                     this.close();
                 }
                 catch(SocketException e) {
@@ -194,9 +194,10 @@ public abstract class Session extends NSObject {
     }
 
     /**
-     * @return The current working directory (pwd)
+     * @return The current working directory (pwd) or null if it cannot be retrieved for whatever reason
+     * @throws ConnectionCanceledException If the underlying connection has already been closed before
      */
-    public abstract Path workdir();
+    protected abstract Path workdir() throws ConnectionCanceledException;
 
     /**
      * Send a no operation command
@@ -206,7 +207,7 @@ public abstract class Session extends NSObject {
     protected abstract void noop() throws IOException;
 
     /**
-     * Interrupt any running operation by closing the underlying socket.
+     * Interrupt any running operation asynchroneously by closing the underlying socket.
      * Close the underlying socket regardless of its state; will throw a socket exception
      * on the thread owning the socket
      */
