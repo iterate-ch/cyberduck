@@ -121,7 +121,7 @@ public class Host extends NSObject {
 
     public Object clone() {
         Host h = new Host(this.getAsDictionary());
-        h.setCredentials(this.getCredentials());
+        h.setCredentials((Login)this.getCredentials().clone());
         return h;
     }
 
@@ -377,6 +377,12 @@ public class Host extends NSObject {
      * @param protocol The protocol to use or null to use the default protocol for this port number
      */
     public void setProtocol(String protocol) {
+        if(null != this.protocol) {
+            if(this.getNickname().equals(this.getDefaultNickname())) {
+                //Revert the last default nickname set
+                this.setNickname(null);
+            }
+        }
         this.protocol = protocol != null ? protocol : Preferences.instance().getProperty("connection.protocol.default");
         if(null == this.login) {
             return;
@@ -402,9 +408,22 @@ public class Host extends NSObject {
         this.identification = id;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getNickname() {
-        if(this.nickname != null)
+        if(this.nickname != null) {
             return this.nickname;
+        }
+        return this.getDefaultNickname();
+    }
+
+    /**
+     *
+     * @return
+     */
+    private String getDefaultNickname() {
         return this.getHostname() + " (" + this.getProtocol().toUpperCase() + ")";
     }
 
@@ -417,6 +436,12 @@ public class Host extends NSObject {
     }
 
     public void setHostname(String hostname) {
+        if(null != this.hostname) {
+            if(this.getNickname().equals(this.getDefaultNickname())) {
+                //Revert the last default nickname set
+                this.setNickname(null);
+            }
+        }
         this.hostname = hostname;
         if(null == this.login)
             return;
