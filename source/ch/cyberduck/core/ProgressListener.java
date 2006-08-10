@@ -1,5 +1,13 @@
 package ch.cyberduck.core;
 
+import com.enterprisedt.net.ftp.FTPException;
+import com.sshtools.j2ssh.SshException;
+
+import com.apple.cocoa.foundation.NSBundle;
+
+import java.net.SocketException;
+import java.io.IOException;
+
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -21,18 +29,36 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public interface ProgressListener {
+public abstract class ProgressListener {
+
+    protected String getErrorText(Exception failure) {
+        String alert = failure.getMessage();
+        String title = NSBundle.localizedString("Error", "");
+        if(failure instanceof FTPException) {
+            title = "FTP " + NSBundle.localizedString("Error", "");
+        }
+        else if(failure instanceof SshException) {
+            title = "SSH " + NSBundle.localizedString("Error", "");
+        }
+        else if(failure instanceof SocketException) {
+            title = "Network " + NSBundle.localizedString("Error", "");
+        }
+        else if(failure instanceof IOException) {
+            title = "I/O " + NSBundle.localizedString("Error", "");
+        }
+        return title + ": " + alert;
+    }
 
     /**
      *
      * @param message
      */
-    public void message(final String message);
+    public abstract void message(final String message);
 
     /**
      *
      * @param exception
      */
-    public void error(final Exception exception);
+    public abstract void error(final Exception exception);
 
 }

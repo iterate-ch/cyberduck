@@ -55,7 +55,7 @@ public class CDQueueController extends CDWindowController
      * @param notification
      */
     public void windowDidBecomeKey(NSNotification notification) {
-        this.updateTableViewSelection();
+        this.updateSelection();
         //Saving state of transfer window
         Preferences.instance().setProperty("queue.openByDefault", true);
     }
@@ -64,7 +64,7 @@ public class CDQueueController extends CDWindowController
      * @param notification
      */
     public void windowDidResignKey(NSNotification notification) {
-        this.updateTableViewSelection();
+        this.updateSelection();
     }
 
     /**
@@ -92,9 +92,9 @@ public class CDQueueController extends CDWindowController
         this.logView = logView;
     }
 
-//    public void toggleLogDrawer(final Object sender) {
-//        this.logDrawer.toggle(this);
-//    }
+    public void toggleLogDrawer(final Object sender) {
+        this.logDrawer.toggle(this);
+    }
 
     private NSTextField urlLabel;
 
@@ -230,35 +230,31 @@ public class CDQueueController extends CDWindowController
                 return null;
             }
 
-            /**
-             * You should implement this method if your table supports varying row heights.
-             * The height returned should not include intercell spacing and must be greater
-             * than zero.
-             * Although NSTableViews may cache the returned values, you should ensure
-             * that this method is efficient. When you change a row's height you must
-             * invalidate the existing row height by calling noteHeightOfRowsWithIndexesChanged.
-             * NSTableView automatically invalidates its entire row height cache when
-             * reloadData and noteNumberOfRowsChanged are called.
-             * TODO: ONLY CALLED FOR 10.4 OR LATER
-             * @param view
-             * @param i
-             * @return The height of the particular view in this row
-             */
-            public float tableViewHeightOfRow(NSTableView view, int i) {
-                final CDProgressController c = queueModel.getController(i);
-                if(null == c) {
-                    log.warn("No progress controller at index "+i);
-                    return 1;
-                }
-                return c.view().frame().size().height();
-            }
+//            /**
+//             * You should implement this method if your table supports varying row heights.
+//             * The height returned should not include intercell spacing and must be greater
+//             * than zero.
+//             * Although NSTableViews may cache the returned values, you should ensure
+//             * that this method is efficient. When you change a row's height you must
+//             * invalidate the existing row height by calling noteHeightOfRowsWithIndexesChanged.
+//             * NSTableView automatically invalidates its entire row height cache when
+//             * reloadData and noteNumberOfRowsChanged are called.
+//             * Note: ONLY CALLED FOR 10.4 OR LATER
+//             * @param view
+//             * @param i
+//             * @return The height of the particular view in this row
+//             */
+//            public float tableViewHeightOfRow(NSTableView view, int i) {
+//                final CDProgressController c = queueModel.getController(i);
+//                return c.view().frame().size().height();
+//            }
 
             public void tableViewSelectionIsChanging(NSNotification aNotification) {
-                updateTableViewSelection();
+                updateSelection();
             }
 
             public void selectionDidChange(NSNotification notification) {
-                updateTableViewSelection();
+                updateSelection();
             }
         });
         // receive drag events from types
@@ -279,7 +275,7 @@ public class CDQueueController extends CDWindowController
             c.setWidth(32f);
             c.setMaxWidth(32f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
             else {
                 c.setResizable(true);
@@ -294,7 +290,7 @@ public class CDQueueController extends CDWindowController
             c.setWidth(300f);
             c.setMaxWidth(1000f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
             else {
                 c.setResizable(true);
@@ -314,13 +310,13 @@ public class CDQueueController extends CDWindowController
     /**
      * Highlights the currently selected item and udpates the text fields
      */
-    private void updateTableViewSelection() {
+    private void updateSelection() {
         boolean key = window().isKeyWindow();
         for(int i = 0; i < queueModel.size(); i++) {
             queueModel.getController(i).setHighlighted(queueTable.isRowSelected(i) && key);
         }
         if(queueTable.selectedRow() != -1) {
-            Queue q = (Queue) queueModel.get(queueTable.selectedRow());
+            final Queue q = (Queue) queueModel.get(queueTable.selectedRow());
             if(q.numberOfRoots() == 1) {
                 urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()
                         + q.getRoot().getAbsolute(),
@@ -352,7 +348,7 @@ public class CDQueueController extends CDWindowController
                 ((NSView) this.queueTable.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
             }
             this.queueTable.reloadData();
-            this.updateTableViewSelection();
+            this.updateSelection();
         }
     }
 
@@ -398,6 +394,7 @@ public class CDQueueController extends CDWindowController
     private void startItem(final Queue queue, final boolean resumeRequested) {
         queue.addListener(new QueueListener() {
             private TranscriptListener transcript;
+            private ProgressListener progress;
 
             public void transferStarted(final Path path) {
                 queueTable.setNeedsDisplay();
@@ -421,6 +418,27 @@ public class CDQueueController extends CDWindowController
 //                                    new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
 //                            logView.textStorage().endEditing();
 //                        }
+                    }
+                });
+                queue.getSession().addProgressListener(progress = new ProgressListener() {
+                    public void message(final String m) {
+                        ;
+                    }
+
+                    public void error(final Exception e) {
+                        invoke(new Runnable() {
+                            public void run() {
+                                synchronized(lock) {
+                                    logView.textStorage().appendAttributedString(
+                                            new NSAttributedString(getErrorText(e) + "\n", BOLD_RED_FONT_ATTRIBUTES));
+                                    if(Preferences.instance().getBoolean("queue.openLogDrawerOnError")) {
+                                        logDrawer.open();
+                                        //Any better way to scroll to the bottom?
+                                        logView.scrollPoint(new NSPoint(0, 1000000));
+                                    }
+                                }
+                            }
+                        });
                     }
                 });
                 if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
@@ -448,6 +466,7 @@ public class CDQueueController extends CDWindowController
                     }
                 }
                 queue.getSession().removeTranscriptListener(transcript);
+                queue.getSession().removeProgressListener(progress);
                 queue.removeListener(this);
                 if(queue.isComplete() && !queue.isCanceled()) {
                     if(queue instanceof DownloadQueue) {
@@ -705,13 +724,17 @@ public class CDQueueController extends CDWindowController
     public void clearButtonClicked(final Object sender) {
         for(int i = 0; i < this.queueModel.size(); i++) {
             CDProgressController c = this.queueModel.getController(i);
-            c.closeErrorMessages();
+//            c.closeErrors();
             if(!c.getQueue().isRunning() && c.getQueue().isComplete()) {
                 this.queueModel.remove(i);
                 i--;
             }
         }
         this.reloadQueueTable();
+//        synchronized(lock) {
+//            //Clear the log view
+//            this.logView.textStorage().setAttributedString(new NSAttributedString());
+//        }
     }
 
     /**

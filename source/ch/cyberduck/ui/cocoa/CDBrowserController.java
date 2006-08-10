@@ -18,6 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.enterprisedt.net.ftp.FTPException;
+import com.sshtools.j2ssh.SshException;
+
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
@@ -34,6 +37,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.net.SocketException;
 
 /**
  * @version $Id$
@@ -933,7 +937,7 @@ public class CDBrowserController extends CDWindowController
             c.setWidth(20f);
             c.setMaxWidth(20f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
             else {
                 c.setResizable(true);
@@ -1051,7 +1055,7 @@ public class CDBrowserController extends CDWindowController
             c.setWidth(100f);
             c.setMaxWidth(800f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
                 c.setResizable(true);
@@ -1063,6 +1067,7 @@ public class CDBrowserController extends CDWindowController
                 NSImage.imageNamed("NSAscendingSortIndicator") :
                 NSImage.imageNamed("NSDescendingSortIndicator"),
                 table.tableColumnWithIdentifier(Preferences.instance().getProperty("browser.sort.column")));
+//        table.setAutosaveTableColumns(true);
         table.sizeToFit();
         this.reloadData(false);
     }
@@ -1139,7 +1144,7 @@ public class CDBrowserController extends CDWindowController
             c.setWidth(32f);
             c.setMaxWidth(32f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
             else {
                 c.setResizable(true);
@@ -1155,7 +1160,7 @@ public class CDBrowserController extends CDWindowController
             c.setWidth(200f);
             c.setMaxWidth(500f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
             else {
                 c.setResizable(true);
@@ -2149,6 +2154,13 @@ public class CDBrowserController extends CDWindowController
                 }
             });
             this.reloadData(false);
+            final File bookmark = getRepresentedFile();
+            if(bookmark != null && bookmark.exists()) {
+                // Delete this history bookmark if there was any error connecting
+                bookmark.delete();
+            }
+            this.window.setTitle("Cyberduck");
+            this.window.setRepresentedFilename(""); //can't send null
             return;
         }
         if(!this.hasSession()) {
@@ -2227,40 +2239,19 @@ public class CDBrowserController extends CDWindowController
              */
             private ProgressListener progress;
             /**
-             * Only used for connection errors upon the initial handshake
-             */
-            private ProgressListener error;
-            /**
              * Writes the transcript to the log viewer
              */
             private TranscriptListener transcript;
 
+            private final Object lock = new Object();
+
             public void connectionWillOpen() {
-                for(Iterator i = errors.iterator(); i.hasNext(); ) {
-                    // First remove any previous error message
-                    ((CDErrorController)i.next()).close(null);
-                }
+//                for(Iterator i = errors.iterator(); i.hasNext(); ) {
+//                    // First remove any previous error message
+//                    ((CDErrorController)i.next()).close(null);
+//                }
                 // Clear all previous error messages
                 errors.clear();
-                session.addProgressListener(error = new ProgressListener() {
-                    public void message(final String message) {
-                        ;
-                    }
-
-                    public void error(final Exception e) {
-                        if(e instanceof IOException) {
-                            if(hasSession()) {
-                                final File bookmark = getRepresentedFile();
-                                if(bookmark.exists()) {
-                                    // Delete this history bookmark if there was any error connecting
-                                    bookmark.delete();
-                                }
-                                window.setRepresentedFilename(""); //can't send null
-                            }
-                        }
-                        session.removeProgressListener(this);
-                    }
-                });
                 session.addProgressListener(progress = new ProgressListener() {
                     public void message(final String msg) {
                         // Update the status label at the bottom of the browser window
@@ -2272,19 +2263,20 @@ public class CDBrowserController extends CDWindowController
                     public void error(final Exception e) {
                         invoke(new Runnable() {
                             public void run() {
-                                CDErrorController error = null;
-                                errors.add(error = new CDBrowserErrorController(
-                                        getSelectedBrowserView().superview().superview().superview(),
-                                        getSelectedBrowserView().superview().superview(),
-                                        e, host));
-                                error.display();
+                                synchronized(lock) {
+                                    logView.textStorage().appendAttributedString(
+                                            new NSAttributedString(getErrorText(e) + "\n", BOLD_RED_FONT_ATTRIBUTES));
+                                    if(Preferences.instance().getBoolean("browser.openLogDrawerOnError")) {
+                                        logDrawer.open();
+                                        //Any better way to scroll to the bottom?
+                                        logView.scrollPoint(new NSPoint(0, 1000000));
+                                    }
+                                }
                             }
                         });
                     }
                 });
                 session.addTranscriptListener(transcript = new TranscriptListener() {
-                    private final Object lock = new Object();
-
                     public void log(String message) {
                         synchronized(lock) {
                             logView.textStorage().beginEditing();
@@ -2299,8 +2291,6 @@ public class CDBrowserController extends CDWindowController
 
             public void connectionDidOpen() {
                 getSelectedBrowserView().setNeedsDisplay();
-                // This progress listener was only used to handle initial connection errors
-                session.removeProgressListener(error);
                 invoke(new Runnable() {
                     public void run() {
                         window.setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername()
