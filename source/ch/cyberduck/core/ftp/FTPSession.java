@@ -103,7 +103,7 @@ public class FTPSession extends Session {
             log.error(e.getMessage());
         }
         finally {
-            FTP = null;
+            this.FTP = null;
             this.fireActivityStoppedEvent();
             this.fireConnectionDidCloseEvent();
         }
@@ -119,7 +119,7 @@ public class FTPSession extends Session {
         }
     }
 
-    protected void connect() throws IOException, FTPException, LoginCanceledException {
+    protected void connect() throws IOException, FTPException, ConnectionCanceledException, LoginCanceledException {
         synchronized(this) {
             SessionPool.instance().add(this);
             this.fireConnectionWillOpenEvent();
@@ -136,29 +136,38 @@ public class FTPSession extends Session {
                     FTPSession.this.log(reply);
                 }
             });
-            this.FTP.connect(host.getHostname(), host.getPort(),
+            try {
+                this.FTP.connect(host.getHostname(), host.getPort(),
                     Preferences.instance().getInteger("connection.timeout"));
-            this.FTP.setStrictReturnCodes(true);
-            if(Proxy.isSOCKSProxyEnabled()) {
-                log.info("Using SOCKS Proxy");
-                FTPClient.initSOCKS(Proxy.getSOCKSProxyPort(), Proxy.getSOCKSProxyHost());
+                this.FTP.setStrictReturnCodes(true);
+                if(Proxy.isSOCKSProxyEnabled()) {
+                    log.info("Using SOCKS Proxy");
+                    FTPClient.initSOCKS(Proxy.getSOCKSProxyPort(), Proxy.getSOCKSProxyHost());
+                }
+                else {
+                    FTPClient.clearSOCKS();
+                }
+                this.FTP.setConnectMode(host.getFTPConnectMode());
+                this.message(NSBundle.localizedString("FTP connection opened", "Status", ""));
+                this.login();
+                if(Preferences.instance().getBoolean("ftp.sendSystemCommand")) {
+                    host.setIdentification(this.FTP.system());
+                }
+                this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(host.getIdentification());
+                this.fireConnectionDidOpenEvent();
             }
-            else {
-                FTPClient.clearSOCKS();
+            catch(NullPointerException e) {
+                // Because the connection could have been closed using #interrupt and set this.FTP to null; we
+                // should find a better way to handle this asynchroneous issue than to catch a null pointer
+                throw new ConnectionCanceledException();
             }
-            this.FTP.setConnectMode(host.getFTPConnectMode());
-            this.message(NSBundle.localizedString("FTP connection opened", "Status", ""));
-            this.login();
-            if(Preferences.instance().getBoolean("ftp.sendSystemCommand")) {
-                host.setIdentification(this.FTP.system());
-            }
-            this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(host.getIdentification());
-            this.fireConnectionDidOpenEvent();
         }
     }
 
-    protected void login() throws IOException, LoginCanceledException {
-        log.debug("login");
+    protected void login() throws IOException, ConnectionCanceledException, LoginCanceledException {
+        if(!this.isConnected()) {
+            throw new ConnectionCanceledException();
+        }
         if(host.getCredentials().check(loginController)) {
             try {
                 this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " "
@@ -183,12 +192,15 @@ public class FTPSession extends Session {
         }
     }
 
-    public Path workdir() {
-        if(this.isConnected()) {
+    protected Path workdir() throws ConnectionCanceledException {
+        synchronized(this) {
+            if(!this.isConnected()) {
+                throw new ConnectionCanceledException();
+            }
+            Path workdir = null;
             try {
-                Path workdir = PathFactory.createPath(this, this.FTP.pwd());
+                workdir = PathFactory.createPath(this, this.FTP.pwd());
                 workdir.attributes.setType(Path.DIRECTORY_TYPE);
-                return workdir;
             }
             catch(FTPException e) {
                 this.error(e);
@@ -197,8 +209,8 @@ public class FTPSession extends Session {
                 this.error(e);
                 this.interrupt();
             }
+            return workdir;
         }
-        return null;
     }
 
     protected void noop() throws IOException {
@@ -215,15 +227,19 @@ public class FTPSession extends Session {
     }
 
     public void sendCommand(String command) {
-        try {
-            this.FTP.quote(command);
-        }
-        catch(FTPException e) {
-            this.error(e);
-        }
-        catch(IOException e) {
-            this.error(e);
-            this.interrupt();
+        synchronized(this) {
+            if(this.isConnected()) {
+                try {
+                    this.FTP.quote(command);
+                }
+                catch(FTPException e) {
+                    this.error(e);
+                }
+                catch(IOException e) {
+                    this.error(e);
+                    this.interrupt();
+                }
+            }
         }
     }
 }
