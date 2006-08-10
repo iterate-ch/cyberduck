@@ -143,6 +143,7 @@ public abstract class Preferences {
         defaults.put("website.bug", "http://trac.cyberduck.ch/newticket/");
 
         defaults.put("rendezvous.enable", "true");
+        defaults.put("rendezvous.loopback.supress", "false");
 
         defaults.put("growl.enable", "true");
 
@@ -195,6 +196,10 @@ public abstract class Preferences {
          * Close bookmark drawer upon opening a connection
          */
         defaults.put("browser.closeDrawer", "false");
+        /**
+         * Open log drawer in browser window upon error
+         */
+        defaults.put("browser.openLogDrawerOnError", "true");
 
         /**
          * Default editor
@@ -220,6 +225,11 @@ public abstract class Preferences {
         defaults.put("queue.postProcessItemWhenComplete", "false");
         defaults.put("queue.orderFrontOnStart", "true");
         defaults.put("queue.orderBackOnStop", "false");
+        /**
+         * Open log drawer in transfer window upon error
+         */
+        defaults.put("queue.openLogDrawerOnError", "true");
+
         defaults.put("queue.download.folder", System.getProperty("user.home") + "/Desktop");
         /**
          * Action when duplicate file exists

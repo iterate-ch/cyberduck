@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * @version $Id$
@@ -97,6 +99,18 @@ public class Rendezvous
     private RendezvousListener notifier = new RendezvousListener() {
 
         public void serviceResolved(final String servicename) {
+            log.info("Service resolved:"+servicename);
+//            if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
+//                try {
+//                    if(InetAddress.getByName(servicename).isLoopbackAddress()) {
+//                        log.debug("Supressed notification for "+servicename);
+//                        return;
+//                    }
+//                }
+//                catch(UnknownHostException e) {
+//                    ; //Ignore
+//                }
+//            }
             RendezvousListener[] l = null;
             synchronized(this) {
                 l = (RendezvousListener[]) listeners.toArray(new RendezvousListener[]{});
@@ -107,6 +121,7 @@ public class Rendezvous
         }
 
         public void serviceLost(final String servicename) {
+            log.info("Service lost:"+servicename);
             RendezvousListener[] l = null;
             synchronized(this) {
                 l = (RendezvousListener[]) listeners.toArray(new RendezvousListener[]{});
