@@ -125,8 +125,6 @@
 		47494C8507EC6C3C00B34D53 /* Duplicate.nib in Resources */ = {isa = PBXBuildFile; fileRef = 47494C8107EC6C3C00B34D53 /* Duplicate.nib */; };
 		4749575F07EDED4600B34D53 /* outline.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4749575E07EDED4600B34D53 /* outline.tiff */; };
 		4749576607EDED4E00B34D53 /* list.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4749576507EDED4E00B34D53 /* list.tiff */; };
-		474C7B480A55CF2D000F600A /* BrowserError.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474C7B440A55CF2D000F600A /* BrowserError.nib */; };
-		474C7B490A55CF2D000F600A /* TransferError.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474C7B460A55CF2D000F600A /* TransferError.nib */; };
 		4751799E097943FA008F671F /* Credentials.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4751799C097943FA008F671F /* Credentials.strings */; };
 		4754786B0A232C9A00CD6EAC /* cancel.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4754786A0A232C9A00CD6EAC /* cancel.tiff */; };
 		47559A160A72AE7A00B5DCDB /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 475599FD0A72AE6200B5DCDB /* Sparkle.framework */; };
@@ -171,8 +169,6 @@
 		479C422A097AB2BB00DDE88A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 479C4229097AB2BB00DDE88A /* Credits.rtf */; };
 		479D64A70752257400FE6086 /* arrowUpBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479D64A50752257400FE6086 /* arrowUpBlack16.tiff */; };
 		47A61DCA076C854A00B535D6 /* generic-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A61DC9076C854A00B535D6 /* generic-document.icns */; };
-		47BA61740A2501C40034AB18 /* CDErrorView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47BA61720A2501C30034AB18 /* CDErrorView.h */; };
-		47BA61750A2501C40034AB18 /* CDErrorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BA61730A2501C30034AB18 /* CDErrorView.m */; };
 		47BA61C70A2507320034AB18 /* CDNavigationView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47BA61C50A2507320034AB18 /* CDNavigationView.h */; };
 		47BA61C80A2507320034AB18 /* CDNavigationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BA61C60A2507320034AB18 /* CDNavigationView.m */; };
 		47BA622D0A25127B0034AB18 /* navigation.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47BA622C0A25127B0034AB18 /* navigation.tiff */; };
@@ -1071,8 +1067,6 @@
 		4749575E07EDED4600B34D53 /* outline.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = outline.tiff; sourceTree = "<group>"; };
 		4749576507EDED4E00B34D53 /* list.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = list.tiff; sourceTree = "<group>"; };
 		47497C1D073F9618009BF63D /* Changelog.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Changelog.txt; sourceTree = "<group>"; };
-		474C7B450A55CF2D000F600A /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/BrowserError.nib; sourceTree = "<group>"; };
-		474C7B470A55CF2D000F600A /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/TransferError.nib; sourceTree = "<group>"; };
 		4751799D097943FA008F671F /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Credentials.strings; sourceTree = "<group>"; };
 		475179A409794467008F671F /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Credentials.strings; sourceTree = "<group>"; };
 		475179A509794472008F671F /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Credentials.strings; sourceTree = "<group>"; };
@@ -1321,9 +1315,6 @@
 		47B19B5607AA60E90064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47B19B5707AA60E90064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		47B6A3C1074F8EAF00B9F16C /* SessionPool.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SessionPool.java; sourceTree = "<group>"; };
-		47BA614A0A24E93E0034AB18 /* CDErrorController.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CDErrorController.java; sourceTree = "<group>"; };
-		47BA61720A2501C30034AB18 /* CDErrorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDErrorView.h; sourceTree = "<group>"; };
-		47BA61730A2501C30034AB18 /* CDErrorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDErrorView.m; sourceTree = "<group>"; };
 		47BA61C50A2507320034AB18 /* CDNavigationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDNavigationView.h; sourceTree = "<group>"; };
 		47BA61C60A2507320034AB18 /* CDNavigationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDNavigationView.m; sourceTree = "<group>"; };
 		47BA622C0A25127B0034AB18 /* navigation.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = navigation.tiff; sourceTree = "<group>"; };
@@ -1368,7 +1359,6 @@
 		47C4E8290879EC6C007A1D39 /* ca */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ca; path = ca.lproj/Folder.nib; sourceTree = "<group>"; };
 		47C59A560880165B00CC2FA5 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ja; path = ja.lproj/Command.nib; sourceTree = "<group>"; };
 		47C75B7B06A5A36900B464FF /* EPLFEntryParserTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = EPLFEntryParserTest.java; sourceTree = "<group>"; };
-		47C75B8606A5A37500B464FF /* FTPPasvResponseTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPPasvResponseTest.java; sourceTree = "<group>"; };
 		47C761EA06A88D7600B464FF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<absolute>"; };
 		47CD32A00751163400B82A2B /* plus.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = plus.tiff; sourceTree = "<group>"; };
 		47CD99760738DE8900E9379E /* SyncQueue.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SyncQueue.java; sourceTree = "<group>"; };
@@ -1897,7 +1887,6 @@
 				4741531306C4F08A00AC0BD2 /* CDPreferencesController.java */,
 				4741531406C4F08A00AC0BD2 /* CDPreferencesImpl.java */,
 				4741531106C4F08A00AC0BD2 /* CDMainController.java */,
-				47BA614A0A24E93E0034AB18 /* CDErrorController.java */,
 				47F20F1B07551A84009192FF /* browser */,
 				4798434E072B0DAA00FA3CDB /* view */,
 				47CD9B6E07392A0100E9379E /* queue */,
@@ -2414,8 +2403,6 @@
 		4741639206C4F58D00AC0BD2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				474C7B440A55CF2D000F600A /* BrowserError.nib */,
-				474C7B460A55CF2D000F600A /* TransferError.nib */,
 				4759C93B0A1476E500C5980A /* Progress.nib */,
 				474163B906C4F64100AC0BD2 /* Queue.nib */,
 				4741653C06C4FC3F00AC0BD2 /* img */,
@@ -2607,8 +2594,6 @@
 				47494C3D07EC6B4200B34D53 /* CDOutlineView.h */,
 				47494C3E07EC6B4200B34D53 /* CDListView.m */,
 				47494C3F07EC6B4200B34D53 /* CDListView.h */,
-				47BA61730A2501C30034AB18 /* CDErrorView.m */,
-				47BA61720A2501C30034AB18 /* CDErrorView.h */,
 				47BA61C60A2507320034AB18 /* CDNavigationView.m */,
 				47BA61C50A2507320034AB18 /* CDNavigationView.h */,
 			);
@@ -2669,38 +2654,6 @@
 				47C75B7B06A5A36900B464FF /* EPLFEntryParserTest.java */,
 			);
 			path = parser;
-			sourceTree = "<group>";
-		};
-		47C75B8206A5A37500B464FF /* com */ = {
-			isa = PBXGroup;
-			children = (
-				47C75B8306A5A37500B464FF /* enterprisedt */,
-			);
-			path = com;
-			sourceTree = "<group>";
-		};
-		47C75B8306A5A37500B464FF /* enterprisedt */ = {
-			isa = PBXGroup;
-			children = (
-				47C75B8406A5A37500B464FF /* net */,
-			);
-			path = enterprisedt;
-			sourceTree = "<group>";
-		};
-		47C75B8406A5A37500B464FF /* net */ = {
-			isa = PBXGroup;
-			children = (
-				47C75B8506A5A37500B464FF /* ftp */,
-			);
-			path = net;
-			sourceTree = "<group>";
-		};
-		47C75B8506A5A37500B464FF /* ftp */ = {
-			isa = PBXGroup;
-			children = (
-				47C75B8606A5A37500B464FF /* FTPPasvResponseTest.java */,
-			);
-			path = ftp;
 			sourceTree = "<group>";
 		};
 		47CD99790738DEB300E9379E /* queue */ = {
@@ -2786,7 +2739,6 @@
 		47F2E90605BD4244003D2875 /* test */ = {
 			isa = PBXGroup;
 			children = (
-				47C75B8206A5A37500B464FF /* com */,
 				47C75B7506A5A36900B464FF /* org */,
 				47F2E90705BD4244003D2875 /* ch */,
 			);
@@ -2841,7 +2793,6 @@
 				4727223409F51EB600136347 /* AIAutoScrollView.h in Headers */,
 				478B36340A07C395000F11F2 /* SKWSegmentedControl.h in Headers */,
 				478B36360A07C395000F11F2 /* SKWSegmentedControlWindowProxy.h in Headers */,
-				47BA61740A2501C40034AB18 /* CDErrorView.h in Headers */,
 				47BA61C70A2507320034AB18 /* CDNavigationView.h in Headers */,
 				4799CE260A29EF5600AA4E59 /* CDBottomView.h in Headers */,
 			);
@@ -3272,8 +3223,6 @@
 				4754786B0A232C9A00CD6EAC /* cancel.tiff in Resources */,
 				47BA622D0A25127B0034AB18 /* navigation.tiff in Resources */,
 				4799CE110A29EEF700AA4E59 /* bottom.tiff in Resources */,
-				474C7B480A55CF2D000F600A /* BrowserError.nib in Resources */,
-				474C7B490A55CF2D000F600A /* TransferError.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3352,7 +3301,6 @@
 				4727223309F51EB600136347 /* AIAutoScrollView.m in Sources */,
 				478B36350A07C395000F11F2 /* SKWSegmentedControl.m in Sources */,
 				478B36370A07C395000F11F2 /* SKWSegmentedControlWindowProxy.m in Sources */,
-				47BA61750A2501C40034AB18 /* CDErrorView.m in Sources */,
 				47BA61C80A2507320034AB18 /* CDNavigationView.m in Sources */,
 				4799CE270A29EF5600AA4E59 /* CDBottomView.m in Sources */,
 			);
@@ -4078,22 +4026,6 @@
 			name = Duplicate.nib;
 			sourceTree = "<group>";
 		};
-		474C7B440A55CF2D000F600A /* BrowserError.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				474C7B450A55CF2D000F600A /* en */,
-			);
-			name = BrowserError.nib;
-			sourceTree = "<group>";
-		};
-		474C7B460A55CF2D000F600A /* TransferError.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				474C7B470A55CF2D000F600A /* en */,
-			);
-			name = TransferError.nib;
-			sourceTree = "<group>";
-		};
 		4751799C097943FA008F671F /* Credentials.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -4322,6 +4254,7 @@
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
+					"-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_3",
 				);
 				ZERO_LINK = NO;
 			};
@@ -4352,6 +4285,7 @@
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
+					"-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_3",
 				);
 				ZERO_LINK = NO;
 			};
@@ -4382,6 +4316,7 @@
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
+					"-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_3",
 				);
 				ZERO_LINK = NO;
 			};
@@ -4409,6 +4344,7 @@
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
+					"-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_3",
 				);
 				ZERO_LINK = NO;
 			};
@@ -4438,6 +4374,7 @@
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
+					"-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_3",
 				);
 				ZERO_LINK = NO;
 			};
@@ -4496,6 +4433,7 @@
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
+					"-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_3",
 				);
 				ZERO_LINK = NO;
 			};
