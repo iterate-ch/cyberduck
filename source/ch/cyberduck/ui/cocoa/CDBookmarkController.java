@@ -261,6 +261,9 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     public void hostInputDidEndEditing(NSNotification sender) {
+        this.host.setHostname(hostField.stringValue());
+        this.updateFields();
+        CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
         new Thread() {
             public void run() {
                 int pool = NSAutoreleasePool.push();
@@ -273,9 +276,6 @@ public class CDBookmarkController extends CDWindowController {
                 });
             }
         }.start();
-        this.host.setHostname(hostField.stringValue());
-        this.updateFields();
-        CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
     }
 
     public void portInputDidEndEditing(NSNotification sender) {
