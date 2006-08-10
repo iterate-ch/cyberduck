@@ -56,7 +56,9 @@ public class Status {
     public static final double GIGA = 1073741824; // 2^30
 
     /**
-     * @return The size of the file
+     * Rounding mode to round towards "nearest neighbor" unless both
+     * neighbors are equidistant, in which case round up.
+     * @return The size of the file using BigDecimal.ROUND_HALF_UP rounding
      */
     public static String getSizeAsString(double size) {
         if (-1 == size) {
@@ -68,16 +70,16 @@ public class Status {
         if (size < MEGA) {
             return new BigDecimal(size).divide(new BigDecimal(KILO),
                     1,
-                    BigDecimal.ROUND_FLOOR).toString() + " KB";
+                    BigDecimal.ROUND_HALF_UP).toString() + " KB";
         }
         if (size < GIGA) {
             return new BigDecimal(size).divide(new BigDecimal(MEGA),
                     1,
-                    BigDecimal.ROUND_FLOOR).toString() + " MB";
+                    BigDecimal.ROUND_HALF_UP).toString() + " MB";
         }
         return new BigDecimal(size).divide(new BigDecimal(GIGA),
                 1,
-                BigDecimal.ROUND_FLOOR).toString() + " GB";
+                BigDecimal.ROUND_HALF_UP).toString() + " GB";
     }
 
     public void setComplete(boolean complete) {
