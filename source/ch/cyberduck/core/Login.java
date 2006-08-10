@@ -31,6 +31,11 @@ import org.apache.log4j.Logger;
 public class Login {
     private static Logger log = Logger.getLogger(Login.class);
 
+    public Object clone() {
+        return new Login(this.hostname, this.protocol,
+                this.getUsername(), this.getPassword());
+    }
+
     private String hostname;
     private String protocol;
     private String user;
