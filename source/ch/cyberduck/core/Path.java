@@ -130,7 +130,8 @@ public abstract class Path extends NSObject {
      * @param name   The relative filename
      */
     public void setPath(String parent, String name) {
-        if (parent.charAt(parent.length() - 1) == '/') {
+        //Determine if the parent path already ends with a delimiter
+        if (parent.endsWith("/")) {
             this.setPath(parent + name);
         }
         else {
@@ -143,12 +144,11 @@ public abstract class Path extends NSObject {
      * @param p
      */
     public void setPath(String p) {
-        if ((p.charAt(p.length() - 1) == '/') && (p.length() > 1)) {
-            this.path = p.substring(0, p.length() - 1);
+        while ((p.endsWith("/") && (p.length() > 1))) {
+            //Strip any redundant delimiter at the end of the path
+            p = p.substring(0, p.length() - 1);
         }
-        else {
-            this.path = p;
-        }
+        this.path = p;
         this.parent = null;
     }
 
