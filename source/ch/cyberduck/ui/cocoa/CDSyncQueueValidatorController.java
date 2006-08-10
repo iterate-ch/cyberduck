@@ -67,7 +67,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
             c.setWidth(20f);
             c.setMaxWidth(20f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
             else {
                 c.setResizable(true);
@@ -85,7 +85,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
             c.setWidth(20f);
             c.setMaxWidth(20f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
             else {
                 c.setResizable(true);
