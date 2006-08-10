@@ -256,11 +256,11 @@ public class SFTPPath extends Path {
             log.debug("delete:" + this.toString());
             try {
                 session.check();
-                if(this.attributes.isFile()) {
+                if(this.attributes.isFile() || this.attributes.isSymbolicLink()) {
                     session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
                     session.SFTP.removeFile(this.getAbsolute());
                 }
-                else if(this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
+                else if(this.attributes.isDirectory()) {
                     for(Iterator iter = this.list().iterator(); iter.hasNext();) {
                         if(!session.isConnected()) {
                             break;

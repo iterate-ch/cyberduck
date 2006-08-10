@@ -265,12 +265,12 @@ public class FTPPath extends Path {
             log.debug("delete:" + this.toString());
             try {
                 session.check();
-                if(this.attributes.isFile()) {
+                if(this.attributes.isFile() || this.attributes.isSymbolicLink()) {
                     this.getParent().cwdir();
                     session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
                     session.FTP.delete(this.getName());
                 }
-                else if(this.attributes.isDirectory() && !this.attributes.isSymbolicLink()) {
+                else if(this.attributes.isDirectory()) {
                     this.cwdir();
                     for(Iterator iter = this.list().iterator(); iter.hasNext();) {
                         if(!session.isConnected()) {
@@ -656,7 +656,8 @@ public class FTPPath extends Path {
                             }
                         }
                         catch(FTPException e) {
-                            log.warn(e.getMessage());
+                            //CHMOD not supported; ignore
+//                            log.warn(e.getMessage());
                         }
                     }
                     if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
@@ -673,7 +674,7 @@ public class FTPPath extends Path {
                             }
                             catch(FTPException ignore) {
                                 //MDTM not supported; ignore
-                                log.warn(ignore.getMessage());
+//                                log.warn(ignore.getMessage());
                             }
                         }
                     }
