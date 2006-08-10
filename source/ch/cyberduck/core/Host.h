@@ -47,6 +47,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Host_diagnose
 #endif
 #endif
 
+#import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 #import <CoreServices/CoreServices.h>
 #import "SystemConfiguration/SCNetworkReachability.h"
