@@ -701,7 +701,7 @@ public class FTPClient {
      */
     public void chdir(String dir) throws IOException, FTPException {
         FTPReply reply = control.sendCommand("CWD "+dir);
-        lastValidReply = control.validateReply(reply, new String[]{"200", "250"});
+        lastValidReply = control.validateReply(reply, new String[]{"200", "250", "257"});
     }
 
     /**
@@ -710,7 +710,7 @@ public class FTPClient {
      */
     public void cdup() throws IOException, FTPException {
         FTPReply reply = control.sendCommand("CDUP");
-        lastValidReply = control.validateReply(reply, new String[]{"200", "250"});
+        lastValidReply = control.validateReply(reply, new String[]{"200", "250", "257"});
     }
 
     private boolean getModtimeSupported = true;
