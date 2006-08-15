@@ -731,10 +731,10 @@ public class CDQueueController extends CDWindowController
             }
         }
         this.reloadQueueTable();
-//        synchronized(lock) {
-//            //Clear the log view
-//            this.logView.textStorage().setAttributedString(new NSAttributedString());
-//        }
+        synchronized(lock) {
+            //Clear the log view
+            this.logView.textStorage().setAttributedString(new NSAttributedString());
+        }
     }
 
     /**
