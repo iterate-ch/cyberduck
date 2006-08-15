@@ -32,8 +32,10 @@ public class Login {
     private static Logger log = Logger.getLogger(Login.class);
 
     public Object clone() {
-        return new Login(this.hostname, this.protocol,
+        Login l = new Login(this.hostname, this.protocol,
                 this.getUsername(), this.getPassword());
+        l.setPrivateKeyFile(this.privateKeyFile);
+        return l;
     }
 
     private String hostname;
