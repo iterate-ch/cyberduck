@@ -12,6 +12,7 @@ div#menu {
 	color: #4e4e4e;
 	border: 1px solid #e2e2e2;
 	background: #e5e5db;
+	font-weight:bold;
 }
 
 div#menu ul {
@@ -21,7 +22,6 @@ div#menu ul {
 }
 
 div#menu a:hover {
-	font-weight:normal; 
 	text-decoration:none; 
 }
 

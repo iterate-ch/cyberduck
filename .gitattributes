@@ -1555,6 +1555,7 @@ www/help/en/howto/index.html -text
 www/help/en/howto/ssh.html -text
 www/help/en/howto/synchronization.html -text
 www/help/en/howto/upload.html -text
+www/help/en/howto/widget.html -text
 www/help/en/index.html -text
 www/help/en/problems/index.html -text
 www/help/es/.htaccess -text
@@ -1580,9 +1581,13 @@ www/help/images/bookmark_export.png -text svneol=unset#image/png
 www/help/images/bookmark_file.png -text svneol=unset#image/png
 www/help/images/bookmark_import.png -text svneol=unset#image/png
 www/help/images/bookmarks.png -text svneol=unset#image/png
+www/help/images/configure_me.png -text
 www/help/images/connection.png -text svneol=unset#image/png
+www/help/images/connection_configuration.png -text
+www/help/images/dashboard_widget_bar.png -text
 www/help/images/download.png -text svneol=unset#image/png
 www/help/images/drop.png -text svneol=unset#image/png
+www/help/images/drop_file.png -text
 www/help/images/edit.png -text svneol=unset#image/png
 www/help/images/history.png -text svneol=unset#image/png
 www/help/images/inetloc.png -text svneol=unset#image/png
