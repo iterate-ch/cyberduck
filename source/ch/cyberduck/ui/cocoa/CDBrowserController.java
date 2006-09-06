@@ -439,7 +439,7 @@ public class CDBrowserController extends CDWindowController
             // Setting up a custom filter for the directory listing
             this.filenameFilter = new Filter() {
                 public boolean accept(Path file) {
-                    return file.getName().toLowerCase().indexOf(searchString.toLowerCase()) != -1;
+                    return file.getName().indexOf(searchString) != -1;
                 }
             };
         }
@@ -2246,10 +2246,6 @@ public class CDBrowserController extends CDWindowController
             private final Object lock = new Object();
 
             public void connectionWillOpen() {
-//                for(Iterator i = errors.iterator(); i.hasNext(); ) {
-//                    // First remove any previous error message
-//                    ((CDErrorController)i.next()).close(null);
-//                }
                 // Clear all previous error messages
                 errors.clear();
                 session.addProgressListener(progress = new ProgressListener() {
@@ -2705,7 +2701,7 @@ public class CDBrowserController extends CDWindowController
             return this.isMounted();
         }
         if(identifier.equals("duplicateFileButtonClicked:")) {
-            return this.isMounted() && this.getSelectionCount() > 0 && this.getSelectedPath().attributes.isFile();
+            return this.isMounted() && this.getSelectionCount() == 1 && this.getSelectedPath().attributes.isFile();
         }
         if(identifier.equals("deleteFileButtonClicked:")) {
             return this.isMounted() && this.getSelectionCount() > 0;
