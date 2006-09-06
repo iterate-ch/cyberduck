@@ -47,7 +47,7 @@ public class CDBookmarkController extends CDWindowController {
         this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[]{Object.class}));
     }
 
-    public void protocolSelectionChanged(NSPopUpButton sender) {
+    public void protocolSelectionChanged(final NSPopUpButton sender) {
         log.debug("protocolSelectionChanged:" + sender);
         if (protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
             this.host.setProtocol(Session.SFTP);
@@ -77,7 +77,7 @@ public class CDBookmarkController extends CDWindowController {
         this.encodingPopup.setAction(new NSSelector("encodingSelectionChanged", new Class[]{Object.class}));
     }
 
-    public void encodingSelectionChanged(NSPopUpButton sender) {
+    public void encodingSelectionChanged(final NSPopUpButton sender) {
         log.debug("encodingSelectionChanged:" + sender);
         this.host.setEncoding(sender.titleOfSelectedItem());
     }
@@ -154,7 +154,7 @@ public class CDBookmarkController extends CDWindowController {
         }
     }
 
-    public void connectmodePopupClicked(NSPopUpButton sender) {
+    public void connectmodePopupClicked(final NSPopUpButton sender) {
         if (sender.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
             this.host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
         }
@@ -223,7 +223,7 @@ public class CDBookmarkController extends CDWindowController {
         this.pkCheckbox.setAction(new NSSelector("pkCheckboxSelectionChanged", new Class[]{Object.class}));
     }
 
-    public void pkCheckboxSelectionChanged(final Object sender) {
+    public void pkCheckboxSelectionChanged(final NSButton sender) {
         log.debug("pkCheckboxSelectionChanged");
         if (this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected", ""))) {
             NSOpenPanel panel = NSOpenPanel.openPanel();
@@ -260,7 +260,7 @@ public class CDBookmarkController extends CDWindowController {
         }
     }
 
-    public void hostInputDidEndEditing(NSNotification sender) {
+    public void hostInputDidEndEditing(final NSNotification sender) {
         this.host.setHostname(hostField.stringValue());
         this.updateFields();
         CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
@@ -271,36 +271,34 @@ public class CDBookmarkController extends CDWindowController {
                 NSAutoreleasePool.pop(pool);
                 invoke(new Runnable() {
                     public void run() {
-                        alertIcon.setHidden(reachable);
+                        synchronized(lock) {
+                            alertIcon.setHidden(reachable);
+                        }
                     }
                 });
             }
         }.start();
     }
 
-    public void portInputDidEndEditing(NSNotification sender) {
-        log.debug("hostInputDidEndEditing");
+    public void portInputDidEndEditing(final NSNotification sender) {
         this.host.setPort(Integer.parseInt(portField.stringValue()));
         this.updateFields();
         CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
     }
 
-    public void pathInputDidEndEditing(NSNotification sender) {
-        log.debug("pathInputDidEndEditing");
+    public void pathInputDidEndEditing(final NSNotification sender) {
         this.host.setDefaultPath(pathField.stringValue());
         this.updateFields();
         CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
     }
 
-    public void nicknameInputDidEndEditing(NSNotification sender) {
-        log.debug("nicknameInputDidEndEditing");
+    public void nicknameInputDidEndEditing(final NSNotification sender) {
         this.host.setNickname(nicknameField.stringValue());
         this.updateFields();
         CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
     }
 
-    public void usernameInputDidEndEditing(NSNotification sender) {
-        log.debug("usernameInputDidEndEditing");
+    public void usernameInputDidEndEditing(final NSNotification sender) {
         this.host.getCredentials().setUsername(usernameField.stringValue());
         this.updateFields();
         CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);

@@ -78,7 +78,7 @@ public class CDConnectionController extends CDSheetController {
         this.bookmarksPopup.setAction(new NSSelector("bookmarksPopupSelectionChanged", new Class[]{Object.class}));
     }
 
-    public void bookmarksPopupSelectionChanged(NSPopUpButton sender) {
+    public void bookmarksPopupSelectionChanged(final NSPopUpButton sender) {
         this.bookmarkSelectionDidChange((Host) bookmarks.get(sender.titleOfSelectedItem()));
     }
 
@@ -111,7 +111,7 @@ public class CDConnectionController extends CDSheetController {
         this.historyPopup.setAction(new NSSelector("historyPopupSelectionChanged", new Class[]{Object.class}));
     }
 
-    public void historyPopupSelectionChanged(NSPopUpButton sender) {
+    public void historyPopupSelectionChanged(final NSPopUpButton sender) {
         this.bookmarkSelectionDidChange((Host) history.get(sender.titleOfSelectedItem()));
     }
 
@@ -155,7 +155,7 @@ public class CDConnectionController extends CDSheetController {
         });
     }
 
-    public void rendezvousSelectionDidChange(final Object sender) {
+    public void rendezvousSelectionDidChange(final NSPopUpButton sender) {
         this.bookmarkSelectionDidChange((Host) Rendezvous.instance().getServiceWithDisplayedName(
                 rendezvousPopup.titleOfSelectedItem()));
     }
@@ -171,7 +171,7 @@ public class CDConnectionController extends CDSheetController {
         this.protocolPopup.setAction(new NSSelector("protocolSelectionDidChange", new Class[]{Object.class}));
     }
 
-    public void protocolSelectionDidChange(final Object sender) {
+    public void protocolSelectionDidChange(final NSNotification sender) {
         log.debug("protocolSelectionDidChange:" + sender);
         if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
             this.portField.setIntValue(Session.FTP_PORT);
@@ -210,21 +210,11 @@ public class CDConnectionController extends CDSheetController {
         });
     }
 
-    public void hostFieldTextDidChange(final Object sender) {
-        new Thread() {
-            public void run() {
-                int pool = NSAutoreleasePool.push();
-                final boolean reachable = new Host(hostField.stringValue()).isReachable();
-                NSAutoreleasePool.pop(pool);
-                invoke(new Runnable() {
-                    public void run() {
-                        alertIcon.setHidden(reachable);
-                    }
-                });
-            }
-        }.start();
+    private static final Object lock = new Object();
+
+    public void hostFieldTextDidChange(final NSNotification sender) {
         try {
-            Host h = Host.parse(hostField.stringValue());
+            final Host h = Host.parse(hostField.stringValue());
             this.hostField.setStringValue(h.getHostname());
             if(h.getProtocol().equals(Session.FTP))
                 this.protocolPopup.selectItemWithTitle(Session.FTP_STRING);
@@ -239,6 +229,20 @@ public class CDConnectionController extends CDSheetController {
         catch(java.net.MalformedURLException e) {
             // ignore; just a hostname has been entered
         }
+        new Thread() {
+            public void run() {
+                int pool = NSAutoreleasePool.push();
+                final boolean reachable = new Host(hostField.stringValue()).isReachable();
+                NSAutoreleasePool.pop(pool);
+                invoke(new Runnable() {
+                    public void run() {
+                        synchronized(lock) {
+                            alertIcon.setHidden(reachable);
+                        }
+                    }
+                });
+            }
+        }.start();
     }
 
     private NSButton alertIcon; // IBOutlet
@@ -271,7 +275,7 @@ public class CDConnectionController extends CDSheetController {
         this.portField = portField;
     }
 
-    public void portFieldTextDidChange(final Object sender) {
+    public void portFieldTextDidChange(final NSNotification sender) {
         if(null == this.portField.stringValue() || this.portField.stringValue().equals("")) {
             if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
                 this.portField.setStringValue("" + Session.SSH_PORT);
@@ -342,7 +346,7 @@ public class CDConnectionController extends CDSheetController {
         this.pkCheckbox.setState(NSCell.OffState);
     }
 
-    public void pkCheckboxSelectionDidChange(final Object sender) {
+    public void pkCheckboxSelectionDidChange(final NSNotification sender) {
         log.debug("pkCheckboxSelectionDidChange");
         if(this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected", ""))) {
             NSOpenPanel panel = NSOpenPanel.openPanel();
@@ -433,35 +437,35 @@ public class CDConnectionController extends CDSheetController {
     public void awakeFromNib() {
         //ControlTextDidChangeNotification
         NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("hostFieldTextDidChange", new Class[]{Object.class}),
+                new NSSelector("hostFieldTextDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.hostField);
         NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("updateURLLabel", new Class[]{Object.class}),
+                new NSSelector("updateURLLabel", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.hostField);
         NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("updateURLLabel", new Class[]{Object.class}),
+                new NSSelector("updateURLLabel", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.pathField);
         NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("updateURLLabel", new Class[]{Object.class}),
+                new NSSelector("updateURLLabel", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.portField);
         NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("portFieldTextDidChange", new Class[]{Object.class}),
+                new NSSelector("portFieldTextDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.portField);
         NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("updateURLLabel", new Class[]{Object.class}),
+                new NSSelector("updateURLLabel", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.usernameField);
         NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
+                new NSSelector("getPasswordFromKeychain", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidEndEditingNotification,
                 this.hostField);
         NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("getPasswordFromKeychain", new Class[]{Object.class}),
+                new NSSelector("getPasswordFromKeychain", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidEndEditingNotification,
                 this.usernameField);
 
@@ -486,7 +490,7 @@ public class CDConnectionController extends CDSheetController {
      * Updating the password field with the actual password if any
      * is avaialble for this hostname
      */
-    public void getPasswordFromKeychain(final Object sender) {
+    public void getPasswordFromKeychain(final NSNotification sender) {
         if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
             if(hostField.stringValue() != null && !hostField.stringValue().equals("") &&
                     usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {
@@ -517,7 +521,7 @@ public class CDConnectionController extends CDSheetController {
         }
     }
 
-    private void bookmarkSelectionDidChange(Host selectedItem) {
+    private void bookmarkSelectionDidChange(final Host selectedItem) {
         if(selectedItem.getProtocol().equals(Session.FTP)) {
             this.protocolPopup.selectItemWithTitle(Session.FTP_STRING);
         }
@@ -545,7 +549,7 @@ public class CDConnectionController extends CDSheetController {
         this.updateURLLabel(null);
     }
 
-    private void updateURLLabel(final Object sender) {
+    private void updateURLLabel(final NSNotification sender) {
         String protocol = null;
         if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
             protocol = Session.SFTP + "://";
