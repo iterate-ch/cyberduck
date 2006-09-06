@@ -55,7 +55,6 @@
 		return;
 	}
 	if([super respondsToSelector:@selector(_scheduleAutoExpandTimerForItem:)]) {
-		//bug: recursion; why is this calling self? [super performSelector:@selector(_scheduleAutoExpandTimerForItem:) withObject:object];
 		[super _scheduleAutoExpandTimerForItem:object];
 	}
 }
@@ -142,10 +141,10 @@
 		}
 		if([[self delegate] respondsToSelector:@selector(tableView:shouldSelectRow:)]) {
 			if([[self delegate] tableView:self shouldSelectRow:row])
-				[self selectRow:row byExtendingSelection:NO];
+				[self selectRow:row byExtendingSelection:YES];
 		} 
 		else {
-			[self selectRow:row byExtendingSelection:NO];
+			[self selectRow:row byExtendingSelection:YES];
 		}
 		return [self menu];
 	}
@@ -194,9 +193,10 @@
 		}
 		return;
 	}
-	if ([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] && 
-		(![[NSCharacterSet controlCharacterSet] characterIsMember:key])) {
-		
+	if (([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] ||
+			[[NSCharacterSet punctuationCharacterSet] characterIsMember:key] ||
+			[[NSCharacterSet symbolCharacterSet] characterIsMember:key] ) && 
+			![[NSCharacterSet controlCharacterSet] characterIsMember:key]) {
 		[select_string appendString:[event charactersIgnoringModifiers]];
 		if([select_string length] == 1) {
 			[self selectRow];
