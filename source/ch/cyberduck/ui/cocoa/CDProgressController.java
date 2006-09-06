@@ -62,35 +62,6 @@ public class CDProgressController extends CDController {
         this.init();
     }
 
-//    /**
-//     * Remove any error messages
-//     */
-//    public void closeErrors() {
-//        for(Iterator i = errors.iterator(); i.hasNext(); ) {
-//            ((CDErrorController)i.next()).close(null);
-//        }
-//        errors.clear();
-//    }
-//
-//    /**
-//     *
-//     * @return The number of error messages
-//     */
-//    public int numberOfErrors() {
-//        return this.errors.size();
-//    }
-//
-//    /**
-//     *
-//     * @param i
-//     * @return The error message at index i
-//     */
-//    public CDErrorController getError(int i) {
-//        return (CDErrorController)this.errors.get(i);
-//    }
-//
-//    private List errors = new ArrayList();
-
     private void init() {
         this.queue.addListener(new QueueListener() {
             private ProgressListener progress;
@@ -118,20 +89,7 @@ public class CDProgressController extends CDController {
                     }
 
                     public void error(final Exception e) {
-//                        NSSelector noteHeightOfRowsWithIndexesChangedSelector
-//                                = new NSSelector("noteHeightOfRowsWithIndexesChanged", new Class[]{NSIndexSet.class});
-//                        if(noteHeightOfRowsWithIndexesChangedSelector.implementedByClass(NSTableView.class)) {
-//                            invoke(new Runnable() {
-//                                public void run() {
-//                                    CDErrorController c = null;
-//                                    c = new CDTransferErrorController(progressView, e,
-//                                            queue.getSession().getHost());
-//                                    c.setHighlighted(highlighted);
-//                                    c.display();
-//                                    errors.add(c);
-//                                }
-//                            });
-//                        }
+                        ;
                     }
                 });
             }
@@ -282,9 +240,6 @@ public class CDProgressController extends CDController {
             this.filenameField.setTextColor(NSColor.blackColor());
             this.progressField.setTextColor(NSColor.darkGrayColor());
         }
-//        for(Iterator iter = this.errors.iterator(); iter.hasNext(); ) {
-//            ((CDErrorController)iter.next()).setHighlighted(highlighted);
-//        }
     }
 
     public boolean isHighlighted() {
@@ -323,44 +278,6 @@ public class CDProgressController extends CDController {
         this.progressBar.setStyle(NSProgressIndicator.ProgressIndicatorBarStyle);
         this.progressBar.setUsesThreadedAnimation(true);
     }
-
-//    private NSButton alertIcon; // IBOutlet
-//
-//    public void setAlertIcon(NSButton alertIcon) {
-//        this.alertIcon = alertIcon;
-//        this.alertIcon.setHidden(true);
-//        this.alertIcon.setTarget(this);
-//        this.alertIcon.setAction(new NSSelector("alertIconClicked", new Class[]{NSButton.class}));
-//    }
-//
-//    public void alertIconClicked(final NSButton sender) {
-//        CDSheetController c = new CDSheetController(CDQueueController.instance()) {
-//
-//            private NSTextView textView;
-//
-//            public void setTextView(NSTextView textView) {
-//                this.textView = textView;
-//                StringBuffer b = new StringBuffer();
-//                for(Iterator iter = errors.iterator(); iter.hasNext(); ) {
-//                    b.append(((CDErrorController)iter.next()).getErrorText() +"\n");
-//                }
-//                this.textView.textStorage().setAttributedString(
-//                        new NSAttributedString(b.toString(), FIXED_WITH_FONT_ATTRIBUTES)
-//                );
-//            }
-//
-//            public void callback(int returncode) {
-//                if (returncode == DEFAULT_OPTION) {
-//                }
-//            }
-//        };
-//        synchronized(lock) {
-//            if (!NSApplication.loadNibNamed("Error", c)) {
-//                log.fatal("Couldn't load Error.nib");
-//            }
-//        }
-//        c.beginSheet(true);
-//    }
 
     private NSImageView typeIconView; //IBOutlet
 
