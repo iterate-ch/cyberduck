@@ -132,6 +132,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
             }
             if (identifier.equals(MODIFIED_COLUMN)) {
                 if (item.attributes.getTimestamp() != -1) {
+                    //TODO: Return NSAttributedString instead; wrong color when selected in browser list view
                     return new NSGregorianDate((double) item.attributes.getTimestamp() / 1000,
                             NSDate.DateFor1970);
                 }
@@ -289,7 +290,10 @@ public abstract class CDBrowserTableDataSource extends CDController {
         if (controller.isMounted()) {
             if (items.count() > 0) {
                 this.promisedDragPaths = new Path[items.count()];
-                // The fileTypes argument is the list of fileTypes being promised. The array elements can consist of file extensions and HFS types encoded with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory of files, only include the top directory in the array.
+                // The fileTypes argument is the list of fileTypes being promised.
+                // The array elements can consist of file extensions and HFS types encoded
+                // with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory
+                // of files, only include the top directory in the array.
                 NSMutableArray fileTypes = new NSMutableArray();
                 Queue q = new DownloadQueue();
                 Session session = (Session)controller.workdir().getSession().clone();
@@ -318,7 +322,6 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 if (queuePboard.setPropertyListForType(new NSArray(q.getAsDictionary()), "QueuePBoardType")) {
                     log.debug("QueuePBoardType data sucessfully written to pasteboard");
                 }
-
                 NSEvent event = NSApplication.sharedApplication().currentEvent();
                 NSPoint dragPosition = view.convertPointFromView(event.locationInWindow(), null);
                 NSRect imageRect = new NSRect(new NSPoint(dragPosition.x() - 16, dragPosition.y() - 16), new NSSize(32, 32));
