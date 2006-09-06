@@ -17,12 +17,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DownloadQueue;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.foundation.NSScriptCommand;
@@ -52,21 +47,30 @@ public class CDApplescriptabilityController extends NSScriptCommand {
         try {
             final Host h = Host.parse(arg);
             if (h.getDefaultPath().length() > 1) {
-                // We have to add this to the end of the main thread; there is some obscure
-                // concurrency issue with the rendezvous initialization
-                // running in CDMainController.applicationDidFinishLaunching, see ticket #????
-                ((CDMainController) NSApplication.sharedApplication().delegate()).invoke(new Runnable() {
-                    public void run() {
-                        Path p = PathFactory.createPath(SessionFactory.createSession(h), h.getDefaultPath());
-                        if(null != p.getExtension()) {
+				final Session s = SessionFactory.createSession(h);
+				try {
+					s.check();
+				}
+				catch(IOException e) {
+		            log.error(e.getMessage());
+					return null;
+				}
+                final Path p = PathFactory.createPath(s, h.getDefaultPath());
+				try {
+					p.cwdir();
+		            CDBrowserController doc = ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
+		            doc.mount(h);
+				}
+                catch(IOException e) {
+                    // We have to add this to the end of the main thread; there is some obscure
+                    // concurrency issue with the rendezvous initialization
+                    // running in CDMainController.applicationDidFinishLaunching, see ticket #????
+                    ((CDMainController) NSApplication.sharedApplication().delegate()).invoke(new Runnable() {
+                        public void run() {
                             CDQueueController.instance().startItem(new DownloadQueue(p));
                         }
-                    }
-                });
-            }
-            else {
-                CDBrowserController doc = ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
-                doc.mount(h);
+                    });
+				}
             }
         }
         catch (java.net.MalformedURLException e) {
