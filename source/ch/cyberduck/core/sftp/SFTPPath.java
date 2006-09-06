@@ -424,12 +424,13 @@ public class SFTPPath extends Path {
                 if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
                     log.info("Updating permissions");
                     Permission perm = null;
-                    if(this.attributes.isFile()
-                            && Preferences.instance().getBoolean("queue.download.permissions.useDefault")) {
+                    if(Preferences.instance().getBoolean("queue.download.permissions.useDefault") && this.attributes.isFile()) {
                         perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
                     }
                     else {
                         perm = this.attributes.getPermission();
+                    }
+                    if(this.attributes.isDirectory()) {
                         perm.getOwnerPermissions()[Permission.WRITE] = true;
                         perm.getOwnerPermissions()[Permission.EXECUTE] = true;
                     }
