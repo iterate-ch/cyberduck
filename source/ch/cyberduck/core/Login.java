@@ -39,11 +39,24 @@ public class Login {
     }
 
     private String hostname;
+    /**
+     * See #Session
+     */
     private String protocol;
     private String user;
     private transient String pass;
+    /**
+     * If not null, use public key authentication if SSH is the protocol
+     */
     private String privateKeyFile;
     private boolean shouldBeAddedToKeychain;
+
+    /**
+     * ProtocolTypeConstants as defined in SecKeychain.h; see #708
+     */
+    private static final String kSecProtocolTypeFTP = "ftp ";
+	private static final String kSecProtocolTypeFTPS = "ftps";
+	private static final String kSecProtocolTypeSSH = "ssh ";
 
     public void setProtocol(String protocol) {
         this.protocol = protocol;
@@ -88,13 +101,28 @@ public class Login {
     }
 
     /**
+     * 
+     * @param protocol
+     * @return The protocol code as defined in SecKeychain.h
+     */
+    private String getKSecProtocolType(String protocol) {
+		if(this.protocol.equals(Session.SFTP)) {
+			return kSecProtocolTypeSSH;
+		}
+		if(this.protocol.equals(Session.FTP_TLS)) {
+			return kSecProtocolTypeFTPS;
+		}
+		return kSecProtocolTypeFTP;
+	}
+
+    /**
      *
      * @return the password fetched from the keychain or null if it was not found
      */
     public String getInternetPasswordFromKeychain() {
         int pool = NSAutoreleasePool.push();
         log.info("Fetching password from Keychain for:" + this.getUsername());
-        String password = Keychain.instance().getInternetPasswordFromKeychain(this.protocol,
+        String password = Keychain.instance().getInternetPasswordFromKeychain(this.getKSecProtocolType(this.protocol),
                 this.hostname, this.getUsername());
         NSAutoreleasePool.pop(pool);
         return password;
@@ -106,7 +134,7 @@ public class Login {
     public void addInternetPasswordToKeychain() {
         if (this.shouldBeAddedToKeychain && !this.isAnonymousLogin() && this.hasReasonableValues()) {
             int pool = NSAutoreleasePool.push();
-            Keychain.instance().addInternetPasswordToKeychain(this.protocol,
+            Keychain.instance().addInternetPasswordToKeychain(this.getKSecProtocolType(this.protocol),
                     this.hostname, this.getUsername(), this.getPassword());
             NSAutoreleasePool.pop(pool);
         }
@@ -115,6 +143,7 @@ public class Login {
     /**
      *
      * @return the password fetched from the system keychain or null if it was not found
+     * @deprecated
      */
     public String getPasswordFromKeychain() {
         int pool = NSAutoreleasePool.push();
