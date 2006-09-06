@@ -489,8 +489,8 @@ public abstract class Path extends NSObject {
             return false;
         }
         if (other instanceof Path) {
-            //case sensitive comparison; doesn't behave well with case-sensitive systems!
-            return this.getAbsolute().equalsIgnoreCase(((Path) other).getAbsolute());
+            //BUG: returns the wrong result on case-insensitive systems, e.g. NT!
+            return this.getAbsolute().equals(((Path) other).getAbsolute());
         }
         return false;
     }
