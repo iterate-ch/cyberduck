@@ -156,7 +156,7 @@ public abstract class Preferences {
          * Current default browser view is outline view (0-List view, 1-Outline view, 2-Column view)
          */
         defaults.put("browser.view", "1");
-        defaults.put("browser.view.autoexpand", "true");
+//        defaults.put("browser.view.autoexpand", "true");
         /**
          * Confirm closing the browsing connection
          */
@@ -279,7 +279,7 @@ public abstract class Preferences {
         defaults.put("connection.buffer.default", "16384");
         defaults.put("connection.port.default", "21");
         defaults.put("connection.protocol.default", "ftp");
-        defaults.put("connection.timeout", "15000"); //in milliseconds
+        defaults.put("connection.timeout", "30000"); //in milliseconds
         defaults.put("connection.keepalive", "false");
         defaults.put("connection.keepalive.interval", "30000");
 
