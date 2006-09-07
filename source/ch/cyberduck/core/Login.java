@@ -124,6 +124,11 @@ public class Login {
         log.info("Fetching password from Keychain for:" + this.getUsername());
         String password = Keychain.instance().getInternetPasswordFromKeychain(this.getKSecProtocolType(this.protocol),
                 this.hostname, this.getUsername());
+        if(null == password || password.equals("")) {
+            // legacy support because previously we saved the passwords using the wrong protocol identifier
+            password = Keychain.instance().getInternetPasswordFromKeychain(this.protocol,
+                this.hostname, this.getUsername());
+        }
         NSAutoreleasePool.pop(pool);
         return password;
     }
