@@ -261,13 +261,14 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     public void hostInputDidEndEditing(final NSNotification sender) {
-        this.host.setHostname(hostField.stringValue());
+        final String hostname = hostField.stringValue();
+        this.host.setHostname(hostname);
         this.updateFields();
         CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
         new Thread() {
             public void run() {
                 int pool = NSAutoreleasePool.push();
-                final boolean reachable = new Host(hostField.stringValue()).isReachable();
+                final boolean reachable = new Host(hostname).isReachable();
                 NSAutoreleasePool.pop(pool);
                 invoke(new Runnable() {
                     public void run() {

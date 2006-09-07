@@ -213,8 +213,9 @@ public class CDConnectionController extends CDSheetController {
     private static final Object lock = new Object();
 
     public void hostFieldTextDidChange(final NSNotification sender) {
+        final String hostname = hostField.stringValue();
         try {
-            final Host h = Host.parse(hostField.stringValue());
+            final Host h = Host.parse(hostname);
             this.hostField.setStringValue(h.getHostname());
             if(h.getProtocol().equals(Session.FTP))
                 this.protocolPopup.selectItemWithTitle(Session.FTP_STRING);
@@ -232,7 +233,7 @@ public class CDConnectionController extends CDSheetController {
         new Thread() {
             public void run() {
                 int pool = NSAutoreleasePool.push();
-                final boolean reachable = new Host(hostField.stringValue()).isReachable();
+                final boolean reachable = new Host(hostname).isReachable();
                 NSAutoreleasePool.pop(pool);
                 invoke(new Runnable() {
                     public void run() {
