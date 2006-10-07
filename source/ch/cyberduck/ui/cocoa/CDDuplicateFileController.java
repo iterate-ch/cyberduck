@@ -28,6 +28,9 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSSize;
 
+import java.util.Calendar;
+import java.text.DateFormat;
+
 /**
  * @version $Id$
  */
@@ -43,7 +46,7 @@ public class CDDuplicateFileController extends CDFileController {
         this.iconView.setImage(icon);
     }
 
-    public CDDuplicateFileController(CDWindowController parent) {
+    public CDDuplicateFileController(final CDWindowController parent) {
         super(parent);
         synchronized(parent) {
             if (!NSApplication.loadNibNamed("Duplicate", this)) {
@@ -54,7 +57,19 @@ public class CDDuplicateFileController extends CDFileController {
 
     public void setFilenameField(NSTextField field) {
         super.setFilenameField(field);
-        this.filenameField.setStringValue(((CDBrowserController)parent).getSelectedPath().getName() + "-Copy");
+        Path selected = ((CDBrowserController)parent).getSelectedPath();
+        StringBuffer proposal = new StringBuffer();
+        if(null == selected.getExtension()) {
+            proposal.append(selected.getName());
+        }
+        else {
+            proposal.append(selected.getName().substring(0, selected.getName().lastIndexOf(".")));
+        }
+        proposal.append(" (" + CDDateFormatter.getShortFormat(Calendar.getInstance().getTime().getTime()) + ")");
+        if(null != selected.getExtension()) {
+            proposal.append("."+selected.getExtension());
+        }
+        this.filenameField.setStringValue(proposal.toString());
     }
 
     public void callback(int returncode) {
