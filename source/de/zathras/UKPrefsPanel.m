@@ -307,7 +307,7 @@
 	windowRect.origin.y = [[tabView window] frame].origin.y;
 	windowRect.size.height += [self toolbarHeightForWindow:[tabView window]]; //toolbar height
 	windowRect.size.height += 22; //title bar height
-	windowRect.size.height += 20; //border
+	windowRect.size.height += 40; //border
 	windowRect.size.width += 35; //border
 
 	NSRect r = NSMakeRect([[tabView window] frame].origin.x - 
