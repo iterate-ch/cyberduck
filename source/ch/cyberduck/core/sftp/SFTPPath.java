@@ -424,7 +424,8 @@ public class SFTPPath extends Path {
                 if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
                     log.info("Updating permissions");
                     Permission perm = null;
-                    if(Preferences.instance().getBoolean("queue.download.permissions.useDefault") && this.attributes.isFile()) {
+                    if(Preferences.instance().getBoolean("queue.download.permissions.useDefault")
+                            && this.attributes.isFile()) {
                         perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
                     }
                     else {
@@ -505,22 +506,18 @@ public class SFTPPath extends Path {
                     // We do set the permissions here as otehrwise we might have an empty mask for
                     // interrupted file transfers
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        try {
-                            Permission perm = null;
+                        if(this.attributes.getPermission().isUndefined()) {
                             if(this.attributes.isFile()
                                     && Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                                perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
+                                this.attributes.setPermission(new Permission(
+                                        Preferences.instance().getProperty("queue.upload.permissions.default"))
+                                );
                             }
                             else {
-                                perm = this.getLocal().getPermission();
-                            }
-                            if(!perm.isUndefined()) {
-                                session.SFTP.changePermissions(this.getAbsolute(), perm.getMask());
+                                this.attributes.setPermission(this.getLocal().getPermission());
                             }
                         }
-                        catch(SshException e) {
-                            log.warn(e.getMessage());
-                        }
+                        this.changePermissions(this.attributes.getPermission(), false);
                     }
                     if(this.status.isResume()) {
                         this.status.setCurrent(f.getAttributes().getSize().intValue());

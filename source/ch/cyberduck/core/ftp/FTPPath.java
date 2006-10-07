@@ -42,6 +42,7 @@ import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -441,7 +442,8 @@ public class FTPPath extends Path {
                 if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
                     log.info("Updating permissions");
                     Permission perm;
-                    if(Preferences.instance().getBoolean("queue.download.permissions.useDefault") && this.attributes.isFile()) {
+                    if(Preferences.instance().getBoolean("queue.download.permissions.useDefault")
+                            && this.attributes.isFile()) {
                         perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
                     }
                     else {
@@ -643,23 +645,18 @@ public class FTPPath extends Path {
                 }
                 if(session.isConnected()) {
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        try {
-                            Permission perm = null;
+                        if(this.attributes.getPermission().isUndefined()) {
                             if(this.attributes.isFile()
                                     && Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                                perm = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
+                                this.attributes.setPermission(new Permission(
+                                        Preferences.instance().getProperty("queue.upload.permissions.default"))
+                                );
                             }
                             else {
-                                perm = this.getLocal().getPermission();
-                            }
-                            if(!perm.isUndefined()) {
-                                session.FTP.setPermissions(perm.getOctalCode(), this.getAbsolute());
+                                this.attributes.setPermission(this.getLocal().getPermission());
                             }
                         }
-                        catch(FTPException e) {
-                            //CHMOD not supported; ignore
-//                            log.warn(e.getMessage());
-                        }
+                        this.changePermissions(this.attributes.getPermission(), false);
                     }
                     if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                         try {
