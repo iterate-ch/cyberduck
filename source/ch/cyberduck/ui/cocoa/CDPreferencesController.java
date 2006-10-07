@@ -18,32 +18,17 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionPool;
+import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSCell;
-import com.apple.cocoa.application.NSControl;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSOpenPanel;
-import com.apple.cocoa.application.NSPopUpButton;
-import com.apple.cocoa.application.NSTabView;
-import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.application.NSView;
-import com.apple.cocoa.application.NSWindow;
-import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSNotificationCenter;
-import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSSize;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -266,12 +251,8 @@ public class CDPreferencesController extends CDWindowController {
     public void setEditorCombobox(NSPopUpButton editorCombobox) {
         this.editorCombobox = editorCombobox;
         this.editorCombobox.setAutoenablesItems(false);
-        this.editorCombobox.setTarget(this);
-        this.editorCombobox.setAction(new NSSelector("editorComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.editorCombobox.removeAllItems();
         java.util.Map editors = Editor.SUPPORTED_EDITORS;
-        NSSelector absolutePathForAppBundleWithIdentifierSelector =
-                new NSSelector("absolutePathForAppBundleWithIdentifier", new Class[]{String.class});
         java.util.Iterator editorNames = editors.keySet().iterator();
         java.util.Iterator editorIdentifiers = editors.values().iterator();
         while (editorNames.hasNext()) {
@@ -290,6 +271,8 @@ public class CDPreferencesController extends CDWindowController {
                 this.editorCombobox.itemWithTitle(editor).setImage(icon);
             }
         }
+        this.editorCombobox.setTarget(this);
+        this.editorCombobox.setAction(new NSSelector("editorComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.editorCombobox.setTitle(Preferences.instance().getProperty("editor.name"));
     }
 
@@ -297,6 +280,83 @@ public class CDPreferencesController extends CDWindowController {
         Preferences.instance().setProperty("editor.name", sender.titleOfSelectedItem());
         Preferences.instance().setProperty("editor.bundleIdentifier", (String) Editor.SUPPORTED_EDITORS.get(sender.titleOfSelectedItem()));
         CDBrowserController.validateToolbarItems();
+    }
+
+    private NSButton openUntitledBrowserCheckbox; //IBOutlet
+
+    public void setOpenUntitledBrowserCheckbox(NSButton openUntitledBrowserCheckbox) {
+        this.openUntitledBrowserCheckbox = openUntitledBrowserCheckbox;
+        this.openUntitledBrowserCheckbox.setTarget(this);
+        this.openUntitledBrowserCheckbox.setAction(new NSSelector("openUntitledBrowserCheckboxClicked", new Class[]{NSButton.class}));
+        this.openUntitledBrowserCheckbox.setState(Preferences.instance().getBoolean("browser.openUntitled") ? NSCell.OnState : NSCell.OffState);
+    }
+
+    public void openUntitledBrowserCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.OnState;
+        Preferences.instance().setProperty("browser.openUntitled", enabled);
+    }
+
+    private NSPopUpButton defaultBookmarkCombobox; //IBOutlet
+
+    private Map bookmarks = new HashMap();
+
+    public void setDefaultBookmarkCombobox(NSPopUpButton defaultBookmarkCombobox) {
+        this.defaultBookmarkCombobox = defaultBookmarkCombobox;
+        this.defaultBookmarkCombobox.setToolTip(NSBundle.localizedString("Bookmarks", ""));
+        this.defaultBookmarkCombobox.removeAllItems();
+        this.defaultBookmarkCombobox.addItem(NSBundle.localizedString("None", ""));
+        Iterator iter = HostCollection.instance().iterator();
+        while(iter.hasNext()) {
+            Host bookmark = (Host) iter.next();
+            this.defaultBookmarkCombobox.addItem(bookmark.getNickname());
+            this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(NSImage.imageNamed("bookmark16.tiff"));
+            this.bookmarks.put(bookmark.getNickname(), bookmark);
+        }
+        HostCollection.instance().addListener(new CollectionListener() {
+            public void collectionItemAdded(Object item) {
+                Host bookmark = (Host) item;
+                CDPreferencesController.this.defaultBookmarkCombobox.addItem(bookmark.getNickname());
+                CDPreferencesController.this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(NSImage.imageNamed("bookmark16.tiff"));
+                bookmarks.put(bookmark.getNickname(), bookmark);
+            }
+
+            public void collectionItemRemoved(Object item) {
+                Host bookmark = (Host) item;
+                if(CDPreferencesController.this.defaultBookmarkCombobox.titleOfSelectedItem().equals(bookmark.getNickname())) {
+                    Preferences.instance().deleteProperty("browser.defaultBookmark");
+                }
+                CDPreferencesController.this.defaultBookmarkCombobox.removeItemWithTitle(bookmark.getNickname());
+                bookmarks.remove(bookmark.getNickname());
+            }
+
+            public void collectionItemChanged(Object item) {
+                ;
+            }
+        });
+        this.defaultBookmarkCombobox.setTarget(this);
+        this.defaultBookmarkCombobox.setAction(new NSSelector("defaultBookmarkComboboxClicked", new Class[]{NSPopUpButton.class}));
+        String defaultBookmark = Preferences.instance().getProperty("browser.defaultBookmark");
+        if(null == defaultBookmark) {
+            this.defaultBookmarkCombobox.setTitle(NSBundle.localizedString("None", ""));
+
+        }
+        else {
+            if(null == this.bookmarks.get(defaultBookmark)) {
+                this.defaultBookmarkCombobox.setTitle(NSBundle.localizedString("None", ""));
+            }
+            else {
+                this.defaultBookmarkCombobox.setTitle(defaultBookmark);
+            }
+        }
+    }
+
+    public void defaultBookmarkComboboxClicked(NSPopUpButton sender) {
+        if(NSBundle.localizedString("None", "").equals(sender.titleOfSelectedItem())) {
+            Preferences.instance().deleteProperty("browser.defaultBookmark");
+        }
+        else {
+            Preferences.instance().setProperty("browser.defaultBookmark", sender.titleOfSelectedItem());
+        }
     }
 
     private NSPopUpButton encodingCombobox; //IBOutlet
@@ -355,6 +415,7 @@ public class CDPreferencesController extends CDWindowController {
         boolean enabled = sender.state() == NSCell.OnState;
         Preferences.instance().setProperty("queue.upload.changePermissions", enabled);
         this.chmodUploadDefaultCheckbox.setEnabled(enabled);
+        this.chmodUploadCustomCheckbox.setEnabled(enabled);
         boolean chmodUploadDefaultChecked = this.chmodUploadDefaultCheckbox.state() == NSCell.OnState;
         this.uownerr.setEnabled(enabled && chmodUploadDefaultChecked);
         this.uownerw.setEnabled(enabled && chmodUploadDefaultChecked);
@@ -389,6 +450,32 @@ public class CDPreferencesController extends CDWindowController {
         this.uotherr.setEnabled(enabled);
         this.uotherw.setEnabled(enabled);
         this.uotherx.setEnabled(enabled);
+        this.chmodUploadCustomCheckbox.setState(!enabled ? NSCell.OnState : NSCell.OffState);
+    }
+
+    private NSButton chmodUploadCustomCheckbox; //IBOutlet
+
+    public void setChmodUploadCustomCheckbox(NSButton chmodUploadCustomCheckbox) {
+        this.chmodUploadCustomCheckbox = chmodUploadCustomCheckbox;
+        this.chmodUploadCustomCheckbox.setTarget(this);
+        this.chmodUploadCustomCheckbox.setAction(new NSSelector("chmodUploadCustomCheckboxClicked", new Class[]{NSButton.class}));
+        this.chmodUploadCustomCheckbox.setState(!Preferences.instance().getBoolean("queue.upload.permissions.useDefault") ? NSCell.OnState : NSCell.OffState);
+        this.chmodUploadCustomCheckbox.setEnabled(Preferences.instance().getBoolean("queue.upload.changePermissions"));
+    }
+
+    public void chmodUploadCustomCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.OnState;
+        Preferences.instance().setProperty("queue.upload.permissions.useDefault", !enabled);
+        this.uownerr.setEnabled(!enabled);
+        this.uownerw.setEnabled(!enabled);
+        this.uownerx.setEnabled(!enabled);
+        this.ugroupr.setEnabled(!enabled);
+        this.ugroupw.setEnabled(!enabled);
+        this.ugroupx.setEnabled(!enabled);
+        this.uotherr.setEnabled(!enabled);
+        this.uotherw.setEnabled(!enabled);
+        this.uotherx.setEnabled(!enabled);
+        this.chmodUploadDefaultCheckbox.setState(!enabled ? NSCell.OnState : NSCell.OffState);
     }
 
     private NSButton chmodDownloadCheckbox; //IBOutlet
@@ -404,6 +491,7 @@ public class CDPreferencesController extends CDWindowController {
         boolean enabled = sender.state() == NSCell.OnState;
         Preferences.instance().setProperty("queue.download.changePermissions", enabled);
         this.chmodDownloadDefaultCheckbox.setEnabled(enabled);
+        this.chmodDownloadCustomCheckbox.setEnabled(enabled);
         boolean chmodDownloadDefaultChecked = this.chmodDownloadDefaultCheckbox.state() == NSCell.OnState;
         this.downerr.setEnabled(enabled && chmodDownloadDefaultChecked);
         this.downerw.setEnabled(enabled && chmodDownloadDefaultChecked);
@@ -438,6 +526,32 @@ public class CDPreferencesController extends CDWindowController {
         this.dotherr.setEnabled(enabled);
         this.dotherw.setEnabled(enabled);
         this.dotherx.setEnabled(enabled);
+        this.chmodDownloadCustomCheckbox.setState(!enabled ? NSCell.OnState : NSCell.OffState);
+    }
+
+    private NSButton chmodDownloadCustomCheckbox; //IBOutlet
+
+    public void setChmodDownloadCustomCheckbox(NSButton chmodDownloadCustomCheckbox) {
+        this.chmodDownloadCustomCheckbox = chmodDownloadCustomCheckbox;
+        this.chmodDownloadCustomCheckbox.setTarget(this);
+        this.chmodDownloadCustomCheckbox.setAction(new NSSelector("chmodDownloadCustomCheckboxClicked", new Class[]{NSButton.class}));
+        this.chmodDownloadCustomCheckbox.setState(!Preferences.instance().getBoolean("queue.download.permissions.useDefault") ? NSCell.OnState : NSCell.OffState);
+        this.chmodDownloadCustomCheckbox.setEnabled(Preferences.instance().getBoolean("queue.download.changePermissions"));
+    }
+
+    public void chmodDownloadCustomCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.OnState;
+        Preferences.instance().setProperty("queue.download.permissions.useDefault", !enabled);
+        this.downerr.setEnabled(!enabled);
+        this.downerw.setEnabled(!enabled);
+        this.downerx.setEnabled(!enabled);
+        this.dgroupr.setEnabled(!enabled);
+        this.dgroupw.setEnabled(!enabled);
+        this.dgroupx.setEnabled(!enabled);
+        this.dotherr.setEnabled(!enabled);
+        this.dotherw.setEnabled(!enabled);
+        this.dotherx.setEnabled(!enabled);
+        this.chmodDownloadDefaultCheckbox.setState(!enabled ? NSCell.OnState : NSCell.OffState);
     }
 
     public NSButton downerr; //IBOutlet
@@ -932,7 +1046,7 @@ public class CDPreferencesController extends CDWindowController {
     public void bufferFieldDidChange(NSNotification sender) {
         try {
             int kbit = Integer.parseInt(this.bufferField.stringValue());
-            Preferences.instance().setProperty("connection.buffer", (int) kbit / 8 * 1024); //Bytes
+            Preferences.instance().setProperty("connection.buffer", kbit / 8 * 1024); //Bytes
         }
         catch (NumberFormatException e) {
             log.error(e.getMessage());
@@ -973,7 +1087,28 @@ public class CDPreferencesController extends CDWindowController {
     public void keepAliveIntervalFieldDidChange(NSNotification sender) {
         try {
             int i = Integer.parseInt(this.keepAliveIntervalField.stringValue());
-            Preferences.instance().setProperty("connection.keepalive.interval", (int) i);
+            Preferences.instance().setProperty("connection.keepalive.interval", i);
+        }
+        catch (NumberFormatException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    private NSTextField timeoutField; //IBOutlet
+
+    public void setTimeoutField(NSTextField timeoutField) {
+        this.timeoutField = timeoutField;
+        this.timeoutField.setStringValue(String.valueOf(Preferences.instance().getInteger("connection.timeout")/1000));
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("timeoutFieldDidChange", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.timeoutField);
+    }
+
+    public void timeoutFieldDidChange(NSNotification sender) {
+        try {
+            int timeout = Integer.parseInt(this.timeoutField.stringValue())*1000;
+            Preferences.instance().setProperty("connection.timeout", timeout);
         }
         catch (NumberFormatException e) {
             log.error(e.getMessage());
@@ -1080,21 +1215,6 @@ public class CDPreferencesController extends CDWindowController {
     public void showHiddenCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.OnState;
         Preferences.instance().setProperty("browser.showHidden", enabled);
-    }
-
-    private NSButton newBrowserCheckbox; //IBOutlet
-
-    public void setNewBrowserCheckbox(NSButton newBrowserCheckbox) {
-        this.newBrowserCheckbox = newBrowserCheckbox;
-        this.newBrowserCheckbox.setTarget(this);
-        this.newBrowserCheckbox.setAction(new NSSelector("newBrowserCheckboxClicked", new Class[]{NSButton.class}));
-        this.newBrowserCheckbox.setState(Preferences.instance().getBoolean("browser.openByDefault") ? NSCell.OnState : NSCell.OffState);
-    }
-
-    public void newBrowserCheckboxClicked(final NSButton sender) {
-        boolean enabled = sender.state() == NSCell.OnState;
-        Preferences.instance().setProperty("browser.openByDefault", enabled);
-        //				this.defaultHostCombobox.setEnabled(enabled);
     }
 
     private NSButton bringQueueToFrontCheckbox; //IBOutlet
