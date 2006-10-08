@@ -530,9 +530,6 @@ en.lproj/Bookmark.nib/keyedobjects.nib -text
 en.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 en.lproj/Browser.nib/keyedobjects.nib -text
 en.lproj/Browser.strings -text svneol=native#application/octet-stream
-en.lproj/BrowserError.nib/classes.nib -text
-en.lproj/BrowserError.nib/info.nib -text
-en.lproj/BrowserError.nib/keyedobjects.nib -text
 en.lproj/Certificate.nib/keyedobjects.nib -text
 en.lproj/Certificate.strings -text svneol=native#application/octet-stream
 en.lproj/Command.nib/keyedobjects.nib -text
@@ -572,9 +569,6 @@ en.lproj/Queue.nib/keyedobjects.nib -text
 en.lproj/Status.strings -text svneol=native#application/octet-stream
 en.lproj/Sync.nib/keyedobjects.nib -text
 en.lproj/Sync.strings -text svneol=native#application/octet-stream
-en.lproj/TransferError.nib/classes.nib -text
-en.lproj/TransferError.nib/info.nib -text
-en.lproj/TransferError.nib/keyedobjects.nib -text
 en.lproj/Validator.nib/keyedobjects.nib -text
 en.lproj/Validator.strings -text svneol=native#application/octet-stream
 es.lproj/Bookmark.nib/keyedobjects.nib -text
