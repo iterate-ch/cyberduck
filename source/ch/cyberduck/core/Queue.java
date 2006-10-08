@@ -18,11 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSMutableDictionary;
-import com.apple.cocoa.foundation.NSObject;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -215,6 +211,7 @@ public abstract class Queue extends NSObject {
     public void run(final boolean resume) {
         new Thread() {
             public void run() {
+                int pool = NSAutoreleasePool.push();
                 try {
                     canceled = false;
                     fireQueueStartedEvent();
@@ -252,6 +249,7 @@ public abstract class Queue extends NSObject {
                     getSession().close();
                     getSession().cache().clear();
                     fireQueueStoppedEvent();
+                    NSAutoreleasePool.pop(pool);
                 }
             }
         }.start();
