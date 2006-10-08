@@ -20,6 +20,8 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.HostCollection;
+import ch.cyberduck.core.CollectionListener;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -62,7 +64,7 @@ public class CDBookmarkController extends CDWindowController {
             this.host.setPort(Session.FTP_PORT);
         }
         this.updateFields();
-        CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
+        HostCollection.instance().collectionItemChanged(this.host);
     }
 
     private NSPopUpButton encodingPopup; // IBOutlet
@@ -167,8 +169,27 @@ public class CDBookmarkController extends CDWindowController {
 
     private static final Object lock = new Object();
 
-    public CDBookmarkController(Host host) {
+    public CDBookmarkController(final Host host) {
         this.host = host;
+        HostCollection.instance().addListener(new CollectionListener() {
+            public void collectionItemAdded(Object item) {
+                ;
+            }
+
+            public void collectionItemRemoved(Object item) {
+                if(item.equals(host)) {
+                    HostCollection.instance().removeListener(this);
+                    final NSWindow window = window();
+                    if(null != window) {
+                        window.close();
+                    }
+                }
+            }
+
+            public void collectionItemChanged(Object item) {
+                ;
+            }
+        });
         synchronized(lock) {
             if (!NSApplication.loadNibNamed("Bookmark", this)) {
                 log.fatal("Couldn't load Bookmark.nib");
@@ -177,7 +198,7 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     public void windowWillClose(NSNotification notification) {
-        CDBookmarkTableDataSource.instance().save();
+        HostCollection.instance().save();
         super.windowWillClose(notification);
     }
 
@@ -264,10 +285,10 @@ public class CDBookmarkController extends CDWindowController {
         final String hostname = hostField.stringValue();
         this.host.setHostname(hostname);
         this.updateFields();
-        CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
+        HostCollection.instance().collectionItemChanged(this.host);
         new Thread() {
             public void run() {
-                int pool = NSAutoreleasePool.push();
+                final int pool = NSAutoreleasePool.push();
                 final boolean reachable = new Host(hostname).isReachable();
                 NSAutoreleasePool.pop(pool);
                 invoke(new Runnable() {
@@ -284,25 +305,25 @@ public class CDBookmarkController extends CDWindowController {
     public void portInputDidEndEditing(final NSNotification sender) {
         this.host.setPort(Integer.parseInt(portField.stringValue()));
         this.updateFields();
-        CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
+        HostCollection.instance().collectionItemChanged(this.host);
     }
 
     public void pathInputDidEndEditing(final NSNotification sender) {
         this.host.setDefaultPath(pathField.stringValue());
         this.updateFields();
-        CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
+        HostCollection.instance().collectionItemChanged(this.host);
     }
 
     public void nicknameInputDidEndEditing(final NSNotification sender) {
         this.host.setNickname(nicknameField.stringValue());
         this.updateFields();
-        CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
+        HostCollection.instance().collectionItemChanged(this.host);
     }
 
     public void usernameInputDidEndEditing(final NSNotification sender) {
         this.host.getCredentials().setUsername(usernameField.stringValue());
         this.updateFields();
-        CDBookmarkTableDataSource.instance().collectionItemChanged(this.host);
+        HostCollection.instance().collectionItemChanged(this.host);
     }
 
     private void updateFields() {
