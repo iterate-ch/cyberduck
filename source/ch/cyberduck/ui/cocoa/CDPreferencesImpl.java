@@ -53,6 +53,10 @@ public class CDPreferencesImpl extends Preferences {
         this.props.setObjectForKey(value, property);
     }
 
+    public void deleteProperty(String property) {
+        this.props.removeObjectForKey(property);
+    }
+
     /**
      * Overwrite the default values with user props if any.
      */

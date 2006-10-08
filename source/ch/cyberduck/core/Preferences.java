@@ -72,6 +72,8 @@ public abstract class Preferences {
      */
     public abstract void setProperty(String property, String value);
 
+    public abstract void deleteProperty(String property);
+
     /**
      * @param property The name of the property to overwrite
      * @param v        The new vlaue
@@ -138,7 +140,7 @@ public abstract class Preferences {
         defaults.put("website.donate", "http://cyberduck.ch/donate/");
         defaults.put("website.update", "http://update.cyberduck.ch/");
         defaults.put("website.home", "http://cyberduck.ch/");
-        defaults.put("website.forum", "http://cyberduck.ch/forum/");
+        defaults.put("website.forum", "http://forum.cyberduck.ch/");
         defaults.put("website.help", "http://cyberduck.ch/help/");
         defaults.put("website.bug", "http://trac.cyberduck.ch/newticket/");
 
@@ -148,15 +150,13 @@ public abstract class Preferences {
         defaults.put("growl.enable", "true");
 
         /**
-         * Bookmark drawer should be opened for new browser windows
-         */
-        defaults.put("bookmarkDrawer.isOpen", "false");
-
-        /**
          * Current default browser view is outline view (0-List view, 1-Outline view, 2-Column view)
          */
         defaults.put("browser.view", "1");
 //        defaults.put("browser.view.autoexpand", "true");
+        defaults.put("browser.openUntitled", "true");
+        defaults.put("browser.defaultBookmark", NSBundle.localizedString("None", ""));
+
         /**
          * Confirm closing the browsing connection
          */
@@ -193,13 +193,18 @@ public abstract class Preferences {
          */
         defaults.put("browser.editable", "true");
         /**
+         * Bookmark drawer should be opened for new browser windows
+         */
+        defaults.put("browser.bookmarkDrawer.isOpen", "false");
+        /**
          * Close bookmark drawer upon opening a connection
          */
         defaults.put("browser.closeDrawer", "false");
         /**
          * Open log drawer in browser window upon error
          */
-        defaults.put("browser.openLogDrawerOnError", "true");
+        defaults.put("browser.logDrawer.openOnError", "true");
+        defaults.put("browser.logDrawer.isOpen", "false");
 
         /**
          * Default editor
@@ -228,7 +233,8 @@ public abstract class Preferences {
         /**
          * Open log drawer in transfer window upon error
          */
-        defaults.put("queue.openLogDrawerOnError", "true");
+        defaults.put("queue.logDrawer.openOnError", "true");
+        defaults.put("queue.logDrawer.isOpen", "false");
 
         defaults.put("queue.download.folder", System.getProperty("user.home") + "/Desktop");
         /**
@@ -237,6 +243,9 @@ public abstract class Preferences {
         defaults.put("queue.fileExists", "ask");
 
         defaults.put("queue.upload.changePermissions", "true");
+        /**
+         * If false, apply the permissions of the local file
+         */
         defaults.put("queue.upload.permissions.useDefault", "false");
         defaults.put("queue.upload.permissions.default", "rw-r--r--");
         defaults.put("queue.upload.preserveDate", "true");
@@ -244,6 +253,9 @@ public abstract class Preferences {
         defaults.put("queue.upload.skip", ".DS_Store");
 
         defaults.put("queue.download.changePermissions", "true");
+        /**
+         * If false, apply the permissions of the remote file
+         */
         defaults.put("queue.download.permissions.useDefault", "false");
         defaults.put("queue.download.permissions.default", "rw-r--r--");
         defaults.put("queue.download.preserveDate", "true");
@@ -308,7 +320,7 @@ public abstract class Preferences {
     public String getProperty(String property) {
         String value = (String) defaults.get(property);
         if (null == value) {
-            throw new IllegalArgumentException("No property with key '" + property + "'");
+            log.warn("No property with key '" + property + "'");
         }
         return value;
     }
