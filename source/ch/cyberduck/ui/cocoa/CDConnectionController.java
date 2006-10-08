@@ -51,13 +51,13 @@ public class CDConnectionController extends CDSheetController {
         this.bookmarksPopup = bookmarksPopup;
         this.bookmarksPopup.setImage(NSImage.imageNamed("bookmarks.tiff"));
         this.bookmarksPopup.setToolTip(NSBundle.localizedString("Bookmarks", ""));
-        Iterator iter = CDBookmarkTableDataSource.instance().iterator();
+        Iterator iter = HostCollection.instance().iterator();
         while(iter.hasNext()) {
             Host bookmark = (Host) iter.next();
             bookmarksPopup.addItem(bookmark.getNickname());
             bookmarks.put(bookmark.getNickname(), bookmark);
         }
-        CDBookmarkTableDataSource.instance().addListener(this.bookmarkCollectionListener = new CollectionListener() {
+        HostCollection.instance().addListener(this.bookmarkCollectionListener = new CollectionListener() {
             public void collectionItemAdded(Object item) {
                 Host bookmark = (Host) item;
                 CDConnectionController.this.bookmarksPopup.addItem(bookmark.getNickname());
@@ -103,7 +103,7 @@ public class CDConnectionController extends CDSheetController {
             }
         });
         for(int i = 0; i < files.length; i++) {
-            Host h = CDBookmarkTableDataSource.instance().importBookmark(files[i]);
+            Host h = HostCollection.instance().importBookmark(files[i]);
             historyPopup.addItem(h.getNickname());
             history.put(h.getNickname(), h);
         }
@@ -198,12 +198,12 @@ public class CDConnectionController extends CDSheetController {
         this.hostField.setUsesDataSource(true);
         this.hostField.setDataSource(this.hostPopupDataSource = new Object() {
             public int numberOfItemsInComboBox(NSComboBox combo) {
-                return CDBookmarkTableDataSource.instance().size();
+                return HostCollection.instance().size();
             }
 
             public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
                 if(row < this.numberOfItemsInComboBox(combo)) {
-                    return ((Host) CDBookmarkTableDataSource.instance().get(row)).getHostname();
+                    return ((Host) HostCollection.instance().get(row)).getHostname();
                 }
                 return null;
             }
@@ -232,7 +232,7 @@ public class CDConnectionController extends CDSheetController {
         }
         new Thread() {
             public void run() {
-                int pool = NSAutoreleasePool.push();
+                final int pool = NSAutoreleasePool.push();
                 final boolean reachable = new Host(hostname).isReachable();
                 NSAutoreleasePool.pop(pool);
                 invoke(new Runnable() {
@@ -426,7 +426,7 @@ public class CDConnectionController extends CDSheetController {
     // Constructors
     // ----------------------------------------------------------
 
-    public CDConnectionController(CDWindowController parent) {
+    public CDConnectionController(final CDWindowController parent) {
         super(parent);
         synchronized(parent) {
             if(!NSApplication.loadNibNamed("Connection", this)) {
@@ -617,7 +617,7 @@ public class CDConnectionController extends CDSheetController {
     }
 
     protected void invalidate() {
-        CDBookmarkTableDataSource.instance().removeListener(this.bookmarkCollectionListener);
+        HostCollection.instance().removeListener(this.bookmarkCollectionListener);
         Rendezvous.instance().removeListener(this.rendezvousListener);
         super.invalidate();
     }

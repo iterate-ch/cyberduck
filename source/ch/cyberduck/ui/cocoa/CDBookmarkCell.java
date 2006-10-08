@@ -45,7 +45,7 @@ public class CDBookmarkCell extends CDTableCell {
         super.encodeWithCoder(encoder);
     }
 
-    public void setObjectValue(Object bookmark) {
+    public void setObjectValue(final Object bookmark) {
         this.bookmark = (Host) bookmark;
     }
 

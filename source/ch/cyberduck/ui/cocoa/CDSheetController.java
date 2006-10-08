@@ -33,14 +33,14 @@ public abstract class CDSheetController extends CDWindowController implements CD
     /**
      * The controller of the parent window
      */
-    protected CDWindowController parent;
+    protected final CDWindowController parent;
 
     /**
      * The sheet window must be provided later with #setWindow (usually called when loading the NIB file)
      *
      * @param parent The controller of the parent window
      */
-    public CDSheetController(CDWindowController parent) {
+    public CDSheetController(final CDWindowController parent) {
         this.parent = parent;
     }
 
@@ -50,7 +50,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
      * @param parent The controller of the parent window
      * @param sheet  The window to attach as the sheet
      */
-    public CDSheetController(CDWindowController parent, NSWindow sheet) {
+    public CDSheetController(final CDWindowController parent, NSWindow sheet) {
         this.parent = parent;
         this.window = sheet;
     }

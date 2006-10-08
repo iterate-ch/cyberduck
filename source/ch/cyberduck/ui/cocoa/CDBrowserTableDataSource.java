@@ -33,7 +33,7 @@ import java.util.ArrayList;
 /**
  * @version $Id$
  */
-public abstract class CDBrowserTableDataSource extends CDController {
+public abstract class CDBrowserTableDataSource extends NSObject {
     protected static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 
     protected static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
@@ -121,7 +121,8 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 return icon;
             }
             if (identifier.equals(FILENAME_COLUMN)) {
-                return new NSAttributedString(item.getName(), CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
+                return new NSAttributedString(item.getName(),
+                        CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
             }
             if (identifier.equals(TYPEAHEAD_COLUMN)) {
                 return item.getName();
@@ -132,9 +133,10 @@ public abstract class CDBrowserTableDataSource extends CDController {
             }
             if (identifier.equals(MODIFIED_COLUMN)) {
                 if (item.attributes.getTimestamp() != -1) {
-                    //TODO: Return NSAttributedString instead; wrong color when selected in browser list view
                     return new NSGregorianDate((double) item.attributes.getTimestamp() / 1000,
                             NSDate.DateFor1970);
+//                    return new NSAttributedString(CDDateFormatter.getShortFormat(item.attributes.getTimestamp()),
+//                            CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
                 }
                 return null;
             }
@@ -187,7 +189,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         public void queueStopped() {
                             if (controller.isMounted()) {
                                 controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
-                                invoke(new Runnable() {
+                                controller.invoke(new Runnable() {
                                     public void run() {
                                         controller.reloadData(true);
                                     }
@@ -369,7 +371,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 this.promisedDragPaths[0].getLocal().mkdir();
             }
         }
-        this.invoke(new Runnable() {
+        controller.invoke(new Runnable() {
             public void run() {
                 Queue q = new DownloadQueue();
                 for (int i = 0; i < promisedDragPaths.length; i++) {

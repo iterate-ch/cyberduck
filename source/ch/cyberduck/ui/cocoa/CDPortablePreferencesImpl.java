@@ -49,6 +49,10 @@ public class CDPortablePreferencesImpl extends Preferences {
         this.props.setObjectForKey(value, property);
     }
 
+    public void deleteProperty(String property) {
+        this.props.removeObjectForKey(property);
+    }
+
     public void load() {
         File f = new File(NSPathUtilities.stringByExpandingTildeInPath(
                 (String)NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")));
@@ -68,9 +72,9 @@ public class CDPortablePreferencesImpl extends Preferences {
                 this.props = (NSMutableDictionary)propertyListFromXMLData;
             }
         }
-		else {
-			this.props = new NSMutableDictionary();
-		}
+        else {
+            this.props = new NSMutableDictionary();
+        }
     }
 
     public void save() {

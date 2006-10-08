@@ -39,7 +39,7 @@ import java.util.List;
 public class CDDownloadQueueValidatorController extends CDValidatorController {
     private static Logger log = Logger.getLogger(CDDownloadQueueValidatorController.class);
 
-    public CDDownloadQueueValidatorController(Queue queue) {
+    public CDDownloadQueueValidatorController(final Queue queue) {
         super(queue);
         synchronized(CDQueueController.instance()) {
             if(!NSApplication.loadNibNamed("Validator", this)) {
@@ -78,7 +78,7 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
         do {
             path.setLocal(new Local(parent, proposal));
             no++;
-            if(index != -1) {
+            if(index != -1 && index != 0) {
                 proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
             }
             else {

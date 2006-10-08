@@ -32,7 +32,7 @@ import com.apple.cocoa.foundation.NSPathUtilities;
  */
 public class CDCreateFileController extends CDFileController {
 
-    public CDCreateFileController(CDWindowController parent) {
+    public CDCreateFileController(final CDWindowController parent) {
         super(parent);
         synchronized(parent) {
             if(!NSApplication.loadNibNamed("File", this)) {

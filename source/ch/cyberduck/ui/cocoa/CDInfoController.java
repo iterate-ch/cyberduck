@@ -142,7 +142,7 @@ public class CDInfoController extends CDWindowController {
 
     private CDBrowserController controller;
 
-    public CDInfoController(CDBrowserController controller) {
+    public CDInfoController(final CDBrowserController controller) {
         this.controller = controller;
         synchronized(controller) {
             if (!NSApplication.loadNibNamed("Info", this)) {

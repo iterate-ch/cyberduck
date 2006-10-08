@@ -34,7 +34,7 @@ public class CDLoginController implements LoginController
 
     CDWindowController parent;
 
-    public CDLoginController(CDWindowController parent) {
+    public CDLoginController(final CDWindowController parent) {
         this.parent = parent;
     }
 

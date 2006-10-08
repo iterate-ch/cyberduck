@@ -42,6 +42,9 @@ public class CDQueueController extends CDWindowController
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
         this.window.setToolbar(toolbar);
+        if(Preferences.instance().getBoolean("queue.logDrawer.isOpen")) {
+            this.logDrawer.open();
+        }
     }
 
     public void setWindow(NSWindow window) {
@@ -71,7 +74,7 @@ public class CDQueueController extends CDWindowController
      * @param notification
      */
     public void windowWillClose(NSNotification notification) {
-        this.queueModel.save();
+        QueueCollection.instance().save();
         //Saving state of transfer window
         Preferences.instance().setProperty("queue.openByDefault", false);
     }
@@ -82,8 +85,32 @@ public class CDQueueController extends CDWindowController
 
     private NSDrawer logDrawer; // IBOutlet
 
+    private NSDrawer.Notifications logDrawerNotifications = new NSDrawer.Notifications() {
+        public void drawerWillOpen(NSNotification notification) {
+        }
+
+        public void drawerDidOpen(NSNotification notification) {
+            Preferences.instance().setProperty("queue.logDrawer.isOpen", true);
+        }
+
+        public void drawerWillClose(NSNotification notification) {
+        }
+
+        public void drawerDidClose(NSNotification notification) {
+            Preferences.instance().setProperty("queue.logDrawer.isOpen", false);
+        }
+    };
+
     public void setLogDrawer(NSDrawer logDrawer) {
         this.logDrawer = logDrawer;
+        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications,
+                new NSSelector("drawerDidOpen", new Class[]{Object.class}),
+                NSDrawer.DrawerDidOpenNotification,
+                this.logDrawer);
+        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications,
+                new NSSelector("drawerDidClose", new Class[]{Object.class}),
+                NSDrawer.DrawerDidCloseNotification,
+                this.logDrawer);
     }
 
     private NSTextView logView;
@@ -146,8 +173,8 @@ public class CDQueueController extends CDWindowController
      * @return true if any transfer is active
      */
     public boolean hasRunningTransfers() {
-        for(int i = 0; i < this.queueModel.size(); i++) {
-            Queue q = (Queue) this.queueModel.get(i);
+        for(int i = 0; i < QueueCollection.instance().size(); i++) {
+            Queue q = (Queue) QueueCollection.instance().get(i);
             if(q.isRunning()) {
                 return true;
             }
@@ -171,8 +198,8 @@ public class CDQueueController extends CDWindowController
                 instance.alert(sheet, new CDSheetCallback() {
                     public void callback(int returncode) {
                         if(returncode == DEFAULT_OPTION) { //Quit
-                            for(int i = 0; i < instance.queueModel.size(); i++) {
-                                Queue queue = (Queue) instance.queueModel.get(i);
+                            for(int i = 0; i < QueueCollection.instance().size(); i++) {
+                                Queue queue = (Queue) QueueCollection.instance().get(i);
                                 if(queue.isRunning()) {
                                     queue.interrupt();
                                 }
@@ -197,8 +224,7 @@ public class CDQueueController extends CDWindowController
 
     public void setQueueTable(NSTableView view) {
         this.queueTable = view;
-
-        this.queueTable.setDataSource(this.queueModel = CDQueueTableDataSource.instance());
+        this.queueTable.setDataSource(this.queueModel = new CDQueueTableDataSource());
         this.queueTable.setDelegate(this.delegate = new CDAbstractTableDelegate() {
 
             public void enterKeyPressed(final Object sender) {
@@ -215,7 +241,7 @@ public class CDQueueController extends CDWindowController
 
             public void tableRowDoubleClicked(final Object sender) {
                 if(CDQueueController.this.queueTable.selectedRow() != -1) {
-                    Queue item = (Queue) queueModel.get(CDQueueController.this.queueTable.selectedRow());
+                    Queue item = (Queue) QueueCollection.instance().get(CDQueueController.this.queueTable.selectedRow());
                     if(!item.isRunning()) {
                         reloadButtonClicked(sender);
                     }
@@ -225,7 +251,7 @@ public class CDQueueController extends CDWindowController
             public String tableViewToolTipForCell(NSTableView view, NSCell cell, NSMutableRect rect,
                                                   NSTableColumn tc, int row, NSPoint mouseLocation) {
                 if(row < queueModel.numberOfRowsInTableView(view)) {
-                    queueModel.get(row).toString();
+                    QueueCollection.instance().get(row).toString();
                 }
                 return null;
             }
@@ -312,11 +338,11 @@ public class CDQueueController extends CDWindowController
      */
     private void updateSelection() {
         boolean key = window().isKeyWindow();
-        for(int i = 0; i < queueModel.size(); i++) {
-            queueModel.getController(i).setHighlighted(queueTable.isRowSelected(i) && key);
+        for(int i = 0; i < QueueCollection.instance().size(); i++) {
+            QueueCollection.instance().getController(i).setHighlighted(queueTable.isRowSelected(i) && key);
         }
         if(queueTable.selectedRow() != -1) {
-            final Queue q = (Queue) queueModel.get(queueTable.selectedRow());
+            final Queue q = (Queue) QueueCollection.instance().get(queueTable.selectedRow());
             if(q.numberOfRoots() == 1) {
                 urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()
                         + q.getRoot().getAbsolute(),
@@ -359,7 +385,7 @@ public class CDQueueController extends CDWindowController
      */
     public void removeItem(Queue queue) {
         synchronized(CDQueueController.instance()) {
-            this.queueModel.remove(queue);
+            QueueCollection.instance().remove(queue);
             this.reloadQueueTable();
         }
     }
@@ -371,8 +397,8 @@ public class CDQueueController extends CDWindowController
      */
     public void addItem(Queue queue) {
         synchronized(CDQueueController.instance()) {
-            int row = this.queueModel.size();
-            this.queueModel.add(row, queue);
+            int row = QueueCollection.instance().size();
+            QueueCollection.instance().add(row, queue);
             this.reloadQueueTable();
             this.queueTable.selectRow(row, false);
             this.queueTable.scrollRowToVisible(row);
@@ -431,7 +457,7 @@ public class CDQueueController extends CDWindowController
                                 synchronized(lock) {
                                     logView.textStorage().appendAttributedString(
                                             new NSAttributedString(getErrorText(e) + "\n", BOLD_RED_FONT_ATTRIBUTES));
-                                    if(Preferences.instance().getBoolean("queue.openLogDrawerOnError")) {
+                                    if(Preferences.instance().getBoolean("queue.logDrawer.openOnError")) {
                                         logDrawer.open();
                                         //Any better way to scroll to the bottom?
                                         logView.scrollPoint(new NSPoint(0, 1000000));
@@ -592,7 +618,7 @@ public class CDQueueController extends CDWindowController
                 NSArray elements = (NSArray) o;
                 for(int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                    this.queueModel.add(QueueFactory.createQueue(dict));
+                    QueueCollection.instance().add(QueueFactory.createQueue(dict));
                 }
                 pboard.setPropertyListForType(null, "QueuePBoardType");
                 this.reloadQueueTable();
@@ -604,7 +630,7 @@ public class CDQueueController extends CDWindowController
         synchronized(sender) {
             NSEnumerator iterator = queueTable.selectedRowEnumerator();
             while(iterator.hasMoreElements()) {
-                Queue queue = (Queue) this.queueModel.get(((Integer) iterator.nextElement()).intValue());
+                Queue queue = (Queue) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
                 if(queue.isRunning()) {
                     queue.cancel();
                 }
@@ -614,8 +640,8 @@ public class CDQueueController extends CDWindowController
 
     public void stopAllButtonClicked(final Object sender) {
         synchronized(sender) {
-            for(int i = 0; i < this.queueModel.size(); i++) {
-                Queue queue = (Queue) this.queueModel.get(i);
+            for(int i = 0; i < QueueCollection.instance().size(); i++) {
+                Queue queue = (Queue) QueueCollection.instance().get(i);
                 if(queue.isRunning()) {
                     queue.cancel();
                 }
@@ -628,7 +654,7 @@ public class CDQueueController extends CDWindowController
             NSEnumerator iterator = queueTable.selectedRowEnumerator();
             while(iterator.hasMoreElements()) {
                 int i = ((Integer) iterator.nextElement()).intValue();
-                Queue queue = (Queue) this.queueModel.get(i);
+                Queue queue = (Queue) QueueCollection.instance().get(i);
                 if(!queue.isRunning()) {
                     this.startItem(queue, true);
                 }
@@ -641,7 +667,7 @@ public class CDQueueController extends CDWindowController
             NSEnumerator iterator = queueTable.selectedRowEnumerator();
             while(iterator.hasMoreElements()) {
                 int i = ((Integer) iterator.nextElement()).intValue();
-                Queue queue = (Queue) this.queueModel.get(i);
+                Queue queue = (Queue) QueueCollection.instance().get(i);
                 if(!queue.isRunning()) {
                     this.startItem(queue, false);
                 }
@@ -651,7 +677,7 @@ public class CDQueueController extends CDWindowController
 
     public void openButtonClicked(final Object sender) {
         if(this.queueTable.selectedRow() != -1) {
-            Queue q = (Queue) this.queueModel.get(this.queueTable.selectedRow());
+            Queue q = (Queue) QueueCollection.instance().get(this.queueTable.selectedRow());
             String file = q.getRoot().getLocal().toString();
             if(!NSWorkspace.sharedWorkspace().openFile(file)) {
                 if(q.isComplete()) {
@@ -680,7 +706,7 @@ public class CDQueueController extends CDWindowController
 
     public void revealButtonClicked(final Object sender) {
         if(this.queueTable.selectedRow() != -1) {
-            Queue q = (Queue) this.queueModel.get(this.queueTable.selectedRow());
+            Queue q = (Queue) QueueCollection.instance().get(this.queueTable.selectedRow());
             String file = q.getRoot().getLocal().toString();
             if(!NSWorkspace.sharedWorkspace().selectFile(file, "")) {
                 if(q.isComplete()) {
@@ -712,9 +738,9 @@ public class CDQueueController extends CDWindowController
         int j = 0;
         while(iterator.hasMoreElements()) {
             int i = ((Integer) iterator.nextElement()).intValue();
-            Queue q = (Queue) this.queueModel.get(i - j);
+            Queue q = (Queue) QueueCollection.instance().get(i - j);
             if(!q.isRunning()) {
-                this.queueModel.remove(i - j);
+                QueueCollection.instance().remove(i - j);
                 j++;
             }
         }
@@ -722,11 +748,11 @@ public class CDQueueController extends CDWindowController
     }
 
     public void clearButtonClicked(final Object sender) {
-        for(int i = 0; i < this.queueModel.size(); i++) {
-            CDProgressController c = this.queueModel.getController(i);
+        for(int i = 0; i < QueueCollection.instance().size(); i++) {
+            CDProgressController c = QueueCollection.instance().getController(i);
 //            c.closeErrors();
             if(!c.getQueue().isRunning() && c.getQueue().isComplete()) {
-                this.queueModel.remove(i);
+                QueueCollection.instance().remove(i);
                 i--;
             }
         }
@@ -837,7 +863,7 @@ public class CDQueueController extends CDWindowController
             }
             NSEnumerator iterator = queueTable.selectedRowEnumerator();
             while(iterator.hasMoreElements()) {
-                Queue queue = (Queue) this.queueModel.get(((Integer) iterator.nextElement()).intValue());
+                Queue queue = (Queue) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
                 if(null == queue) {
                     return false;
                 }
@@ -849,7 +875,7 @@ public class CDQueueController extends CDWindowController
         }
         if(identifier.equals("resumeButtonClicked:")) {
             if(this.queueTable.numberOfSelectedRows() > 0) {
-                Queue queue = (Queue) this.queueModel.get(this.queueTable.selectedRow());
+                Queue queue = (Queue) QueueCollection.instance().get(this.queueTable.selectedRow());
                 if(null == queue) {
                     return false;
                 }
@@ -859,7 +885,7 @@ public class CDQueueController extends CDWindowController
         }
         if(identifier.equals("reloadButtonClicked:")) {
             if(this.queueTable.numberOfSelectedRows() > 0) {
-                Queue queue = (Queue) this.queueModel.get(this.queueTable.selectedRow());
+                Queue queue = (Queue) QueueCollection.instance().get(this.queueTable.selectedRow());
                 if(null == queue) {
                     return false;
                 }
@@ -870,7 +896,7 @@ public class CDQueueController extends CDWindowController
         if(identifier.equals("openButtonClicked:")
                 || identifier.equals(TOOLBAR_SHOW) || identifier.equals("revealButtonClicked:")) {
             if(this.queueTable.numberOfSelectedRows() == 1) {
-                Queue queue = (Queue) this.queueModel.get(this.queueTable.selectedRow());
+                Queue queue = (Queue) QueueCollection.instance().get(this.queueTable.selectedRow());
                 if(null == queue) {
                     return false;
                 }
@@ -887,7 +913,7 @@ public class CDQueueController extends CDWindowController
             }
             NSEnumerator iterator = queueTable.selectedRowEnumerator();
             while(iterator.hasMoreElements()) {
-                Queue queue = (Queue) this.queueModel.get(((Integer) iterator.nextElement()).intValue());
+                Queue queue = (Queue) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
                 if(null == queue) {
                     return false;
                 }

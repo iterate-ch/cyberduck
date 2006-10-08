@@ -42,7 +42,7 @@ public class CDDownloadController extends CDSheetController {
         this.urlField = urlField;
     }
 
-    public CDDownloadController(CDWindowController parent) {
+    public CDDownloadController(final CDWindowController parent) {
         super(parent);
         synchronized(parent) {
             if (!NSApplication.loadNibNamed("Download", this)) {

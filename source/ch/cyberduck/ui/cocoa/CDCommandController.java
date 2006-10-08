@@ -55,7 +55,7 @@ public class CDCommandController extends CDSheetController implements Transcript
 
     private Session session;
 
-    public CDCommandController(CDWindowController parent, Session session) {
+    public CDCommandController(final CDWindowController parent, final Session session) {
         super(parent);
         this.session = session;
         this.session.addTranscriptListener(this);

@@ -51,7 +51,7 @@ public abstract class CDFileController extends CDSheetController {
                 Preferences.instance().getProperty("editor.bundleIdentifier")) != null);
     }
 
-    public CDFileController(CDWindowController parent) {
+    public CDFileController(final CDWindowController parent) {
         super(parent);
     }
 

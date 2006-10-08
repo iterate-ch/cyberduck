@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 public class CDFolderController extends CDFileController {
     private static Logger log = Logger.getLogger(CDFolderController.class);
 
-    public CDFolderController(CDWindowController parent) {
+    public CDFolderController(final CDWindowController parent) {
         super(parent);
         synchronized(parent) {
             if(!NSApplication.loadNibNamed("Folder", this)) {

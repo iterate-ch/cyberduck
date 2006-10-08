@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostCollection;
 
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.foundation.NSArray;
@@ -53,7 +54,7 @@ public class CDDotMacController extends CDController {
         }
     }
 
-    private native void downloadBookmarks(String cddotmacdestination);
+    private native void downloadBookmarks(String path);
 
     public native void uploadBookmarks();
 
@@ -61,35 +62,37 @@ public class CDDotMacController extends CDController {
         File f = new File(NSPathUtilities.temporaryDirectory(), "Favorites.plist");
         this.downloadBookmarks(f.getAbsolutePath());
         if (f.exists()) {
-            NSData plistData = new NSData(f);
-            String[] errorString = new String[]{null};
-            Object propertyListFromXMLData =
-                    NSPropertyListSerialization.propertyListFromData(plistData,
-                            NSPropertyListSerialization.PropertyListImmutable,
-                            new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-                            errorString);
-            if (errorString[0] != null) {
-                log.error("Problem reading bookmark file: " + errorString[0]);
-            }
-            if (propertyListFromXMLData instanceof NSArray) {
-                NSArray entries = (NSArray) propertyListFromXMLData;
-                java.util.Enumeration i = entries.objectEnumerator();
-                Object element;
-                while (i.hasMoreElements()) {
-                    element = i.nextElement();
-                    if (element instanceof NSDictionary) {
-                        Host bookmark = new Host((NSDictionary) element);
-                        if (!CDBookmarkTableDataSource.instance().contains(bookmark)) {
-                            int choice = NSAlertPanel.runAlert((bookmark).getNickname(),
-                                    NSBundle.localizedString("Add this bookmark to your existing bookmarks?", "IDisk", ""),
-                                    NSBundle.localizedString("Add", "IDisk", ""), //default
-                                    NSBundle.localizedString("Cancel", ""), //alternate
-                                    NSBundle.localizedString("Skip", "IDisk", "")); //other
-                            if (choice == CDSheetCallback.DEFAULT_OPTION) {
-                                CDBookmarkTableDataSource.instance().add(bookmark);
-                            }
-                            if (choice == CDSheetCallback.ALTERNATE_OPTION) {
-                                return;
+            synchronized(HostCollection.instance()) {
+                NSData plistData = new NSData(f);
+                String[] errorString = new String[]{null};
+                Object propertyListFromXMLData =
+                        NSPropertyListSerialization.propertyListFromData(plistData,
+                                NSPropertyListSerialization.PropertyListImmutable,
+                                new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
+                                errorString);
+                if (errorString[0] != null) {
+                    log.error("Problem reading bookmark file: " + errorString[0]);
+                }
+                if (propertyListFromXMLData instanceof NSArray) {
+                    NSArray entries = (NSArray) propertyListFromXMLData;
+                    java.util.Enumeration i = entries.objectEnumerator();
+                    Object element;
+                    while (i.hasMoreElements()) {
+                        element = i.nextElement();
+                        if (element instanceof NSDictionary) {
+                            Host bookmark = new Host((NSDictionary) element);
+                            if (!HostCollection.instance().contains(bookmark)) {
+                                int choice = NSAlertPanel.runAlert((bookmark).getNickname(),
+                                        NSBundle.localizedString("Add this bookmark to your existing bookmarks?", "IDisk", ""),
+                                        NSBundle.localizedString("Add", "IDisk", ""), //default
+                                        NSBundle.localizedString("Cancel", ""), //alternate
+                                        NSBundle.localizedString("Skip", "IDisk", "")); //other
+                                if (choice == CDSheetCallback.DEFAULT_OPTION) {
+                                    HostCollection.instance().add(bookmark);
+                                }
+                                if (choice == CDSheetCallback.ALTERNATE_OPTION) {
+                                    return;
+                                }
                             }
                         }
                     }

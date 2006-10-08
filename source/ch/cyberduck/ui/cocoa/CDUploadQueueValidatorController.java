@@ -73,7 +73,7 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
         do {
             path.setPath(parent, proposal);
             no++;
-            if (index != -1) {
+            if (index != -1 && index != 0) {
                 proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
             }
             else {

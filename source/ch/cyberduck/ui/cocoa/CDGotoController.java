@@ -73,7 +73,7 @@ public class CDGotoController extends CDSheetController
         this.folderCombobox.setStringValue(((CDBrowserController)this.parent).workdir().getAbsolute());
     }
 
-    public CDGotoController(CDWindowController parent) {
+    public CDGotoController(final CDWindowController parent) {
         super(parent);
         synchronized(parent) {
             if (!NSApplication.loadNibNamed("Goto", this)) {

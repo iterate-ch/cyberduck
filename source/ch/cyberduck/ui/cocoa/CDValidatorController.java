@@ -49,7 +49,7 @@ public abstract class CDValidatorController
 
     protected Queue queue;
 
-    public CDValidatorController(Queue queue) {
+    public CDValidatorController(final Queue queue) {
         super(CDQueueController.instance());
         this.queue = queue;
     }

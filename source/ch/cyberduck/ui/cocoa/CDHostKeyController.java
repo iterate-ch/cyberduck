@@ -41,7 +41,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification
 
     private CDWindowController parent;
 
-    public CDHostKeyController(CDWindowController windowController) {
+    public CDHostKeyController(final CDWindowController windowController) {
         this.parent = windowController;
         try {
             this.setKnownHostFile(Preferences.instance().getProperty("ssh.knownhosts"));

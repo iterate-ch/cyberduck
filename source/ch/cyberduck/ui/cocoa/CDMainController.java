@@ -25,11 +25,15 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -74,7 +78,9 @@ public class CDMainController extends CDController {
     private class DockBookmarkMenuDelegate extends NSObject {
 
         public int numberOfItemsInMenu(NSMenu menu) {
-            return CDBookmarkTableDataSource.instance().size();
+            synchronized(HostCollection.instance()) {
+                return HostCollection.instance().size();
+            }
         }
 
         /**
@@ -86,17 +92,19 @@ public class CDMainController extends CDController {
          * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
          */
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
-            if(index >= this.numberOfItemsInMenu(menu)) {
-                log.warn("Invalid index in menuUpdateItemAtIndex:"+index);
-                return false;
+            synchronized(HostCollection.instance()) {
+                if(index >= this.numberOfItemsInMenu(menu)) {
+                    log.warn("Invalid index in menuUpdateItemAtIndex:"+index);
+                    return false;
+                }
+                Host h = (Host) HostCollection.instance().get(index);
+                item.setTitle(h.getNickname());
+                item.setTarget(this);
+                item.setImage(NSImage.imageNamed("bookmark16.tiff"));
+                item.setAction(new NSSelector("bookmarkMenuItemClicked", new Class[]{Object.class}));
+                item.setRepresentedObject(h);
+                return true;
             }
-            Host h = (Host) CDBookmarkTableDataSource.instance().get(index);
-            item.setTitle(h.getNickname());
-            item.setTarget(this);
-            item.setImage(NSImage.imageNamed("bookmark16.tiff"));
-            item.setAction(new NSSelector("bookmarkMenuItemClicked", new Class[]{Object.class}));
-            item.setRepresentedObject(h);
-            return true;
         }
 
         public void bookmarkMenuItemClicked(final NSMenuItem sender) {
@@ -152,9 +160,11 @@ public class CDMainController extends CDController {
     private class BookmarkMenuDelegate extends NSObject {
 
         public int numberOfItemsInMenu(NSMenu menu) {
-            return CDBookmarkTableDataSource.instance().size() + 8;
-            //index 0-2 are static menu items, 3 is sepeartor, 4 is iDisk with submenu, 5 is History with submenu,
-            // 6 is Bonjour with submenu, 7 is sepearator
+            synchronized(HostCollection.instance()) {
+                return HostCollection.instance().size() + 8;
+                //index 0-2 are static menu items, 3 is sepeartor, 4 is iDisk with submenu, 5 is History with submenu,
+                // 6 is Bonjour with submenu, 7 is sepearator
+            }
         }
 
         /**
@@ -166,34 +176,36 @@ public class CDMainController extends CDController {
          * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
          */
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
-            if(index >= this.numberOfItemsInMenu(menu)) {
-                log.warn("Invalid index in menuUpdateItemAtIndex:"+index);
-                return false;
+            synchronized(HostCollection.instance()) {
+                if(index >= this.numberOfItemsInMenu(menu)) {
+                    log.warn("Invalid index in menuUpdateItemAtIndex:"+index);
+                    return false;
+                }
+                if (index == 4) {
+                    item.setEnabled(true);
+                    NSImage icon = NSImage.imageNamed("idisk.tiff");
+                    icon.setScalesWhenResized(true);
+                    icon.setSize(new NSSize(16f, 16f));
+                    item.setImage(icon);
+                }
+                if (index == 5) {
+                    item.setEnabled(true);
+                    item.setImage(NSImage.imageNamed("history.tiff"));
+                }
+                if (index == 6) {
+                    item.setEnabled(true);
+                    item.setImage(NSImage.imageNamed("rendezvous16.tiff"));
+                }
+                if (index > 7) {
+                    Host h = (Host) HostCollection.instance().get(index - 8);
+                    item.setTitle(h.getNickname());
+                    item.setTarget(this);
+                    item.setImage(NSImage.imageNamed("bookmark16.tiff"));
+                    item.setAction(new NSSelector("bookmarkMenuItemClicked", new Class[]{Object.class}));
+                    item.setRepresentedObject(h);
+                }
+                return true;
             }
-            if (index == 4) {
-                item.setEnabled(true);
-                NSImage icon = NSImage.imageNamed("idisk.tiff");
-                icon.setScalesWhenResized(true);
-                icon.setSize(new NSSize(16f, 16f));
-                item.setImage(icon);
-            }
-            if (index == 5) {
-                item.setEnabled(true);
-                item.setImage(NSImage.imageNamed("history.tiff"));
-            }
-            if (index == 6) {
-                item.setEnabled(true);
-                item.setImage(NSImage.imageNamed("rendezvous16.tiff"));
-            }
-            if (index > 7) {
-                Host h = (Host) CDBookmarkTableDataSource.instance().get(index - 8);
-                item.setTitle(h.getNickname());
-                item.setTarget(this);
-                item.setImage(NSImage.imageNamed("bookmark16.tiff"));
-                item.setAction(new NSSelector("bookmarkMenuItemClicked", new Class[]{Object.class}));
-                item.setRepresentedObject(h);
-            }
-            return true;
         }
 
         public void bookmarkMenuItemClicked(final NSMenuItem sender) {
@@ -232,7 +244,7 @@ public class CDMainController extends CDController {
                     }
                 });
                 for (int i = 0; i < files.length; i++) {
-                    cache.add(CDBookmarkTableDataSource.instance().importBookmark(files[i]));
+                    cache.add(HostCollection.instance().importBookmark(files[i]));
                 }
             }
             if (cache.size() > 0) {
@@ -271,11 +283,13 @@ public class CDMainController extends CDController {
     private class RendezvousMenuDelegate extends NSObject {
 
         public int numberOfItemsInMenu(NSMenu menu) {
-            int n = Rendezvous.instance().numberOfServices();
-            if (n > 0) {
-                return n;
+            synchronized(Rendezvous.instance()) {
+                int n = Rendezvous.instance().numberOfServices();
+                if (n > 0) {
+                    return n;
+                }
+                return 1;
             }
-            return 1;
         }
 
         /**
@@ -287,23 +301,25 @@ public class CDMainController extends CDController {
          * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
          */
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
-            if (Rendezvous.instance().numberOfServices() == 0) {
-                sender.setTitle(NSBundle.localizedString("No Bonjour services available", ""));
-                sender.setEnabled(false);
-                return !shouldCancel;
-            }
-            else {
-                if(index >= this.numberOfItemsInMenu(menu)) {
-                    log.warn("Invalid index in menuUpdateItemAtIndex:"+index);
-                    return false;
+            synchronized(Rendezvous.instance()) {
+                if (Rendezvous.instance().numberOfServices() == 0) {
+                    sender.setTitle(NSBundle.localizedString("No Bonjour services available", ""));
+                    sender.setEnabled(false);
+                    return !shouldCancel;
                 }
-                String title = Rendezvous.instance().getDisplayedName(index);
-                sender.setTitle(title);
-                sender.setTarget(this);
-                sender.setEnabled(true);
-                sender.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
-                sender.setRepresentedObject(Rendezvous.instance().getServiceWithDisplayedName(title));
-                return !shouldCancel;
+                else {
+                    if(index >= this.numberOfItemsInMenu(menu)) {
+                        log.warn("Invalid index in menuUpdateItemAtIndex:"+index);
+                        return false;
+                    }
+                    String title = Rendezvous.instance().getDisplayedName(index);
+                    sender.setTitle(title);
+                    sender.setTarget(this);
+                    sender.setEnabled(true);
+                    sender.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
+                    sender.setRepresentedObject(Rendezvous.instance().getServiceWithDisplayedName(title));
+                    return !shouldCancel;
+                }
             }
         }
 
@@ -406,7 +422,7 @@ public class CDMainController extends CDController {
     }
 
     public void newBrowserMenuClicked(final Object sender) {
-        this.newDocument(true);
+        this.openDefaultBookmark(this.newDocument(true));
     }
 
     public void showTransferQueueClicked(final Object sender) {
@@ -430,12 +446,18 @@ public class CDMainController extends CDController {
     // Application delegate methods
     // ----------------------------------------------------------
 
+    /**
+     *
+     * @param app
+     * @param filename
+     * @return
+     */
     public boolean applicationOpenFile(NSApplication app, String filename) {
         log.debug("applicationOpenFile:" + filename);
         File f = new File(filename);
         if (f.exists()) {
             if (f.getAbsolutePath().endsWith(".duck")) {
-                Host host = CDBookmarkTableDataSource.instance().importBookmark(f);
+                Host host = HostCollection.instance().importBookmark(f);
                 if (host != null) {
                     this.newDocument().mount(host);
                     return true;
@@ -476,9 +498,30 @@ public class CDMainController extends CDController {
         return false;
     }
 
+    /**
+     * Sent directly by theApplication to the delegate. The method should attempt to open the file filename,
+     * returning true if the file is successfully opened, and false otherwise. By design, a
+     * file opened through this method is assumed to be temporary—it’s the application’s
+     * responsibility to remove the file at the appropriate time.
+     * @param app
+     * @param filename
+     * @return
+     */
     public boolean applicationOpenTempFile(NSApplication app, String filename) {
         log.debug("applicationOpenTempFile:" + filename);
         return this.applicationOpenFile(app, filename);
+    }
+
+    /**
+     * Invoked immediately before opening an untitled file. Return false to prevent
+     * the application from opening an untitled file; return true otherwise.
+     * Note that applicationOpenUntitledFile is invoked if this method returns true.
+     * @param sender
+     * @return
+     */
+    public boolean applicationShouldOpenUntitledFile(NSApplication sender) {
+        log.debug("applicationShouldOpenUntitledFile");
+        return Preferences.instance().getBoolean("browser.openUntitled");
     }
 
     /**
@@ -486,17 +529,66 @@ public class CDMainController extends CDController {
      */
     public boolean applicationOpenUntitledFile(NSApplication app) {
         log.debug("applicationOpenUntitledFile");
-        return this.newDocument() != null;
+        this.openDefaultBookmark(this.newDocument());
+        return true;
     }
 
+    /**
+     *
+     * @param controller
+     */
+    private void openDefaultBookmark(CDBrowserController controller) {
+        String defaultBookmark = Preferences.instance().getProperty("browser.defaultBookmark");
+        if(null == defaultBookmark) {
+            return; //No default bookmark given
+        }
+        for(Iterator iter = HostCollection.instance().iterator(); iter.hasNext(); ) {
+            Host host = (Host)iter.next();
+            if(host.getNickname().equals(defaultBookmark)) {
+                controller.mount(host);
+                return;
+            }
+        }
+    }
+
+    /**
+     * These events are sent whenever the Finder reactivates an already running application
+     * because someone double-clicked it again or used the dock to activate it. By default
+     * the Application Kit will handle this event by checking whether there are any visible
+     * NSWindows (not NSPanels), and, if there are none, it goes through the standard untitled
+     * document creation (the same as it does if theApplication is launched without any document
+     * to open). For most document-based applications, an untitled document will be created.
+     * The application delegate will also get a chance to respond to the normal untitled document
+     * delegations. If you implement this method in your application delegate, it will be called
+     * before any of the default behavior happens. If you return true, then NSApplication will
+     * go on to do its normal thing. If you return false, then NSApplication will do nothing.
+     * So, you can either implement this method, do nothing, and return false if you do not
+     * want anything to happen at all (not recommended), or you can implement this method,
+     * handle the event yourself in some custom way, and return false.
+     * @param app
+     * @param visibleWindowsFound
+     * @return
+     */
     public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
         log.debug("applicationShouldHandleReopen");
-        if (this.orderedBrowsers().count() == 0 && this.orderedTransfers().count() == 0) {
-            return null == this.newDocument();
+        if(Preferences.instance().getBoolean("browser.openUntitled")) {
+            if (this.orderedBrowsers().count() == 0 && this.orderedTransfers().count() == 0) {
+                this.openDefaultBookmark(this.newDocument());
+            }
         }
         return false;
     }
 
+    /**
+     * Sent by the default notification center after the application has been launched and initialized but
+     * before it has received its first event. aNotification is always an
+     * ApplicationDidFinishLaunchingNotification. You can retrieve the NSApplication
+     * object in question by sending object to aNotification. The delegate can implement
+     * this method to perform further initialization. If the user started up the application
+     * by double-clicking a file, the delegate receives the applicationOpenFile message before receiving
+     * applicationDidFinishLaunching. (applicationWillFinishLaunching is sent before applicationOpenFile.)
+     * @param notification
+     */
     public void applicationDidFinishLaunching(NSNotification notification) {
         log.info("Running Java " + System.getProperty("java.version"));
         Growl.instance().register();
@@ -520,6 +612,11 @@ public class CDMainController extends CDController {
         }
     }
 
+    /**
+     * Posted before the machine goes to sleep. An observer of this message
+     * can delay sleep for up to 30 seconds while handling this notification.
+     * @param o
+     */
     public void applicationShouldSleep(Object o) {
         log.debug("applicationShouldSleep");
         //Stopping rendezvous service discovery
@@ -541,8 +638,19 @@ public class CDMainController extends CDController {
         }
     }
 
+    /**
+     *
+     */
     private boolean donationBoxDisplayed = false;
 
+    /**
+     * Invoked from within the terminate method immediately before the
+     * application terminates. sender is the NSApplication to be terminated.
+     * If this method returns false, the application is not terminated,
+     * and control returns to the main event loop.
+     * @param app
+     * @return Return true to allow the application to terminate.
+     */
     public int applicationShouldTerminate(NSApplication app) {
         log.debug("applicationShouldTerminate");
         if (!donationBoxDisplayed && Preferences.instance().getBoolean("donate.reminder")) {

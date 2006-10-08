@@ -109,6 +109,7 @@ public abstract class CDController extends NSObject {
      * marks this controller to be garbage collected as soon as needed
      */
     protected void invalidate() {
+        log.debug("invalidate:"+this.toString());
         NSNotificationCenter.defaultCenter().removeObserver(this);
         instances.removeObject(this);
         System.gc();
