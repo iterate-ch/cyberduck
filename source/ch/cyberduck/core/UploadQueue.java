@@ -67,6 +67,12 @@ public class UploadQueue extends Queue {
         if(!this.isCanceled()) {
             if(p.getLocal().exists()) {// && p.getLocal().canRead()) {
                 childs.add(p);
+                if(p.exists()) {
+                    List list = p.getParent().list();
+                    //Honor existing permissions when replacing files
+                    p.attributes.setPermission(
+                            ((Path)list.get(list.indexOf(p))).attributes.getPermission());
+                }
                 if(p.attributes.isDirectory()) {
                     if(!p.getRemote().exists()) {
                         //hack
