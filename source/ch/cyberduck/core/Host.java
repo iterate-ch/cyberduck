@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
+import java.util.Iterator;
 
 /**
  * @version $Id$
@@ -55,6 +56,10 @@ public class Host extends NSObject {
     public static final String KEYFILE = "Private Key File";
     public static final String FTPCONNECTMODE = "FTP Connect Mode";
 
+    /**
+     *
+     * @param dict
+     */
     public Host(NSDictionary dict) {
         Object protocolObj = dict.objectForKey(Host.PROTOCOL);
         if(protocolObj != null) {
@@ -96,6 +101,10 @@ public class Host extends NSObject {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public NSDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
         dict.setObjectForKey(this.getProtocol(), Host.PROTOCOL);
@@ -410,25 +419,33 @@ public class Host extends NSObject {
 
     /**
      *
-     * @return
+     * @return The user-given name of this bookmark
      */
     public String getNickname() {
-        if(this.nickname != null) {
-            return this.nickname;
+        if(null == this.nickname) {
+            this.setNickname(this.getDefaultNickname());
         }
-        return this.getDefaultNickname();
+        return this.nickname;
     }
 
     /**
      *
-     * @return
+     * @return The default given name of this bookmark
      */
     private String getDefaultNickname() {
         return this.getHostname() + " (" + this.getProtocol().toUpperCase() + ")";
     }
 
     public void setNickname(String nickname) {
-        this.nickname = nickname;
+        final HostCollection c = HostCollection.instance();
+        String proposal = nickname;
+        int no = 0;
+        do {
+            this.nickname = proposal;
+            no++;
+            proposal = nickname + " (" + no + ")";
+        }
+        while(c.contains(this) && !(c.get(c.indexOf(this)) == this));
     }
 
     public String getHostname() {
@@ -517,14 +534,12 @@ public class Host extends NSObject {
         }
         if(other instanceof Host) {
             Host o = (Host) other;
-            return this.getProtocol().equals(o.getProtocol())
-                    && this.getCredentials().getUsername().equals(o.getCredentials().getUsername())
-                    && this.getHostname().equals(o.getHostname())
-                    && this.getNickname().equals(o.getNickname())
-                    && this.getPort() == o.getPort()
-                    && this.getDefaultPath().equals(o.getDefaultPath());
+            return this.getNickname().equals(o.getNickname());
         }
-        return this.toString().equals(other.toString());
+//        if(other instanceof String) {
+//            return this.getNickname().equals(other); //hack to allow comparision in Host#setNickname
+//        }
+        return false;
     }
 
     protected void finalize() throws java.lang.Throwable {
@@ -574,7 +589,7 @@ public class Host extends NSObject {
 
     /**
      * @param url
-     * @return
+     * @return true if the host is reachable
      */
     private native boolean isReachable(String url);
 
