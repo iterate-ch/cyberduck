@@ -324,7 +324,7 @@ public abstract class Path extends NSObject {
     public String getExtension() {
         String name = this.getName();
         int index = name.lastIndexOf(".");
-        if (index != -1) {
+        if (index != -1 && index != 0) {
             return name.substring(index + 1, name.length());
         }
         return null;
