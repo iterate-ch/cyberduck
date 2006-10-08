@@ -247,7 +247,7 @@ public class SFTPSession extends Session {
         // If the private key is passphrase protected then ask for the passphrase
         String passphrase = null;
         if(keyFile.isPassphraseProtected()) {
-            int pool = NSAutoreleasePool.push();
+            final int pool = NSAutoreleasePool.push();
             passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
             if(null == passphrase || passphrase.equals("")) {
                 loginController.promptUser(host.getCredentials(),
@@ -332,14 +332,16 @@ public class SFTPSession extends Session {
         }
     }
 
-    protected void noop() throws IOException, SshException {
+    protected void noop() throws IOException {
         synchronized(this) {
             if(this.isConnected()) {
                 try {
                     this.SSH.noop();
                 }
-                catch(SshException e) {
+                catch(IOException e) {
+                    this.error(e);
                     this.close();
+                    throw e;
                 }
             }
         }
