@@ -25,33 +25,13 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
-
 /**
  * @version $Id$
  */
-public class CDQueueTableDataSource extends Collection {
+public class CDQueueTableDataSource extends NSObject {
     private static Logger log = Logger.getLogger(CDQueueTableDataSource.class);
 
-    private static final File QUEUE_FILE
-    	= new File(Preferences.instance().getProperty("application.support.path"), "Queue.plist");
-
-    static {
-        QUEUE_FILE.getParentFile().mkdir();
-    }
-
     private static CDQueueTableDataSource instance;
-
-    public static CDQueueTableDataSource instance() {
-        if (null == instance) {
-            instance = new CDQueueTableDataSource();
-        }
-        return instance;
-    }
-
-    private CDQueueTableDataSource() {
-        this.load();
-    }
 
     public static final String ICON_COLUMN = "ICON";
     public static final String PROGRESS_COLUMN = "PROGRESS";
@@ -60,34 +40,38 @@ public class CDQueueTableDataSource extends Collection {
 
     /**
      *
-     * @param tableView
+     * @param view
      */
-    public int numberOfRowsInTableView(NSTableView tableView) {
-        return this.size();
+    public int numberOfRowsInTableView(NSTableView view) {
+        synchronized(QueueCollection.instance()) {
+            return QueueCollection.instance().size();
+        }
     }
 
     /**
      *
-     * @param tableView
+     * @param view
      * @param tableColumn
      * @param row
      */
-    public Object tableViewObjectValueForLocation(NSTableView tableView, NSTableColumn tableColumn, int row) {
-        if (row < numberOfRowsInTableView(tableView)) {
-            final String identifier = (String) tableColumn.identifier();
-            final Queue queue = (Queue)this.get(row);
-            if (identifier.equals(ICON_COLUMN)) {
-                return queue;
+    public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
+        synchronized(QueueCollection.instance()) {
+            if (row < numberOfRowsInTableView(view)) {
+                final String identifier = (String) tableColumn.identifier();
+                final Queue queue = (Queue)QueueCollection.instance().get(row);
+                if (identifier.equals(ICON_COLUMN)) {
+                    return queue;
+                }
+                if (identifier.equals(PROGRESS_COLUMN)) {
+                    return QueueCollection.instance().getController(row).view();
+                }
+                if (identifier.equals(TYPEAHEAD_COLUMN)) {
+                    return queue.getName();
+                }
+                throw new IllegalArgumentException("Unknown identifier: " + identifier);
             }
-            if (identifier.equals(PROGRESS_COLUMN)) {
-                return this.getController(row).view();
-            }
-            if (identifier.equals(TYPEAHEAD_COLUMN)) {
-                return queue.getName();
-            }
-            throw new IllegalArgumentException("Unknown identifier: " + identifier);
+            return null;
         }
-        return null;
     }
 
     // ----------------------------------------------------------
@@ -153,142 +137,19 @@ public class CDQueueTableDataSource extends Collection {
                 log.debug("tableViewAcceptDrop:" + o);
                 if (o != null) {
                     NSArray elements = (NSArray) o;
-                    for (int i = 0; i < elements.count(); i++) {
-                        NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                        this.add(row, QueueFactory.createQueue(dict));
-                        tableView.reloadData();
-                        tableView.selectRow(row, false);
+                    synchronized(QueueCollection.instance()) {
+                        for (int i = 0; i < elements.count(); i++) {
+                            NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+                            QueueCollection.instance().add(row, QueueFactory.createQueue(dict));
+                            tableView.reloadData();
+                            tableView.selectRow(row, false);
+                        }
+                        pboard.setPropertyListForType(null, "QueuePBoardType");
                     }
-                    pboard.setPropertyListForType(null, "QueuePBoardType");
                     return true;
                 }
             }
         }
         return false;
-    }
-
-    // ----------------------------------------------------------
-    //	Data Manipulation
-    // ----------------------------------------------------------
-
-    public void save() {
-        this.save(QUEUE_FILE);
-    }
-
-    private void save(java.io.File f) {
-        log.debug("save");
-        if (Preferences.instance().getBoolean("queue.save")) {
-            try {
-                NSMutableArray list = new NSMutableArray();
-                for (int i = 0; i < this.size(); i++) {
-                    list.addObject(((Queue) this.get(i)).getAsDictionary());
-                }
-                NSMutableData collection = new NSMutableData();
-                String[] errorString = new String[]{null};
-                collection.appendData(NSPropertyListSerialization.dataFromPropertyList(list,
-                        NSPropertyListSerialization.PropertyListXMLFormat,
-                        errorString));
-                if (errorString[0] != null) {
-                    log.error("Problem writing queue file: " + errorString[0]);
-                }
-
-                if (collection.writeToURL(f.toURL(), true)) {
-                    log.info("Queue sucessfully saved to :" + f.toString());
-                }
-                else {
-                    log.error("Error saving queue to :" + f.toString());
-                }
-            }
-            catch (java.net.MalformedURLException e) {
-                log.error(e.getMessage());
-            }
-        }
-    }
-
-    public void load() {
-        this.load(QUEUE_FILE);
-    }
-
-    private void load(java.io.File f) {
-        log.debug("load");
-        if (f.exists()) {
-            log.info("Found Queue file: " + f.toString());
-            NSData plistData = new NSData(f);
-            String[] errorString = new String[]{null};
-            Object propertyListFromXMLData =
-                    NSPropertyListSerialization.propertyListFromData(plistData,
-                            NSPropertyListSerialization.PropertyListImmutable,
-                            new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-                            errorString);
-            if (errorString[0] != null) {
-                log.error("Problem reading queue file: " + errorString[0]);
-            }
-            if (propertyListFromXMLData instanceof NSArray) {
-                NSArray entries = (NSArray) propertyListFromXMLData;
-                java.util.Enumeration i = entries.objectEnumerator();
-                Object element;
-                while (i.hasMoreElements()) {
-                    element = i.nextElement();
-                    if (element instanceof NSDictionary) {
-                        super.add(new CDProgressController(
-                                QueueFactory.createQueue((NSDictionary) element)));
-                    }
-                }
-            }
-        }
-    }
-
-    public boolean add(Object queue) {
-        super.add(new CDProgressController((Queue) queue));
-        this.save();
-        return true;
-    }
-
-    public void add(int row, Object queue) {
-        super.add(row, new CDProgressController((Queue) queue));
-        this.save();
-    }
-
-    public boolean remove(Object item) {
-        for (int i = 0; i < this.size(); i++) {
-            CDProgressController c = this.getController(i);
-            if (c.getQueue().equals(item)) {
-                c.invalidate();
-                super.remove(i);
-            }
-        }
-        return true;
-    }
-
-    public Object remove(int row) {
-        CDProgressController c = this.getController(row);
-        c.invalidate();
-        return super.remove(row);
-    }
-
-    /**
-     * Get the queue at index row
-     *
-     * @param row
-     * @return The @see ch.cyberduck.core.Queue object at this index
-     */
-    public Object get(int row) {
-        if (row < this.size()) {
-            return ((CDProgressController) super.get(row)).getQueue();
-        }
-        return null;
-    }
-
-    /**
-     * Get the progress controller at index row
-     *
-     * @param row
-     * @return the @see ch.cyberduck.ui.cocoa.CDProgressController at this index
-     */
-    public CDProgressController getController(int row) {
-        if (row < this.size()) {
-            return (CDProgressController) super.get(row);
-        }
-        return null;
     }
 }
