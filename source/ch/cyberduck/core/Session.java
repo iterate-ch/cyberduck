@@ -357,7 +357,6 @@ public abstract class Session extends NSObject {
                 Session.this.noop();
             }
             catch(IOException e) {
-                log.error(e.getMessage());
                 this.cancel();
             }
         }
