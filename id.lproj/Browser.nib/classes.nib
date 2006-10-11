@@ -16,6 +16,7 @@
                 editButtonClicked = id; 
                 infoButtonClicked = id; 
                 reloadButtonClicked = id; 
+                renameFileButtonClicked = id; 
                 syncButtonClicked = id; 
                 uploadButtonClicked = id; 
             }; 
@@ -41,9 +42,9 @@
                 browserOutlineView = NSOutlineView; 
                 browserSwitchView = NSSegmentedControl; 
                 browserTabView = NSTabView; 
+                contextEditMenu = NSMenu; 
                 deleteBookmarkButton = NSButton; 
                 editBookmarkButton = NSButton; 
-                editMenu = NSMenu; 
                 encodingPopup = NSPopUpButton; 
                 infoLabel = NSTextField; 
                 logDrawer = NSDrawer; 
