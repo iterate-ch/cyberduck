@@ -24,6 +24,7 @@
                 myAction = id; 
                 pasteFromFinder = id; 
                 reloadButtonClicked = id; 
+                renameFileButtonClicked = id; 
                 sendCustomCommandClicked = id; 
                 showHiddenFilesClicked = id; 
                 showTransferQueueClicked = id; 
