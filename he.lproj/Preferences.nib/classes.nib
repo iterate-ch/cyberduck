@@ -9,10 +9,6 @@
             SUPERCLASS = NSObject; 
         }, 
         {
-            ACTIONS = {
-                defaultPermissionsDownloadChanged = id; 
-                defaultPermissionsUploadChanged = id; 
-            }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDPreferencesController"; 
             LANGUAGE = Java; 
             OUTLETS = {
@@ -23,8 +19,10 @@
                 bringQueueToFrontCheckbox = NSButton; 
                 bufferField = NSTextField; 
                 chmodDownloadCheckbox = NSButton; 
+                chmodDownloadCustomCheckbox = NSButton; 
                 chmodDownloadDefaultCheckbox = NSButton; 
                 chmodUploadCheckbox = NSButton; 
+                chmodUploadCustomCheckbox = NSButton; 
                 chmodUploadDefaultCheckbox = NSButton; 
                 columnModificationCheckbox = NSButton; 
                 columnOwnerCheckbox = NSButton; 
@@ -37,6 +35,7 @@
                 connectmodeCombobox = NSPopUpButton; 
                 csAuthenticationCombobox = NSPopUpButton; 
                 csEncryptionCombobox = NSPopUpButton; 
+                defaultBookmarkCombobox = NSPopUpButton; 
                 defaultBufferButton = NSButton; 
                 dgroupr = NSButton; 
                 dgroupw = NSButton; 
@@ -62,11 +61,12 @@
                 lineEndingCombobox = NSPopUpButton; 
                 listCheckbox = NSButton; 
                 loginField = NSTextField; 
+                openUntitledBrowserCheckbox = NSButton; 
                 panelAdvanced = NSView; 
                 panelFTP = NSView; 
                 panelFTPTLS = NSView; 
-                panelGeneral = id; 
-                panelInterface = id; 
+                panelGeneral = NSView; 
+                panelInterface = NSView; 
                 panelSFTP = NSView; 
                 panelTransfer = NSView; 
                 preserveModificationDownloadCheckbox = NSButton; 
@@ -81,6 +81,7 @@
                 showHiddenCheckbox = NSButton; 
                 systCheckbox = NSButton; 
                 tabView = NSTabView; 
+                timeoutField = NSTextField; 
                 transfermodeCombobox = NSPopUpButton; 
                 ugroupr = NSButton; 
                 ugroupw = NSButton; 
