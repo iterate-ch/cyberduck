@@ -84,8 +84,6 @@ public abstract class CDValidatorController
      */
     protected List workList = new ArrayList();
 
-    protected abstract boolean exists(Path p);
-
     public List validate(final boolean resumeRequested) {
         List childs = this.queue.getChilds();
         for (Iterator iter = childs.iterator(); iter.hasNext();) {
@@ -133,48 +131,11 @@ public abstract class CDValidatorController
 
     /**
      *
-     * @param path
+     * @param p
      * @param resumeRequested
      * @return true if the file should be added to the queue
      */
-    protected boolean validateFile(Path path, boolean resumeRequested) {
-        if (resumeRequested) { // resume existing files independant of settings in preferences
-            path.reset();
-            path.status.setResume(this.exists(path));
-            return true;
-        }
-        // When overwriting file anyway we don't have to check if the file already exists
-        if (Preferences.instance().getProperty("queue.fileExists").equals("overwrite")) {
-            log.info("Apply validation rule to overwrite file " + path.getName());
-            path.status.setResume(false);
-            return true;
-        }
-        path.reset();
-        if (this.exists(path)) {
-            if (Preferences.instance().getProperty("queue.fileExists").equals("resume")) {
-                log.debug("Apply validation rule to resume:" + path.getName());
-                path.status.setResume(true);
-                return true;
-            }
-            if (Preferences.instance().getProperty("queue.fileExists").equals("similar")) {
-                log.debug("Apply validation rule to apply similar name:" + path.getName());
-                path.status.setResume(false);
-                this.adjustFilename(path);
-                log.info("Changed local name to " + path.getName());
-                return true;
-            }
-            if (Preferences.instance().getProperty("queue.fileExists").equals("ask")) {
-                log.debug("Apply validation rule to ask:" + path.getName());
-                this.prompt(path);
-                return false;
-            }
-            throw new IllegalArgumentException("No rules set to validate transfers");
-        }
-        else {
-            path.status.setResume(false);
-            return true;
-        }
-    }
+    protected abstract boolean validateFile(Path p, boolean resumeRequested);
 
     /**
      *

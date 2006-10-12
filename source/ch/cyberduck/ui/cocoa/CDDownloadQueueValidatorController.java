@@ -20,12 +20,13 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Status;
 
 import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSTableView;
 import com.apple.cocoa.application.NSTableColumn;
+import com.apple.cocoa.application.NSTableView;
 import com.apple.cocoa.foundation.NSAttributedString;
 
 import org.apache.log4j.Logger;
@@ -56,12 +57,47 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
         return result;
     }
 
-    protected boolean exists(Path p) {
-        return p.getLocal().exists() && p.getLocal().getSize() > 0;
-    }
-
     protected boolean validateDirectory(Path path) {
         return true;
+    }
+
+    protected boolean validateFile(Path p, boolean resumeRequested) {
+        if(resumeRequested) { // resume existing files independant of settings in preferences
+            p.reset();
+            p.status.setResume(p.getLocal().exists() && p.getLocal().getSize() > 0);
+            return true;
+        }
+        // When overwriting file anyway we don't have to check if the file already exists
+        if(Preferences.instance().getProperty("queue.download.fileExists").equals(OVERWRITE)) {
+            log.info("Apply validation rule to overwrite file " + p.getName());
+            p.status.setResume(false);
+            return true;
+        }
+        p.reset();
+        if(p.getLocal().exists() && p.getLocal().getSize() > 0) {
+            if(Preferences.instance().getProperty("queue.download.fileExists").equals(RESUME)) {
+                log.debug("Apply validation rule to resume:" + p.getName());
+                p.status.setResume(true);
+                return true;
+            }
+            if(Preferences.instance().getProperty("queue.download.fileExists").equals(SIMILAR)) {
+                log.debug("Apply validation rule to apply similar name:" + p.getName());
+                p.status.setResume(false);
+                this.adjustFilename(p);
+                log.info("Changed local name to " + p.getName());
+                return true;
+            }
+            if(Preferences.instance().getProperty("queue.download.fileExists").equals(ASK)) {
+                log.debug("Apply validation rule to ask:" + p.getName());
+                this.prompt(p);
+                return false;
+            }
+            throw new IllegalArgumentException("No rules set to validate transfers");
+        }
+        else {
+            p.status.setResume(false);
+            return true;
+        }
     }
 
     protected void prompt(Path p) {
@@ -89,11 +125,11 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
     }
 
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
-        if (row < this.numberOfRowsInTableView(view)) {
+        if(row < this.numberOfRowsInTableView(view)) {
             String identifier = (String) tableColumn.identifier();
             Path p = (Path) this.workList.get(row);
-            if (p != null) {
-                if (identifier.equals(WARNING_COLUMN)) {
+            if(p != null) {
+                if(identifier.equals(WARNING_COLUMN)) {
                     if(p.getRemote().attributes.getSize() == 0) {
                         return ALERT_ICON;
                     }
@@ -101,7 +137,7 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
                         return ALERT_ICON;
                     }
                 }
-                if (identifier.equals(SIZE_COLUMN)) {
+                if(identifier.equals(SIZE_COLUMN)) {
                     return new NSAttributedString(Status.getSizeAsString(p.attributes.getSize()),
                             CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
                 }
