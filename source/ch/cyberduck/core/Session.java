@@ -314,6 +314,11 @@ public abstract class Session extends NSObject {
         transcriptListeners.remove(listener);
     }
 
+    /**
+     * Log the message to all subscribed transcript listeners
+     * @see #ch.cyberduck.core.TranscriptListener
+     * @param message
+     */
     protected void log(final String message) {
         log.info(message);
         TranscriptListener[] l = (TranscriptListener[]) transcriptListeners.toArray(new TranscriptListener[]{});
@@ -415,6 +420,10 @@ public abstract class Session extends NSObject {
         return (Path[]) this.forwardHistory.toArray(new Path[this.forwardHistory.size()]);
     }
 
+    /**
+     *
+     * @return The directory listing cache
+     */
     public Cache cache() {
         if(null == this.cache) {
             this.cache = new Cache();
@@ -422,12 +431,18 @@ public abstract class Session extends NSObject {
         return this.cache;
     }
 
+    /**
+     *
+     * @param other
+     * @return
+     */
     public boolean equals(Object other) {
         if (null == other) {
             return false;
         }
         if (other instanceof Session) {
-            return this.getHost().equals(((Session)other).getHost());
+            return this.getHost().getHostname().equals(((Session)other).getHost().getHostname())
+                    && this.getHost().getProtocol().equals(((Session)other).getHost().getProtocol());
         }
         return false;
     }
