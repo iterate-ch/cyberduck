@@ -25,6 +25,11 @@ import java.util.List;
  */
 public interface Validator {
 
+    public static final String OVERWRITE = "overwrite";
+    public static final String RESUME = "resume";
+    public static final String SIMILAR = "similar";
+    public static final String ASK = "ask";
+
     /**
      *
      * @param resumeRequested
