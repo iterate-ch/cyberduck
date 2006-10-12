@@ -220,19 +220,19 @@ public class Host extends NSObject {
         else {
             throw new MalformedURLException("Unknown protocol: " + protocol);
         }
-        if(input.indexOf('@', begin) != -1) {
-            if(input.indexOf(':', begin) != -1 && input.indexOf('@', begin) > input.indexOf(':', begin)) {
+        if(input.lastIndexOf('@') != -1) {
+            if(input.indexOf(':', begin) != -1 && input.lastIndexOf('@') > input.indexOf(':', begin)) {
                 // ':' is not for the port number but username:pass seperator
                 cut = input.indexOf(':', begin);
                 username = input.substring(begin, cut);
                 begin += username.length() + 1;
-                cut = input.indexOf('@', begin);
+                cut = input.lastIndexOf('@');
                 password = input.substring(begin, cut);
                 begin += password.length() + 1;
             }
             else {
                 //no password given
-                cut = input.indexOf('@', begin);
+                cut = input.lastIndexOf('@');
                 username = input.substring(begin, cut);
                 begin += username.length() + 1;
             }
