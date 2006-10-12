@@ -256,25 +256,6 @@ public class CDQueueController extends CDWindowController
                 return null;
             }
 
-//            /**
-//             * You should implement this method if your table supports varying row heights.
-//             * The height returned should not include intercell spacing and must be greater
-//             * than zero.
-//             * Although NSTableViews may cache the returned values, you should ensure
-//             * that this method is efficient. When you change a row's height you must
-//             * invalidate the existing row height by calling noteHeightOfRowsWithIndexesChanged.
-//             * NSTableView automatically invalidates its entire row height cache when
-//             * reloadData and noteNumberOfRowsChanged are called.
-//             * Note: ONLY CALLED FOR 10.4 OR LATER
-//             * @param view
-//             * @param i
-//             * @return The height of the particular view in this row
-//             */
-//            public float tableViewHeightOfRow(NSTableView view, int i) {
-//                final CDProgressController c = queueModel.getController(i);
-//                return c.view().frame().size().height();
-//            }
-
             public void tableViewSelectionIsChanging(NSNotification aNotification) {
                 updateSelection();
             }
@@ -424,6 +405,11 @@ public class CDQueueController extends CDWindowController
 
             public void transferStarted(final Path path) {
                 queueTable.setNeedsDisplay();
+                CDQueueController.this.invoke(new Runnable() {
+                    public void run() {
+                        updateSelection();
+                    }
+                });
             }
 
             public void transferStopped(final Path path) {
