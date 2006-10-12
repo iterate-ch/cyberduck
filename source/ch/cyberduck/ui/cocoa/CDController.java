@@ -85,7 +85,15 @@ public abstract class CDController extends NSObject {
      * @param thread
      */
     protected synchronized void invoke(Runnable thread) {
-        mainRunLoop.addTimerForMode(new NSTimer(0f, this,
+        this.invoke(thread, 0f);
+    }
+
+    /**
+     *
+     * @param thread
+     */
+    protected synchronized void invoke(Runnable thread, float delay) {
+        mainRunLoop.addTimerForMode(new NSTimer(delay, this,
                 new NSSelector("post", new Class[]{NSTimer.class}),
                 thread,
                 false //automatically invalidate
