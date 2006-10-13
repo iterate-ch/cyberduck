@@ -214,19 +214,25 @@ public class FTPControlSocket {
 	 *               in passive mode
 	 * @return connected data socket
 	 */
-	protected FTPDataSocket createDataSocket(FTPConnectMode connectMode)
+    protected FTPDataSocket createDataSocket(FTPConnectMode connectMode)
             throws IOException, FTPException {
 
-		if(connectMode == FTPConnectMode.ACTIVE) {
-			return this.createDataSocketActive();
-		}
-		else { // PASV
-			return this.createDataSocketPASV();
-		}
-	}
+        try {
+            if(connectMode == FTPConnectMode.ACTIVE) {
+                return this.createDataSocketActive();
+            }
+            if(connectMode == FTPConnectMode.PASV) {
+                return this.createDataSocketPASV();
+            }
+        }
+        catch(IOException e) {
+            throw new FTPDataSocketException(e.getMessage());
+        }
+        return null;
+    }
 
-	/**
-	 * Request a data socket be created on the Client
+    /**
+     * Request a data socket be created on the Client
 	 * client on any free port, do not connect it to yet.
 	 *
 	 * @return not connected data socket
