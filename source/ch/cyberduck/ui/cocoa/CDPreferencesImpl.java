@@ -51,10 +51,12 @@ public class CDPreferencesImpl extends Preferences {
         // Setting a default has no effect on the value returned by the objectForKey method if
         // the same key exists in a domain that precedes the application domain in the search list.
         this.props.setObjectForKey(value, property);
+        this.save();
     }
 
     public void deleteProperty(String property) {
         this.props.removeObjectForKey(property);
+        this.save();
     }
 
     /**
@@ -65,6 +67,7 @@ public class CDPreferencesImpl extends Preferences {
     }
 
     public void save() {
+        log.debug("save");
         // Saves any modifications to the persistent domains and updates all
         // persistent domains that were not modified to  what is on disk.
         // Returns false if it could not save data to disk. Because synchronize
