@@ -14,6 +14,7 @@
                 disconnectButtonClicked = id; 
                 downloadAsButtonClicked = id; 
                 downloadButtonClicked = id; 
+                downloadToButtonClicked = id; 
                 duplicateFileButtonClicked = id; 
                 editBookmarkButtonClicked = id; 
                 editButtonClicked = id; 

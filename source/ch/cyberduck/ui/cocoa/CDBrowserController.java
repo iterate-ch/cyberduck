@@ -1875,6 +1875,42 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
+    private static String lastSelectedDownloadDirectory = null;
+
+    public void downloadToButtonClicked(final Object sender) {
+        NSOpenPanel panel = NSOpenPanel.openPanel();
+        panel.setCanChooseDirectories(true);
+        panel.setCanCreateDirectories(true);
+        panel.setCanChooseFiles(false);
+        panel.setAllowsMultipleSelection(false);
+        panel.setPrompt(NSBundle.localizedString("Download To", ""));
+        panel.setTitle(NSBundle.localizedString("Download To", ""));
+        panel.beginSheetForDirectory(
+                lastSelectedDownloadDirectory, //trying to be smart
+                null,
+                null,
+                this.window,
+                this,
+                new NSSelector("downloadToPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}),
+                null);
+    }
+
+
+    public void downloadToPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
+        if(returncode == CDSheetCallback.DEFAULT_OPTION) {
+            Queue q = new DownloadQueue();
+            Session session = (Session) this.session.clone();
+            for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
+                Path path = (Path) ((Path) i.next()).clone(session);
+                path.setLocal(new Local(sheet.filename(), path.getLocal().getName()));
+                q.addRoot(path);
+            }
+            CDQueueController.instance().startItem(q);
+        }
+        lastSelectedDownloadDirectory = sheet.filename();
+    }
+
+
     public void downloadAsButtonClicked(final Object sender) {
         Session session = (Session) this.session.clone();
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
@@ -1971,7 +2007,7 @@ public class CDBrowserController extends CDWindowController
         CDQueueController.instance().startItem(q);
     }
 
-    private String lastSelectedUploadDirectory = null;
+    private static String lastSelectedUploadDirectory = null;
 
     public void uploadButtonClicked(final Object sender) {
         NSOpenPanel panel = NSOpenPanel.openPanel();
@@ -1982,7 +2018,7 @@ public class CDBrowserController extends CDWindowController
         panel.setPrompt(NSBundle.localizedString("Upload", ""));
         panel.setTitle(NSBundle.localizedString("Upload", ""));
         panel.beginSheetForDirectory(
-                this.lastSelectedUploadDirectory, //trying to be smart
+                lastSelectedUploadDirectory, //trying to be smart
                 null,
                 null,
                 this.window,
@@ -2017,9 +2053,9 @@ public class CDBrowserController extends CDWindowController
                         workdir.getAbsolute(),
                         new Local((String) iterator.nextElement())));
             }
-            this.lastSelectedUploadDirectory = q.getRoot().getLocal().getParentFile().getAbsolutePath();
             CDQueueController.instance().startItem(q);
         }
+        lastSelectedUploadDirectory = new File(sheet.filename()).getParent();
     }
 
     public void insideButtonClicked(final Object sender) {
@@ -2786,6 +2822,9 @@ public class CDBrowserController extends CDWindowController
         }
         if(identifier.equals("downloadAsButtonClicked:")) {
             return this.isMounted() && this.getSelectionCount() == 1;
+        }
+        if(identifier.equals("downloadToButtonClicked:")) {
+            return this.isMounted() && this.getSelectionCount() > 0;
         }
         if(identifier.equals("insideButtonClicked:")) {
             return this.isMounted() && this.getSelectionCount() > 0;
