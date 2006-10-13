@@ -105,23 +105,23 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
         super.prompt(p);
     }
 
-    protected void adjustFilename(Path path) {
-        String parent = path.getLocal().getParent();
-        String filename = path.getLocal().getName();
+    private void adjustFilename(Path path) {
+        final String parent = path.getLocal().getParent();
+        final String filename = path.getLocal().getName();
         String proposal = filename;
         int no = 0;
         int index = filename.lastIndexOf(".");
-        do {
-            path.setLocal(new Local(parent, proposal));
+        while(path.getLocal().exists()) {
             no++;
             if(index != -1 && index != 0) {
-                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
+                proposal = filename.substring(0, index)
+                        + "-" + no + filename.substring(index);
             }
             else {
                 proposal = filename + "-" + no;
             }
+            path.setLocal(new Local(parent, proposal));
         }
-        while(path.getLocal().exists());
     }
 
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {

@@ -138,14 +138,6 @@ public abstract class CDValidatorController
     protected abstract boolean validateFile(Path p, boolean resumeRequested);
 
     /**
-     *
-     * @param path
-     */
-    protected void adjustFilename(Path path) {
-        //
-    }
-
-    /**
      * true if some files need confirmation from the user
      */
     protected boolean hasPrompt = false;

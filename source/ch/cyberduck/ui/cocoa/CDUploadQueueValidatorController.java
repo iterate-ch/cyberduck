@@ -100,23 +100,23 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
         super.prompt(p);
     }
 
-    protected void adjustFilename(Path path) {
-        String parent = path.getParent().getAbsolute();
-        String filename = path.getName();
+    private void adjustFilename(Path path) {
+        final String parent = path.getParent().getAbsolute();
+        final String filename = path.getName();
         String proposal = filename;
         int no = 0;
         int index = filename.lastIndexOf(".");
-        do {
-            path.setPath(parent, proposal);
+        while(path.exists()) {
             no++;
             if(index != -1 && index != 0) {
-                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
+                proposal = filename.substring(0, index)
+                        + "-" + no + filename.substring(index);
             }
             else {
                 proposal = filename + "-" + no;
             }
+            path.setPath(parent, proposal);
         }
-        while(path.exists());
     }
 
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
