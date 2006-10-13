@@ -417,7 +417,9 @@ public class CDMainController extends CDController {
     }
 
     public void newDownloadMenuClicked(final Object sender) {
-        CDSheetController controller = new CDDownloadController(CDQueueController.instance());
+        CDQueueController c = CDQueueController.instance();
+        c.window().makeKeyAndOrderFront(null);
+        CDSheetController controller = new CDDownloadController(c);
         controller.beginSheet(false);
     }
 
