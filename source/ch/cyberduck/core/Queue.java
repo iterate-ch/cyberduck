@@ -166,7 +166,7 @@ public abstract class Queue extends NSObject {
     public String getName() {
         String name = "";
         for(Iterator iter = this.roots.iterator(); iter.hasNext();) {
-            name = name + ((Path) iter.next()).getName() + " ";
+            name = name + ((Path) iter.next()).getLocal().getName() + " ";
         }
         return name;
     }
