@@ -320,7 +320,7 @@ build/Sparkle.framework/Versions/Current -text
 ca.lproj/Bookmark.nib/keyedobjects.nib -text
 ca.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 ca.lproj/Browser.nib/keyedobjects.nib -text
-ca.lproj/Browser.strings -text svneol=native#application/octet-stream
+ca.lproj/Browser.strings -text
 ca.lproj/Certificate.nib/keyedobjects.nib -text
 ca.lproj/Certificate.strings -text svneol=native#application/octet-stream
 ca.lproj/Command.nib/keyedobjects.nib -text
@@ -350,7 +350,7 @@ ca.lproj/Localizable.strings -text svneol=native#application/octet-stream
 ca.lproj/Login.nib/keyedobjects.nib -text
 ca.lproj/Login.strings -text svneol=native#application/octet-stream
 ca.lproj/Main.nib/keyedobjects.nib -text
-ca.lproj/Main.strings -text svneol=native#application/octet-stream
+ca.lproj/Main.strings -text
 ca.lproj/Preferences.nib/keyedobjects.nib -text
 ca.lproj/Preferences.strings -text svneol=native#application/octet-stream
 ca.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -402,7 +402,7 @@ cs.lproj/Validator.strings -text
 cy.lproj/Bookmark.nib/keyedobjects.nib -text
 cy.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 cy.lproj/Browser.nib/keyedobjects.nib -text
-cy.lproj/Browser.strings -text svneol=native#application/octet-stream
+cy.lproj/Browser.strings -text
 cy.lproj/Certificate.nib/keyedobjects.nib -text
 cy.lproj/Certificate.strings -text svneol=native#application/octet-stream
 cy.lproj/Command.nib/keyedobjects.nib -text
@@ -432,7 +432,7 @@ cy.lproj/Localizable.strings -text svneol=native#application/octet-stream
 cy.lproj/Login.nib/keyedobjects.nib -text
 cy.lproj/Login.strings -text svneol=native#application/octet-stream
 cy.lproj/Main.nib/keyedobjects.nib -text
-cy.lproj/Main.strings -text svneol=native#application/octet-stream
+cy.lproj/Main.strings -text
 cy.lproj/Preferences.nib/keyedobjects.nib -text
 cy.lproj/Preferences.strings -text svneol=native#application/octet-stream
 cy.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -447,7 +447,7 @@ cy.lproj/Validator.strings -text svneol=native#application/octet-stream
 da.lproj/Bookmark.nib/keyedobjects.nib -text
 da.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 da.lproj/Browser.nib/keyedobjects.nib -text
-da.lproj/Browser.strings -text svneol=native#application/octet-stream
+da.lproj/Browser.strings -text
 da.lproj/Certificate.nib/keyedobjects.nib -text
 da.lproj/Certificate.strings -text svneol=native#application/octet-stream
 da.lproj/Command.nib/keyedobjects.nib -text
@@ -477,7 +477,7 @@ da.lproj/Localizable.strings -text svneol=native#application/octet-stream
 da.lproj/Login.nib/keyedobjects.nib -text
 da.lproj/Login.strings -text svneol=native#application/octet-stream
 da.lproj/Main.nib/keyedobjects.nib -text
-da.lproj/Main.strings -text svneol=native#application/octet-stream
+da.lproj/Main.strings -text
 da.lproj/Preferences.nib/keyedobjects.nib -text
 da.lproj/Preferences.strings -text svneol=native#application/octet-stream
 da.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -488,7 +488,7 @@ da.lproj/Validator.strings -text svneol=native#application/octet-stream
 de.lproj/Bookmark.nib/keyedobjects.nib -text
 de.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 de.lproj/Browser.nib/keyedobjects.nib -text
-de.lproj/Browser.strings -text svneol=native#application/octet-stream
+de.lproj/Browser.strings -text
 de.lproj/Certificate.nib/keyedobjects.nib -text
 de.lproj/Certificate.strings -text svneol=native#application/octet-stream
 de.lproj/Command.nib/keyedobjects.nib -text
@@ -518,7 +518,7 @@ de.lproj/Localizable.strings -text
 de.lproj/Login.nib/keyedobjects.nib -text
 de.lproj/Login.strings -text svneol=native#application/octet-stream
 de.lproj/Main.nib/keyedobjects.nib -text
-de.lproj/Main.strings -text svneol=native#application/octet-stream
+de.lproj/Main.strings -text
 de.lproj/Preferences.nib/keyedobjects.nib -text
 de.lproj/Preferences.strings -text svneol=native#application/octet-stream
 de.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -529,7 +529,7 @@ de.lproj/Validator.strings -text svneol=native#application/octet-stream
 en.lproj/Bookmark.nib/keyedobjects.nib -text
 en.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 en.lproj/Browser.nib/keyedobjects.nib -text
-en.lproj/Browser.strings -text svneol=native#application/octet-stream
+en.lproj/Browser.strings -text
 en.lproj/Certificate.nib/keyedobjects.nib -text
 en.lproj/Certificate.strings -text svneol=native#application/octet-stream
 en.lproj/Command.nib/keyedobjects.nib -text
@@ -559,7 +559,7 @@ en.lproj/Localizable.strings -text
 en.lproj/Login.nib/keyedobjects.nib -text
 en.lproj/Login.strings -text svneol=native#application/octet-stream
 en.lproj/Main.nib/keyedobjects.nib -text
-en.lproj/Main.strings -text svneol=native#application/octet-stream
+en.lproj/Main.strings -text
 en.lproj/Preferences.nib/keyedobjects.nib -text
 en.lproj/Preferences.strings -text svneol=native#application/octet-stream
 en.lproj/Progress.nib/classes.nib -text
@@ -574,7 +574,7 @@ en.lproj/Validator.strings -text svneol=native#application/octet-stream
 es.lproj/Bookmark.nib/keyedobjects.nib -text
 es.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 es.lproj/Browser.nib/keyedobjects.nib -text
-es.lproj/Browser.strings -text svneol=native#application/octet-stream
+es.lproj/Browser.strings -text
 es.lproj/Certificate.nib/keyedobjects.nib -text
 es.lproj/Certificate.strings -text svneol=native#application/octet-stream
 es.lproj/Command.nib/keyedobjects.nib -text
@@ -604,7 +604,7 @@ es.lproj/Localizable.strings -text svneol=native#application/octet-stream
 es.lproj/Login.nib/keyedobjects.nib -text
 es.lproj/Login.strings -text svneol=native#application/octet-stream
 es.lproj/Main.nib/keyedobjects.nib -text
-es.lproj/Main.strings -text svneol=native#application/octet-stream
+es.lproj/Main.strings -text
 es.lproj/Preferences.nib/keyedobjects.nib -text
 es.lproj/Preferences.strings -text svneol=native#application/octet-stream
 es.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -615,7 +615,7 @@ es.lproj/Validator.strings -text svneol=native#application/octet-stream
 fi.lproj/Bookmark.nib/keyedobjects.nib -text
 fi.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 fi.lproj/Browser.nib/keyedobjects.nib -text
-fi.lproj/Browser.strings -text svneol=native#application/octet-stream
+fi.lproj/Browser.strings -text
 fi.lproj/Certificate.nib/keyedobjects.nib -text
 fi.lproj/Certificate.strings -text svneol=native#application/octet-stream
 fi.lproj/Command.nib/keyedobjects.nib -text
@@ -645,7 +645,7 @@ fi.lproj/Localizable.strings -text svneol=native#application/octet-stream
 fi.lproj/Login.nib/keyedobjects.nib -text
 fi.lproj/Login.strings -text svneol=native#application/octet-stream
 fi.lproj/Main.nib/keyedobjects.nib -text
-fi.lproj/Main.strings -text svneol=native#application/octet-stream
+fi.lproj/Main.strings -text
 fi.lproj/Preferences.nib/keyedobjects.nib -text
 fi.lproj/Preferences.strings -text svneol=native#application/octet-stream
 fi.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -656,7 +656,7 @@ fi.lproj/Validator.strings -text svneol=native#application/octet-stream
 fr.lproj/Bookmark.nib/keyedobjects.nib -text
 fr.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 fr.lproj/Browser.nib/keyedobjects.nib -text
-fr.lproj/Browser.strings -text svneol=native#application/octet-stream
+fr.lproj/Browser.strings -text
 fr.lproj/Certificate.nib/keyedobjects.nib -text
 fr.lproj/Certificate.strings -text svneol=native#application/octet-stream
 fr.lproj/Command.nib/keyedobjects.nib -text
@@ -686,7 +686,7 @@ fr.lproj/Localizable.strings -text svneol=native#application/octet-stream
 fr.lproj/Login.nib/keyedobjects.nib -text
 fr.lproj/Login.strings -text svneol=native#application/octet-stream
 fr.lproj/Main.nib/keyedobjects.nib -text
-fr.lproj/Main.strings -text svneol=native#application/octet-stream
+fr.lproj/Main.strings -text
 fr.lproj/Preferences.nib/keyedobjects.nib -text
 fr.lproj/Preferences.strings -text svneol=native#application/octet-stream
 fr.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -774,7 +774,7 @@ he.lproj/Validator.strings -text
 hu.lproj/Bookmark.nib/keyedobjects.nib -text
 hu.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 hu.lproj/Browser.nib/keyedobjects.nib -text
-hu.lproj/Browser.strings -text svneol=native#application/octet-stream
+hu.lproj/Browser.strings -text
 hu.lproj/Certificate.nib/keyedobjects.nib -text
 hu.lproj/Certificate.strings -text svneol=native#application/octet-stream
 hu.lproj/Command.nib/keyedobjects.nib -text
@@ -804,7 +804,7 @@ hu.lproj/Localizable.strings -text svneol=native#application/octet-stream
 hu.lproj/Login.nib/keyedobjects.nib -text
 hu.lproj/Login.strings -text svneol=native#application/octet-stream
 hu.lproj/Main.nib/keyedobjects.nib -text
-hu.lproj/Main.strings -text svneol=native#application/octet-stream
+hu.lproj/Main.strings -text
 hu.lproj/Preferences.nib/keyedobjects.nib -text
 hu.lproj/Preferences.strings -text svneol=native#application/octet-stream
 hu.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -815,7 +815,7 @@ hu.lproj/Validator.strings -text svneol=native#application/octet-stream
 id.lproj/Bookmark.nib/keyedobjects.nib -text
 id.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 id.lproj/Browser.nib/keyedobjects.nib -text
-id.lproj/Browser.strings -text svneol=native#application/octet-stream
+id.lproj/Browser.strings -text
 id.lproj/Certificate.nib/keyedobjects.nib -text
 id.lproj/Certificate.strings -text svneol=native#application/octet-stream
 id.lproj/Command.nib/keyedobjects.nib -text
@@ -845,7 +845,7 @@ id.lproj/Localizable.strings -text svneol=native#application/octet-stream
 id.lproj/Login.nib/keyedobjects.nib -text
 id.lproj/Login.strings -text svneol=native#application/octet-stream
 id.lproj/Main.nib/keyedobjects.nib -text
-id.lproj/Main.strings -text svneol=native#application/octet-stream
+id.lproj/Main.strings -text
 id.lproj/Preferences.nib/keyedobjects.nib -text
 id.lproj/Preferences.strings -text svneol=native#application/octet-stream
 id.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -948,7 +948,7 @@ img/uploadFile.tiff -text
 it.lproj/Bookmark.nib/keyedobjects.nib -text
 it.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 it.lproj/Browser.nib/keyedobjects.nib -text
-it.lproj/Browser.strings -text svneol=native#application/octet-stream
+it.lproj/Browser.strings -text
 it.lproj/Certificate.nib/keyedobjects.nib -text
 it.lproj/Certificate.strings -text svneol=native#application/octet-stream
 it.lproj/Command.nib/keyedobjects.nib -text
@@ -978,7 +978,7 @@ it.lproj/Localizable.strings -text svneol=native#application/octet-stream
 it.lproj/Login.nib/keyedobjects.nib -text
 it.lproj/Login.strings -text svneol=native#application/octet-stream
 it.lproj/Main.nib/keyedobjects.nib -text
-it.lproj/Main.strings -text svneol=native#application/octet-stream
+it.lproj/Main.strings -text
 it.lproj/Preferences.nib/keyedobjects.nib -text
 it.lproj/Preferences.strings -text svneol=native#application/octet-stream
 it.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -1031,7 +1031,7 @@ ja.lproj/Validator.strings -text svneol=native#application/octet-stream
 ko.lproj/Bookmark.nib/keyedobjects.nib -text
 ko.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 ko.lproj/Browser.nib/keyedobjects.nib -text
-ko.lproj/Browser.strings -text svneol=native#application/octet-stream
+ko.lproj/Browser.strings -text
 ko.lproj/Certificate.nib/keyedobjects.nib -text
 ko.lproj/Certificate.strings -text svneol=native#application/octet-stream
 ko.lproj/Command.nib/keyedobjects.nib -text
@@ -1061,7 +1061,7 @@ ko.lproj/Localizable.strings -text svneol=native#application/octet-stream
 ko.lproj/Login.nib/keyedobjects.nib -text
 ko.lproj/Login.strings -text svneol=native#application/octet-stream
 ko.lproj/Main.nib/keyedobjects.nib -text
-ko.lproj/Main.strings -text svneol=native#application/octet-stream
+ko.lproj/Main.strings -text
 ko.lproj/Preferences.nib/keyedobjects.nib -text
 ko.lproj/Preferences.strings -text svneol=native#application/octet-stream
 ko.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -1075,7 +1075,7 @@ lib/log4j-1.2.13.jar -text
 nl.lproj/Bookmark.nib/keyedobjects.nib -text
 nl.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 nl.lproj/Browser.nib/keyedobjects.nib -text
-nl.lproj/Browser.strings -text svneol=native#application/octet-stream
+nl.lproj/Browser.strings -text
 nl.lproj/Certificate.nib/keyedobjects.nib -text
 nl.lproj/Certificate.strings -text svneol=native#application/octet-stream
 nl.lproj/Command.nib/keyedobjects.nib -text
@@ -1105,7 +1105,7 @@ nl.lproj/Localizable.strings -text svneol=unset#application/octet-stream
 nl.lproj/Login.nib/keyedobjects.nib -text
 nl.lproj/Login.strings -text svneol=native#application/octet-stream
 nl.lproj/Main.nib/keyedobjects.nib -text
-nl.lproj/Main.strings -text svneol=native#application/octet-stream
+nl.lproj/Main.strings -text
 nl.lproj/Preferences.nib/keyedobjects.nib -text
 nl.lproj/Preferences.strings -text svneol=native#application/octet-stream
 nl.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -1116,7 +1116,7 @@ nl.lproj/Validator.strings -text svneol=native#application/octet-stream
 no.lproj/Bookmark.nib/keyedobjects.nib -text
 no.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 no.lproj/Browser.nib/keyedobjects.nib -text
-no.lproj/Browser.strings -text svneol=native#application/octet-stream
+no.lproj/Browser.strings -text
 no.lproj/Certificate.nib/keyedobjects.nib -text
 no.lproj/Certificate.strings -text svneol=native#application/octet-stream
 no.lproj/Command.nib/keyedobjects.nib -text
@@ -1146,7 +1146,7 @@ no.lproj/Localizable.strings -text svneol=native#application/octet-stream
 no.lproj/Login.nib/keyedobjects.nib -text
 no.lproj/Login.strings -text svneol=native#application/octet-stream
 no.lproj/Main.nib/keyedobjects.nib -text
-no.lproj/Main.strings -text svneol=native#application/octet-stream
+no.lproj/Main.strings -text
 no.lproj/Preferences.nib/keyedobjects.nib -text
 no.lproj/Preferences.strings -text svneol=native#application/octet-stream
 no.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -1157,7 +1157,7 @@ no.lproj/Validator.strings -text svneol=native#application/octet-stream
 pl.lproj/Bookmark.nib/keyedobjects.nib -text
 pl.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 pl.lproj/Browser.nib/keyedobjects.nib -text
-pl.lproj/Browser.strings -text svneol=native#application/octet-stream
+pl.lproj/Browser.strings -text
 pl.lproj/Certificate.nib/keyedobjects.nib -text
 pl.lproj/Certificate.strings -text svneol=native#application/octet-stream
 pl.lproj/Command.nib/keyedobjects.nib -text
@@ -1188,7 +1188,7 @@ pl.lproj/Localizable.strings -text svneol=native#application/octet-stream
 pl.lproj/Login.nib/keyedobjects.nib -text
 pl.lproj/Login.strings -text svneol=native#application/octet-stream
 pl.lproj/Main.nib/keyedobjects.nib -text
-pl.lproj/Main.strings -text svneol=native#application/octet-stream
+pl.lproj/Main.strings -text
 pl.lproj/Preferences.nib/keyedobjects.nib -text
 pl.lproj/Preferences.strings -text svneol=native#application/octet-stream
 pl.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -1199,7 +1199,7 @@ pl.lproj/Validator.strings -text svneol=native#application/octet-stream
 pt.lproj/Bookmark.nib/keyedobjects.nib -text
 pt.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 pt.lproj/Browser.nib/keyedobjects.nib -text
-pt.lproj/Browser.strings -text svneol=native#application/octet-stream
+pt.lproj/Browser.strings -text
 pt.lproj/Certificate.nib/keyedobjects.nib -text
 pt.lproj/Certificate.strings -text svneol=native#application/octet-stream
 pt.lproj/Command.nib/keyedobjects.nib -text
@@ -1228,7 +1228,7 @@ pt.lproj/Localizable.strings -text svneol=native#application/octet-stream
 pt.lproj/Login.nib/keyedobjects.nib -text
 pt.lproj/Login.strings -text svneol=native#application/octet-stream
 pt.lproj/Main.nib/keyedobjects.nib -text
-pt.lproj/Main.strings -text svneol=native#application/octet-stream
+pt.lproj/Main.strings -text
 pt.lproj/Preferences.nib/keyedobjects.nib -text
 pt.lproj/Preferences.strings -text svneol=native#application/octet-stream
 pt.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -1239,7 +1239,7 @@ pt.lproj/Validator.strings -text svneol=native#application/octet-stream
 ru.lproj/Bookmark.nib/keyedobjects.nib -text
 ru.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 ru.lproj/Browser.nib/keyedobjects.nib -text
-ru.lproj/Browser.strings -text svneol=native#application/octet-stream
+ru.lproj/Browser.strings -text
 ru.lproj/Certificate.nib/keyedobjects.nib -text
 ru.lproj/Certificate.strings -text svneol=native#application/octet-stream
 ru.lproj/Command.nib/keyedobjects.nib -text
@@ -1269,7 +1269,7 @@ ru.lproj/Localizable.strings -text svneol=native#application/octet-stream
 ru.lproj/Login.nib/keyedobjects.nib -text
 ru.lproj/Login.strings -text svneol=native#application/octet-stream
 ru.lproj/Main.nib/keyedobjects.nib -text
-ru.lproj/Main.strings -text svneol=native#application/octet-stream
+ru.lproj/Main.strings -text
 ru.lproj/Preferences.nib/keyedobjects.nib -text
 ru.lproj/Preferences.strings -text svneol=native#application/octet-stream
 ru.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -1329,7 +1329,7 @@ source/de/zathras/UKCrashReporter.m -text
 sv.lproj/Bookmark.nib/keyedobjects.nib -text
 sv.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 sv.lproj/Browser.nib/keyedobjects.nib -text
-sv.lproj/Browser.strings -text svneol=native#application/octet-stream
+sv.lproj/Browser.strings -text
 sv.lproj/Certificate.nib/keyedobjects.nib -text
 sv.lproj/Certificate.strings -text svneol=native#application/octet-stream
 sv.lproj/Command.nib/keyedobjects.nib -text
@@ -1359,7 +1359,7 @@ sv.lproj/Localizable.strings -text svneol=native#application/octet-stream
 sv.lproj/Login.nib/keyedobjects.nib -text
 sv.lproj/Login.strings -text svneol=native#application/octet-stream
 sv.lproj/Main.nib/keyedobjects.nib -text
-sv.lproj/Main.strings -text svneol=native#application/octet-stream
+sv.lproj/Main.strings -text
 sv.lproj/Preferences.nib/keyedobjects.nib -text
 sv.lproj/Preferences.strings -text svneol=native#application/octet-stream
 sv.lproj/Status.strings -text svneol=native#application/octet-stream
@@ -1623,7 +1623,7 @@ www/update/changelog.rss -text
 zh_CN.lproj/Bookmark.nib/keyedobjects.nib -text
 zh_CN.lproj/Bookmark.strings -text
 zh_CN.lproj/Browser.nib/keyedobjects.nib -text
-zh_CN.lproj/Browser.strings -text svneol=native#application/octet-stream
+zh_CN.lproj/Browser.strings -text
 zh_CN.lproj/Certificate.nib/keyedobjects.nib -text
 zh_CN.lproj/Certificate.strings -text svneol=native#application/octet-stream
 zh_CN.lproj/Command.nib/keyedobjects.nib -text
@@ -1664,7 +1664,7 @@ zh_CN.lproj/Validator.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Bookmark.nib/keyedobjects.nib -text
 zh_TW.lproj/Bookmark.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Browser.nib/keyedobjects.nib -text
-zh_TW.lproj/Browser.strings -text svneol=native#application/octet-stream
+zh_TW.lproj/Browser.strings -text
 zh_TW.lproj/Certificate.nib/keyedobjects.nib -text
 zh_TW.lproj/Certificate.strings -text svneol=native#application/octet-stream
 zh_TW.lproj/Command.nib/keyedobjects.nib -text
