@@ -19,12 +19,9 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 
-import com.apple.cocoa.application.NSDraggingInfo;
-import com.apple.cocoa.application.NSOutlineView;
-import com.apple.cocoa.application.NSPasteboard;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSView;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSArray;
 
 import java.util.List;
@@ -48,18 +45,34 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         return this.indexOf(tableView, p) != -1;
     }
 
-    public boolean outlineViewIsItemExpandable(NSOutlineView outlineView, Path item) {
+    public boolean outlineViewIsItemExpandable(final NSOutlineView outlineView, final Path item) {
         if (null == item) {
             return false;
         }
-        return item.attributes.isDirectory();
+        if(item.attributes.isDirectory()) {
+            if(NSEvent.LeftMouseDragged == NSApplication.sharedApplication().currentEvent().type()) {
+                if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
+                    // See tickets #98 and #633
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
-    public int outlineViewNumberOfChildrenOfItem(NSOutlineView outlineView, Path item) {
+//    private int rowOfCurrentEvent(final NSOutlineView outlineView) {
+//        return outlineView.rowAtPoint(outlineView.convertPointFromView(
+//            NSApplication.sharedApplication().currentEvent().locationInWindow(),
+//            null));
+//    }
+
+    public int outlineViewNumberOfChildrenOfItem(final NSOutlineView view, Path item) {
         if (controller.isMounted()) {
             if (null == item) {
                 item = controller.workdir();
             }
+            log.debug("outlineViewNumberOfChildrenOfItem:"+item.getName());
             return this.childs(item).size();
         }
         return 0;
@@ -70,7 +83,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
      * of a given parent item are accessed sequentially. If item is null, this method should
      * return the appropriate child item of the root object
      */
-    public Path outlineViewChildOfItem(NSOutlineView outlineView, int index, Path item) {
+    public Path outlineViewChildOfItem(final NSOutlineView outlineView, int index, Path item) {
         if (null == item) {
             item = controller.workdir();
         }
@@ -78,16 +91,16 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         if (index < childs.size()) {
             return (Path) this.childs(item).get(index);
         }
-		log.warn("outlineViewChildOfItem: Index "+index+" out of bounds for "+item);
+        log.warn("outlineViewChildOfItem: Index "+index+" out of bounds for "+item);
         return null;
     }
 
-    public void outlineViewSetObjectValueForItem(NSOutlineView outlineView, Object value,
-                                                 NSTableColumn tableColumn, Path item) {
+    public void outlineViewSetObjectValueForItem(final NSOutlineView outlineView, Object value,
+                                                 final NSTableColumn tableColumn, Path item) {
         super.setObjectValueForItem(item, value, (String) tableColumn.identifier());
     }
 
-    public Object outlineViewObjectValueForItem(NSOutlineView outlineView, NSTableColumn tableColumn, Path item) {
+    public Object outlineViewObjectValueForItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, Path item) {
         return super.objectValueForItem(item, (String) tableColumn.identifier());
     }
 
@@ -101,7 +114,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
      * @param destination The proposed parent
      * @param row         The proposed child location.
      */
-    public int outlineViewValidateDrop(NSOutlineView outlineView, NSDraggingInfo info, Path destination, int row) {
+    public int outlineViewValidateDrop(final NSOutlineView outlineView, final NSDraggingInfo info, Path destination, int row) {
         outlineView.setDropItemAndDropChildIndex(destination, NSOutlineView.DropOnItemIndex);
         if (controller.isMounted()) {
             if (null == destination) {
@@ -112,7 +125,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         return NSDraggingInfo.DragOperationNone;
     }
 
-    public boolean outlineViewAcceptDrop(NSOutlineView outlineView, NSDraggingInfo info, Path destination, int row) {
+    public boolean outlineViewAcceptDrop(final NSOutlineView outlineView, final NSDraggingInfo info, Path destination, int row) {
         if (controller.isMounted()) {
             if (null == destination) {
                 destination = controller.workdir();
@@ -126,7 +139,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
     // Drag methods
     // ----------------------------------------------------------
 
-    public boolean outlineViewWriteItemsToPasteboard(NSOutlineView outlineView, NSArray items, NSPasteboard pboard) {
+    public boolean outlineViewWriteItemsToPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard) {
         return super.writeItemsToPasteBoard(outlineView, items, pboard);
     }
 }

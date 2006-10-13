@@ -22,7 +22,6 @@
 - (NSTableColumn *)_typeAheadSelectionColumn;
 - (void)selectRow;
 - (void)selectRowWithTimer:(NSTimer *)sender;
-- (void)_scheduleAutoExpandTimerForItem:(id)object;
 @end
 
 @implementation CDOutlineView
@@ -50,16 +49,40 @@
 	[super dealloc];
 }
 
-- (void)_scheduleAutoExpandTimerForItem:(id)object {
+- (void)_scheduleAutoExpandTimerForItem:(id)object 
+{
 	if([[[NSUserDefaults standardUserDefaults] stringForKey:@"browser.view.autoexpand"] isEqualToString:@"false"]) {
 		return;
 	}
+//	if(NSLeftMouseDragged == [[[NSApplication sharedApplication] currentEvent] type]) {
+//		//if(![autoExpandTimer isValid]) {
+//			[self performSelector:@selector(_scheduleAutoExpandTimerForItemDelayed:)
+//					   withObject:[NSValue valueWithPoint:[self convertPoint:[[NSApp currentEvent] locationInWindow]
+//																	fromView:nil]] 
+//					   afterDelay:2.0];
+//		//}
+//		return;
+//	}
 	if([super respondsToSelector:@selector(_scheduleAutoExpandTimerForItem:)]) {
 		[super _scheduleAutoExpandTimerForItem:object];
 	}
 }
 
-- (void)handleBrowserClick:(id)sender {
+//- (void)_scheduleAutoExpandTimerForItemDelayed:(NSValue *)point
+//{
+//	if(NSLeftMouseDragged == [[[NSApplication sharedApplication] currentEvent] type]) {
+//		int previousRow = [self rowAtPoint:[point pointValue]];
+//		if(previousRow == [self rowAtPoint:[self convertPoint:[[NSApp currentEvent] locationInWindow] fromView:nil]]) {
+//			// Still dragging onto the same row; finally expand the item
+//			if([super respondsToSelector:@selector(_scheduleAutoExpandTimerForItem:)]) {
+//				[super _scheduleAutoExpandTimerForItem:[self itemAtRow:previousRow]];
+//			}
+//		}
+//	}
+//}
+
+- (void)handleBrowserClick:(id)sender 
+{
 	NSPoint where = [self convertPoint:[[NSApp currentEvent] locationInWindow] fromView:nil];
 	int row = [self rowAtPoint:where];
 	int col = [self columnAtPoint:where];
@@ -79,7 +102,8 @@
 	}
 }
 
-- (void)handleBrowserClickOffloaded:(NSValue *)inWrappedMouseLocation {
+- (void)handleBrowserClickOffloaded:(NSValue *)inWrappedMouseLocation 
+{
 	// UI: mouse must not have ben moved since first click, and must not have been double-clicked
 	if((!mBrowserWasDoubleClicked) && (NSEqualPoints([inWrappedMouseLocation pointValue], [NSEvent mouseLocation])) ) {
 		if(mBrowserEditingRow == [self selectedRow])
@@ -88,7 +112,8 @@
 	mBrowserWasDoubleClicked = NO;
 }
 
-- (void)handleBrowserDoubleClick:(id)sender {
+- (void)handleBrowserDoubleClick:(id)sender 
+{
 	mBrowserWasDoubleClicked = YES;
     if([self clickedRow] != -1) { // make sure double click was not in table header
 		if ([[self delegate] respondsToSelector:@selector(tableRowDoubleClicked:)]) {
