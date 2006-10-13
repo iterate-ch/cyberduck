@@ -932,6 +932,7 @@ public class CDPreferencesController extends CDWindowController {
         panel.setCanChooseFiles(false);
         panel.setCanChooseDirectories(true);
         panel.setAllowsMultipleSelection(false);
+        panel.setCanCreateDirectories(true);
         panel.beginSheetForDirectory(null, null, null, this.window, this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
     }
 
@@ -1538,5 +1539,20 @@ public class CDPreferencesController extends CDWindowController {
     public void failInsecureDataChannelCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.OnState;
         Preferences.instance().setProperty("ftp.tls.datachannel.failOnError", !enabled);
+    }
+
+    private NSButton springLoadedFoldersCheckbox; //IBOutlet
+
+    public void setSpringLoadedFoldersCheckbox(NSButton springLoadedFoldersCheckbox) {
+        this.springLoadedFoldersCheckbox = springLoadedFoldersCheckbox;
+        this.springLoadedFoldersCheckbox.setTarget(this);
+        this.springLoadedFoldersCheckbox.setAction(new NSSelector("setSpringLoadedFoldersCheckboxClicked", new Class[]{NSButton.class}));
+        this.springLoadedFoldersCheckbox.setState(
+                Preferences.instance().getBoolean("browser.view.autoexpand") ? NSCell.OnState : NSCell.OffState);
+    }
+
+    public void setSpringLoadedFoldersCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.OnState;
+        Preferences.instance().setProperty("browser.view.autoexpand", enabled);
     }
 }
