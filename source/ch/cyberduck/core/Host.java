@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.enterprisedt.net.ftp.FTPConnectMode;
+
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
@@ -92,10 +94,10 @@ public class Host extends NSObject {
         }
         Object connectModeObj = dict.objectForKey(Host.FTPCONNECTMODE);
         if(connectModeObj != null) {
-            if(connectModeObj.equals("active")) {
+            if(connectModeObj.equals(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE.toString())) {
                 this.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
             }
-            else {
+            if(connectModeObj.equals(com.enterprisedt.net.ftp.FTPConnectMode.PASV.toString())) {
                 this.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
             }
         }
@@ -437,15 +439,17 @@ public class Host extends NSObject {
     }
 
     public void setNickname(String nickname) {
-        final HostCollection c = HostCollection.instance();
-        String proposal = nickname;
-        int no = 0;
-        do {
-            this.nickname = proposal;
-            no++;
-            proposal = nickname + " (" + no + ")";
+        synchronized(HostCollection.instance()) {
+            final HostCollection c = HostCollection.instance();
+            String proposal = nickname;
+            int no = 0;
+            do {
+                this.nickname = proposal;
+                no++;
+                proposal = nickname + " (" + no + ")";
+            }
+            while(c.contains(this) && !(c.get(c.indexOf(this)) == this));
         }
-        while(c.contains(this) && !(c.get(c.indexOf(this)) == this));
     }
 
     public String getHostname() {
@@ -495,9 +499,9 @@ public class Host extends NSObject {
 
     public com.enterprisedt.net.ftp.FTPConnectMode getFTPConnectMode() {
         if(null == this.connectMode) {
-            if(Preferences.instance().getProperty("ftp.connectmode").equals("active"))
+            if(Preferences.instance().getProperty("ftp.connectmode").equals(FTPConnectMode.ACTIVE.toString()))
                 this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE;
-            if(Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
+            if(Preferences.instance().getProperty("ftp.connectmode").equals(FTPConnectMode.PASV.toString()))
                 this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.PASV;
         }
         return this.connectMode;
@@ -536,9 +540,10 @@ public class Host extends NSObject {
             Host o = (Host) other;
             return this.getNickname().equals(o.getNickname());
         }
-//        if(other instanceof String) {
-//            return this.getNickname().equals(other); //hack to allow comparision in Host#setNickname
-//        }
+        if(other instanceof String) {
+            //hack to allow comparision in CDBrowserController#handleMountScriptCommand
+            return this.getNickname().equals(other);
+        }
         return false;
     }
 
