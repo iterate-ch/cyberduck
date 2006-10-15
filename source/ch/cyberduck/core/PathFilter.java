@@ -21,6 +21,6 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public interface Filter {
+public interface PathFilter {
     public boolean accept(Path file);
 }

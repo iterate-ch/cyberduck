@@ -21,7 +21,7 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public class HiddenFilesFilter implements Filter {
+public class HiddenFilesPathFilter implements PathFilter {
     public boolean accept(Path file) {
         return !(file.getName().charAt(0) == '.');
     }
