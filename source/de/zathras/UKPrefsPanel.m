@@ -309,10 +309,11 @@
 	windowRect.size.height += 22; //title bar height
 	windowRect.size.height += 40; //border
 	windowRect.size.width += 35; //border
-
-	NSRect r = NSMakeRect([[tabView window] frame].origin.x - 
-						  (windowRect.size.width - [[tabView window] frame].size.width), [[tabView window] frame].origin.y - 
-						  (windowRect.size.height - [[tabView window] frame].size.height), windowRect.size.width, windowRect.size.height);
+	NSRect r = NSMakeRect(
+		[[tabView window] frame].origin.x,// - (windowRect.size.width - [[tabView window] frame].size.width), 
+		[[tabView window] frame].origin.y - (windowRect.size.height - [[tabView window] frame].size.height), 			
+		[[[tabView selectedTabViewItem] view] frame].size.width, 
+		windowRect.size.height);
 	[[tabView window] setFrame:r display:YES animate:YES];
 }
 
