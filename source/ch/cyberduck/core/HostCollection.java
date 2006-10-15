@@ -24,6 +24,7 @@ import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.util.Iterator;
 
 /**
  * @version $Id$
@@ -43,6 +44,10 @@ public class HostCollection extends Collection {
             instance.load();
         }
         return instance;
+    }
+
+    public Object get(int row) {
+        return super.get(row);
     }
 
     public boolean add(Object host) {
@@ -157,7 +162,7 @@ public class HostCollection extends Collection {
 
     /**
      * @param file
-     * @return
+     * @return The imported bookmark deserialized as a #Host
      */
     public Host importBookmark(File file) {
         NSData plistData = new NSData(file);

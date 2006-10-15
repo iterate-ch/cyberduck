@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -75,7 +74,7 @@ public class Cache extends HashMap {
      * @param filter
      * @return null if no cached file listing is available
      */
-    public AttributedList get(final Path path, final Comparator comparator, final Filter filter) {
+    public AttributedList get(final Path path, final Comparator comparator, final PathFilter filter) {
         AttributedList childs = (AttributedList) super.get(path.getAbsolute());
         if (null == childs) {
             return null;

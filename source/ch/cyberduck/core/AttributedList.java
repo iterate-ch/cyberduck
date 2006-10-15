@@ -62,7 +62,7 @@ public class AttributedList extends NSObject implements List {
     /**
      * Container for file listing attributes, such as a sorting comparator and filter
      *
-     * @see Filter
+     * @see PathFilter
      * @see BrowserComparator
      */
     public class Attributes extends HashMap {
@@ -70,14 +70,14 @@ public class AttributedList extends NSObject implements List {
          * Initialize with default values
          */
         public Attributes() {
-            this.put(FILTER, new NullFilter());
+            this.put(FILTER, new NullPathFilter());
             this.put(COMPARATOR, new NullComparator());
             this.put(HIDDEN, new HashSet());
             this.put(INVALID, Boolean.FALSE);
             this.put(READABLE, Boolean.TRUE);
         }
 
-        public Attributes(Comparator comparator, Filter filter) {
+        public Attributes(Comparator comparator, PathFilter filter) {
             this.put(COMPARATOR, comparator);
             this.put(FILTER, filter);
             this.put(HIDDEN, new java.util.HashSet());

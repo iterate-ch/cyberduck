@@ -18,6 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.enterprisedt.net.ftp.FTPConnectMode;
+
 import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.*;
@@ -416,9 +418,9 @@ public class CDConnectionController extends CDSheetController {
         this.connectmodePopup.itemWithTitle(CONNECTMODE_PASSIVE).setKeyEquivalent("p");
         this.connectmodePopup.itemWithTitle(CONNECTMODE_ACTIVE).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
         this.connectmodePopup.itemWithTitle(CONNECTMODE_ACTIVE).setKeyEquivalent("a");
-        if(Preferences.instance().getProperty("ftp.connectmode").equals("active"))
+        if(Preferences.instance().getProperty("ftp.connectmode").equals(FTPConnectMode.ACTIVE.toString()))
             this.connectmodePopup.setTitle(CONNECTMODE_ACTIVE);
-        if(Preferences.instance().getProperty("ftp.connectmode").equals("passive"))
+        if(Preferences.instance().getProperty("ftp.connectmode").equals(FTPConnectMode.PASV.toString()))
             this.connectmodePopup.setTitle(CONNECTMODE_PASSIVE);
     }
 

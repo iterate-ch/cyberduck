@@ -18,6 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.enterprisedt.net.ftp.FTPConnectMode;
+
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
@@ -76,37 +78,55 @@ public class CDBrowserController extends CDWindowController
     public Object handleMountScriptCommand(NSScriptCommand command) {
         log.debug("handleMountScriptCommand:" + command);
         NSDictionary args = command.evaluatedArguments();
-        Host host;
         Object portObj = args.objectForKey("Port");
-        if(portObj != null) {
-            Object protocolObj = args.objectForKey("Protocol");
-            if(protocolObj != null) {
-                host = new Host((String) args.objectForKey("Protocol"),
-                        (String) args.objectForKey("Host"),
-                        Integer.parseInt((String) args.objectForKey("Port")));
+        Host host;
+        Object bookmarkObj = args.objectForKey("Bookmark");
+        if(bookmarkObj != null) {
+            HostCollection bookmarks = HostCollection.instance();
+            int index = bookmarks.indexOf(bookmarkObj);
+            if(index < 0) {
+                return null;
             }
-            else {
-                host = new Host((String) args.objectForKey("Host"),
-                        Integer.parseInt((String) args.objectForKey("Port")));
-            }
+            host = (Host)bookmarks.get(index);
         }
         else {
-            Object protocolObj = args.objectForKey("Protocol");
-            if(protocolObj != null) {
-                host = new Host((String) args.objectForKey("Protocol"),
-                        (String) args.objectForKey("Host"));
+            if(portObj != null) {
+                Object protocolObj = args.objectForKey("Protocol");
+                if(protocolObj != null) {
+                    host = new Host((String) args.objectForKey("Protocol"),
+                            (String) args.objectForKey("Host"),
+                            Integer.parseInt((String) args.objectForKey("Port")));
+                }
+                else {
+                    host = new Host((String) args.objectForKey("Host"),
+                            Integer.parseInt((String) args.objectForKey("Port")));
+                }
             }
             else {
-                host = new Host((String) args.objectForKey("Host"));
+                Object protocolObj = args.objectForKey("Protocol");
+                if(protocolObj != null) {
+                    host = new Host((String) args.objectForKey("Protocol"),
+                            (String) args.objectForKey("Host"));
+                }
+                else {
+                    host = new Host((String) args.objectForKey("Host"));
+                }
             }
-        }
-        Object pathObj = args.objectForKey("InitialPath");
-        if(pathObj != null) {
-            host.setDefaultPath((String) args.objectForKey("InitialPath"));
-        }
-        Object userObj = args.objectForKey("Username");
-        if(userObj != null) {
-            host.setCredentials((String) args.objectForKey("Username"), (String) args.objectForKey("Password"));
+            Object pathObj = args.objectForKey("InitialPath");
+            if(pathObj != null) {
+                host.setDefaultPath((String) args.objectForKey("InitialPath"));
+            }
+            Object userObj = args.objectForKey("Username");
+            if(userObj != null) {
+                host.setCredentials((String) args.objectForKey("Username"), (String) args.objectForKey("Password"));
+            }
+            Object modeObj = args.objectForKey("Mode");
+            if(modeObj != null) {
+                if(modeObj.equals(FTPConnectMode.ACTIVE.toString()))
+                    host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
+                if(modeObj.equals(FTPConnectMode.PASV.toString()))
+                    host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
+            }
         }
         Session session = this.init(host);
         this.setWorkdir(session.mount());
@@ -406,20 +426,20 @@ public class CDBrowserController extends CDWindowController
     }
 
     private boolean showHiddenFiles;
-    private Filter filenameFilter;
+    private PathFilter filenameFilter;
 
     {
         if(Preferences.instance().getBoolean("browser.showHidden")) {
-            this.filenameFilter = new NullFilter();
+            this.filenameFilter = new NullPathFilter();
             this.showHiddenFiles = true;
         }
         else {
-            this.filenameFilter = new HiddenFilesFilter();
+            this.filenameFilter = new HiddenFilesPathFilter();
             this.showHiddenFiles = false;
         }
     }
 
-    protected Filter getFileFilter() {
+    protected PathFilter getFileFilter() {
         return this.filenameFilter;
     }
 
@@ -428,15 +448,15 @@ public class CDBrowserController extends CDWindowController
             this.searchField.setStringValue("");
             // Revert to the last used default filter
             if(this.getShowHiddenFiles()) {
-                this.filenameFilter = new NullFilter();
+                this.filenameFilter = new NullPathFilter();
             }
             else {
-                this.filenameFilter = new HiddenFilesFilter();
+                this.filenameFilter = new HiddenFilesPathFilter();
             }
         }
         else {
             // Setting up a custom filter for the directory listing
-            this.filenameFilter = new Filter() {
+            this.filenameFilter = new PathFilter() {
                 public boolean accept(Path file) {
                     return file.getName().indexOf(searchString) != -1;
                 }
@@ -446,11 +466,11 @@ public class CDBrowserController extends CDWindowController
 
     public void setShowHiddenFiles(boolean showHidden) {
         if(showHidden) {
-            this.filenameFilter = new NullFilter();
+            this.filenameFilter = new NullPathFilter();
             this.showHiddenFiles = true;
         }
         else {
-            this.filenameFilter = new HiddenFilesFilter();
+            this.filenameFilter = new HiddenFilesPathFilter();
             this.showHiddenFiles = false;
         }
     }
@@ -674,6 +694,33 @@ public class CDBrowserController extends CDWindowController
                 new NSSelector("drawerDidClose", new Class[]{Object.class}),
                 NSDrawer.DrawerDidCloseNotification,
                 this.bookmarkDrawer);
+    }
+
+    private NSTextField bookmarkSearchField;
+
+    public void setBookmarkSearchField(NSTextField bookmarkSearchField) {
+        this.bookmarkSearchField = bookmarkSearchField;
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("bookmarkSearchFieldDidChange", new Class[]{Object.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.bookmarkSearchField);
+    }
+
+    public void bookmarkSearchFieldDidChange(NSNotification notification) {
+        NSDictionary userInfo = notification.userInfo();
+        if(null != userInfo) {
+            Object o = userInfo.allValues().lastObject();
+            if(null != o) {
+                final String searchString = ((NSText)o).string();
+                this.bookmarkModel.setFilter(new HostFilter() {
+                    public boolean accept(Host host) {
+                        return host.getNickname().indexOf(searchString) != -1
+                                || host.getHostname().indexOf(searchString) != -1;
+                    }
+                });
+                this.bookmarkTable.reloadData();
+            }
+        }
     }
 
     private NSTabView browserTabView;
@@ -1121,8 +1168,7 @@ public class CDBrowserController extends CDWindowController
         this.reloadData(false);
     }
 
-    private CDBookmarkTableDataSource bookmarkModel
-            = new CDBookmarkTableDataSource();
+    private CDBookmarkTableDataSource bookmarkModel;
 
     private NSTableView bookmarkTable; // IBOutlet
     private CDTableDelegate bookmarkTableDelegate;
@@ -1130,7 +1176,7 @@ public class CDBrowserController extends CDWindowController
 
     public void setBookmarkTable(NSTableView view) {
         this.bookmarkTable = view;
-        this.bookmarkTable.setDataSource(this.bookmarkModel);
+        this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource());
         HostCollection.instance().addListener(this.bookmarkCollectionListener = new CollectionListener() {
             public void collectionItemAdded(Object item) {
                 bookmarkTable.reloadData();
@@ -1147,7 +1193,7 @@ public class CDBrowserController extends CDWindowController
         this.bookmarkTable.setDelegate(this.bookmarkTableDelegate = new CDAbstractTableDelegate() {
             public void tableRowDoubleClicked(final Object sender) {
                 if(bookmarkTable.numberOfSelectedRows() == 1) {
-                    CDBrowserController.this.mount((Host) HostCollection.instance().get(bookmarkTable.selectedRow()));
+                    CDBrowserController.this.mount((Host) bookmarkModel.get(bookmarkTable.selectedRow()));
                     if(Preferences.instance().getBoolean("browser.closeDrawer")) {
                         bookmarkDrawer.close();
                     }
@@ -1303,7 +1349,22 @@ public class CDBrowserController extends CDWindowController
         this.quickConnectPopup.setCompletes(true);
         this.quickConnectPopup.setAction(new NSSelector("quickConnectSelectionChanged", new Class[]{Object.class}));
         this.quickConnectPopup.setUsesDataSource(true);
-        this.quickConnectPopup.setDataSource(this.bookmarkModel);
+        this.quickConnectPopup.setDataSource(new NSObject/*NSComboBox.DataSource*/() {
+            public int numberOfItemsInComboBox(NSComboBox combo) {
+                synchronized(HostCollection.instance()) {
+                    return HostCollection.instance().size();
+                }
+            }
+
+            public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
+                synchronized(HostCollection.instance()) {
+                    if(row < numberOfItemsInComboBox(combo)) {
+                        return ((Host)HostCollection.instance().get(row)).getNickname();
+                    }
+                    return null;
+                }
+            }
+        });
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("quickConnectWillPopUp", new Class[]{Object.class}),
                 NSComboBox.ComboBoxWillPopUpNotification,
@@ -1312,8 +1373,10 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void quickConnectWillPopUp(NSNotification notification) {
-        int size = HostCollection.instance().size();
-        this.quickConnectPopup.setNumberOfVisibleItems(size > 10 ? 10 : size);
+        synchronized(HostCollection.instance()) {
+            int size = HostCollection.instance().size();
+            this.quickConnectPopup.setNumberOfVisibleItems(size > 10 ? 10 : size);
+        }
     }
 
     public void quickConnectSelectionChanged(final Object sender) {
@@ -1325,12 +1388,14 @@ public class CDBrowserController extends CDWindowController
             return;
         }
         try {
-            // First look for equivalent bookmarks
-            for(Iterator iter = HostCollection.instance().iterator(); iter.hasNext();) {
-                Host h = (Host) iter.next();
-                if(h.getNickname().equals(input)) {
-                    this.mount(h);
-                    return;
+            synchronized(HostCollection.instance()) {
+                // First look for equivalent bookmarks
+                for(Iterator iter = HostCollection.instance().iterator(); iter.hasNext();) {
+                    Host h = (Host) iter.next();
+                    if(h.getNickname().equals(input)) {
+                        this.mount(h);
+                        return;
+                    }
                 }
             }
             // Try to parse the input as a URL and extract protocol, hostname, username and password if any.
@@ -1380,7 +1445,7 @@ public class CDBrowserController extends CDWindowController
     public void editBookmarkButtonClicked(final Object sender) {
         this.bookmarkDrawer.open();
         CDBookmarkController c = new CDBookmarkController(
-                (Host)HostCollection.instance().get(bookmarkTable.selectedRow())
+                (Host)bookmarkModel.get(bookmarkTable.selectedRow())
         );
         c.window().makeKeyAndOrderFront(null);
     }
@@ -1407,8 +1472,8 @@ public class CDBrowserController extends CDWindowController
                         Preferences.instance().getInteger("connection.port.default"));
             }
             HostCollection.instance().add(item);
-            this.bookmarkTable.selectRow(HostCollection.instance().lastIndexOf(item), false);
-            this.bookmarkTable.scrollRowToVisible(HostCollection.instance().lastIndexOf(item));
+            this.bookmarkTable.selectRow(bookmarkModel.lastIndexOf(item), false);
+            this.bookmarkTable.scrollRowToVisible(bookmarkModel.lastIndexOf(item));
             CDBookmarkController c = new CDBookmarkController(item);
             c.window().makeKeyAndOrderFront(null);
         }
@@ -1439,7 +1504,7 @@ public class CDBrowserController extends CDWindowController
             for(i = 0; i < indexes.length; i++) {
                 int row = indexes[i] - j;
                 this.bookmarkTable.selectRow(row, false);
-                Host host = (Host) HostCollection.instance().get(row);
+                Host host = (Host) bookmarkModel.get(row);
                 switch(NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark", ""),
                         NSBundle.localizedString("Do you want to delete the selected bookmark?", "")
                                 + " (" + host.getNickname() + ")",
@@ -1447,7 +1512,7 @@ public class CDBrowserController extends CDWindowController
                         NSBundle.localizedString("Cancel", ""),
                         null)) {
                     case CDSheetCallback.DEFAULT_OPTION:
-                        HostCollection.instance().remove(row);
+                        bookmarkModel.remove(row);
                         j++;
                 }
             }
@@ -2706,11 +2771,14 @@ public class CDBrowserController extends CDWindowController
             }
         }
         if(identifier.equals("showHiddenFilesClicked:")) {
-            item.setState((this.getFileFilter() instanceof NullFilter) ? NSCell.OnState : NSCell.OffState);
+            item.setState((this.getFileFilter() instanceof NullPathFilter) ? NSCell.OnState : NSCell.OffState);
         }
         if(identifier.equals("encodingButtonClicked:")) {
             if(this.isMounted()) {
                 item.setState(this.session.getHost().getEncoding().equalsIgnoreCase(item.title()) ? NSCell.OnState : NSCell.OffState);
+            }
+            else {
+                item.setState(Preferences.instance().getProperty("browser.charset.encoding").equalsIgnoreCase(item.title()) ? NSCell.OnState : NSCell.OffState);
             }
         }
         if(identifier.equals("browserSwitchClicked:")) {

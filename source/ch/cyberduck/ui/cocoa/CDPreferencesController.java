@@ -18,6 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.enterprisedt.net.ftp.FTPConnectMode;
+
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
@@ -1435,10 +1437,10 @@ public class CDPreferencesController extends CDWindowController {
 
     public void connectmodeComboboxClicked(NSPopUpButton sender) {
         if (sender.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
-            Preferences.instance().setProperty("ftp.connectmode", "active");
+            Preferences.instance().setProperty("ftp.connectmode", FTPConnectMode.ACTIVE.toString());
         }
         else if (sender.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
-            Preferences.instance().setProperty("ftp.connectmode", "passive");
+            Preferences.instance().setProperty("ftp.connectmode", FTPConnectMode.PASV.toString());
         }
     }
 

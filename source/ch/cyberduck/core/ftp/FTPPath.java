@@ -42,7 +42,6 @@ import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-import java.util.List;
 
 /**
  * @version $Id$
@@ -121,7 +120,7 @@ public class FTPPath extends Path {
         return this.session;
     }
 
-    public AttributedList list(Comparator comparator, Filter filter) {
+    public AttributedList list(Comparator comparator, PathFilter filter) {
         synchronized(session) {
             if(!session.cache().containsKey(this) || session.cache().isInvalid(this)) {
                 AttributedList childs = new AttributedList();

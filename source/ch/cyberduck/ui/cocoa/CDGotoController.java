@@ -19,8 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.NullComparator;
-import ch.cyberduck.core.NullFilter;
 
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSComboBox;

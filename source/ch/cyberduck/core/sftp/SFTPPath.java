@@ -107,7 +107,7 @@ public class SFTPPath extends Path {
         return this.session;
     }
 
-    public AttributedList list(Comparator comparator, Filter filter) {
+    public AttributedList list(Comparator comparator, PathFilter filter) {
         synchronized(session) {
             if(!session.cache().containsKey(this) || session.cache().isInvalid(this)) {
                 AttributedList childs = new AttributedList();

@@ -27,7 +27,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Calendar;
 
 /**
@@ -205,7 +204,7 @@ public abstract class Path extends NSObject {
      * @return The children of this path or an empty list if it is not accessible for some reason
      */
     public AttributedList list() {
-        return this.list(new NullComparator(), new NullFilter());
+        return this.list(new NullComparator(), new NullPathFilter());
     }
 
     /**
@@ -215,7 +214,7 @@ public abstract class Path extends NSObject {
      * @param filter     The filter to exlude certain files
      * @return The children of this path or an empty list if it is not accessible for some reason
      */
-    public abstract AttributedList list(Comparator comparator, Filter filter);
+    public abstract AttributedList list(Comparator comparator, PathFilter filter);
 
     /**
      * Remove this file from the remote host. Does not affect any corresponding local file

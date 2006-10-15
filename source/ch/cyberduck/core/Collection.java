@@ -27,6 +27,14 @@ import java.util.Iterator;
  */
 public class Collection extends ArrayList implements CollectionListener {
 
+    public Collection() {
+        super();
+    }
+
+    public Collection(Collection c) {
+        super(c);
+    }
+
     public int indexOf(Object elem) {
         for (int i = 0; i < this.size(); i++) {
             if (this.get(i).equals(elem))

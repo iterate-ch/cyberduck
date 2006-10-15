@@ -37,12 +37,20 @@ public class FTPConnectMode {
 	/**
 	 * Represents active connect mode
 	 */
-	public static FTPConnectMode ACTIVE = new FTPConnectMode();
+	public static FTPConnectMode ACTIVE = new FTPConnectMode() {
+        public String toString() {
+            return "active";
+        }
+    };
 
 	/**
 	 * Represents PASV connect mode
 	 */
-	public static FTPConnectMode PASV = new FTPConnectMode();
+	public static FTPConnectMode PASV = new FTPConnectMode() {
+        public String toString() {
+            return "passive";
+        }
+    };
 
 	/**
 	 * Private so no-one else can instantiate this class
