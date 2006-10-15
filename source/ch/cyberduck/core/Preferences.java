@@ -214,7 +214,7 @@ public abstract class Preferences {
         defaults.put("editor.bundleIdentifier", "com.macromates.textmate");
         defaults.put("editor.disabledFiles", "pdf ps exe bin jpeg jpg jp2 gif tif ico icns tiff bmp pict sgi tga png psd " +
                 "hqx sea dmg zip sit tar gz tgz bz2 avi qtl bom pax pgp" +
-                "mpg mpeg mp3 m4p m4a mov avi qt ram aiff aif wav wma jar war ear doc xls ppt");
+                "mpg mpeg mp3 m4p m4a mov avi qt ram aiff aif wav wma doc xls ppt");
 
         /**
          * Save bookmarks in ~/Library
