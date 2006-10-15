@@ -26,6 +26,8 @@ import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 /**
  * @version $Id$
@@ -46,49 +48,81 @@ public class CDBookmarkTableDataSource extends NSObject {
     // virtual column to implement keyboard selection
     protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
 
+    private HostFilter filter;
+
+    /**
+     * Display only a subset of all bookmarks
+     *
+     * @param filter
+     */
+    public void setFilter(HostFilter filter) {
+        synchronized(HostCollection.instance()) {
+            this.filter = filter;
+        }
+    }
+
+    private Collection filter(Collection c) {
+        if(null == filter) {
+            return c;
+        }
+        Collection filtered = new Collection(c);
+        Host bookmark = null;
+        for(Iterator i = filtered.iterator(); i.hasNext();) {
+            if(!filter.accept(bookmark = (Host) i.next())) {
+                //temporarly remove the bookmark from the collection
+                i.remove();
+            }
+        }
+        return filtered;
+    }
+
+    public Object get(int row) {
+        return this.filter(HostCollection.instance()).get(row);
+    }
+
+    public int indexOf(Host item) {
+        return this.filter(HostCollection.instance()).indexOf(item);
+    }
+
+    public void remove(int row) {
+        HostCollection.instance().remove(
+                HostCollection.instance().indexOf(this.filter(HostCollection.instance()).get(row)));
+    }
+
+    public int lastIndexOf(Host item) {
+        return this.filter(HostCollection.instance()).lastIndexOf(item);
+    }
+
     /**
      * NSTableView.DataSource
      */
     public int numberOfRowsInTableView(NSTableView view) {
-        return HostCollection.instance().size();
+        synchronized(HostCollection.instance()) {
+            return this.filter(HostCollection.instance()).size();
+        }
     }
 
     /**
      * NSTableView.DataSource
      */
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
-        if(row < this.numberOfRowsInTableView(view)) {
-            String identifier = (String) tableColumn.identifier();
-            if(identifier.equals(ICON_COLUMN)) {
-                return DOCUMENT_ICON;
+        synchronized(HostCollection.instance()) {
+            if(row < this.numberOfRowsInTableView(view)) {
+                String identifier = (String) tableColumn.identifier();
+                if(identifier.equals(ICON_COLUMN)) {
+                    return DOCUMENT_ICON;
+                }
+                if(identifier.equals(BOOKMARK_COLUMN)) {
+                    return this.filter(HostCollection.instance()).get(row);
+                }
+                if(identifier.equals(TYPEAHEAD_COLUMN)) {
+                    return ((Host) this.filter(HostCollection.instance()).get(row)).getNickname();
+                }
+                throw new IllegalArgumentException("Unknown identifier: " + identifier);
             }
-            if(identifier.equals(BOOKMARK_COLUMN)) {
-                return HostCollection.instance().get(row);
-            }
-            if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                return ((Host) HostCollection.instance().get(row)).getNickname();
-            }
-            throw new IllegalArgumentException("Unknown identifier: " + identifier);
+            log.warn("tableViewObjectValueForLocation:" + row + " == null");
+            return null;
         }
-        log.warn("tableViewObjectValueForLocation:" + row + " == null");
-        return null;
-    }
-
-    /**
-     * NSComboBox.DataSource
-     */
-    public int numberOfItemsInComboBox(NSComboBox combo) {
-        return HostCollection.instance().size();
-    }
-
-    /**
-     * NSComboBox.DataSource
-     */
-    public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
-        if(row < HostCollection.instance().size()) {
-            return ((Host) HostCollection.instance().get(row)).getNickname();
-        }
-        return null;
     }
 
     // ----------------------------------------------------------
@@ -132,7 +166,7 @@ public class CDBookmarkTableDataSource extends NSObject {
      *
      * @param info  contains details on this dragging operation.
      * @param index The proposed location is row and action is operation.
-     * The data source should incorporate the data from the dragging pasteboard at this time.
+     *              The data source should incorporate the data from the dragging pasteboard at this time.
      */
     public boolean tableViewAcceptDrop(NSTableView view, NSDraggingInfo info, int index, int operation) {
         log.debug("tableViewAcceptDrop:" + index);
@@ -160,7 +194,7 @@ public class CDBookmarkTableDataSource extends NSObject {
                 }
                 else {
                     //the bookmark this file has been dropped onto
-                    Host h = (Host) HostCollection.instance().get(index);
+                    Host h = (Host) this.filter(HostCollection.instance()).get(index);
                     if(null == session) {
                         session = SessionFactory.createSession(h);
                     }
@@ -241,7 +275,7 @@ public class CDBookmarkTableDataSource extends NSObject {
             this.promisedDragBookmarksFileDestination = new File[rows.count()];
             NSMutableArray promisedDragBookmarksAsDictionary = new NSMutableArray();
             for(int i = 0; i < rows.count(); i++) {
-                promisedDragBookmarks[i] = (Host) HostCollection.instance().get(((Integer) rows.objectAtIndex(i)).intValue());
+                promisedDragBookmarks[i] = (Host) this.filter(HostCollection.instance()).get(((Integer) rows.objectAtIndex(i)).intValue());
                 promisedDragBookmarksAsDictionary.addObject(promisedDragBookmarks[i].getAsDictionary());
             }
 
