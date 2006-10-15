@@ -188,7 +188,33 @@ public class HostTest extends TestCase {
         }
     }
 
-        public void testParseURLWithDefaultPath() {
+    public void testParseWithTwoKlammeraffen() {
+        try {
+            {
+                String url = "user@name@hostname";
+                Host h = Host.parse(url);
+                assertTrue(h.getHostname().equals("hostname"));
+                assertTrue(h.getProtocol().equals(Preferences.instance().getProperty("connection.protocol.default")));
+                assertNotNull(h.getCredentials().getUsername());
+                assertTrue(h.getCredentials().getUsername().equals("user@name"));
+                assertNull(h.getCredentials().getPassword());
+            }
+            {
+                String url = "user@name:password@hostname";
+                Host h = Host.parse(url);
+                assertTrue(h.getHostname().equals("hostname"));
+                assertTrue(h.getProtocol().equals(Preferences.instance().getProperty("connection.protocol.default")));
+                assertNotNull(h.getCredentials().getUsername());
+                assertTrue(h.getCredentials().getUsername().equals("user@name"));
+                assertTrue(h.getCredentials().getPassword().equals("password"));
+            }
+        }
+        catch(MalformedURLException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    public void testParseURLWithDefaultPath() {
         try {
             {
                 String url = "user@hostname/path/to/file";
