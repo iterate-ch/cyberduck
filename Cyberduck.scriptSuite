@@ -117,12 +117,21 @@
 				<string>NSScriptCommand</string>
 				<key>Arguments</key>
 				<dict>
+					<key>Bookmark</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>BoRk</string>
+						<key>Optional</key>
+						<string>Yes</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
 					<key>Host</key>
 					<dict>
 						<key>AppleEventCode</key>
 						<string>HoSt</string>
 						<key>Optional</key>
-						<string>No</string>
+						<string>Yes</string>
 						<key>Type</key>
 						<string>NSString</string>
 					</dict>
@@ -166,6 +175,15 @@
 					<dict>
 						<key>AppleEventCode</key>
 						<string>PaRd</string>
+						<key>Optional</key>
+						<string>Yes</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+					<key>Mode</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>CoMd</string>
 						<key>Optional</key>
 						<string>Yes</string>
 						<key>Type</key>

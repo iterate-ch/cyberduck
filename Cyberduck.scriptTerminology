@@ -68,12 +68,12 @@
 				<string>connect</string>
 				<key>Arguments</key>
 				<dict>
-					<key>Protocol</key>
+					<key>Bookmark</key>
 					<dict>
 						<key>Description</key>
-						<string>The protocol to use (FTP or SFTP).</string>
+						<string>Connect to bookmark with this nickname</string>
 						<key>Name</key>
-						<string>with protocol</string>
+						<string>to bookmark</string>
 					</dict>
 					<key>Host</key>
 					<dict>
@@ -81,6 +81,13 @@
 						<string>The host to connect to.</string>
 						<key>Name</key>
 						<string>to</string>
+					</dict>
+					<key>Protocol</key>
+					<dict>
+						<key>Description</key>
+						<string>The protocol to use (FTP or SFTP).</string>
+						<key>Name</key>
+						<string>with protocol</string>
 					</dict>
 					<key>Port</key>
 					<dict>
@@ -96,6 +103,13 @@
 						<key>Name</key>
 						<string>with initial folder</string>
 					</dict>
+					<key>Username</key>
+					<dict>
+						<key>Description</key>
+						<string>The username to use when connecting.</string>
+						<key>Name</key>
+						<string>as user</string>
+					</dict>
 					<key>Password</key>
 					<dict>
 						<key>Description</key>
@@ -103,12 +117,12 @@
 						<key>Name</key>
 						<string>with password</string>
 					</dict>
-					<key>Username</key>
+					<key>Mode</key>
 					<dict>
 						<key>Description</key>
-						<string>The username to use when connecting.</string>
+						<string>The connect mode to use (FTP).</string>
 						<key>Name</key>
-						<string>as user</string>
+						<string>with connect mode</string>
 					</dict>
 				</dict>
 			</dict>
