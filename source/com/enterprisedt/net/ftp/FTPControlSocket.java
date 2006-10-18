@@ -25,6 +25,8 @@
 
 package com.enterprisedt.net.ftp;
 
+import ch.cyberduck.core.Preferences;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -225,8 +227,17 @@ public class FTPControlSocket {
                 return this.createDataSocketPASV();
             }
         }
-        catch(IOException e) {
-            throw new FTPDataSocketException(e.getMessage());
+        catch(FTPException e) {
+            if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
+                // Fallback to other connect mode
+                if(connectMode == FTPConnectMode.ACTIVE) {
+                    return this.createDataSocketPASV();
+                }
+                if(connectMode == FTPConnectMode.PASV) {
+                    return this.createDataSocketActive();
+                }
+            }
+            throw e;
         }
         return null;
     }
