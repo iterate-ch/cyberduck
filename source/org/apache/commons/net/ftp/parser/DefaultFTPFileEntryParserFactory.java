@@ -71,7 +71,8 @@ public class DefaultFTPFileEntryParserFactory implements FTPFileEntryParserFacto
                 return this.createMVSEntryParser();
             }
 		}
-		return new UnixFTPEntryParser();
+        // Defaulting to UNIX parser
+        return new UnixFTPEntryParser();
 	}
 
 	private FTPFileEntryParser createUnixFTPEntryParser() {
