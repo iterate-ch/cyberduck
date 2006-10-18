@@ -279,6 +279,7 @@ public abstract class Preferences {
          * Send LIST -a
          */
         defaults.put("ftp.sendExtendedListCommand", "true");
+        defaults.put("ftp.connectmode.fallback", "true");
 
         defaults.put("ftp.tls.datachannel", "P"); //C
         defaults.put("ftp.tls.datachannel.failOnError", "false");
