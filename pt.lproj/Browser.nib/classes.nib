@@ -47,14 +47,15 @@
                 deleteBookmarkButton = NSButton; 
                 editBookmarkButton = NSButton; 
                 encodingPopup = NSPopUpButton; 
-                infoLabel = NSTextField; 
                 logDrawer = NSDrawer; 
                 logView = NSTextView; 
                 navigationButton = NSSegmentedControl; 
+                navigationView = NSView; 
                 pathPopup = NSPopUpButton; 
-                progressIndicator = NSProgressIndicator; 
                 quickConnectPopup = NSComboBox; 
                 searchField = NSView; 
+                securityLabel = NSButton; 
+                spinner = NSProgressIndicator; 
                 statusLabel = NSTextField; 
                 upButton = NSSegmentedControl; 
                 window = NSWindow; 
