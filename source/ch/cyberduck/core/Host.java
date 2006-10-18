@@ -42,7 +42,6 @@ public class Host extends NSObject {
     private int port;
     private String hostname;
     private String nickname;
-    private String identification;
     private String defaultpath;
     private Login login;
     private String encoding;
@@ -403,20 +402,6 @@ public class Host extends NSObject {
 
     public String getProtocol() {
         return this.protocol;
-    }
-
-    /**
-     * @return The remote host identification such as the response to the SYST command in FTP
-     */
-    public String getIdentification() {
-        return this.identification;
-    }
-
-    /**
-     * @param id
-     */
-    public void setIdentification(String id) {
-        this.identification = id;
     }
 
     /**

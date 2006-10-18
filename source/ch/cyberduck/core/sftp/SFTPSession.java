@@ -67,7 +67,14 @@ public class SFTPSession extends Session {
     }
 
     public boolean isSecure() {
-        return true;
+        return this.isConnected();
+    }
+
+    public String getSecurityInformation() {
+        StringBuffer info = new StringBuffer();
+        info.append(SSH.getServerId()+"\n");
+        info.append(SSH.getServerHostKey().getFingerprint());
+        return info.toString();
     }
 
     public boolean isConnected() {
@@ -137,6 +144,9 @@ public class SFTPSession extends Session {
 
     protected void connect() throws IOException, SshException, ConnectionCanceledException, LoginCanceledException {
         synchronized(this) {
+            if(this.isConnected()) {
+                return;
+            }
             SessionPool.instance().add(this);
             this.fireConnectionWillOpenEvent();
             this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getHostname() + "...");
@@ -181,7 +191,7 @@ public class SFTPSession extends Session {
                 this.message(NSBundle.localizedString("SSH connection opened", "Status", ""));
                 String id = SSH.getServerId();
                 this.log(id);
-                this.host.setIdentification(id);
+                this.setIdentification(id);
                 this.login();
                 this.message(NSBundle.localizedString("Starting SFTP subsystem...", "Status", ""));
                 this.SFTP = SSH.openSftpChannel(new ChannelEventAdapter() {

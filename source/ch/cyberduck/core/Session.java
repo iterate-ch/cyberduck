@@ -48,6 +48,8 @@ public abstract class Session extends NSObject {
     public static final String FTP_TLS_STRING = NSBundle.localizedString("FTP-SSL (FTP over TLS/SSL)", "");
     public static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
 
+    private String identification;
+
     /**
      * Default port for ftp
      */
@@ -82,6 +84,20 @@ public abstract class Session extends NSObject {
     }
 
     /**
+     * @return The remote host identification such as the response to the SYST command in FTP
+     */
+    public String getIdentification() {
+        return this.identification;
+    }
+
+    /**
+     * @param id
+     */
+    public void setIdentification(String id) {
+        this.identification = id;
+    }
+
+    /**
      * Assert that the connection to the remote host is still alive. Open connection if needed.
      *
      * @throws IOException The connection to the remote host failed.
@@ -113,6 +129,12 @@ public abstract class Session extends NSObject {
      * @return true if the control channel is either tunneled using TLS or SSH
      */
     public abstract boolean isSecure();
+
+    /**
+     *
+     * @return
+     */
+    public abstract String getSecurityInformation();
 
     protected abstract void connect() throws IOException, LoginCanceledException;
 

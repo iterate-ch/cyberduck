@@ -32,6 +32,7 @@ import org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 /**
  * Opens a connection to the remote server via ftp protocol
@@ -60,6 +61,19 @@ public class FTPSession extends Session {
 
     public boolean isSecure() {
         return false;
+    }
+
+    public String getSecurityInformation() {
+        String syst = this.getIdentification();
+        try {
+            if(null == syst) {
+                return this.host.getIp();
+            }
+            return syst+" ("+this.host.getIp()+")";
+        }
+        catch(UnknownHostException e) {
+            return this.host.getHostname();
+        }
     }
 
     public boolean isConnected() {
@@ -121,6 +135,9 @@ public class FTPSession extends Session {
 
     protected void connect() throws IOException, FTPException, ConnectionCanceledException, LoginCanceledException {
         synchronized(this) {
+            if(this.isConnected()) {
+                return;
+            }
             SessionPool.instance().add(this);
             this.fireConnectionWillOpenEvent();
             this.message(NSBundle.localizedString("Opening FTP connection to", "Status", "") + " " + host.getHostname() + "...");
@@ -151,9 +168,9 @@ public class FTPSession extends Session {
                 this.message(NSBundle.localizedString("FTP connection opened", "Status", ""));
                 this.login();
                 if(Preferences.instance().getBoolean("ftp.sendSystemCommand")) {
-                    host.setIdentification(this.FTP.system());
+                    this.setIdentification(this.FTP.system());
                 }
-                this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(host.getIdentification());
+                this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.getIdentification());
                 this.fireConnectionDidOpenEvent();
             }
             catch(NullPointerException e) {
