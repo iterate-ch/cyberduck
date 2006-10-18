@@ -84,7 +84,6 @@ public class CDProgressController extends CDController {
             public void queueStarted() {
                 invoke(new Runnable() {
                     public void run() {
-//                        closeErrors();
                         progressBar.setHidden(false);
                         progressBar.setIndeterminate(true);
                         progressBar.startAnimation(null);
@@ -98,7 +97,6 @@ public class CDProgressController extends CDController {
                                 statusText = message;
                                 progressField.setAttributedStringValue(new NSAttributedString(getProgressText(),
                                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                                progressField.display();
                             }
                         });
                     }
