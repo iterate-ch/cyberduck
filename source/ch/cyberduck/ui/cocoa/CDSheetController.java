@@ -139,6 +139,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
         log.debug("beginSheet:" + this.window());
         synchronized(lock) {
             this.waitForSheetEnd();
+            this.parent.window().makeKeyAndOrderFront(null);
             NSApplication app = NSApplication.sharedApplication();
             app.beginSheet(this.window(), //window
                     this.parent.window(),
