@@ -198,8 +198,14 @@ public class CDInfoController extends CDWindowController {
             else {
                 this.filenameField.setEnabled(true);
             }
-            this.pathField.setAttributedStringValue(new NSAttributedString(file.getParent().getAbsolute(),
-                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+            if (file.attributes.isSymbolicLink() && file.getSymbolicLinkPath() != null) {
+                this.pathField.setAttributedStringValue(new NSAttributedString(file.getSymbolicLinkPath(),
+                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+            }
+            else {
+                this.pathField.setAttributedStringValue(new NSAttributedString(file.getParent().getAbsolute(),
+                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+            }
             this.groupField.setStringValue(this.numberOfFiles() > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.attributes.getGroup());
             if (this.numberOfFiles() > 1) {

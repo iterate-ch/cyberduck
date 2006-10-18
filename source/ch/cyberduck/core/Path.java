@@ -35,8 +35,18 @@ import java.util.Calendar;
 public abstract class Path extends NSObject {
     private static Logger log = Logger.getLogger(Path.class);
 
+    /**
+     * The absolute remote path
+     */
     private String path = null;
+    /**
+     * The local path to be used if file is copied
+     */
     private Local local = null;
+    /**
+     * Where the symbolic link is pointing to
+     */
+    private String symbolic = null;
 
     public Status status = new Status();
     public Attributes attributes = new Attributes();
@@ -149,6 +159,26 @@ public abstract class Path extends NSObject {
         }
         this.path = p;
         this.parent = null;
+    }
+
+    public void setSymbolicLinkPath(String parent, String name) {
+        if (parent.endsWith("/")) {
+            this.setSymbolicLinkPath(parent + name);
+        }
+        else {
+            this.setSymbolicLinkPath(parent + DELIMITER + name);
+        }
+    }
+
+    public void setSymbolicLinkPath(String p) {
+        this.symbolic = p;
+    }
+
+    public String getSymbolicLinkPath() {
+        if(this.attributes.isSymbolicLink()) {
+            return this.symbolic;
+        }
+        return null;
     }
 
     /**
