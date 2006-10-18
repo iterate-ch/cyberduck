@@ -85,6 +85,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
             }
             catch (final CertificateException e) {
                 if (this.keychainKnowsAbout(x509Certificates[i])) {
+                    acceptedCertificates.add(cert);
                     return;
                 }
                 CDSheetController c = new CDSheetController(parent) {
@@ -131,6 +132,10 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
                 }
             }
         }
+    }
+
+    public X509Certificate[] getAcceptedIssuers() {
+        return (X509Certificate[])this.acceptedCertificates.toArray(new X509Certificate[]{});
     }
 
     public boolean keychainKnowsAbout(X509Certificate certificate) {
