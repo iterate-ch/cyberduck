@@ -46,6 +46,7 @@ public class Attributes implements IAttributes {
      * The file type
      */
     private int type = Path.FILE_TYPE;
+
     protected Permission permission = null;
 
     public Attributes() {
@@ -62,8 +63,9 @@ public class Attributes implements IAttributes {
 
     public boolean isUndefined() {
         boolean defined = -1 == this.modified || -1 == this.size;
-        if(!defined)
+        if(!defined) {
             log.info("Undefined file attributes");
+        }
         return defined;
     }
 
