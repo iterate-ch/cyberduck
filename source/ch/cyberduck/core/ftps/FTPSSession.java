@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
+import java.security.cert.X509Certificate;
 
 /**
  * @version $Id$
@@ -54,8 +55,21 @@ public class FTPSSession extends FTPSession {
     }
 
     public boolean isSecure() {
-        return true;
+        return this.isConnected();
 //        return trustManager.isServerCertificateTrusted();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getSecurityInformation() {
+        StringBuffer info = new StringBuffer();
+        X509Certificate[] accepted = this.trustManager.getAcceptedIssuers();
+        for(int i = 0; i < accepted.length; i++) {
+            info.append(accepted[i].toString());
+        }
+        return info.toString();
     }
 
     public X509TrustManager getTrustManager() {
@@ -70,6 +84,9 @@ public class FTPSSession extends FTPSession {
 
     protected void connect() throws IOException, FTPException {
         synchronized (this) {
+            if(this.isConnected()) {
+                return;
+            }
             SessionPool.instance().add(this);
             this.fireConnectionWillOpenEvent();
             this.message(NSBundle.localizedString("Opening FTP-TLS connection to", "Status", "") + " " + host.getHostname() + "...");
@@ -101,9 +118,9 @@ public class FTPSSession extends FTPSession {
             ((FTPSClient) this.FTP).auth();
             this.login();
             if (Preferences.instance().getBoolean("ftp.sendSystemCommand")) {
-                this.host.setIdentification(this.FTP.system());
+                this.setIdentification(this.FTP.system());
             }
-            this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.host.getIdentification());
+            this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.getIdentification());
             this.fireConnectionDidOpenEvent();
         }
     }
