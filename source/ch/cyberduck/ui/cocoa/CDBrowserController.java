@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 import com.apple.cocoa.application.*;
@@ -259,12 +258,8 @@ public class CDBrowserController extends CDWindowController
             if(localObj != null) {
                 path.setLocal(new Local((String) localObj));
             }
-            path.sync();
-            if(path.status.isComplete()) {
-                Growl.instance().notify(
-                        NSBundle.localizedString("Synchronization complete", "Growl", "Growl Notification"),
-                        path.getName());
-            }
+            Queue q = new SyncQueue(path, false);
+            q.run(false);
         }
         return null;
     }
@@ -291,12 +286,8 @@ public class CDBrowserController extends CDWindowController
             if(nameObj != null) {
                 path.setLocal(new Local(path.getLocal().getParent(), (String) nameObj));
             }
-            path.download();
-            if(path.status.isComplete()) {
-                Growl.instance().notify(
-                        NSBundle.localizedString("Download complete", "Growl", "Growl Notification"),
-                        path.getName());
-            }
+            Queue q = new DownloadQueue(path, false);
+            q.run(false);
         }
         return null;
     }
@@ -322,12 +313,8 @@ public class CDBrowserController extends CDWindowController
             if(nameObj != null) {
                 path.setPath(this.workdir().getAbsolute(), (String) nameObj);
             }
-            path.upload();
-            if(path.status.isComplete()) {
-                Growl.instance().notify(
-                        NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"),
-                        path.getName());
-            }
+            Queue q = new UploadQueue(path, false);
+            q.run(false);
         }
         return null;
     }
@@ -499,11 +486,13 @@ public class CDBrowserController extends CDWindowController
         final NSTableView browser = this.getSelectedBrowserView();
         browser.reloadData();
         if(this.isMounted()) {
-            this.infoLabel.setStringValue(browser.numberOfRows() + " " +
+            this.statusLabel.setStringValue(browser.numberOfRows() + " " +
                     NSBundle.localizedString("files", ""));
-        }
-        else {
-            this.infoLabel.setStringValue("");
+            this.invoke(new Runnable() {
+                public void run() {
+                    statusLabel.setNeedsDisplay();
+                }
+            });
         }
         if(preserveSelection) {
             this.setSelectedPaths(selected);
@@ -915,12 +904,12 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void outlineViewItemDidExpand(NSNotification notification) {
-                infoLabel.setStringValue(CDBrowserController.this.browserOutlineView.numberOfRows() + " " +
+                statusLabel.setStringValue(CDBrowserController.this.browserOutlineView.numberOfRows() + " " +
                         NSBundle.localizedString("files", ""));
             }
 
             public void outlineViewItemDidCollapse(NSNotification notification) {
-                infoLabel.setStringValue(CDBrowserController.this.browserOutlineView.numberOfRows() + " " +
+                statusLabel.setStringValue(CDBrowserController.this.browserOutlineView.numberOfRows() + " " +
                         NSBundle.localizedString("files", ""));
             }
 
@@ -1343,13 +1332,15 @@ public class CDBrowserController extends CDWindowController
 
     private NSComboBox quickConnectPopup; // IBOutlet
 
+    private NSObject quickConnectPopupModel;
+
     public void setQuickConnectPopup(NSComboBox quickConnectPopup) {
         this.quickConnectPopup = quickConnectPopup;
         this.quickConnectPopup.setTarget(this);
         this.quickConnectPopup.setCompletes(true);
         this.quickConnectPopup.setAction(new NSSelector("quickConnectSelectionChanged", new Class[]{Object.class}));
         this.quickConnectPopup.setUsesDataSource(true);
-        this.quickConnectPopup.setDataSource(new NSObject/*NSComboBox.DataSource*/() {
+        this.quickConnectPopup.setDataSource(this.quickConnectPopupModel = new NSObject/*NSComboBox.DataSource*/() {
             public int numberOfItemsInComboBox(NSComboBox combo) {
                 synchronized(HostCollection.instance()) {
                     return HostCollection.instance().size();
@@ -1693,26 +1684,50 @@ public class CDBrowserController extends CDWindowController
      */
     private boolean activityRunning;
 
-    private NSProgressIndicator progressIndicator; // IBOutlet
+    private NSProgressIndicator spinner; // IBOutlet
 
-    public void setProgressIndicator(NSProgressIndicator progressIndicator) {
-        this.progressIndicator = progressIndicator;
-        this.progressIndicator.setIndeterminate(true);
-        this.progressIndicator.setUsesThreadedAnimation(true);
+    public void setSpinner(NSProgressIndicator spinner) {
+        this.spinner = spinner;
+        this.spinner.setDisplayedWhenStopped(false);
+        this.spinner.setIndeterminate(true);
+        this.spinner.setUsesThreadedAnimation(true);
     }
 
     private NSTextField statusLabel; // IBOutlet
 
     public void setStatusLabel(NSTextField statusLabel) {
         this.statusLabel = statusLabel;
-        this.statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "Status", ""),
-                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
     }
 
-    private NSTextField infoLabel; // IBOutlet
+    private NSButton securityLabel; // IBOutlet
 
-    public void setInfoLabel(NSTextField infoLabel) {
-        this.infoLabel = infoLabel;
+    public void setSecurityLabel(NSButton securityLabel) {
+        this.securityLabel = securityLabel;
+        this.securityLabel.setImage(NSImage.imageNamed("unlocked.tiff"));
+        this.securityLabel.setEnabled(false);
+        this.securityLabel.setTarget(this);
+        this.securityLabel.setAction(new NSSelector("securityLabelClicked", new Class[]{Object.class}));
+    }
+
+    public void securityLabelClicked(final Object sender) {
+        CDWindowController c = new CDWindowController() {
+            public void awakeFromNib() {
+                this.window().setTitle(CDBrowserController.this.window().title());
+                this.window().center();
+                this.window().makeKeyAndOrderFront(null);
+            }
+
+            private NSTextView textView;
+
+            public void setTextView(NSTextView textView) {
+                this.textView = textView;
+                this.textView.textStorage().appendAttributedString(
+                        new NSAttributedString(session.getSecurityInformation(), FIXED_WITH_FONT_ATTRIBUTES));
+            }
+        };
+        if (!NSApplication.loadNibNamed("Security", c)) {
+            log.fatal("Couldn't load Security.nib");
+        }
     }
 
     // ----------------------------------------------------------
@@ -2355,17 +2370,17 @@ public class CDBrowserController extends CDWindowController
         });
         // Mark the browser data source as dirty
         this.reloadData(false);
+        this.invoke(new Runnable() {
+            public void run() {
+                getSelectedBrowserView().setNeedsDisplay();
+            }
+        });
     }
 
     /**
      *
      */
     private ConnectionListener listener = null;
-
-    /**
-     * References to all the error controllers attached to the window
-     */
-    private List errors = new ArrayList();
 
     /**
      * Initializes a session for the passed host. Setting up the listeners and adding any callback
@@ -2410,14 +2425,16 @@ public class CDBrowserController extends CDWindowController
             private final Object lock = new Object();
 
             public void connectionWillOpen() {
-                // Clear all previous error messages
-                errors.clear();
                 session.addProgressListener(progress = new ProgressListener() {
                     public void message(final String msg) {
                         // Update the status label at the bottom of the browser window
                         statusLabel.setAttributedStringValue(new NSAttributedString(msg,
                                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                        statusLabel.display();
+                        invoke(new Runnable() {
+                            public void run() {
+                                statusLabel.setNeedsDisplay();
+                            }
+                        });
                     }
 
                     public void error(final Exception e) {
@@ -2439,10 +2456,8 @@ public class CDBrowserController extends CDWindowController
                 session.addTranscriptListener(transcript = new TranscriptListener() {
                     public void log(String message) {
                         synchronized(lock) {
-                            logView.textStorage().beginEditing();
                             logView.textStorage().appendAttributedString(
                                     new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
-                            logView.textStorage().endEditing();
                         }
                     }
                 });
@@ -2459,6 +2474,10 @@ public class CDBrowserController extends CDWindowController
                             window.setDocumentEdited(true);
                         }
                         window.toolbar().validateVisibleItems();
+                        securityLabel.setImage(session.isSecure() ? NSImage.imageNamed("locked.tiff")
+                                : NSImage.imageNamed("unlocked.tiff"));
+//                        securityLabel.setEnabled(session.isSecure());
+                        securityLabel.setEnabled(true);
                     }
                 });
             }
@@ -2471,27 +2490,26 @@ public class CDBrowserController extends CDWindowController
                 getSelectedBrowserView().setNeedsDisplay();
                 session.removeProgressListener(progress);
                 session.removeTranscriptListener(transcript);
-                progressIndicator.stopAnimation(this);
+                spinner.stopAnimation(this);
                 invoke(new Runnable() {
                     public void run() {
                         window.setDocumentEdited(false);
                         window.toolbar().validateVisibleItems();
+                        securityLabel.setImage(NSImage.imageNamed("unlocked.tiff"));
+                        securityLabel.setEnabled(false);
                     }
                 });
             }
 
             public void activityStarted() {
                 activityRunning = true;
-                progressIndicator.startAnimation(this);
+                spinner.startAnimation(this);
                 return;
             }
 
             public void activityStopped() {
                 activityRunning = false;
-                progressIndicator.stopAnimation(this);
-                statusLabel.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Idle", "Status", ""),
-                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                statusLabel.display();
+                spinner.stopAnimation(this);
             }
         });
         this.getFocus();
@@ -2549,11 +2567,6 @@ public class CDBrowserController extends CDWindowController
                         synchronized(mountingLock) {
                             // Mount this session and set the working directory
                             setWorkdir(session.mount());
-                            invoke(new Runnable() {
-                                public void run() {
-                                    getSelectedBrowserView().setNeedsDisplay();
-                                }
-                            });
                         }
                     }
                 }.start();
@@ -3272,6 +3285,7 @@ public class CDBrowserController extends CDWindowController
         this.encodingPopup.setTarget(null);
 
         this.quickConnectPopup.setDataSource(null);
+        this.quickConnectPopupModel = null;
         this.quickConnectPopup.setTarget(null);
         this.quickConnectPopup = null;
 

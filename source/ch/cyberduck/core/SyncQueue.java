@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.CDSyncQueueValidatorController;
+import ch.cyberduck.ui.cocoa.CDValidatorController;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -36,11 +37,15 @@ import java.util.StringTokenizer;
 public class SyncQueue extends Queue {
 
     public SyncQueue() {
-        super();
+        super(true);
     }
 
-    public SyncQueue(Path root) {
-        super(root);
+    public SyncQueue(boolean validating) {
+        super(validating);
+    }
+
+    public SyncQueue(Path root, boolean validating) {
+        super(root, validating);
     }
 
     public SyncQueue(NSDictionary dict) {
@@ -142,6 +147,17 @@ public class SyncQueue extends Queue {
     }
 
     protected Validator getValidator() {
+        if(!validating) {
+            return new CDValidatorController(this) {
+                protected boolean validateDirectory(Path path) {
+                    return true;
+                }
+
+                protected boolean validateFile(Path p, boolean resumeRequested) {
+                    return true;
+                }
+            };
+        }
         return new CDSyncQueueValidatorController(this);
     }
 }

@@ -507,7 +507,13 @@ public class CDQueueController extends CDWindowController
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
             this.window.makeKeyAndOrderFront(null);
         }
-        queue.run(resumeRequested);
+        new Thread() {
+            public void run() {
+                int pool = NSAutoreleasePool.push();
+                queue.run(resumeRequested);
+                NSAutoreleasePool.pop(pool);
+            }
+        }.start();
     }
 
     private static final String TOOLBAR_RESUME = "Resume";

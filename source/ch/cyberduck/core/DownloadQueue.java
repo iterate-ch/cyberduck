@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.CDDownloadQueueValidatorController;
+import ch.cyberduck.ui.cocoa.CDValidatorController;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -35,11 +36,15 @@ import java.util.StringTokenizer;
 public class DownloadQueue extends Queue {
 
     public DownloadQueue() {
-        super();
+        super(true);
     }
 
-    public DownloadQueue(Path root) {
-        super(root);
+    public DownloadQueue(boolean validating) {
+        super(validating);
+    }
+
+    public DownloadQueue(Path root, boolean validating) {
+        super(root, validating);
     }
 
     public NSMutableDictionary getAsDictionary() {
@@ -96,6 +101,17 @@ public class DownloadQueue extends Queue {
     }
 
     protected Validator getValidator() {
+        if(!validating) {
+            return new CDValidatorController(this) {
+                protected boolean validateDirectory(Path path) {
+                    return true;
+                }
+
+                protected boolean validateFile(Path p, boolean resumeRequested) {
+                    return true;
+                }
+            };
+        }
         return new CDDownloadQueueValidatorController(this);
     }
 }

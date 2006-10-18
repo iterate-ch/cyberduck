@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.ui.cocoa.CDUploadQueueValidatorController;
+import ch.cyberduck.ui.cocoa.CDValidatorController;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.foundation.NSBundle;
@@ -35,11 +36,15 @@ import java.util.StringTokenizer;
 public class UploadQueue extends Queue {
 
     public UploadQueue() {
-        super();
+        super(true);
     }
 
-    public UploadQueue(Path root) {
-        super(root);
+    public UploadQueue(boolean validating) {
+        super(validating);
+    }
+
+    public UploadQueue(Path root, boolean validating) {
+        super(root, validating);
     }
 
     public UploadQueue(NSDictionary dict) {
@@ -72,6 +77,9 @@ public class UploadQueue extends Queue {
                     //Honor existing permissions when replacing files
                     p.attributes.setPermission(
                             ((Path)list.get(list.indexOf(p))).attributes.getPermission());
+                }
+                else {
+                    p.attributes.setPermission(new Permission());
                 }
                 if(p.attributes.isDirectory()) {
                     if(!p.getRemote().exists()) {
@@ -111,6 +119,17 @@ public class UploadQueue extends Queue {
     }
 
     protected Validator getValidator() {
+        if(!validating) {
+            return new CDValidatorController(this) {
+                protected boolean validateDirectory(Path path) {
+                    return true;
+                }
+
+                protected boolean validateFile(Path p, boolean resumeRequested) {
+                    return true;
+                }
+            };
+        }
         return new CDUploadQueueValidatorController(this);
     }
 }

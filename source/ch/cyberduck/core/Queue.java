@@ -45,14 +45,20 @@ public abstract class Queue extends NSObject {
     private boolean canceled;
 
     /**
+     *
+     */
+    protected boolean validating;
+
+    /**
      * Creating an empty queue containing no items. Items have to be added later
      * using the <code>addRoot</code> method.
      */
-    public Queue() {
-        ;
+    public Queue(boolean validating) {
+        this.validating = validating;
     }
 
-    public Queue(Path root) {
+    public Queue(Path root, boolean validating) {
+        this(validating);
         this.roots.add(root);
     }
 
@@ -103,6 +109,7 @@ public abstract class Queue extends NSObject {
     }
 
     public Queue(NSDictionary dict) {
+        this(true);
         Object hostObj = dict.objectForKey("Host");
         if(hostObj != null) {
             Host host = new Host((NSDictionary) hostObj);
@@ -209,50 +216,44 @@ public abstract class Queue extends NSObject {
      * @param resume   The user requested to resume the transfer
      */
     public void run(final boolean resume) {
-        new Thread() {
-            public void run() {
-                int pool = NSAutoreleasePool.push();
-                try {
-                    canceled = false;
-                    fireQueueStartedEvent();
-                    try {
-                        getSession().connect();
-                    }
-                    catch(IOException e) {
-                        getSession().error(e);
-                        cancel();
-                    }
-                    if(canceled) {
-                        return;
-                    }
-                    Validator validator = getValidator();
-                    List validated = validator.validate(resume);
-                    if(canceled) {
-                        return;
-                    }
-                    jobs = validated;
-                    reset();
-                    for(Iterator iter = jobs.iterator(); iter.hasNext();) {
-                        if(!getSession().isConnected()) {
-                            cancel();
-                        }
-                        if(canceled) {
-                            return;
-                        }
-                        final Path path = (Path)iter.next();
-                        fireTransferStartedEvent(path);
-                        transfer(path);
-                        fireTransferStoppedEvent(path);
-                    }
-                }
-                finally {
-                    getSession().close();
-                    getSession().cache().clear();
-                    fireQueueStoppedEvent();
-                    NSAutoreleasePool.pop(pool);
-                }
+        try {
+            canceled = false;
+            fireQueueStartedEvent();
+            try {
+                this.getSession().connect();
             }
-        }.start();
+            catch(IOException e) {
+                this.getSession().error(e);
+                this.cancel();
+            }
+            if(canceled) {
+                return;
+            }
+            Validator validator = this.getValidator();
+            List validated = validator.validate(resume);
+            if(canceled) {
+                return;
+            }
+            jobs = validated;
+            reset();
+            for(Iterator iter = jobs.iterator(); iter.hasNext();) {
+                if(!this.getSession().isConnected()) {
+                    this.cancel();
+                }
+                if(canceled) {
+                    return;
+                }
+                final Path path = (Path)iter.next();
+                this.fireTransferStartedEvent(path);
+                this.transfer(path);
+                this.fireTransferStoppedEvent(path);
+            }
+        }
+        finally {
+            this.getSession().close();
+            this.getSession().cache().clear();
+            this.fireQueueStoppedEvent();
+        }
     }
 
     protected abstract Validator getValidator();
