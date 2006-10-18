@@ -123,18 +123,15 @@ public class SFTPPath extends Path {
                     workingDirectory.close();
                     java.util.Iterator i = children.iterator();
                     while(i.hasNext()) {
-                        SftpFile x = (SftpFile) i.next();
-                        if(!x.getFilename().equals(".") && !x.getFilename().equals("..")) {
-                            Path p = PathFactory.createPath(session, this.getAbsolute(), x.getFilename());
-                            p.attributes.setOwner(x.getAttributes().getUID().toString());
-                            p.attributes.setGroup(x.getAttributes().getGID().toString());
-                            p.attributes.setSize(x.getAttributes().getSize().doubleValue());
-                            p.attributes.setTimestamp(Long.parseLong(x.getAttributes().getModifiedTime().toString()) * 1000L);
-                            String permStr = x.getAttributes().getPermissionsString();
-                            if(permStr.charAt(0) == 'd') {
-                                p.attributes.setType(Path.DIRECTORY_TYPE);
-                            }
-                            else if(permStr.charAt(0) == 'l') {
+                        SftpFile f = (SftpFile) i.next();
+                        if(!f.getFilename().equals(".") && !f.getFilename().equals("..")) {
+                            Path p = PathFactory.createPath(session, this.getAbsolute(), f.getFilename());
+                            p.attributes.setOwner(f.getAttributes().getUID().toString());
+                            p.attributes.setGroup(f.getAttributes().getGID().toString());
+                            p.attributes.setSize(f.getAttributes().getSize().doubleValue());
+                            p.attributes.setTimestamp(
+                                    Long.parseLong(f.getAttributes().getModifiedTime().toString()) * 1000L);
+                            if(f.isLink()) {
                                 try {
                                     p.cwdir();
                                     p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
@@ -142,10 +139,16 @@ public class SFTPPath extends Path {
                                 catch(java.io.IOException e) {
                                     p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                                 }
+                                // how to know symbolic link target path?
+                                // p.setSymbolicLinkPath();
                             }
-                            else {
+                            else if(f.isDirectory()) {
+                                p.attributes.setType(Path.DIRECTORY_TYPE);
+                            }
+                            else if(f.isFile()) {
                                 p.attributes.setType(Path.FILE_TYPE);
                             }
+                            String permStr = f.getAttributes().getPermissionsString();
                             p.attributes.setPermission(new Permission(permStr.substring(1, permStr.length())));
                             childs.add(p);
                         }
