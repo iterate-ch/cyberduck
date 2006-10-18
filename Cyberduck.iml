@@ -16,6 +16,8 @@
       <excludeFolder url="file://$MODULE_DIR$/Upload Automator Action" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
       <excludeFolder url="file://$MODULE_DIR$/source_refactored" />
+      <excludeFolder url="file://$MODULE_DIR$/source_refactored_jsch" />
+      <excludeFolder url="file://$MODULE_DIR$/source_refactored_org_apache_commons" />
       <excludeFolder url="file://$MODULE_DIR$/www" />
     </content>
     <orderEntry type="inheritedJdk" />
