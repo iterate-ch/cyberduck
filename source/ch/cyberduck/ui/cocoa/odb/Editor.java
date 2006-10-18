@@ -141,6 +141,8 @@ public class Editor extends CDController {
     public void didModifyFile() {
         this.path.upload();
         if(this.path.status.isComplete()) {
+            this.path.getSession().message(
+                    NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"));
             Growl.instance().notify(
                     NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"),
                     path.getName());

@@ -86,31 +86,26 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit(
 
 - (IBAction) odbEdit:(id) sender path:(NSString *)path withEditor:(NSString *)editor
 {
-    
     [[ODBEditor sharedODBEditor:editor] editFile:path options:nil forClient:self context:nil];
 }
 
 - (void)odbEditor:(ODBEditor *)editor didModifyFile:(NSString *)path newFileLocation:(NSString *)newPath  context:(NSDictionary *)context
 {
-
 	jmethodID didModifyFileMethod = (*env)->GetMethodID(env, editorClass, "didModifyFile", "()V");
 	if (didModifyFileMethod == 0) {
 		NSLog( @"Editor -> GetMethodID:didModifyFile failed");
 		return;
 	}
-	
 	(*env)->CallVoidMethod(env, editorObject, didModifyFileMethod);	
 }
 
 - (void)odbEditor:(ODBEditor *)editor didClosefile:(NSString *)path context:(NSDictionary *)context 
 {
-	
 	jmethodID didCloseFileMethod = (*env)->GetMethodID(env, editorClass, "didCloseFile", "()V");
 	if (didCloseFileMethod == 0) {
 		NSLog( @"Editor -> GetMethodID:didCloseFile failed");
 		return;
 	}
-	
 	(*env)->CallVoidMethod(env, editorObject, didCloseFileMethod);	
 
 	[self release];
