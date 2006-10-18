@@ -307,7 +307,7 @@ public class CDBookmarkTableDataSource extends NSObject {
         for(int i = 0; i < promisedDragBookmarks.length; i++) {
             try {
                 promisedDragBookmarksFileDestination[i] = new File(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"),
-                        promisedDragBookmarks[i].getNickname() + ".duck");
+                        promisedDragBookmarks[i].getNickname().replace('/', ':') + ".duck");
                 HostCollection.instance().exportBookmark(promisedDragBookmarks[i], promisedDragBookmarksFileDestination[i]);
                 promisedDragNames.addObject(promisedDragBookmarks[i].getNickname() + ".duck");
             }
