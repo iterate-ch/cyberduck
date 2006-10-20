@@ -31,6 +31,8 @@ import org.apache.log4j.Logger;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @version $Id$
@@ -140,15 +142,34 @@ public class CDInfoController extends CDWindowController {
     // Constructors
     // ----------------------------------------------------------
 
+    public static class Factory {
+        private static Map open = new HashMap();
+
+        public static CDInfoController create(final CDBrowserController controller, final List files) {
+            if(open.containsKey(files)) {
+                return (CDInfoController)open.get(files);
+            }
+            final CDInfoController c = new CDInfoController(controller, files) {
+                public void windowWillClose(NSNotification notification) {
+                    Factory.open.remove(files);
+                    super.windowWillClose(notification);
+                }
+            };
+            open.put(files, c);
+            return c;
+        }
+    }
+
     private CDBrowserController controller;
 
-    public CDInfoController(final CDBrowserController controller) {
+    private CDInfoController(final CDBrowserController controller, List files) {
         this.controller = controller;
         synchronized(controller) {
             if (!NSApplication.loadNibNamed("Info", this)) {
                 log.fatal("Couldn't load Info.nib");
             }
         }
+        this.setFiles(files);
     }
 
     public void setFiles(List files) {
@@ -332,7 +353,7 @@ public class CDInfoController extends CDWindowController {
     }
 
     private int numberOfFiles() {
-        return files.size();
+        return (null == files) ? 0 : files.size();
     }
 
     public void filenameInputDidEndEditing(NSNotification sender) {
