@@ -221,7 +221,7 @@
 						<key>Description</key>
 						<string>The filename.</string>
 						<key>Name</key>
-						<string>file</string>
+						<string>item</string>
 					</dict>
 					<key>Local</key>
 					<dict>
@@ -252,7 +252,7 @@
 						<key>Description</key>
 						<string>The filename.</string>
 						<key>Name</key>
-						<string>file</string>
+						<string>item</string>
 					</dict>
 					<key>Remote</key>
 					<dict>
