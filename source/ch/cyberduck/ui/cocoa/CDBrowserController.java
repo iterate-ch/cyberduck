@@ -488,11 +488,7 @@ public class CDBrowserController extends CDWindowController
         if(this.isMounted()) {
             this.statusLabel.setStringValue(browser.numberOfRows() + " " +
                     NSBundle.localizedString("files", ""));
-            this.invoke(new Runnable() {
-                public void run() {
-                    statusLabel.setNeedsDisplay();
-                }
-            });
+            this.statusLabel.display();
         }
         if(preserveSelection) {
             this.setSelectedPaths(selected);
@@ -2431,11 +2427,7 @@ public class CDBrowserController extends CDWindowController
                         // Update the status label at the bottom of the browser window
                         statusLabel.setAttributedStringValue(new NSAttributedString(msg,
                                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                        invoke(new Runnable() {
-                            public void run() {
-                                statusLabel.setNeedsDisplay();
-                            }
-                        });
+                        statusLabel.display();
                     }
 
                     public void error(final Exception e) {
