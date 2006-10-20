@@ -1435,7 +1435,7 @@ public class CDBrowserController extends CDWindowController
 
     public void editBookmarkButtonClicked(final Object sender) {
         this.bookmarkDrawer.open();
-        CDBookmarkController c = new CDBookmarkController(
+        CDBookmarkController c = CDBookmarkController.Factory.create(
                 (Host)bookmarkModel.get(bookmarkTable.selectedRow())
         );
         c.window().makeKeyAndOrderFront(null);
@@ -1465,7 +1465,7 @@ public class CDBrowserController extends CDWindowController
             HostCollection.instance().add(item);
             this.bookmarkTable.selectRow(bookmarkModel.lastIndexOf(item), false);
             this.bookmarkTable.scrollRowToVisible(bookmarkModel.lastIndexOf(item));
-            CDBookmarkController c = new CDBookmarkController(item);
+            CDBookmarkController c = CDBookmarkController.Factory.create(item);
             c.window().makeKeyAndOrderFront(null);
         }
     }
@@ -1890,14 +1890,15 @@ public class CDBrowserController extends CDWindowController
             List files = this.getSelectedPaths();
             if(Preferences.instance().getBoolean("browser.info.isInspector")) {
                 if(null == this.inspector) {
-                    this.inspector = new CDInfoController(this);
+                    this.inspector = CDInfoController.Factory.create(this, files);
                 }
-                this.inspector.setFiles(files);
+                else {
+                    this.inspector.setFiles(files);
+                }
                 this.inspector.window().makeKeyAndOrderFront(null);
             }
             else {
-                CDInfoController c = new CDInfoController(this);
-                c.setFiles(files);
+                CDInfoController c = CDInfoController.Factory.create(this, files);
                 c.window().makeKeyAndOrderFront(null);
             }
         }
@@ -2476,7 +2477,6 @@ public class CDBrowserController extends CDWindowController
                         window.toolbar().validateVisibleItems();
                         securityLabel.setImage(session.isSecure() ? NSImage.imageNamed("locked.tiff")
                                 : NSImage.imageNamed("unlocked.tiff"));
-//                        securityLabel.setEnabled(session.isSecure());
                         securityLabel.setEnabled(true);
                     }
                 });

@@ -29,6 +29,8 @@ import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 import java.net.MalformedURLException;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @version $Id$
@@ -169,7 +171,32 @@ public class CDBookmarkController extends CDWindowController {
 
     private static final Object lock = new Object();
 
-    public CDBookmarkController(final Host host) {
+    /**
+     *
+     */
+    public static class Factory {
+        private static Map open = new HashMap();
+
+        public static CDBookmarkController create(final Host host) {
+            if(open.containsKey(host)) {
+                return (CDBookmarkController)open.get(host);
+            }
+            final CDBookmarkController c = new CDBookmarkController(host) {
+                public void windowWillClose(NSNotification notification) {
+                    Factory.open.remove(host);
+                    super.windowWillClose(notification);
+                }
+            };
+            open.put(host, c);
+            return c;
+        }
+    }
+
+    /**
+     *
+     * @param host
+     */
+    private CDBookmarkController(final Host host) {
         this.host = host;
         HostCollection.instance().addListener(new CollectionListener() {
             public void collectionItemAdded(Object item) {
