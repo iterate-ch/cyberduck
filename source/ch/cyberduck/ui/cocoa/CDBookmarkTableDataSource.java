@@ -296,20 +296,21 @@ public class CDBookmarkTableDataSource extends NSObject {
 
     /**
      * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-     *         This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
-     *         Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
-     *         you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
-     *         blocking the destination application.
+     * This method is invoked when the drop has been accepted by the destination and the destination,
+     * in the case of another Cocoa application, invokes the NSDraggingInfo method
+     * namesOfPromisedFilesDroppedAtDestination.
+     * For long operations, you can cache dropDestination and defer the creation of the files until the
+     * finishedDraggingImage method to avoid blocking the destination application.
      */
     public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
         NSMutableArray promisedDragNames = new NSMutableArray();
         for(int i = 0; i < promisedDragBookmarks.length; i++) {
             try {
-                promisedDragBookmarksFileDestination[i] = new File(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"),
-                        promisedDragBookmarks[i].getNickname().replace('/', ':') + ".duck");
+                final String filename = promisedDragBookmarks[i].getNickname().replace('/', ':')+ ".duck";
+                promisedDragBookmarksFileDestination[i] = new File(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), filename);
                 HostCollection.instance().exportBookmark(promisedDragBookmarks[i], promisedDragBookmarksFileDestination[i]);
-                promisedDragNames.addObject(promisedDragBookmarks[i].getNickname() + ".duck");
+                promisedDragNames.addObject(filename);
             }
             catch(java.io.UnsupportedEncodingException e) {
                 log.error(e.getMessage());
