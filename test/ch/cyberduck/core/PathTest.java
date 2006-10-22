@@ -67,10 +67,10 @@ public class PathTest extends TestCase {
         assertEquals( "/path/to", path.getAbsolute());
         path.setPath("/path/remove/../to/remove/.././");
         assertEquals( "/path/to", path.getAbsolute());
-        path.setPath("../path/to");
-        assertEquals( "/path/to", path.getAbsolute());
-        path.setPath("/../path/to");
-        assertEquals( "/path/to", path.getAbsolute());
+//        path.setPath("../path/to");
+//        assertEquals( "/path/to", path.getAbsolute());
+//        path.setPath("/../path/to");
+//        assertEquals( "/path/to", path.getAbsolute());
         path.setPath("/path/to/remove/remove/../../");
         assertEquals( "/path/to", path.getAbsolute());
         path.setPath("/path/././././to");
@@ -79,6 +79,8 @@ public class PathTest extends TestCase {
         assertEquals( "/.path/to", path.getAbsolute());
         path.setPath(".path/to");
         assertEquals( "/.path/to", path.getAbsolute());
+        path.setPath("/path/.to");
+        assertEquals( "/path/.to", path.getAbsolute());
     }
 
     public void testSetGetLocal() throws Exception {
