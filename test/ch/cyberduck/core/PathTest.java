@@ -59,6 +59,28 @@ public class PathTest extends TestCase {
         ;
     }
 
+    public void testNormalize() throws Exception {
+        Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")));
+        path.setPath("/path/to/remove/..");
+        assertEquals("/path/to", path.getAbsolute());
+        path.setPath("/path/to/remove/.././");
+        assertEquals( "/path/to", path.getAbsolute());
+        path.setPath("/path/remove/../to/remove/.././");
+        assertEquals( "/path/to", path.getAbsolute());
+        path.setPath("../path/to");
+        assertEquals( "/path/to", path.getAbsolute());
+        path.setPath("/../path/to");
+        assertEquals( "/path/to", path.getAbsolute());
+        path.setPath("/path/to/remove/remove/../../");
+        assertEquals( "/path/to", path.getAbsolute());
+        path.setPath("/path/././././to");
+        assertEquals( "/path/to", path.getAbsolute());
+        path.setPath("./.path/to");
+        assertEquals( "/.path/to", path.getAbsolute());
+        path.setPath(".path/to");
+        assertEquals( "/.path/to", path.getAbsolute());
+    }
+
     public void testSetGetLocal() throws Exception {
         ;
     }
