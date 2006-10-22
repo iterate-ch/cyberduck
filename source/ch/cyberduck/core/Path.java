@@ -26,8 +26,8 @@ import com.apple.cocoa.foundation.NSObject;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.Calendar;
+import java.util.Comparator;
 
 /**
  * @version $Id$
@@ -59,15 +59,15 @@ public abstract class Path extends NSObject {
 
     public Path(NSDictionary dict) {
         Object pathObj = dict.objectForKey("Remote");
-        if (pathObj != null) {
+        if(pathObj != null) {
             this.setPath((String) pathObj);
         }
         Object localObj = dict.objectForKey("Local");
-        if (localObj != null) {
+        if(localObj != null) {
             this.setLocal(new Local((String) localObj));
         }
         Object attributesObj = dict.objectForKey("Attributes");
-        if (attributesObj != null) {
+        if(attributesObj != null) {
             this.attributes = new Attributes((NSDictionary) attributesObj);
         }
     }
@@ -78,6 +78,10 @@ public abstract class Path extends NSObject {
         dict.setObjectForKey(this.getLocal().toString(), "Local");
         dict.setObjectForKey(this.attributes.getAsDictionary(), "Attributes");
         return dict;
+    }
+
+    public Object clone() {
+        return this.clone(this.getSession());
     }
 
     public Object clone(Session session) {
@@ -122,14 +126,13 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     *
      * @param parent
      * @param file
      */
     public void setPath(String parent, Local file) {
         this.setPath(parent, file.getName());
         this.setLocal(file);
-        if (this.getLocal().exists()) {
+        if(this.getLocal().exists()) {
             this.attributes.setType(this.getLocal().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
         }
     }
@@ -140,7 +143,7 @@ public abstract class Path extends NSObject {
      */
     public void setPath(String parent, String name) {
         //Determine if the parent path already ends with a delimiter
-        if (parent.endsWith("/")) {
+        if(parent.endsWith(DELIMITER)) {
             this.setPath(parent + name);
         }
         else {
@@ -149,20 +152,15 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     *
      * @param p
      */
     public void setPath(String p) {
-        while ((p.endsWith("/") && (p.length() > 1))) {
-            //Strip any redundant delimiter at the end of the path
-            p = p.substring(0, p.length() - 1);
-        }
-        this.path = p;
+        this.path = this.normalize(p);
         this.parent = null;
     }
 
     public void setSymbolicLinkPath(String parent, String name) {
-        if (parent.endsWith("/")) {
+        if(parent.endsWith(DELIMITER)) {
             this.setSymbolicLinkPath(parent + name);
         }
         else {
@@ -195,14 +193,14 @@ public abstract class Path extends NSObject {
      * @return My parent directory
      */
     public Path getParent() {
-        if (null == parent) {
+        if(null == parent) {
             int index = this.getAbsolute().length() - 1;
-            if (this.getAbsolute().charAt(index) == '/') {
-                if (index > 0)
+            if(this.getAbsolute().charAt(index) == '/') {
+                if(index > 0)
                     index--;
             }
             int cut = this.getAbsolute().lastIndexOf('/', index);
-            if (cut > 0) {
+            if(cut > 0) {
                 this.parent = PathFactory.createPath(this.getSession(), this.getAbsolute().substring(0, cut));
                 this.parent.attributes.setType(Path.DIRECTORY_TYPE);
             }
@@ -212,6 +210,65 @@ public abstract class Path extends NSObject {
             }
         }
         return this.parent;
+    }
+
+    /**
+     * Return a context-relative path, beginning with a "/", that represents
+     * the canonical version of the specified path after ".." and "." elements
+     * are resolved out.
+     *  *
+     * @return the normalized path.
+     * @author Adapted from org.apache.webdav
+     * @license http://www.apache.org/licenses/LICENSE-2.0
+     */
+    private String normalize(final String path) {
+        String normalized = path;
+
+        while(!normalized.startsWith(DELIMITER)) {
+            normalized = DELIMITER + normalized;
+        }
+
+        while((normalized.endsWith(DELIMITER) && (normalized.length()
+                > 1))) {
+            //Strip any redundant delimiter at the end of the path
+            normalized = normalized.substring(0, normalized.length() - 1);
+        }
+
+        // Resolve occurrences of "/.." in the normalized path
+        while(true) {
+            int index = normalized.indexOf("/..");
+            if(index < 0) {
+                break;
+            }
+            if(index == 0) {
+                normalized = normalized.substring(index + 3);
+            }
+            else {
+                normalized = normalized.substring(0, normalized.lastIndexOf('/', index - 1)) +
+                        normalized.substring(index + 3);
+            }
+        }
+
+        // Resolve occurrences of "/." in the normalized path
+        while(true) {
+            int index = normalized.indexOf("/.", 2);
+            if(index < 0)
+                break;
+            normalized = normalized.substring(0, index) +
+                    normalized.substring(index + 2);
+        }
+
+        // Resolve occurrences of "//" in the normalized path
+        while(true) {
+            int index = normalized.indexOf("//");
+            if(index < 0)
+                break;
+            normalized = normalized.substring(0, index) +
+                    normalized.substring(index + 1);
+        }
+
+        // Return the normalized path that we have completed
+        return normalized;
     }
 
     /**
@@ -262,7 +319,7 @@ public abstract class Path extends NSObject {
 
     /**
      * @param recursive Create intermediate directories as required.  If this option is
-     * not specified, the full path prefix of each operand must already exist
+     *                  not specified, the full path prefix of each operand must already exist
      */
     public abstract void mkdir(boolean recursive);
 
@@ -288,13 +345,12 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     *
      * @param p
      * @return true if p is a child of me in the path hierarchy
      */
     public boolean isChild(Path p) {
-        for (Path parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
-            if (parent.equals(p)) {
+        for(Path parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
+            if(parent.equals(p)) {
                 return true;
             }
         }
@@ -305,7 +361,7 @@ public abstract class Path extends NSObject {
      * @return the path relative to its parent directory
      */
     public String getName() {
-        if (this.isRoot()) {
+        if(this.isRoot()) {
             return DELIMITER;
         }
         String abs = this.getAbsolute();
@@ -322,6 +378,7 @@ public abstract class Path extends NSObject {
 
     /**
      * Set the local equivalent of this path (used if downloaded or synced)
+     *
      * @param file
      */
     public void setLocal(Local file) {
@@ -333,14 +390,13 @@ public abstract class Path extends NSObject {
      */
     public Local getLocal() {
         //default value if not set explicitly, i.e. with drag and drop
-        if (null == this.local) {
+        if(null == this.local) {
             return new Local(Preferences.instance().getProperty("queue.download.folder"), this.getName());
         }
         return this.local;
     }
 
     /**
-     *
      * @return reference to myself
      */
     public Path getRemote() {
@@ -353,14 +409,13 @@ public abstract class Path extends NSObject {
     public String getExtension() {
         String name = this.getName();
         int index = name.lastIndexOf(".");
-        if (index != -1 && index != 0) {
+        if(index != -1 && index != 0) {
             return name.substring(index + 1, name.length());
         }
         return null;
     }
 
     /**
-     *
      * @return The session this path uses to send commands
      */
     public abstract Session getSession();
@@ -390,14 +445,13 @@ public abstract class Path extends NSObject {
             Preferences.instance().setProperty("queue.upload.preserveDate.fallback", false);
         }
     }
-    
+
     /**
      * A state variable to mark this path if it should not be considered for file transfers
      */
     private boolean skip = false;
 
     /**
-     *
      * @param ignore
      */
     public void setSkipped(boolean ignore) {
@@ -406,7 +460,6 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     *
      * @return true if this path should not be added to any queue
      */
     public boolean isSkipped() {
@@ -418,18 +471,18 @@ public abstract class Path extends NSObject {
      * @param out The stream to write to
      */
     public void upload(java.io.OutputStream out, java.io.InputStream in) throws IOException {
-        if (log.isDebugEnabled()) {
+        if(log.isDebugEnabled()) {
             log.debug("upload(" + out.toString() + ", " + in.toString());
         }
         this.getSession().message(NSBundle.localizedString("Uploading", "Status", "") + " " + this.getName());
-        if (this.status.isResume()) {
+        if(this.status.isResume()) {
             long skipped = in.skip(this.status.getCurrent());
             log.info("Skipping " + skipped + " bytes");
-            if (skipped < this.status.getCurrent()) {
+            if(skipped < this.status.getCurrent()) {
                 throw new IOException("Resume failed: Skipped " + skipped + " bytes instead of " + this.status.getCurrent());
             }
         }
-        if (log.isDebugEnabled()) {
+        if(log.isDebugEnabled()) {
             log.debug("upload(" + in.toString() + ", " + out.toString());
         }
         int chunksize = Preferences.instance().getInteger("connection.buffer");
@@ -438,9 +491,9 @@ public abstract class Path extends NSObject {
         long current = this.status.getCurrent();
         boolean complete = false;
         // read from socket (bytes) & write to file in chunks
-        while (!complete && !status.isCanceled()) {
+        while(!complete && !status.isCanceled()) {
             amount = in.read(chunk, 0, chunksize);
-            if (-1 == amount) {
+            if(-1 == amount) {
                 complete = true;
             }
             else {
@@ -457,7 +510,7 @@ public abstract class Path extends NSObject {
      * @param out The stream to write to
      */
     public void download(java.io.InputStream in, java.io.OutputStream out) throws IOException {
-        if (log.isDebugEnabled()) {
+        if(log.isDebugEnabled()) {
             log.debug("download(" + in.toString() + ", " + out.toString());
         }
         this.getSession().message(NSBundle.localizedString("Downloading", "Status", "") + " " + this.getName());
@@ -470,35 +523,34 @@ public abstract class Path extends NSObject {
         int step = 0;
         this.getLocal().setProgress(step);
         // read from socket (bytes) & write to file in chunks
-        while (!complete && !status.isCanceled()) {
+        while(!complete && !status.isCanceled()) {
             amount = in.read(chunk, 0, chunksize);
-            if (-1 == amount) {
+            if(-1 == amount) {
                 complete = true;
             }
             else {
                 out.write(chunk, 0, amount);
                 this.status.setCurrent(current += amount);
-                if (updateProgress) {
+                if(updateProgress) {
                     int fraction = (int) (status.getCurrent() / this.attributes.getSize() * 10);
-                    if ((fraction > step)) {
+                    if((fraction > step)) {
                         this.getLocal().setProgress(++step);
                     }
                 }
                 out.flush();
             }
         }
-        if (complete) {
+        if(complete) {
             this.getLocal().setProgress(-1);
         }
         this.status.setComplete(complete);
     }
 
     /**
-     *
      * @return true if the path exists (or is cached!)
      */
     public boolean exists() {
-        if (this.isRoot()) {
+        if(this.isRoot()) {
             return true;
         }
         return this.getParent().list().contains(this);
@@ -509,15 +561,14 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     *
      * @param other
      * @return true if the other path has the same absolute path name
      */
     public boolean equals(Object other) {
-        if (null == other) {
+        if(null == other) {
             return false;
         }
-        if (other instanceof Path) {
+        if(other instanceof Path) {
             //BUG: returns the wrong result on case-insensitive systems, e.g. NT!
             return this.getAbsolute().equals(((Path) other).getAbsolute());
         }
@@ -547,10 +598,9 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     *
      * @return > 0 if the remote path exists and is newer than
-     * the local file; < 0 if the local path exists and is newer than
-     * the remote file; 0 if both files don't exist or have an equal timestamp
+     *         the local file; < 0 if the local path exists and is newer than
+     *         the remote file; 0 if both files don't exist or have an equal timestamp
      */
     public int compare() {
         if(this.getRemote().exists() && this.getLocal().exists()) {
@@ -587,7 +637,6 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     *
      * @return
      */
     private int compareSize() {
@@ -604,7 +653,6 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     *
      * @return The absolute path name
      */
     public String toString() {

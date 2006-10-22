@@ -204,7 +204,7 @@ public abstract class Preferences {
         /**
          * Open log drawer in browser window upon error
          */
-        defaults.put("browser.logDrawer.openOnError", "true");
+        defaults.put("browser.logDrawer.openOnError", "false");
         defaults.put("browser.logDrawer.isOpen", "false");
 
         /**

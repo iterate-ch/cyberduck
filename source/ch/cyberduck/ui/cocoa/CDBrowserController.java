@@ -386,7 +386,8 @@ public class CDBrowserController extends CDWindowController
         this._updateBrowserColumns(this.browserOutlineView);
 
         // Configure window
-        this.window.setTitle("Cyberduck");
+        this.window.setTitle(
+                (String)NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
         if(Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen")) {
             this.bookmarkDrawer.open();
         }
@@ -486,8 +487,9 @@ public class CDBrowserController extends CDWindowController
         final NSTableView browser = this.getSelectedBrowserView();
         browser.reloadData();
         if(this.isMounted()) {
-            this.statusLabel.setStringValue(browser.numberOfRows() + " " +
-                    NSBundle.localizedString("files", ""));
+            this.statusLabel.setAttributedStringValue(new NSAttributedString(
+                    browser.numberOfRows() + " " + NSBundle.localizedString("files", ""),
+                    TRUNCATE_MIDDLE_ATTRIBUTES));
             this.statusLabel.display();
         }
         if(preserveSelection) {
@@ -900,13 +902,17 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void outlineViewItemDidExpand(NSNotification notification) {
-                statusLabel.setStringValue(CDBrowserController.this.browserOutlineView.numberOfRows() + " " +
-                        NSBundle.localizedString("files", ""));
+                statusLabel.setAttributedStringValue(new NSAttributedString(
+                        CDBrowserController.this.browserOutlineView.numberOfRows() + " " +
+                                NSBundle.localizedString("files", ""),
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
 
             public void outlineViewItemDidCollapse(NSNotification notification) {
-                statusLabel.setStringValue(CDBrowserController.this.browserOutlineView.numberOfRows() + " " +
-                        NSBundle.localizedString("files", ""));
+                statusLabel.setAttributedStringValue(new NSAttributedString(
+                        CDBrowserController.this.browserOutlineView.numberOfRows() + " " +
+                                NSBundle.localizedString("files", ""),
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
 
             public String outlineViewToolTipForCell(NSOutlineView view, NSCell cell, NSMutableRect rect, NSTableColumn tableColumn,
@@ -1756,9 +1762,7 @@ public class CDBrowserController extends CDWindowController
                             break;
                         }
                         if(p.attributes.isDirectory()) {
-                            if(this.browserOutlineView.isItemExpanded(p)) {
-                                p.invalidate();
-                            }
+                            p.invalidate();
                         }
                     }
                     break;
@@ -2318,7 +2322,7 @@ public class CDBrowserController extends CDWindowController
      *
      * @param path The new working directory to display or null to detach any working directory from the browser
      */
-    protected void setWorkdir(Path path) {
+    protected void setWorkdir(final Path path) {
         log.debug("setWorkdir:" + path);
         if(null == path) {
             // Clear the browser view if no working directory is given
@@ -2330,12 +2334,13 @@ public class CDBrowserController extends CDWindowController
                 }
             });
             this.reloadData(false);
-            final File bookmark = getRepresentedFile();
+            final File bookmark = this.getRepresentedFile();
             if(bookmark != null && bookmark.exists()) {
                 // Delete this history bookmark if there was any error connecting
                 bookmark.delete();
             }
-            this.window.setTitle("Cyberduck");
+            this.window.setTitle(
+                    (String)NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
             this.window.setRepresentedFilename(""); //can't send null
             return;
         }
@@ -2426,11 +2431,15 @@ public class CDBrowserController extends CDWindowController
                     public void message(final String msg) {
                         // Update the status label at the bottom of the browser window
                         statusLabel.setAttributedStringValue(new NSAttributedString(msg,
-                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                                TRUNCATE_MIDDLE_ATTRIBUTES));
                         statusLabel.display();
                     }
 
                     public void error(final Exception e) {
+                        // Update the status label at the bottom of the browser window
+                        statusLabel.setAttributedStringValue(new NSAttributedString(this.getErrorText(e),
+                                TRUNCATE_MIDDLE_BOLD_RED_FONT_ATTRIBUTES));
+                        statusLabel.display();
                         invoke(new Runnable() {
                             public void run() {
                                 synchronized(lock) {

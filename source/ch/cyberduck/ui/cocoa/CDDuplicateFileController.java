@@ -91,7 +91,7 @@ public class CDDuplicateFileController extends CDFileController {
     }
 
     private Path duplicateFile(Path selected, String filename) {
-        Path duplicate = (Path)selected.clone(selected.getSession());
+        Path duplicate = (Path)selected.clone();
         duplicate.setLocal(new Local(NSPathUtilities.temporaryDirectory(),
                 selected.getName()));
         duplicate.download();

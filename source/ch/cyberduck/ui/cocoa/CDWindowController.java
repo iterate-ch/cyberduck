@@ -45,9 +45,24 @@ public abstract class CDWindowController extends CDController
         lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
     }
 
-    protected static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(
+    protected static final NSDictionary TRUNCATE_MIDDLE_ATTRIBUTES = new NSDictionary(
             new Object[]{lineBreakByTruncatingMiddleParagraph},
             new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+
+    protected static final NSDictionary TRUNCATE_MIDDLE_BOLD_RED_FONT_ATTRIBUTES = new NSDictionary(
+            new Object[]{lineBreakByTruncatingMiddleParagraph, NSFont.boldSystemFontOfSize(10.0f), NSColor.redColor()},
+            new Object[]{NSAttributedString.ParagraphStyleAttributeName, NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName}
+    );
+
+    protected static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(
+            new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)},
+            new Object[]{NSAttributedString.FontAttributeName}
+    );
+
+    protected static final NSDictionary BOLD_RED_FONT_ATTRIBUTES = new NSDictionary(
+            new Object[]{NSFont.boldSystemFontOfSize(10.0f), NSColor.redColor()},
+            new Object[]{NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName}
+    );
 
     /**
      * The window this controller is owner of

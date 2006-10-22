@@ -327,15 +327,15 @@ public class CDQueueController extends CDWindowController
             if(q.numberOfRoots() == 1) {
                 urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()
                         + q.getRoot().getAbsolute(),
-                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
                 localField.setAttributedStringValue(new NSAttributedString(q.getRoot().getLocal().getAbsolute(),
-                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
             else {
                 urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL(),
-                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
                 localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiple files", ""),
-                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
         }
         else {

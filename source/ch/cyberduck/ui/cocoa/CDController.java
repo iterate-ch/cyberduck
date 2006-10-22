@@ -36,16 +36,6 @@ import java.util.ArrayList;
 public abstract class CDController extends NSObject {
     private static Logger log = Logger.getLogger(CDController.class);
 
-    protected static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(
-            new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)},
-            new Object[]{NSAttributedString.FontAttributeName}
-    );
-
-    protected static final NSDictionary BOLD_RED_FONT_ATTRIBUTES = new NSDictionary(
-            new Object[]{NSFont.boldSystemFontOfSize(10.0f), NSColor.redColor()},
-            new Object[]{NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName}
-    );
-
 //    protected static final NSDictionary BOLD_FONT_ATTRIBUTES = new NSDictionary(
 //            new Object[]{NSFont.boldSystemFontOfSize(9.0f)},
 //            new Object[]{NSAttributedString.FontAttributeName}

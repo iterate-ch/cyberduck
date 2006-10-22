@@ -221,11 +221,11 @@ public class CDInfoController extends CDWindowController {
             }
             if (file.attributes.isSymbolicLink() && file.getSymbolicLinkPath() != null) {
                 this.pathField.setAttributedStringValue(new NSAttributedString(file.getSymbolicLinkPath(),
-                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
             else {
                 this.pathField.setAttributedStringValue(new NSAttributedString(file.getParent().getAbsolute(),
-                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
             this.groupField.setStringValue(this.numberOfFiles() > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.attributes.getGroup());
@@ -257,7 +257,7 @@ public class CDInfoController extends CDWindowController {
             else {
                 this.modifiedField.setAttributedStringValue(new NSAttributedString(
                         CDDateFormatter.getLongFormat(file.attributes.getTimestamp()),
-                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
             this.ownerField.setStringValue(this.numberOfFiles() > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.attributes.getOwner());
@@ -266,7 +266,7 @@ public class CDInfoController extends CDWindowController {
                 size += ((Path) i.next()).attributes.getSize();
             }
             this.sizeField.setAttributedStringValue(new NSAttributedString(Status.getSizeAsString(size) + " (" + size + " bytes)",
-                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                    TRUNCATE_MIDDLE_ATTRIBUTES));
             {
                 ownerr.setAllowsMixedState(true);
                 ownerr.setEnabled(false);

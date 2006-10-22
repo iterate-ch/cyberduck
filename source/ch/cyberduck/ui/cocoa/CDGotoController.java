@@ -90,8 +90,8 @@ public class CDGotoController extends CDSheetController
         return folderCombobox.stringValue().length() != 0;
     }
 
-    protected void gotoFolder(Path workdir, String filename) {
-        Path dir = (Path)workdir.clone(workdir.getSession());
+    protected void gotoFolder(final Path workdir, String filename) {
+        Path dir = (Path)workdir.clone();
         if (filename.charAt(0) != '/') {
             dir.setPath(workdir.getAbsolute(), filename);
         }
