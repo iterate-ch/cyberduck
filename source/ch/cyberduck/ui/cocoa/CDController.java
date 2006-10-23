@@ -36,11 +36,6 @@ import java.util.ArrayList;
 public abstract class CDController extends NSObject {
     private static Logger log = Logger.getLogger(CDController.class);
 
-//    protected static final NSDictionary BOLD_FONT_ATTRIBUTES = new NSDictionary(
-//            new Object[]{NSFont.boldSystemFontOfSize(9.0f)},
-//            new Object[]{NSAttributedString.FontAttributeName}
-//    );
-
     protected static String[] availableCharsets() {
         List charsets = new ArrayList();
         for (Iterator iter = java.nio.charset.Charset.availableCharsets().values().iterator(); iter.hasNext(); ) {

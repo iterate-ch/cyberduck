@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 import com.apple.cocoa.application.*;
@@ -29,7 +28,6 @@ import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSSize;
 
 import java.util.Calendar;
-import java.text.DateFormat;
 
 /**
  * @version $Id$
@@ -75,14 +73,10 @@ public class CDDuplicateFileController extends CDFileController {
     public void callback(int returncode) {
         Path selected = ((CDBrowserController)parent).getSelectedPath();
         if (returncode == DEFAULT_OPTION) {
-            this.duplicateFile(selected, filenameField.stringValue());
+            this.duplicateFile(selected, filenameField.stringValue(), false);
         }
         if (returncode == ALTERNATE_OPTION) {
-            Path path = this.duplicateFile(selected, filenameField.stringValue());
-            if (path != null) {
-                Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
-                editor.open(path);
-            }
+            this.duplicateFile(selected, filenameField.stringValue(), true);
         }
     }
 
@@ -90,22 +84,33 @@ public class CDDuplicateFileController extends CDFileController {
         return ((CDBrowserController)parent).getSelectedPath().getParent();
     }
 
-    private Path duplicateFile(Path selected, String filename) {
-        Path duplicate = (Path)selected.clone();
-        duplicate.setLocal(new Local(NSPathUtilities.temporaryDirectory(),
-                selected.getName()));
-        duplicate.download();
-        duplicate.setPath(selected.getParent().getAbsolute(), filename);
-        duplicate.upload();
-        duplicate.setLocal(null);
-        if(duplicate.exists()) {
-            if(filename.charAt(0) == '.') {
-                ((CDBrowserController)parent).setShowHiddenFiles(true);
+    private void duplicateFile(final Path selected, final String filename, final boolean edit) {
+        final CDBrowserController c = (CDBrowserController)parent;
+        c.background(new Runnable() {
+            public void run() {
+                final Path file = (Path)selected.clone();
+                file.setLocal(new Local(NSPathUtilities.temporaryDirectory(),
+                        selected.getName()));
+                file.download();
+                file.setPath(selected.getParent().getAbsolute(), filename);
+                file.upload();
+                file.setLocal(null);
+                if(file.exists()) {
+                    if(edit) {
+                        Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"), c);
+                        editor.open(file);
+                    }
+                    c.invoke(new Runnable() {
+                        public void run() {
+                            if(filename.charAt(0) == '.') {
+                                c.setShowHiddenFiles(true);
+                            }
+                            c.reloadData(false);
+                            c.setSelectedPath(file);
+                        }
+                    });
+                }
             }
-            ((CDBrowserController)parent).reloadData(false);
-            ((CDBrowserController)parent).setSelectedPath(duplicate);
-            return duplicate;
-        }
-        return null;
+        });
     }
 }

@@ -46,17 +46,24 @@ public class CDFolderController extends CDFileController {
         }
     }
 
-    protected Path createFolder(Path workdir, String filename) {
-        Path folder = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
-        folder.mkdir(false);
-        if(folder.exists()) {
-            if(filename.charAt(0) == '.') {
-                ((CDBrowserController) parent).setShowHiddenFiles(true);
+    protected void createFolder(final Path workdir, final String filename) {
+        final CDBrowserController c = (CDBrowserController)parent;
+        c.background(new Runnable() {
+            public void run() {
+                final Path folder = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
+                folder.mkdir(false);
+                if(folder.exists()) {
+                    c.invoke(new Runnable() {
+                        public void run() {
+                            if(filename.charAt(0) == '.') {
+                                c.setShowHiddenFiles(true);
+                            }
+                            c.reloadData(false);
+                            c.setSelectedPath(folder);
+                        }
+                    });
+                }
             }
-            ((CDBrowserController) parent).reloadData(false);
-            ((CDBrowserController) parent).setSelectedPath(folder);
-            return folder;
-        }
-        return null;
+        });
     }
 }

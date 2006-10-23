@@ -83,12 +83,20 @@ public abstract class CDBrowserTableDataSource extends NSObject {
         log.debug("setObjectValueForItem:" + item);
         if (identifier.equals(FILENAME_COLUMN)) {
             if (!item.getName().equals(value) && !value.equals("")) {
-                Path renamed = PathFactory.createPath(controller.workdir().getSession(),
+                final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
                         item.getParent().getAbsolute(), value.toString());
-                controller.renamePath(item, renamed);
-                item.getParent().invalidate();
-                controller.reloadData(false);
-                controller.setSelectedPath(renamed);
+                controller.background(new Runnable() {
+                    public void run() {
+                        controller.renamePath(item, renamed);
+                        item.getParent().invalidate();
+                        controller.invoke(new Runnable() {
+                            public void run() {
+                                controller.reloadData(false);
+                                controller.setSelectedPath(renamed);
+                            }
+                        });
+                    }
+                });
             }
         }
     }
@@ -169,7 +177,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
         return NSDraggingInfo.DragOperationCopy;
     }
 
-    public boolean acceptDrop(NSTableView view, Path destination, NSDraggingInfo info) {
+    public boolean acceptDrop(NSTableView view, final Path destination, NSDraggingInfo info) {
         log.debug("acceptDrop:" + destination);
         if (info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
             Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
@@ -205,26 +213,34 @@ public abstract class CDBrowserTableDataSource extends NSObject {
         if (NSPasteboard.pasteboardWithName("QueuePBoard").availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
             Object o = NSPasteboard.pasteboardWithName("QueuePBoard").propertyListForType("QueuePBoardType");
             if (o != null) {
-                NSArray elements = (NSArray) o;
-                List selected = new ArrayList();
-                for (int i = 0; i < elements.count(); i++) {
-                    NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                    Queue q = QueueFactory.createQueue(dict);
-                    for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                        Path current = PathFactory.createPath(controller.workdir().getSession(),
-                                ((Path) iter.next()).getAbsolute());
-                        Path renamed = PathFactory.createPath(controller.workdir().getSession(),
-                                destination.getAbsolute(), current.getName());
-                        controller.renamePath(current, renamed);
-                        if(!controller.isConnected()) {
-                            break;
+                final NSArray elements = (NSArray) o;
+                final List selected = new ArrayList();
+                controller.background(new Runnable() {
+                    public void run() {
+                        for (int i = 0; i < elements.count(); i++) {
+                            NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+                            Queue q = QueueFactory.create(dict);
+                            for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
+                                Path current = PathFactory.createPath(controller.workdir().getSession(),
+                                        ((Path) iter.next()).getAbsolute());
+                                Path renamed = PathFactory.createPath(controller.workdir().getSession(),
+                                        destination.getAbsolute(), current.getName());
+                                controller.renamePath(current, renamed);
+                                if(!controller.isConnected()) {
+                                    break;
+                                }
+                                selected.add(renamed);
+                            }
                         }
-                        selected.add(renamed);
+                        destination.invalidate();
+                        controller.invoke(new Runnable() {
+                            public void run() {
+                                controller.reloadData(true);
+                                controller.setSelectedPaths(selected);
+                            }
+                        });
                     }
-                }
-                destination.invalidate();
-                controller.reloadData(true);
-                controller.setSelectedPaths(selected);
+                });
                 NSPasteboard.pasteboardWithName("QueuePBoard").setPropertyListForType(null, "QueuePBoardType");
                 return true;
             }
@@ -252,7 +268,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     NSArray elements = (NSArray) o;
                     for (int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                        Queue q = QueueFactory.createQueue(dict);
+                        Queue q = QueueFactory.create(dict);
                         for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                             Path item = (Path) iter.next();
                             if(!item.getSession().equals(this.controller.getSession())) {

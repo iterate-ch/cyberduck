@@ -43,45 +43,52 @@ public class CDCreateFileController extends CDFileController {
 
     public void callback(int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            this.createFile(this.getWorkdir(), filenameField.stringValue());
+            this.createFile(this.getWorkdir(), filenameField.stringValue(), false);
         }
         if(returncode == ALTERNATE_OPTION) {
-            Path path = createFile(this.getWorkdir(), filenameField.stringValue());
-            if(path != null) {
-                Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"));
-                editor.open(path);
-            }
+            createFile(this.getWorkdir(), filenameField.stringValue(), true);
         }
     }
 
-    protected Path createFile(Path workdir, String filename) {
-        Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
-                new Local(NSPathUtilities.temporaryDirectory(), filename));
+    protected void createFile(final Path workdir, final String filename, final boolean edit) {
+        final CDBrowserController c = (CDBrowserController)parent;
+        c.background(new Runnable() {
+            public void run() {
+                final Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
+                        new Local(NSPathUtilities.temporaryDirectory(), filename));
 
-        String proposal;
-        int no = 0;
-        int index = filename.lastIndexOf(".");
-        while(file.getLocal().exists()) {
-            no++;
-            if(index != -1) {
-                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
+                String proposal;
+                int no = 0;
+                int index = filename.lastIndexOf(".");
+                while(file.getLocal().exists()) {
+                    no++;
+                    if(index != -1) {
+                        proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
+                    }
+                    else {
+                        proposal = filename + "-" + no;
+                    }
+                    file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
+                }
+                file.getLocal().createNewFile();
+                file.upload();
+                file.getLocal().delete();
+                if(file.exists()) {
+                    if(edit) {
+                        Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"), c);
+                        editor.open(file);
+                    }
+                    c.invoke(new Runnable() {
+                        public void run() {
+                            if(filename.charAt(0) == '.') {
+                                c.setShowHiddenFiles(true);
+                            }
+                            c.reloadData(false);
+                            c.setSelectedPath(file);
+                        }
+                    });
+                }
             }
-            else {
-                proposal = filename + "-" + no;
-            }
-            file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
-        }
-        file.getLocal().createNewFile();
-        file.upload();
-        file.getLocal().delete();
-        if(file.exists()) {
-            if(filename.charAt(0) == '.') {
-                ((CDBrowserController) parent).setShowHiddenFiles(true);
-            }
-            ((CDBrowserController) parent).reloadData(false);
-            ((CDBrowserController) parent).setSelectedPath(file);
-            return file;
-        }
-        return null;
+        });
     }
 }

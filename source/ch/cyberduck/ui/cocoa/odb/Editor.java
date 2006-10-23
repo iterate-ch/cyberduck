@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UploadQueue;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.ui.cocoa.CDController;
+import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.application.NSWorkspace;
@@ -71,13 +72,16 @@ public class Editor extends CDController {
         }
     }
 
+    private CDBrowserController controller;
+
     private String bundleIdentifier;
 
     /**
      * @param bundleIdentifier The bundle identifier of the external editor to use
      */
-    public Editor(String bundleIdentifier) {
+    public Editor(String bundleIdentifier, CDBrowserController controller) {
         this.bundleIdentifier = bundleIdentifier;
+        this.controller = controller;
     }
 
     private Path path;
@@ -89,23 +93,31 @@ public class Editor extends CDController {
         String proposal = filename;
         int no = 0;
         int index = filename.lastIndexOf(".");
-        do {
-            this.path.setLocal(new Local(parent, proposal));
+        while(path.getLocal().exists()) {
             no++;
-            if (index != -1) {
-                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
+            if(index != -1 && index != 0) {
+                proposal = filename.substring(0, index)
+                        + "-" + no + filename.substring(index);
             }
             else {
                 proposal = filename + "-" + no;
             }
+            path.setLocal(new Local(parent, proposal));
         }
-        while (this.path.getLocal().exists());
-
-        this.path.download();
-        if (this.path.status.isComplete()) {
-            this.jni_load();
-            this.edit(this.path.getLocal().getAbsolute(), this.bundleIdentifier);
-        }
+        controller.background(new Runnable() {
+            public void run() {
+                path.download();
+                if (path.status.isComplete()) {
+                    invoke(new Runnable() {
+                        public void run() {
+                            Editor.this.jni_load();
+                            // Important, should always be run on the main thread; otherwise applescript crashes
+                            Editor.this.edit(path.getLocal().getAbsolute(), bundleIdentifier);
+                        }
+                    });
+                }
+            }
+        });
     }
 
     private static boolean JNI_LOADED = false;
@@ -139,13 +151,17 @@ public class Editor extends CDController {
     }
 
     public void didModifyFile() {
-        this.path.upload();
-        if(this.path.status.isComplete()) {
-            this.path.getSession().message(
-                    NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"));
-            Growl.instance().notify(
-                    NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"),
-                    path.getName());
-        }
+        controller.background(new Runnable() {
+            public void run() {
+                path.upload();
+                if(path.status.isComplete()) {
+                    path.getSession().message(
+                            NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"));
+                    Growl.instance().notify(
+                            NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"),
+                            path.getName());
+                }
+            }
+        });
     }
 }

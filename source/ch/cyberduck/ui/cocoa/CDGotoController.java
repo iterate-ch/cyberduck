@@ -90,14 +90,26 @@ public class CDGotoController extends CDSheetController
         return folderCombobox.stringValue().length() != 0;
     }
 
-    protected void gotoFolder(final Path workdir, String filename) {
-        Path dir = (Path)workdir.clone();
-        if (filename.charAt(0) != '/') {
-            dir.setPath(workdir.getAbsolute(), filename);
-        }
-        else {
-            dir.setPath(filename);
-        }
-        ((CDBrowserController)this.parent).setWorkdir(dir);
+    protected void gotoFolder(final Path workdir, final String filename) {
+        final CDBrowserController c = (CDBrowserController)parent;
+        c.background(new Runnable() {
+            public void run() {
+                Path dir = (Path)workdir.clone();
+                if (filename.charAt(0) != '/') {
+                    dir.setPath(workdir.getAbsolute(), filename);
+                }
+                else {
+                    dir.setPath(filename);
+                }
+                c.setWorkdir(dir);
+                if(workdir.getParent().equals(dir)) {
+                    c.invoke(new Runnable() {
+                        public void run() {
+                            c.setSelectedPath(workdir);
+                        }
+                    });
+                }
+            }
+        });
     }
 }

@@ -67,7 +67,7 @@ public class CDApplescriptabilityController extends NSScriptCommand {
                     // running in CDMainController.applicationDidFinishLaunching, see ticket #????
                     ((CDMainController) NSApplication.sharedApplication().delegate()).invoke(new Runnable() {
                         public void run() {
-                            CDQueueController.instance().startItem(new DownloadQueue(p, true));
+                            CDQueueController.instance().startItem(new DownloadQueue(p));
                         }
                     });
 				}

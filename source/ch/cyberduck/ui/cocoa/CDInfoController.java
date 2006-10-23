@@ -361,12 +361,20 @@ public class CDInfoController extends CDWindowController {
             final Path current = (Path) this.files.get(0);
             if (!this.filenameField.stringValue().equals(current.getName())) {
                 if (this.filenameField.stringValue().indexOf('/') == -1) {
-                    Path renamed = PathFactory.createPath(controller.workdir().getSession(),
+                    final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
                             current.getParent().getAbsolute(), this.filenameField.stringValue());
-                    controller.renamePath(current, renamed);
-                    current.getParent().invalidate();
-                    controller.reloadData(true);
-                    controller.setSelectedPath(renamed);
+                    controller.background(new Runnable() {
+                        public void run() {
+                            controller.renamePath(current, renamed);
+                            current.getParent().invalidate();
+                            controller.invoke(new Runnable() {
+                                public void run() {
+                                    controller.reloadData(true);
+                                    controller.setSelectedPath(renamed);
+                                }
+                            });
+                        }
+                    });
                 }
                 else if (filenameField.stringValue().length() == 0) {
                     this.filenameField.setStringValue(current.getName());
@@ -414,15 +422,23 @@ public class CDInfoController extends CDWindowController {
         log.debug("applyButtonClicked");
         final Permission permission = this.getPermissionFromSelection();
         // send the changes to the remote host
-        Path f = null;
-        for (Iterator i = files.iterator(); i.hasNext();) {
-            f = (Path) i.next();
-            if(!controller.isConnected()) {
-                break;
+        controller.background(new Runnable() {
+            public void run() {
+                Path f = null;
+                for (Iterator i = files.iterator(); i.hasNext();) {
+                    f = (Path) i.next();
+                    if(!controller.isConnected()) {
+                        break;
+                    }
+                    f.changePermissions(permission,
+                            recursiveCheckbox.state() == NSCell.OnState);
+                }
+                controller.invoke(new Runnable() {
+                    public void run() {
+                        controller.reloadData(true);
+                    }
+                });
             }
-            f.changePermissions(permission,
-                    this.recursiveCheckbox.state() == NSCell.OnState);
-        }
-        controller.reloadData(true);
+        });
     }
 }
