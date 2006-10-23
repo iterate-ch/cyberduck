@@ -243,6 +243,11 @@ public abstract class Preferences {
          */
         defaults.put("queue.download.fileExists", Validator.ASK);
         defaults.put("queue.upload.fileExists", Validator.ASK);
+        /**
+         * When triggered manually using 'Reload' in the transfer window
+         */
+        defaults.put("queue.download.reload.fileExists", Validator.ASK);
+        defaults.put("queue.upload.reload.fileExists", Validator.ASK);
 
         defaults.put("queue.upload.changePermissions", "true");
         /**
@@ -333,7 +338,7 @@ public abstract class Preferences {
     }
 
     public boolean getBoolean(String property) {
-        return this.getProperty(property).equals("true");
+        return this.getProperty(property).equalsIgnoreCase("true");
     }
 
     /**

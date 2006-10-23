@@ -51,7 +51,9 @@
                 downloadPathButton = NSButton; 
                 downloadPathField = NSTextField; 
                 duplicateDownloadCombobox = NSPopUpButton; 
+                duplicateDownloadOverwriteButton = NSButton; 
                 duplicateUploadCombobox = NSPopUpButton; 
+                duplicateUploadOverwriteButton = NSButton; 
                 editorCombobox = NSPopUpButton; 
                 encodingCombobox = NSPopUpButton; 
                 extensionsField = NSTextField; 
