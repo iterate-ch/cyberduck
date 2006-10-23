@@ -158,6 +158,7 @@
 			<fileset dir="${app.resources}/en.lproj">
 				<include name="Queue.nib/**"/>
 				<include name="Progress.nib/**"/>
+				<include name="Security.nib/**"/>
 			</fileset>
 		</copy>
 		<chmod perm="a+x" type="file">
