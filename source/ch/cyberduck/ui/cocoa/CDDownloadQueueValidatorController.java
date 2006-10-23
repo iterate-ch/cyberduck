@@ -40,8 +40,7 @@ import java.util.List;
 public class CDDownloadQueueValidatorController extends CDValidatorController {
     private static Logger log = Logger.getLogger(CDDownloadQueueValidatorController.class);
 
-    public CDDownloadQueueValidatorController(final Queue queue) {
-        super(queue);
+    public CDDownloadQueueValidatorController() {
         synchronized(CDQueueController.instance()) {
             if(!NSApplication.loadNibNamed("Validator", this)) {
                 log.fatal("Couldn't load Validator.nib");
@@ -50,79 +49,9 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
         }
     }
 
-    public List getResult() {
-        List result = new ArrayList();
-        result.addAll(this.validatedList);
-        result.addAll(this.workList);
-        return result;
-    }
-
-    protected boolean validateDirectory(Path path) {
-        return true;
-    }
-
-    protected boolean validateFile(Path p, boolean resumeRequested) {
-        if(resumeRequested) { // resume existing files independant of settings in preferences
-            p.reset();
-            p.status.setResume(p.getLocal().exists() && p.getLocal().getSize() > 0);
-            return true;
-        }
-        // When overwriting file anyway we don't have to check if the file already exists
-        if(Preferences.instance().getProperty("queue.download.fileExists").equals(OVERWRITE)) {
-            log.info("Apply validation rule to overwrite file " + p.getName());
-            p.status.setResume(false);
-            return true;
-        }
-        p.reset();
-        if(p.getLocal().exists() && p.getLocal().getSize() > 0) {
-            if(Preferences.instance().getProperty("queue.download.fileExists").equals(RESUME)) {
-                log.debug("Apply validation rule to resume:" + p.getName());
-                p.status.setResume(true);
-                return true;
-            }
-            if(Preferences.instance().getProperty("queue.download.fileExists").equals(SIMILAR)) {
-                log.debug("Apply validation rule to apply similar name:" + p.getName());
-                p.status.setResume(false);
-                this.adjustFilename(p);
-                log.info("Changed local name to " + p.getName());
-                return true;
-            }
-            if(Preferences.instance().getProperty("queue.download.fileExists").equals(ASK)) {
-                log.debug("Apply validation rule to ask:" + p.getName());
-                this.prompt(p);
-                return false;
-            }
-            throw new IllegalArgumentException("No rules set to validate transfers");
-        }
-        else {
-            p.status.setResume(false);
-            return true;
-        }
-    }
-
-    protected void prompt(Path p) {
-        this.workList.add(p);
-        super.prompt(p);
-    }
-
-    private void adjustFilename(Path path) {
-        final String parent = path.getLocal().getParent();
-        final String filename = path.getLocal().getName();
-        String proposal = filename;
-        int no = 0;
-        int index = filename.lastIndexOf(".");
-        while(path.getLocal().exists()) {
-            no++;
-            if(index != -1 && index != 0) {
-                proposal = filename.substring(0, index)
-                        + "-" + no + filename.substring(index);
-            }
-            else {
-                proposal = filename + "-" + no;
-            }
-            path.setLocal(new Local(parent, proposal));
-        }
-    }
+    // ----------------------------------------------------------
+    // NSTableView.DataSource
+    // ----------------------------------------------------------
 
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
         if(row < this.numberOfRowsInTableView(view)) {

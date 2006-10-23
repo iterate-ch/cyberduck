@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.CDUploadQueueValidatorController;
-import ch.cyberduck.ui.cocoa.CDValidatorController;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.foundation.NSBundle;
@@ -36,15 +34,11 @@ import java.util.StringTokenizer;
 public class UploadQueue extends Queue {
 
     public UploadQueue() {
-        super(true);
+        super();
     }
 
-    public UploadQueue(boolean validating) {
-        super(validating);
-    }
-
-    public UploadQueue(Path root, boolean validating) {
-        super(root, validating);
+    public UploadQueue(Path root) {
+        super(root);
     }
 
     public UploadQueue(NSDictionary dict) {
@@ -58,7 +52,7 @@ public class UploadQueue extends Queue {
     }
 
     public void fireQueueStoppedEvent() {
-        if(this.isComplete() && !this.isCanceled()) {
+        if(this.isComplete() && !this.isCanceled() && !(this.getCurrent() == 0)) {
             this.getSession().message(
                     NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"));
             Growl.instance().notify(
@@ -118,18 +112,73 @@ public class UploadQueue extends Queue {
         p.upload();
     }
 
-    protected Validator getValidator() {
-        if(!validating) {
-            return new CDValidatorController(this) {
-                protected boolean validateDirectory(Path path) {
-                    return true;
-                }
-
-                protected boolean validateFile(Path p, boolean resumeRequested) {
-                    return true;
-                }
-            };
+    protected boolean validateDirectory(Path p) {
+        if(!p.getRemote().exists()) {
+            //Directory does not exist yet; include so it will be created on the server
+            return true;
         }
-        return new CDUploadQueueValidatorController(this);
+        //Directory already exists; do not include as this would throw "file already exists"
+        return false;
+    }
+
+    protected boolean validateFile(Path p, boolean resumeRequested, boolean reloadRequested) {
+        if(resumeRequested) { // resume existing files independant of settings in preferences
+            p.readAttributes();
+            p.status.setResume(p.exists());
+            return true;
+        }
+        String action = null;
+        if(reloadRequested) {
+            action = Preferences.instance().getProperty("queue.upload.reload.fileExists");
+        }
+        else {
+            action = Preferences.instance().getProperty("queue.upload.fileExists");
+        }
+        // When overwriting file anyway we don't have to check if the file already exists
+        if(action.equals(Validator.OVERWRITE)) {
+            log.info("Will overwrite file:" + p.getName());
+            p.status.setResume(false);
+            return true;
+        }
+        p.readAttributes();
+        if(p.exists()) {
+            if(action.equals(Validator.RESUME)) {
+                log.debug("Will resume file:" + p.getName());
+                p.status.setResume(true);
+                return true;
+            }
+            if(action.equals(Validator.SIMILAR)) {
+                log.debug("Will rename file:" + p.getName());
+                p.status.setResume(false);
+                this.adjustFilename(p);
+                log.info("Changed name to:" + p.getName());
+                return true;
+            }
+            log.debug("Prompting for file:" + p.getName());
+            return false;
+        }
+        else {
+            p.status.setResume(false);
+            return true;
+        }
+    }
+
+    private void adjustFilename(Path path) {
+        final String parent = path.getParent().getAbsolute();
+        final String filename = path.getName();
+        String proposal = filename;
+        int no = 0;
+        int index = filename.lastIndexOf(".");
+        while(path.exists()) {
+            no++;
+            if(index != -1 && index != 0) {
+                proposal = filename.substring(0, index)
+                        + "-" + no + filename.substring(index);
+            }
+            else {
+                proposal = filename + "-" + no;
+            }
+            path.setPath(parent, proposal);
+        }
     }
 }

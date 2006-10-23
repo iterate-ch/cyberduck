@@ -19,8 +19,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.ui.cocoa.growl.Growl;
-import ch.cyberduck.ui.cocoa.CDDownloadQueueValidatorController;
-import ch.cyberduck.ui.cocoa.CDValidatorController;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -36,15 +34,11 @@ import java.util.StringTokenizer;
 public class DownloadQueue extends Queue {
 
     public DownloadQueue() {
-        super(true);
+        super();
     }
 
-    public DownloadQueue(boolean validating) {
-        super(validating);
-    }
-
-    public DownloadQueue(Path root, boolean validating) {
-        super(root, validating);
+    public DownloadQueue(Path root) {
+        super(root);
     }
 
     public NSMutableDictionary getAsDictionary() {
@@ -58,7 +52,7 @@ public class DownloadQueue extends Queue {
     }
 
     public void fireQueueStoppedEvent() {
-        if(this.isComplete() && !this.isCanceled()) {
+        if(this.isComplete() && !this.isCanceled() && !(this.getCurrent() == 0)) {
             this.getSession().message(
                     NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
             Growl.instance().notify(
@@ -100,18 +94,64 @@ public class DownloadQueue extends Queue {
         p.download();
     }
 
-    protected Validator getValidator() {
-        if(!validating) {
-            return new CDValidatorController(this) {
-                protected boolean validateDirectory(Path path) {
-                    return true;
-                }
-
-                protected boolean validateFile(Path p, boolean resumeRequested) {
-                    return true;
-                }
-            };
+    protected boolean validateFile(Path p, boolean resumeRequested, boolean reloadRequested) {
+        if(resumeRequested) { // resume existing files independant of settings in preferences
+            p.readAttributes();
+            p.status.setResume(p.getLocal().exists() && p.getLocal().getSize() > 0);
+            return true;
         }
-        return new CDDownloadQueueValidatorController(this);
+        String action = null;
+        if(reloadRequested) {
+            action = Preferences.instance().getProperty("queue.download.reload.fileExists");
+        }
+        else {
+            action = Preferences.instance().getProperty("queue.download.fileExists");
+        }
+        // When overwriting file anyway we don't have to check if the file already exists
+        if(action.equals(Validator.OVERWRITE)) {
+            log.info("Will overwrite file:" + p.getName());
+            p.status.setResume(false);
+            return true;
+        }
+        p.readAttributes();
+        if(p.getLocal().exists() && p.getLocal().getSize() > 0) {
+            if(action.equals(Validator.RESUME)) {
+                log.debug("Will resume file:" + p.getName());
+                p.status.setResume(true);
+                return true;
+            }
+            if(action.equals(Validator.SIMILAR)) {
+                log.debug("Will rename file:" + p.getName());
+                p.status.setResume(false);
+                this.adjustFilename(p);
+                log.info("Changed local name to:" + p.getLocal().getName());
+                return true;
+            }
+            log.debug("Prompting for file:" + p.getName());
+            return false;
+        }
+        else {
+            p.status.setResume(false);
+            return true;
+        }
+    }
+
+    private void adjustFilename(Path path) {
+        final String parent = path.getLocal().getParent();
+        final String filename = path.getLocal().getName();
+        String proposal = filename;
+        int no = 0;
+        int index = filename.lastIndexOf(".");
+        while(path.getLocal().exists()) {
+            no++;
+            if(index != -1 && index != 0) {
+                proposal = filename.substring(0, index)
+                        + "-" + no + filename.substring(index);
+            }
+            else {
+                proposal = filename + "-" + no;
+            }
+            path.setLocal(new Local(parent, proposal));
+        }
     }
 }

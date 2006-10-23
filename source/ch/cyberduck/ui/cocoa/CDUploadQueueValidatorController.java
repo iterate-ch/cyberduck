@@ -34,11 +34,9 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class CDUploadQueueValidatorController extends CDValidatorController {
-
     private static Logger log = Logger.getLogger(CDUploadQueueValidatorController.class);
 
-    public CDUploadQueueValidatorController(final Queue queue) {
-        super(queue);
+    public CDUploadQueueValidatorController() {
         synchronized(CDQueueController.instance()) {
             if(!NSApplication.loadNibNamed("Validator", this)) {
                 log.fatal("Couldn't load Validator.nib");
@@ -47,77 +45,9 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
         }
     }
 
-    protected boolean validateDirectory(Path p) {
-        if(!p.getRemote().exists()) {
-            //Directory does not exist yet; include so it will be created on the server
-            return true;
-        }
-        //Directory already exists; do not include as this would throw "file already exists"
-        return false;
-    }
-
-    protected boolean validateFile(Path p, boolean resumeRequested) {
-        if(resumeRequested) { // resume existing files independant of settings in preferences
-            p.reset();
-            p.status.setResume(p.exists());
-            return true;
-        }
-        // When overwriting file anyway we don't have to check if the file already exists
-        if(Preferences.instance().getProperty("queue.upload.fileExists").equals(OVERWRITE)) {
-            log.info("Apply validation rule to overwrite file " + p.getName());
-            p.status.setResume(false);
-            return true;
-        }
-        p.reset();
-        if(p.exists()) {
-            if(Preferences.instance().getProperty("queue.upload.fileExists").equals(RESUME)) {
-                log.debug("Apply validation rule to resume:" + p.getName());
-                p.status.setResume(true);
-                return true;
-            }
-            if(Preferences.instance().getProperty("queue.upload.fileExists").equals(SIMILAR)) {
-                log.debug("Apply validation rule to apply similar name:" + p.getName());
-                p.status.setResume(false);
-                this.adjustFilename(p);
-                log.info("Changed local name to " + p.getName());
-                return true;
-            }
-            if(Preferences.instance().getProperty("queue.upload.fileExists").equals(ASK)) {
-                log.debug("Apply validation rule to ask:" + p.getName());
-                this.prompt(p);
-                return false;
-            }
-            throw new IllegalArgumentException("No rules set to validate transfers");
-        }
-        else {
-            p.status.setResume(false);
-            return true;
-        }
-    }
-
-    protected void prompt(Path p) {
-        this.workList.add(p);
-        super.prompt(p);
-    }
-
-    private void adjustFilename(Path path) {
-        final String parent = path.getParent().getAbsolute();
-        final String filename = path.getName();
-        String proposal = filename;
-        int no = 0;
-        int index = filename.lastIndexOf(".");
-        while(path.exists()) {
-            no++;
-            if(index != -1 && index != 0) {
-                proposal = filename.substring(0, index)
-                        + "-" + no + filename.substring(index);
-            }
-            else {
-                proposal = filename + "-" + no;
-            }
-            path.setPath(parent, proposal);
-        }
-    }
+    // ----------------------------------------------------------
+    // NSTableView.DataSource
+    // ----------------------------------------------------------
 
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
         if(row < this.numberOfRowsInTableView(view)) {

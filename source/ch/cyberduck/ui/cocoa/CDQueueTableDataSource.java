@@ -140,7 +140,7 @@ public class CDQueueTableDataSource extends NSObject {
                     synchronized(QueueCollection.instance()) {
                         for (int i = 0; i < elements.count(); i++) {
                             NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                            QueueCollection.instance().add(row, QueueFactory.createQueue(dict));
+                            QueueCollection.instance().add(row, QueueFactory.create(dict));
                             tableView.reloadData();
                             tableView.selectRow(row, false);
                         }

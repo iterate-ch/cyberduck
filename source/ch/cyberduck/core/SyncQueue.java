@@ -37,15 +37,11 @@ import java.util.StringTokenizer;
 public class SyncQueue extends Queue {
 
     public SyncQueue() {
-        super(true);
+        super();
     }
 
-    public SyncQueue(boolean validating) {
-        super(validating);
-    }
-
-    public SyncQueue(Path root, boolean validating) {
-        super(root, validating);
+    public SyncQueue(Path root) {
+        super(root);
     }
 
     public SyncQueue(NSDictionary dict) {
@@ -64,7 +60,7 @@ public class SyncQueue extends Queue {
     }
 
     public void fireQueueStoppedEvent() {
-        if(this.isComplete() && !this.isCanceled()) {
+        if(this.isComplete() && !this.isCanceled() && !(this.getCurrent() == 0)) {
             this.getSession().message(
                     NSBundle.localizedString("Synchronization complete", "Growl", "Growl Notification"));
             Growl.instance().notify(
@@ -146,18 +142,12 @@ public class SyncQueue extends Queue {
         p.sync();
     }
 
-    protected Validator getValidator() {
-        if(!validating) {
-            return new CDValidatorController(this) {
-                protected boolean validateDirectory(Path path) {
-                    return true;
-                }
+    protected boolean validateFile(Path p, boolean resumeRequsted, boolean reloadRequested) {
+        log.debug("Prompting for file:" + p.getName());
+        return false;
+    }
 
-                protected boolean validateFile(Path p, boolean resumeRequested) {
-                    return true;
-                }
-            };
-        }
-        return new CDSyncQueueValidatorController(this);
+    protected boolean validateDirectory(Path p) {
+        return !p.getRemote().exists() || !p.getLocal().exists();
     }
 }

@@ -34,8 +34,7 @@ import java.util.*;
 public class CDSyncQueueValidatorController extends CDValidatorController {
     private static Logger log = Logger.getLogger(CDSyncQueueValidatorController.class);
 
-    public CDSyncQueueValidatorController(final Queue queue) {
-        super(queue);
+    public CDSyncQueueValidatorController() {
         synchronized(CDQueueController.instance()) {
             if(!NSApplication.loadNibNamed("Sync", this)) {
                 log.fatal("Couldn't load Sync.nib");
@@ -48,7 +47,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
      * The list of files for possibly synchronisationw
      * using either the mirror, download or upload option
      */
-    protected List promptList = new ArrayList();
+    private List promptList = new ArrayList();
 
     public void awakeFromNib() {
         this.mirrorRadioCell.setTarget(this);
@@ -96,40 +95,31 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
             this.fileTableView.addTableColumn(c);
         }
         this.fileTableView.sizeToFit();
+        super.awakeFromNib();
     }
 
-    protected boolean validateFile(Path p, boolean resume) {
+    public void prompt(Path p) {
+        // Check if the timestamps are different or either the remote or local file doesn't exist
         if(p.compare() != 0) {
-            // The timestamps are different or either the remote or local file doesn't exist 
-            this.prompt(p);
-        }
-        return false;
-    }
-
-    protected boolean validateDirectory(Path p) {
-        return !p.getRemote().exists() || !p.getLocal().exists();
-    }
-
-    protected void prompt(Path p) {
-        this.promptList.add(p);
-        if(this.mirrorRadioCell.state() == NSCell.OnState) {
-            this.workList.add(p);
-        }
-        if(this.downloadRadioCell.state() == NSCell.OnState) {
-            if(p.getRemote().exists()) {
+            if(!this.parent.hasSheet()) {
+                this.beginSheet(false);
+            }
+            this.promptList.add(p);
+            if(this.mirrorRadioCell.state() == NSCell.OnState) {
                 this.workList.add(p);
             }
-        }
-        if(this.uploadRadioCell.state() == NSCell.OnState) {
-            if(p.getLocal().exists()) {
-                this.workList.add(p);
+            if(this.downloadRadioCell.state() == NSCell.OnState) {
+                if(p.getRemote().exists()) {
+                    this.workList.add(p);
+                }
             }
+            if(this.uploadRadioCell.state() == NSCell.OnState) {
+                if(p.getLocal().exists()) {
+                    this.workList.add(p);
+                }
+            }
+            this.fireDataChanged();
         }
-        super.prompt(p);
-    }
-
-    protected boolean exists(Path p) {
-        return p.getRemote().exists() || p.getLocal().exists();
     }
 
     protected void setEnabled(boolean enabled) {
@@ -198,9 +188,9 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
     public void callback(int returncode) {
         if(returncode == DEFAULT_OPTION) { //sync
             for(Iterator i = this.workList.iterator(); i.hasNext();) {
-                Path p = (Path) i.next();
-                if(!p.isSkipped()) {
-                    this.validatedList.add(p);
+                final Path p = (Path) i.next();
+                if(p.isSkipped()) {
+                    this.workList.remove(p);
                 }
             }
         }

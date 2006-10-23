@@ -173,13 +173,15 @@ public class CDQueueController extends CDWindowController
      * @return true if any transfer is active
      */
     public boolean hasRunningTransfers() {
-        for(int i = 0; i < QueueCollection.instance().size(); i++) {
-            Queue q = (Queue) QueueCollection.instance().get(i);
-            if(q.isRunning()) {
-                return true;
+        synchronized(QueueCollection.instance()) {
+            for(int i = 0; i < QueueCollection.instance().size(); i++) {
+                Queue q = (Queue) QueueCollection.instance().get(i);
+                if(q.isRunning()) {
+                    return true;
+                }
             }
+            return false;
         }
-        return false;
     }
 
     /*
@@ -198,10 +200,12 @@ public class CDQueueController extends CDWindowController
                 instance.alert(sheet, new CDSheetCallback() {
                     public void callback(int returncode) {
                         if(returncode == DEFAULT_OPTION) { //Quit
-                            for(int i = 0; i < QueueCollection.instance().size(); i++) {
-                                Queue queue = (Queue) QueueCollection.instance().get(i);
-                                if(queue.isRunning()) {
-                                    queue.interrupt();
+                            synchronized(QueueCollection.instance()) {
+                                for(int i = 0; i < QueueCollection.instance().size(); i++) {
+                                    Queue queue = (Queue) QueueCollection.instance().get(i);
+                                    if(queue.isRunning()) {
+                                        queue.interrupt();
+                                    }
                                 }
                             }
                             NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
@@ -240,10 +244,12 @@ public class CDQueueController extends CDWindowController
             }
 
             public void tableRowDoubleClicked(final Object sender) {
-                if(CDQueueController.this.queueTable.selectedRow() != -1) {
-                    Queue item = (Queue) QueueCollection.instance().get(CDQueueController.this.queueTable.selectedRow());
-                    if(!item.isRunning()) {
-                        reloadButtonClicked(sender);
+                synchronized(QueueCollection.instance()) {
+                    if(CDQueueController.this.queueTable.selectedRow() != -1) {
+                        Queue item = (Queue) QueueCollection.instance().get(CDQueueController.this.queueTable.selectedRow());
+                        if(!item.isRunning()) {
+                            reloadButtonClicked(sender);
+                        }
                     }
                 }
             }
@@ -318,31 +324,33 @@ public class CDQueueController extends CDWindowController
      * Highlights the currently selected item and udpates the text fields
      */
     private void updateSelection() {
-        boolean key = window().isKeyWindow();
-        for(int i = 0; i < QueueCollection.instance().size(); i++) {
-            QueueCollection.instance().getController(i).setHighlighted(queueTable.isRowSelected(i) && key);
-        }
-        if(queueTable.selectedRow() != -1) {
-            final Queue q = (Queue) QueueCollection.instance().get(queueTable.selectedRow());
-            if(q.numberOfRoots() == 1) {
-                urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()
-                        + q.getRoot().getAbsolute(),
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
-                localField.setAttributedStringValue(new NSAttributedString(q.getRoot().getLocal().getAbsolute(),
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
+        synchronized(QueueCollection.instance()) {
+            boolean key = window().isKeyWindow();
+            for(int i = 0; i < QueueCollection.instance().size(); i++) {
+                QueueCollection.instance().getController(i).setHighlighted(queueTable.isRowSelected(i) && key);
+            }
+            if(queueTable.selectedRow() != -1) {
+                final Queue q = (Queue) QueueCollection.instance().get(queueTable.selectedRow());
+                if(q.numberOfRoots() == 1) {
+                    urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()
+                            + q.getRoot().getAbsolute(),
+                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                    localField.setAttributedStringValue(new NSAttributedString(q.getRoot().getLocal().getAbsolute(),
+                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                }
+                else {
+                    urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL(),
+                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                    localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiple files", ""),
+                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                }
             }
             else {
-                urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL(),
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
-                localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiple files", ""),
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
+                urlField.setStringValue("");
+                localField.setStringValue("");
             }
+            toolbar.validateVisibleItems();
         }
-        else {
-            urlField.setStringValue("");
-            localField.setStringValue("");
-        }
-        toolbar.validateVisibleItems();
     }
 
     // ----------------------------------------------------------
@@ -365,7 +373,7 @@ public class CDQueueController extends CDWindowController
      * @param queue
      */
     public void removeItem(Queue queue) {
-        synchronized(CDQueueController.instance()) {
+        synchronized(QueueCollection.instance()) {
             QueueCollection.instance().remove(queue);
             this.reloadQueueTable();
         }
@@ -377,7 +385,7 @@ public class CDQueueController extends CDWindowController
      * @param queue
      */
     public void addItem(Queue queue) {
-        synchronized(CDQueueController.instance()) {
+        synchronized(QueueCollection.instance()) {
             int row = QueueCollection.instance().size();
             QueueCollection.instance().add(row, queue);
             this.reloadQueueTable();
@@ -387,18 +395,24 @@ public class CDQueueController extends CDWindowController
     }
 
     /**
+     *
      * @param queue
      */
-    public void startItem(Queue queue) {
-        this.addItem(queue);
-        this.startItem(queue, false);
+    public void startItem(final Queue queue) {
+        this.startItem(queue, false, false);
     }
 
     /**
      * @param queue
      * @param resumeRequested
+     * @param reloadRequested
      */
-    private void startItem(final Queue queue, final boolean resumeRequested) {
+    public void startItem(final Queue queue, final boolean resumeRequested, final boolean reloadRequested) {
+        synchronized(QueueCollection.instance()) {
+            if(!QueueCollection.instance().contains(queue)) {
+                this.addItem(queue);
+            }
+        }
         queue.addListener(new QueueListener() {
             private TranscriptListener transcript;
             private ProgressListener progress;
@@ -510,7 +524,7 @@ public class CDQueueController extends CDWindowController
         new Thread() {
             public void run() {
                 int pool = NSAutoreleasePool.push();
-                queue.run(resumeRequested);
+                queue.run(resumeRequested, reloadRequested, true);
                 NSAutoreleasePool.pop(pool);
             }
         }.start();
@@ -610,7 +624,7 @@ public class CDQueueController extends CDWindowController
                 NSArray elements = (NSArray) o;
                 for(int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                    QueueCollection.instance().add(QueueFactory.createQueue(dict));
+                    QueueCollection.instance().add(QueueFactory.create(dict));
                 }
                 pboard.setPropertyListForType(null, "QueuePBoardType");
                 this.reloadQueueTable();
@@ -619,50 +633,42 @@ public class CDQueueController extends CDWindowController
     }
 
     public void stopButtonClicked(final Object sender) {
-        synchronized(sender) {
-            NSEnumerator iterator = queueTable.selectedRowEnumerator();
-            while(iterator.hasMoreElements()) {
-                Queue queue = (Queue) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
-                if(queue.isRunning()) {
-                    queue.cancel();
-                }
+        NSEnumerator iterator = queueTable.selectedRowEnumerator();
+        while(iterator.hasMoreElements()) {
+            Queue queue = (Queue) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
+            if(queue.isRunning()) {
+                queue.cancel();
             }
         }
     }
 
     public void stopAllButtonClicked(final Object sender) {
-        synchronized(sender) {
-            for(int i = 0; i < QueueCollection.instance().size(); i++) {
-                Queue queue = (Queue) QueueCollection.instance().get(i);
-                if(queue.isRunning()) {
-                    queue.cancel();
-                }
+        for(int i = 0; i < QueueCollection.instance().size(); i++) {
+            Queue queue = (Queue) QueueCollection.instance().get(i);
+            if(queue.isRunning()) {
+                queue.cancel();
             }
         }
     }
 
     public void resumeButtonClicked(final Object sender) {
-        synchronized(sender) {
-            NSEnumerator iterator = queueTable.selectedRowEnumerator();
-            while(iterator.hasMoreElements()) {
-                int i = ((Integer) iterator.nextElement()).intValue();
-                Queue queue = (Queue) QueueCollection.instance().get(i);
-                if(!queue.isRunning()) {
-                    this.startItem(queue, true);
-                }
+        NSEnumerator iterator = queueTable.selectedRowEnumerator();
+        while(iterator.hasMoreElements()) {
+            int i = ((Integer) iterator.nextElement()).intValue();
+            Queue queue = (Queue) QueueCollection.instance().get(i);
+            if(!queue.isRunning()) {
+                this.startItem(queue, true, false);
             }
         }
     }
 
     public void reloadButtonClicked(final Object sender) {
-        synchronized(sender) {
-            NSEnumerator iterator = queueTable.selectedRowEnumerator();
-            while(iterator.hasMoreElements()) {
-                int i = ((Integer) iterator.nextElement()).intValue();
-                Queue queue = (Queue) QueueCollection.instance().get(i);
-                if(!queue.isRunning()) {
-                    this.startItem(queue, false);
-                }
+        NSEnumerator iterator = queueTable.selectedRowEnumerator();
+        while(iterator.hasMoreElements()) {
+            int i = ((Integer) iterator.nextElement()).intValue();
+            Queue queue = (Queue) QueueCollection.instance().get(i);
+            if(!queue.isRunning()) {
+                this.startItem(queue, false, true);
             }
         }
     }
@@ -742,7 +748,6 @@ public class CDQueueController extends CDWindowController
     public void clearButtonClicked(final Object sender) {
         for(int i = 0; i < QueueCollection.instance().size(); i++) {
             CDProgressController c = QueueCollection.instance().getController(i);
-//            c.closeErrors();
             if(!c.getQueue().isRunning() && c.getQueue().isComplete()) {
                 QueueCollection.instance().remove(i);
                 i--;
@@ -808,7 +813,7 @@ public class CDQueueController extends CDWindowController
                     NSArray elements = (NSArray) o;
                     for(int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                        Queue q = QueueFactory.createQueue(dict);
+                        Queue q = QueueFactory.create(dict);
                         if(q.numberOfRoots() == 1)
                             item.setTitle(NSBundle.localizedString("Paste", "Menu item") + " \""
                                     + q.getRoot().getName() + "\"");
@@ -854,45 +859,53 @@ public class CDQueueController extends CDWindowController
                 return false;
             }
             NSEnumerator iterator = queueTable.selectedRowEnumerator();
-            while(iterator.hasMoreElements()) {
-                Queue queue = (Queue) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
-                if(null == queue) {
-                    return false;
-                }
-                if(!queue.isRunning()) {
-                    return false;
+            synchronized(QueueCollection.instance()) {
+                while(iterator.hasMoreElements()) {
+                    Queue queue = (Queue) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
+                    if(null == queue) {
+                        return false;
+                    }
+                    if(queue.isRunning()) {
+                        return true;
+                    }
                 }
             }
-            return true;
+            return false;
         }
         if(identifier.equals("resumeButtonClicked:")) {
             if(this.queueTable.numberOfSelectedRows() > 0) {
-                Queue queue = (Queue) QueueCollection.instance().get(this.queueTable.selectedRow());
-                if(null == queue) {
-                    return false;
+                synchronized(QueueCollection.instance()) {
+                    Queue queue = (Queue) QueueCollection.instance().get(this.queueTable.selectedRow());
+                    if(null == queue) {
+                        return false;
+                    }
+                    return !queue.isRunning() && !queue.isComplete();
                 }
-                return !queue.isRunning() && !queue.isComplete();
             }
             return false;
         }
         if(identifier.equals("reloadButtonClicked:")) {
             if(this.queueTable.numberOfSelectedRows() > 0) {
-                Queue queue = (Queue) QueueCollection.instance().get(this.queueTable.selectedRow());
-                if(null == queue) {
-                    return false;
+                synchronized(QueueCollection.instance()) {
+                    Queue queue = (Queue) QueueCollection.instance().get(this.queueTable.selectedRow());
+                    if(null == queue) {
+                        return false;
+                    }
+                    return !queue.isRunning();
                 }
-                return !queue.isRunning();
             }
             return false;
         }
         if(identifier.equals("openButtonClicked:")
                 || identifier.equals(TOOLBAR_SHOW) || identifier.equals("revealButtonClicked:")) {
             if(this.queueTable.numberOfSelectedRows() == 1) {
-                Queue queue = (Queue) QueueCollection.instance().get(this.queueTable.selectedRow());
-                if(null == queue) {
-                    return false;
+                synchronized(QueueCollection.instance()) {
+                    Queue queue = (Queue) QueueCollection.instance().get(this.queueTable.selectedRow());
+                    if(null == queue) {
+                        return false;
+                    }
+                    return queue.getRoot().getLocal().exists();
                 }
-                return queue.getRoot().getLocal().exists();
             }
             return false;
         }
@@ -905,12 +918,14 @@ public class CDQueueController extends CDWindowController
             }
             NSEnumerator iterator = queueTable.selectedRowEnumerator();
             while(iterator.hasMoreElements()) {
-                Queue queue = (Queue) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
-                if(null == queue) {
-                    return false;
-                }
-                if(queue.isRunning()) {
-                    return false;
+                synchronized(QueueCollection.instance()) {
+                    Queue queue = (Queue) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
+                    if(null == queue) {
+                        return false;
+                    }
+                    if(queue.isRunning()) {
+                        return false;
+                    }
                 }
             }
             return true;

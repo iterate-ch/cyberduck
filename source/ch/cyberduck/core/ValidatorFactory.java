@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- *  Copyright (c) 2005 David Kocher. All rights reserved.
+ *  Copyright (c) 2006 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,34 +18,25 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.*;
-import java.util.Collection;
+import ch.cyberduck.ui.cocoa.CDSyncQueueValidatorController;
+import ch.cyberduck.ui.cocoa.CDUploadQueueValidatorController;
+import ch.cyberduck.ui.cocoa.CDDownloadQueueValidatorController;
 
 /**
  * @version $Id$
  */
-public interface Validator {
+public class ValidatorFactory {
 
-    public static final String OVERWRITE = "overwrite";
-    public static final String RESUME = "resume";
-    public static final String SIMILAR = "similar";
-    public static final String ASK = "ask";
-
-    /**
-     *
-     * @param p
-     */
-    public void prompt(Path p);
-
-    /**
-     *
-     * @return
-     */
-    public Collection result();
-
-    /**
-     * 
-     * @return
-     */
-    public boolean isCanceled();
+    public static Validator create(Queue q) {
+        if(q instanceof DownloadQueue) {
+            return new CDDownloadQueueValidatorController();
+        }
+        if(q instanceof UploadQueue) {
+            return new CDUploadQueueValidatorController();
+        }
+        if(q instanceof SyncQueue) {
+            return new CDSyncQueueValidatorController();
+        }
+        return null;
+    }
 }

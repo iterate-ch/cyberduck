@@ -32,7 +32,7 @@ public abstract class QueueFactory {
     public static final int KIND_UPLOAD = 1;
     public static final int KIND_SYNC = 2;
 
-    public static Queue createQueue(NSDictionary dict) {
+    public static Queue create(NSDictionary dict) {
         Object kindObj = dict.objectForKey("Kind");
         if (kindObj != null) {
             int kind = Integer.parseInt((String) kindObj);

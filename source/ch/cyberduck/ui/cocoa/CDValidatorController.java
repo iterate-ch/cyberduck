@@ -18,7 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Validator;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Status;
+import ch.cyberduck.core.Preferences;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -28,138 +31,61 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Collection;
 
 /**
  * @version $Id$
  */
 public abstract class CDValidatorController
         extends CDSheetController implements Validator {
-
     private static Logger log = Logger.getLogger(CDValidatorController.class);
-
-    private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
-
-    static {
-        lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
-    }
-
-    protected static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
-            new Object[]{NSAttributedString.ParagraphStyleAttributeName});
-
-
-    protected Queue queue;
-
-    public CDValidatorController(final Queue queue) {
-        super(CDQueueController.instance());
-        this.queue = queue;
-    }
-
-    public void callback(int returncode) {
-        if (returncode == DEFAULT_OPTION || returncode == ALTERNATE_OPTION) { //overwrite || resume
-            for (Iterator i = workList.iterator(); i.hasNext();) {
-                Path p = (Path) i.next();
-                if (!p.isSkipped()) {
-                    p.status.setResume(returncode == ALTERNATE_OPTION);
-                    this.validatedList.add(p);
-                }
-            }
-        }
-        if (returncode == SKIP_OPTION) { //skip
-            this.workList.clear();
-        }
-        if (returncode == CANCEL_OPTION) {
-            this.validatedList.clear();
-            this.workList.clear();
-            this.queue.cancel();
-        }
-    }
-
-    /**
-     * The list of files ready to transfer
-     */
-    protected List validatedList = new ArrayList();
 
     /**
      * The list of files displayed in the table to be included or excluded by the user
      */
     protected List workList = new ArrayList();
 
-    public List validate(final boolean resumeRequested) {
-        List childs = this.queue.getChilds();
-        for (Iterator iter = childs.iterator(); iter.hasNext();) {
-            if(this.queue.isCanceled()) {
-                break;
+    public Collection result() {
+        this.statusIndicator.stopAnimation(null);
+        this.setEnabled(true);
+        this.waitForSheetEnd();
+        return workList;
+    }
+
+    private boolean canceled = false;
+
+    public boolean isCanceled() {
+        return this.canceled;
+    }
+
+    public CDValidatorController() {
+        super(CDQueueController.instance());
+    }
+
+    public void callback(int returncode) {
+        if (returncode == DEFAULT_OPTION || returncode == ALTERNATE_OPTION) { //overwrite || resume
+            for (Iterator i = workList.iterator(); i.hasNext();) {
+                final Path p = (Path) i.next();
+                if (p.isSkipped()) {
+                    this.workList.remove(p);
+                    continue;
+                }
+                p.status.setResume(returncode == ALTERNATE_OPTION);
             }
-            Path child = (Path) iter.next();
-            log.debug("Validating:" + child);
-            if (this.validate(child, resumeRequested)) {
-                log.info("Adding " + child + " to final set.");
-                this.validatedList.add(child);
-            }
         }
-        if (this.hasPrompt()) {
-            this.statusIndicator.stopAnimation(null);
-            this.fileTableView.reloadData();
-            this.setEnabled(true);
-            this.waitForSheetEnd();
+        if (returncode == SKIP_OPTION || returncode == CANCEL_OPTION) { //skip
+            this.workList.clear();
         }
-        return this.validatedList;
+        if (returncode == CANCEL_OPTION) {
+            this.canceled = true;
+        }
     }
 
-    /**
-     *
-     * @param p
-     * @param resumeRequested
-     * @return true if the file can be added to the queue withtout confirmation
-     */
-    protected boolean validate(Path p, boolean resumeRequested) {
-        if (p.attributes.isFile()) {
-            return this.validateFile(p, resumeRequested);
-        }
-        if (p.attributes.isDirectory()) {
-            return this.validateDirectory(p);
-        }
-        throw new IllegalArgumentException(p.getName() + " is neither file nor directory");
-    }
-
-    /**
-     *
-     * @param path
-     * @return true if the directory should be added to the queue
-     */
-    protected abstract boolean validateDirectory(Path path);
-
-    /**
-     *
-     * @param p
-     * @param resumeRequested
-     * @return true if the file should be added to the queue
-     */
-    protected abstract boolean validateFile(Path p, boolean resumeRequested);
-
-    /**
-     * true if some files need confirmation from the user
-     */
-    protected boolean hasPrompt = false;
-
-    /**
-     *
-     * @return true if the sheet dialog is displayed
-     */
-    protected boolean hasPrompt() {
-        return this.hasPrompt;
-    }
-
-    /**
-     * Add the file to the dialog requesting the user to decide for includsion
-     * @param p
-     */
-    protected void prompt(Path p) {
-        if (!this.hasPrompt()) {
+    public void prompt(Path p) {
+        if(!this.parent.hasSheet()) {
             this.beginSheet(false);
-            this.statusIndicator.startAnimation(null);
-            this.hasPrompt = true;
         }
+        this.workList.add(p);
         this.fireDataChanged();
     }
 
@@ -216,6 +142,7 @@ public abstract class CDValidatorController
         this.statusIndicator = f;
         this.statusIndicator.setUsesThreadedAnimation(true);
         this.statusIndicator.setDisplayedWhenStopped(false);
+        this.statusIndicator.startAnimation(null);
     }
 
     protected NSTableView fileTableView; // IBOutlet
@@ -258,15 +185,15 @@ public abstract class CDValidatorController
                         if (p.getLocal().exists()) {
                             localURLField.setAttributedStringValue(
                                     new NSAttributedString(p.getLocal().getAbsolute(),
-                                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
                             localURLField.setHidden(false);
                             localSizeField.setAttributedStringValue(
                                     new NSAttributedString(Status.getSizeAsString(p.getLocal().attributes.getSize()),
-                                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
                             localSizeField.setHidden(false);
                             localModificationField.setAttributedStringValue(
                                     new NSAttributedString(CDDateFormatter.getLongFormat(p.getLocal().attributes.getTimestamp()),
-                                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
                             localModificationField.setHidden(false);
                         }
                         else {
@@ -277,15 +204,15 @@ public abstract class CDValidatorController
                         if (p.getRemote().exists()) {
                             remoteURLField.setAttributedStringValue(
                                     new NSAttributedString(p.getRemote().getHost().getURL() + p.getRemote().getAbsolute(),
-                                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
                             remoteURLField.setHidden(false);
                             remoteSizeField.setAttributedStringValue(
                                     new NSAttributedString(Status.getSizeAsString(p.getRemote().attributes.getSize()),
-                                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
                             remoteSizeField.setHidden(false);
                             remoteModificationField.setAttributedStringValue(
                                     new NSAttributedString(CDDateFormatter.getLongFormat(p.getRemote().attributes.getTimestamp()),
-                                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
                             remoteModificationField.setHidden(false);
                         }
                         else {
@@ -449,9 +376,7 @@ public abstract class CDValidatorController
     }
 
     protected void fireDataChanged() {
-        if (this.hasPrompt()) {
-            this.fileTableView.noteNumberOfRowsChanged();
-        }
+        this.fileTableView.noteNumberOfRowsChanged();
     }
 
     // ----------------------------------------------------------

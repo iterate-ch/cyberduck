@@ -35,30 +35,44 @@ import java.io.IOException;
 public abstract class Queue extends NSObject {
     protected static Logger log = Logger.getLogger(Queue.class);
 
-    //	private Worker worker;
+    /**
+     *
+     */
     private List roots = new ArrayList();
+
+    /**
+     * Contains all references to #Path
+     */
     protected List jobs;
-
-    protected double size = -1;
-    private double current = 0;
-
-    private boolean canceled;
 
     /**
      *
      */
-    protected boolean validating;
+    protected double size = -1;
+
+    /**
+     *
+     */
+    private double current = 0;
+
+    /**
+     * The transfer has been canceled and not continue any forther processing
+     */
+    private boolean canceled;
 
     /**
      * Creating an empty queue containing no items. Items have to be added later
      * using the <code>addRoot</code> method.
      */
-    public Queue(boolean validating) {
-        this.validating = validating;
+    public Queue() {
+
     }
 
-    public Queue(Path root, boolean validating) {
-        this(validating);
+    /**
+     *
+     * @param root
+     */
+    public Queue(Path root) {
         this.roots.add(root);
     }
 
@@ -109,7 +123,6 @@ public abstract class Queue extends NSObject {
     }
 
     public Queue(NSDictionary dict) {
-        this(true);
         Object hostObj = dict.objectForKey("Host");
         if(hostObj != null) {
             Host host = new Host((NSDictionary) hostObj);
@@ -180,7 +193,7 @@ public abstract class Queue extends NSObject {
 
     public List getChilds() {
         List childs = new ArrayList();
-        for(Iterator rootIter = this.getRoots().iterator(); rootIter.hasNext() && !canceled;) {
+        for(Iterator rootIter = this.getRoots().iterator(); rootIter.hasNext() && !this.isCanceled();) {
             this.getChilds(childs, (Path) rootIter.next());
         }
         return childs;
@@ -211,14 +224,24 @@ public abstract class Queue extends NSObject {
     protected abstract void transfer(Path p);
 
     /**
+     * 
+     * @param interactive
+     */
+    public void run(final boolean interactive) {
+        this.run(false, false, interactive);
+    }
+
+    /**
      * Process the queue. All files will be downloaded/uploaded/synced rerspectively.
      *
-     * @param resume   The user requested to resume the transfer
+     * @param resumeRequested The user requested to resume the transfer
+     * @param reloadRequested The user requested to reload the transfer
+     * @param interactive If false, run interactive and include questionable files nonetheless
      */
-    public void run(final boolean resume) {
+    public void run(final boolean resumeRequested, final boolean reloadRequested, boolean interactive) {
         try {
-            canceled = false;
-            fireQueueStartedEvent();
+            this.canceled = false;
+            this.fireQueueStartedEvent();
             try {
                 this.getSession().connect();
             }
@@ -226,21 +249,20 @@ public abstract class Queue extends NSObject {
                 this.getSession().error(e);
                 this.cancel();
             }
-            if(canceled) {
+            if(this.isCanceled()) {
                 return;
             }
-            Validator validator = this.getValidator();
-            List validated = validator.validate(resume);
-            if(canceled) {
+            List validated = this.validate(resumeRequested, reloadRequested, interactive);
+            if(this.isCanceled()) {
                 return;
             }
-            jobs = validated;
-            reset();
+            this.jobs = validated;
+            this.reset();
             for(Iterator iter = jobs.iterator(); iter.hasNext();) {
                 if(!this.getSession().isConnected()) {
                     this.cancel();
                 }
-                if(canceled) {
+                if(this.isCanceled()) {
                     return;
                 }
                 final Path path = (Path)iter.next();
@@ -256,14 +278,74 @@ public abstract class Queue extends NSObject {
         }
     }
 
-    protected abstract Validator getValidator();
+    private List validate(final boolean resumeRequested, final boolean reloadRequested, boolean interactive) {
+        final List childs = this.getChilds();
+        final List validated = new ArrayList();
+        Validator v = null;
+        for (Iterator iter = childs.iterator(); iter.hasNext();) {
+            if(this.isCanceled()) {
+                break;
+            }
+            Path child = (Path) iter.next();
+            log.debug("Validating:" + child);
+            if (child.attributes.isFile()) {
+                if(this.validateFile(child, resumeRequested, reloadRequested)) {
+                    log.info("Adding " + child + " to final set.");
+                    validated.add(child);
+                }
+                else {
+                    if(interactive) {
+                        if(null == v) {
+                            v = ValidatorFactory.create(this);
+                        }
+                        v.prompt(child);
+                    }
+                    else {
+                        validated.add(child);
+                    }
+                }
+            }
+            if (child.attributes.isDirectory()) {
+                if(this.validateDirectory(child)) {
+                    log.info("Adding " + child + " to final set.");
+                    validated.add(child);
+                }
+            }
+        }
+        if(null != v) {
+            validated.addAll(v.result());
+            if(v.isCanceled()) {
+                this.cancel();
+            }
+        }
+        return validated;
+    }
+
+    /**
+     *
+     * @param path
+     * @return true if the directory should be added to the queue
+     */
+    protected boolean validateDirectory(Path path) {
+        return true;
+    }
+
+    /**
+     *
+     * @param p
+     * @param resumeRequested
+     * @return true if the file should be added to the queue
+     */
+    protected boolean validateFile(Path p, boolean resumeRequested, boolean reloadRequested) {
+        return true;
+    }
 
     public void interrupt() {
         this.getSession().interrupt();
     }
 
     public void cancel() {
-        if(canceled) {
+        if(this.isCanceled()) {
             // Called prevously; now force
             this.interrupt();
         }
