@@ -5,6 +5,8 @@ Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
 2.6.3 [http://trac.cyberduck.ch/query?status=closed&milestone=2.6.3]
+- [Feature] Don't block user interface when working in browser. All potentially lengthy operations are now performed in the background [#921]
+- [Feature] All (possibly stalled) operations in progress can be interrupted [#943]
 - [Feature] A default bookmark can be configured [#915]
 - [Feature] Option to disable spring-loaded folders [#98]
 - [Feature] Individual settings how to treat duplicate files on uploads and downloads [#500]
@@ -13,7 +15,8 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] The bottom of the browser window shows the security status [#9]
 - [Feature] Improvements to the AppleScript dictionary [#737, #918, #878, #922]
 - [Feature] When duplicating files, propose a filename containing the current date and time [#912]
-- [Bugfix] Honor the existing permissions when replacing files [#]
+- [Feature] Added JarInspector to the list of supported editors (http://www.cgerdes.com) [#--]
+- [Bugfix] Honor the existing permissions when replacing files [#--]
 
 2.6.2 [http://trac.cyberduck.ch/query?status=closed&milestone=2.6.2]
 - [Bugfix] Crash when typing hostname in connection dialog for some users [#711]
