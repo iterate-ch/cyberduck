@@ -157,8 +157,8 @@
 		<copy todir="${app.bundle.loc}/Contents/Resources/${localization}.lproj">
 			<fileset dir="${app.resources}/en.lproj">
 				<include name="Queue.nib/**"/>
-				<include name="TransferError.nib/**"/>
-				<include name="BrowserError.nib/**"/>
+				<include name="Progress.nib/**"/>
+				<include name="Security.nib/**"/>
 			</fileset>
 		</copy>
 		<chmod perm="a+x" type="file">
