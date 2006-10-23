@@ -30,11 +30,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -921,24 +917,42 @@ public class CDBrowserController extends CDWindowController
                 }
             }
 
+            /**
+             * Container for all paths currently being expanded in the background
+             */
+            private List isLoadingListingInBackground = new ArrayList();
+
             public boolean outlineViewShouldExpandItem(final NSOutlineView view, final Object item) {
-                boolean cached = getSession().cache().containsKey((Path)item);
-                if(!cached) {
-                    // If the path is not cached, then don't allow expansion as this would
-                    // cause the interface to hang. Delay until the listing has been fetched
-                    // in the background
-                    background(new Runnable() {
-                        public void run() {
-                            ((Path)item).list();
-                            invoke(new Runnable() {
-                                public void run() {
-                                    view.expandItem(item);
-                                }
-                            });
-                        }
-                    });
+                log.debug("outlineViewShouldExpandItem:"+item);
+                // Check first if it hasn't been already requested so we don't spawn
+                // a multitude of unecessary threads
+                if(!isLoadingListingInBackground.contains(item)) {
+                    boolean cached = ((Path)item).getSession().cache().containsKey((Path)item);
+                    if(!cached) {
+                        isLoadingListingInBackground.add(item);
+                        // If the path is not cached, then don't allow expansion as this would
+                        // cause the interface to hang. Delay until the listing has been fetched
+                        // in the background
+                        background(new Runnable() {
+                            public void run() {
+                                ((Path)item).list();
+                                isLoadingListingInBackground.remove(item);
+                                invoke(new Runnable() {
+                                    public void run() {
+                                        // The outline view asumes the item has been sucessfully expanded altough
+                                        // we returned false before. Therefore we first collapse it otherwise
+                                        // the expandItem method does nothing
+                                        view.collapseItem(item);
+                                        view.expandItem(item);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    // Only allow the item to be expanded if it is already cached
+                    return cached;
                 }
-                return cached;
+                return true;
             }
 
             public void outlineViewItemDidExpand(NSNotification notification) {
@@ -2461,6 +2475,13 @@ public class CDBrowserController extends CDWindowController
                         spinner.startAnimation(this);
                         action.run();
                     }
+                    catch(NullPointerException e) {
+                        // We might get a null pointer if the session has been interrupted
+                        // during the action in progress and closing the underlying socket
+                        // asynchronously. See Session#interrupt
+                        log.info("Due to closing the underlying socket asynchronously, the " +
+                                "action was interrupted while still pending completion");
+                    }
                     finally {
                         invoke(new Runnable() {
                             public void run() {
@@ -2469,8 +2490,8 @@ public class CDBrowserController extends CDWindowController
                             }
                         });
                     }
+                    log.debug("Releasing lock for background runnable:"+action);
                 }
-                log.debug("Released lock for background runnable:"+action);
             }
         }.start();
         log.debug("Started background runnable:"+action);
@@ -2604,14 +2625,14 @@ public class CDBrowserController extends CDWindowController
                         // Update the status label at the bottom of the browser window
                         statusLabel.setAttributedStringValue(new NSAttributedString(msg,
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
-                        statusLabel.display();
+//                        statusLabel.display();
                     }
 
                     public void error(final Exception e) {
                         // Update the status label at the bottom of the browser window
                         statusLabel.setAttributedStringValue(new NSAttributedString(getErrorText(e),
                                 TRUNCATE_MIDDLE_BOLD_RED_FONT_ATTRIBUTES));
-                        statusLabel.display();
+//                        statusLabel.display();
                         invoke(new Runnable() {
                             public void run() {
                                 synchronized(lock) {
@@ -2635,7 +2656,6 @@ public class CDBrowserController extends CDWindowController
                         }
                     }
                 });
-                window.toolbar().validateVisibleItems();
             }
 
             public void connectionDidOpen() {
@@ -2673,11 +2693,21 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void activityStarted() {
-                window.toolbar().validateVisibleItems();
+                invoke(new Runnable() {
+                    public void run() {
+                        statusLabel.display();
+                        window.toolbar().validateVisibleItems();
+                    }
+                });
             }
 
             public void activityStopped() {
-                window.toolbar().validateVisibleItems();
+                invoke(new Runnable() {
+                    public void run() {
+                        statusLabel.display();
+                        window.toolbar().validateVisibleItems();
+                    }
+                });
             }
         });
         this.getFocus();
@@ -3128,6 +3158,20 @@ public class CDBrowserController extends CDWindowController
                 item.setImage(NSImage.imageNamed("pencil.tiff"));
             }
         }
+        if(identifier.equals("disconnectButtonClicked:")) {
+            if(activityRunning) {
+                item.setLabel(NSBundle.localizedString(TOOLBAR_INTERRUPT, "Toolbar item"));
+                item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_INTERRUPT, "Toolbar item"));
+                item.setToolTip(NSBundle.localizedString("Cancel current operation in progress", "Toolbar item tooltip"));
+                item.setImage(NSImage.imageNamed("stop.tiff"));
+            }
+            else {
+                item.setLabel(NSBundle.localizedString(TOOLBAR_DISCONNECT, "Toolbar item"));
+                item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_DISCONNECT, "Toolbar item"));
+                item.setToolTip(NSBundle.localizedString("Disconnect from server", "Toolbar item tooltip"));
+                item.setImage(NSImage.imageNamed("eject.tiff"));
+            }
+        }
         return this.validateItem(identifier);
     }
 
@@ -3356,15 +3400,6 @@ public class CDBrowserController extends CDWindowController
             item.setAction(new NSSelector("disconnectButtonClicked", new Class[]{Object.class}));
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_INTERRUPT)) {
-            item.setLabel(NSBundle.localizedString(TOOLBAR_INTERRUPT, "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_INTERRUPT, "Toolbar item"));
-            item.setToolTip(NSBundle.localizedString("Cancel current operation in progress", "Toolbar item tooltip"));
-            item.setImage(NSImage.imageNamed("stop.tiff"));
-            item.setTarget(this);
-            item.setAction(new NSSelector("interruptButtonClicked", new Class[]{Object.class}));
-            return item;
-        }
         // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
         // Returning null will inform the toolbar this kind of item is not supported.
         return null;
@@ -3411,7 +3446,6 @@ public class CDBrowserController extends CDWindowController
                 TOOLBAR_NEW_FOLDER,
                 TOOLBAR_GET_INFO,
                 TOOLBAR_DISCONNECT,
-                TOOLBAR_INTERRUPT,
                 NSToolbarItem.CustomizeToolbarItemIdentifier,
                 NSToolbarItem.SpaceItemIdentifier,
                 NSToolbarItem.SeparatorItemIdentifier,

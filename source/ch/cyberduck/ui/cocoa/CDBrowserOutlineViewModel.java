@@ -73,6 +73,10 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
                 item = controller.workdir();
             }
             log.debug("outlineViewNumberOfChildrenOfItem:"+item.getName());
+            boolean cached = ((Path)item).getSession().cache().containsKey((Path)item);
+            if(!cached) {
+                return 0;
+            }
             return this.childs(item).size();
         }
         return 0;
