@@ -431,7 +431,11 @@ public class CDQueueController extends CDWindowController
             }
 
             public void queueStarted() {
-                toolbar.validateVisibleItems();
+                invoke(new Runnable() {
+                    public void run() {
+                        window.toolbar().validateVisibleItems();
+                    }
+                });
                 queue.getSession().addTranscriptListener(transcript = new TranscriptListener() {
                     public void log(String message) {
                         // Currently no logging because of many crashes; must be some concurrency
@@ -479,7 +483,11 @@ public class CDQueueController extends CDWindowController
             }
 
             public void queueStopped() {
-                toolbar.validateVisibleItems();
+                invoke(new Runnable() {
+                    public void run() {
+                        window.toolbar().validateVisibleItems();
+                    }
+                });
                 if(queue.isComplete()) {
                     if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
                         if(!hasRunningTransfers()) {
