@@ -182,7 +182,7 @@ public abstract class Path extends NSObject {
     /**
      *
      */
-    public abstract void reset();
+    public abstract void readAttributes();
 
     /**
      * Reference to the parent created lazily if needed
@@ -601,14 +601,14 @@ public abstract class Path extends NSObject {
      */
     public int compare() {
         if(this.getRemote().exists() && this.getLocal().exists()) {
-            Calendar remote = this.getCalendar(
-                    this.getRemote().attributes.getTimestamp(),
-                    Calendar.MINUTE);
-            Calendar local = this.getCalendar(
-                    this.getLocal().getTimestamp(),
-                    Calendar.MINUTE);
             int size = this.compareSize(); //fist make sure both files are larger than 0 bytes
             if(0 == size) {
+                Calendar remote = this.getCalendar(
+                        this.getRemote().attributes.getTimestamp(),
+                        Calendar.MINUTE);
+                Calendar local = this.getCalendar(
+                        this.getLocal().getTimestamp(),
+                        Calendar.MINUTE);
                 //both files have a valid size; compare using timestamp
                 if(local.before(remote)) {
                     //remote file is newser

@@ -229,7 +229,7 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void reset() {
+    public void readAttributes() {
         synchronized(session) {
             if(this.attributes.isFile() && this.attributes.isUndefined()) {
                 if(this.exists()) {
