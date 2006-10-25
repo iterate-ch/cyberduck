@@ -133,7 +133,7 @@ public abstract class CDWindowController extends CDController
      */
     protected void alert(final NSWindow sheet) {
         this.alert(sheet, new CDSheetCallback() {
-            public void callback(int returncode) {
+            public void callback(final int returncode) {
                 ;
             }
         });

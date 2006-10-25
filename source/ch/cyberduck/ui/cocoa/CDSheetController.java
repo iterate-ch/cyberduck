@@ -128,14 +128,14 @@ public abstract class CDSheetController extends CDWindowController implements CD
      *
      * @param returncode
      */
-    public abstract void callback(int returncode);
+    public abstract void callback(final int returncode);
 
     /**
      * Will attach the sheet to the parent window
      *
      * @param blocking will wait for the sheet to end if true
      */
-    protected void beginSheet(boolean blocking) {
+    protected void beginSheet(final boolean blocking) {
         log.debug("beginSheet:" + this.window());
         synchronized(lock) {
             this.waitForSheetEnd();
@@ -164,7 +164,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
      * @param returncode Identifier for the button clicked by the user
      * @param context    Not used
      */
-    public void sheetDidClose(NSPanel sheet, int returncode, Object context) {
+    public void sheetDidClose(NSPanel sheet, final int returncode, Object context) {
         log.debug("sheetDidClose:" + sheet);
         sheet.orderOut(null);
         this.callback(returncode);

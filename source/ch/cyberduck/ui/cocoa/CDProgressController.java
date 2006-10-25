@@ -82,7 +82,7 @@ public class CDProgressController extends CDController {
             private ProgressListener progress;
 
             public void queueStarted() {
-                invoke(new Runnable() {
+                CDProgressController.this.invoke(new Runnable() {
                     public void run() {
                         progressBar.setHidden(false);
                         progressBar.setIndeterminate(true);
@@ -92,7 +92,7 @@ public class CDProgressController extends CDController {
                 });
                 queue.getSession().addProgressListener(progress = new ProgressListener() {
                     public void message(final String message) {
-                        invoke(new Runnable() {
+                        CDProgressController.this.invoke(new Runnable() {
                             public void run() {
                                 statusText = message;
                                 progressField.setAttributedStringValue(new NSAttributedString(getProgressText(),
@@ -101,14 +101,14 @@ public class CDProgressController extends CDController {
                         });
                     }
 
-                    public void error(final Exception e) {
+                    public void error(final Exception exception) {
                         ;
                     }
                 });
             }
 
             public void queueStopped() {
-                invoke(new Runnable() {
+                CDProgressController.this.invoke(new Runnable() {
                     public void run() {
                         progressBar.setIndeterminate(true);
                         progressBar.stopAnimation(null);

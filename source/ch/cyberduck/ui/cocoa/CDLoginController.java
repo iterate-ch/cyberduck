@@ -77,7 +77,7 @@ public class CDLoginController implements LoginController
                 this.keychainCheckbox.setState(NSCell.OffState);
             }
 
-            public void callback(int returncode) {
+            public void callback(final int returncode) {
                 if (returncode == DEFAULT_OPTION) {
                     log.info("Update login credentials...");
                     login.setTryAgain(true);

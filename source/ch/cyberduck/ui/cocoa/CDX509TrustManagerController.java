@@ -110,7 +110,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
                         this.alwaysButton.setEnabled(true);
                     }
 
-                    public void callback(int returncode) {
+                    public void callback(final int returncode) {
                         if (returncode == DEFAULT_OPTION) { //Allow
                             acceptedCertificates.add(cert);
                             if (alwaysButton.state() == NSCell.OnState) {

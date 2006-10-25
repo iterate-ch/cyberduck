@@ -51,7 +51,7 @@ public class CDDownloadController extends CDSheetController {
         }
     }
 
-    public void callback(int returncode) {
+    public void callback(final int returncode) {
         if (returncode == DEFAULT_OPTION) {
             try {
                 Host host = Host.parse(urlField.stringValue());

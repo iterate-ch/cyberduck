@@ -75,7 +75,7 @@ public class CDBookmarkController extends CDWindowController {
         this.encodingPopup = encodingPopup;
         this.encodingPopup.setEnabled(true);
         this.encodingPopup.removeAllItems();
-        this.encodingPopup.addItemsWithTitles(new NSArray(CDConnectionController.availableCharsets()));
+        this.encodingPopup.addItemsWithTitles(new NSArray(((CDMainController)NSApplication.sharedApplication().delegate()).availableCharsets()));
         this.encodingPopup.setTitle(this.host.getEncoding());
         this.encodingPopup.setTarget(this);
         this.encodingPopup.setAction(new NSSelector("encodingSelectionChanged", new Class[]{Object.class}));
@@ -318,7 +318,7 @@ public class CDBookmarkController extends CDWindowController {
                 final int pool = NSAutoreleasePool.push();
                 final boolean reachable = new Host(hostname).isReachable();
                 NSAutoreleasePool.pop(pool);
-                invoke(new Runnable() {
+                CDBookmarkController.this.invoke(new Runnable() {
                     public void run() {
                         synchronized(lock) {
                             alertIcon.setHidden(reachable);

@@ -140,7 +140,7 @@ public class CDConnectionController extends CDSheetController {
         }
         Rendezvous.instance().addListener(rendezvousListener = new RendezvousListener() {
             public void serviceResolved(final String servicename) {
-                invoke(new Runnable() {
+                CDConnectionController.this.invoke(new Runnable() {
                     public void run() {
                         addItemToRendezvousPopup(Rendezvous.instance().getDisplayedName(servicename));
                     }
@@ -148,7 +148,7 @@ public class CDConnectionController extends CDSheetController {
             }
 
             public void serviceLost(final String servicename) {
-                invoke(new Runnable() {
+                CDConnectionController.this.invoke(new Runnable() {
                     public void run() {
                         removeItemFromRendezvousPopup(Rendezvous.instance().getDisplayedName(servicename));
                     }
@@ -237,7 +237,7 @@ public class CDConnectionController extends CDSheetController {
                 final int pool = NSAutoreleasePool.push();
                 final boolean reachable = new Host(hostname).isReachable();
                 NSAutoreleasePool.pop(pool);
-                invoke(new Runnable() {
+                CDConnectionController.this.invoke(new Runnable() {
                     public void run() {
                         synchronized(lock) {
                             alertIcon.setHidden(reachable);
@@ -401,7 +401,7 @@ public class CDConnectionController extends CDSheetController {
         this.encodingPopup = encodingPopup;
         this.encodingPopup.setEnabled(true);
         this.encodingPopup.removeAllItems();
-        this.encodingPopup.addItemsWithTitles(new NSArray(CDController.availableCharsets()));
+        this.encodingPopup.addItemsWithTitles(new NSArray(((CDMainController)NSApplication.sharedApplication().delegate()).availableCharsets()));
         this.encodingPopup.setTitle(Preferences.instance().getProperty("browser.charset.encoding"));
     }
 
@@ -568,7 +568,7 @@ public class CDConnectionController extends CDSheetController {
                 + pathField.stringValue());
     }
 
-    public void callback(int returncode) {
+    public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             Host host = null;
             if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {

@@ -185,7 +185,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
         this.syncButton = syncButton;
     }
 
-    public void callback(int returncode) {
+    public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) { //sync
             for(Iterator i = this.workList.iterator(); i.hasNext();) {
                 final Path p = (Path) i.next();

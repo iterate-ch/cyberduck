@@ -8,24 +8,24 @@ public interface CDSheetCallback {
     /**
      * Use default option; 'OK'
      */
-    int DEFAULT_OPTION = 1;
+    public int DEFAULT_OPTION = 1;
     /**
      * Use alternate option
      */
-    int ALTERNATE_OPTION = -1;
+    public int ALTERNATE_OPTION = -1;
     /**
      * Cancel proposed operation
      */
-    int CANCEL_OPTION = 0;
+    public int CANCEL_OPTION = 0;
     /**
      *
      */
-    int SKIP_OPTION = 2;
+    public int SKIP_OPTION = 2;
 
     /**
      *
      * @param returncode
      */
-    public void callback(int returncode);
+    public abstract  void callback(final int returncode);
 
 }

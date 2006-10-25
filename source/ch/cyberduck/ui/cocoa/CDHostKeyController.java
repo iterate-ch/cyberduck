@@ -62,7 +62,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification
                 this.isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null //other button
         );
         CDSheetController c = new CDSheetController(parent, sheet) {
-            public void callback(int returncode) {
+            public void callback(final int returncode) {
                 try {
                     if (returncode == DEFAULT_OPTION) {
                         allowHost(host, actualHostKey, false);
@@ -91,7 +91,7 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification
                 this.isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null //other button
         );
         CDSheetController c = new CDSheetController(parent, sheet) {
-            public void callback(int returncode) {
+            public void callback(final int returncode) {
                 try {
                     if (returncode == DEFAULT_OPTION) {
                         allowHost(host, actualHostKey, false); // allow host (once)

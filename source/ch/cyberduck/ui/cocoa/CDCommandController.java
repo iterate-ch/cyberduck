@@ -86,7 +86,7 @@ public class CDCommandController extends CDSheetController implements Transcript
         return true;
     }
 
-    public void callback(int returncode) {
+    public void callback(final int returncode) {
         ;
     }
 

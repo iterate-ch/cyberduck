@@ -62,7 +62,7 @@ public abstract class CDValidatorController
         super(CDQueueController.instance());
     }
 
-    public void callback(int returncode) {
+    public void callback(final int returncode) {
         if (returncode == DEFAULT_OPTION || returncode == ALTERNATE_OPTION) { //overwrite || resume
             for (Iterator i = workList.iterator(); i.hasNext();) {
                 final Path p = (Path) i.next();
