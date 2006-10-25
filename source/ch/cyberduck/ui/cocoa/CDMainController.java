@@ -119,7 +119,7 @@ public class CDMainController extends CDController {
 
     public void setEncodingMenu(NSMenu encodingMenu) {
         this.encodingMenu = encodingMenu;
-        String[] charsets = CDController.availableCharsets();
+        String[] charsets = ((CDMainController)NSApplication.sharedApplication().delegate()).availableCharsets();
         this.encodingMenuItems = new ArrayList(charsets.length);
         for(int i = 0; i < charsets.length; i++) {
             NSMenuItem item = new NSMenuItem(charsets[i],
@@ -477,7 +477,7 @@ public class CDMainController extends CDController {
                                 public void queueStopped() {
                                     if (controller.isMounted()) {
                                         controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
-                                        invoke(new Runnable() {
+                                        controller.invoke(new Runnable() {
                                             public void run() {
                                                 controller.reloadData(true);
                                             }
@@ -808,5 +808,17 @@ public class CDMainController extends CDController {
 
     public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
         return false;
+    }
+
+
+    protected String[] availableCharsets() {
+        List charsets = new ArrayList();
+        for (Iterator iter = java.nio.charset.Charset.availableCharsets().values().iterator(); iter.hasNext(); ) {
+            String name = ((java.nio.charset.Charset) iter.next()).displayName();
+            if(!(name.startsWith("IBM") || name.startsWith("x-"))) {
+                charsets.add(name);
+            }
+        }
+        return (String[])charsets.toArray(new String[0]);
     }
 }
