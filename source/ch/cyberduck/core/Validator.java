@@ -35,17 +35,17 @@ public interface Validator {
      *
      * @param p
      */
-    public void prompt(Path p);
+    public abstract  void prompt(Path p);
 
     /**
      *
      * @return
      */
-    public Collection result();
+    public abstract  Collection result();
 
     /**
      * 
      * @return
      */
-    public boolean isCanceled();
+    public abstract  boolean isCanceled();
 }

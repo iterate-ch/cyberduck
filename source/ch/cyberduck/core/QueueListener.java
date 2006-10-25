@@ -27,23 +27,23 @@ public interface QueueListener {
     /**
      *
      */
-    public void queueStarted();
+    public abstract  void queueStarted();
 
     /**
      *
      */
-    public void queueStopped();
-
-    /**
-     *
-     * @param path
-     */
-    public void transferStarted(Path path);
+    public abstract  void queueStopped();
 
     /**
      *
      * @param path
      */
-    public void transferStopped(Path path);
+    public abstract  void transferStarted(Path path);
+
+    /**
+     *
+     * @param path
+     */
+    public abstract  void transferStopped(Path path);
 
 }

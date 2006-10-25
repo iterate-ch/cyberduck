@@ -23,13 +23,13 @@ package ch.cyberduck.core;
  */
 public interface IAttributes {
 
-    double getSize();
+    public abstract double getSize();
 
-    long getTimestamp();
+    public abstract long getTimestamp();
 
-    Permission getPermission();
+    public abstract Permission getPermission();
 
-    boolean isDirectory();
+    public abstract boolean isDirectory();
 
-    boolean isFile();
+    public abstract boolean isFile();
 }

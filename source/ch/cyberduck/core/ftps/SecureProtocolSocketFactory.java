@@ -57,7 +57,7 @@ public interface SecureProtocolSocketFactory extends ProtocolSocketFactory {
      * @throws UnknownHostException if the IP address of the host cannot be
      *                              determined
      */
-    Socket createSocket(Socket socket,
+    public abstract Socket createSocket(Socket socket,
                         String host,
                         int port,
                         boolean autoClose) throws IOException, UnknownHostException;

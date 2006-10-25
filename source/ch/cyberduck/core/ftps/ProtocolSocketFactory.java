@@ -61,7 +61,7 @@ public interface ProtocolSocketFactory {
      * @throws UnknownHostException if the IP address of the host cannot be
      *                              determined
      */
-    Socket createSocket(String host,
+    public abstract Socket createSocket(String host,
                         int port,
                         InetAddress localAddress,
                         int localPort) throws IOException, UnknownHostException;
@@ -77,7 +77,7 @@ public interface ProtocolSocketFactory {
      * @throws UnknownHostException if the IP address of the host cannot be
      *                              determined
      */
-    Socket createSocket(String host,
+    public abstract Socket createSocket(String host,
                         int port) throws IOException, UnknownHostException;
 
 }

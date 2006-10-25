@@ -26,30 +26,30 @@ public interface ConnectionListener {
     /**
      *
      */
-    public void connectionWillOpen();
+    public abstract void connectionWillOpen();
 
     /**
      *
      */
-    public void connectionDidOpen();
+    public abstract void connectionDidOpen();
 
     /**
      *
      */
-    public void connectionWillClose();
+    public abstract void connectionWillClose();
 
     /**
      *
      */
-    public void connectionDidClose();
+    public abstract void connectionDidClose();
 
     /**
      *
      */
-    public void activityStarted();
+    public abstract void activityStarted();
 
     /**
      *
      */
-    public void activityStopped();
+    public abstract void activityStopped();
 }

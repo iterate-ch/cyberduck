@@ -274,6 +274,9 @@ public class AttributedList extends NSObject implements List {
     }
 
     public Object get(int i) {
+        if(i >= this.size()) {
+            return null;
+        }
         return this.content.objectAtIndex(i);
     }
 
@@ -297,6 +300,9 @@ public class AttributedList extends NSObject implements List {
      * @return the element previously at the specified position.
      */
     public Object remove(int i) {
+        if(i >= this.size()) {
+            return null;
+        }
         Object previous = this.get(i);
         this.content.removeObjectAtIndex(i);
         return previous;
@@ -332,7 +338,7 @@ public class AttributedList extends NSObject implements List {
     /**
      * @param index index of first element to be returned from the list iterator (by a call to the next method).
      * @return a list iterator of the elements in this list (in proper sequence), starting at the specified
-     *         position in this list.
+     * position in this list.
      */
     public ListIterator listIterator(final int index) {
         return new ListIterator() {

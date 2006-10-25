@@ -22,5 +22,5 @@ package ch.cyberduck.core;
  * @version $Id$
  */
 public interface HostFilter {
-    public boolean accept(Host host);
+    public abstract boolean accept(Host host);
 }
