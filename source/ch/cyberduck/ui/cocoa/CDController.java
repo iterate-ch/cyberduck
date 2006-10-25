@@ -57,7 +57,7 @@ public abstract class CDController extends NSObject {
      * Run the argument on the main thread
      * @param thread
      */
-    protected void invoke(Runnable thread) {
+    public void invoke(Runnable thread) {
         this.invoke(thread, 0f);
     }
 

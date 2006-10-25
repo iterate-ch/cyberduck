@@ -70,7 +70,7 @@ public class CDDuplicateFileController extends CDFileController {
         this.filenameField.setStringValue(proposal.toString());
     }
 
-    public void callback(int returncode) {
+    public void callback(final int returncode) {
         Path selected = ((CDBrowserController)parent).getSelectedPath();
         if (returncode == DEFAULT_OPTION) {
             this.duplicateFile(selected, filenameField.stringValue(), false);

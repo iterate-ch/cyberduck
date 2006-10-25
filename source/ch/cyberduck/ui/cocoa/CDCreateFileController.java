@@ -41,12 +41,12 @@ public class CDCreateFileController extends CDFileController {
         }
     }
 
-    public void callback(int returncode) {
+    public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             this.createFile(this.getWorkdir(), filenameField.stringValue(), false);
         }
         if(returncode == ALTERNATE_OPTION) {
-            createFile(this.getWorkdir(), filenameField.stringValue(), true);
+            this.createFile(this.getWorkdir(), filenameField.stringValue(), true);
         }
     }
 

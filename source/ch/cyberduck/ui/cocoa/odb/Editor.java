@@ -102,12 +102,12 @@ public class Editor extends CDController {
             }
         }
         while (this.path.getLocal().exists());
-        
+
         controller.background(new Runnable() {
             public void run() {
                 path.download();
                 if (path.status.isComplete()) {
-                    invoke(new Runnable() {
+                    controller.invoke(new Runnable() {
                         public void run() {
                             Editor.this.jni_load();
                             // Important, should always be run on the main thread; otherwise applescript crashes

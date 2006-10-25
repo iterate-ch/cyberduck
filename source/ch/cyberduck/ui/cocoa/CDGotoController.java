@@ -80,7 +80,7 @@ public class CDGotoController extends CDSheetController
         }
     }
 
-    public void callback(int returncode) {
+    public void callback(final int returncode) {
         if (returncode == DEFAULT_OPTION) {
             this.gotoFolder(((CDBrowserController)parent).workdir(), folderCombobox.stringValue());
         }
