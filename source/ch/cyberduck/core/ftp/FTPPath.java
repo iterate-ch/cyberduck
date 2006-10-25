@@ -121,8 +121,8 @@ public class FTPPath extends Path {
     }
 
     public AttributedList list(Comparator comparator, PathFilter filter) {
-        synchronized(session) {
-            if(!session.cache().containsKey(this) || session.cache().isInvalid(this)) {
+        if(!session.cache().containsKey(this) || session.cache().isInvalid(this)) {
+            synchronized(session) {
                 AttributedList childs = new AttributedList();
                 try {
                     session.check();
@@ -152,8 +152,8 @@ public class FTPPath extends Path {
                     session.fireActivityStoppedEvent();
                 }
             }
-            return session.cache().get(this, comparator, filter);
         }
+        return session.cache().get(this, comparator, filter);
     }
 
     public void cwdir() throws IOException {
