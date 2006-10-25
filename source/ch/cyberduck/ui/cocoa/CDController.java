@@ -36,18 +36,6 @@ import java.util.ArrayList;
 public abstract class CDController extends NSObject {
     private static Logger log = Logger.getLogger(CDController.class);
 
-    protected static String[] availableCharsets() {
-        List charsets = new ArrayList();
-        for (Iterator iter = java.nio.charset.Charset.availableCharsets().values().iterator(); iter.hasNext(); ) {
-            String name = ((java.nio.charset.Charset) iter.next()).displayName();
-            if(!(name.startsWith("IBM") || name.startsWith("x-"))) {
-                charsets.add(name);
-            }
-        }
-        return (String[])charsets.toArray(new String[0]);
-    }
-
-
     public CDController() {
         //Assuming this is always called from the main thread #currentRunLoop will return the main run loop
         mainRunLoop = NSRunLoop.currentRunLoop();
@@ -69,7 +57,7 @@ public abstract class CDController extends NSObject {
      * Run the argument on the main thread
      * @param thread
      */
-    protected synchronized void invoke(Runnable thread) {
+    protected void invoke(Runnable thread) {
         this.invoke(thread, 0f);
     }
 
@@ -77,7 +65,7 @@ public abstract class CDController extends NSObject {
      *
      * @param thread
      */
-    protected synchronized void invoke(Runnable thread, float delay) {
+    protected void invoke(Runnable thread, float delay) {
         mainRunLoop.addTimerForMode(new NSTimer(delay, this,
                 new NSSelector("post", new Class[]{NSTimer.class}),
                 thread,
