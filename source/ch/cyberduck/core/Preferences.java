@@ -153,7 +153,7 @@ public abstract class Preferences {
          * Current default browser view is outline view (0-List view, 1-Outline view, 2-Column view)
          */
         defaults.put("browser.view", "1");
-        defaults.put("browser.view.autoexpand", "true");
+        defaults.put("browser.view.autoexpand", "false");
 //        defaults.put("browser.view.autoexpand.delay", "1000"); // in milliseconds
         defaults.put("browser.openUntitled", "true");
         defaults.put("browser.defaultBookmark", NSBundle.localizedString("None", ""));
