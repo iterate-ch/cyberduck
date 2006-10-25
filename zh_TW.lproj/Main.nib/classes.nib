@@ -22,6 +22,7 @@
                 gotoButtonClicked = id; 
                 infoButtonClicked = id; 
                 insideButtonClicked = id; 
+                interruptButtonClicked = id; 
                 myAction = id; 
                 pasteFromFinder = id; 
                 reloadButtonClicked = id; 
