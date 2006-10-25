@@ -2501,7 +2501,7 @@ public class CDBrowserController extends CDWindowController
     /**
      * A lock to make sure that actions are not run in parallel
      */
-    private static final Object backgroundLock = new Object();
+    private final Object backgroundLock = new Object();
 
     /**
      *
