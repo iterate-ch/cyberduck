@@ -20,10 +20,8 @@ package ch.cyberduck.ui.cocoa.odb;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.UploadQueue;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.ui.cocoa.CDController;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.ui.cocoa.CDController;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.application.NSWorkspace;
@@ -33,8 +31,8 @@ import com.apple.cocoa.foundation.NSPathUtilities;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -93,17 +91,18 @@ public class Editor extends CDController {
         String proposal = filename;
         int no = 0;
         int index = filename.lastIndexOf(".");
-        while(path.getLocal().exists()) {
+        do {
+            this.path.setLocal(new Local(parent, proposal));
             no++;
-            if(index != -1 && index != 0) {
-                proposal = filename.substring(0, index)
-                        + "-" + no + filename.substring(index);
+            if (index != -1 && index != 0) {
+                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
             }
             else {
                 proposal = filename + "-" + no;
             }
-            path.setLocal(new Local(parent, proposal));
         }
+        while (this.path.getLocal().exists());
+        
         controller.background(new Runnable() {
             public void run() {
                 path.download();
