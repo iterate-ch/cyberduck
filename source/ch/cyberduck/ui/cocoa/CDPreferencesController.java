@@ -105,6 +105,21 @@ public class CDPreferencesController extends CDWindowController {
         instance = null;
     }
 
+    public void setWindow(NSWindow window) {
+//        String file = null;
+//        if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")) {
+//            file = NSPathUtilities.stringByExpandingTildeInPath("~/Library/Preferences")
+//                    +"/"+NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier")+".plist";
+//        }
+//        else {
+//            file = NSPathUtilities.stringByExpandingTildeInPath(
+//                    (String)NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path"));
+//        }
+//        window.setRepresentedFilename(file);
+        window.setExcludedFromWindowsMenu(true);
+        super.setWindow(window);
+    }
+
     public void awakeFromNib() {
         NSSelector setShowsToolbarButtonSelector
                 = new NSSelector("setShowsToolbarButton", new Class[]{boolean.class});
@@ -368,7 +383,7 @@ public class CDPreferencesController extends CDWindowController {
         this.encodingCombobox.setTarget(this);
         this.encodingCombobox.setAction(new NSSelector("encodingComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.encodingCombobox.removeAllItems();
-        this.encodingCombobox.addItemsWithTitles(new NSArray(CDController.availableCharsets()));
+        this.encodingCombobox.addItemsWithTitles(new NSArray(((CDMainController)NSApplication.sharedApplication().delegate()).availableCharsets()));
         this.encodingCombobox.setTitle(Preferences.instance().getProperty("browser.charset.encoding"));
     }
 
