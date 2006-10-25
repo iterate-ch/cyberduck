@@ -363,18 +363,7 @@ public class CDInfoController extends CDWindowController {
                 if (this.filenameField.stringValue().indexOf('/') == -1) {
                     final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
                             current.getParent().getAbsolute(), this.filenameField.stringValue());
-                    controller.background(new Runnable() {
-                        public void run() {
-                            controller.renamePath(current, renamed);
-                            current.getParent().invalidate();
-                            controller.invoke(new Runnable() {
-                                public void run() {
-                                    controller.reloadData(true);
-                                    controller.setSelectedPath(renamed);
-                                }
-                            });
-                        }
-                    });
+                    controller.renamePath(current, renamed);
                 }
                 else if (filenameField.stringValue().length() == 0) {
                     this.filenameField.setStringValue(current.getName());
@@ -424,14 +413,12 @@ public class CDInfoController extends CDWindowController {
         // send the changes to the remote host
         controller.background(new Runnable() {
             public void run() {
-                Path f = null;
                 for (Iterator i = files.iterator(); i.hasNext();) {
-                    f = (Path) i.next();
+                    ((Path) i.next()).changePermissions(permission,
+                            recursiveCheckbox.state() == NSCell.OnState);
                     if(!controller.isConnected()) {
                         break;
                     }
-                    f.changePermissions(permission,
-                            recursiveCheckbox.state() == NSCell.OnState);
                 }
                 controller.invoke(new Runnable() {
                     public void run() {
