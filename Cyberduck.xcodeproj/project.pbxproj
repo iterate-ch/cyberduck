@@ -33,8 +33,6 @@
 		4727223409F51EB600136347 /* AIAutoScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4727223209F51EB600136347 /* AIAutoScrollView.h */; };
 		47354D4E09C6CC9B00426BE0 /* NSString+CarbonFSRefCreation.m in Sources */ = {isa = PBXBuildFile; fileRef = 47354D4C09C6CC9B00426BE0 /* NSString+CarbonFSRefCreation.m */; };
 		47354D4F09C6CC9B00426BE0 /* NSString+CarbonFSRefCreation.h in Headers */ = {isa = PBXBuildFile; fileRef = 47354D4D09C6CC9B00426BE0 /* NSString+CarbonFSRefCreation.h */; };
-		4737797A0AE52AC500F73905 /* CDCoverView.m in Sources */ = {isa = PBXBuildFile; fileRef = 473779780AE52AC500F73905 /* CDCoverView.m */; };
-		4737797B0AE52AC500F73905 /* CDCoverView.h in Headers */ = {isa = PBXBuildFile; fileRef = 473779790AE52AC500F73905 /* CDCoverView.h */; };
 		473779A50AE5365600F73905 /* stop16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 473779A40AE5365600F73905 /* stop16.tiff */; };
 		4739EF690856981300405FD3 /* Keychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 47983749072AD67800FA3CDB /* Keychain.h */; };
 		4739EF6B0856981300405FD3 /* Keychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 4798373F072AD66D00FA3CDB /* Keychain.m */; };
@@ -461,8 +459,6 @@
 		47341E0E09A09D070065FF57 /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/Crash.strings; sourceTree = "<group>"; };
 		47354D4C09C6CC9B00426BE0 /* NSString+CarbonFSRefCreation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+CarbonFSRefCreation.m"; sourceTree = "<group>"; };
 		47354D4D09C6CC9B00426BE0 /* NSString+CarbonFSRefCreation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+CarbonFSRefCreation.h"; sourceTree = "<group>"; };
-		473779780AE52AC500F73905 /* CDCoverView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDCoverView.m; sourceTree = "<group>"; };
-		473779790AE52AC500F73905 /* CDCoverView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDCoverView.h; sourceTree = "<group>"; };
 		473779A40AE5365600F73905 /* stop16.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = stop16.tiff; sourceTree = "<group>"; };
 		4739EF730856981400405FD3 /* libKeychain.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libKeychain.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EF94085698F700405FD3 /* libODBEdit.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libODBEdit.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2660,8 +2656,6 @@
 		4798434E072B0DAA00FA3CDB /* view */ = {
 			isa = PBXGroup;
 			children = (
-				473779780AE52AC500F73905 /* CDCoverView.m */,
-				473779790AE52AC500F73905 /* CDCoverView.h */,
 				4799CE240A29EF5600AA4E59 /* CDBottomView.h */,
 				4799CE250A29EF5600AA4E59 /* CDBottomView.m */,
 				4741531A06C4F08A00AC0BD2 /* CDTableCell.java */,
@@ -2874,7 +2868,6 @@
 				478B36360A07C395000F11F2 /* SKWSegmentedControlWindowProxy.h in Headers */,
 				47BA61C70A2507320034AB18 /* CDNavigationView.h in Headers */,
 				4799CE260A29EF5600AA4E59 /* CDBottomView.h in Headers */,
-				4737797B0AE52AC500F73905 /* CDCoverView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3389,7 +3382,6 @@
 				478B36370A07C395000F11F2 /* SKWSegmentedControlWindowProxy.m in Sources */,
 				47BA61C80A2507320034AB18 /* CDNavigationView.m in Sources */,
 				4799CE270A29EF5600AA4E59 /* CDBottomView.m in Sources */,
-				4737797A0AE52AC500F73905 /* CDCoverView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
