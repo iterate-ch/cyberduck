@@ -57,6 +57,14 @@ Download[!!-~]Automator[!!-~]Action/English.lproj/InfoPlist.strings svneol=nativ
 Spotlight[!!-~]Importer/English.lproj/schema.strings svneol=native#unset
 Upload[!!-~]Automator[!!-~]Action/English.lproj/InfoPlist.strings svneol=native#unset
 /build.xml.debug -text
+build/DisclosableView.framework/DisclosableView -text
+build/DisclosableView.framework/Headers -text
+build/DisclosableView.framework/Resources -text
+build/DisclosableView.framework/Versions/A/DisclosableView -text
+build/DisclosableView.framework/Versions/A/Resources/Info.plist -text
+build/DisclosableView.framework/Versions/A/Resources/SNDisclosureArrowDown.tiff -text svneol=unset#image/tiff
+build/DisclosableView.framework/Versions/A/Resources/SNDisclosureArrowRight.tiff -text svneol=unset#image/tiff
+build/DisclosableView.framework/Versions/Current -text
 build/DotMacKit.framework/DotMacKit -text
 build/DotMacKit.framework/Resources/English.lproj/InfoPlist.strings -text
 build/DotMacKit.framework/Resources/English.lproj/locversion.plist -text
