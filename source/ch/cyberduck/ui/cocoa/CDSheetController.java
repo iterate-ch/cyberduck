@@ -135,7 +135,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
      *
      * @param blocking will wait for the sheet to end if true
      */
-    protected void beginSheet(final boolean blocking) {
+    public void beginSheet(final boolean blocking) {
         log.debug("beginSheet:" + this.window());
         synchronized(lock) {
             this.waitForSheetEnd();

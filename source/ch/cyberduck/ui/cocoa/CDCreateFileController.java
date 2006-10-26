@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.odb.Editor;
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.foundation.NSPathUtilities;
@@ -52,11 +53,11 @@ public class CDCreateFileController extends CDFileController {
 
     protected void createFile(final Path workdir, final String filename, final boolean edit) {
         final CDBrowserController c = (CDBrowserController)parent;
-        c.background(new Runnable() {
-            public void run() {
-                final Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
-                        new Local(NSPathUtilities.temporaryDirectory(), filename));
+        c.background(new BackgroundAction() {
+            final Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
+                    new Local(NSPathUtilities.temporaryDirectory(), filename));
 
+            public void run() {
                 String proposal;
                 int no = 0;
                 int index = filename.lastIndexOf(".");
@@ -78,15 +79,16 @@ public class CDCreateFileController extends CDFileController {
                         Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"), c);
                         editor.open(file);
                     }
-                    c.invoke(new Runnable() {
-                        public void run() {
-                            if(filename.charAt(0) == '.') {
-                                c.setShowHiddenFiles(true);
-                            }
-                            c.reloadData(false);
-                            c.setSelectedPath(file);
-                        }
-                    });
+                }
+            }
+
+            public void cleanup() {
+                if(file.exists()) {
+                    if(filename.charAt(0) == '.') {
+                        c.setShowHiddenFiles(true);
+                    }
+                    c.reloadData(false);
+                    c.setSelectedPath(file);
                 }
             }
         });

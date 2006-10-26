@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.odb.Editor;
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSPathUtilities;
@@ -86,9 +87,10 @@ public class CDDuplicateFileController extends CDFileController {
 
     private void duplicateFile(final Path selected, final String filename, final boolean edit) {
         final CDBrowserController c = (CDBrowserController)parent;
-        c.background(new Runnable() {
+        c.background(new BackgroundAction() {
+            final Path file = (Path)selected.clone();
+
             public void run() {
-                final Path file = (Path)selected.clone();
                 file.setLocal(new Local(NSPathUtilities.temporaryDirectory(),
                         selected.getName()));
                 file.download();
@@ -100,15 +102,16 @@ public class CDDuplicateFileController extends CDFileController {
                         Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"), c);
                         editor.open(file);
                     }
-                    c.invoke(new Runnable() {
-                        public void run() {
-                            if(filename.charAt(0) == '.') {
-                                c.setShowHiddenFiles(true);
-                            }
-                            c.reloadData(false);
-                            c.setSelectedPath(file);
-                        }
-                    });
+                }
+            }
+
+            public void cleanup() {
+                if(file.exists()) {
+                    if(filename.charAt(0) == '.') {
+                        c.setShowHiddenFiles(true);
+                    }
+                    c.reloadData(false);
+                    c.setSelectedPath(file);
                 }
             }
         });

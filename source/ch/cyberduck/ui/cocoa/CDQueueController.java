@@ -19,17 +19,21 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
+import java.util.Iterator;
+
 /**
  * @version $Id$
  */
 public class CDQueueController extends CDWindowController
         implements NSToolbarItem.ItemValidation {
+
     private static Logger log = Logger.getLogger(CDQueueController.class);
 
     private static CDQueueController instance;
@@ -42,9 +46,6 @@ public class CDQueueController extends CDWindowController
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
         this.window.setToolbar(toolbar);
-        if(Preferences.instance().getBoolean("queue.logDrawer.isOpen")) {
-            this.logDrawer.open();
-        }
     }
 
     public void setWindow(NSWindow window) {
@@ -82,46 +83,6 @@ public class CDQueueController extends CDWindowController
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
-
-    private NSDrawer logDrawer; // IBOutlet
-
-    private NSDrawer.Notifications logDrawerNotifications = new NSDrawer.Notifications() {
-        public void drawerWillOpen(NSNotification notification) {
-        }
-
-        public void drawerDidOpen(NSNotification notification) {
-            Preferences.instance().setProperty("queue.logDrawer.isOpen", true);
-        }
-
-        public void drawerWillClose(NSNotification notification) {
-        }
-
-        public void drawerDidClose(NSNotification notification) {
-            Preferences.instance().setProperty("queue.logDrawer.isOpen", false);
-        }
-    };
-
-    public void setLogDrawer(NSDrawer logDrawer) {
-        this.logDrawer = logDrawer;
-        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications,
-                new NSSelector("drawerDidOpen", new Class[]{Object.class}),
-                NSDrawer.DrawerDidOpenNotification,
-                this.logDrawer);
-        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications,
-                new NSSelector("drawerDidClose", new Class[]{Object.class}),
-                NSDrawer.DrawerDidCloseNotification,
-                this.logDrawer);
-    }
-
-    private NSTextView logView;
-
-    public void setLogView(NSTextView logView) {
-        this.logView = logView;
-    }
-
-    public void toggleLogDrawer(final Object sender) {
-        this.logDrawer.toggle(this);
-    }
 
     private NSTextField urlLabel;
 
@@ -395,28 +356,15 @@ public class CDQueueController extends CDWindowController
     }
 
     /**
-     *
      * @param queue
      */
     public void startItem(final Queue queue) {
-        this.startItem(queue, false, false);
-    }
-
-    /**
-     * @param queue
-     * @param resumeRequested
-     * @param reloadRequested
-     */
-    public void startItem(final Queue queue, final boolean resumeRequested, final boolean reloadRequested) {
         synchronized(QueueCollection.instance()) {
             if(!QueueCollection.instance().contains(queue)) {
                 this.addItem(queue);
             }
         }
         queue.addListener(new QueueListener() {
-            private TranscriptListener transcript;
-            private ProgressListener progress;
-
             public void transferStarted(final Path path) {
                 queueTable.setNeedsDisplay();
                 CDQueueController.this.invoke(new Runnable() {
@@ -434,41 +382,6 @@ public class CDQueueController extends CDWindowController
                 invoke(new Runnable() {
                     public void run() {
                         window.toolbar().validateVisibleItems();
-                    }
-                });
-                queue.getSession().addTranscriptListener(transcript = new TranscriptListener() {
-                    public void log(String message) {
-                        // Currently no logging because of many crashes; must be some concurrency
-                        // issue I am not aware of. A solution would be to run this on the main thread
-                        // but that gives a huge performance issue possibly because of frequent
-                        // thread switching required
-//                        synchronized(lock) {
-//                            logView.textStorage().beginEditing();
-//                            logView.textStorage().appendAttributedString(
-//                                    new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
-//                            logView.textStorage().endEditing();
-//                        }
-                    }
-                });
-                queue.getSession().addProgressListener(progress = new ProgressListener() {
-                    public void message(final String m) {
-                        ;
-                    }
-
-                    public void error(final Exception e) {
-                        invoke(new Runnable() {
-                            public void run() {
-                                synchronized(lock) {
-                                    logView.textStorage().appendAttributedString(
-                                            new NSAttributedString(getErrorText(e) + "\n", BOLD_RED_FONT_ATTRIBUTES));
-                                    if(Preferences.instance().getBoolean("queue.logDrawer.openOnError")) {
-                                        logDrawer.open();
-                                        //Any better way to scroll to the bottom?
-                                        logView.scrollPoint(new NSPoint(0, 1000000));
-                                    }
-                                }
-                            }
-                        });
                     }
                 });
                 if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
@@ -499,8 +412,6 @@ public class CDQueueController extends CDWindowController
                         }
                     }
                 }
-                queue.getSession().removeTranscriptListener(transcript);
-                queue.getSession().removeProgressListener(progress);
                 queue.removeListener(this);
                 if(queue.isComplete() && !queue.isCanceled()) {
                     if(queue instanceof DownloadQueue) {
@@ -529,13 +440,19 @@ public class CDQueueController extends CDWindowController
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
             this.window.makeKeyAndOrderFront(null);
         }
-        new Thread() {
-            public void run() {
-                int pool = NSAutoreleasePool.push();
-                queue.run(resumeRequested, reloadRequested, true);
-                NSAutoreleasePool.pop(pool);
+        new BackgroundActionImpl(this, queue) {
+            public void prepare() {
+                queue.getSession().addErrorListener(this);
+                queue.getSession().addTranscriptListener(this);
+                super.prepare();
             }
-        }.start();
+
+            public void cleanup() {
+                queue.getSession().removeErrorListener(this);
+                queue.getSession().removeTranscriptListener(this);
+                super.cleanup();
+            }
+        }.run();
     }
 
     private static final String TOOLBAR_RESUME = "Resume";
@@ -665,7 +582,8 @@ public class CDQueueController extends CDWindowController
             int i = ((Integer) iterator.nextElement()).intValue();
             Queue queue = (Queue) QueueCollection.instance().get(i);
             if(!queue.isRunning()) {
-                this.startItem(queue, true, false);
+                queue.setResumeRequested();
+                this.startItem(queue);
             }
         }
     }
@@ -676,7 +594,8 @@ public class CDQueueController extends CDWindowController
             int i = ((Integer) iterator.nextElement()).intValue();
             Queue queue = (Queue) QueueCollection.instance().get(i);
             if(!queue.isRunning()) {
-                this.startItem(queue, false, true);
+                queue.setReloadRequested();
+                this.startItem(queue);
             }
         }
     }
@@ -762,10 +681,6 @@ public class CDQueueController extends CDWindowController
             }
         }
         this.reloadQueueTable();
-        synchronized(lock) {
-            //Clear the log view
-            this.logView.textStorage().setAttributedString(new NSAttributedString());
-        }
     }
 
     /**

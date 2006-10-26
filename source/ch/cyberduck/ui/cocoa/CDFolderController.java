@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.NSApplication;
 
@@ -48,20 +49,21 @@ public class CDFolderController extends CDFileController {
 
     protected void createFolder(final Path workdir, final String filename) {
         final CDBrowserController c = (CDBrowserController)parent;
-        c.background(new Runnable() {
+        c.background(new BackgroundAction() {
+            final Path folder
+                    = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
+
             public void run() {
-                final Path folder = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
                 folder.mkdir(false);
+            }
+
+            public void cleanup() {
                 if(folder.exists()) {
-                    c.invoke(new Runnable() {
-                        public void run() {
-                            if(filename.charAt(0) == '.') {
-                                c.setShowHiddenFiles(true);
-                            }
-                            c.reloadData(false);
-                            c.setSelectedPath(folder);
-                        }
-                    });
+                    if(filename.charAt(0) == '.') {
+                        c.setShowHiddenFiles(true);
+                    }
+                    c.reloadData(false);
+                    c.setSelectedPath(folder);
                 }
             }
         });

@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSComboBox;
@@ -92,9 +93,10 @@ public class CDGotoController extends CDSheetController
 
     protected void gotoFolder(final Path workdir, final String filename) {
         final CDBrowserController c = (CDBrowserController)parent;
-        c.background(new Runnable() {
+        c.background(new BackgroundAction() {
+            final Path dir = (Path)workdir.clone();
+
             public void run() {
-                Path dir = (Path)workdir.clone();
                 if (filename.charAt(0) != '/') {
                     dir.setPath(workdir.getAbsolute(), filename);
                 }
@@ -102,12 +104,11 @@ public class CDGotoController extends CDSheetController
                     dir.setPath(filename);
                 }
                 c.setWorkdir(dir);
+            }
+
+            public void cleanup() {
                 if(workdir.getParent().equals(dir)) {
-                    c.invoke(new Runnable() {
-                        public void run() {
-                            c.setSelectedPath(workdir);
-                        }
-                    });
+                    c.setSelectedPath(workdir);
                 }
             }
         });

@@ -22,6 +22,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDController;
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.application.NSWorkspace;
@@ -103,17 +105,16 @@ public class Editor extends CDController {
         }
         while (this.path.getLocal().exists());
 
-        controller.background(new Runnable() {
+        controller.background(new BackgroundAction() {
             public void run() {
                 path.download();
+            }
+
+            public void cleanup() {
                 if (path.status.isComplete()) {
-                    controller.invoke(new Runnable() {
-                        public void run() {
-                            Editor.this.jni_load();
-                            // Important, should always be run on the main thread; otherwise applescript crashes
-                            Editor.this.edit(path.getLocal().getAbsolute(), bundleIdentifier);
-                        }
-                    });
+                    Editor.this.jni_load();
+                    // Important, should always be run on the main thread; otherwise applescript crashes
+                    Editor.this.edit(path.getLocal().getAbsolute(), bundleIdentifier);
                 }
             }
         });
@@ -150,9 +151,12 @@ public class Editor extends CDController {
     }
 
     public void didModifyFile() {
-        controller.background(new Runnable() {
+        controller.background(new BackgroundAction() {
             public void run() {
                 path.upload();
+            }
+
+            public void cleanup() {
                 if(path.status.isComplete()) {
                     path.getSession().message(
                             NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"));

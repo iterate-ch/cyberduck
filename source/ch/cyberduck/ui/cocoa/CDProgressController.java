@@ -100,10 +100,6 @@ public class CDProgressController extends CDController {
                             }
                         });
                     }
-
-                    public void error(final Exception exception) {
-                        ;
-                    }
                 });
             }
 

@@ -23,6 +23,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Status;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -411,7 +412,7 @@ public class CDInfoController extends CDWindowController {
         log.debug("applyButtonClicked");
         final Permission permission = this.getPermissionFromSelection();
         // send the changes to the remote host
-        controller.background(new Runnable() {
+        controller.background(new BackgroundAction() {
             public void run() {
                 for (Iterator i = files.iterator(); i.hasNext();) {
                     ((Path) i.next()).changePermissions(permission,
@@ -420,11 +421,10 @@ public class CDInfoController extends CDWindowController {
                         break;
                     }
                 }
-                controller.invoke(new Runnable() {
-                    public void run() {
-                        controller.reloadData(true);
-                    }
-                });
+            }
+
+            public void cleanup() {
+                controller.reloadData(true);
             }
         });
     }

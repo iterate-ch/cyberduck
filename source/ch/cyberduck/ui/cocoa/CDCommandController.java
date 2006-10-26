@@ -18,11 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.enterprisedt.net.ftp.FTPException;
+
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+
+import java.io.IOException;
 
 /**
  * @version $Id$
@@ -66,10 +70,18 @@ public class CDCommandController extends CDSheetController implements Transcript
         }
     }
 
-    public void sendButtonClicked(final Object sender) {
+    public void sendButtonClicked(final NSButton sender) {
         String command = this.inputField.stringValue();
         if (command != null && command.length() > 0) {
-            session.sendCommand(command);
+            try {
+                session.sendCommand(command);
+            }
+            catch(FTPException e) {
+                ; //ignore
+            }
+            catch(IOException e) {
+                this.closeSheet(sender);
+            }
         }
     }
 
