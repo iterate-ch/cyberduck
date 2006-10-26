@@ -29,8 +29,6 @@
 		47239F2609FAFC4E006361C6 /* folder_new.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47239F2409FAFC4E006361C6 /* folder_new.tiff */; };
 		47239F2709FAFC4E006361C6 /* folder_noaccess.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47239F2509FAFC4E006361C6 /* folder_noaccess.tiff */; };
 		47239F2909FAFC5D006361C6 /* folder_writeonly.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47239F2809FAFC5D006361C6 /* folder_writeonly.tiff */; };
-		4727223309F51EB600136347 /* AIAutoScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4727223109F51EB600136347 /* AIAutoScrollView.m */; };
-		4727223409F51EB600136347 /* AIAutoScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4727223209F51EB600136347 /* AIAutoScrollView.h */; };
 		47354D4E09C6CC9B00426BE0 /* NSString+CarbonFSRefCreation.m in Sources */ = {isa = PBXBuildFile; fileRef = 47354D4C09C6CC9B00426BE0 /* NSString+CarbonFSRefCreation.m */; };
 		47354D4F09C6CC9B00426BE0 /* NSString+CarbonFSRefCreation.h in Headers */ = {isa = PBXBuildFile; fileRef = 47354D4D09C6CC9B00426BE0 /* NSString+CarbonFSRefCreation.h */; };
 		473779A50AE5365600F73905 /* stop16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 473779A40AE5365600F73905 /* stop16.tiff */; };
@@ -436,8 +434,6 @@
 		47271DA909F4050B00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Folder.nib; sourceTree = "<group>"; };
 		47271DAB09F4053E00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Crash.strings; sourceTree = "<group>"; };
 		47271DAE09F4055700136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Status.strings; sourceTree = "<group>"; };
-		4727223109F51EB600136347 /* AIAutoScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AIAutoScrollView.m; path = adiumx/AIAutoScrollView.m; sourceTree = "<group>"; };
-		4727223209F51EB600136347 /* AIAutoScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AIAutoScrollView.h; path = adiumx/AIAutoScrollView.h; sourceTree = "<group>"; };
 		47341D6C099FF7740065FF57 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Crash.strings; sourceTree = "<group>"; };
 		47341D83099FF7B20065FF57 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Crash.strings; sourceTree = "<group>"; };
 		47341DA709A003A50065FF57 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Crash.strings; sourceTree = "<group>"; };
@@ -1531,12 +1527,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				475787240AF0E968004BAEC9 /* DisclosableView.framework in Frameworks */,
 				47559A160A72AE7A00B5DCDB /* Sparkle.framework in Frameworks */,
 				471D2C5205A2505500675163 /* Cocoa.framework in Frameworks */,
 				47649E0908E563C500207DC9 /* Security.framework in Frameworks */,
 				47649E4508E563D000207DC9 /* CoreFoundation.framework in Frameworks */,
 				47649EDD08E563D600207DC9 /* Carbon.framework in Frameworks */,
-				475787240AF0E968004BAEC9 /* DisclosableView.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1780,15 +1776,6 @@
 			path = ftps;
 			sourceTree = "<group>";
 		};
-		4727224509F51F2600136347 /* adiumx */ = {
-			isa = PBXGroup;
-			children = (
-				4727223209F51EB600136347 /* AIAutoScrollView.h */,
-				4727223109F51EB600136347 /* AIAutoScrollView.m */,
-			);
-			name = adiumx;
-			sourceTree = "<group>";
-		};
 		47412ECE07CA832400BD37AB /* ext */ = {
 			isa = PBXGroup;
 			children = (
@@ -1982,7 +1969,6 @@
 			isa = PBXGroup;
 			children = (
 				478B362F0A07C395000F11F2 /* macfoh */,
-				4727224509F51F2600136347 /* adiumx */,
 				4741532C06C4F08A00AC0BD2 /* enterprisedt */,
 				4741533806C4F08A00AC0BD2 /* sshtools */,
 			);
@@ -2863,7 +2849,6 @@
 				47494C4307EC6B4200B34D53 /* CDListView.h in Headers */,
 				47457F8E09980270002C93C3 /* UKCrashReporter.h in Headers */,
 				475E53F709AD1B48007CFC2B /* UKPrefsPanel.h in Headers */,
-				4727223409F51EB600136347 /* AIAutoScrollView.h in Headers */,
 				478B36340A07C395000F11F2 /* SKWSegmentedControl.h in Headers */,
 				478B36360A07C395000F11F2 /* SKWSegmentedControlWindowProxy.h in Headers */,
 				47BA61C70A2507320034AB18 /* CDNavigationView.h in Headers */,
@@ -3377,7 +3362,6 @@
 				47494C4207EC6B4200B34D53 /* CDListView.m in Sources */,
 				47457F8F09980270002C93C3 /* UKCrashReporter.m in Sources */,
 				475E53F809AD1B48007CFC2B /* UKPrefsPanel.m in Sources */,
-				4727223309F51EB600136347 /* AIAutoScrollView.m in Sources */,
 				478B36350A07C395000F11F2 /* SKWSegmentedControl.m in Sources */,
 				478B36370A07C395000F11F2 /* SKWSegmentedControlWindowProxy.m in Sources */,
 				47BA61C80A2507320034AB18 /* CDNavigationView.m in Sources */,
