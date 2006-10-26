@@ -201,11 +201,6 @@ public abstract class Preferences {
          * Close bookmark drawer upon opening a connection
          */
         defaults.put("browser.closeDrawer", "false");
-        /**
-         * Open log drawer in browser window upon error
-         */
-        defaults.put("browser.logDrawer.openOnError", "false");
-        defaults.put("browser.logDrawer.isOpen", "false");
 
         /**
          * Default editor
@@ -231,11 +226,6 @@ public abstract class Preferences {
         defaults.put("queue.postProcessItemWhenComplete", "false");
         defaults.put("queue.orderFrontOnStart", "true");
         defaults.put("queue.orderBackOnStop", "false");
-        /**
-         * Open log drawer in transfer window upon error
-         */
-        defaults.put("queue.logDrawer.openOnError", "true");
-        defaults.put("queue.logDrawer.isOpen", "false");
 
         defaults.put("queue.download.folder", System.getProperty("user.home") + "/Desktop");
         /**
