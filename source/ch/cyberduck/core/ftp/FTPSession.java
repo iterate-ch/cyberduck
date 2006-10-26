@@ -24,6 +24,7 @@ import com.enterprisedt.net.ftp.FTPMessageListener;
 import com.enterprisedt.net.ftp.FTPNullReplyException;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import com.apple.cocoa.foundation.NSBundle;
 
@@ -219,11 +220,8 @@ public class FTPSession extends Session {
                 workdir = PathFactory.createPath(this, this.FTP.pwd());
                 workdir.attributes.setType(Path.DIRECTORY_TYPE);
             }
-            catch(FTPException e) {
-                this.error(e);
-            }
             catch(IOException e) {
-                this.error(e);
+                this.error("Connection failed", e);
                 this.interrupt();
             }
             return workdir;
@@ -237,7 +235,7 @@ public class FTPSession extends Session {
                     this.FTP.noop();
                 }
                 catch(IOException e) {
-                    this.error(e);
+                    this.error("Connection failed", e);
                     this.interrupt();
                     throw e;
                 }
@@ -245,19 +243,10 @@ public class FTPSession extends Session {
         }
     }
 
-    public void sendCommand(String command) {
+    public void sendCommand(String command) throws IOException {
         synchronized(this) {
             if(this.isConnected()) {
-                try {
-                    this.FTP.quote(command);
-                }
-                catch(FTPException e) {
-                    this.error(e);
-                }
-                catch(IOException e) {
-                    this.error(e);
-                    this.interrupt();
-                }
+                this.FTP.quote(command);
             }
         }
     }

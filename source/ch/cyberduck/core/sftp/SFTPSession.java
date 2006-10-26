@@ -32,6 +32,7 @@ import com.sshtools.j2ssh.transport.TransportProtocol;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import com.apple.cocoa.foundation.NSAutoreleasePool;
 import com.apple.cocoa.foundation.NSBundle;
@@ -335,7 +336,7 @@ public class SFTPSession extends Session {
                 log.error("SSH Error: " + e.getMessage());
             }
             catch(IOException e) {
-                this.error(e);
+                this.error("Connection failed", e);
                 this.interrupt();
             }
             return workdir;
@@ -349,7 +350,7 @@ public class SFTPSession extends Session {
                     this.SSH.noop();
                 }
                 catch(IOException e) {
-                    this.error(e);
+                    this.error("Connection failed", e);
                     this.close();
                     throw e;
                 }
@@ -357,9 +358,9 @@ public class SFTPSession extends Session {
         }
     }
 
-    public void sendCommand(String command) {
+    public void sendCommand(String command) throws IOException {
         synchronized(this) {
-            log.error("Not implemented");
+            log.fatal("Not implemented");
         }
     }
 }

@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.ui.LoginController;
 import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.threading.BackgroundException;
+
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSObject;
 import org.apache.log4j.Logger;
@@ -190,7 +192,7 @@ public abstract class Session extends NSObject {
                 }
             }
             catch(IOException e) {
-                this.error(e);
+                this.error("Connection failed", e);
                 Growl.instance().notify(
                         NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
                         host.getHostname());
@@ -239,7 +241,7 @@ public abstract class Session extends NSObject {
      * 
      * @param command
      */
-    public abstract void sendCommand(String command);
+    public abstract void sendCommand(String command) throws IOException;
 
     /**
      * @return boolean True if the session has not yet been closed.
@@ -359,19 +361,34 @@ public abstract class Session extends NSObject {
         progressListeners.remove(listener);
     }
 
-    public void error(final Exception e) {
-        log.info(e.getMessage());
-        ProgressListener[] l = (ProgressListener[]) progressListeners.toArray(new ProgressListener[]{});
-        for(int i = 0; i < l.length; i++) {
-            l[i].error(e);
-        }
-    }
-
     public void message(final String message) {
         log.info(message);
         ProgressListener[] l = (ProgressListener[]) progressListeners.toArray(new ProgressListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].message(message);
+        }
+    }
+
+    private Vector errorListeners = new Vector();
+
+    public void addErrorListener(ErrorListener listener) {
+        errorListeners.add(listener);
+    }
+
+    public void removeErrorListener(ErrorListener listener) {
+        errorListeners.remove(listener);
+    }
+
+    public void error(String message, Exception e) {
+        this.error(null, message, e);
+    }
+
+    public void error(Path path, String message, Exception e) {
+        log.info(e.getMessage());
+        BackgroundException failure = new BackgroundException(this, path, message, e);
+        ErrorListener[] l = (ErrorListener[]) errorListeners.toArray(new ErrorListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].error(failure);
         }
     }
 

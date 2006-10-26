@@ -18,6 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.BackgroundException;
+
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableArray;
@@ -36,7 +39,7 @@ import java.util.Vector;
 /**
  * @version $Id$
  */
-public abstract class Queue extends NSObject {
+public abstract class Queue extends NSObject implements BackgroundAction {
     protected static Logger log = Logger.getLogger(Queue.class);
 
     /**
@@ -228,58 +231,74 @@ public abstract class Queue extends NSObject {
     protected abstract void transfer(Path p);
 
     /**
-     *
-     * @param interactive
+     * The user requested to resume the transfer
      */
-    public void run(final boolean interactive) {
-        this.run(false, false, interactive);
+    private boolean resumeRequested = false;
+
+    public void setResumeRequested() {
+        this.resumeRequested = true;
+        this.reloadRequested = false;
+    }
+
+    /**
+     * The user requested to reload the transfer
+     */
+    private boolean reloadRequested = false;
+
+    public void setReloadRequested() {
+        this.reloadRequested = true;
+        this.resumeRequested = false;
+    }
+
+    /**
+     * Display file validation dialog sheet
+     */
+    private boolean interactive;
+
+    public void setInteractive(boolean interactive) {
+        this.interactive = interactive;
     }
 
     /**
      * Process the queue. All files will be downloaded/uploaded/synced rerspectively.
-     *
-     * @param resumeRequested The user requested to resume the transfer
-     * @param reloadRequested The user requested to reload the transfer
-     * @param interactive If false, run interactive and include questionable files nonetheless
      */
-    public void run(final boolean resumeRequested, final boolean reloadRequested, boolean interactive) {
+    public void run() {
+        this.canceled = false;
+        this.fireQueueStartedEvent();
         try {
-            this.canceled = false;
-            this.fireQueueStartedEvent();
-            try {
-                this.getSession().connect();
-            }
-            catch(IOException e) {
-                this.getSession().error(e);
+            this.getSession().connect();
+        }
+        catch(IOException e) {
+            this.getSession().error("Connection failed", e);
+            this.cancel();
+        }
+        if(this.isCanceled()) {
+            return;
+        }
+        List validated = this.validate(resumeRequested, reloadRequested, interactive);
+        if(this.isCanceled()) {
+            return;
+        }
+        this.jobs = validated;
+        this.reset();
+        for(Iterator iter = jobs.iterator(); iter.hasNext();) {
+            if(!this.getSession().isConnected()) {
                 this.cancel();
             }
             if(this.isCanceled()) {
                 return;
             }
-            List validated = this.validate(resumeRequested, reloadRequested, interactive);
-            if(this.isCanceled()) {
-                return;
-            }
-            this.jobs = validated;
-            this.reset();
-            for(Iterator iter = jobs.iterator(); iter.hasNext();) {
-                if(!this.getSession().isConnected()) {
-                    this.cancel();
-                }
-                if(this.isCanceled()) {
-                    return;
-                }
-                final Path path = (Path)iter.next();
-                this.fireTransferStartedEvent(path);
-                this.transfer(path);
-                this.fireTransferStoppedEvent(path);
-            }
+            final Path path = (Path)iter.next();
+            this.fireTransferStartedEvent(path);
+            this.transfer(path);
+            this.fireTransferStoppedEvent(path);
         }
-        finally {
-            this.getSession().close();
-            this.getSession().cache().clear();
-            this.fireQueueStoppedEvent();
-        }
+    }
+
+    public void cleanup() {
+        this.getSession().close();
+        this.getSession().cache().clear();
+        this.fireQueueStoppedEvent();
     }
 
     private List validate(final boolean resumeRequested, final boolean reloadRequested, boolean interactive) {

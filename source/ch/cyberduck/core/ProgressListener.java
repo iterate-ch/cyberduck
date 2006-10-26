@@ -54,11 +54,4 @@ public abstract class ProgressListener {
      * @param message
      */
     public abstract void message(final String message);
-
-    /**
-     *
-     * @param exception
-     */
-    public abstract void error(final Exception exception);
-
 }

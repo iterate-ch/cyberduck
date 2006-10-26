@@ -28,6 +28,7 @@ import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -156,11 +157,11 @@ public class SFTPPath extends Path {
                 }
                 catch(SshException e) {
                     childs.getAttributes().setReadable(false);
-                    session.error(new SshException(e.getMessage() + " (" + this.getName() + ")"));
+                    this.error("Listing directory failed", e);
                 }
                 catch(IOException e) {
                     childs.getAttributes().setReadable(false);
-                    session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
+                    this.error("Connection failed", e);
                     session.interrupt();
                 }
                 finally {
@@ -194,10 +195,10 @@ public class SFTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch(SshException e) {
-                session.error(new SshException(e.getMessage() + " (" + this.getName() + ")"));
+                this.error("Cannot create folder", e);
             }
             catch(IOException e) {
-                session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
+                this.error("Connection failed", e);
                 session.interrupt();
             }
             finally {
@@ -214,13 +215,18 @@ public class SFTPPath extends Path {
                 session.SFTP.renameFile(this.getAbsolute(), filename);
                 this.getParent().invalidate();
                 this.setPath(filename);
-                //this.getParent().invalidate();
+                this.getParent().invalidate();
             }
             catch(SshException e) {
-                session.error(new SshException(e.getMessage() + " (" + this.getName() + ")"));
+                if(this.attributes.isFile()) {
+                    this.error("Cannot rename file", e);
+                }
+                if(this.attributes.isDirectory()) {
+                    this.error("Cannot rename folder", e);
+                }
             }
             catch(IOException e) {
-                session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
+                this.error("Connection failed", e);
                 session.interrupt();
             }
             finally {
@@ -243,10 +249,10 @@ public class SFTPPath extends Path {
                         f.close();
                     }
                     catch(SshException e) {
-                        session.error(new SshException(e.getMessage() + " (" + this.getName() + ")"));
+                        this.error("Cannot get file attributes", e);
                     }
                     catch(IOException e) {
-                        session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
+                        this.error("Connection failed", e);
                         session.interrupt();
                     }
                 }
@@ -276,10 +282,15 @@ public class SFTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch(SshException e) {
-                session.error(new SshException(e.getMessage() + " (" + this.getName() + ")"));
+                if(this.attributes.isFile()) {
+                    this.error("Cannot delete file", e);
+                }
+                if(this.attributes.isDirectory()) {
+                    this.error("Cannot delete folder", e);
+                }
             }
             catch(IOException e) {
-                session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
+                this.error("Connection failed", e);
                 session.interrupt();
             }
             finally {
@@ -311,10 +322,10 @@ public class SFTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch(SshException e) {
-                session.error(new SshException(e.getMessage() + " (" + this.getName() + ")"));
+                this.error("Cannot change owner", e);
             }
             catch(IOException e) {
-                session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
+                this.error("Connection failed", e);
                 session.interrupt();
             }
             finally {
@@ -346,10 +357,10 @@ public class SFTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch(SshException e) {
-                session.error(new SshException(e.getMessage() + " (" + this.getName() + ")"));
+                this.error("Cannot change group", e);
             }
             catch(IOException e) {
-                session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
+                this.error("Connection failed", e);
                 session.interrupt();
             }
             finally {
@@ -381,10 +392,10 @@ public class SFTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch(SshException e) {
-                session.error(new SshException(e.getMessage() + " (" + this.getName() + ")"));
+                this.error("Cannot change permissions", e);
             }
             catch(IOException e) {
-                session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
+                this.error("Connection failed", e);
                 session.interrupt();
             }
             finally {
@@ -453,13 +464,13 @@ public class SFTPPath extends Path {
                 Growl.instance().notify(
                         NSBundle.localizedString("Download failed", "Growl", "Growl Notification"),
                         this.getName());
-                session.error(new SshException(e.getMessage() + " (" + this.getName() + ")"));
+                this.error("Download failed", e);
             }
             catch(IOException e) {
                 Growl.instance().notify(
                         NSBundle.localizedString("Download failed", "Growl", "Growl Notification"),
                         this.getName());
-                session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
+                this.error("Connection failed", e);
                 session.interrupt();
             }
             finally {
@@ -568,13 +579,13 @@ public class SFTPPath extends Path {
                 Growl.instance().notify(
                         NSBundle.localizedString("Upload failed", "Growl", "Growl Notification"),
                         this.getName());
-                session.error(new SshException(e.getMessage() + " (" + this.getName() + ")"));
+                this.error("Upload failed", e);
             }
             catch(IOException e) {
                 Growl.instance().notify(
                         NSBundle.localizedString("Upload failed", "Growl", "Growl Notification"),
                         this.getName());
-                session.error(new IOException(e.getMessage() + " (" + this.getName() + ")"));
+                this.error("Connection failed", e);
                 session.interrupt();
             }
             finally {

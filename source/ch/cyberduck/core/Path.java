@@ -660,4 +660,8 @@ public abstract class Path extends NSObject {
         log.debug("finalize:" + super.toString());
         super.finalize();
     }
+
+    protected void error(String message, IOException e) {
+        this.getSession().error(this, message, e);
+    }
 }
