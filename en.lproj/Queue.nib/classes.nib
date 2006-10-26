@@ -21,8 +21,6 @@
             OUTLETS = {
                 localField = NSTextField; 
                 localLabel = NSTextField; 
-                logDrawer = NSDrawer; 
-                logView = NSTextView; 
                 queueTable = NSTableView; 
                 urlField = NSTextField; 
                 urlLabel = NSTextField; 
