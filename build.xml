@@ -159,6 +159,7 @@
 				<include name="Queue.nib/**"/>
 				<include name="Progress.nib/**"/>
 				<include name="Security.nib/**"/>
+				<include name="Alert.nib/**"/>
 			</fileset>
 		</copy>
 		<chmod perm="a+x" type="file">
