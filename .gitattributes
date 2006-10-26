@@ -340,6 +340,7 @@ ca.lproj/Download.nib/keyedobjects.nib -text
 ca.lproj/Download.strings -text
 ca.lproj/Duplicate.nib/keyedobjects.nib -text
 ca.lproj/Duplicate.strings -text
+ca.lproj/Error.strings -text
 ca.lproj/File.nib/keyedobjects.nib -text
 ca.lproj/File.strings -text
 ca.lproj/Folder.nib/keyedobjects.nib -text
@@ -386,6 +387,7 @@ cs.lproj/Download.nib/keyedobjects.nib -text
 cs.lproj/Download.strings -text
 cs.lproj/Duplicate.nib/keyedobjects.nib -text
 cs.lproj/Duplicate.strings -text
+cs.lproj/Error.strings -text
 cs.lproj/File.nib/keyedobjects.nib -text
 cs.lproj/File.strings -text
 cs.lproj/Folder.nib/keyedobjects.nib -text
@@ -432,6 +434,7 @@ cy.lproj/Download.nib/keyedobjects.nib -text
 cy.lproj/Download.strings -text
 cy.lproj/Duplicate.nib/keyedobjects.nib -text
 cy.lproj/Duplicate.strings -text
+cy.lproj/Error.strings -text
 cy.lproj/File.nib/keyedobjects.nib -text
 cy.lproj/File.strings -text
 cy.lproj/Folder.nib/keyedobjects.nib -text
@@ -482,6 +485,7 @@ da.lproj/Download.nib/keyedobjects.nib -text
 da.lproj/Download.strings -text
 da.lproj/Duplicate.nib/keyedobjects.nib -text
 da.lproj/Duplicate.strings -text
+da.lproj/Error.strings -text
 da.lproj/File.nib/keyedobjects.nib -text
 da.lproj/File.strings -text
 da.lproj/Folder.nib/keyedobjects.nib -text
@@ -528,6 +532,7 @@ de.lproj/Download.nib/keyedobjects.nib -text
 de.lproj/Download.strings -text
 de.lproj/Duplicate.nib/keyedobjects.nib -text
 de.lproj/Duplicate.strings -text
+de.lproj/Error.strings -text
 de.lproj/File.nib/keyedobjects.nib -text
 de.lproj/File.strings -text
 de.lproj/Folder.nib/keyedobjects.nib -text
@@ -574,6 +579,7 @@ en.lproj/Download.nib/keyedobjects.nib -text
 en.lproj/Download.strings -text
 en.lproj/Duplicate.nib/keyedobjects.nib -text
 en.lproj/Duplicate.strings -text
+en.lproj/Error.strings -text
 en.lproj/File.nib/keyedobjects.nib -text
 en.lproj/File.strings -text
 en.lproj/Folder.nib/keyedobjects.nib -text
@@ -627,6 +633,7 @@ es.lproj/Download.nib/keyedobjects.nib -text
 es.lproj/Download.strings -text
 es.lproj/Duplicate.nib/keyedobjects.nib -text
 es.lproj/Duplicate.strings -text
+es.lproj/Error.strings -text
 es.lproj/File.nib/keyedobjects.nib -text
 es.lproj/File.strings -text
 es.lproj/Folder.nib/keyedobjects.nib -text
@@ -673,6 +680,7 @@ fi.lproj/Download.nib/keyedobjects.nib -text
 fi.lproj/Download.strings -text
 fi.lproj/Duplicate.nib/keyedobjects.nib -text
 fi.lproj/Duplicate.strings -text
+fi.lproj/Error.strings -text
 fi.lproj/File.nib/keyedobjects.nib -text
 fi.lproj/File.strings -text
 fi.lproj/Folder.nib/keyedobjects.nib -text
@@ -719,6 +727,7 @@ fr.lproj/Download.nib/keyedobjects.nib -text
 fr.lproj/Download.strings -text
 fr.lproj/Duplicate.nib/keyedobjects.nib -text
 fr.lproj/Duplicate.strings -text
+fr.lproj/Error.strings -text
 fr.lproj/File.nib/keyedobjects.nib -text
 fr.lproj/File.strings -text
 fr.lproj/Folder.nib/keyedobjects.nib -text
@@ -783,6 +792,7 @@ he.lproj/Duplicate.nib/classes.nib -text
 he.lproj/Duplicate.nib/info.nib -text
 he.lproj/Duplicate.nib/keyedobjects.nib -text
 he.lproj/Duplicate.strings -text
+he.lproj/Error.strings -text
 he.lproj/File.nib/classes.nib -text
 he.lproj/File.nib/info.nib -text
 he.lproj/File.nib/keyedobjects.nib -text
@@ -847,6 +857,7 @@ hu.lproj/Download.nib/keyedobjects.nib -text
 hu.lproj/Download.strings -text
 hu.lproj/Duplicate.nib/keyedobjects.nib -text
 hu.lproj/Duplicate.strings -text
+hu.lproj/Error.strings -text
 hu.lproj/File.nib/keyedobjects.nib -text
 hu.lproj/File.strings -text
 hu.lproj/Folder.nib/keyedobjects.nib -text
@@ -893,6 +904,7 @@ id.lproj/Download.nib/keyedobjects.nib -text
 id.lproj/Download.strings -text
 id.lproj/Duplicate.nib/keyedobjects.nib -text
 id.lproj/Duplicate.strings -text
+id.lproj/Error.strings -text
 id.lproj/File.nib/keyedobjects.nib -text
 id.lproj/File.strings -text
 id.lproj/Folder.nib/keyedobjects.nib -text
@@ -1031,6 +1043,7 @@ it.lproj/Download.nib/keyedobjects.nib -text
 it.lproj/Download.strings -text
 it.lproj/Duplicate.nib/keyedobjects.nib -text
 it.lproj/Duplicate.strings -text
+it.lproj/Error.strings -text
 it.lproj/File.nib/keyedobjects.nib -text
 it.lproj/File.strings -text
 it.lproj/Folder.nib/keyedobjects.nib -text
@@ -1077,6 +1090,7 @@ ja.lproj/Download.nib/keyedobjects.nib -text
 ja.lproj/Download.strings -text
 ja.lproj/Duplicate.nib/keyedobjects.nib -text
 ja.lproj/Duplicate.strings -text
+ja.lproj/Error.strings -text
 ja.lproj/File.nib/keyedobjects.nib -text
 ja.lproj/File.strings -text
 ja.lproj/Folder.nib/keyedobjects.nib -text
@@ -1124,6 +1138,7 @@ ko.lproj/Download.nib/keyedobjects.nib -text
 ko.lproj/Download.strings -text
 ko.lproj/Duplicate.nib/keyedobjects.nib -text
 ko.lproj/Duplicate.strings -text
+ko.lproj/Error.strings -text
 ko.lproj/File.nib/keyedobjects.nib -text
 ko.lproj/File.strings -text
 ko.lproj/Folder.nib/keyedobjects.nib -text
@@ -1173,6 +1188,7 @@ nl.lproj/Download.nib/keyedobjects.nib -text
 nl.lproj/Download.strings -text
 nl.lproj/Duplicate.nib/keyedobjects.nib -text
 nl.lproj/Duplicate.strings -text
+nl.lproj/Error.strings -text
 nl.lproj/File.nib/keyedobjects.nib -text
 nl.lproj/File.strings -text
 nl.lproj/Folder.nib/keyedobjects.nib -text
@@ -1219,6 +1235,7 @@ no.lproj/Download.nib/keyedobjects.nib -text
 no.lproj/Download.strings -text
 no.lproj/Duplicate.nib/keyedobjects.nib -text
 no.lproj/Duplicate.strings -text
+no.lproj/Error.strings -text
 no.lproj/File.nib/keyedobjects.nib -text
 no.lproj/File.strings -text
 no.lproj/Folder.nib/keyedobjects.nib -text
@@ -1265,6 +1282,7 @@ pl.lproj/Download.nib/keyedobjects.nib -text
 pl.lproj/Download.strings -text
 pl.lproj/Duplicate.nib/keyedobjects.nib -text
 pl.lproj/Duplicate.strings -text
+pl.lproj/Error.strings -text
 pl.lproj/File.nib/keyedobjects.nib -text
 pl.lproj/File.strings -text
 pl.lproj/Folder.nib/keyedobjects.nib -text
@@ -1311,6 +1329,7 @@ pt.lproj/Download.nib/keyedobjects.nib -text
 pt.lproj/Download.strings -text
 pt.lproj/Duplicate.nib/keyedobjects.nib -text
 pt.lproj/Duplicate.strings -text
+pt.lproj/Error.strings -text
 pt.lproj/File.nib/keyedobjects.nib -text
 pt.lproj/File.strings -text
 pt.lproj/Folder.nib/keyedobjects.nib -text
@@ -1357,6 +1376,7 @@ ru.lproj/Download.nib/keyedobjects.nib -text
 ru.lproj/Download.strings -text
 ru.lproj/Duplicate.nib/keyedobjects.nib -text
 ru.lproj/Duplicate.strings -text
+ru.lproj/Error.strings -text
 ru.lproj/File.nib/keyedobjects.nib -text
 ru.lproj/File.strings -text
 ru.lproj/Folder.nib/keyedobjects.nib -text
@@ -1403,6 +1423,7 @@ sk.lproj/Download.nib/keyedobjects.nib -text
 sk.lproj/Download.strings -text
 sk.lproj/Duplicate.nib/keyedobjects.nib -text
 sk.lproj/Duplicate.strings -text
+sk.lproj/Error.strings -text
 sk.lproj/File.nib/keyedobjects.nib -text
 sk.lproj/File.strings -text
 sk.lproj/Folder.nib/keyedobjects.nib -text
@@ -1457,6 +1478,7 @@ sv.lproj/Download.nib/keyedobjects.nib -text
 sv.lproj/Download.strings -text
 sv.lproj/Duplicate.nib/keyedobjects.nib -text
 sv.lproj/Duplicate.strings -text
+sv.lproj/Error.strings -text
 sv.lproj/File.nib/keyedobjects.nib -text
 sv.lproj/File.strings -text
 sv.lproj/Folder.nib/keyedobjects.nib -text
@@ -1519,6 +1541,7 @@ th.lproj/Duplicate.nib/classes.nib -text
 th.lproj/Duplicate.nib/info.nib -text
 th.lproj/Duplicate.nib/keyedobjects.nib -text
 th.lproj/Duplicate.strings -text
+th.lproj/Error.strings -text
 th.lproj/File.nib/classes.nib -text
 th.lproj/File.nib/info.nib -text
 th.lproj/File.nib/keyedobjects.nib -text
@@ -1599,6 +1622,7 @@ tr.lproj/Duplicate.nib/classes.nib -text
 tr.lproj/Duplicate.nib/info.nib -text
 tr.lproj/Duplicate.nib/keyedobjects.nib -text
 tr.lproj/Duplicate.strings -text
+tr.lproj/Error.strings -text
 tr.lproj/File.nib/classes.nib -text
 tr.lproj/File.nib/info.nib -text
 tr.lproj/File.nib/keyedobjects.nib -text
@@ -1766,6 +1790,7 @@ zh_CN.lproj/Download.nib/keyedobjects.nib -text
 zh_CN.lproj/Download.strings -text
 zh_CN.lproj/Duplicate.nib/keyedobjects.nib -text
 zh_CN.lproj/Duplicate.strings -text
+zh_CN.lproj/Error.strings -text
 zh_CN.lproj/File.nib/keyedobjects.nib -text
 zh_CN.lproj/File.strings -text
 zh_CN.lproj/Folder.nib/keyedobjects.nib -text
@@ -1812,6 +1837,7 @@ zh_TW.lproj/Download.nib/keyedobjects.nib -text
 zh_TW.lproj/Download.strings -text
 zh_TW.lproj/Duplicate.nib/keyedobjects.nib -text
 zh_TW.lproj/Duplicate.strings -text
+zh_TW.lproj/Error.strings -text
 zh_TW.lproj/File.nib/keyedobjects.nib -text
 zh_TW.lproj/File.strings -text
 zh_TW.lproj/Folder.nib/keyedobjects.nib -text
