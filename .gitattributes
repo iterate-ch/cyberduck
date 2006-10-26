@@ -1461,7 +1461,6 @@ source/ch/cyberduck/core/forker/NSString+CarbonFSRefCreation.m -text
 source/ch/cyberduck/ui/cocoa/CDBottomView.m -text
 source/ch/cyberduck/ui/cocoa/CDNavigationView.m -text
 source/ch/cyberduck/ui/cocoa/growl/GrowlNative.java -text
-source/com/adiumx/AIAutoScrollView.m -text
 source/de/zathras/UKCrashReporter.m -text
 sv.lproj/Alert.nib/classes.nib -text
 sv.lproj/Alert.nib/data.dependency -text
