@@ -333,7 +333,7 @@ public class CDQueueController extends CDWindowController
      *
      * @param queue
      */
-    public void removeItem(Queue queue) {
+    public void removeItem(final Queue queue) {
         synchronized(QueueCollection.instance()) {
             QueueCollection.instance().remove(queue);
             this.reloadQueueTable();
@@ -345,24 +345,13 @@ public class CDQueueController extends CDWindowController
      *
      * @param queue
      */
-    public void addItem(Queue queue) {
+    public void addItem(final Queue queue) {
         synchronized(QueueCollection.instance()) {
             int row = QueueCollection.instance().size();
             QueueCollection.instance().add(row, queue);
             this.reloadQueueTable();
             this.queueTable.selectRow(row, false);
             this.queueTable.scrollRowToVisible(row);
-        }
-    }
-
-    /**
-     * @param queue
-     */
-    public void startItem(final Queue queue) {
-        synchronized(QueueCollection.instance()) {
-            if(!QueueCollection.instance().contains(queue)) {
-                this.addItem(queue);
-            }
         }
         queue.addListener(new QueueListener() {
             public void transferStarted(final Path path) {
@@ -412,7 +401,6 @@ public class CDQueueController extends CDWindowController
                         }
                     }
                 }
-                queue.removeListener(this);
                 if(queue.isComplete() && !queue.isCanceled()) {
                     if(queue instanceof DownloadQueue) {
                         if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
@@ -437,6 +425,17 @@ public class CDQueueController extends CDWindowController
                 queue.getSession().setLoginController(null);
             }
         });
+    }
+
+    /**
+     * @param queue
+     */
+    public void startItem(final Queue queue) {
+        synchronized(QueueCollection.instance()) {
+            if(!QueueCollection.instance().contains(queue)) {
+                this.addItem(queue);
+            }
+        }
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
             this.window.makeKeyAndOrderFront(null);
         }
