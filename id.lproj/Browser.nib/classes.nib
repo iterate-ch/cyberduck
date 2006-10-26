@@ -47,8 +47,6 @@
                 deleteBookmarkButton = NSButton; 
                 editBookmarkButton = NSButton; 
                 encodingPopup = NSPopUpButton; 
-                logDrawer = NSDrawer; 
-                logView = NSTextView; 
                 navigationButton = NSSegmentedControl; 
                 navigationView = NSView; 
                 pathPopup = NSPopUpButton; 
