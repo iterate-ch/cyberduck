@@ -48,7 +48,6 @@
                 editBookmarkButton = NSButton; 
                 encodingPopup = NSPopUpButton; 
                 navigationButton = NSSegmentedControl; 
-                navigationView = NSView; 
                 pathPopup = NSPopUpButton; 
                 quickConnectPopup = NSComboBox; 
                 searchField = NSView; 
