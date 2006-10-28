@@ -24,7 +24,8 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSRange;
 
 import java.io.IOException;
 
@@ -63,7 +64,7 @@ public class CDCommandController extends CDSheetController implements Transcript
         super(parent);
         this.session = session;
         this.session.addTranscriptListener(this);
-        synchronized(parent) {
+        synchronized(NSApplication.sharedApplication()) {
             if (!NSApplication.loadNibNamed("Command", this)) {
                 log.fatal("Couldn't load Command.nib");
             }

@@ -26,8 +26,6 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
-import java.util.Iterator;
-
 /**
  * @version $Id$
  */
@@ -119,7 +117,7 @@ public class CDQueueController extends CDWindowController
     private static final Object lock = new Object();
 
     public static CDQueueController instance() {
-        synchronized(lock) {
+        synchronized(NSApplication.sharedApplication()) {
             if(null == instance) {
                 instance = new CDQueueController();
                 if(!NSApplication.loadNibNamed("Queue", instance)) {
@@ -353,84 +351,23 @@ public class CDQueueController extends CDWindowController
             this.queueTable.selectRow(row, false);
             this.queueTable.scrollRowToVisible(row);
         }
-        queue.addListener(new QueueListener() {
-            public void transferStarted(final Path path) {
-                queueTable.setNeedsDisplay();
-                CDQueueController.this.invoke(new Runnable() {
-                    public void run() {
-                        updateSelection();
-                    }
-                });
-            }
-
-            public void transferStopped(final Path path) {
-                queueTable.setNeedsDisplay();
-            }
-
-            public void queueStarted() {
-                invoke(new Runnable() {
-                    public void run() {
-                        window.toolbar().validateVisibleItems();
-                    }
-                });
-                if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
-                    ((ch.cyberduck.core.sftp.SFTPSession) queue.getSession()).setHostKeyVerificationController(
-                            new CDHostKeyController(CDQueueController.instance()));
-                }
-                if(queue.getSession() instanceof ch.cyberduck.core.ftps.FTPSSession) {
-                    ((ch.cyberduck.core.ftps.FTPSSession) queue.getSession()).setTrustManager(
-                            new CDX509TrustManagerController(CDQueueController.instance()));
-                }
-                queue.getSession().setLoginController(new CDLoginController(CDQueueController.instance()));
-            }
-
-            public void queueStopped() {
-                invoke(new Runnable() {
-                    public void run() {
-                        window.toolbar().validateVisibleItems();
-                    }
-                });
-                if(queue.isComplete()) {
-                    if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
-                        if(!hasRunningTransfers()) {
-                            CDQueueController.this.invoke(new Runnable() {
-                                public void run() {
-                                    window().close();
-                                }
-                            });
-                        }
-                    }
-                }
-                if(queue.isComplete() && !queue.isCanceled()) {
-                    if(queue instanceof DownloadQueue) {
-                        if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
-                            boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
-                            log.info("Success opening file:" + success);
-                        }
-                    }
-                    if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
-                        invoke(new Runnable() {
-                            public void run() {
-                                removeItem(queue);
-                            }
-                        });
-                    }
-                }
-                if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
-                    ((ch.cyberduck.core.sftp.SFTPSession) queue.getSession()).setHostKeyVerificationController(null);
-                }
-                if(queue.getSession() instanceof ch.cyberduck.core.ftps.FTPSSession) {
-                    ((ch.cyberduck.core.ftps.FTPSSession) queue.getSession()).setTrustManager(null);
-                }
-                queue.getSession().setLoginController(null);
-            }
-        });
     }
 
     /**
+     *
      * @param queue
      */
     public void startItem(final Queue queue) {
+        this.startItem(queue, false, false);
+    }
+
+    /**
+     *
+     * @param queue
+     * @param resumeRequested
+     * @param reloadRequested
+     */
+    public void startItem(final Queue queue, final boolean resumeRequested, final boolean reloadRequested) {
         synchronized(QueueCollection.instance()) {
             if(!QueueCollection.instance().contains(queue)) {
                 this.addItem(queue);
@@ -439,19 +376,96 @@ public class CDQueueController extends CDWindowController
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
             this.window.makeKeyAndOrderFront(null);
         }
-        new BackgroundActionImpl(this, queue) {
-            public void prepare() {
-                queue.getSession().addErrorListener(this);
-                queue.getSession().addTranscriptListener(this);
-                super.prepare();
+        this.background(new BackgroundActionImpl(this) {
+            public void run() {
+                try {
+                    queue.getSession().addErrorListener(this);
+                    queue.getSession().addTranscriptListener(this);
+                    queue.addListener(new QueueListener() {
+                        public void transferStarted(final Path path) {
+                            queueTable.setNeedsDisplay();
+                            CDQueueController.this.invoke(new Runnable() {
+                                public void run() {
+                                    updateSelection();
+                                }
+                            });
+                        }
+
+                        public void transferStopped(final Path path) {
+                            queueTable.setNeedsDisplay();
+                        }
+
+                        public void queueStarted() {
+                            invoke(new Runnable() {
+                                public void run() {
+                                    window.toolbar().validateVisibleItems();
+                                }
+                            });
+                            if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
+                                ((ch.cyberduck.core.sftp.SFTPSession) queue.getSession()).setHostKeyVerificationController(
+                                        new CDHostKeyController(CDQueueController.instance()));
+                            }
+                            if(queue.getSession() instanceof ch.cyberduck.core.ftps.FTPSSession) {
+                                ((ch.cyberduck.core.ftps.FTPSSession) queue.getSession()).setTrustManager(
+                                        new CDX509TrustManagerController(CDQueueController.instance()));
+                            }
+                            queue.getSession().setLoginController(new CDLoginController(CDQueueController.instance()));
+                        }
+
+                        public void queueStopped() {
+                            invoke(new Runnable() {
+                                public void run() {
+                                    window.toolbar().validateVisibleItems();
+                                }
+                            });
+                            if(queue.isComplete()) {
+                                if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
+                                    if(!hasRunningTransfers()) {
+                                        CDQueueController.this.invoke(new Runnable() {
+                                            public void run() {
+                                                window().close();
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                            queue.removeListener(this);
+                            if(queue.isComplete() && !queue.isCanceled()) {
+                                if(queue instanceof DownloadQueue) {
+                                    if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
+                                        boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
+                                        log.info("Success opening file:" + success);
+                                    }
+                                }
+                                if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
+                                    invoke(new Runnable() {
+                                        public void run() {
+                                            removeItem(queue);
+                                        }
+                                    });
+                                }
+                            }
+                            if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
+                                ((ch.cyberduck.core.sftp.SFTPSession) queue.getSession()).setHostKeyVerificationController(null);
+                            }
+                            if(queue.getSession() instanceof ch.cyberduck.core.ftps.FTPSSession) {
+                                ((ch.cyberduck.core.ftps.FTPSSession) queue.getSession()).setTrustManager(null);
+                            }
+                            queue.getSession().setLoginController(null);
+                        }
+                    });
+                    queue.run(resumeRequested, reloadRequested);
+                }
+                finally {
+                    queue.getSession().removeErrorListener(this);
+                    queue.getSession().removeTranscriptListener(this);
+                }
             }
 
             public void cleanup() {
-                queue.getSession().removeErrorListener(this);
-                queue.getSession().removeTranscriptListener(this);
-                super.cleanup();
+                ;
             }
-        }.run();
+        }, new Object());
     }
 
     private static final String TOOLBAR_RESUME = "Resume";
@@ -581,8 +595,7 @@ public class CDQueueController extends CDWindowController
             int i = ((Integer) iterator.nextElement()).intValue();
             Queue queue = (Queue) QueueCollection.instance().get(i);
             if(!queue.isRunning()) {
-                queue.setResumeRequested();
-                this.startItem(queue);
+                this.startItem(queue, true, false);
             }
         }
     }
@@ -593,8 +606,7 @@ public class CDQueueController extends CDWindowController
             int i = ((Integer) iterator.nextElement()).intValue();
             Queue queue = (Queue) QueueCollection.instance().get(i);
             if(!queue.isRunning()) {
-                queue.setReloadRequested();
-                this.startItem(queue);
+                this.startItem(queue, false, true);
             }
         }
     }

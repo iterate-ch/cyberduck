@@ -19,16 +19,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.foundation.*;
-import com.apple.cocoa.application.NSFont;
-import com.apple.cocoa.application.NSColor;
 
 import org.apache.log4j.Logger;
-
-import java.util.Map;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * @version $Id$

@@ -98,7 +98,8 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                 }
                 else if (item.attributes.isDirectory()) {
                     icon = FOLDER_ICON;
-                    if (!item.attributes.isExecutable()) {
+                    if (!item.attributes.isExecutable()
+                            || (item.cache() != null && !item.cache().getAttributes().isReadable())) {
                         icon = FOLDER_NOACCESS_ICON;
                     }
                     else if (!item.attributes.isReadable()) {

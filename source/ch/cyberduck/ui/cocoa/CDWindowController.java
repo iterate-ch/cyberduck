@@ -18,6 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
+
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
@@ -63,6 +66,49 @@ public abstract class CDWindowController extends CDController
             new Object[]{NSFont.boldSystemFontOfSize(10.0f), NSColor.redColor()},
             new Object[]{NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName}
     );
+
+    /**
+     * Run the runnable in the background using a new thread
+     * @param runnable
+     */
+    public void background(final BackgroundActionImpl runnable, final Object lock) {
+        log.debug("background:"+runnable);
+        new Thread() {
+            public void run() {
+                // Synchronize all background threads to this lock so actions run
+                // sequentially as they were initiated from the main interface thread
+                synchronized(lock) {
+                    log.debug("Acquired lock for background runnable:"+runnable);
+                    try {
+                        // Execute the action of the runnable
+                        runnable.run();
+                    }
+                    catch(NullPointerException e) {
+                        // We might get a null pointer if the session has been interrupted
+                        // during the action in progress and closing the underlying socket
+                        // asynchronously. See Session#interrupt
+                        log.info("Due to closing the underlying socket asynchronously, the " +
+                                "action was interrupted while still pending completion");
+                    }
+                    finally {
+                        // Invoke the cleanup on the main thread to let the action
+                        // synchronize the user interface
+                        CDWindowController.this.invoke(new Runnable() {
+                            public void run() {
+                                runnable.cleanup();
+                                // If there was any failure, display the summary now
+                                if(runnable.hasFailed()) {
+                                    runnable.alert(lock);
+                                }
+                            }
+                        });
+                    }
+                    log.debug("Releasing lock for background runnable:"+runnable);
+                }
+            }
+        }.start();
+        log.debug("Started background runnable for:"+runnable);
+    }
 
     /**
      * The window this controller is owner of

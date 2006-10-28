@@ -22,9 +22,8 @@ import com.enterprisedt.net.ftp.FTPConnectMode;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.odb.Editor;
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
-import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -259,7 +258,7 @@ public class CDBrowserController extends CDWindowController
             }
             Queue q = new SyncQueue(path);
             q.setInteractive(false);
-            q.run();
+            q.run(false, false);
         }
         return null;
     }
@@ -288,7 +287,7 @@ public class CDBrowserController extends CDWindowController
             }
             Queue q = new DownloadQueue(path);
             q.setInteractive(false);
-            q.run();
+            q.run(false, false);
         }
         return null;
     }
@@ -316,7 +315,7 @@ public class CDBrowserController extends CDWindowController
             }
             Queue q = new UploadQueue(path);
             q.setInteractive(false);
-            q.run();
+            q.run(false, false);
         }
         return null;
     }
@@ -480,7 +479,7 @@ public class CDBrowserController extends CDWindowController
     protected void reloadData(final boolean preserveSelection) {
         log.debug("reloadData:" + preserveSelection);
         if(this.isMounted()) {
-            if(!this.getSession().cache().containsKey(this.workdir())) {
+            if(null == this.workdir().cache()) {
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
                 // Delay until path is cached in the background
                 this.background(new BackgroundAction() {
@@ -853,7 +852,8 @@ public class CDBrowserController extends CDWindowController
                         }
                         else if(item.attributes.isDirectory()) {
                             icon = FOLDER_ICON;
-                            if(!item.attributes.isExecutable()) {
+                            if (!item.attributes.isExecutable()
+                                    || (item.cache() != null && !item.cache().getAttributes().isReadable())) {
                                 icon = CDBrowserTableDataSource.FOLDER_NOACCESS_ICON;
                             }
                             else if(!item.attributes.isReadable()) {
@@ -893,32 +893,39 @@ public class CDBrowserController extends CDWindowController
                 log.debug("outlineViewShouldExpandItem:"+item);
                 // Check first if it hasn't been already requested so we don't spawn
                 // a multitude of unecessary threads
-                if(!isLoadingListingInBackground.contains(item)) {
-                    boolean cached = ((Path)item).getSession().cache().containsKey((Path)item);
-                    if(!cached) {
-                        isLoadingListingInBackground.add(item);
-                        // If the path is not cached, then don't allow expansion as this would
-                        // cause the interface to hang. Delay until the listing has been fetched
-                        // in the background
-                        background(new BackgroundAction() {
-                            public void run() {
-                                ((Path)item).list();
-                                isLoadingListingInBackground.remove(item);
-                            }
+                synchronized(isLoadingListingInBackground) {
+                    if(!isLoadingListingInBackground.contains(item)) {
+                        boolean cached = ((Path)item).cache() != null;
+                        if(!cached) {
+                            isLoadingListingInBackground.add(item);
+                            // If the path is not cached, then don't allow expansion as this would
+                            // cause the interface to hang. Delay until the listing has been fetched
+                            // in the background
+                            background(new BackgroundAction() {
+                                public void run() {
+                                    ((Path)item).list();
+                                    synchronized(isLoadingListingInBackground) {
+                                        isLoadingListingInBackground.remove(item);
+                                    }
+                                }
 
-                            public void cleanup() {
-                                // The outline view asumes the item has been sucessfully expanded altough
-                                // we returned false before. Therefore we first collapse it otherwise
-                                // the expandItem method does nothing
-                                view.collapseItem(item);
-                                view.expandItem(item);
-                            }
-                        });
+                                public void cleanup() {
+                                    boolean cached = ((Path)item).cache() != null;
+                                    if(cached) {
+                                        // The outline view asumes the item has been sucessfully expanded altough
+                                        // we returned false before. Therefore we first collapse it otherwise
+                                        // the expandItem method does nothing
+                                        view.collapseItem(item);
+                                        view.expandItem(item);
+                                    }
+                                }
+                            });
+                        }
+                        // Only allow the item to be expanded if it is already cached
+                        return cached;
                     }
-                    // Only allow the item to be expanded if it is already cached
-                    return cached;
+                    return true;
                 }
-                return true;
             }
 
             public void outlineViewItemDidExpand(NSNotification notification) {
@@ -1546,12 +1553,6 @@ public class CDBrowserController extends CDWindowController
     // Browser navigation
     // ----------------------------------------------------------
 
-    private NSView navigationView; // IBOutlet
-
-    public void setNavigationView(NSView navigationView) {
-        this.navigationView = navigationView;
-    }
-
     private static final int NAVIGATION_LEFT_SEGMENT_BUTTON = 0;
     private static final int NAVIGATION_RIGHT_SEGMENT_BUTTON = 1;
 
@@ -1597,12 +1598,16 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void forwardButtonClicked(final Object sender) {
-        this.background(new AbstractBackgroundAction() {
+        this.background(new BackgroundAction() {
             public void run() {
                 Path selected = session.getForwardPath();
                 if(selected != null) {
                     setWorkdir(selected);
                 }
+            }
+
+            public void cleanup () {
+                ;
             }
         });
     }
@@ -1787,8 +1792,10 @@ public class CDBrowserController extends CDWindowController
                         new NSAttributedString(session.getSecurityInformation(), FIXED_WITH_FONT_ATTRIBUTES));
             }
         };
-        if (!NSApplication.loadNibNamed("Security", c)) {
-            log.fatal("Couldn't load Security.nib");
+        synchronized(NSApplication.sharedApplication()) {
+            if (!NSApplication.loadNibNamed("Security", c)) {
+                log.fatal("Couldn't load Security.nib");
+            }
         }
     }
 
@@ -1829,9 +1836,13 @@ public class CDBrowserController extends CDWindowController
                 }
             }
             final Path workdir = this.workdir();
-            this.background(new AbstractBackgroundAction() {
+            this.background(new BackgroundAction() {
                 public void run() {
                     setWorkdir(workdir);
+                }
+
+                public void cleanup() {
+                    ;
                 }
             });
         }
@@ -2265,9 +2276,12 @@ public class CDBrowserController extends CDWindowController
         if(this.getSelectionCount() > 0) {
             final Path selected = this.getSelectedPath(); //last row selected
             if(selected.attributes.isDirectory()) {
-                this.background(new AbstractBackgroundAction() {
+                this.background(new BackgroundAction() {
                     public void run() {
                         setWorkdir(selected);
+                    }
+                    public void cleanup() {
+                        ;
                     }
                 });
             }
@@ -2457,36 +2471,47 @@ public class CDBrowserController extends CDWindowController
     /**
      * A lock to make sure that actions are not run in parallel
      */
-    private final Object backgroundLock = new Object();
+    protected final Object backgroundLock = new Object();
 
     /**
-     *
      * @param runnable
      * @pre must always be invoked form the main interface thread
      */
     public void background(final BackgroundAction runnable) {
-        log.debug("background:"+runnable);
-        new BackgroundActionImpl(this, runnable, backgroundLock) {
-            public void prepare() {
+        super.background(new BackgroundActionImpl(this) {
+            public void run() {
                 activityRunning = true;
-                spinner.startAnimation(this);
-                session.addErrorListener(this);
-                session.addTranscriptListener(this);
-                super.prepare();
+                try {
+                    spinner.startAnimation(this);
+                    session.addErrorListener(this);
+                    session.addTranscriptListener(this);
+                    {
+                        runnable.run();
+                    }
+                }
+                finally {
+                    // It is important not  to do this in #cleanup as otherwise
+                    // the listeners are still registered when the next BackgroundAction
+                    // is already running
+                    session.removeTranscriptListener(this);
+                    session.removeErrorListener(this);
+                }
             }
 
             public void cleanup() {
                 activityRunning = false;
-                spinner.stopAnimation(this);
-                session.removeErrorListener(this);
-                session.removeTranscriptListener(this);
-                statusLabel.setAttributedStringValue(new NSAttributedString(
-                        getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", ""),
-                        CDWindowController.TRUNCATE_MIDDLE_ATTRIBUTES));
-                statusLabel.display();
-                super.cleanup();
+                try {
+                    spinner.stopAnimation(CDBrowserController.this);
+                    statusLabel.setAttributedStringValue(new NSAttributedString(
+                            getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", ""),
+                            CDWindowController.TRUNCATE_MIDDLE_ATTRIBUTES));
+                    statusLabel.display();
+                }
+                finally {
+                    runnable.cleanup();
+                }
             }
-        }.run();
+        }, backgroundLock);
     }
 
     protected Path workdir() {
@@ -2604,12 +2629,6 @@ public class CDBrowserController extends CDWindowController
              * The listener used to watch for messages and errors during the session
              */
             private ProgressListener progress;
-            /**
-             * Writes the transcript to the log viewer
-             */
-            private TranscriptListener transcript;
-
-            private final Object lock = new Object();
 
             public void connectionWillOpen() {
                 session.addProgressListener(progress = new ProgressListener() {
@@ -2644,7 +2663,6 @@ public class CDBrowserController extends CDWindowController
             public void connectionDidClose() {
                 getSelectedBrowserView().setNeedsDisplay();
                 session.removeProgressListener(progress);
-                session.removeTranscriptListener(transcript);
                 CDBrowserController.this.invoke(new Runnable() {
                     public void run() {
                         window.setDocumentEdited(false);
@@ -2703,12 +2721,15 @@ public class CDBrowserController extends CDWindowController
                 // The host is already mounted
                 if(host.hasReasonableDefaultPath()) {
                     // Change to its default path
-                    this.background(new AbstractBackgroundAction() {
+                    this.background(new BackgroundAction() {
                         public void run() {
                             Path home = PathFactory.createPath(session, host.getDefaultPath());
                             home.attributes.setType(Path.DIRECTORY_TYPE);
                             home.invalidate();
                             setWorkdir(home);
+                        }
+                        public void cleanup() {
+                            ;
                         }
                     });
                     return session;
@@ -2727,10 +2748,13 @@ public class CDBrowserController extends CDWindowController
             // The browser has no session, we are allowed to proceed
             // Initialize the browser with the new session attaching all listeners
             final Session session = this.init(host);
-            background(new AbstractBackgroundAction() {
+            this.background(new BackgroundAction() {
                 public void run() {
                     // Mount this session and set the working directory in the background
                     setWorkdir(session.mount());
+                }
+                public void cleanup() {
+                    ;
                 }
             });
             return session;

@@ -74,7 +74,7 @@ public class CDGotoController extends CDSheetController
 
     public CDGotoController(final CDWindowController parent) {
         super(parent);
-        synchronized(parent) {
+        synchronized(NSApplication.sharedApplication()) {
             if (!NSApplication.loadNibNamed("Goto", this)) {
                 log.fatal("Couldn't load Goto.nib");
             }

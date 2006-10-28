@@ -21,7 +21,11 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.ftps.AbstractX509TrustManager;
 
-import com.apple.cocoa.application.*;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSButton;
+import com.apple.cocoa.application.NSCell;
+import com.apple.cocoa.application.NSTextField;
+import com.apple.cocoa.application.NSTextView;
 import com.apple.cocoa.foundation.NSAutoreleasePool;
 import com.apple.cocoa.foundation.NSBundle;
 
@@ -72,8 +76,6 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
         this.checkCertificate(x509Certificates, authType);
     }
 
-    private static final Object lock = new Object();
-
     public void checkCertificate(final X509Certificate[] x509Certificates, String authType)
             throws CertificateException {
         for (int i = 0; i < x509Certificates.length; i++) {
@@ -121,7 +123,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 
 
                 };
-                synchronized(lock) {
+                synchronized(NSApplication.sharedApplication()) {
                     if (!NSApplication.loadNibNamed("Certificate", c)) {
                         log.fatal("Couldn't load Certificate.nib");
                     }

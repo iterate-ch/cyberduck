@@ -50,8 +50,6 @@ public class CDProgressController extends CDController {
 
     private Queue queue;
 
-    private static final Object lock = new Object();
-
     public CDProgressController(final Queue queue) {
         this.queue = queue;
         QueueCollection.instance().addListener(new CollectionListener() {
@@ -69,7 +67,7 @@ public class CDProgressController extends CDController {
                 ;
             }
         });
-        synchronized(lock) {
+        synchronized(NSApplication.sharedApplication()) {
             if(!NSApplication.loadNibNamed("Progress", this)) {
                 log.fatal("Couldn't load Progress.nib");
             }

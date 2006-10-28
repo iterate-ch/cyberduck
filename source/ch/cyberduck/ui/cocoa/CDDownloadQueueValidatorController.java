@@ -18,10 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Status;
 
 import com.apple.cocoa.application.NSApplication;
@@ -31,9 +28,6 @@ import com.apple.cocoa.foundation.NSAttributedString;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @version $Id$
  */
@@ -41,7 +35,7 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
     private static Logger log = Logger.getLogger(CDDownloadQueueValidatorController.class);
 
     public CDDownloadQueueValidatorController() {
-        synchronized(CDQueueController.instance()) {
+        synchronized(NSApplication.sharedApplication()) {
             if(!NSApplication.loadNibNamed("Validator", this)) {
                 log.fatal("Couldn't load Validator.nib");
             }

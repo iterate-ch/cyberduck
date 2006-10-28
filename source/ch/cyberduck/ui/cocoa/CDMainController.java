@@ -685,7 +685,7 @@ public class CDMainController extends CDController {
                     NSApplication.sharedApplication().terminate(null);
                 }
             };
-            synchronized(app) {
+            synchronized(NSApplication.sharedApplication()) {
                 if (!NSApplication.loadNibNamed("Donate", c)) {
                     log.fatal("Couldn't load Donate.nib");
                 }

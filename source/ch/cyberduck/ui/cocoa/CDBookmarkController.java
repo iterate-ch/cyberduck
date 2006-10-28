@@ -18,10 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.HostCollection;
 import ch.cyberduck.core.CollectionListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostCollection;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -29,8 +31,8 @@ import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 import java.net.MalformedURLException;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -169,8 +171,6 @@ public class CDBookmarkController extends CDWindowController {
 
     private Host host;
 
-    private static final Object lock = new Object();
-
     /**
      *
      */
@@ -217,7 +217,7 @@ public class CDBookmarkController extends CDWindowController {
                 ;
             }
         });
-        synchronized(lock) {
+        synchronized(NSApplication.sharedApplication()) {
             if (!NSApplication.loadNibNamed("Bookmark", this)) {
                 log.fatal("Couldn't load Bookmark.nib");
             }
@@ -313,20 +313,17 @@ public class CDBookmarkController extends CDWindowController {
         this.host.setHostname(hostname);
         this.updateFields();
         HostCollection.instance().collectionItemChanged(this.host);
-        new Thread() {
+        this.background(new BackgroundActionImpl(this) {
+            boolean reachable = false;
+
             public void run() {
-                final int pool = NSAutoreleasePool.push();
-                final boolean reachable = new Host(hostname).isReachable();
-                NSAutoreleasePool.pop(pool);
-                CDBookmarkController.this.invoke(new Runnable() {
-                    public void run() {
-                        synchronized(lock) {
-                            alertIcon.setHidden(reachable);
-                        }
-                    }
-                });
+                reachable = new Host(hostname).isReachable();
             }
-        }.start();
+
+            public void cleanup() {
+                alertIcon.setHidden(reachable);
+            }
+        }, this);
     }
 
     public void portInputDidEndEditing(final NSNotification sender) {

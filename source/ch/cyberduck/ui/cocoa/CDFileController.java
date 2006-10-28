@@ -18,16 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
 
-import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.application.NSWindow;
-import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 

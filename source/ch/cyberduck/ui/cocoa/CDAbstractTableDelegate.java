@@ -26,7 +26,8 @@ import ch.cyberduck.core.Status;
 import com.apple.cocoa.application.NSOutlineView;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSNotification;
+import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 

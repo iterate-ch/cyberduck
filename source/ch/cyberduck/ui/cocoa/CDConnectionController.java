@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -212,8 +213,6 @@ public class CDConnectionController extends CDSheetController {
         });
     }
 
-    private static final Object lock = new Object();
-
     public void hostFieldTextDidChange(final NSNotification sender) {
         final String hostname = hostField.stringValue();
         try {
@@ -232,20 +231,17 @@ public class CDConnectionController extends CDSheetController {
         catch(java.net.MalformedURLException e) {
             // ignore; just a hostname has been entered
         }
-        new Thread() {
+        this.background(new BackgroundActionImpl(this) {
+            boolean reachable = false;
+
             public void run() {
-                final int pool = NSAutoreleasePool.push();
-                final boolean reachable = new Host(hostname).isReachable();
-                NSAutoreleasePool.pop(pool);
-                CDConnectionController.this.invoke(new Runnable() {
-                    public void run() {
-                        synchronized(lock) {
-                            alertIcon.setHidden(reachable);
-                        }
-                    }
-                });
+                reachable = new Host(hostname).isReachable();
             }
-        }.start();
+
+            public void cleanup() {
+                alertIcon.setHidden(reachable);
+            }
+        }, this);
     }
 
     private NSButton alertIcon; // IBOutlet
@@ -430,7 +426,7 @@ public class CDConnectionController extends CDSheetController {
 
     public CDConnectionController(final CDWindowController parent) {
         super(parent);
-        synchronized(parent) {
+        synchronized(NSApplication.sharedApplication()) {
             if(!NSApplication.loadNibNamed("Connection", this)) {
                 log.fatal("Couldn't load Connection.nib");
             }

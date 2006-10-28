@@ -34,7 +34,7 @@ public class CDFolderController extends CDFileController {
 
     public CDFolderController(final CDWindowController parent) {
         super(parent);
-        synchronized(parent) {
+        synchronized(NSApplication.sharedApplication()) {
             if(!NSApplication.loadNibNamed("Folder", this)) {
                 log.fatal("Couldn't load Folder.nib");
             }

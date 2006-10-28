@@ -20,8 +20,13 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.application.NSDraggingInfo;
+import com.apple.cocoa.application.NSPasteboard;
+import com.apple.cocoa.application.NSTableColumn;
+import com.apple.cocoa.application.NSTableView;
+import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 

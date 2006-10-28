@@ -24,7 +24,11 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
-import com.apple.cocoa.application.*;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSImage;
+import com.apple.cocoa.application.NSImageView;
+import com.apple.cocoa.application.NSTextField;
+import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSSize;
 
@@ -47,7 +51,7 @@ public class CDDuplicateFileController extends CDFileController {
 
     public CDDuplicateFileController(final CDWindowController parent) {
         super(parent);
-        synchronized(parent) {
+        synchronized(NSApplication.sharedApplication()) {
             if (!NSApplication.loadNibNamed("Duplicate", this)) {
                 log.fatal("Couldn't load Duplicate.nib");
             }

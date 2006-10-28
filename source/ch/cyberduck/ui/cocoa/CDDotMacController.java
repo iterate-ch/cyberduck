@@ -22,12 +22,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostCollection;
 
 import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSData;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSPropertyListSerialization;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 

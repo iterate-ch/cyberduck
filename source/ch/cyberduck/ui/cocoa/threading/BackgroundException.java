@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa.threading;
 
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 
 import com.apple.cocoa.foundation.NSBundle;
 

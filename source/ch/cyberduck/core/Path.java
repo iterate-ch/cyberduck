@@ -300,6 +300,10 @@ public abstract class Path extends NSObject {
      */
     public abstract AttributedList list(Comparator comparator, PathFilter filter);
 
+    public AttributedList cache() {
+        return (AttributedList)this.getSession().cache().get(this);    
+    }
+
     /**
      * Remove this file from the remote host. Does not affect any corresponding local file
      */

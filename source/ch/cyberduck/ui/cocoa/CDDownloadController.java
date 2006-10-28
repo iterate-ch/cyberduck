@@ -18,7 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.DownloadQueue;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.SessionFactory;
 
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
@@ -27,7 +31,6 @@ import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 
 /**
@@ -44,7 +47,7 @@ public class CDDownloadController extends CDSheetController {
 
     public CDDownloadController(final CDWindowController parent) {
         super(parent);
-        synchronized(parent) {
+        synchronized(NSApplication.sharedApplication()) {
             if (!NSApplication.loadNibNamed("Download", this)) {
                 log.fatal("Couldn't load Download.nib");
             }

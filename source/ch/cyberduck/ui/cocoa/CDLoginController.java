@@ -21,7 +21,11 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Login;
 import ch.cyberduck.ui.LoginController;
 
-import com.apple.cocoa.application.*;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSButton;
+import com.apple.cocoa.application.NSCell;
+import com.apple.cocoa.application.NSSecureTextField;
+import com.apple.cocoa.application.NSTextField;
 
 import org.apache.log4j.Logger;
 
@@ -37,8 +41,6 @@ public class CDLoginController implements LoginController
     public CDLoginController(final CDWindowController parent) {
         this.parent = parent;
     }
-
-    private static final Object lock = new Object();
 
     public void promptUser(final Login login, final String reason, final String message) {
         CDSheetController c = new CDSheetController(parent) {
@@ -91,7 +93,7 @@ public class CDLoginController implements LoginController
                 }
             }
         };
-        synchronized(lock) {
+        synchronized(NSApplication.sharedApplication()) {
             if (!NSApplication.loadNibNamed("Login", c)) {
                 log.fatal("Couldn't load Login.nib");
             }

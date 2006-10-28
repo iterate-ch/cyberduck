@@ -40,10 +40,8 @@ public class CDPreferencesController extends CDWindowController {
 
     private static CDPreferencesController instance;
 
-    private static final Object lock = new Object();
-
     public static CDPreferencesController instance() {
-        synchronized(lock) {
+        synchronized(NSApplication.sharedApplication()) {
             if (null == instance) {
                 instance = new CDPreferencesController();
                 if (!NSApplication.loadNibNamed("Preferences", instance)) {

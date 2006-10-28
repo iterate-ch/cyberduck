@@ -39,7 +39,7 @@ import java.util.Vector;
 /**
  * @version $Id$
  */
-public abstract class Queue extends NSObject implements BackgroundAction {
+public abstract class Queue extends NSObject {
     protected static Logger log = Logger.getLogger(Queue.class);
 
     /**
@@ -231,26 +231,6 @@ public abstract class Queue extends NSObject implements BackgroundAction {
     protected abstract void transfer(Path p);
 
     /**
-     * The user requested to resume the transfer
-     */
-    private boolean resumeRequested = false;
-
-    public void setResumeRequested() {
-        this.resumeRequested = true;
-        this.reloadRequested = false;
-    }
-
-    /**
-     * The user requested to reload the transfer
-     */
-    private boolean reloadRequested = false;
-
-    public void setReloadRequested() {
-        this.reloadRequested = true;
-        this.resumeRequested = false;
-    }
-
-    /**
      * Display file validation dialog sheet
      */
     private boolean interactive;
@@ -261,44 +241,47 @@ public abstract class Queue extends NSObject implements BackgroundAction {
 
     /**
      * Process the queue. All files will be downloaded/uploaded/synced rerspectively.
+     * @param resumeRequested The user requested to resume the transfer
+     * @param reloadRequested The user requested to reload the transfer
      */
-    public void run() {
-        this.canceled = false;
-        this.fireQueueStartedEvent();
+    public void run(final boolean resumeRequested, final boolean reloadRequested) {
         try {
-            this.getSession().connect();
-        }
-        catch(IOException e) {
-            this.getSession().error("Connection failed", e);
-            this.cancel();
-        }
-        if(this.isCanceled()) {
-            return;
-        }
-        List validated = this.validate(resumeRequested, reloadRequested, interactive);
-        if(this.isCanceled()) {
-            return;
-        }
-        this.jobs = validated;
-        this.reset();
-        for(Iterator iter = jobs.iterator(); iter.hasNext();) {
-            if(!this.getSession().isConnected()) {
+            this.canceled = false;
+            this.fireQueueStartedEvent();
+            try {
+                this.getSession().connect();
+            }
+            catch(IOException e) {
+                this.getSession().error("Connection failed", e);
                 this.cancel();
             }
             if(this.isCanceled()) {
                 return;
             }
-            final Path path = (Path)iter.next();
-            this.fireTransferStartedEvent(path);
-            this.transfer(path);
-            this.fireTransferStoppedEvent(path);
+            List validated = this.validate(resumeRequested, reloadRequested, interactive);
+            if(this.isCanceled()) {
+                return;
+            }
+            this.jobs = validated;
+            this.reset();
+            for(Iterator iter = jobs.iterator(); iter.hasNext();) {
+                if(!this.getSession().isConnected()) {
+                    this.cancel();
+                }
+                if(this.isCanceled()) {
+                    return;
+                }
+                final Path path = (Path)iter.next();
+                this.fireTransferStartedEvent(path);
+                this.transfer(path);
+                this.fireTransferStoppedEvent(path);
+            }
         }
-    }
-
-    public void cleanup() {
-        this.getSession().close();
-        this.getSession().cache().clear();
-        this.fireQueueStoppedEvent();
+        finally {
+            this.getSession().close();
+            this.getSession().cache().clear();
+            this.fireQueueStoppedEvent();
+        }
     }
 
     private List validate(final boolean resumeRequested, final boolean reloadRequested, boolean interactive) {

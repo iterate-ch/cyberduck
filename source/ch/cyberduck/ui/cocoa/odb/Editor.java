@@ -22,9 +22,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDController;
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
-import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSBundle;
@@ -146,17 +145,35 @@ public class Editor extends CDController {
     private native void edit(String path, String bundleIdentifier);
 
     public void didCloseFile() {
-        this.path.getLocal().delete();
-        this.invalidate();
+		if(!uploadInProgress) {
+	        this.path.getLocal().delete();
+	        this.invalidate();
+		}
+		else {
+			shouldCloseFile = true;
+		}
     }
+
+    private boolean uploadInProgress;
+
+	private boolean shouldCloseFile;
 
     public void didModifyFile() {
         controller.background(new BackgroundAction() {
             public void run() {
-                path.upload();
+                uploadInProgress = true;
+                try {
+                    path.upload();
+                }
+                finally {
+                    uploadInProgress = false;
+                }
             }
 
             public void cleanup() {
+				if(shouldCloseFile) {
+					didCloseFile();
+				}
                 if(path.status.isComplete()) {
                     path.getSession().message(
                             NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"));

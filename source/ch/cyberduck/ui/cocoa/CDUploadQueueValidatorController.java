@@ -19,8 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Status;
 
 import com.apple.cocoa.application.NSApplication;
@@ -37,7 +35,7 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
     private static Logger log = Logger.getLogger(CDUploadQueueValidatorController.class);
 
     public CDUploadQueueValidatorController() {
-        synchronized(CDQueueController.instance()) {
+        synchronized(NSApplication.sharedApplication()) {
             if(!NSApplication.loadNibNamed("Validator", this)) {
                 log.fatal("Couldn't load Validator.nib");
             }

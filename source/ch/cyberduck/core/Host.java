@@ -24,6 +24,7 @@ import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 import com.apple.cocoa.foundation.NSObject;
+import com.apple.cocoa.foundation.NSAutoreleasePool;
 
 import org.apache.log4j.Logger;
 
@@ -570,7 +571,9 @@ public class Host extends NSObject {
         if(!Preferences.instance().getBoolean("connection.hostname.check")) {
             return true;
         }
+        final int pool = NSAutoreleasePool.push();
         boolean available = this.isReachable(this.getURL());
+        NSAutoreleasePool.pop(pool);
         if(!available) {
             log.warn("Unreachable hostname:" + this.getHostname());
         }

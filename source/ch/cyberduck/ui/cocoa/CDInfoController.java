@@ -19,10 +19,10 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Status;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.*;
@@ -30,10 +30,10 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 /**
  * @version $Id$
@@ -165,7 +165,7 @@ public class CDInfoController extends CDWindowController {
 
     private CDInfoController(final CDBrowserController controller, List files) {
         this.controller = controller;
-        synchronized(controller) {
+        synchronized(NSApplication.sharedApplication()) {
             if (!NSApplication.loadNibNamed("Info", this)) {
                 log.fatal("Couldn't load Info.nib");
             }

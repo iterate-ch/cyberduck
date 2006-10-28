@@ -35,7 +35,7 @@ public class CDCreateFileController extends CDFileController {
 
     public CDCreateFileController(final CDWindowController parent) {
         super(parent);
-        synchronized(parent) {
+        synchronized(NSApplication.sharedApplication()) {
             if(!NSApplication.loadNibNamed("File", this)) {
                 log.fatal("Couldn't load File.nib");
             }

@@ -23,15 +23,11 @@ import com.sshtools.j2ssh.SshException;
 
 import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
-import com.apple.cocoa.application.NSColor;
-import com.apple.cocoa.application.NSFont;
-import com.apple.cocoa.application.NSFontManager;
 import com.apple.cocoa.application.NSGraphics;
 import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSCoder;
-import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSRect;
 
 import java.io.IOException;
