@@ -928,6 +928,8 @@ id.lproj/Sync.nib/keyedobjects.nib -text
 id.lproj/Sync.strings -text
 id.lproj/Validator.nib/keyedobjects.nib -text
 id.lproj/Validator.strings -text
+img/SNDisclosureArrowDown.tiff -text svneol=unset#image/tiff
+img/SNDisclosureArrowRight.tiff -text svneol=unset#image/tiff
 img/add.tiff -text svneol=unset#image/tiff
 img/addPressed.tiff -text svneol=unset#image/tiff
 img/advanced.tiff -text
