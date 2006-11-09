@@ -27,7 +27,6 @@ import com.apple.cocoa.application.NSGraphics;
 import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSCoder;
 import com.apple.cocoa.foundation.NSRect;
 
 import java.io.IOException;
@@ -43,14 +42,6 @@ public class CDErrorCell extends CDTableCell {
 
     public CDErrorCell() {
         super();
-    }
-
-    protected CDErrorCell(NSCoder decoder, long token) {
-        super(decoder, token);
-    }
-
-    protected void encodeWithCoder(NSCoder encoder) {
-        super.encodeWithCoder(encoder);
     }
 
     public void setObjectValue(final Object exception) {

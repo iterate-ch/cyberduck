@@ -26,7 +26,6 @@ import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSText;
 import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSCoder;
 import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRect;
 import com.apple.cocoa.foundation.NSSize;
@@ -40,14 +39,6 @@ public class CDIconCell extends CDTableCell {
 
     public CDIconCell() {
         super();
-    }
-
-    protected CDIconCell(NSCoder decoder, long token) {
-        super(decoder, token);
-    }
-
-    protected void encodeWithCoder(NSCoder encoder) {
-        super.encodeWithCoder(encoder);
     }
 
     public void setObjectValue(Object q) {
@@ -64,10 +55,6 @@ public class CDIconCell extends CDTableCell {
         MULTIPLE_DOCUMENTS_ICON.setSize(new NSSize(32f, 32f));
         FOLDER_ICON.setSize(new NSSize(32f, 32f));
         NOT_FOUND_ICON.setSize(new NSSize(32f, 32f));
-    }
-
-    public void editWithFrameInView(NSRect rect, NSView view, NSText text, Object object, NSEvent event) {
-        super.editWithFrameInView(rect, view, text, object, event);
     }
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {

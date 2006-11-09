@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.NSView;
-import com.apple.cocoa.foundation.NSCoder;
 import com.apple.cocoa.foundation.NSRect;
 
 /**
@@ -29,14 +28,6 @@ public class CDProgressCell extends CDTableCell {
 
     public CDProgressCell() {
         super();
-    }
-
-    protected CDProgressCell(NSCoder decoder, long token) {
-        super(decoder, token);
-    }
-
-    protected void encodeWithCoder(NSCoder encoder) {
-        super.encodeWithCoder(encoder);
     }
 
     private NSView subview;

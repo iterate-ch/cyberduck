@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSCoder;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSRect;
 
@@ -37,18 +36,6 @@ public class CDTableCell extends NSCell {
     protected NSDictionary tinyFontRight;
     protected NSDictionary alertFont;
     protected NSDictionary fixedFont;
-
-    public CDTableCell() {
-        super();
-    }
-
-    protected CDTableCell(NSCoder decoder, long token) {
-        super(decoder, token);
-    }
-
-    protected void encodeWithCoder(NSCoder encoder) {
-        super.encodeWithCoder(encoder);
-    }
 
     protected static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE;
 
@@ -85,10 +72,6 @@ public class CDTableCell extends NSCell {
             new Object[]{PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL},
             new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
-
-    public void editWithFrameInView(NSRect nsRect, NSView nsView, NSText nsText, Object object, NSEvent nsEvent) {
-        super.editWithFrameInView(nsRect, nsView, nsText, object, nsEvent);
-    }
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
         super.drawInteriorWithFrameInView(cellFrame, controlView);
