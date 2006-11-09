@@ -8,6 +8,7 @@
             OUTLETS = {
                 diagnosticsButton = NSButton; 
                 errorView = NSTableView; 
+                transcriptButton = NSButton; 
                 transcriptView = NSTextView; 
                 window = NSWindow; 
             }; 

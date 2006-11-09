@@ -24,11 +24,7 @@ import ch.cyberduck.ui.cocoa.CDErrorCell;
 import ch.cyberduck.ui.cocoa.CDSheetController;
 import ch.cyberduck.ui.cocoa.CDWindowController;
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.application.NSTextView;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSSelector;
 
@@ -41,7 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @version $Id$
+ * @version $Id: BackgroundActionImpl.java 2524 2006-10-26 13:14:03Z dkocher $
  */
 public abstract class BackgroundActionImpl
         implements BackgroundAction, ErrorListener, TranscriptListener {
@@ -106,6 +102,19 @@ public abstract class BackgroundActionImpl
      */
     public void alert(final Object lock) {
         CDSheetController c = new CDSheetController(controller) {
+
+            public void awakeFromNib() {
+                boolean enabled = transcript.length() > 0;
+                if(!enabled) {
+                    if(this.transcriptButton.state() == NSCell.OnState) {
+                        log.debug("Closing transcript view");
+                        this.transcriptButton.performClick(null);
+                    }
+                }
+                this.transcriptButton.setEnabled(enabled);
+                super.awakeFromNib();
+            }
+
             private NSButton diagnosticsButton;
 
             public void setDiagnosticsButton(NSButton diagnosticsButton) {
@@ -125,6 +134,12 @@ public abstract class BackgroundActionImpl
 
             public void diagnosticsButtonClicked(final NSButton sender) {
                 ((BackgroundException)exceptions.get(exceptions.size()-1)).getSession().getHost().diagnose();
+            }
+
+            private NSButton transcriptButton;
+
+            public void setTranscriptButton(NSButton transcriptButton) {
+                this.transcriptButton = transcriptButton;
             }
 
             private NSTableView errorView;
@@ -153,7 +168,9 @@ public abstract class BackgroundActionImpl
 
             public void callback(final int returncode) {
                 exceptions.clear();
-                transcript.delete(0, transcript.length()-1);
+                if(transcript.length() > 0) {
+                    transcript.delete(0, transcript.length()-1);
+                }
                 if(returncode == DEFAULT_OPTION) { //Try Again
                     // Re-run the action with the previous lock used
                     controller.background(BackgroundActionImpl.this, lock);
