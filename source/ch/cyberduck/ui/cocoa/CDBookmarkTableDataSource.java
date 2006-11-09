@@ -44,28 +44,25 @@ public class CDBookmarkTableDataSource extends NSObject {
     // virtual column to implement keyboard selection
     protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
 
-    private HostFilter filter;
+//    private HostFilter filter;
 
-    /**
-     * Display only a subset of all bookmarks
-     * @see CDBrowserController#bookmarkSearchField
-     * @param filter
-     */
-    public void setFilter(HostFilter filter) {
-        synchronized(HostCollection.instance()) {
-            this.filter = filter;
-        }
-    }
-
-    /**
-     * @param c
-     * @see CDBrowserController#bookmarkSearchField
-     * @see HostFilter
-     * @return The filtered collection currently to be displayed within the constraints
-     * given by the comparision with the HostFilter
-     */
-    private Collection filter(Collection c) {
-        return c;
+//    /**
+//     * Display only a subset of all bookmarks
+//     * @see CDBrowserController#bookmarkSearchField
+//     * @param filter
+//     */
+//    public void setFilter(HostFilter filter) {
+//        this.filter = filter;
+//    }
+//
+//    /**
+//     * @param c
+//     * @see CDBrowserController#bookmarkSearchField
+//     * @see HostFilter
+//     * @return The filtered collection currently to be displayed within the constraints
+//     * given by the comparision with the HostFilter
+//     */
+//    private Collection filter(Collection c) {
 //        if(null == filter) {
 //            return c;
 //        }
@@ -78,82 +75,78 @@ public class CDBookmarkTableDataSource extends NSObject {
 //            }
 //        }
 //        return filtered;
-    }
-
-    /**
-     * Overwritten returning filtered resultset
-     * @param row
-     * @return
-     */
-    public Object get(int row) {
-        return this.filter(HostCollection.instance()).get(row);
-    }
-
-    /**
-     * Overwritten returning filtered resultset
-     * @param item
-     * @return
-     */
-    public int indexOf(Host item) {
-        return this.filter(HostCollection.instance()).indexOf(item);
-    }
-
-    /**
-     * Overwritten returning filtered resultset
-     * @param row
-     */
-    public void remove(int row) {
-        HostCollection.instance().remove(
-                HostCollection.instance().indexOf(this.filter(HostCollection.instance()).get(row)));
-    }
-
-    /**
-     * Overwritten returning filtered resultset
-     * @param item
-     * @return
-     */
-    public int lastIndexOf(Host item) {
-        return this.filter(HostCollection.instance()).lastIndexOf(item);
-    }
-
-    /**
-     * Overwritten returning filtered resultset
-     * @return
-     */
-    public int size() {
-        return this.filter(HostCollection.instance()).size();
-    }
+//    }
+//
+//    /**
+//     * Overwritten returning filtered resultset
+//     * @param row
+//     * @return
+//     */
+//    public Object get(int row) {
+//        return this.filter(HostCollection.instance()).get(row);
+//    }
+//
+//    /**
+//     * Overwritten returning filtered resultset
+//     * @param item
+//     * @return
+//     */
+//    public int indexOf(Host item) {
+//        return this.filter(HostCollection.instance()).indexOf(item);
+//    }
+//
+//    /**
+//     * Overwritten returning filtered resultset
+//     * @param row
+//     */
+//    public void remove(int row) {
+//        HostCollection.instance().remove(
+//                HostCollection.instance().indexOf(this.filter(HostCollection.instance()).get(row)));
+//    }
+//
+//    /**
+//     * Overwritten returning filtered resultset
+//     * @param item
+//     * @return
+//     */
+//    public int lastIndexOf(Host item) {
+//        return this.filter(HostCollection.instance()).lastIndexOf(item);
+//    }
+//
+//    /**
+//     * Overwritten returning filtered resultset
+//     * @return
+//     */
+//    public int size() {
+//        return this.filter(HostCollection.instance()).size();
+//    }
 
     /**
      * NSTableView.DataSource
      */
     public int numberOfRowsInTableView(NSTableView view) {
-        synchronized(HostCollection.instance()) {
-            return this.size();
-        }
+        return HostCollection.instance().size();
     }
 
     /**
      * NSTableView.DataSource
      */
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
-        synchronized(HostCollection.instance()) {
-            if(row < this.numberOfRowsInTableView(view)) {
-                String identifier = (String) tableColumn.identifier();
-                if(identifier.equals(ICON_COLUMN)) {
-                    return DOCUMENT_ICON;
-                }
-                if(identifier.equals(BOOKMARK_COLUMN)) {
-                    return this.filter(HostCollection.instance()).get(row);
-                }
-                if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                    return ((Host) this.filter(HostCollection.instance()).get(row)).getNickname();
-                }
-                throw new IllegalArgumentException("Unknown identifier: " + identifier);
+        if(row < this.numberOfRowsInTableView(view)) {
+            String identifier = (String) tableColumn.identifier();
+            if(identifier.equals(ICON_COLUMN)) {
+                return DOCUMENT_ICON;
             }
-            log.warn("tableViewObjectValueForLocation:" + row + " == null");
-            return null;
+            if(identifier.equals(BOOKMARK_COLUMN)) {
+                return HostCollection.instance().get(row);
+            }
+            if(identifier.equals(TYPEAHEAD_COLUMN)) {
+                return ((Host) HostCollection.instance().get(row)).getNickname();
+            }
+            throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
+        log.warn("tableViewObjectValueForLocation:" + row + " == null");
+        return null;
     }
 
     /**
@@ -193,7 +186,7 @@ public class CDBookmarkTableDataSource extends NSObject {
      *
      * @param info  contains details on this dragging operation.
      * @param index The proposed location is row and action is operation.
-     * The data source should incorporate the data from the dragging pasteboard at this time.
+     *              The data source should incorporate the data from the dragging pasteboard at this time.
      */
     public boolean tableViewAcceptDrop(NSTableView view, NSDraggingInfo info, int index, int operation) {
         log.debug("tableViewAcceptDrop:" + index);
@@ -228,7 +221,7 @@ public class CDBookmarkTableDataSource extends NSObject {
                 }
                 else {
                     // The bookmark this file has been dropped onto
-                    Host h = (Host) this.filter(HostCollection.instance()).get(index);
+                    Host h = (Host) HostCollection.instance().get(index);
                     if(null == session) {
                         session = SessionFactory.createSession(h);
                     }
@@ -262,6 +255,7 @@ public class CDBookmarkTableDataSource extends NSObject {
 
     /**
      * NSDraggingSource
+     *
      * @see "http://www.cocoabuilder.com/archive/message/2005/10/5/118857"
      */
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
@@ -271,6 +265,7 @@ public class CDBookmarkTableDataSource extends NSObject {
 
     /**
      * NSDraggingSource
+     *
      * @param local
      * @return
      */
@@ -294,7 +289,7 @@ public class CDBookmarkTableDataSource extends NSObject {
      *
      * @param rows is the list of row numbers that will be participating in the drag.
      * @return To refuse the drag, return false. To start a drag, return true and place
-     * the drag data onto pboard (data, owner, and so on).
+     *         the drag data onto pboard (data, owner, and so on).
      */
     public boolean tableViewWriteRowsToPasteboard(NSTableView view, NSArray rows, NSPasteboard pboard) {
         log.debug("tableViewWriteRowsToPasteboard:" + rows);
@@ -302,7 +297,7 @@ public class CDBookmarkTableDataSource extends NSObject {
             this.promisedDragBookmarks = new Host[rows.count()];
             for(int i = 0; i < rows.count(); i++) {
                 promisedDragBookmarks[i]
-                        = (Host) this.filter(HostCollection.instance()).get(((Integer) rows.objectAtIndex(i)).intValue());
+                        = (Host) HostCollection.instance().get(((Integer) rows.objectAtIndex(i)).intValue());
             }
             NSEvent event = NSApplication.sharedApplication().currentEvent();
             NSPoint dragPosition = view.convertPointFromView(event.locationInWindow(), null);
@@ -316,12 +311,13 @@ public class CDBookmarkTableDataSource extends NSObject {
 
     /**
      * NSTableView.DataSource
+     *
      * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-     * This method is invoked when the drop has been accepted by the destination and the destination,
-     * in the case of another Cocoa application, invokes the NSDraggingInfo method
-     * namesOfPromisedFilesDroppedAtDestination.
-     * For long operations, you can cache dropDestination and defer the creation of the files until the
-     * finishedDraggingImage method to avoid blocking the destination application.
+     *         This method is invoked when the drop has been accepted by the destination and the destination,
+     *         in the case of another Cocoa application, invokes the NSDraggingInfo method
+     *         namesOfPromisedFilesDroppedAtDestination.
+     *         For long operations, you can cache dropDestination and defer the creation of the files until the
+     *         finishedDraggingImage method to avoid blocking the destination application.
      */
     public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
@@ -329,7 +325,7 @@ public class CDBookmarkTableDataSource extends NSObject {
         for(int i = 0; i < promisedDragBookmarks.length; i++) {
             try {
                 // See trac #933
-                final String filename = promisedDragBookmarks[i].getNickname().replace('/', ':')+ ".duck";
+                final String filename = promisedDragBookmarks[i].getNickname().replace('/', ':') + ".duck";
                 HostCollection.instance().exportBookmark(
                         promisedDragBookmarks[i],
                         // utf-8 is just a wild guess

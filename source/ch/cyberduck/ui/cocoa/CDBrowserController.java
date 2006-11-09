@@ -665,32 +665,32 @@ public class CDBrowserController extends CDWindowController
                 this.bookmarkDrawer);
     }
 
-    private NSTextField bookmarkSearchField;
-
-    public void setBookmarkSearchField(NSTextField bookmarkSearchField) {
-        this.bookmarkSearchField = bookmarkSearchField;
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("bookmarkSearchFieldDidChange", new Class[]{Object.class}),
-                NSControl.ControlTextDidChangeNotification,
-                this.bookmarkSearchField);
-    }
-
-    public void bookmarkSearchFieldDidChange(NSNotification notification) {
-        NSDictionary userInfo = notification.userInfo();
-        if(null != userInfo) {
-            Object o = userInfo.allValues().lastObject();
-            if(null != o) {
-                final String searchString = ((NSText)o).string();
-                this.bookmarkModel.setFilter(new HostFilter() {
-                    public boolean accept(Host host) {
-                        return host.getNickname().indexOf(searchString) != -1
-                                || host.getHostname().indexOf(searchString) != -1;
-                    }
-                });
-                this.bookmarkTable.reloadData();
-            }
-        }
-    }
+//    private NSTextField bookmarkSearchField;
+//
+//    public void setBookmarkSearchField(NSTextField bookmarkSearchField) {
+//        this.bookmarkSearchField = bookmarkSearchField;
+//        NSNotificationCenter.defaultCenter().addObserver(this,
+//                new NSSelector("bookmarkSearchFieldDidChange", new Class[]{Object.class}),
+//                NSControl.ControlTextDidChangeNotification,
+//                this.bookmarkSearchField);
+//    }
+//
+//    public void bookmarkSearchFieldDidChange(NSNotification notification) {
+//        NSDictionary userInfo = notification.userInfo();
+//        if(null != userInfo) {
+//            Object o = userInfo.allValues().lastObject();
+//            if(null != o) {
+//                final String searchString = ((NSText)o).string();
+//                this.bookmarkModel.setFilter(new HostFilter() {
+//                    public boolean accept(Host host) {
+//                        return host.getNickname().indexOf(searchString) != -1
+//                                || host.getHostname().indexOf(searchString) != -1;
+//                    }
+//                });
+//                this.bookmarkTable.reloadData();
+//            }
+//        }
+//    }
 
     private NSTabView browserTabView;
 
@@ -1211,7 +1211,7 @@ public class CDBrowserController extends CDWindowController
         this.bookmarkTable.setDelegate(this.bookmarkTableDelegate = new CDAbstractTableDelegate() {
             public void tableRowDoubleClicked(final Object sender) {
                 if(bookmarkTable.numberOfSelectedRows() == 1) {
-                    final Host selected = (Host) bookmarkModel.get(bookmarkTable.selectedRow());
+                    final Host selected = (Host) HostCollection.instance().get(bookmarkTable.selectedRow());
 //                    if(CDBrowserController.this.isMounted()) {
 //                        if(Preferences.instance().getBoolean("browser.openBookmarkinNewWindowIfMounted")) {
 //                            CDBrowserController browser =
@@ -1380,18 +1380,14 @@ public class CDBrowserController extends CDWindowController
         this.quickConnectPopup.setUsesDataSource(true);
         this.quickConnectPopup.setDataSource(this.quickConnectPopupModel = new NSObject/*NSComboBox.DataSource*/() {
             public int numberOfItemsInComboBox(NSComboBox combo) {
-                synchronized(HostCollection.instance()) {
-                    return HostCollection.instance().size();
-                }
+                return HostCollection.instance().size();
             }
 
             public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
-                synchronized(HostCollection.instance()) {
-                    if(row < numberOfItemsInComboBox(combo)) {
-                        return ((Host)HostCollection.instance().get(row)).getNickname();
-                    }
-                    return null;
+                if(row < numberOfItemsInComboBox(combo)) {
+                    return ((Host)HostCollection.instance().get(row)).getNickname();
                 }
+                return null;
             }
         });
         NSNotificationCenter.defaultCenter().addObserver(this,
@@ -1402,10 +1398,8 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void quickConnectWillPopUp(NSNotification notification) {
-        synchronized(HostCollection.instance()) {
-            int size = HostCollection.instance().size();
-            this.quickConnectPopup.setNumberOfVisibleItems(size > 10 ? 10 : size);
-        }
+        int size = HostCollection.instance().size();
+        this.quickConnectPopup.setNumberOfVisibleItems(size > 10 ? 10 : size);
     }
 
     public void quickConnectSelectionChanged(final Object sender) {
@@ -1417,14 +1411,12 @@ public class CDBrowserController extends CDWindowController
             return;
         }
         try {
-            synchronized(HostCollection.instance()) {
-                // First look for equivalent bookmarks
-                for(Iterator iter = HostCollection.instance().iterator(); iter.hasNext();) {
-                    Host h = (Host) iter.next();
-                    if(h.getNickname().equals(input)) {
-                        this.mount(h);
-                        return;
-                    }
+            // First look for equivalent bookmarks
+            for(Iterator iter = HostCollection.instance().iterator(); iter.hasNext();) {
+                Host h = (Host) iter.next();
+                if(h.getNickname().equals(input)) {
+                    this.mount(h);
+                    return;
                 }
             }
             // Try to parse the input as a URL and extract protocol, hostname, username and password if any.
@@ -1474,7 +1466,7 @@ public class CDBrowserController extends CDWindowController
     public void editBookmarkButtonClicked(final Object sender) {
         this.bookmarkDrawer.open();
         CDBookmarkController c = CDBookmarkController.Factory.create(
-                (Host)bookmarkModel.get(bookmarkTable.selectedRow())
+                (Host)HostCollection.instance().get(bookmarkTable.selectedRow())
         );
         c.window().makeKeyAndOrderFront(null);
     }
@@ -1488,24 +1480,22 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void addBookmarkButtonClicked(final Object sender) {
-        synchronized(HostCollection.instance()) {
-            this.bookmarkDrawer.open();
-            Host item;
-            if(this.isMounted()) {
-                item = (Host) this.session.getHost().clone();
-                item.setDefaultPath(this.workdir().getAbsolute());
-            }
-            else {
-                item = new Host(Preferences.instance().getProperty("connection.protocol.default"),
-                        "localhost",
-                        Preferences.instance().getInteger("connection.port.default"));
-            }
-            HostCollection.instance().add(item);
-            this.bookmarkTable.selectRow(bookmarkModel.lastIndexOf(item), false);
-            this.bookmarkTable.scrollRowToVisible(bookmarkModel.lastIndexOf(item));
-            CDBookmarkController c = CDBookmarkController.Factory.create(item);
-            c.window().makeKeyAndOrderFront(null);
+        this.bookmarkDrawer.open();
+        Host item;
+        if(this.isMounted()) {
+            item = (Host) this.session.getHost().clone();
+            item.setDefaultPath(this.workdir().getAbsolute());
         }
+        else {
+            item = new Host(Preferences.instance().getProperty("connection.protocol.default"),
+                    "localhost",
+                    Preferences.instance().getInteger("connection.port.default"));
+        }
+        HostCollection.instance().add(item);
+        this.bookmarkTable.selectRow(HostCollection.instance().lastIndexOf(item), false);
+        this.bookmarkTable.scrollRowToVisible(HostCollection.instance().lastIndexOf(item));
+        CDBookmarkController c = CDBookmarkController.Factory.create(item);
+        c.window().makeKeyAndOrderFront(null);
     }
 
     private NSButton deleteBookmarkButton; // IBOutlet
@@ -1519,34 +1509,32 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void deleteBookmarkButtonClicked(final Object sender) {
-        synchronized(HostCollection.instance()) {
-            this.bookmarkDrawer.open();
-            NSEnumerator iterator = this.bookmarkTable.selectedRowEnumerator();
-            int[] indexes = new int[this.bookmarkTable.numberOfSelectedRows()];
-            int i = 0;
-            while(iterator.hasMoreElements()) {
-                indexes[i] = ((Integer) iterator.nextElement()).intValue();
-                i++;
-            }
-            this.bookmarkTable.deselectAll(null);
-            int j = 0;
-            for(i = 0; i < indexes.length; i++) {
-                int row = indexes[i] - j;
-                this.bookmarkTable.selectRow(row, false);
-                Host host = (Host) bookmarkModel.get(row);
-                switch(NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark", ""),
-                        NSBundle.localizedString("Do you want to delete the selected bookmark?", "")
-                                + " (" + host.getNickname() + ")",
-                        NSBundle.localizedString("Delete", ""),
-                        NSBundle.localizedString("Cancel", ""),
-                        null)) {
-                    case CDSheetCallback.DEFAULT_OPTION:
-                        bookmarkModel.remove(row);
-                        j++;
-                }
-            }
-            this.bookmarkTable.deselectAll(null);
+        this.bookmarkDrawer.open();
+        NSEnumerator iterator = this.bookmarkTable.selectedRowEnumerator();
+        int[] indexes = new int[this.bookmarkTable.numberOfSelectedRows()];
+        int i = 0;
+        while(iterator.hasMoreElements()) {
+            indexes[i] = ((Integer) iterator.nextElement()).intValue();
+            i++;
         }
+        this.bookmarkTable.deselectAll(null);
+        int j = 0;
+        for(i = 0; i < indexes.length; i++) {
+            int row = indexes[i] - j;
+            this.bookmarkTable.selectRow(row, false);
+            Host host = (Host) HostCollection.instance().get(row);
+            switch(NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark", ""),
+                    NSBundle.localizedString("Do you want to delete the selected bookmark?", "")
+                            + " (" + host.getNickname() + ")",
+                    NSBundle.localizedString("Delete", ""),
+                    NSBundle.localizedString("Cancel", ""),
+                    null)) {
+                case CDSheetCallback.DEFAULT_OPTION:
+                    HostCollection.instance().remove(row);
+                    j++;
+            }
+        }
+        this.bookmarkTable.deselectAll(null);
     }
 
     // ----------------------------------------------------------
@@ -2490,7 +2478,8 @@ public class CDBrowserController extends CDWindowController
                     }
                 }
                 finally {
-                    // It is important not  to do this in #cleanup as otherwise
+                    activityRunning = false;
+                    // It is important _not_ to do this in #cleanup as otherwise
                     // the listeners are still registered when the next BackgroundAction
                     // is already running
                     session.removeTranscriptListener(this);
@@ -2499,7 +2488,6 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void cleanup() {
-                activityRunning = false;
                 try {
                     spinner.stopAnimation(CDBrowserController.this);
                     statusLabel.setAttributedStringValue(new NSAttributedString(

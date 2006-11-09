@@ -425,17 +425,15 @@ public class Host extends NSObject {
     }
 
     public void setNickname(String nickname) {
-        synchronized(HostCollection.instance()) {
-            final HostCollection c = HostCollection.instance();
-            String proposal = nickname;
-            int no = 0;
-            do {
-                this.nickname = proposal;
-                no++;
-                proposal = nickname + " (" + no + ")";
-            }
-            while(c.contains(this) && !(c.get(c.indexOf(this)) == this));
+        final HostCollection c = HostCollection.instance();
+        String proposal = nickname;
+        int no = 0;
+        do {
+            this.nickname = proposal;
+            no++;
+            proposal = nickname + " (" + no + ")";
         }
+        while(c.contains(this) && !(c.get(c.indexOf(this)) == this));
     }
 
     public String getHostname() {
