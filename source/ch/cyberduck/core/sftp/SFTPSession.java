@@ -151,9 +151,6 @@ public class SFTPSession extends Session {
             SessionPool.instance().add(this);
             this.fireConnectionWillOpenEvent();
             this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getHostname() + "...");
-            this.log("=====================================");
-            this.log(new java.util.Date().toString());
-            this.log(host.getIp());
             SSH = new SshClient();
             try {
                 SSH.setSocketTimeout(Preferences.instance().getInteger("connection.timeout"));

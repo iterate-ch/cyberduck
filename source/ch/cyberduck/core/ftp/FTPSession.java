@@ -142,9 +142,6 @@ public class FTPSession extends Session {
             SessionPool.instance().add(this);
             this.fireConnectionWillOpenEvent();
             this.message(NSBundle.localizedString("Opening FTP connection to", "Status", "") + " " + host.getHostname() + "...");
-            this.log("=====================================");
-            this.log(new java.util.Date().toString());
-            this.log(host.getIp());
             this.FTP = new FTPClient(host.getEncoding(), new FTPMessageListener() {
                 public void logCommand(String cmd) {
                     FTPSession.this.log(cmd);
