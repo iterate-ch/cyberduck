@@ -29,6 +29,15 @@
 		47239F2609FAFC4E006361C6 /* folder_new.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47239F2409FAFC4E006361C6 /* folder_new.tiff */; };
 		47239F2709FAFC4E006361C6 /* folder_noaccess.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47239F2509FAFC4E006361C6 /* folder_noaccess.tiff */; };
 		47239F2909FAFC5D006361C6 /* folder_writeonly.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47239F2809FAFC5D006361C6 /* folder_writeonly.tiff */; };
+		472404590AFF4B75008FAFBB /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
+		4724050D0AFF4BA7008FAFBB /* FileWatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 472404400AFF4B5C008FAFBB /* FileWatcher.h */; };
+		4724050E0AFF4BA7008FAFBB /* UKKQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 472404440AFF4B5D008FAFBB /* UKKQueue.h */; };
+		4724050F0AFF4BA7008FAFBB /* UKMainThreadProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 472404460AFF4B5D008FAFBB /* UKMainThreadProxy.h */; };
+		472405100AFF4BB5008FAFBB /* FileWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 472404420AFF4B5C008FAFBB /* FileWatcher.m */; };
+		472405110AFF4BB5008FAFBB /* UKKQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 472404450AFF4B5D008FAFBB /* UKKQueue.m */; };
+		472405120AFF4BB5008FAFBB /* UKMainThreadProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 472404470AFF4B5D008FAFBB /* UKMainThreadProxy.m */; };
+		472405230AFF4C14008FAFBB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		472759650AF3BE6000EBE267 /* update.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 472759640AF3BE6000EBE267 /* update.tiff */; };
 		47354D4E09C6CC9B00426BE0 /* NSString+CarbonFSRefCreation.m in Sources */ = {isa = PBXBuildFile; fileRef = 47354D4C09C6CC9B00426BE0 /* NSString+CarbonFSRefCreation.m */; };
 		47354D4F09C6CC9B00426BE0 /* NSString+CarbonFSRefCreation.h in Headers */ = {isa = PBXBuildFile; fileRef = 47354D4D09C6CC9B00426BE0 /* NSString+CarbonFSRefCreation.h */; };
 		473779A50AE5365600F73905 /* stop16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 473779A40AE5365600F73905 /* stop16.tiff */; };
@@ -196,6 +205,7 @@
 		47EEBC680808362700BE95E7 /* ftp-tls.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47EEBC670808362700BE95E7 /* ftp-tls.tiff */; };
 		47EF997409006EF500D4B4FF /* IconFamily.m in Sources */ = {isa = PBXBuildFile; fileRef = 47EF997009006EF500D4B4FF /* IconFamily.m */; };
 		47EF997509006EF500D4B4FF /* IconFamily.h in Headers */ = {isa = PBXBuildFile; fileRef = 47EF997109006EF500D4B4FF /* IconFamily.h */; };
+		47EF9B2F0AF91C1B004C3BD1 /* box.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47EF9B2E0AF91C1B004C3BD1 /* box.tiff */; };
 		47F0B701087ACD0B00439978 /* Growl.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B6FE087ACD0300439978 /* Growl.strings */; };
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
 		47FC190C099FB8AF0082431D /* Crash.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47FC190A099FB8AF0082431D /* Crash.strings */; };
@@ -264,6 +274,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 471D2C0B05A2505500675163;
 			remoteInfo = "app (International)";
+		};
+		4724052C0AFF4C75008FAFBB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 472404530AFF4B75008FAFBB /* libKQueue */;
+			remoteInfo = libKQueue;
 		};
 		47CD9C4F0739339B00E9379E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -411,6 +428,15 @@
 		47239F2409FAFC4E006361C6 /* folder_new.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = folder_new.tiff; sourceTree = "<group>"; };
 		47239F2509FAFC4E006361C6 /* folder_noaccess.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = folder_noaccess.tiff; sourceTree = "<group>"; };
 		47239F2809FAFC5D006361C6 /* folder_writeonly.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = folder_writeonly.tiff; sourceTree = "<group>"; };
+		472404400AFF4B5C008FAFBB /* FileWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileWatcher.h; sourceTree = "<group>"; };
+		472404410AFF4B5C008FAFBB /* FileWatcher.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FileWatcher.java; sourceTree = "<group>"; };
+		472404420AFF4B5C008FAFBB /* FileWatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileWatcher.m; sourceTree = "<group>"; };
+		472404430AFF4B5D008FAFBB /* FileWatcherListener.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FileWatcherListener.java; sourceTree = "<group>"; };
+		472404440AFF4B5D008FAFBB /* UKKQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKKQueue.h; sourceTree = "<group>"; };
+		472404450AFF4B5D008FAFBB /* UKKQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKKQueue.m; sourceTree = "<group>"; };
+		472404460AFF4B5D008FAFBB /* UKMainThreadProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKMainThreadProxy.h; sourceTree = "<group>"; };
+		472404470AFF4B5D008FAFBB /* UKMainThreadProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKMainThreadProxy.m; sourceTree = "<group>"; };
+		4724045F0AFF4B75008FAFBB /* libKQueue.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libKQueue.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4725BE0A05D2E27000C7CCBD /* JavaVM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaVM.framework; path = /System/Library/Frameworks/JavaVM.framework; sourceTree = "<absolute>"; };
 		47271D8E09F4050B00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47271D8F09F4050B00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/IDisk.strings; sourceTree = "<group>"; };
@@ -437,6 +463,7 @@
 		47271DA909F4050B00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Folder.nib; sourceTree = "<group>"; };
 		47271DAB09F4053E00136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Crash.strings; sourceTree = "<group>"; };
 		47271DAE09F4055700136347 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Status.strings; sourceTree = "<group>"; };
+		472759640AF3BE6000EBE267 /* update.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = update.tiff; sourceTree = "<group>"; };
 		47341D6C099FF7740065FF57 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Crash.strings; sourceTree = "<group>"; };
 		47341D83099FF7B20065FF57 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Crash.strings; sourceTree = "<group>"; };
 		47341DA709A003A50065FF57 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Crash.strings; sourceTree = "<group>"; };
@@ -1234,9 +1261,6 @@
 		476C7C2C07F5A30C00CF6032 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		476C7C2D07F5A31800CF6032 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		476C7C2E07F5A32200CF6032 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text; name = sv; path = sv.lproj/License.txt; sourceTree = "<group>"; };
-		476C7E5C07F77F8E00CF6032 /* Filter.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Filter.java; sourceTree = "<group>"; };
-		476C7E5E07F77F9800CF6032 /* HiddenFilesFilter.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = HiddenFilesFilter.java; sourceTree = "<group>"; };
-		476C7E5F07F77F9800CF6032 /* NullFilter.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NullFilter.java; sourceTree = "<group>"; };
 		476C7E6107F77FA200CF6032 /* Collection.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Collection.java; sourceTree = "<group>"; };
 		476DEBE10629C6FB005EF4B1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
 		47729074080D5957007126E4 /* Keychain.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Keychain.java; sourceTree = "<group>"; };
@@ -1461,6 +1485,7 @@
 		47EEBC670808362700BE95E7 /* ftp-tls.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "ftp-tls.tiff"; sourceTree = "<group>"; };
 		47EF997009006EF500D4B4FF /* IconFamily.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = IconFamily.m; sourceTree = "<group>"; };
 		47EF997109006EF500D4B4FF /* IconFamily.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IconFamily.h; sourceTree = "<group>"; };
+		47EF9B2E0AF91C1B004C3BD1 /* box.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = box.tiff; sourceTree = "<group>"; };
 		47F0B70A087ACD3300439978 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Growl.strings; sourceTree = "<group>"; };
 		47F0B70B087ACD3800439978 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Growl.strings; sourceTree = "<group>"; };
 		47F0B70C087ACD3D00439978 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Growl.strings; sourceTree = "<group>"; };
@@ -1543,6 +1568,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		472404580AFF4B75008FAFBB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				472405230AFF4C14008FAFBB /* Cocoa.framework in Frameworks */,
+				472404590AFF4B75008FAFBB /* JavaVM.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4739EF6C0856981300405FD3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1620,6 +1654,7 @@
 				4739EFC10856991300405FD3 /* libLocal.dylib */,
 				4716D8B80877533B00938886 /* libDotMac.dylib */,
 				4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */,
+				4724045F0AFF4B75008FAFBB /* libKQueue.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1782,6 +1817,21 @@
 			path = ftps;
 			sourceTree = "<group>";
 		};
+		4724043F0AFF4B5C008FAFBB /* io */ = {
+			isa = PBXGroup;
+			children = (
+				472404400AFF4B5C008FAFBB /* FileWatcher.h */,
+				472404410AFF4B5C008FAFBB /* FileWatcher.java */,
+				472404420AFF4B5C008FAFBB /* FileWatcher.m */,
+				472404430AFF4B5D008FAFBB /* FileWatcherListener.java */,
+				472404440AFF4B5D008FAFBB /* UKKQueue.h */,
+				472404450AFF4B5D008FAFBB /* UKKQueue.m */,
+				472404460AFF4B5D008FAFBB /* UKMainThreadProxy.h */,
+				472404470AFF4B5D008FAFBB /* UKMainThreadProxy.m */,
+			);
+			path = io;
+			sourceTree = "<group>";
+		};
 		47412ECE07CA832400BD37AB /* ext */ = {
 			isa = PBXGroup;
 			children = (
@@ -1870,6 +1920,7 @@
 		474152DA06C4F08A00AC0BD2 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				4724043F0AFF4B5C008FAFBB /* io */,
 				470E56CF08BE3E1E00BDF3CD /* forker */,
 				47CD997C0738DEC700E9379E /* proxy */,
 				474152DB06C4F08A00AC0BD2 /* Attributes.java */,
@@ -1882,9 +1933,6 @@
 				474152DF06C4F08A00AC0BD2 /* ftp */,
 				474152F906C4F08A00AC0BD2 /* sftp */,
 				476C7E6107F77FA200CF6032 /* Collection.java */,
-				476C7E5C07F77F8E00CF6032 /* Filter.java */,
-				476C7E5E07F77F9800CF6032 /* HiddenFilesFilter.java */,
-				476C7E5F07F77F9800CF6032 /* NullFilter.java */,
 				47685DD80759706B00C744E1 /* Local.java */,
 				475D187C0805E24B00166B8A /* Local.h */,
 				475D187B0805E24B00166B8A /* Local.m */,
@@ -2504,6 +2552,8 @@
 		4741653C06C4FC3F00AC0BD2 /* img */ = {
 			isa = PBXGroup;
 			children = (
+				47EF9B2E0AF91C1B004C3BD1 /* box.tiff */,
+				472759640AF3BE6000EBE267 /* update.tiff */,
 				477B1B770AF383DC0023BA7F /* SNDisclosureArrowDown.tiff */,
 				477B1B780AF383DC0023BA7F /* SNDisclosureArrowRight.tiff */,
 				47905BE10AE3D6FF00F9E193 /* unlocked.tiff */,
@@ -2878,6 +2928,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		472404540AFF4B75008FAFBB /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4724050D0AFF4BA7008FAFBB /* FileWatcher.h in Headers */,
+				4724050E0AFF4BA7008FAFBB /* UKKQueue.h in Headers */,
+				4724050F0AFF4BA7008FAFBB /* UKMainThreadProxy.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4739EF680856981300405FD3 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -3008,12 +3068,31 @@
 				471E21540A1734D7009E164E /* PBXTargetDependency */,
 				471E21560A1734D7009E164E /* PBXTargetDependency */,
 				471E21580A1734D7009E164E /* PBXTargetDependency */,
+				4724052D0AFF4C75008FAFBB /* PBXTargetDependency */,
 			);
 			name = "app (International)";
 			productInstallPath = "$(USER_APPS_DIR)";
 			productName = Cyberduck;
 			productReference = 471D2C5505A2505600675163 /* Cyberduck.app */;
 			productType = "com.apple.product-type.application";
+		};
+		472404530AFF4B75008FAFBB /* libKQueue */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4724045D0AFF4B75008FAFBB /* Build configuration list for PBXNativeTarget "libKQueue" */;
+			buildPhases = (
+				472404540AFF4B75008FAFBB /* Headers */,
+				472404560AFF4B75008FAFBB /* Sources */,
+				472404580AFF4B75008FAFBB /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libKQueue;
+			productInstallPath = /usr/local/lib;
+			productName = keychainLib;
+			productReference = 4724045F0AFF4B75008FAFBB /* libKQueue.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
 		};
 		4739EF670856981300405FD3 /* libKeychain */ = {
 			isa = PBXNativeTarget;
@@ -3185,6 +3264,7 @@
 				4739EFB10856991200405FD3 /* libLocal */,
 				4716D8AC0877533B00938886 /* libDotMac */,
 				4762DAB809FC42EC0034C662 /* libDiagnostics */,
+				472404530AFF4B75008FAFBB /* libKQueue */,
 			);
 		};
 /* End PBXProject section */
@@ -3311,6 +3391,8 @@
 				47AA19690AF09F810059C736 /* Error.strings in Resources */,
 				477B1B790AF383DC0023BA7F /* SNDisclosureArrowDown.tiff in Resources */,
 				477B1B7A0AF383DC0023BA7F /* SNDisclosureArrowRight.tiff in Resources */,
+				472759650AF3BE6000EBE267 /* update.tiff in Resources */,
+				47EF9B2F0AF91C1B004C3BD1 /* box.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3392,6 +3474,16 @@
 				4799CE270A29EF5600AA4E59 /* CDBottomView.m in Sources */,
 				477B1B810AF384350023BA7F /* SNDisclosableView.m in Sources */,
 				477B1B830AF384350023BA7F /* SNDisclosureButton.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		472404560AFF4B75008FAFBB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				472405100AFF4BB5008FAFBB /* FileWatcher.m in Sources */,
+				472405110AFF4BB5008FAFBB /* UKKQueue.m in Sources */,
+				472405120AFF4BB5008FAFBB /* UKMainThreadProxy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3490,6 +3582,11 @@
 			isa = PBXTargetDependency;
 			target = 471D2C0B05A2505500675163 /* app (International) */;
 			targetProxy = 471E21630A1734E8009E164E /* PBXContainerItemProxy */;
+		};
+		4724052D0AFF4C75008FAFBB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 472404530AFF4B75008FAFBB /* libKQueue */;
+			targetProxy = 4724052C0AFF4C75008FAFBB /* PBXContainerItemProxy */;
 		};
 		47CD9C500739339B00E9379E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4422,6 +4519,38 @@
 			};
 			name = Deployment;
 		};
+		4724045E0AFF4B75008FAFBB /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				COPY_PHASE_STRIP = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/build\"";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers",
+					source/ch/cyberduck/core,
+				);
+				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_STYLE = DYNAMIC;
+				MACH_O_TYPE = mh_dylib;
+				PREBINDING = NO;
+				PRODUCT_NAME = libKQueue;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+					"-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_3",
+				);
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
 		4739EF720856981300405FD3 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4694,6 +4823,14 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4716D8B70877533B00938886 /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
+		4724045D0AFF4B75008FAFBB /* Build configuration list for PBXNativeTarget "libKQueue" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4724045E0AFF4B75008FAFBB /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
