@@ -22,6 +22,9 @@ import glguerin.io.FileForker;
 import glguerin.io.Pathname;
 import glguerin.io.imp.mac.macosx.MacOSXForker;
 
+import ch.cyberduck.core.io.FileWatcher;
+import ch.cyberduck.core.io.FileWatcherListener;
+
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -71,6 +74,23 @@ public class Local extends File implements IAttributes {
 
     public Local(String path) {
         super(NSPathUtilities.stringByExpandingTildeInPath(path));
+    }
+
+    public Local(File path) {
+        super(NSPathUtilities.stringByExpandingTildeInPath(path.getAbsolutePath()));
+    }
+
+    private FileWatcher uk;
+
+    /**
+     * 
+     * @param listener
+     */
+    public void watch(FileWatcherListener listener) {
+        if(null == uk) {
+            uk = FileWatcher.instance(this);
+        }
+        uk.watch(listener);
     }
 
     public boolean createNewFile() {
