@@ -69,6 +69,11 @@ public class CDPreferencesController extends CDWindowController {
     private NSView panelFTPTLS;
     private NSView panelSFTP;
     private NSView panelAdvanced;
+    private NSView panelUpdate;
+
+    public void setPanelUpdate(NSView panelUpdate) {
+        this.panelUpdate = panelUpdate;
+    }
 
     public void setPanelAdvanced(NSView panelAdvanced) {
         this.panelAdvanced = panelAdvanced;
@@ -235,6 +240,7 @@ public class CDPreferencesController extends CDWindowController {
         tabView.tabViewItemAtIndex(4).setView(panelFTPTLS);
         tabView.tabViewItemAtIndex(5).setView(panelSFTP);
         tabView.tabViewItemAtIndex(6).setView(panelAdvanced);
+        tabView.tabViewItemAtIndex(7).setView(panelUpdate);
     }
 
     private static final String CONNECTMODE_ACTIVE = NSBundle.localizedString("Active", "");
