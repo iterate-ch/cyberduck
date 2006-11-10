@@ -90,13 +90,13 @@ public class DownloadQueue extends Queue {
         }
     }
 
-    protected void transfer(Path p) {
+    protected void transfer(final Path p) {
         p.download();
     }
 
-    protected boolean validateFile(Path p, boolean resumeRequested, boolean reloadRequested) {
+    protected boolean validateFile(final Path p, final boolean resumeRequested, final boolean reloadRequested) {
+        p.readAttributes();
         if(resumeRequested) { // resume existing files independant of settings in preferences
-            p.readAttributes();
             p.status.setResume(p.getLocal().exists() && p.getLocal().getSize() > 0);
             return true;
         }
@@ -113,7 +113,6 @@ public class DownloadQueue extends Queue {
             p.status.setResume(false);
             return true;
         }
-        p.readAttributes();
         if(p.getLocal().exists() && p.getLocal().getSize() > 0) {
             if(action.equals(Validator.RESUME)) {
                 log.debug("Will resume file:" + p.getName());

@@ -223,48 +223,46 @@ public class FTPPath extends Path {
     public void readAttributes() {
         synchronized(session) {
             if(this.attributes.isFile() && this.attributes.isUndefined()) {
-                if(this.exists()) {
+                try {
+                    session.check();
+                    session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
                     try {
-                        session.check();
-                        session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
-                        try {
-                            this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()).getTime());
-                        }
-                        catch(FTPException e) {
-                            log.warn(e.getMessage());
-                        }
-                        if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
-                            if(this.isASCIIType()) {
-                                session.FTP.setTransferType(FTPTransferType.ASCII);
-                            }
-                            else {
-                                session.FTP.setTransferType(FTPTransferType.BINARY);
-                            }
-                        }
-                        else if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
-                            session.FTP.setTransferType(FTPTransferType.BINARY);
-                        }
-                        else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+                        this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()).getTime());
+                    }
+                    catch(FTPException e) {
+                        log.warn(e.getMessage());
+                    }
+                    if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+                        if(this.isASCIIType()) {
                             session.FTP.setTransferType(FTPTransferType.ASCII);
                         }
                         else {
-                            throw new FTPException("Transfer type not set");
+                            session.FTP.setTransferType(FTPTransferType.BINARY);
                         }
-                        session.message(NSBundle.localizedString("Getting size of", "Status", "") + " " + this.getName());
-                        try {
-                            this.attributes.setSize(session.FTP.size(this.getAbsolute()));
-                        }
-                        catch(FTPException e) {
-                            log.warn(e.getMessage());
-                        }
+                    }
+                    else if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+                        session.FTP.setTransferType(FTPTransferType.BINARY);
+                    }
+                    else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+                        session.FTP.setTransferType(FTPTransferType.ASCII);
+                    }
+                    else {
+                        throw new FTPException("Transfer type not set");
+                    }
+                    session.message(NSBundle.localizedString("Getting size of", "Status", "") + " " + this.getName());
+                    try {
+                        this.attributes.setSize(session.FTP.size(this.getAbsolute()));
                     }
                     catch(FTPException e) {
-                        this.error("Cannot get file attributes", e);
+                        log.warn(e.getMessage());
                     }
-                    catch(IOException e) {
-                        this.error("Connection failed", e);
-                        session.interrupt();
-                    }
+                }
+                catch(FTPException e) {
+                    this.error("Cannot get file attributes", e);
+                }
+                catch(IOException e) {
+                    this.error("Connection failed", e);
+                    session.interrupt();
                 }
             }
         }

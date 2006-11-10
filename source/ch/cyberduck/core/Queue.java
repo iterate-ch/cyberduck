@@ -231,7 +231,7 @@ public abstract class Queue extends NSObject {
     protected abstract void transfer(Path p);
 
     /**
-     * Display file validation dialog sheet
+     * Display file validation dialog sheet prompting the user about duplicate files
      */
     private boolean interactive;
 
@@ -240,11 +240,27 @@ public abstract class Queue extends NSObject {
     }
 
     /**
-     * Process the queue. All files will be downloaded/uploaded/synced rerspectively.
-     * @param resumeRequested The user requested to resume the transfer
-     * @param reloadRequested The user requested to reload the transfer
+     * The user requested to resume the transfer; mutually exclusive with #reloadRequested
      */
-    public void run(final boolean resumeRequested, final boolean reloadRequested) {
+    private boolean resumeRequested;
+
+    public void setResumeReqested(boolean resumeRequested) {
+        this.resumeRequested = resumeRequested;
+    }
+
+    /**
+     * The user requested to reload the transfer; mutually exclusive with #resumeReqested
+     */
+    private boolean reloadRequested;
+
+    public void setReloadRequested(boolean reloadRequested) {
+        this.reloadRequested = reloadRequested;
+    }
+
+    /**
+     * Process the queue. All files will be downloaded/uploaded/synced rerspectively.
+     */
+    public void run() {
         try {
             this.canceled = false;
             this.fireQueueStartedEvent();
@@ -258,7 +274,7 @@ public abstract class Queue extends NSObject {
             if(this.isCanceled()) {
                 return;
             }
-            List validated = this.validate(resumeRequested, reloadRequested, interactive);
+            List validated = this.validate();
             if(this.isCanceled()) {
                 return;
             }
@@ -284,7 +300,7 @@ public abstract class Queue extends NSObject {
         }
     }
 
-    private List validate(final boolean resumeRequested, final boolean reloadRequested, boolean interactive) {
+    private List validate() {
         final List childs = this.getChilds();
         final List validated = new ArrayList();
         Validator v = null;
@@ -306,9 +322,13 @@ public abstract class Queue extends NSObject {
                         }
                         v.prompt(child);
                     }
-                    else {
-                        validated.add(child);
-                    }
+//                    else {
+//                        // In cases we run withtout prompting the user, then just overwrite files.
+//                        // This is when running from an AppleScript
+//                        // e.g. CDBrowserController#handleUploadScriptCommand
+//                        child.status.setResume(false);
+//                        validated.add(child);
+//                    }
                 }
             }
             if (child.attributes.isDirectory()) {
@@ -342,7 +362,7 @@ public abstract class Queue extends NSObject {
      * @param resumeRequested
      * @return true if the file should be added to the queue
      */
-    protected boolean validateFile(Path p, boolean resumeRequested, boolean reloadRequested) {
+    protected boolean validateFile(final Path p, final boolean resumeRequested, final boolean reloadRequested) {
         return true;
     }
 

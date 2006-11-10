@@ -108,7 +108,7 @@ public class UploadQueue extends Queue {
         }
     }
 
-    protected void transfer(Path p) {
+    protected void transfer(final Path p) {
         p.upload();
     }
 
@@ -121,9 +121,9 @@ public class UploadQueue extends Queue {
         return false;
     }
 
-    protected boolean validateFile(Path p, boolean resumeRequested, boolean reloadRequested) {
+    protected boolean validateFile(final Path p, final boolean resumeRequested, final boolean reloadRequested) {
+        p.readAttributes();
         if(resumeRequested) { // resume existing files independant of settings in preferences
-            p.readAttributes();
             p.status.setResume(p.exists());
             return true;
         }
@@ -140,7 +140,6 @@ public class UploadQueue extends Queue {
             p.status.setResume(false);
             return true;
         }
-        p.readAttributes();
         if(p.exists()) {
             if(action.equals(Validator.RESUME)) {
                 log.debug("Will resume file:" + p.getName());

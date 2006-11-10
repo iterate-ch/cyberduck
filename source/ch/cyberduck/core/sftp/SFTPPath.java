@@ -238,23 +238,21 @@ public class SFTPPath extends Path {
     public void readAttributes() {
         synchronized(session) {
             if(this.attributes.isFile() && this.attributes.isUndefined()) {
-                if(this.exists()) {
-                    try {
-                        session.check();
-                        session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
-                        SftpFile f = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-                        this.attributes.setTimestamp(Long.parseLong(f.getAttributes().getModifiedTime().toString()) * 1000L);
-                        session.message(NSBundle.localizedString("Getting size of", "Status", "") + " " + this.getName());
-                        this.attributes.setSize(f.getAttributes().getSize().doubleValue());
-                        f.close();
-                    }
-                    catch(SshException e) {
-                        this.error("Cannot get file attributes", e);
-                    }
-                    catch(IOException e) {
-                        this.error("Connection failed", e);
-                        session.interrupt();
-                    }
+                try {
+                    session.check();
+                    session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
+                    SftpFile f = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
+                    this.attributes.setTimestamp(Long.parseLong(f.getAttributes().getModifiedTime().toString()) * 1000L);
+                    session.message(NSBundle.localizedString("Getting size of", "Status", "") + " " + this.getName());
+                    this.attributes.setSize(f.getAttributes().getSize().doubleValue());
+                    f.close();
+                }
+                catch(SshException e) {
+                    this.error("Cannot get file attributes", e);
+                }
+                catch(IOException e) {
+                    this.error("Connection failed", e);
+                    session.interrupt();
                 }
             }
         }

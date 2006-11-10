@@ -454,7 +454,10 @@ public class CDQueueController extends CDWindowController
                             queue.getSession().setLoginController(null);
                         }
                     });
-                    queue.run(resumeRequested, reloadRequested);
+                    queue.setInteractive(true);
+                    queue.setResumeReqested(resumeRequested);
+                    queue.setReloadRequested(reloadRequested);
+                    queue.run();
                 }
                 finally {
                     queue.getSession().removeErrorListener(this);

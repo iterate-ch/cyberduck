@@ -138,11 +138,11 @@ public class SyncQueue extends Queue {
         }
     }
 
-    protected void transfer(Path p) {
+    protected void transfer(final Path p) {
         p.sync();
     }
 
-    protected boolean validateFile(Path p, boolean resumeRequsted, boolean reloadRequested) {
+    protected boolean validateFile(final Path p, final boolean resumeRequsted, final boolean reloadRequested) {
         log.debug("Prompting for file:" + p.getName());
         return false;
     }

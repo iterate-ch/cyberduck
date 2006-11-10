@@ -257,8 +257,10 @@ public class CDBrowserController extends CDWindowController
                 path.setLocal(new Local((String) localObj));
             }
             Queue q = new SyncQueue(path);
-            q.setInteractive(false);
-            q.run(false, false);
+            q.setInteractive(true);
+            q.setResumeReqested(false);
+            q.setReloadRequested(false);
+            CDQueueController.instance().startItem(q);
         }
         return null;
     }
@@ -286,8 +288,10 @@ public class CDBrowserController extends CDWindowController
                 path.setLocal(new Local(path.getLocal().getParent(), (String) nameObj));
             }
             Queue q = new DownloadQueue(path);
-            q.setInteractive(false);
-            q.run(false, false);
+            q.setInteractive(true);
+            q.setResumeReqested(false);
+            q.setReloadRequested(false);
+            CDQueueController.instance().startItem(q);
         }
         return null;
     }
@@ -314,8 +318,10 @@ public class CDBrowserController extends CDWindowController
                 path.setPath(this.workdir().getAbsolute(), (String) nameObj);
             }
             Queue q = new UploadQueue(path);
-            q.setInteractive(false);
-            q.run(false, false);
+            q.setInteractive(true);
+            q.setResumeReqested(false);
+            q.setReloadRequested(false);
+            CDQueueController.instance().startItem(q);
         }
         return null;
     }
