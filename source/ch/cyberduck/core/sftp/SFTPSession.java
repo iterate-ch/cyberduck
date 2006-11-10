@@ -186,6 +186,9 @@ public class SFTPSession extends Session {
                     properties.setProxyPort(Proxy.getSOCKSProxyPort());
                 }
                 SSH.connect(properties, this.getHostKeyVerificationController());
+                if(!this.isConnected()) {
+                    return;
+                }
                 this.message(NSBundle.localizedString("SSH connection opened", "Status", ""));
                 String id = SSH.getServerId();
                 this.log(id);

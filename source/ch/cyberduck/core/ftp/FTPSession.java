@@ -154,6 +154,9 @@ public class FTPSession extends Session {
             try {
                 this.FTP.connect(host.getHostname(), host.getPort(),
                     Preferences.instance().getInteger("connection.timeout"));
+                if(!this.isConnected()) {
+                    return;
+                }
                 this.FTP.setStrictReturnCodes(true);
                 if(Proxy.isSOCKSProxyEnabled()) {
                     log.info("Using SOCKS Proxy");

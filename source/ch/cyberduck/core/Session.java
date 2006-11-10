@@ -340,7 +340,7 @@ public abstract class Session extends NSObject {
 
     /**
      * Log the message to all subscribed transcript listeners
-     * @see #ch.cyberduck.core.TranscriptListener
+     * @see TranscriptListener
      * @param message
      */
     protected void log(final String message) {
