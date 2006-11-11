@@ -1021,6 +1021,7 @@ img/symlink.tiff -text
 img/sync32.tiff -text
 img/transparent.tiff -text
 img/unlocked.tiff -text
+img/update.tiff -text svneol=unset#image/tiff
 img/uploadFile.tiff -text
 it.lproj/Alert.nib/classes.nib -text
 it.lproj/Alert.nib/data.dependency -text
