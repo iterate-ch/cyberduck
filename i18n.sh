@@ -8,7 +8,7 @@
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
 #  GNU General Public License for more details.
 #
 #  Bug fixes, suggestions and comments should be sent to:
@@ -20,10 +20,10 @@ base_language="en.lproj"
 
 usage() {
 	echo ""
-	echo "    Usage: i18n.sh --extractstrings"
-	echo "    Usage: i18n.sh [-l <language>] --status"
-	echo "    Usage: i18n.sh [-l <language>] --init"
-	echo "    Usage: i18n.sh [-l <language>] [-n <nib>] [--force] --update"
+	echo "	  Usage: i18n.sh --extractstrings"
+	echo "	  Usage: i18n.sh [-l <language>] --status"
+	echo "	  Usage: i18n.sh [-l <language>] --init"
+	echo "	  Usage: i18n.sh [-l <language>] [-n <nib>] [--force] --update"
 	echo ""
 	echo "<language> must be Japanese.lproj, French.lproj, Spanish.lproj, ..."
 	echo "<nib> must be Preferences.nib, Main.nib, ..."
@@ -35,11 +35,13 @@ usage() {
 init() {
 	mkdir -p $language
 	for nibfile in `ls $base_language | grep .nib | grep -v ~.nib | grep -v .bak`; do
+	{
 		echo "Copying $nibfile"
 		nib=`basename $nibfile .nib`
 		cp -R $base_language/$nibfile $language/$nibfile
 		rm -rf $language/$nibfile/.svn
 		nibtool --localizable-strings $language/$nibfile > $language/$nib.strings
+	}
 	done
 	cp $base_language/Localizable.strings $language/
 	cp $base_language/Crash.strings $language/
@@ -71,14 +73,14 @@ open() {
 }
 
 extractstrings() {
-    echo "*** Extracting strings from Obj-C source files (genstrings)..."
-    genstrings -j -a -q -o $base_language source/ch/cyberduck/ui/cocoa/*.java
-    echo "*** Extracting strings from Java source files (genstrings)..."
-    genstrings -j -a -q -o $base_language source/ch/cyberduck/core/*.java
-    genstrings    -a -q -o $base_language source/ch/cyberduck/ui/cocoa/*.m
-    genstrings -j -a -q -o $base_language source/ch/cyberduck/core/ftp/*.java
-    genstrings -j -a -q -o $base_language source/ch/cyberduck/core/ftps/*.java
-    genstrings -j -a -q -o $base_language source/ch/cyberduck/core/sftp/*.java
+	echo "*** Extracting strings from Obj-C source files (genstrings)..."
+	genstrings -j -a -q -o $base_language source/ch/cyberduck/ui/cocoa/*.java
+	echo "*** Extracting strings from Java source files (genstrings)..."
+	genstrings -j -a -q -o $base_language source/ch/cyberduck/core/*.java
+	genstrings	  -a -q -o $base_language source/ch/cyberduck/ui/cocoa/*.m
+	genstrings -j -a -q -o $base_language source/ch/cyberduck/core/ftp/*.java
+	genstrings -j -a -q -o $base_language source/ch/cyberduck/core/ftps/*.java
+	genstrings -j -a -q -o $base_language source/ch/cyberduck/core/sftp/*.java
 }
 
 status() {
@@ -102,22 +104,22 @@ status() {
 
 nib() {
 	#Changes to the .strings has precedence over the NIBs
-    updateNibFromStrings;
+	updateNibFromStrings;
 	#Update the .strings with new values from NIBs
-    udpateStringsFromNib;
+	udpateStringsFromNib;
 }
 
 updateNibFromStrings() {
 	rm -rf $language/$nibfile.bak 
-    mv $language/$nibfile $language/$nibfile.bak
+	mv $language/$nibfile $language/$nibfile.bak
 
-    if($force == true); then
+	if($force == true); then
 	{
 		# force update
 		echo "*** Updating $nib... (force) in $language..."
 		nibtool --write $language/$nibfile --dictionary $language/$nib.strings $base_language/$nibfile
 	}
-    else
+	else
 	{
 		# incremental update
 		echo "*** Updating $nib... (incremental) in $language..."
@@ -125,63 +127,63 @@ updateNibFromStrings() {
 				--incremental $language/$nibfile.bak \
 				--dictionary $language/$nib.strings $base_language/$nibfile
 	}
-    fi;
-    cp -R $language/$nibfile.bak/.svn $language/$nibfile/.svn
+	fi;
+	cp -R $language/$nibfile.bak/.svn $language/$nibfile/.svn
 	rm -rf $language/$nibfile.bak 
 }
 
 udpateStringsFromNib() {
-    echo "*** Updating $nib.strings in $language..."
-    nibtool --previous $base_language/$nibfile \
-            --incremental $language/$nibfile \
-            --localizable-strings $base_language/$nibfile > $language/$nib.strings
+	echo "*** Updating $nib.strings in $language..."
+	nibtool --previous $base_language/$nibfile \
+			--incremental $language/$nibfile \
+			--localizable-strings $base_language/$nibfile > $language/$nib.strings
 }
 
 update() {
 	if [ "$language" = "all" ] ; then
-		{
-			echo "*** Updating all localizations...";
-			for lproj in `ls . | grep lproj`; do
-				language=$lproj;
-				if [ $language != $base_language ]; then
-				{
-					echo "*** Updating $language Localization...";
-					if [ "$nibfile" = "all" ] ; then
-						echo "*** Updating all NIBs...";
-						for nibfile in `ls $language | grep .nib | grep -v ~.nib | grep -v .bak`; do
-							nib=`basename $nibfile .nib`
-							nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
-							nib;
-						done;
-					fi;
-					if [ "$nibfile" != "all" ] ; then
-							nib=`basename $nibfile .nib`
-							nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
-							nib;
-					fi;
-				}
-				fi;
-			done;
-		}
-	else
-		{
-			echo "*** Updating $language Localization...";
-			if [ "$nibfile" = "all" ] ; then
-				echo "*** Updating all NIBs...";
-				for nibfile in `ls $language | grep .nib | grep -v ~.nib | grep -v .bak`; do
-					nib=`basename $nibfile .nib`;
-					nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
-					nib;
-				done;
-			fi;
-			if [ "$nibfile" != "all" ] ; then
+	{
+		echo "*** Updating all localizations...";
+		for lproj in `ls . | grep lproj`; do
+			language=$lproj;
+			if [ $language != $base_language ]; then
 			{
+				echo "*** Updating $language Localization...";
+				if [ "$nibfile" = "all" ] ; then
+					echo "*** Updating all NIBs...";
+					for nibfile in `ls $language | grep .nib | grep -v ~.nib | grep -v .bak`; do
+						nib=`basename $nibfile .nib`
+						nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
+						nib;
+					done;
+				fi;
+				if [ "$nibfile" != "all" ] ; then
+						nib=`basename $nibfile .nib`
+						nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
+						nib;
+				fi;
+			}
+			fi;
+		done;
+	}
+	else
+	{
+		echo "*** Updating $language Localization...";
+		if [ "$nibfile" = "all" ] ; then
+			echo "*** Updating all NIBs...";
+			for nibfile in `ls $language | grep .nib | grep -v ~.nib | grep -v .bak`; do
 				nib=`basename $nibfile .nib`;
 				nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
 				nib;
-			}
-			fi;
+			done;
+		fi;
+		if [ "$nibfile" != "all" ] ; then
+		{
+			nib=`basename $nibfile .nib`;
+			nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
+			nib;
 		}
+		fi;
+	}
 	fi;
 }
 
@@ -247,7 +249,7 @@ while [ "$1" != "" ] # When there are arguments...
 				echo "*** DONE. ***";
 				exit 0;
 			;; 
-			*)  
+			*)	
 				echo "Option [$1] not one of  [--extractstrings, --status, --update, --open, --init]"; # Error (!)
 				exit 1
 			;; # Abort Script Now
