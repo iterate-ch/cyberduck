@@ -381,19 +381,7 @@ public class CDQueueController extends CDWindowController
                 try {
                     queue.getSession().addErrorListener(this);
                     queue.getSession().addTranscriptListener(this);
-                    queue.addListener(new QueueListener() {
-                        public void transferStarted(final Path path) {
-                            queueTable.setNeedsDisplay();
-                            CDQueueController.this.invoke(new Runnable() {
-                                public void run() {
-                                    updateSelection();
-                                }
-                            });
-                        }
-
-                        public void transferStopped(final Path path) {
-                            queueTable.setNeedsDisplay();
-                        }
+                    queue.addListener(new QueueAdapter() {
 
                         public void queueStarted() {
                             invoke(new Runnable() {
@@ -413,22 +401,6 @@ public class CDQueueController extends CDWindowController
                         }
 
                         public void queueStopped() {
-                            invoke(new Runnable() {
-                                public void run() {
-                                    window.toolbar().validateVisibleItems();
-                                }
-                            });
-                            if(queue.isComplete()) {
-                                if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
-                                    if(!hasRunningTransfers()) {
-                                        CDQueueController.this.invoke(new Runnable() {
-                                            public void run() {
-                                                window().close();
-                                            }
-                                        });
-                                    }
-                                }
-                            }
                             queue.removeListener(this);
                             if(queue.isComplete() && !queue.isCanceled()) {
                                 if(queue instanceof DownloadQueue) {
@@ -466,7 +438,14 @@ public class CDQueueController extends CDWindowController
             }
 
             public void cleanup() {
-                ;
+                window.toolbar().validateVisibleItems();
+                if(queue.isComplete()) {
+                    if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
+                        if(!hasRunningTransfers()) {
+                            window().close();
+                        }
+                    }
+                }
             }
         }, new Object());
     }
