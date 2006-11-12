@@ -282,7 +282,7 @@
 
 -(IBAction)	changePanes: (id)sender
 {
-	NSString*		key;
+	NSString* key;
 	
 	[tabView selectTabViewItemAtIndex: [sender tag]];
 	[[tabView window] setTitle: [baseWindowName stringByAppendingString: [sender label]]];
@@ -295,26 +295,22 @@
 
 -(void) resize
 {
+	// Compute the new frame window height and width
+	NSRect windowFrame = [NSWindow contentRectForFrameRect:[[tabView window] frame] styleMask:[[tabView window] styleMask]];
+
 	NSArray *subviews = [[[tabView selectedTabViewItem] view] subviews];
 	NSEnumerator *enumerator = [subviews objectEnumerator];
-	NSRect windowRect = NSZeroRect;
+	NSRect contentRect = NSZeroRect;
 	NSView *subview = nil;
 	while((subview = [enumerator nextObject]))
 	{
-		windowRect = NSUnionRect(windowRect, [subview frame]);
+		contentRect = NSUnionRect(contentRect, [subview frame]);
 	}
-	windowRect.origin.x = [[tabView window] frame].origin.x;
-	windowRect.origin.y = [[tabView window] frame].origin.y;
-	windowRect.size.height += [self toolbarHeightForWindow:[tabView window]]; //toolbar height
-	windowRect.size.height += 22; //title bar height
-	windowRect.size.height += 40; //border
-	windowRect.size.width += 35; //border
-	NSRect r = NSMakeRect(
-		[[tabView window] frame].origin.x,// - (windowRect.size.width - [[tabView window] frame].size.width), 
-		[[tabView window] frame].origin.y - (windowRect.size.height - [[tabView window] frame].size.height), 			
-		[[[tabView selectedTabViewItem] view] frame].size.width, 
-		windowRect.size.height);
-	[[tabView window] setFrame:r display:YES animate:YES];
+	contentRect.size.height += 40; //border
+	float height = NSHeight(contentRect) + [self toolbarHeightForWindow:[tabView window]];
+	NSRect frameRect = NSMakeRect(NSMinX(windowFrame), NSMaxY(windowFrame) - height, NSWidth([[[tabView selectedTabViewItem] view] frame]), height);
+	NSRect newWindowFrame = [NSWindow frameRectForContentRect:frameRect styleMask:[[tabView window] styleMask]];
+	[[tabView window] setFrame:newWindowFrame display:YES animate:[[tabView window] isVisible]];
 }
 
 -(float)toolbarHeightForWindow:(NSWindow *)window
