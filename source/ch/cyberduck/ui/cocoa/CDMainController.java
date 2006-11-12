@@ -177,7 +177,6 @@ public class CDMainController extends CDController {
             if (index == 4) {
                 item.setEnabled(true);
                 NSImage icon = NSImage.imageNamed("idisk.tiff");
-                icon.setScalesWhenResized(true);
                 icon.setSize(new NSSize(16f, 16f));
                 item.setImage(icon);
             }

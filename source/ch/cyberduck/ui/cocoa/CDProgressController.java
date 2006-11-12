@@ -307,8 +307,6 @@ public class CDProgressController extends CDController {
         else if(queue instanceof SyncQueue) {
             icon = SYNC_ICON;
         }
-        icon.setScalesWhenResized(true);
-        icon.setSize(new NSSize(32f, 32f));
         this.typeIconView.setImage(icon);
     }
 

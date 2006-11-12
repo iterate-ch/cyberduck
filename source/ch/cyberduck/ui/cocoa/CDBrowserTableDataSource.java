@@ -41,6 +41,14 @@ public abstract class CDBrowserTableDataSource extends NSObject {
     protected static final NSImage FOLDER_WRITEONLY_ICON = NSImage.imageNamed("folder_writeonly.tiff");
     protected static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
+    static {
+        SYMLINK_ICON.setSize(new NSSize(16f, 16f));
+        FOLDER_ICON.setSize(new NSSize(16f, 16f));
+        FOLDER_NOACCESS_ICON.setSize(new NSSize(16f, 16f));
+        FOLDER_WRITEONLY_ICON.setSize(new NSSize(16f, 16f));
+        NOT_FOUND_ICON.setSize(new NSSize(16f, 16f));
+    }
+
     public static final String TYPE_COLUMN = "TYPE";
     public static final String FILENAME_COLUMN = "FILENAME";
     public static final String SIZE_COLUMN = "SIZE";

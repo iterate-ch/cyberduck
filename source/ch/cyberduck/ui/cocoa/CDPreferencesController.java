@@ -287,7 +287,6 @@ public class CDPreferencesController extends CDWindowController {
                 NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
                         NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
                 );
-                icon.setScalesWhenResized(true);
                 icon.setSize(new NSSize(16f, 16f));
                 this.editorCombobox.itemWithTitle(editor).setImage(icon);
             }

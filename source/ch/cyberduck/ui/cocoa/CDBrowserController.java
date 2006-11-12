@@ -870,11 +870,11 @@ public class CDBrowserController extends CDWindowController
                         }
                         else if(item.attributes.isFile()) {
                             icon = CDIconCache.instance().get(item.getExtension());
+                            icon.setSize(new NSSize(16f, 16f));
                         }
                         else {
                             icon = CDBrowserTableDataSource.NOT_FOUND_ICON;
                         }
-                        icon.setSize(new NSSize(16f, 16f));
                         ((CDOutlineCell) cell).setIcon(icon);
                         ((CDOutlineCell) cell).setAttributedStringValue(new NSAttributedString(item.getName(),
                                 CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT));
@@ -893,7 +893,7 @@ public class CDBrowserController extends CDWindowController
             /**
              * Container for all paths currently being expanded in the background
              */
-            private List isLoadingListingInBackground = new ArrayList();
+            private final List isLoadingListingInBackground = new ArrayList();
 
             public boolean outlineViewShouldExpandItem(final NSOutlineView view, final Object item) {
                 log.debug("outlineViewShouldExpandItem:"+item);
@@ -1353,7 +1353,6 @@ public class CDBrowserController extends CDWindowController
                     identifier);
             if(path != null) {
                 NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
-                icon.setScalesWhenResized(true);
                 icon.setSize(new NSSize(16f, 16f));
                 item.setImage(icon);
             }
@@ -1575,35 +1574,35 @@ public class CDBrowserController extends CDWindowController
 
     public void backButtonClicked(final Object sender) {
         final Path selected = this.session.getPreviousPath();
-        final Path previous = this.workdir();
-        this.background(new BackgroundAction() {
-            public void run() {
-                if(selected != null) {
+        if(selected != null) {
+            final Path previous = this.workdir();
+            this.background(new BackgroundAction() {
+                public void run() {
                     setWorkdir(selected);
                 }
-            }
 
-            public void cleanup() {
-                if(previous.getParent().equals(selected)) {
-                    setSelectedPath(previous);
+                public void cleanup() {
+                    if(previous.getParent().equals(selected)) {
+                        setSelectedPath(previous);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     public void forwardButtonClicked(final Object sender) {
-        this.background(new BackgroundAction() {
-            public void run() {
-                Path selected = session.getForwardPath();
-                if(selected != null) {
+        final Path selected = this.session.getForwardPath();
+        if(selected != null) {
+            this.background(new BackgroundAction() {
+                public void run() {
                     setWorkdir(selected);
                 }
-            }
 
-            public void cleanup () {
-                ;
-            }
-        });
+                public void cleanup () {
+                    ;
+                }
+            });
+        }
     }
 
     private NSSegmentedControl upButton; // IBOutlet
@@ -2475,16 +2474,15 @@ public class CDBrowserController extends CDWindowController
         super.background(new BackgroundActionImpl(this) {
             public void run() {
                 activityRunning = true;
+                spinner.startAnimation(this);
+                session.addErrorListener(this);
+                session.addTranscriptListener(this);
                 try {
-                    spinner.startAnimation(this);
-                    session.addErrorListener(this);
-                    session.addTranscriptListener(this);
-                    {
-                        runnable.run();
-                    }
+                    runnable.run();
                 }
                 finally {
                     activityRunning = false;
+                    spinner.stopAnimation(CDBrowserController.this);
                     // It is important _not_ to do this in #cleanup as otherwise
                     // the listeners are still registered when the next BackgroundAction
                     // is already running
@@ -2495,7 +2493,6 @@ public class CDBrowserController extends CDWindowController
 
             public void cleanup() {
                 try {
-                    spinner.stopAnimation(CDBrowserController.this);
                     statusLabel.setAttributedStringValue(new NSAttributedString(
                             getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", ""),
                             CDWindowController.TRUNCATE_MIDDLE_ATTRIBUTES));
@@ -2949,7 +2946,6 @@ public class CDBrowserController extends CDWindowController
                     Preferences.instance().getProperty("editor.bundleIdentifier"));
             if(editorPath != null) {
                 NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(editorPath);
-                icon.setScalesWhenResized(true);
                 icon.setSize(new NSSize(16f, 16f));
                 item.setImage(icon);
             }
@@ -2960,7 +2956,6 @@ public class CDBrowserController extends CDWindowController
                 String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
                 if(editorPath != null) {
                     NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(editorPath);
-                    icon.setScalesWhenResized(true);
                     icon.setSize(new NSSize(16f, 16f));
                     item.setImage(icon);
                 }

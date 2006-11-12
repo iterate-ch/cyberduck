@@ -70,13 +70,12 @@ public class CDIconCell extends CDTableCell {
             if(queue.numberOfRoots() == 1) {
                 fileIcon = queue.getRoot().getLocal().attributes.isFile() ? NSWorkspace.sharedWorkspace().iconForFile(
                         queue.getRoot().getLocal().getAbsolute()) : FOLDER_ICON;
+                fileIcon.setSize(new NSSize(32f, 32f));
             }
             else {
                 fileIcon = MULTIPLE_DOCUMENTS_ICON;
             }
         }
-        fileIcon.setScalesWhenResized(true);
-        fileIcon.setSize(new NSSize(32f, 32f));
         fileIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE,
                 cellPoint.y() + 32 + SPACE),
                 NSImage.CompositeSourceOver);
