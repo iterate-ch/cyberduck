@@ -549,6 +549,10 @@ public class CDConnectionController extends CDSheetController {
     }
 
     private void updateURLLabel(final NSNotification sender) {
+        if("".equals(hostField.stringValue())) {
+            urlLabel.setStringValue(hostField.stringValue());
+        }
+        else {
         String protocol = null;
         if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
             protocol = Session.SFTP + "://";
@@ -562,6 +566,7 @@ public class CDConnectionController extends CDSheetController {
         urlLabel.setStringValue(protocol + usernameField.stringValue()
                 + "@" + hostField.stringValue() + ":" + portField.stringValue()
                 + pathField.stringValue());
+        }
     }
 
     public void callback(final int returncode) {

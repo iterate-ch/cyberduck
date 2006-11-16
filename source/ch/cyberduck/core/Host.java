@@ -572,9 +572,6 @@ public class Host extends NSObject {
         final int pool = NSAutoreleasePool.push();
         boolean available = this.isReachable(this.getURL());
         NSAutoreleasePool.pop(pool);
-        if(!available) {
-            log.warn("Unreachable hostname:" + this.getHostname());
-        }
         return available;
     }
 

@@ -186,7 +186,7 @@ public class SFTPSession extends Session {
                     properties.setProxyPort(Proxy.getSOCKSProxyPort());
                 }
                 SSH.connect(properties, this.getHostKeyVerificationController());
-                if(!this.isConnected()) {
+                if(!SSH.isConnected()) {
                     return;
                 }
                 this.message(NSBundle.localizedString("SSH connection opened", "Status", ""));
@@ -204,6 +204,9 @@ public class SFTPSession extends Session {
                         log(new String(data));
                     }
                 }, host.getEncoding());
+                if(!this.isConnected()) {
+                    return;
+                }
                 this.message(NSBundle.localizedString("SFTP subsystem ready", "Status", ""));
                 this.fireConnectionDidOpenEvent();
             }

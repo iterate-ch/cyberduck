@@ -80,18 +80,18 @@ public class Local extends File implements IAttributes {
         super(NSPathUtilities.stringByExpandingTildeInPath(path.getAbsolutePath()));
     }
 
-    private FileWatcher uk;
-
-    /**
-     * 
-     * @param listener
-     */
-    public void watch(FileWatcherListener listener) {
-        if(null == uk) {
-            uk = FileWatcher.instance(this);
-        }
-        uk.watch(listener);
-    }
+//    private FileWatcher uk;
+//
+//    /**
+//     *
+//     * @param listener
+//     */
+//    public void watch(FileWatcherListener listener) {
+//        if(null == uk) {
+//            uk = FileWatcher.instance(this);
+//        }
+//        uk.watch(listener);
+//    }
 
     public boolean createNewFile() {
         try {
