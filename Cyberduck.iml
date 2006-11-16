@@ -11,14 +11,10 @@
       <excludeFolder url="file://$MODULE_DIR$/AppleScript Samples" />
       <excludeFolder url="file://$MODULE_DIR$/Dashboard Widget" />
       <excludeFolder url="file://$MODULE_DIR$/Download Automator Action" />
-      <excludeFolder url="file://$MODULE_DIR$/Sparkle" />
       <excludeFolder url="file://$MODULE_DIR$/Spotlight Importer" />
       <excludeFolder url="file://$MODULE_DIR$/Upload Automator Action" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
-      <excludeFolder url="file://$MODULE_DIR$/source_refactored" />
-      <excludeFolder url="file://$MODULE_DIR$/source_refactored_jsch" />
-      <excludeFolder url="file://$MODULE_DIR$/source_refactored_org_apache_commons" />
-      <excludeFolder url="file://$MODULE_DIR$/source_refactored_outline_bookmarks" />
+      <excludeFolder url="file://$MODULE_DIR$/refactoring" />
       <excludeFolder url="file://$MODULE_DIR$/www" />
     </content>
     <orderEntry type="inheritedJdk" />
