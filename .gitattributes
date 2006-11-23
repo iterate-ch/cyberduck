@@ -1774,6 +1774,7 @@ www/help/sv/.htaccess -text
 www/help/th/.htaccess -text
 www/help/zh_CN/.htaccess -text
 www/help/zh_TW/.htaccess -text
+www/update/changelog.html -text
 www/update/changelog.rss -text
 zh_CN.lproj/Alert.nib/classes.nib -text
 zh_CN.lproj/Alert.nib/data.dependency -text
