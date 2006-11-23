@@ -15,7 +15,6 @@ release:
 	cd Spotlight\ Importer; make release
 	cd Dashboard\ Widget; make release
 	xcodebuild -project $(PROJECT) -target release -configuration $(BUILDSTYLE)
-	cd $(BUILD_DIR)/$(BUILDSTYLE); tar -czf ../Cyberduck-`svnversion ..`.tar.gz Cyberduck.app
 
 clean:
 	cd Spotlight\ Importer; make clean

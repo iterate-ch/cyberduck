@@ -17,7 +17,7 @@
 #!/bin/bash
         
 build() {
-	if [ "$language" = "all" ] ; then
+	if [ "$lproj" = "all" ] ; then
 		{
 			echo "*** Building all localizations...";
 			for lproj in `ls ./build/Deployment/Cyberduck.app/Contents/Resources/ | grep lproj`; do
@@ -28,20 +28,21 @@ build() {
 		}
 	else
 		{
+			language=`basename $lproj .lproj`;
 			echo "*** Building $language localization disk image...";
 			ant -Dlocalization=$language release-localization 
 		}
 	fi;
 }
 
-language="all";
+lproj="all";
 
 while [ "$1" != "" ] # When there are arguments...
 	do case "$1" in 
 			-l | --language)
 				shift;
-				language=$1;
-				echo "Using Language:$language";
+				lproj=$1;
+				echo "Using Language:$lproj";
 				build;
 				echo "*** DONE. ***";
 				exit 0;
