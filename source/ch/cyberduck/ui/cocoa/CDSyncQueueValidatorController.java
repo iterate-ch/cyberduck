@@ -219,10 +219,6 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 //        this.fireDataChanged();
 //    }
 
-    // ----------------------------------------------------------
-    // NSTableView.DataSource
-    // ----------------------------------------------------------
-
     protected static final String TYPE_COLUMN = "TYPE";
     protected static final String NEW_COLUMN = "NEW";
 
@@ -230,6 +226,9 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
     private static final NSImage ARROW_DOWN_ICON = NSImage.imageNamed("arrowDown16.tiff");
     private static final NSImage PLUS_ICON = NSImage.imageNamed("plus.tiff");
 
+    /**
+     * @see NSTableView.DataSource
+     */
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn column, int row) {
         if(row < this.numberOfRowsInTableView(view)) {
             String identifier = (String) column.identifier();

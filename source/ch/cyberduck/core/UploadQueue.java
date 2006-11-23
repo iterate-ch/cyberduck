@@ -122,7 +122,6 @@ public class UploadQueue extends Queue {
     }
 
     protected boolean validateFile(final Path p, final boolean resumeRequested, final boolean reloadRequested) {
-        p.readAttributes();
         if(resumeRequested) { // resume existing files independant of settings in preferences
             p.status.setResume(p.exists());
             return true;
@@ -141,6 +140,7 @@ public class UploadQueue extends Queue {
             return true;
         }
         if(p.exists()) {
+            p.readAttributes();
             if(action.equals(Validator.RESUME)) {
                 log.debug("Will resume file:" + p.getName());
                 p.status.setResume(true);

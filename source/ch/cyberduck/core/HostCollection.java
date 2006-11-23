@@ -132,7 +132,6 @@ public class HostCollection extends Collection {
      */
     private synchronized void load(File f) {
         if(f.exists()) {
-            final int pool = NSAutoreleasePool.push();
             log.info("Found Bookmarks file: " + f.toString());
             NSData plistData = new NSData(f);
             String[] errorString = new String[]{null};
@@ -156,7 +155,6 @@ public class HostCollection extends Collection {
                     }
                 }
             }
-            NSAutoreleasePool.pop(pool);
         }
     }
 

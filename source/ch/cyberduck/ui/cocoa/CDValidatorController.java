@@ -46,9 +46,11 @@ public abstract class CDValidatorController
     protected List workList = new ArrayList();
 
     public Collection result() {
-        this.statusIndicator.stopAnimation(null);
-        this.setEnabled(true);
-        this.waitForSheetEnd();
+        if(this.hasPrompt()) {
+            this.statusIndicator.stopAnimation(null);
+            this.setEnabled(true);
+            this.waitForSheetEnd();
+        }
         return workList;
     }
 
@@ -63,27 +65,48 @@ public abstract class CDValidatorController
     }
 
     public void callback(final int returncode) {
-        if (returncode == DEFAULT_OPTION || returncode == ALTERNATE_OPTION) { //overwrite || resume
-            for (Iterator i = workList.iterator(); i.hasNext();) {
+        if(returncode == DEFAULT_OPTION || returncode == ALTERNATE_OPTION) { //overwrite || resume
+            for(Iterator i = workList.iterator(); i.hasNext();) {
                 final Path p = (Path) i.next();
-                if (p.isSkipped()) {
+                if(p.isSkipped()) {
                     this.workList.remove(p);
                     continue;
                 }
                 p.status.setResume(returncode == ALTERNATE_OPTION);
             }
         }
-        if (returncode == SKIP_OPTION || returncode == CANCEL_OPTION) { //skip
+        if(returncode == SKIP_OPTION || returncode == CANCEL_OPTION) { //skip
             this.workList.clear();
         }
-        if (returncode == CANCEL_OPTION) {
+        if(returncode == CANCEL_OPTION) {
             this.canceled = true;
         }
     }
 
+    /**
+     * State variable to know if we are about to
+     * display a sheet
+     */
+    protected boolean hasPrompt = false;
+
+    /**
+     * @return true if the sheet dialog is displayed
+     */
+    protected boolean hasPrompt() {
+        return this.hasPrompt;
+    }
+
+    /**
+     * @see CDQueueController
+     * @param p
+     */
     public void prompt(Path p) {
-        if(!this.parent.hasSheet()) {
+        if(!this.hasPrompt()) {
+            // We should not call parent.hasSheet() because the parent
+            // is a singleton class that may have a sheet from another
+            // ongoing transfer
             this.beginSheet(false);
+            this.hasPrompt = true;
         }
         this.workList.add(p);
         this.fireDataChanged();
@@ -156,8 +179,8 @@ public abstract class CDValidatorController
 
             public String tableViewToolTipForCell(NSTableView tableView, NSCell cell, NSMutableRect rect,
                                                   NSTableColumn tc, int row, NSPoint mouseLocation) {
-                if (row < numberOfRowsInTableView(tableView)) {
-                    return super.tooltipForPath((Path)workList.get(row));
+                if(row < numberOfRowsInTableView(tableView)) {
+                    return super.tooltipForPath((Path) workList.get(row));
                 }
                 return null;
             }
@@ -179,21 +202,21 @@ public abstract class CDValidatorController
             }
 
             public void selectionDidChange(NSNotification notification) {
-                if (fileTableView.selectedRow() != -1) {
+                if(fileTableView.selectedRow() != -1) {
                     Path p = (Path) workList.get(fileTableView.selectedRow());
-                    if (p != null) {
-                        if (p.getLocal().exists()) {
+                    if(p != null) {
+                        if(p.getLocal().exists()) {
                             localURLField.setAttributedStringValue(
                                     new NSAttributedString(p.getLocal().getAbsolute(),
-                                    TRUNCATE_MIDDLE_ATTRIBUTES));
+                                            TRUNCATE_MIDDLE_ATTRIBUTES));
                             localURLField.setHidden(false);
                             localSizeField.setAttributedStringValue(
                                     new NSAttributedString(Status.getSizeAsString(p.getLocal().attributes.getSize()),
-                                    TRUNCATE_MIDDLE_ATTRIBUTES));
+                                            TRUNCATE_MIDDLE_ATTRIBUTES));
                             localSizeField.setHidden(false);
                             localModificationField.setAttributedStringValue(
                                     new NSAttributedString(CDDateFormatter.getLongFormat(p.getLocal().attributes.getTimestamp()),
-                                    TRUNCATE_MIDDLE_ATTRIBUTES));
+                                            TRUNCATE_MIDDLE_ATTRIBUTES));
                             localModificationField.setHidden(false);
                         }
                         else {
@@ -201,18 +224,18 @@ public abstract class CDValidatorController
                             localSizeField.setHidden(true);
                             localModificationField.setHidden(true);
                         }
-                        if (p.getRemote().exists()) {
+                        if(p.getRemote().exists()) {
                             remoteURLField.setAttributedStringValue(
                                     new NSAttributedString(p.getRemote().getHost().getURL() + p.getRemote().getAbsolute(),
-                                    TRUNCATE_MIDDLE_ATTRIBUTES));
+                                            TRUNCATE_MIDDLE_ATTRIBUTES));
                             remoteURLField.setHidden(false);
                             remoteSizeField.setAttributedStringValue(
                                     new NSAttributedString(Status.getSizeAsString(p.getRemote().attributes.getSize()),
-                                    TRUNCATE_MIDDLE_ATTRIBUTES));
+                                            TRUNCATE_MIDDLE_ATTRIBUTES));
                             remoteSizeField.setHidden(false);
                             remoteModificationField.setAttributedStringValue(
                                     new NSAttributedString(CDDateFormatter.getLongFormat(p.getRemote().attributes.getTimestamp()),
-                                    TRUNCATE_MIDDLE_ATTRIBUTES));
+                                            TRUNCATE_MIDDLE_ATTRIBUTES));
                             remoteModificationField.setHidden(false);
                         }
                         else {
@@ -240,14 +263,14 @@ public abstract class CDValidatorController
         this.fileTableView.setAllowsColumnSelection(false);
         this.fileTableView.setAllowsColumnReordering(true);
         this.fileTableView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
-        if (Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines"))
+        if(Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines"))
         {
             this.fileTableView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
         }
-        else if (Preferences.instance().getBoolean("browser.verticalLines")) {
+        else if(Preferences.instance().getBoolean("browser.verticalLines")) {
             this.fileTableView.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
         }
-        else if (Preferences.instance().getBoolean("browser.horizontalLines")) {
+        else if(Preferences.instance().getBoolean("browser.horizontalLines")) {
             this.fileTableView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
         }
         else {
@@ -262,7 +285,7 @@ public abstract class CDValidatorController
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
-            if (setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
             else {
@@ -285,7 +308,7 @@ public abstract class CDValidatorController
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
-            if (setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
             else {
@@ -303,7 +326,7 @@ public abstract class CDValidatorController
             c.setMinWidth(100f);
             c.setWidth(220f);
             c.setMaxWidth(800f);
-            if (setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
@@ -320,7 +343,7 @@ public abstract class CDValidatorController
             c.setMinWidth(50f);
             c.setWidth(80f);
             c.setMaxWidth(100f);
-            if (setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
@@ -337,7 +360,7 @@ public abstract class CDValidatorController
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
-            if (setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
             else {
@@ -375,13 +398,12 @@ public abstract class CDValidatorController
         this.skipButton.setEnabled(enabled);
     }
 
+    /**
+     * Notify the view that the model has changed
+     */
     protected void fireDataChanged() {
         this.fileTableView.noteNumberOfRowsChanged();
     }
-
-    // ----------------------------------------------------------
-    // NSTableView.DataSource
-    // ----------------------------------------------------------
 
     protected static final String INCLUDE_COLUMN = "INCLUDE";
     protected static final String ICON_COLUMN = "ICON";
@@ -391,10 +413,13 @@ public abstract class CDValidatorController
     // virtual column to implement keyboard selection
     protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
 
+    /**
+     * @see NSTableView.DataSource
+     */
     public void tableViewSetObjectValueForLocation(NSTableView view, Object object, NSTableColumn tableColumn, int row) {
-        if (row < this.numberOfRowsInTableView(view)) {
+        if(row < this.numberOfRowsInTableView(view)) {
             String identifier = (String) tableColumn.identifier();
-            if (identifier.equals(INCLUDE_COLUMN)) {
+            if(identifier.equals(INCLUDE_COLUMN)) {
                 Path p = (Path) this.workList.get(row);
                 p.setSkipped(((Integer) object).intValue() == NSCell.OffState);
             }
@@ -405,35 +430,41 @@ public abstract class CDValidatorController
     protected static final NSImage ALERT_ICON = NSImage.imageNamed("alert.tiff");
     protected static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
+    /**
+     * @see NSTableView.DataSource
+     */
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
         String identifier = (String) tableColumn.identifier();
         Path p = (Path) this.workList.get(row);
-        if (identifier.equals(INCLUDE_COLUMN)) {
-            if (p.isSkipped())
+        if(identifier.equals(INCLUDE_COLUMN)) {
+            if(p.isSkipped())
                 return new Integer(NSCell.OffState);
             return new Integer(NSCell.OnState);
         }
-        if (identifier.equals(ICON_COLUMN)) {
-            if (p.attributes.isDirectory()) {
+        if(identifier.equals(ICON_COLUMN)) {
+            if(p.attributes.isDirectory()) {
                 return FOLDER_ICON;
             }
-            if (p.attributes.isFile()) {
+            if(p.attributes.isFile()) {
                 NSImage icon = CDIconCache.instance().get(p.getExtension());
                 icon.setSize(new NSSize(16f, 16f));
                 return icon;
             }
             return NOT_FOUND_ICON;
         }
-        if (identifier.equals(FILENAME_COLUMN)) {
+        if(identifier.equals(FILENAME_COLUMN)) {
             return new NSAttributedString(p.getRemote().getName(),
                     CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
         }
-        if (identifier.equals(TYPEAHEAD_COLUMN)) {
+        if(identifier.equals(TYPEAHEAD_COLUMN)) {
             return p.getRemote().getName();
         }
         return null;
     }
 
+    /**
+     * @see NSTableView.DataSource
+     */
     public int numberOfRowsInTableView(NSTableView view) {
         return this.workList.size();
     }

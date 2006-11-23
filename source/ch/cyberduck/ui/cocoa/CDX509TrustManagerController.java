@@ -141,7 +141,6 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
     }
 
     public boolean keychainKnowsAbout(X509Certificate certificate) {
-        final int pool = NSAutoreleasePool.push();
         try {
             if (Keychain.instance().hasCertificate(certificate.getEncoded())) {
                 log.info("Certificate exists in Keychain");
@@ -151,24 +150,17 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
         catch (CertificateException e) {
             log.error("Error getting certificate from the keychain: " + e.getMessage());
         }
-        finally {
-            NSAutoreleasePool.pop(pool);
-        }
         log.info("Certificate not found in Keychain");
         return false;
     }
 
     private void saveToKeychain(X509Certificate cert) {
-        final int pool = NSAutoreleasePool.push();
         try {
             Keychain.instance().addCertificateToKeychain(cert.getEncoded());
             log.info("Certificate added to Keychain");
         }
         catch (CertificateEncodingException e) {
             log.error(e.getMessage());
-        }
-        finally {
-            NSAutoreleasePool.pop(pool);
         }
     }
 }

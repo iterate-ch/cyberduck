@@ -569,10 +569,7 @@ public class Host extends NSObject {
         if(!Preferences.instance().getBoolean("connection.hostname.check")) {
             return true;
         }
-        final int pool = NSAutoreleasePool.push();
-        boolean available = this.isReachable(this.getURL());
-        NSAutoreleasePool.pop(pool);
-        return available;
+        return this.isReachable(this.getURL());
     }
 
     /**

@@ -120,7 +120,6 @@ public class Login {
      * @return the password fetched from the keychain or null if it was not found
      */
     public String getInternetPasswordFromKeychain() {
-        final int pool = NSAutoreleasePool.push();
         log.info("Fetching password from Keychain for:" + this.getUsername());
         String password = Keychain.instance().getInternetPasswordFromKeychain(this.getKSecProtocolType(this.protocol),
                 this.hostname, this.getUsername());
@@ -129,7 +128,6 @@ public class Login {
             password = Keychain.instance().getInternetPasswordFromKeychain(this.protocol,
                 this.hostname, this.getUsername());
         }
-        NSAutoreleasePool.pop(pool);
         return password;
     }
 
@@ -138,10 +136,8 @@ public class Login {
      */
     public void addInternetPasswordToKeychain() {
         if (this.shouldBeAddedToKeychain && !this.isAnonymousLogin() && this.hasReasonableValues()) {
-            final int pool = NSAutoreleasePool.push();
             Keychain.instance().addInternetPasswordToKeychain(this.getKSecProtocolType(this.protocol),
                     this.hostname, this.getUsername(), this.getPassword());
-            NSAutoreleasePool.pop(pool);
         }
     }
 
@@ -151,10 +147,7 @@ public class Login {
      * @deprecated
      */
     public String getPasswordFromKeychain() {
-        final int pool = NSAutoreleasePool.push();
-        String pass = Keychain.instance().getPasswordFromKeychain(this.hostname, this.getUsername());
-        NSAutoreleasePool.pop(pool);
-        return pass;
+        return Keychain.instance().getPasswordFromKeychain(this.hostname, this.getUsername());
     }
 
     /**

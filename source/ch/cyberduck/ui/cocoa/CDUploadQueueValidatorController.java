@@ -43,10 +43,9 @@ public class CDUploadQueueValidatorController extends CDValidatorController {
         }
     }
 
-    // ----------------------------------------------------------
-    // NSTableView.DataSource
-    // ----------------------------------------------------------
-
+    /**
+     * @see NSTableView.DataSource
+     */
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
         if(row < this.numberOfRowsInTableView(view)) {
             String identifier = (String) tableColumn.identifier();

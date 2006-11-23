@@ -230,7 +230,7 @@ public class FTPPath extends Path {
                         this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()).getTime());
                     }
                     catch(FTPException e) {
-                        log.warn(e.getMessage());
+                        log.warn("Cannot read timestamp:"+e.getMessage());
                     }
                     if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
                         if(this.isASCIIType()) {
@@ -254,7 +254,7 @@ public class FTPPath extends Path {
                         this.attributes.setSize(session.FTP.size(this.getAbsolute()));
                     }
                     catch(FTPException e) {
-                        log.warn(e.getMessage());
+                        log.warn("Cannot read size:"+e.getMessage());
                     }
                 }
                 catch(FTPException e) {

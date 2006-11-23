@@ -67,22 +67,30 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         return false;
     }
 
-    // NSTableView.Delegate
+    /**
+     * @see NSTableView.DataSource
+     */
     public boolean tableViewShouldSelectRow(NSTableView view, int rowIndex) {
         return true;
     }
 
-    // NSOutlineView.Delegate
+    /**
+     * @see NSTableView.DataSource
+     */
     public boolean outlineViewShouldSelectItem(NSOutlineView view, Object item) {
         return true;
     }
 
-    // NSTableView.Delegate
+    /**
+     * @see NSTableView.DataSource
+     */
     public boolean tableViewShouldEditLocation(NSTableView view, NSTableColumn tableColumn, int row) {
         return false;
     }
 
-    // NSOutlineView.Delegate
+    /**
+     * @see NSTableView.DataSource
+     */
     public boolean outlineViewShouldEditTableColumn(NSOutlineView view, NSTableColumn tableColumn, Object item) {
         return false;
     }
@@ -91,33 +99,48 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         return true;
     }
 
-    // NSTableView.Delegate
+    /**
+     * @see NSTableView.DataSource
+     */
     public boolean selectionShouldChangeInTableView(NSTableView view) {
         return this.selectionShouldChange();
     }
 
-    // NSOutlineView.Delegate
+    /**
+     * @see NSOutlineView.DataSource
+     */
     public boolean selectionShouldChangeInOutlineView(NSTableView view) {
         return this.selectionShouldChange();
     }
 
     public abstract void tableColumnClicked(NSTableView view, NSTableColumn tableColumn);
 
+    /**
+     * @see NSOutlineView.Delegate
+     */
     public void outlineViewDidClickTableColumn(NSOutlineView view, NSTableColumn tableColumn) {
         this.tableColumnClicked(view, tableColumn);
     }
 
+    /**
+     * @see NSTableView.Delegate
+     */
     public void tableViewDidClickTableColumn(NSOutlineView view, NSTableColumn tableColumn) {
         this.tableColumnClicked(view, tableColumn);
     }
 
     public abstract void tableRowDoubleClicked(final Object sender);
 
-    // NSTableView.Notifications
+    /**
+     * @see NSTableView.Notifications
+     */
     public void tableViewSelectionDidChange(NSNotification notification) {
         this.selectionDidChange(notification);
     }
 
+    /**
+     * @see NSOutlineView.Notifications
+     */
     public void outlineViewSelectionDidChange(NSNotification notification) {
         this.selectionDidChange(notification);
     }

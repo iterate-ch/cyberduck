@@ -178,21 +178,21 @@ public abstract class BackgroundActionImpl
             }
 
             /**
-             * NSTableView.DataSource
+             * @see NSTableView.DataSource
              */
             public int numberOfRowsInTableView(NSTableView view) {
                 return exceptions.size();
             }
 
             /**
-             * NSTableView.DataSource
+             * @see NSTableView.DataSource
              */
             public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
                 return exceptions.get(row);
             }
 
             /**
-             * NSTableView.Delegate
+             * @see NSTableView.Delegate
              */
             boolean selectionShouldChangeInTableView(NSTableView view) {
                 return false;

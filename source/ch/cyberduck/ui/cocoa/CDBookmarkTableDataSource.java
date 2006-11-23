@@ -122,14 +122,14 @@ public class CDBookmarkTableDataSource extends NSObject {
 //    }
 
     /**
-     * NSTableView.DataSource
+     * @see NSTableView.DataSource
      */
     public int numberOfRowsInTableView(NSTableView view) {
         return HostCollection.instance().size();
     }
 
     /**
-     * NSTableView.DataSource
+     * @see NSTableView.DataSource
      */
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
         if(row < this.numberOfRowsInTableView(view)) {
@@ -150,7 +150,7 @@ public class CDBookmarkTableDataSource extends NSObject {
     }
 
     /**
-     * NSTableView.DataSource
+     * @see NSTableView.DataSource
      */
     public int tableViewValidateDrop(NSTableView view, NSDraggingInfo info, int index, int operation) {
         if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
@@ -181,7 +181,7 @@ public class CDBookmarkTableDataSource extends NSObject {
     }
 
     /**
-     * NSTableView.DataSource
+     * @see NSTableView.DataSource
      * Invoked by view when the mouse button is released over a table view that previously decided to allow a drop.
      *
      * @param info  contains details on this dragging operation.
@@ -249,12 +249,8 @@ public class CDBookmarkTableDataSource extends NSObject {
         return false;
     }
 
-    // ----------------------------------------------------------
-    // Drag methods
-    // ----------------------------------------------------------
-
     /**
-     * NSDraggingSource
+     * @see NSDraggingSource
      *
      * @see "http://www.cocoabuilder.com/archive/message/2005/10/5/118857"
      */
@@ -264,7 +260,7 @@ public class CDBookmarkTableDataSource extends NSObject {
     }
 
     /**
-     * NSDraggingSource
+     * @see NSDraggingSource
      *
      * @param local
      * @return
@@ -282,7 +278,7 @@ public class CDBookmarkTableDataSource extends NSObject {
     private Host[] promisedDragBookmarks;
 
     /**
-     * NSTableView.DataSource
+     * @see NSTableView.DataSource
      * Invoked by view after it has been determined that a drag should begin, but before the drag has been started.
      * The drag image and other drag-related information will be set up and provided by the table view once this call
      * returns with true.
@@ -310,8 +306,7 @@ public class CDBookmarkTableDataSource extends NSObject {
     }
 
     /**
-     * NSTableView.DataSource
-     *
+     * @see NSTableView.DataSource
      * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
      *         This method is invoked when the drop has been accepted by the destination and the destination,
      *         in the case of another Cocoa application, invokes the NSDraggingInfo method

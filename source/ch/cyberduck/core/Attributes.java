@@ -62,11 +62,7 @@ public class Attributes implements IAttributes {
     }
 
     public boolean isUndefined() {
-        boolean defined = -1 == this.modified || -1 == this.size;
-        if(!defined) {
-            log.info("Undefined file attributes");
-        }
-        return defined;
+        return -1 == this.modified || -1 == this.size;
     }
 
     public Attributes(NSDictionary dict) {

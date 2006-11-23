@@ -567,7 +567,7 @@ public class SFTPPath extends Path {
                             session.SFTP.setAttributes(this.getAbsolute(), attrs);
                         }
                         catch(SshException e) {
-                            log.warn(e.getMessage());
+                            log.warn("Cannot write timestamp:"+e.getMessage());
                         }
                     }
                 }

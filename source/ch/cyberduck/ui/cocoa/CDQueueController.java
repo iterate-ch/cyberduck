@@ -381,7 +381,22 @@ public class CDQueueController extends CDWindowController
                 try {
                     queue.getSession().addErrorListener(this);
                     queue.getSession().addTranscriptListener(this);
-                    queue.addListener(new QueueAdapter() {
+                    queue.addListener(new QueueListener() {
+
+                        public void transferStarted(final Path path) {
+                            if(path.attributes.isFile() && !path.getLocal().exists()) {
+                                invoke(new Runnable() {
+                                    public void run() {
+                                        path.getLocal().createNewFile(); //hack to display actual icon #CDIconCell
+                                    }
+                                });
+                            }
+                            queueTable.setNeedsDisplay(true);
+                        }
+
+                        public void transferStopped(final Path path) {
+                            queueTable.setNeedsDisplay(true);
+                        }
 
                         public void queueStarted() {
                             invoke(new Runnable() {
