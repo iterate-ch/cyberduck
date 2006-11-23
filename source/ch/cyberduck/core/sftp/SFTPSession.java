@@ -261,7 +261,6 @@ public class SFTPSession extends Session {
         // If the private key is passphrase protected then ask for the passphrase
         String passphrase = null;
         if(keyFile.isPassphraseProtected()) {
-            final int pool = NSAutoreleasePool.push();
             passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
             if(null == passphrase || passphrase.equals("")) {
                 loginController.promptUser(host.getCredentials(),
@@ -282,7 +281,6 @@ public class SFTPSession extends Session {
                             NSBundle.localizedString("Login canceled", "Credentials", ""));
                 }
             }
-            NSAutoreleasePool.pop(pool);
         }
         // Get the key
         pk.setKey(keyFile.toPrivateKey(passphrase));
@@ -353,7 +351,6 @@ public class SFTPSession extends Session {
                     this.SSH.noop();
                 }
                 catch(IOException e) {
-                    this.error("Connection failed", e);
                     this.close();
                     throw e;
                 }

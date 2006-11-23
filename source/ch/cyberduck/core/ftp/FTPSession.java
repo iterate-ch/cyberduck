@@ -235,7 +235,6 @@ public class FTPSession extends Session {
                     this.FTP.noop();
                 }
                 catch(IOException e) {
-                    this.error("Connection failed", e);
                     this.interrupt();
                     throw e;
                 }
