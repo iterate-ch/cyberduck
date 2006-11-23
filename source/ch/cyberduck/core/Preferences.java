@@ -158,6 +158,7 @@ public abstract class Preferences {
         defaults.put("browser.openUntitled", "true");
         defaults.put("browser.defaultBookmark", NSBundle.localizedString("None", ""));
 
+        defaults.put("browser.markInaccessibleFolders", "true");
         /**
          * Confirm closing the browsing connection
          */
