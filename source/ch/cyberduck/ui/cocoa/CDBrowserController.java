@@ -497,6 +497,7 @@ public class CDBrowserController extends CDWindowController
                         reloadData(preserveSelection);
                     }
                 });
+                return;
             }
         }
         List selected = null;
@@ -759,9 +760,9 @@ public class CDBrowserController extends CDWindowController
     }
 
     private class AbstractBrowserTableDelegate extends CDAbstractTableDelegate {
-        public boolean isColumnEditable(NSTableColumn tableColumn) {
+        public boolean isColumnEditable(NSTableColumn column) {
             if(Preferences.instance().getBoolean("browser.editable")) {
-                return tableColumn.identifier().equals(CDBrowserTableDataSource.FILENAME_COLUMN);
+                return column.identifier().equals(CDBrowserTableDataSource.FILENAME_COLUMN);
             }
             return false;
         }
@@ -858,13 +859,15 @@ public class CDBrowserController extends CDWindowController
                         }
                         else if(item.attributes.isDirectory()) {
                             icon = FOLDER_ICON;
-                            if (!item.attributes.isExecutable()
-                                    || (item.cache() != null && !item.cache().getAttributes().isReadable())) {
-                                icon = CDBrowserTableDataSource.FOLDER_NOACCESS_ICON;
-                            }
-                            else if(!item.attributes.isReadable()) {
-                                if(item.attributes.isWritable()) {
-                                    icon = CDBrowserTableDataSource.FOLDER_WRITEONLY_ICON;
+                            if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")) {
+                                if (!item.attributes.isExecutable()
+                                        || (item.cache() != null && !item.cache().getAttributes().isReadable())) {
+                                    icon = CDBrowserTableDataSource.FOLDER_NOACCESS_ICON;
+                                }
+                                else if(!item.attributes.isReadable()) {
+                                    if(item.attributes.isWritable()) {
+                                        icon = CDBrowserTableDataSource.FOLDER_WRITEONLY_ICON;
+                                    }
                                 }
                             }
                         }
