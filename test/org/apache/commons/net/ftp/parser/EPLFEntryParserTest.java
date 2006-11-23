@@ -20,20 +20,18 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
     }
     
 	private FTPFileEntryParser parser;
-    private Path parentPath;
+    private Path parent;
 
     public void setUp() {
 		this.parser = new UnixFTPEntryParser();
-		Host host = new Host("localhost", 21);
-		host.setCredentials("anonymous", "anonymous@example.net");
-		Session session = SessionFactory.createSession(host);
-		this.parentPath = PathFactory.createPath(session, "/");
+        this.parent = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+                "/");
     }
 
     public void testStandardBinls() {
         // Legacy test.
         // Just to make sure we don't break the standard parser.
-        Path parsed = parser.parseFTPEntry(parentPath, "drwxrwxr-x   7 root     ftpadmin     1024 Apr 20 16:17 pub");
+        Path parsed = parser.parseFTPEntry(parent, "drwxrwxr-x   7 root     ftpadmin     1024 Apr 20 16:17 pub");
 
         assertTrue("is dir", parsed.attributes.isDirectory());
         assertFalse("is root", parsed.isRoot());
@@ -56,13 +54,13 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         // Legacy test.
         // The original parser barfed on null.
         boolean caught = false;
-        try { parser.parseFTPEntry(parentPath, null);
+        try { parser.parseFTPEntry(parent, null);
         } catch (NullPointerException expected) { caught = true; }
         if (!caught) fail("should throw null pointer exception");
     }
 
     public void testReadonlyFile() {
-        Path parsed = parser.parseFTPEntry(parentPath, "+m825718503,r,s280,\tdjb.html\r\n");
+        Path parsed = parser.parseFTPEntry(parent, "+m825718503,r,s280,\tdjb.html\r\n");
 
         assertEquals("name", "djb.html", parsed.getName());
         assertEquals("absolute", "/djb.html", parsed.getAbsolute());
@@ -85,7 +83,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
     }
     
     public void testReadonlyDirectory() {
-        Path parsed = parser.parseFTPEntry(parentPath, "+m825718503,/,\t514");
+        Path parsed = parser.parseFTPEntry(parent, "+m825718503,/,\t514");
         
         assertEquals("name", "514", parsed.getName());
         assertEquals("absolute", "/514", parsed.getAbsolute());
@@ -108,7 +106,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
     }
     
     public void testSpecifiedPermissionsOverrideStandardDirPermissions() {
-        Path parsed = parser.parseFTPEntry(parentPath, "+up153,/,\t514");
+        Path parsed = parser.parseFTPEntry(parent, "+up153,/,\t514");
         assertTrue("is dir", parsed.attributes.isDirectory());
         assertEquals("type", Path.DIRECTORY_TYPE, parsed.attributes.getType());
         assertTrue("attr is dir", parsed.attributes.isDirectory());
@@ -116,7 +114,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
     }
     
     public void testSpecifiedPermissionsDoesntRemoveDirTag() {
-        Path parsed = parser.parseFTPEntry(parentPath, "+/,up153,\t514");
+        Path parsed = parser.parseFTPEntry(parent, "+/,up153,\t514");
         assertTrue("is dir", parsed.attributes.isDirectory());
         assertEquals("type", Path.DIRECTORY_TYPE, parsed.attributes.getType());
         assertTrue("attr is dir", parsed.attributes.isDirectory());
@@ -124,7 +122,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
     }
     
     public void testSpecifiedPermissionsOverrideStandardFilePermissions() {
-        Path parsed = parser.parseFTPEntry(parentPath, "+up153,r,\tmyfile");
+        Path parsed = parser.parseFTPEntry(parent, "+up153,r,\tmyfile");
         assertFalse("is dir", parsed.attributes.isDirectory());
         assertEquals("type", Path.FILE_TYPE, parsed.attributes.getType());
         assertTrue("attr is file", parsed.attributes.isFile());
@@ -133,7 +131,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
     
     public void testHideUnreadableFilesAndDirs() {
         // Missing both 'r' (may be RETRed) and '/' (may be CWDed) fact.
-        assertNull(parser.parseFTPEntry(parentPath, "+m825718503,\tuseless"));
+        assertNull(parser.parseFTPEntry(parent, "+m825718503,\tuseless"));
     }
 
     public void testEmptyFacts() {
@@ -142,21 +140,21 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         millis = millis * 1000;
         Path parsed = null;
         
-        parsed = parser.parseFTPEntry(parentPath, "+,m825718503,r,s280,\tdjb.html\r\n");
+        parsed = parser.parseFTPEntry(parent, "+,m825718503,r,s280,\tdjb.html\r\n");
         assertEquals("name", "djb.html", parsed.getName());
         assertFalse("is dir", parsed.attributes.isDirectory());
         assertEquals("size", 280, parsed.attributes.getSize(), 0);
         assertEquals("timestamp", millis, parsed.attributes.getTimestamp());
         assertEquals("permissions", "--------- (000)", parsed.attributes.getPermission().toString());
         
-        parsed = parser.parseFTPEntry(parentPath, "+m825718503,,r,s280,\tdjb.html\r\n");
+        parsed = parser.parseFTPEntry(parent, "+m825718503,,r,s280,\tdjb.html\r\n");
         assertEquals("X name", "djb.html", parsed.getName());
         assertFalse("X is dir", parsed.attributes.isDirectory());
         assertEquals("X size", 280, parsed.attributes.getSize(), 0);
         assertEquals("timestamp", millis, parsed.attributes.getTimestamp());
         assertEquals("permissions", "--------- (000)", parsed.attributes.getPermission().toString());
         
-        parsed = parser.parseFTPEntry(parentPath, "+m825718503,r,s280,,\tdjb.html\r\n");
+        parsed = parser.parseFTPEntry(parent, "+m825718503,r,s280,,\tdjb.html\r\n");
         assertEquals("XX name", "djb.html", parsed.getName());
         assertFalse("XX is dir", parsed.attributes.isDirectory());
         assertEquals("XX size", 280, parsed.attributes.getSize(), 0);
@@ -166,17 +164,17 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
 
     public void testNoFacts() {
         // We know nothing but the name of the mystery file, which essentially means a RETR or CWD is futile.
-        assertNull(parser.parseFTPEntry(parentPath, "+\tMysteryFile"));
+        assertNull(parser.parseFTPEntry(parent, "+\tMysteryFile"));
     }
 
     public void testAFewNotVeryInterestingFiles() {
-        assertNull("dot", parser.parseFTPEntry(parentPath, "+/,\t."));
-        assertNull("dot dot", parser.parseFTPEntry(parentPath, "+/,\t.."));
-        assertNull("empty", parser.parseFTPEntry(parentPath, "+r,\t\r\n"));
-        assertNull("really empty", parser.parseFTPEntry(parentPath, "+\t\r\n"));
+        assertNull("dot", parser.parseFTPEntry(parent, "+/,\t."));
+        assertNull("dot dot", parser.parseFTPEntry(parent, "+/,\t.."));
+        assertNull("empty", parser.parseFTPEntry(parent, "+r,\t\r\n"));
+        assertNull("really empty", parser.parseFTPEntry(parent, "+\t\r\n"));
     }
 
     public void testMissingNameSeparator() {
-        assertNull(parser.parseFTPEntry(parentPath, "+r,s1234,  notabinfront\r\n"));
+        assertNull(parser.parseFTPEntry(parent, "+r,s1234,  notabinfront\r\n"));
     }
 }
