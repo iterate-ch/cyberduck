@@ -154,19 +154,30 @@
 			</fileset>
 		</chmod>
 		<exec dir="${home}" executable="./buildDMG.pl" spawn="false">
-			<arg line="-dmgName '${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg' -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor} (${localization})' -buildDir ${build} -compressionLevel 9 ${app.bundle.loc} ${app.name}\ Website.url Donate.url ${localization}.lproj/License.txt Credits.rtf  AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
+			<arg line="-dmgName '${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg' -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor} (${localization})' -buildDir ${build}/localizations -compressionLevel 9 ${app.bundle.loc} ${app.name}\ Website.url Donate.url ${localization}.lproj/License.txt Credits.rtf  AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
 		</exec>
-		<checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg" algorithm="md5" />
+		<checksum file="${build}/localizations/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg" algorithm="md5" />
 		<delete dir="${build}/${localization}"/>
 	</target>
 
 	<target name="release" depends="build, timestamp, revision">
 		<echo message="_TIMESTAMP_=${touch.time}" />
 		<echo message="_VERSION_=${cyberduck.version.major}.${cyberduck.version.minor}" />
+		<replace dir="${app.bundle}" summary="true" encoding="UTF-8">
+			<include name="**/InfoPlist.strings" />
+			<include name="**/Info.plist" />
+			<replacefilter token="_TIMESTAMP_" value="${touch.time}" />
+			<replacefilter token="_REVISION_" value="${svn.revision}" />
+			<replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
+		</replace>
 		<echo message="Creating tar.gz archive..." />
 		<exec dir="${build.deploy}" executable="tar" spawn="false">
 			<arg line="-czf ../${app.name}-${svn.revision}.tar.gz ${app.name}.app"/>
 		</exec>
+		<exec dir="${home}" executable="./buildDMG.pl" spawn="false">
+			<arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor}' -buildDir ${build} -compressionLevel 9 ${app.bundle} ${app.name}\ Website.url Donate.url en.lproj/License.txt Credits.rtf AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
+		</exec>
+		<checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg" algorithm="md5" />
 		<echo message="Calculating MD5 sum..." />
 		<checksum file="${build}/${app.name}-${svn.revision}.tar.gz" 
 			algorithm="md5" property="md5sum"/>
@@ -186,20 +197,9 @@
 			<replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
 			<replacefilter token="_MD5SUM_" value="${md5sum}" />
 		</replace>
-		<replace dir="${app.bundle}" summary="true" encoding="UTF-8">
-			<include name="**/InfoPlist.strings" />
-			<include name="**/Info.plist" />
-			<replacefilter token="_TIMESTAMP_" value="${touch.time}" />
-			<replacefilter token="_REVISION_" value="${svn.revision}" />
-			<replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
-		</replace>
-		<exec dir="${home}" executable="./buildDMG.pl" spawn="false">
-			<arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor}' -buildDir ${build} -compressionLevel 9 ${app.bundle} ${app.name}\ Website.url Donate.url en.lproj/License.txt Credits.rtf AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
-		</exec>
-		<checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg" algorithm="md5" />
 	</target>
 
-	<target name="scp" depends="revision">
+	<target name="mirror" depends="revision">
 		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"
 			   todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
 			   keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
