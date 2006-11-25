@@ -24,14 +24,12 @@ import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 import com.apple.cocoa.foundation.NSObject;
-import com.apple.cocoa.foundation.NSAutoreleasePool;
 
 import org.apache.log4j.Logger;
 
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.util.Iterator;
 
 /**
  * @version $Id$

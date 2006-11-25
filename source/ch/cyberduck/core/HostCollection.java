@@ -132,28 +132,34 @@ public class HostCollection extends Collection {
      */
     private synchronized void load(File f) {
         if(f.exists()) {
-            log.info("Found Bookmarks file: " + f.toString());
-            NSData plistData = new NSData(f);
-            String[] errorString = new String[]{null};
-            Object propertyListFromXMLData =
-                    NSPropertyListSerialization.propertyListFromData(plistData,
-                            NSPropertyListSerialization.PropertyListImmutable,
-                            new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-                            errorString);
-            if(errorString[0] != null) {
-                log.error("Problem reading bookmark file: " + errorString[0]);
-                return;
-            }
-            if(propertyListFromXMLData instanceof NSArray) {
-                NSArray entries = (NSArray) propertyListFromXMLData;
-                java.util.Enumeration i = entries.objectEnumerator();
-                Object element;
-                while(i.hasMoreElements()) {
-                    element = i.nextElement();
-                    if(element instanceof NSDictionary) {
-                        super.add(new Host((NSDictionary) element));
+            final int pool = NSAutoreleasePool.push();
+            try {
+                log.info("Found Bookmarks file: " + f.toString());
+                NSData plistData = new NSData(f);
+                String[] errorString = new String[]{null};
+                Object propertyListFromXMLData =
+                        NSPropertyListSerialization.propertyListFromData(plistData,
+                                NSPropertyListSerialization.PropertyListImmutable,
+                                new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
+                                errorString);
+                if(errorString[0] != null) {
+                    log.error("Problem reading bookmark file: " + errorString[0]);
+                    return;
+                }
+                if(propertyListFromXMLData instanceof NSArray) {
+                    NSArray entries = (NSArray) propertyListFromXMLData;
+                    java.util.Enumeration i = entries.objectEnumerator();
+                    Object element;
+                    while(i.hasMoreElements()) {
+                        element = i.nextElement();
+                        if(element instanceof NSDictionary) {
+                            super.add(new Host((NSDictionary) element));
+                        }
                     }
                 }
+            }
+            finally {
+                NSAutoreleasePool.pop(pool);
             }
         }
     }

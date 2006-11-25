@@ -467,7 +467,6 @@ public class CDMainController extends CDController {
                             q.addListener(new QueueAdapter() {
                                 public void queueStopped() {
                                     if (controller.isMounted()) {
-                                        controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
                                         controller.invoke(new Runnable() {
                                             public void run() {
                                                 controller.reloadData(true);
@@ -562,10 +561,8 @@ public class CDMainController extends CDController {
      */
     public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
         log.debug("applicationShouldHandleReopen");
-        if(Preferences.instance().getBoolean("browser.openUntitled")) {
-            if (this.orderedBrowsers().count() == 0 && this.orderedTransfers().count() == 0) {
-                this.openDefaultBookmark(this.newDocument());
-            }
+        if (this.orderedBrowsers().count() == 0 && this.orderedTransfers().count() == 0) {
+            this.openDefaultBookmark(this.newDocument());
         }
         return false;
     }

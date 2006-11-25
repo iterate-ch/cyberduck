@@ -26,7 +26,6 @@ import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.application.NSCell;
 import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.application.NSTextView;
-import com.apple.cocoa.foundation.NSAutoreleasePool;
 import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;

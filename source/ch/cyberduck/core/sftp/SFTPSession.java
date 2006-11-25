@@ -32,9 +32,7 @@ import com.sshtools.j2ssh.transport.TransportProtocol;
 import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
-import com.apple.cocoa.foundation.NSAutoreleasePool;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSPathUtilities;
 

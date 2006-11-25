@@ -295,7 +295,6 @@ public abstract class Queue extends NSObject {
         }
         finally {
             this.getSession().close();
-            this.getSession().cache().clear();
             this.fireQueueStoppedEvent();
         }
     }

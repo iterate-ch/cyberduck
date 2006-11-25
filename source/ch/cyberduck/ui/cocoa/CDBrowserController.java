@@ -1972,7 +1972,7 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void cleanup() {
-                reloadData(true);
+                reloadData(false);
             }
         });
     }
@@ -2191,7 +2191,6 @@ public class CDBrowserController extends CDWindowController
                 q.addListener(new QueueAdapter() {
                     public void queueStopped() {
                         if(isMounted()) {
-                            getSession().cache().invalidate(q.getRoot().getParent());
                             CDBrowserController.this.invoke(new Runnable() {
                                 public void run() {
                                     reloadData(true);
@@ -2247,7 +2246,6 @@ public class CDBrowserController extends CDWindowController
             q.addListener(new QueueAdapter() {
                 public void queueStopped() {
                     if(isMounted()) {
-                        getSession().cache().invalidate(q.getRoot().getParent());
                         CDBrowserController.this.invoke(new Runnable() {
                             public void run() {
                                 reloadData(true);
@@ -2411,7 +2409,6 @@ public class CDBrowserController extends CDWindowController
                     q.addListener(new QueueAdapter() {
                         public void queueStopped() {
                             if(isMounted()) {
-                                getSession().cache().invalidate(q.getRoot().getParent());
                                 CDBrowserController.this.invoke(new Runnable() {
                                     public void run() {
                                         reloadData(true);
@@ -3438,7 +3435,6 @@ public class CDBrowserController extends CDWindowController
         if(this.hasSession()) {
             this.session.removeConnectionListener(this.listener);
             this.session.getHost().getCredentials().setPassword(null);
-            this.session.cache().clear();
             this.session = null;
         }
         this.toolbar.setDelegate(null);

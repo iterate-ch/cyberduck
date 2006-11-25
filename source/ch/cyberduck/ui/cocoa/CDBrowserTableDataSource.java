@@ -195,7 +195,6 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     q.addListener(new QueueAdapter() {
                         public void queueStopped() {
                             if (controller.isMounted()) {
-                                controller.workdir().getSession().cache().invalidate(q.getRoot().getParent());
                                 controller.invoke(new Runnable() {
                                     public void run() {
                                         controller.reloadData(true);

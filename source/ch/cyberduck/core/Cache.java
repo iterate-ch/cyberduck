@@ -18,19 +18,42 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @version $Id$
  */
 public class Cache extends HashMap {
 
-    public Cache() {
-        super();
+    private static Map CACHES = new HashMap();
+
+    /**
+     *
+     * @param url
+     * @return
+     */
+    public static Cache get(String url) {
+        if(null == CACHES.get(url)) {
+            CACHES.put(url, new Cache());
+        }
+        return (Cache)CACHES.get(url);
+    }
+
+    public static boolean delete(String url) {
+        if(CACHES.containsKey(url)) {
+            Cache c = (Cache)CACHES.get(url);
+            c.clear();
+            CACHES.remove(url);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     *
+     */
+    private Cache() {
+        ;
     }
 
     public boolean containsKey(Path path) {
@@ -121,9 +144,5 @@ public class Cache extends HashMap {
      */
     public Object put(Object path, Object childs) {
         return this.put((Path) path, (AttributedList) childs);
-    }
-
-    public void clear() {
-        super.clear();
     }
 }

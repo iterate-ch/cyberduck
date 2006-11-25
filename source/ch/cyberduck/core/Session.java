@@ -67,11 +67,6 @@ public abstract class Session extends NSObject {
      */
     protected Host host = null;
 
-    /**
-     * Caching browsed directories
-     */
-    protected Cache cache = null;
-
     private List backHistory = new ArrayList();
 
     private List forwardHistory = new ArrayList();
@@ -298,6 +293,7 @@ public abstract class Session extends NSObject {
             this.keepAliveTimer.cancel();
         }
         SessionPool.instance().release(this);
+        Cache.delete(this.host.getURL());
 
         this.message(NSBundle.localizedString("Disconnected", "Status", ""));
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
@@ -464,10 +460,7 @@ public abstract class Session extends NSObject {
      * @return The directory listing cache
      */
     public Cache cache() {
-        if(null == this.cache) {
-            this.cache = new Cache();
-        }
-        return this.cache;
+        return Cache.get(this.host.getURL());
     }
 
     /**

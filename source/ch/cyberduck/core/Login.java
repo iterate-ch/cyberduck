@@ -20,7 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.ui.LoginController;
 
-import com.apple.cocoa.foundation.NSAutoreleasePool;
 import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
