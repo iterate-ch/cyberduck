@@ -1325,6 +1325,7 @@ pt.lproj/Command.nib/keyedobjects.nib -text
 pt.lproj/Command.strings -text
 pt.lproj/Connection.nib/keyedobjects.nib -text
 pt.lproj/Connection.strings -text
+pt.lproj/Crash.strings -text
 pt.lproj/Credentials.strings -text
 pt.lproj/Donate.nib/keyedobjects.nib -text
 pt.lproj/Donate.strings -text
