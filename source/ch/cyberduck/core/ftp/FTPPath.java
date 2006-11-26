@@ -390,7 +390,7 @@ public class FTPPath extends Path {
     public void changePermissions(Permission perm, boolean recursive) {
         synchronized(session) {
             log.debug("changePermissions:" + perm);
-            String command = "chmod";
+            String command = "CHMOD";
             try {
                 session.check();
                 session.message(NSBundle.localizedString("Changing permission to", "Status", "") + " " + perm.getOctalCode() + " (" + this.getName() + ")");
@@ -668,7 +668,7 @@ public class FTPPath extends Path {
                                 this.attributes.setPermission(this.getLocal().getPermission());
                             }
                         }
-                        this.changePermissions(this.attributes.getPermission(), false);
+                        session.FTP.setPermissions(this.attributes.getPermission().getOctalCode(), this.getAbsolute());
                     }
                     if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                         try {

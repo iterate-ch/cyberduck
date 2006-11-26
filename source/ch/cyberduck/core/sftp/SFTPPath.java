@@ -529,7 +529,7 @@ public class SFTPPath extends Path {
                                 this.attributes.setPermission(this.getLocal().getPermission());
                             }
                         }
-                        this.changePermissions(this.attributes.getPermission(), false);
+                        session.SFTP.changePermissions(this.getAbsolute(), this.attributes.getPermission().getMask());
                     }
                     if(this.status.isResume()) {
                         this.status.setCurrent(f.getAttributes().getSize().intValue());
