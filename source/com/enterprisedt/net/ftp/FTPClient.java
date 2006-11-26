@@ -508,7 +508,7 @@ public class FTPClient {
 
         // Can get a 200 (ok) or 202 (not impl). Some
         // FTP servers return 502 (not impl)
-        String[] validCodes = {"200", "202", "250", "502"};
+        String[] validCodes = {"200", "202", "250", "502", "253"};
         lastValidReply = control.validateReply(reply, validCodes);
 
         // return true or false? 200 is ok, 202/502 not
