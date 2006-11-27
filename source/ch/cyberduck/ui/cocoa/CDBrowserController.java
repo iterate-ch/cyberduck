@@ -926,6 +926,7 @@ public class CDBrowserController extends CDWindowController
                                         // the expandItem method does nothing
                                         view.collapseItem(item);
                                         view.expandItem(item);
+                                        view.reloadData();
                                     }
                                 }
                             });
@@ -1704,7 +1705,7 @@ public class CDBrowserController extends CDWindowController
             if(this.session.getHost().getEncoding().equals(encoding)) {
                 return;
             }
-            this.unmount();
+            this.unmount(false);
             this.session.getHost().setEncoding(encoding);
             this.reloadButtonClicked(sender);
         }
@@ -2193,6 +2194,8 @@ public class CDBrowserController extends CDWindowController
                         if(isMounted()) {
                             CDBrowserController.this.invoke(new Runnable() {
                                 public void run() {
+                                    //hack because the browser has its own cache
+                                    session.cache().invalidate(q.getRoot().getParent());
                                     reloadData(true);
                                 }
                             });
@@ -2248,6 +2251,8 @@ public class CDBrowserController extends CDWindowController
                     if(isMounted()) {
                         CDBrowserController.this.invoke(new Runnable() {
                             public void run() {
+                                //hack because the browser has its own cache
+                                session.cache().invalidate(q.getRoot().getParent());
                                 reloadData(true);
                             }
                         });
@@ -2296,7 +2301,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void disconnectButtonClicked(final Object sender) {
-        this.unmount();
+        this.unmount(false);
     }
 
     private NSButton interruptButton;
@@ -2411,7 +2416,9 @@ public class CDBrowserController extends CDWindowController
                             if(isMounted()) {
                                 CDBrowserController.this.invoke(new Runnable() {
                                     public void run() {
-                                        reloadData(true);
+                                        //hack because the browser has its own cache
+                                        CDBrowserController.this.session.cache().invalidate(q.getRoot().getParent());
+                                        CDBrowserController.this.reloadData(true);
                                     }
                                 });
                             }
@@ -2731,7 +2738,7 @@ public class CDBrowserController extends CDWindowController
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
                     // The user has approved closing the current session
-                    unmount();
+                    unmount(true);
                     mount(host);
                 }
             }
@@ -2757,8 +2764,9 @@ public class CDBrowserController extends CDWindowController
     /**
      * Will close the session but still display the current working directory without any confirmation
      * from the user
+     * @param forever The session won't be remounted in any case; will clear the cache
      */
-    public void unmount() {
+    public void unmount(final boolean forever) {
         // This is not synchronized to the <code>mountingLock</code> intentionally; this allows to unmount
         // sessions not yet connected
         if(this.hasSession()) {
@@ -2769,6 +2777,9 @@ public class CDBrowserController extends CDWindowController
             else {
                 //Close the connection gracefully
                 this.session.close();
+            }
+            if(forever) {
+                this.session.cache().clear();
             }
         }
     }
@@ -2790,7 +2801,7 @@ public class CDBrowserController extends CDWindowController
                 ), callback);
                 return false;
             }
-            this.unmount();
+            this.unmount(true);
         }
         // Unmount succeeded
         return true;
@@ -2847,7 +2858,7 @@ public class CDBrowserController extends CDWindowController
         return this.unmount(new CDSheetCallback() {
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
-                    unmount();
+                    unmount(true);
                     sender.close();
                 }
             }

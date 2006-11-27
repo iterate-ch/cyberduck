@@ -67,16 +67,11 @@ public abstract class Session extends NSObject {
      */
     protected Host host = null;
 
-    private List backHistory = new ArrayList();
-
-    private List forwardHistory = new ArrayList();
-
     public Object clone() {
         return SessionFactory.createSession((Host) this.host.clone());
     }
 
     protected Session(Host h) {
-        log.debug("Session(" + h + ")");
         this.host = h;
     }
 
@@ -293,7 +288,6 @@ public abstract class Session extends NSObject {
             this.keepAliveTimer.cancel();
         }
         SessionPool.instance().release(this);
-        Cache.delete(this.host.getURL());
 
         this.message(NSBundle.localizedString("Disconnected", "Status", ""));
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
@@ -402,6 +396,10 @@ public abstract class Session extends NSObject {
         }
     }
 
+    private List backHistory = new ArrayList();
+
+    private List forwardHistory = new ArrayList();
+
     /**
      * @param p
      */
@@ -457,10 +455,15 @@ public abstract class Session extends NSObject {
 
     /**
      *
+     */
+    private Cache cache = new Cache();
+
+    /**
+     *
      * @return The directory listing cache
      */
     public Cache cache() {
-        return Cache.get(this.host.getURL());
+        return this.cache;
     }
 
     /**

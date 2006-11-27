@@ -25,34 +25,10 @@ import java.util.*;
  */
 public class Cache extends HashMap {
 
-    private static Map CACHES = new HashMap();
-
-    /**
-     *
-     * @param url
-     * @return
-     */
-    public static Cache get(String url) {
-        if(null == CACHES.get(url)) {
-            CACHES.put(url, new Cache());
-        }
-        return (Cache)CACHES.get(url);
-    }
-
-    public static boolean delete(String url) {
-        if(CACHES.containsKey(url)) {
-            Cache c = (Cache)CACHES.get(url);
-            c.clear();
-            CACHES.remove(url);
-            return true;
-        }
-        return false;
-    }
-
     /**
      *
      */
-    private Cache() {
+    public Cache() {
         ;
     }
 
@@ -87,6 +63,11 @@ public class Cache extends HashMap {
         return (AttributedList) super.get(path.getAbsolute());
     }
 
+    /**
+     * 
+     * @param key
+     * @return
+     */
     public Object get(Object key) {
         return this.get((Path)key);
     }

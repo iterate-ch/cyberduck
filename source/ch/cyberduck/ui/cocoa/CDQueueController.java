@@ -447,6 +447,7 @@ public class CDQueueController extends CDWindowController
                     queue.run();
                 }
                 finally {
+                    queue.getSession().cache().clear();
                     queue.getSession().removeErrorListener(this);
                     queue.getSession().removeTranscriptListener(this);
                 }

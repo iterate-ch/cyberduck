@@ -469,6 +469,8 @@ public class CDMainController extends CDController {
                                     if (controller.isMounted()) {
                                         controller.invoke(new Runnable() {
                                             public void run() {
+                                                //hack because the browser has its own cache
+                                                controller.getSession().cache().invalidate(q.getRoot().getParent());
                                                 controller.reloadData(true);
                                             }
                                         });
@@ -621,7 +623,7 @@ public class CDMainController extends CDController {
             NSWindow window = (NSWindow) windows.objectAtIndex(count);
             CDBrowserController controller = CDBrowserController.controllerForWindow(window);
             if (null != controller) {
-                controller.unmount();
+                controller.unmount(false);
             }
         }
     }
@@ -709,7 +711,7 @@ public class CDMainController extends CDController {
                         }
                     }
                     else {
-                        controller.unmount();
+                        controller.unmount(true);
                     }
                 }
             }

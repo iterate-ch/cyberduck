@@ -197,6 +197,8 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                             if (controller.isMounted()) {
                                 controller.invoke(new Runnable() {
                                     public void run() {
+                                        //hack because the browser has its own cache
+                                        controller.getSession().cache().invalidate(q.getRoot().getParent());
                                         controller.reloadData(true);
                                     }
                                 });

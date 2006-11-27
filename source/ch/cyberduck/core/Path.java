@@ -300,6 +300,11 @@ public abstract class Path extends NSObject {
      */
     public abstract AttributedList list(Comparator comparator, PathFilter filter);
 
+    /**
+     * @see #list
+     * @return The cached children of this path or null if not cached
+     * or this path does not denote a directory
+     */
     public AttributedList cache() {
         return (AttributedList)this.getSession().cache().get(this);    
     }

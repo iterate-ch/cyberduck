@@ -52,6 +52,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         if(item.attributes.isDirectory()) {
             if(NSEvent.LeftMouseDragged == NSApplication.sharedApplication().currentEvent().type()) {
                 if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
+                    log.info("Returning false to outlineViewIsItemExpandable:"+item.getName()+" while dragging");
                     // See tickets #98 and #633
                     return false;
                 }
@@ -73,6 +74,8 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
                 item = controller.workdir();
             }
             if(null == item.cache()) {
+                log.warn("Returning 0 as the number of children of "+item.getName()+" as there is no cached" +
+                        "listing yet available");
                 // @see CDBrowserController#outlineViewShouldExpandItem
                 return 0;
             }
