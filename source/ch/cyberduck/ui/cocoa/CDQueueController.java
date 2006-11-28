@@ -424,12 +424,14 @@ public class CDQueueController extends CDWindowController
                                         log.info("Success opening file:" + success);
                                     }
                                 }
-                                if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
-                                    invoke(new Runnable() {
-                                        public void run() {
-                                            removeItem(queue);
-                                        }
-                                    });
+                                if(!hasFailed()) {
+                                    if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
+                                        invoke(new Runnable() {
+                                            public void run() {
+                                                removeItem(queue);
+                                            }
+                                        });
+                                    }
                                 }
                             }
                             if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
