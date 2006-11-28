@@ -205,7 +205,6 @@
 		47EEBC680808362700BE95E7 /* ftp-tls.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47EEBC670808362700BE95E7 /* ftp-tls.tiff */; };
 		47EF997409006EF500D4B4FF /* IconFamily.m in Sources */ = {isa = PBXBuildFile; fileRef = 47EF997009006EF500D4B4FF /* IconFamily.m */; };
 		47EF997509006EF500D4B4FF /* IconFamily.h in Headers */ = {isa = PBXBuildFile; fileRef = 47EF997109006EF500D4B4FF /* IconFamily.h */; };
-		47EF9B2F0AF91C1B004C3BD1 /* box.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47EF9B2E0AF91C1B004C3BD1 /* box.tiff */; };
 		47F0B701087ACD0B00439978 /* Growl.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B6FE087ACD0300439978 /* Growl.strings */; };
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
 		47FC190C099FB8AF0082431D /* Crash.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47FC190A099FB8AF0082431D /* Crash.strings */; };
@@ -1478,7 +1477,6 @@
 		47EEBC670808362700BE95E7 /* ftp-tls.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "ftp-tls.tiff"; sourceTree = "<group>"; };
 		47EF997009006EF500D4B4FF /* IconFamily.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = IconFamily.m; sourceTree = "<group>"; };
 		47EF997109006EF500D4B4FF /* IconFamily.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IconFamily.h; sourceTree = "<group>"; };
-		47EF9B2E0AF91C1B004C3BD1 /* box.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = box.tiff; sourceTree = "<group>"; };
 		47F0B70A087ACD3300439978 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Growl.strings; sourceTree = "<group>"; };
 		47F0B70B087ACD3800439978 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Growl.strings; sourceTree = "<group>"; };
 		47F0B70C087ACD3D00439978 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Growl.strings; sourceTree = "<group>"; };
@@ -2571,7 +2569,6 @@
 		4741653C06C4FC3F00AC0BD2 /* img */ = {
 			isa = PBXGroup;
 			children = (
-				47EF9B2E0AF91C1B004C3BD1 /* box.tiff */,
 				472759640AF3BE6000EBE267 /* update.tiff */,
 				477B1B770AF383DC0023BA7F /* SNDisclosureArrowDown.tiff */,
 				477B1B780AF383DC0023BA7F /* SNDisclosureArrowRight.tiff */,
@@ -3410,7 +3407,6 @@
 				477B1B790AF383DC0023BA7F /* SNDisclosureArrowDown.tiff in Resources */,
 				477B1B7A0AF383DC0023BA7F /* SNDisclosureArrowRight.tiff in Resources */,
 				472759650AF3BE6000EBE267 /* update.tiff in Resources */,
-				47EF9B2F0AF91C1B004C3BD1 /* box.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
