@@ -26,7 +26,7 @@
 "Binary" = "Binário";
 
 /* Toolbar item */
-"Bookmarks" = "Bookmarks";
+"Bookmarks" = "Favoritos";
 
 /* Alert sheet alternate button */
 "Cancel" = "Cancelar";
@@ -35,16 +35,16 @@
 "Cannot continue without a valid host key." = "Impossível continuar sem uma chave de servidor válida.";
 
 /* Toolbar item tooltip */
-"Character Encoding" = "Character Encoding";
+"Character Encoding" = "Codificação de caracteres";
 
 /* No comment provided by engineer. */
-"Choose" = "Choose";
+"Choose" = "Escolher";
 
 /* No comment provided by engineer. */
 "Clean Up" = "Apagar";
 
 /* Toolbar item */
-"Column" = "Column";
+"Column" = "Coluna";
 
 /* Toolbar item tooltip */
 "Connect to server" = "Ligar a servidor";
@@ -65,7 +65,7 @@
 "Create New Folder" = "Criar nova Pasta";
 
 /* Menu item */
-"Cut" = "Cut";
+"Cut" = "Cortar";
 
 /* No comment provided by engineer. */
 "Default" = "Defeito";
@@ -101,16 +101,16 @@
 "Do you want to delete the selected bookmark?" = "Deseja apagar o favorito seleccionado?";
 
 /* Toolbar item */
-"Download" = "Download";
+"Download" = "Descarregar";
 
 /* No comment provided by engineer. */
-"Download As:" = "Fazer Download Como:";
+"Download As:" = "Descarregar Como:";
 
 /* Toolbar item tooltip */
 "Download file" = "Receber ficheiro";
 
 /* No comment provided by engineer. */
-"Download the selected file to..." = "Fazer download do ficheiro seleccionado para...";
+"Download the selected file to..." = "Descarregar o ficheiro seleccionado para...";
 
 /* Toolbar item */
 "Edit" = "Editar";
@@ -119,13 +119,13 @@
 "Edit file in external editor" = "Editar ficheiro em editor externo";
 
 /* Toolbar item */
-"Encoding" = "Encoding";
+"Encoding" = "Codificação";
 
 /* Alert sheet title */
 "Error" = "Erro";
 
 /* No comment provided by engineer. */
-"File" = "File";
+"File" = "Ficheiro";
 
 /* A column in the browser */
 "Filename" = "Nome do Ficheiro";
@@ -134,19 +134,19 @@
 "files" = "ficheiros";
 
 /* No comment provided by engineer. */
-"Folder" = "Folder";
+"Folder" = "Pasta";
 
 /* No comment provided by engineer. */
-"FTP (File Transfer Protocol)" = "FTP (Transferência de Ficheiros)";
+"FTP (File Transfer Protocol)" = "FTP (Protocolo de Transferência de Ficheiros)";
 
 /* No comment provided by engineer. */
-"FTP-SSL (FTP over TLS/SSL)" = "FTP-SSL (FTP over TLS/SSL)";
+"FTP-SSL (FTP over TLS/SSL)" = "FTP-SSL (FTP sobre TLS/SSL)";
 
 /* Toolbar item */
 "Get Info" = "Ver Informação";
 
 /* No comment provided by engineer. */
-"History" = "History";
+"History" = "Historial";
 
 /* No comment provided by engineer. */
 "Host key mismatch: " = "Erro de chave de servidor: ";
@@ -167,13 +167,13 @@
 "It moved since you downloaded it." = "A sua localização foi alterada desde a última vez que fez um download.";
 
 /* Toolbar item */
-"List" = "List";
+"List" = "Lista";
 
 /* No comment provided by engineer. */
 "Local" = "Local";
 
 /* No comment provided by engineer. */
-"Local File" = "Local File";
+"Local File" = "Ficheiro Local";
 
 /* No comment provided by engineer. */
 "Mac Line Endings (CR)" = "Terminação de linhas de Mac (CR)";
@@ -182,10 +182,10 @@
 "Modified" = "Modificado";
 
 /* No comment provided by engineer. */
-"Multiple files" = "Multiple files";
+"Multiple files" = "Múltiplos Ficheiros";
 
 /* Toolbar item */
-"New Connection" = "Nova Conexão";
+"New Connection" = "Nova Ligação";
 
 /* Toolbar item */
 "New Folder" = "Nova Pasta";
@@ -200,19 +200,19 @@
 "No Bonjour services available" = "Não existem serviços Bonjour disponíveis";
 
 /* No comment provided by engineer. */
-"No external editor available" = "No external editor available";
+"No external editor available" = "Editor externo Indisponível";
 
 /* No comment provided by engineer. */
-"No recently connected servers available" = "No recently connected servers available";
+"No recently connected servers available" = "Indsiponível lista de ligações recentes ";
 
 /* Alert sheet title */
 "No update" = "Não actualizar";
 
 /* No comment provided by engineer. */
-"None" = "None";
+"None" = "Nenhum";
 
 /* 1.2MB of 3.4MB */
-"of" = "of";
+"of" = "de";
 
 /* Alert default button
    Alert sheet default button */
@@ -222,10 +222,10 @@
 "Open" = "Abrir";
 
 /* Toolbar item */
-"Outline" = "Outline";
+"Outline" = "Estrutura";
 
 /* No comment provided by engineer. */
-"Overwrite" = "Overwrite";
+"Overwrite" = "Reescrever";
 
 /* No comment provided by engineer. */
 "Overwrite existing file" = "A reescrever ficheiro existente";
@@ -237,10 +237,10 @@
 "Passive" = "Passivo";
 
 /* Menu item */
-"Paste" = "Paste";
+"Paste" = "Colar";
 
 /* Menu item */
-"Paste from Finder" = "Paste from Finder";
+"Paste from Finder" = "Colar do Finder";
 
 /* A column in the browser */
 "Permissions" = "Permissões";
@@ -276,7 +276,7 @@
 "Review..." = "Rever...";
 
 /* No comment provided by engineer. */
-"Server File" = "Server File";
+"Server File" = "Ficheiro de Servidor";
 
 /* No comment provided by engineer. */
 "SFTP (SSH Secure File Transfer)" = "SFTP (Transferência Segura de Ficheiros por SSH)";
@@ -291,7 +291,7 @@
 "Show in Finder" = "Visualizar na Mesa";
 
 /* Toolbar item tooltip */
-"Show Transfers window" = "Show Transfers window";
+"Show Transfers window" = "Exibir janela de transferências";
 
 /* A column in the browser */
 "Size" = "Tamanho";
@@ -300,34 +300,35 @@
 "Stop" = "Parar";
 
 /* Toolbar item tooltip */
-"Switch Browser View" = "Switch Browser View";
+"Switch Browser View" = "Trocar Vista da janela";
 
 /* No comment provided by engineer. */
-"Symbolic Link (File)" = "Symbolic Link (File)";
+"Symbolic Link (File)" = "Symbolic Link (Ficheiro)";
 
 /* No comment provided by engineer. */
-"Symbolic Link (Folder)" = "Symbolic Link (Folder)";
+"Symbolic Link (Folder)" = "Symbolic Link (pasta)";
 
 /* Toolbar item */
-"Synchronize" = "Synchronize";
+"Synchronize" = "Sincronizar";
 
 /* Toolbar item tooltip */
-"Synchronize files" = "Synchronize files";
+"Synchronize files" = "Sincronizar ficheiros";
 
 /* Toolbar item tooltip */
-"Toggle Bookmarks" = "Toggle Bookmarks";
+"Toggle Bookmarks" = "Exibir Favortitos";
 
 /* No comment provided by engineer. */
-"Transfer in progress" = "Transfer in progress";
+"Transfer in progress" = "Transferências em progresso";
 
 /* Toolbar item */
-"Transfers" = "Transfers";
+"Transfers" = "Transferências
+";
 
 /* No comment provided by engineer. */
-"Unknown size" = "Unknown size";
+"Unknown size" = "Dimensão desconhecida";
 
 /* No comment provided by engineer. */
-"Unknown" = "Unknown";
+"Unknown" = "Desconhecido";
 
 /* Alert sheet text */
 "The connection will be closed." = "A ligação será encerrada.";
@@ -348,10 +349,10 @@
 "There was a problem checking for an update. Please try again later." = "Ocorreu um problema ao verificar a existência de actualizações. Por favor tente mais tarde.";
 
 /* No comment provided by engineer. */
-"There are items in the queue currently being transferred. Quit anyway?" = "There are items in the queue currently being transferred. Quit anyway?";
+"There are items in the queue currently being transferred. Quit anyway?" = "Existem items activos na fila de transferência. Deseja fechar??";
 
 /* No comment provided by engineer. */
-"Try to resume transfer" = "Tentar continuar a transferência";
+"Try to resume transfer" = "Tentar retomar a transferência";
 
 /* No comment provided by engineer. */
 "Unix Line Endings (LF)" = "Terminação de linhas de Unix (LF)";
@@ -369,16 +370,16 @@
 "Use similar name" = "Utilizar nome semelhante";
 
 /* Toolbar item */
-"View" = "View";
+"View" = "Vista";
 
 /* No comment provided by engineer. */
 "Windows Line Endings (CRLF)" = "Terminação de linhas de Windows (CRLF)";
 
 /* Synchronize <file> with <file> */
-"with" = "with";
+"with" = "Com";
 
 /* No comment provided by engineer. */
 "You are connected to at least one remote site. Do you want to review open browsers?" = "Está ligado a, pelo menos, um servidor. Deseja rever as janelas abertas?";
 
 /* Option in error dialog if a connection error occurs, opens the Network Diagnostics application */
-"Open Network Diagnostics" = "Open Network Diagnostics";
+"Open Network Diagnostics" = "Abrir Diagnósticos de Rede";
