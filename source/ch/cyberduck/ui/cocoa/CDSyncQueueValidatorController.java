@@ -106,6 +106,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
         if(p.compare() != 0) {
             if(!this.parent.hasSheet()) {
                 this.beginSheet(false);
+                this.hasPrompt = true;
             }
             this.promptList.add(p);
             if(this.mirrorRadioCell.state() == NSCell.OnState) {
