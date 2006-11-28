@@ -668,7 +668,13 @@ public class FTPPath extends Path {
                                 this.attributes.setPermission(this.getLocal().getPermission());
                             }
                         }
-                        session.FTP.setPermissions(this.attributes.getPermission().getOctalCode(), this.getAbsolute());
+                        try {
+                            session.FTP.setPermissions(this.attributes.getPermission().getOctalCode(), this.getAbsolute());
+                        }
+                        catch(FTPException ignore) {
+                            //CHMOD not supported; ignore
+                            log.warn(ignore.getMessage());
+                        }
                     }
                     if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                         try {
@@ -684,7 +690,7 @@ public class FTPPath extends Path {
                             }
                             catch(FTPException ignore) {
                                 //MDTM not supported; ignore
-//                                log.warn(ignore.getMessage());
+                                log.warn(ignore.getMessage());
                             }
                         }
                     }

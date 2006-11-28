@@ -747,7 +747,7 @@ public class FTPClient {
      * @param remoteFile
      */
     public void setPermissions(String octal, String remoteFile) throws IOException, FTPException {
-        if(setChmodSupported) {
+        if(this.setChmodSupported) {
             try {
                 this.site("CHMOD "+octal+" "+remoteFile);
             }
@@ -756,7 +756,9 @@ public class FTPClient {
                 throw e;
             }
         }
-        throw new FTPException("CHMOD not supported");
+        if(!this.setChmodSupported) {
+            throw new FTPException("CHMOD not supported");
+        }
     }
 
     private boolean setModtimeSupported = true;
@@ -767,7 +769,7 @@ public class FTPClient {
      * @param remoteFile name of remote file
      */
     public void setmodtime(long modtime, String remoteFile) throws IOException, FTPException {
-        if(setModtimeSupported) {
+        if(this.setModtimeSupported) {
             try {
                 this.site("UTIME "+tsFormat.format(new Date(modtime))+" "+remoteFile);
             }
@@ -776,7 +778,9 @@ public class FTPClient {
                 throw e;
             }
         }
-        throw new FTPException("UTIME not supported");
+        if(!this.setModtimeSupported) {
+            throw new FTPException("UTIME not supported");
+        }
     }
 
     /**
