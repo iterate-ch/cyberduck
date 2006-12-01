@@ -37,7 +37,8 @@ import java.util.List;
 public class CDSyncQueueValidatorController extends CDValidatorController {
     private static Logger log = Logger.getLogger(CDSyncQueueValidatorController.class);
 
-    public CDSyncQueueValidatorController() {
+    public CDSyncQueueValidatorController(final CDWindowController parent) {
+        super(parent);
         synchronized(NSApplication.sharedApplication()) {
             if(!NSApplication.loadNibNamed("Sync", this)) {
                 log.fatal("Couldn't load Sync.nib");

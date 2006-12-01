@@ -290,13 +290,7 @@ public class Host extends NSObject {
         if(null == this.defaultpath) {
             return "";
         }
-        if(this.defaultpath.equals("")) {
-            return "";
-        }
-        if(this.defaultpath.charAt(0) == '/') {
-            return this.defaultpath;
-        }
-        return Path.DELIMITER + this.defaultpath;
+        return this.defaultpath;
     }
 
     /**

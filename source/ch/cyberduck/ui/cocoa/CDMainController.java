@@ -462,7 +462,7 @@ public class CDMainController extends CDController {
                     final CDBrowserController controller = CDBrowserController.controllerForWindow(window);
                     if (null != controller) {
                         if (controller.isMounted()) {
-                            Path workdir = controller.workdir();
+                            final Path workdir = controller.workdir();
                             final Queue q = new UploadQueue();
                             q.addListener(new QueueAdapter() {
                                 public void queueStopped() {
@@ -470,7 +470,7 @@ public class CDMainController extends CDController {
                                         controller.invoke(new Runnable() {
                                             public void run() {
                                                 //hack because the browser has its own cache
-                                                controller.getSession().cache().invalidate(q.getRoot().getParent());
+                                                workdir.invalidate();
                                                 controller.reloadData(true);
                                             }
                                         });
@@ -623,7 +623,7 @@ public class CDMainController extends CDController {
             NSWindow window = (NSWindow) windows.objectAtIndex(count);
             CDBrowserController controller = CDBrowserController.controllerForWindow(window);
             if (null != controller) {
-                controller.unmount(false);
+                controller.unmount(false, false);
             }
         }
     }
@@ -711,7 +711,7 @@ public class CDMainController extends CDController {
                         }
                     }
                     else {
-                        controller.unmount(true);
+                        controller.unmount(true, false);
                     }
                 }
             }

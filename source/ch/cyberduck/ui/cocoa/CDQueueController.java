@@ -443,12 +443,12 @@ public class CDQueueController extends CDWindowController
                             queue.getSession().setLoginController(null);
                         }
                     });
-                    queue.setInteractive(true);
                     queue.setResumeReqested(resumeRequested);
                     queue.setReloadRequested(reloadRequested);
-                    queue.run();
+                    queue.run(ValidatorFactory.create(queue, CDQueueController.this));
                 }
                 finally {
+                    queue.getSession().close();
                     queue.getSession().cache().clear();
                     queue.getSession().removeErrorListener(this);
                     queue.getSession().removeTranscriptListener(this);

@@ -21,21 +21,22 @@ package ch.cyberduck.core;
 import ch.cyberduck.ui.cocoa.CDSyncQueueValidatorController;
 import ch.cyberduck.ui.cocoa.CDUploadQueueValidatorController;
 import ch.cyberduck.ui.cocoa.CDDownloadQueueValidatorController;
+import ch.cyberduck.ui.cocoa.CDWindowController;
 
 /**
  * @version $Id$
  */
 public class ValidatorFactory {
 
-    public static Validator create(Queue q) {
+    public static Validator create(final Queue q, final CDWindowController parent) {
         if(q instanceof DownloadQueue) {
-            return new CDDownloadQueueValidatorController();
+            return new CDDownloadQueueValidatorController(parent);
         }
         if(q instanceof UploadQueue) {
-            return new CDUploadQueueValidatorController();
+            return new CDUploadQueueValidatorController(parent);
         }
         if(q instanceof SyncQueue) {
-            return new CDSyncQueueValidatorController();
+            return new CDSyncQueueValidatorController(parent);
         }
         return null;
     }

@@ -231,15 +231,6 @@ public abstract class Queue extends NSObject {
     protected abstract void transfer(Path p);
 
     /**
-     * Display file validation dialog sheet prompting the user about duplicate files
-     */
-    private boolean interactive;
-
-    public void setInteractive(boolean interactive) {
-        this.interactive = interactive;
-    }
-
-    /**
      * The user requested to resume the transfer; mutually exclusive with #reloadRequested
      */
     private boolean resumeRequested;
@@ -259,8 +250,9 @@ public abstract class Queue extends NSObject {
 
     /**
      * Process the queue. All files will be downloaded/uploaded/synced rerspectively.
+     * @param v
      */
-    public void run() {
+    public void run(final Validator v) {
         try {
             this.canceled = false;
             this.fireQueueStartedEvent();
@@ -274,7 +266,7 @@ public abstract class Queue extends NSObject {
             if(this.isCanceled()) {
                 return;
             }
-            List validated = this.validate();
+            List validated = this.validate(v);
             if(this.isCanceled()) {
                 return;
             }
@@ -294,15 +286,18 @@ public abstract class Queue extends NSObject {
             }
         }
         finally {
-            this.getSession().close();
             this.fireQueueStoppedEvent();
         }
     }
 
-    private List validate() {
+    /**
+     *
+     * @param v
+     * @return
+     */
+    private List validate(final Validator v) {
         final List childs = this.getChilds();
         final List validated = new ArrayList();
-        Validator v = null;
         for (Iterator iter = childs.iterator(); iter.hasNext();) {
             if(this.isCanceled()) {
                 break;
@@ -315,19 +310,7 @@ public abstract class Queue extends NSObject {
                     validated.add(child);
                 }
                 else {
-                    if(interactive) {
-                        if(null == v) {
-                            v = ValidatorFactory.create(this);
-                        }
-                        v.prompt(child);
-                    }
-//                    else {
-//                        // In cases we run withtout prompting the user, then just overwrite files.
-//                        // This is when running from an AppleScript
-//                        // e.g. CDBrowserController#handleUploadScriptCommand
-//                        child.status.setResume(false);
-//                        validated.add(child);
-//                    }
+                    v.prompt(child);
                 }
             }
             if (child.attributes.isDirectory()) {

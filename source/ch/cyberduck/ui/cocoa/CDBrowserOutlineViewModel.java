@@ -45,7 +45,10 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         return this.indexOf(tableView, p) != -1;
     }
 
-    public boolean outlineViewIsItemExpandable(final NSOutlineView outlineView, final Path item) {
+    /**
+     * @see NSOutlineView.DataSource
+     */
+    public boolean outlineViewIsItemExpandable(final NSOutlineView view, final Path item) {
         if (null == item) {
             return false;
         }
@@ -62,22 +65,13 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         return false;
     }
 
-//    private int rowOfCurrentEvent(final NSOutlineView outlineView) {
-//        return outlineView.rowAtPoint(outlineView.convertPointFromView(
-//            NSApplication.sharedApplication().currentEvent().locationInWindow(),
-//            null));
-//    }
-
+    /**
+     * @see NSOutlineView.DataSource
+     */
     public int outlineViewNumberOfChildrenOfItem(final NSOutlineView view, Path item) {
         if (controller.isMounted()) {
             if (null == item) {
                 item = controller.workdir();
-            }
-            if(null == item.cache()) {
-                log.warn("Returning 0 as the number of children of "+item.getName()+" as there is no cached" +
-                        "listing yet available");
-                // @see CDBrowserController#outlineViewShouldExpandItem
-                return 0;
             }
             return this.childs(item).size();
         }
@@ -85,6 +79,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
     }
 
     /**
+     * @see NSOutlineView.DataSource
      * Invoked by outlineView, and returns the child item at the specified index. Children
      * of a given parent item are accessed sequentially. If item is null, this method should
      * return the appropriate child item of the root object
@@ -101,24 +96,23 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         return null;
     }
 
+    /**
+     * @see NSOutlineView.DataSource
+     */
     public void outlineViewSetObjectValueForItem(final NSOutlineView outlineView, Object value,
                                                  final NSTableColumn tableColumn, Path item) {
         super.setObjectValueForItem(item, value, (String) tableColumn.identifier());
     }
 
+    /**
+     * @see NSOutlineView.DataSource
+     */
     public Object outlineViewObjectValueForItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, Path item) {
         return super.objectValueForItem(item, (String) tableColumn.identifier());
     }
 
-    // ----------------------------------------------------------
-    // Drop methods
-    // ----------------------------------------------------------
-
     /**
-     * @param outlineView
-     * @param info
-     * @param destination The proposed parent
-     * @param row         The proposed child location.
+     * @see NSOutlineView.DataSource
      */
     public int outlineViewValidateDrop(final NSOutlineView outlineView, final NSDraggingInfo info, Path destination, int row) {
         outlineView.setDropItemAndDropChildIndex(destination, NSOutlineView.DropOnItemIndex);
@@ -131,6 +125,9 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         return NSDraggingInfo.DragOperationNone;
     }
 
+    /**
+     * @see NSOutlineView.DataSource
+     */
     public boolean outlineViewAcceptDrop(final NSOutlineView outlineView, final NSDraggingInfo info, Path destination, int row) {
         if (controller.isMounted()) {
             if (null == destination) {
@@ -141,10 +138,9 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         return false;
     }
 
-    // ----------------------------------------------------------
-    // Drag methods
-    // ----------------------------------------------------------
-
+    /**
+     * @see NSOutlineView.DataSource
+     */
     public boolean outlineViewWriteItemsToPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard) {
         return super.writeItemsToPasteBoard(outlineView, items, pboard);
     }

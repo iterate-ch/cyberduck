@@ -23,7 +23,6 @@ import com.enterprisedt.net.ftp.FTPTransferType;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
-import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -122,7 +121,7 @@ public class FTPPath extends Path {
     }
 
     public AttributedList list(Comparator comparator, PathFilter filter) {
-        if(!session.cache().containsKey(this) || session.cache().isInvalid(this)) {
+        if(!this.isCached() || this.cache().attributes().isDirty()) {
             synchronized(session) {
                 AttributedList childs = new AttributedList();
                 try {
@@ -140,11 +139,11 @@ public class FTPPath extends Path {
                     }
                 }
                 catch(FTPException e) {
-                    childs.getAttributes().setReadable(false);
+                    childs.attributes().setReadable(false);
                     this.error("Listing directory failed", e);
                 }
                 catch(IOException e) {
-                    childs.getAttributes().setReadable(false);
+                    childs.attributes().setReadable(false);
                     this.error("Connection failed", e);
                     session.interrupt();
                 }

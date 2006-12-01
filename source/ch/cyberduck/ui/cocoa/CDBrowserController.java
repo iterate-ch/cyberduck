@@ -249,18 +249,17 @@ public class CDBrowserController extends CDWindowController
         log.debug("handleSyncScriptCommand:" + command);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
-            final Path path = PathFactory.createPath(this.session,
+            final Path path = PathFactory.createPath((Session)this.session,
                     (String) args.objectForKey("Path"));
             path.attributes.setType(Path.DIRECTORY_TYPE);
             Object localObj = args.objectForKey("Local");
             if(localObj != null) {
                 path.setLocal(new Local((String) localObj));
             }
-            Queue q = new SyncQueue(path);
-            q.setInteractive(true);
+            final Queue q = new SyncQueue(path);
             q.setResumeReqested(false);
             q.setReloadRequested(false);
-            CDQueueController.instance().startItem(q);
+            q.run(ValidatorFactory.create(q, this));
         }
         return null;
     }
@@ -269,7 +268,7 @@ public class CDBrowserController extends CDWindowController
         log.debug("handleDownloadScriptCommand:" + command);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
-            final Path path = PathFactory.createPath(this.session,
+            final Path path = PathFactory.createPath((Session)this.session,
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"));
             try {
@@ -288,10 +287,9 @@ public class CDBrowserController extends CDWindowController
                 path.setLocal(new Local(path.getLocal().getParent(), (String) nameObj));
             }
             Queue q = new DownloadQueue(path);
-            q.setInteractive(true);
             q.setResumeReqested(false);
             q.setReloadRequested(false);
-            CDQueueController.instance().startItem(q);
+            q.run(ValidatorFactory.create(q, this));
         }
         return null;
     }
@@ -300,7 +298,7 @@ public class CDBrowserController extends CDWindowController
         log.debug("handleUploadScriptCommand:" + command);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
-            final Path path = PathFactory.createPath(this.session,
+            final Path path = PathFactory.createPath((Session)this.session,
                     this.workdir().getAbsolute(),
                     new Local((String) args.objectForKey("Path")));
             if(path.getLocal().isFile()) {
@@ -317,11 +315,10 @@ public class CDBrowserController extends CDWindowController
             if(nameObj != null) {
                 path.setPath(this.workdir().getAbsolute(), (String) nameObj);
             }
-            Queue q = new UploadQueue(path);
-            q.setInteractive(true);
+            final Queue q = new UploadQueue(path);
             q.setResumeReqested(false);
             q.setReloadRequested(false);
-            CDQueueController.instance().startItem(q);
+            q.run(ValidatorFactory.create(q, this));
         }
         return null;
     }
@@ -485,7 +482,7 @@ public class CDBrowserController extends CDWindowController
     protected void reloadData(final boolean preserveSelection) {
         log.debug("reloadData:" + preserveSelection);
         if(this.isMounted()) {
-            if(null == this.workdir().cache()) {
+            if(!this.workdir().isCached() || this.workdir().cache().attributes().isDirty()) {
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
                 // Delay until path is cached in the background
                 this.background(new BackgroundAction() {
@@ -502,7 +499,7 @@ public class CDBrowserController extends CDWindowController
         }
         List selected = null;
         if(preserveSelection) {
-            //Remember the selected paths
+            //Remember the previously selected paths
             selected = this.getSelectedPaths();
         }
         this.deselectAll();
@@ -839,6 +836,7 @@ public class CDBrowserController extends CDWindowController
 
         this.browserOutlineView.setDataSource(this.browserOutlineModel = new CDBrowserOutlineViewModel(this));
         this.browserOutlineView.setDelegate(this.browserOutlineViewDelegate = new AbstractBrowserTableDelegate() {
+
             public void enterKeyPressed(final Object sender) {
                 if(CDBrowserController.this.browserOutlineView.numberOfSelectedRows() == 1) {
                     CDBrowserController.this.browserOutlineView.editLocation(
@@ -848,6 +846,9 @@ public class CDBrowserController extends CDWindowController
                 }
             }
 
+            /**
+             * @see NSOutlineView.Delegate
+             */
             public void outlineViewWillDisplayCell(NSOutlineView outlineView, Object cell,
                                                    NSTableColumn tableColumn, Path item) {
                 String identifier = (String) tableColumn.identifier();
@@ -861,7 +862,7 @@ public class CDBrowserController extends CDWindowController
                             icon = FOLDER_ICON;
                             if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")) {
                                 if (!item.attributes.isExecutable()
-                                        || (item.cache() != null && !item.cache().getAttributes().isReadable())) {
+                                        || (item.isCached() && !item.cache().attributes().isReadable())) {
                                     icon = CDBrowserTableDataSource.FOLDER_NOACCESS_ICON;
                                 }
                                 else if(!item.attributes.isReadable()) {
@@ -894,50 +895,15 @@ public class CDBrowserController extends CDWindowController
             }
 
             /**
-             * Container for all paths currently being expanded in the background
+             * @see NSOutlineView.Delegate
              */
-            private final List isLoadingListingInBackground = new ArrayList();
-
-            public boolean outlineViewShouldExpandItem(final NSOutlineView view, final Object item) {
-                log.debug("outlineViewShouldExpandItem:"+item);
-                // Check first if it hasn't been already requested so we don't spawn
-                // a multitude of unecessary threads
-                synchronized(isLoadingListingInBackground) {
-                    if(!isLoadingListingInBackground.contains(item)) {
-                        boolean cached = ((Path)item).cache() != null;
-                        if(!cached) {
-                            isLoadingListingInBackground.add(item);
-                            // If the path is not cached, then don't allow expansion as this would
-                            // cause the interface to hang. Delay until the listing has been fetched
-                            // in the background
-                            background(new BackgroundAction() {
-                                public void run() {
-                                    ((Path)item).list();
-                                    synchronized(isLoadingListingInBackground) {
-                                        isLoadingListingInBackground.remove(item);
-                                    }
-                                }
-
-                                public void cleanup() {
-                                    boolean cached = ((Path)item).cache() != null;
-                                    if(cached) {
-                                        // The outline view asumes the item has been sucessfully expanded altough
-                                        // we returned false before. Therefore we first collapse it otherwise
-                                        // the expandItem method does nothing
-                                        view.collapseItem(item);
-                                        view.expandItem(item);
-                                        view.reloadData();
-                                    }
-                                }
-                            });
-                        }
-                        // Only allow the item to be expanded if it is already cached
-                        return cached;
-                    }
-                    return true;
-                }
+            public boolean outlineViewShouldExpandItem(final NSOutlineView view, final Path item) {
+                return true;
             }
 
+            /**
+             * @see NSOutlineView.Notifications
+             */
             public void outlineViewItemDidExpand(NSNotification notification) {
                 statusLabel.setAttributedStringValue(new NSAttributedString(
                         CDBrowserController.this.browserOutlineView.numberOfRows() + " " +
@@ -945,6 +911,9 @@ public class CDBrowserController extends CDWindowController
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
 
+            /**
+             * @see NSOutlineView.Notifications
+             */
             public void outlineViewItemDidCollapse(NSNotification notification) {
                 statusLabel.setAttributedStringValue(new NSAttributedString(
                         CDBrowserController.this.browserOutlineView.numberOfRows() + " " +
@@ -952,6 +921,9 @@ public class CDBrowserController extends CDWindowController
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
 
+            /**
+             * @see NSOutlineView.Delegate
+             */
             public String outlineViewToolTipForCell(NSOutlineView view, NSCell cell, NSMutableRect rect, NSTableColumn tableColumn,
                                                     Object item, NSPoint mouseLocation) {
                 if(item instanceof Path) {
@@ -1690,13 +1662,14 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void encodingButtonClicked(final Object sender) {
-        String encoding = null;
+        String e = null;
         if(sender instanceof NSMenuItem) {
-            encoding = ((NSMenuItem) sender).title();
+            e = ((NSMenuItem) sender).title();
         }
         if(sender instanceof NSPopUpButton) {
-            encoding = this.encodingPopup.titleOfSelectedItem();
+            e = this.encodingPopup.titleOfSelectedItem();
         }
+        final String encoding = e;
         if(null == encoding) {
             return;
         }
@@ -1705,9 +1678,17 @@ public class CDBrowserController extends CDWindowController
             if(this.session.getHost().getEncoding().equals(encoding)) {
                 return;
             }
-            this.unmount(false);
-            this.session.getHost().setEncoding(encoding);
-            this.reloadButtonClicked(sender);
+            final boolean force = this.activityRunning;
+            background(new BackgroundAction() {
+                public void run() {
+                    unmount(false, force);
+                }
+
+                public void cleanup() {
+                    session.getHost().setEncoding(encoding);
+                    reloadButtonClicked(sender);
+                }
+            });
         }
     }
 
@@ -1742,11 +1723,6 @@ public class CDBrowserController extends CDWindowController
     // ----------------------------------------------------------
     // Status
     // ----------------------------------------------------------
-
-    /**
-     * A task is in progress; e.g. a file listing is expected from the server
-     */
-    private boolean activityRunning;
 
     private NSProgressIndicator spinner; // IBOutlet
 
@@ -2005,7 +1981,7 @@ public class CDBrowserController extends CDWindowController
      * @param selected
      * @return True if the selected path is editable (not a directory and no known binary file)
      */
-    private boolean isEditable(Path selected) {
+    private boolean isEditable(final Path selected) {
         if(selected.attributes.isFile()) {
             if(null == selected.getExtension()) {
                 return true;
@@ -2185,7 +2161,7 @@ public class CDBrowserController extends CDWindowController
 
     public void syncPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
-            Path selection = (Path) contextInfo;
+            final Path selection = (Path) contextInfo;
             if(sheet.filenames().count() > 0) {
                 selection.setLocal(new Local((String) sheet.filenames().lastObject()));
                 final Queue q = new SyncQueue();
@@ -2194,8 +2170,7 @@ public class CDBrowserController extends CDWindowController
                         if(isMounted()) {
                             CDBrowserController.this.invoke(new Runnable() {
                                 public void run() {
-                                    //hack because the browser has its own cache
-                                    session.cache().invalidate(q.getRoot().getParent());
+                                    selection.invalidate();
                                     reloadData(true);
                                 }
                             });
@@ -2301,7 +2276,16 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void disconnectButtonClicked(final Object sender) {
-        this.unmount(false);
+        final boolean force = this.activityRunning;
+        background(new BackgroundAction() {
+            public void run() {
+                unmount(false, force);
+            }
+
+            public void cleanup() {
+                ;
+            }
+        });
     }
 
     private NSButton interruptButton;
@@ -2469,6 +2453,11 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
+     * A task is in progress; e.g. a file listing is expected from the server
+     */
+    private boolean activityRunning;
+
+    /**
      * A lock to make sure that actions are not run in parallel
      */
     protected final Object backgroundLock = new Object();
@@ -2490,11 +2479,13 @@ public class CDBrowserController extends CDWindowController
                 finally {
                     activityRunning = false;
                     spinner.stopAnimation(CDBrowserController.this);
-                    // It is important _not_ to do this in #cleanup as otherwise
-                    // the listeners are still registered when the next BackgroundAction
-                    // is already running
-                    session.removeTranscriptListener(this);
-                    session.removeErrorListener(this);
+                    if(hasSession()) {
+                        // It is important _not_ to do this in #cleanup as otherwise
+                        // the listeners are still registered when the next BackgroundAction
+                        // is already running
+                        session.removeTranscriptListener(this);
+                        session.removeErrorListener(this);
+                    }
                 }
             }
 
@@ -2555,7 +2546,7 @@ public class CDBrowserController extends CDWindowController
             // this can happen if the user closes a connection that is about to be opened
             return;
         }
-        if(!path.list().getAttributes().isReadable()) {
+        if(!path.list().attributes().isReadable()) {
             // the path given cannot be read either because it doesn't exist
             // or you don't have permission; don't update browser view
             return;
@@ -2737,9 +2728,17 @@ public class CDBrowserController extends CDWindowController
         if(this.unmount(new CDSheetCallback() {
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
+                    final boolean force = activityRunning;
                     // The user has approved closing the current session
-                    unmount(true);
-                    mount(host);
+                    background(new BackgroundAction() {
+                        public void run() {
+                            unmount(true, force);
+                        }
+
+                        public void cleanup() {
+                            mount(host);
+                        }
+                    });
                 }
             }
         })) {
@@ -2765,12 +2764,13 @@ public class CDBrowserController extends CDWindowController
      * Will close the session but still display the current working directory without any confirmation
      * from the user
      * @param forever The session won't be remounted in any case; will clear the cache
+     * @param force Close the underlying socket without properly exiting the session
      */
-    public void unmount(final boolean forever) {
+    public void unmount(final boolean forever, final boolean force) {
         // This is not synchronized to the <code>mountingLock</code> intentionally; this allows to unmount
         // sessions not yet connected
         if(this.hasSession()) {
-            if(this.activityRunning) {
+            if(force) {
                 //Interrupt any operation in progress; just closes the socket without any goodbye message
                 this.session.interrupt();
             }
@@ -2780,6 +2780,7 @@ public class CDBrowserController extends CDWindowController
             }
             if(forever) {
                 this.session.cache().clear();
+                this.session = null;
             }
         }
     }
@@ -2801,7 +2802,16 @@ public class CDBrowserController extends CDWindowController
                 ), callback);
                 return false;
             }
-            this.unmount(true);
+            final boolean force = this.activityRunning;
+            this.background(new BackgroundAction() {
+                public void run() {
+                    unmount(true, force);
+                }
+
+                public void cleanup() {
+                    ;
+                }
+            });
         }
         // Unmount succeeded
         return true;
@@ -2858,8 +2868,16 @@ public class CDBrowserController extends CDWindowController
         return this.unmount(new CDSheetCallback() {
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
-                    unmount(true);
-                    sender.close();
+                    final boolean force = activityRunning;
+                    background(new BackgroundAction() {
+                        public void run() {
+                            unmount(true, force);
+                        }
+
+                        public void cleanup() {
+                            sender.close();
+                        }
+                    });
                 }
             }
         });
@@ -3043,14 +3061,20 @@ public class CDBrowserController extends CDWindowController
                 String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                         Preferences.instance().getProperty("editor.bundleIdentifier"));
                 if(editorPath != null) {
-                    return this.isEditable(this.getSelectedPath());
+                    Path selected = this.getSelectedPath();
+                    if(selected != null) {
+                        return this.isEditable(selected);
+                    }
                 }
             }
             return false;
         }
         if(identifier.equals("editButtonContextMenuClicked:")) {
-            if(this.isMounted() && this.getSelectionCount() > 0) {
-                return this.isEditable(this.getSelectedPath());
+            if(this.isMounted()) {
+                Path selected = this.getSelectedPath();
+                if(selected != null) {
+                    return this.isEditable(selected);
+                }
             }
             return false;
         }
@@ -3446,7 +3470,6 @@ public class CDBrowserController extends CDWindowController
         if(this.hasSession()) {
             this.session.removeConnectionListener(this.listener);
             this.session.getHost().getCredentials().setPassword(null);
-            this.session = null;
         }
         this.toolbar.setDelegate(null);
 

@@ -34,7 +34,8 @@ import org.apache.log4j.Logger;
 public class CDDownloadQueueValidatorController extends CDValidatorController {
     private static Logger log = Logger.getLogger(CDDownloadQueueValidatorController.class);
 
-    public CDDownloadQueueValidatorController() {
+    public CDDownloadQueueValidatorController(final CDWindowController parent) {
+        super(parent);
         synchronized(NSApplication.sharedApplication()) {
             if(!NSApplication.loadNibNamed("Validator", this)) {
                 log.fatal("Couldn't load Validator.nib");

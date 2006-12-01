@@ -279,7 +279,9 @@ public abstract class Path extends NSObject {
      * @throws NullPointerException if session is not initialized
      */
     public void invalidate() {
-        this.getSession().cache().invalidate(this);
+        if(this.isCached()) {
+            this.cache().attributes().setDirty(true);
+        }
     }
 
     /**
@@ -307,6 +309,10 @@ public abstract class Path extends NSObject {
      */
     public AttributedList cache() {
         return (AttributedList)this.getSession().cache().get(this);    
+    }
+
+    public boolean isCached() {
+        return this.getSession().cache().containsKey(this);
     }
 
     /**

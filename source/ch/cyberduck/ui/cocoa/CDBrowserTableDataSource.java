@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -59,17 +60,51 @@ public abstract class CDBrowserTableDataSource extends NSObject {
     protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
 
     /**
+     * Container for all paths currently being listed in the background
+     */
+    private final List isLoadingListingInBackground = new ArrayList();
+
+    /**
      * Must be efficient; called very frequently by the table view
-     *
+     * @pre Call from the main thread
      * @param path The directory to fetch the childs from
      * @return The cached or newly fetched file listing of the directory
      */
-    protected List childs(Path path) {
-        List childs = path.list(controller.getComparator(), controller.getFileFilter());
-        if(null == childs) {
-            return new ArrayList();
+    protected List childs(final Path path) {
+        // Check first if it hasn't been already requested so we don't spawn
+        // a multitude of unecessary threads
+        synchronized(isLoadingListingInBackground) {
+            if(!isLoadingListingInBackground.contains(path)) {
+                // For dirty paths, we do not currently load in background as the outline
+                // view otherwise forgets about expanded items as it seems the outline view
+                // wrongly compares using '==' instead of using 'Object#equals'. As a
+                // workaround, items marked as dirty are loaded in the main interface thread
+                // This has been filed to bugreport.apple.com but been marked as 'Behaves correctly'.
+                if(!path.isCached()) {// || path.cache().attributes().isDirty()) {
+                    isLoadingListingInBackground.add(path);
+                    // Reloading a workdir that is not cached yet would cause the interface to freeze;
+                    // Delay until path is cached in the background
+                    controller.background(new BackgroundAction() {
+                        public void run() {
+                            path.list();
+                            synchronized(isLoadingListingInBackground) {
+                                isLoadingListingInBackground.remove(path);
+                            }
+                        }
+
+                        public void cleanup() {
+                            // When expanding multiple items this is called too frequently
+                            controller.reloadData(true);
+                        }
+                    });
+                }
+                else {
+                    return path.list(controller.getComparator(), controller.getFileFilter());
+                }
+            }
         }
-        return childs;
+        log.warn("No cached listing for "+path.getName());
+        return Collections.EMPTY_LIST;
     }
 
     protected CDBrowserController controller;
@@ -108,7 +143,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     icon = FOLDER_ICON;
                     if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")) {
                         if (!item.attributes.isExecutable()
-                                || (item.cache() != null && !item.cache().getAttributes().isReadable())) {
+                                || (item.isCached() && !item.cache().attributes().isReadable())) {
                             icon = FOLDER_NOACCESS_ICON;
                         }
                         else if (!item.attributes.isReadable()) {
@@ -198,7 +233,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                                 controller.invoke(new Runnable() {
                                     public void run() {
                                         //hack because the browser has its own cache
-                                        controller.getSession().cache().invalidate(q.getRoot().getParent());
+                                        destination.invalidate();
                                         controller.reloadData(true);
                                     }
                                 });

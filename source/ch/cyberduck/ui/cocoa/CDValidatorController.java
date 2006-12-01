@@ -60,8 +60,8 @@ public abstract class CDValidatorController
         return this.canceled;
     }
 
-    public CDValidatorController() {
-        super(CDQueueController.instance());
+    public CDValidatorController(final CDWindowController parent) {
+        super(parent);
     }
 
     public void callback(final int returncode) {

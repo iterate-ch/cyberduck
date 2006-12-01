@@ -156,7 +156,7 @@ public abstract class Session extends NSObject {
                     if(host.hasReasonableDefaultPath()) {
                         home = PathFactory.createPath(this, host.getDefaultPath());
                         home.attributes.setType(Path.DIRECTORY_TYPE);
-                        if(!home.list().getAttributes().isReadable()) {
+                        if(!home.list().attributes().isReadable()) {
                             // the default path does not exist or is not readable due to permission issues
                             home = workdir();
                         }

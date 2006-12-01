@@ -73,7 +73,7 @@ public abstract class CDWindowController extends CDController
      */
     public void background(final BackgroundActionImpl runnable, final Object lock) {
         log.debug("background:"+runnable);
-        new Thread() {
+        new Thread("Background") {
             public void run() {
                 // Synchronize all background threads to this lock so actions run
                 // sequentially as they were initiated from the main interface thread

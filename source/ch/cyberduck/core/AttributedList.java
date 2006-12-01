@@ -98,10 +98,13 @@ public class AttributedList extends NSObject implements List {
         }
 
         /**
-         * Mark as superseded
+         * Mark cached listing as superseded
          */
         public void setDirty(boolean dirty) {
             this.put(INVALID, Boolean.valueOf(dirty));
+            if(dirty) {
+                this.put(READABLE, Boolean.TRUE);
+            }
         }
 
         /**
@@ -113,7 +116,7 @@ public class AttributedList extends NSObject implements List {
         }
     }
 
-    public Attributes getAttributes() {
+    public Attributes attributes() {
         return attributes;
     }
 
