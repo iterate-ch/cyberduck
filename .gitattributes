@@ -7,7 +7,7 @@ AppleScript[!!-~]Samples/Sync[!!-~]Sample.scpt -text
 AppleScript[!!-~]Samples/Upload[!!-~]Sample.scpt -text
 AppleScript[!!-~]Samples/iPhoto[!!-~]Upload[!!-~]Sample.scpt -text
 /Credits.rtf -text
-/Cyberduck[!!-~]Website.url -text
+/Cyberduck[!!-~]Website.webloc -text
 /Cyberduck.scriptTerminology -text svneol=unset#application/octet-stream
 Dashboard[!!-~]Widget/Cyberduck.wdgt/Default.png -text svneol=unset#image/png
 Dashboard[!!-~]Widget/Cyberduck.wdgt/Icon.png -text svneol=unset#image/png
@@ -50,7 +50,7 @@ Dashboard[!!-~]Widget/Plugin/BookmarkPlugin_Prefix.pch -text
 Dashboard[!!-~]Widget/Plugin/English.lproj/InfoPlist.strings -text
 Dashboard[!!-~]Widget/Plugin/Info.plist -text
 Dashboard[!!-~]Widget/Plugin/Plugin.xcodeproj/project.pbxproj -text
-/Donate.url -text
+/Donate.webloc -text
 Download[!!-~]Automator[!!-~]Action/English.lproj/InfoPlist.strings svneol=native#unset
 /Info.plist.debug -text
 /LICENSE -text
