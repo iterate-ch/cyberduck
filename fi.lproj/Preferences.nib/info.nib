@@ -21,7 +21,7 @@
 		<key>874</key>
 		<string>232 286 527 421 0 0 1024 746 </string>
 		<key>906</key>
-		<string>232 291 527 412 0 0 1024 746 </string>
+		<string>232 287 527 420 0 0 1024 746 </string>
 	</dict>
 	<key>IBFramework Version</key>
 	<string>446.1</string>
@@ -103,6 +103,6 @@
 	<key>IBOldestOS</key>
 	<integer>3</integer>
 	<key>IBSystem Version</key>
-	<string>8J135</string>
+	<string>8L127</string>
 </dict>
 </plist>
