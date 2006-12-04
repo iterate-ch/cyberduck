@@ -103,10 +103,6 @@ public class CDProgressController extends CDController {
                             }
                         });
                     }
-
-                    public void connectionDidClose() {
-                        queue.getSession().removeProgressListener(progress);
-                    }
                 });
             }
 
@@ -118,6 +114,7 @@ public class CDProgressController extends CDController {
                         progressBar.setHidden(true);
                     }
                 });
+                queue.getSession().removeProgressListener(progress);
                 queue.getSession().removeConnectionListener(connection);
             }
 
