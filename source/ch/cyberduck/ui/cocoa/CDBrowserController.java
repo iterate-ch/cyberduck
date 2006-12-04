@@ -2124,12 +2124,12 @@ public class CDBrowserController extends CDWindowController
                     path.getLocal().getName(),
                     this.window,
                     this,
-                    new NSSelector("saveAsPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}),
+                    new NSSelector("downloadAsPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}),
                     path);
         }
     }
 
-    public void saveAsPanelDidEnd(NSSavePanel sheet, int returncode, Object contextInfo) {
+    public void downloadAsPanelDidEnd(NSSavePanel sheet, int returncode, Object contextInfo) {
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
             String filename;
             if((filename = sheet.filename()) != null) {
@@ -2436,7 +2436,13 @@ public class CDBrowserController extends CDWindowController
                 NSArray elements = (NSArray) o;
                 final Queue q = new UploadQueue();
                 final Path workdir = this.workdir();
-                Session session = (Session) this.getSession().clone();
+                Session session;
+                if(Preferences.instance().getInteger("connection.pool.max") == 1) {
+                    session = this.getSession();
+                }
+                else {
+                    session = (Session) this.getSession().clone();
+                }
                 for(int i = 0; i < elements.count(); i++) {
                     Path p = PathFactory.createPath(session,
                             workdir.getAbsolute(),
