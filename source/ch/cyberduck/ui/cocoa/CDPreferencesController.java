@@ -1001,6 +1001,9 @@ public class CDPreferencesController extends CDWindowController {
     public void concurrentConnectionsFieldDidChange(NSNotification sender) {
         try {
             int max = Integer.parseInt(this.concurrentConnectionsField.stringValue());
+            if(max < 1) {
+                this.concurrentConnectionsField.setStringValue(String.valueOf(1));
+            }
             Preferences.instance().setProperty("connection.pool.max", max);
             synchronized (SessionPool.instance()) {
                 SessionPool.instance().notifyAll();
@@ -1025,6 +1028,10 @@ public class CDPreferencesController extends CDWindowController {
     public void concurrentConnectionsTimeoutFieldDidChange(NSNotification sender) {
         try {
             int timeout = Integer.parseInt(this.concurrentConnectionsTimeoutField.stringValue());
+            int MIN_VALUE = 10;
+            if(timeout < MIN_VALUE) {
+                this.concurrentConnectionsTimeoutField.setStringValue(String.valueOf(MIN_VALUE));
+            }
             Preferences.instance().setProperty("connection.pool.timeout", timeout);
         }
         catch (NumberFormatException e) {
@@ -1067,6 +1074,10 @@ public class CDPreferencesController extends CDWindowController {
     public void bufferFieldDidChange(NSNotification sender) {
         try {
             int kbit = Integer.parseInt(this.bufferField.stringValue());
+            int MIN_VALUE = 32;
+            if(kbit < MIN_VALUE) {
+                this.bufferField.setStringValue(String.valueOf(MIN_VALUE));
+            }
             Preferences.instance().setProperty("connection.buffer", kbit / 8 * 1024); //Bytes
         }
         catch (NumberFormatException e) {
@@ -1129,6 +1140,10 @@ public class CDPreferencesController extends CDWindowController {
     public void timeoutFieldDidChange(NSNotification sender) {
         try {
             int timeout = Integer.parseInt(this.timeoutField.stringValue())*1000;
+            int MIN_VALUE = 10000;
+            if(timeout < MIN_VALUE) {
+                this.timeoutField.setStringValue(String.valueOf(MIN_VALUE/1000));
+            }
             Preferences.instance().setProperty("connection.timeout", timeout);
         }
         catch (NumberFormatException e) {
@@ -1644,5 +1659,31 @@ public class CDPreferencesController extends CDWindowController {
     public void setSpringLoadedFoldersCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.OnState;
         Preferences.instance().setProperty("browser.view.autoexpand", enabled);
+        this.springLoadedFoldersDelayCheckbox.setEnabled(enabled);
+        this.springLoadedFoldersDelaySlider.setEnabled(enabled
+                && springLoadedFoldersDelayCheckbox.state() == NSCell.OnState);
+    }
+
+    private NSButton springLoadedFoldersDelayCheckbox; //IBOutlet
+
+    public void setSpringLoadedFoldersDelayCheckbox(NSButton springLoadedFoldersDelayCheckbox) {
+        this.springLoadedFoldersDelayCheckbox = springLoadedFoldersDelayCheckbox;
+        this.springLoadedFoldersDelayCheckbox.setTarget(this);
+        this.springLoadedFoldersDelayCheckbox.setAction(new NSSelector("springLoadedFoldersDelayCheckboxClicked", new Class[]{NSButton.class}));
+        this.springLoadedFoldersDelayCheckbox.setState(
+                Preferences.instance().getBoolean("browser.view.autoexpand.useDelay") ? NSCell.OnState : NSCell.OffState);
+    }
+
+    public void springLoadedFoldersDelayCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.OnState;
+        Preferences.instance().setProperty("browser.view.autoexpand.useDelay", enabled);
+        this.springLoadedFoldersDelaySlider.setEnabled(enabled);
+    }
+
+    private NSSlider springLoadedFoldersDelaySlider; //IBOutlet
+
+    public void springLoadedFoldersDelaySlider(NSSlider springLoadedFoldersDelaySlider) {
+        this.springLoadedFoldersDelaySlider = springLoadedFoldersDelaySlider;
+        this.springLoadedFoldersDelaySlider.setEnabled(Preferences.instance().getBoolean("browser.view.autoexpand.useDelay"));
     }
 }

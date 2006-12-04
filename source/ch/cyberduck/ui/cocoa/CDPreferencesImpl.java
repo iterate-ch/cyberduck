@@ -35,6 +35,7 @@ public class CDPreferencesImpl extends Preferences {
 
     private NSUserDefaults props;
 
+
     public String getProperty(String property) {
         String value = (String) props.objectForKey(property);
         if (null == value) {
@@ -64,6 +65,10 @@ public class CDPreferencesImpl extends Preferences {
      */
     public void load() {
         this.props = NSUserDefaults.standardUserDefaults();
+
+        // Setting default values that must be accessible using [NSUserDefaults standardUserDefaults]
+        this.setProperty("browser.view.autoexpand.useDelay", super.getProperty("browser.view.autoexpand.useDelay"));
+        this.setProperty("browser.view.autoexpand.delay", super.getProperty("browser.view.autoexpand.delay"));
     }
 
     public void save() {

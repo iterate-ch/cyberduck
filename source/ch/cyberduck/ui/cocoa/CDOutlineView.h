@@ -27,6 +27,7 @@
 
 	NSMutableString *select_string;
 	NSTimer *select_timer;
+	NSTimer *autoexpand_timer;
 }
 
 - (void)handleBrowserClick:(id)sender;

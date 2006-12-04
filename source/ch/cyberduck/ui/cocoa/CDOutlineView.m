@@ -22,6 +22,7 @@
 - (NSTableColumn *)_typeAheadSelectionColumn;
 - (void)selectRow;
 - (void)selectRowWithTimer:(NSTimer *)sender;
+- (void)_scheduleAutoExpandTimerForItem:(id)object; 
 @end
 
 @implementation CDOutlineView
@@ -35,6 +36,7 @@
 	// browser typeahead selection
 	select_string = [[NSMutableString alloc] init];
 	select_timer = nil;
+	autoexpand_timer = nil;
 }
 
 - (BOOL)acceptsFirstMouse:(NSEvent *)event
@@ -46,6 +48,7 @@
 {
 	[select_string release];
 	[select_timer release];
+	[autoexpand_timer release];
 	[super dealloc];
 }
 
@@ -54,32 +57,36 @@
 	if([[[NSUserDefaults standardUserDefaults] stringForKey:@"browser.view.autoexpand"] isEqualToString:@"false"]) {
 		return;
 	}
-//	if(NSLeftMouseDragged == [[[NSApplication sharedApplication] currentEvent] type]) {
-//		//if(![autoExpandTimer isValid]) {
-//			[self performSelector:@selector(_scheduleAutoExpandTimerForItemDelayed:)
-//					   withObject:[NSValue valueWithPoint:[self convertPoint:[[NSApp currentEvent] locationInWindow]
-//																	fromView:nil]] 
-//					   afterDelay:2.0];
-//		//}
-//		return;
-//	}
+	if(NSLeftMouseDragged == [[[NSApplication sharedApplication] currentEvent] type]) {
+		if([[[NSUserDefaults standardUserDefaults] stringForKey:@"browser.view.autoexpand.useDelay"] isEqualToString:@"true"]) {
+			if(nil == autoexpand_timer) {
+				autoexpand_timer = [NSTimer scheduledTimerWithTimeInterval:[[NSUserDefaults standardUserDefaults] floatForKey:@"browser.view.autoexpand.delay"]
+																target:self
+															  selector:@selector(_scheduleAutoExpandTimerForItemDelayed:) 
+															  userInfo:[NSValue valueWithPoint:[self convertPoint:[[NSApp currentEvent] locationInWindow] fromView:nil]] 
+															   repeats:NO];
+			}
+			return;
+		}
+	}
 	if([super respondsToSelector:@selector(_scheduleAutoExpandTimerForItem:)]) {
 		[super _scheduleAutoExpandTimerForItem:object];
 	}
 }
 
-//- (void)_scheduleAutoExpandTimerForItemDelayed:(NSValue *)point
-//{
-//	if(NSLeftMouseDragged == [[[NSApplication sharedApplication] currentEvent] type]) {
-//		int previousRow = [self rowAtPoint:[point pointValue]];
-//		if(previousRow == [self rowAtPoint:[self convertPoint:[[NSApp currentEvent] locationInWindow] fromView:nil]]) {
-//			// Still dragging onto the same row; finally expand the item
-//			if([super respondsToSelector:@selector(_scheduleAutoExpandTimerForItem:)]) {
-//				[super _scheduleAutoExpandTimerForItem:[self itemAtRow:previousRow]];
-//			}
-//		}
-//	}
-//}
+- (void)_scheduleAutoExpandTimerForItemDelayed:(NSTimer *)sender
+{
+	if(NSLeftMouseDragged == [[[NSApplication sharedApplication] currentEvent] type]) {
+		int previousRow = [self rowAtPoint:[[sender userInfo] pointValue]];
+		if(previousRow == [self rowAtPoint:[self convertPoint:[[NSApp currentEvent] locationInWindow] fromView:nil]]) {
+			// Still dragging onto the same row; finally expand the item
+			if([super respondsToSelector:@selector(_scheduleAutoExpandTimerForItem:)]) {
+				[super _scheduleAutoExpandTimerForItem:[self itemAtRow:previousRow]];
+			}
+		}
+	}
+	autoexpand_timer = nil;
+}
 
 - (void)handleBrowserClick:(id)sender 
 {
