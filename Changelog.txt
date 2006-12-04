@@ -4,11 +4,21 @@ http://cyberduck.ch/
 Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
+2.7.2 [http://trac.cyberduck.ch/query?status=closed&milestone=2.7.2]
+- [Feature] When the number of allowed concurrent connections to a server is set to one, use the browser session to transfer files [#--]
+- [Bugfix] Disconnecting in the background not blocking the user interface [#--]
+- [Bugfix] Folders marked as inaccessible after timeouts and cannot be opened after reconnecting [#--]
+- [Bugfix] Applescript/Dashboard should not use seperate session for transfers [#--]
+- [Bugfix] Cannot write to group writable files (SFTP) [#173]
+- [Bugfix] File length is set to zero if updating permission fails (SFTP) [#974]
+
 2.7.1 [http://trac.cyberduck.ch/query?status=closed&milestone=2.7.1]
 - [Localize] Portuguese Localization
+- [Bugfix] Reporting error about failed to set permissions whereas it actually succeeded [#--]
 - [Bugfix] Fail gracefully on uploading when server doesn't support changing permissions [#--]
 - [Bugfix] Disconnecting from server could crash application shortly thereafter [#--]
 - [Bugfix] Outline view not updated after dragged files have been uploaded [#--]
+- [Bugfix] Synchronisation not awaiting selection from user [#--]
 
 2.7 [http://trac.cyberduck.ch/query?status=closed&milestone=2.7]
 - [Feature] Don't block user interface when working in browser. All potentially lengthy operations are now performed in the background [#921]

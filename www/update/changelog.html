@@ -14,13 +14,31 @@
 <body>
 	<div>
 		<strong><a href=
-		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=2.7">
-		2.7</a></strong> <em>Nov-27-2006</em> (Build 2600)<br />
+		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=2.7.2">
+		2.7.2</a></strong> <em></em><br />
 
 		<ul>
-			<li>[Bugfix] Fail gracefully on uploading when server doesn't support changing permissions [#--</a>]</li>
-			<li>[Bugfix] Disconnecting from server could crash application shortly thereafter [#--</a>]</li>
-			<li>[Bugfix] Outline view not updated after dragged files have been uploaded [#--</a>]</li>
+			<li>[Feature] When the number of allowed concurrent connections to a server is set to one, use the browser session to transfer files [#--]</li>
+			<li>[Bugfix] Disconnecting in the background not blocking the user interface [#--]</li>
+			<li>[Bugfix] Folders marked as inaccessible after timeouts and cannot be opened after reconnecting [#--]</li>
+			<li>[Bugfix] Applescript/Dashboard should not use seperate session for transfers [#--]</li>
+			<li>[Bugfix] Cannot write to group writable files (SFTP) [#173]</li>
+			<li>[Bugfix] File length is set to zero if updating permission fails (SFTP) [#974]</li>
+		</ul>
+	</div>
+
+	<div>
+		<strong><a href=
+		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=2.7.1">
+		2.7.1</a></strong> <em>Nov-29-2006</em> (Build 2608)<br />
+
+		<ul>
+			<li>[Localize] Portuguese Localization</li>
+			<li>[Bugfix] Reporting error about failed to set permissions whereas it actually succeeded [#--]</li>
+			<li>[Bugfix] Fail gracefully on uploading when server doesn't support changing permissions [#--]</li>
+			<li>[Bugfix] Disconnecting from server could crash application shortly thereafter [#--]</li>
+			<li>[Bugfix] Outline view not updated after dragged files have been uploaded [#--]</li>
+			<li>[Bugfix] Synchronisation not awaiting selection from user [#--]</li>
 		</ul>
 	</div>
 
