@@ -135,12 +135,19 @@ public abstract class CDBrowserTableDataSource extends NSObject {
     public Object objectValueForItem(Path item, String identifier) {
         if (null != item) {
             if (identifier.equals(TYPE_COLUMN)) {
-                NSImage icon;
+                final String extension = item.getExtension();
+                NSImage icon = null;
                 if (item.attributes.isSymbolicLink()) {
                     icon = SYMLINK_ICON;
                 }
                 else if (item.attributes.isDirectory()) {
-                    icon = FOLDER_ICON;
+                    if(extension != null) {
+                        icon = CDIconCache.instance().get(extension);
+                        icon.setSize(new NSSize(16f, 16f));
+                    }
+                    if(null == icon) {
+                        icon = FOLDER_ICON;
+                    }
                     if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")) {
                         if (!item.attributes.isExecutable()
                                 || (item.isCached() && !item.cache().attributes().isReadable())) {
@@ -154,7 +161,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     }
                 }
                 else if (item.attributes.isFile()) {
-                    icon = CDIconCache.instance().get(item.getExtension());
+                    icon = CDIconCache.instance().get(extension);
                 }
                 else {
                     icon = NOT_FOUND_ICON;

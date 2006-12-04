@@ -854,12 +854,19 @@ public class CDBrowserController extends CDWindowController
                 String identifier = (String) tableColumn.identifier();
                 if(item != null) {
                     if(identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
-                        NSImage icon;
+                        final String extension = item.getExtension();
+                        NSImage icon = null;
                         if(item.attributes.isSymbolicLink()) {
                             icon = CDBrowserTableDataSource.SYMLINK_ICON;
                         }
                         else if(item.attributes.isDirectory()) {
-                            icon = FOLDER_ICON;
+                            if(extension != null) {
+                                icon = CDIconCache.instance().get(extension);
+                                icon.setSize(new NSSize(16f, 16f));
+                            }
+                            if(null == icon) {
+                                icon = FOLDER_ICON;
+                            }
                             if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")) {
                                 if (!item.attributes.isExecutable()
                                         || (item.isCached() && !item.cache().attributes().isReadable())) {
@@ -873,7 +880,7 @@ public class CDBrowserController extends CDWindowController
                             }
                         }
                         else if(item.attributes.isFile()) {
-                            icon = CDIconCache.instance().get(item.getExtension());
+                            icon = CDIconCache.instance().get(extension);
                             icon.setSize(new NSSize(16f, 16f));
                         }
                         else {
