@@ -22,7 +22,6 @@ import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -143,7 +142,6 @@ public class FTPPath extends Path {
                     this.error("Listing directory failed", e);
                 }
                 catch(IOException e) {
-                    childs.attributes().setReadable(false);
                     this.error("Connection failed", e);
                     session.interrupt();
                 }
@@ -476,16 +474,10 @@ public class FTPPath extends Path {
                 }
             }
             catch(FTPException e) {
-                Growl.instance().notify(
-                        NSBundle.localizedString("Download failed", "Growl", "Growl Notification"),
-                        this.getName());
-                this.error("Download failed", e);
+                this.error("Download failed", e, this.getName());
             }
             catch(IOException e) {
-                Growl.instance().notify(
-                        NSBundle.localizedString("Download failed", "Growl", "Growl Notification"),
-                        this.getName());
-                this.error("Connection failed", e);
+                this.error("Connection failed", e, this.getName());
                 session.interrupt();
             }
             finally {
@@ -697,16 +689,10 @@ public class FTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch(FTPException e) {
-                Growl.instance().notify(
-                        NSBundle.localizedString("Upload failed", "Growl", "Growl Notification"),
-                        this.getName());
-                this.error("Upload failed", e);
+                this.error("Upload failed", e, this.getName());
             }
             catch(IOException e) {
-                Growl.instance().notify(
-                        NSBundle.localizedString("Upload failed", "Growl", "Growl Notification"),
-                        this.getName());
-                this.error("Connection failed", e);
+                this.error("Connection failed", e, this.getName());
                 session.interrupt();
             }
             finally {

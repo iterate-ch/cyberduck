@@ -176,8 +176,6 @@ public class Editor extends CDController {
 				}
                 if(path.status.isComplete()) {
                     path.getSession().message(
-                            NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"));
-                    Growl.instance().notify(
                             NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"),
                             path.getName());
                 }

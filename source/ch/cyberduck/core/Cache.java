@@ -41,16 +41,6 @@ public class Cache extends HashMap {
     }
 
     /**
-     * @deprecated Use Path#cache instead
-     * @param path
-     */
-    public void invalidate(Path path) {
-        if (this.containsKey(path)) {
-            this.get(path).attributes().setDirty(true);
-        }
-    }
-
-    /**
      * Get the childs of this path using the last sorting and filter used
      * @param path
      * @return null if no cached file listing is available

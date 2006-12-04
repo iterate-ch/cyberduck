@@ -78,6 +78,7 @@ public class CDProgressController extends CDController {
     private void init() {
         this.queue.addListener(new QueueListener() {
             private ProgressListener progress;
+            private ConnectionListener connection;
 
             public void queueStarted() {
                 CDProgressController.this.invoke(new Runnable() {
@@ -88,15 +89,23 @@ public class CDProgressController extends CDController {
                         progressBar.setNeedsDisplay(true);
                     }
                 });
-                queue.getSession().addProgressListener(progress = new ProgressListener() {
-                    public void message(final String message) {
-                        CDProgressController.this.invoke(new Runnable() {
-                            public void run() {
-                                statusText = message;
-                                progressField.setAttributedStringValue(new NSAttributedString(getProgressText(),
-                                        TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                queue.getSession().addConnectionListener(connection = new ConnectionAdapter() {
+                    public void connectionWillOpen() {
+                        queue.getSession().addProgressListener(progress = new ProgressListener() {
+                            public void message(final String message) {
+                                CDProgressController.this.invoke(new Runnable() {
+                                    public void run() {
+                                        statusText = message;
+                                        progressField.setAttributedStringValue(new NSAttributedString(getProgressText(),
+                                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                                    }
+                                });
                             }
                         });
+                    }
+
+                    public void connectionDidClose() {
+                        queue.getSession().removeProgressListener(progress);
                     }
                 });
             }
@@ -109,7 +118,7 @@ public class CDProgressController extends CDController {
                         progressBar.setHidden(true);
                     }
                 });
-                queue.getSession().removeProgressListener(progress);
+                queue.getSession().removeConnectionListener(connection);
             }
 
             public void transferStarted(final Path path) {

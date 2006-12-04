@@ -257,10 +257,13 @@ public abstract class Queue extends NSObject {
             this.canceled = false;
             this.fireQueueStartedEvent();
             try {
+                // We manually open the connection here first as otherwise
+                // every transfer will try again if it should fail
                 this.getSession().connect();
             }
             catch(IOException e) {
-                this.getSession().error("Connection failed", e);
+                this.getSession().error(null, "Connection failed", e);
+                // Initial connection attempt failed; bail out
                 this.cancel();
             }
             if(this.isCanceled()) {

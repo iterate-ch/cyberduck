@@ -677,6 +677,10 @@ public abstract class Path extends NSObject {
     }
 
     protected void error(String message, IOException e) {
-        this.getSession().error(this, message, e);
+        this.error(message, e, null);
+    }
+
+    protected void error(String message, IOException e, String title) {
+        this.getSession().error(this, message, e, title);
     }
 }

@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.growl.Growl;
-
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
@@ -54,8 +52,6 @@ public class UploadQueue extends Queue {
     public void fireQueueStoppedEvent() {
         if(this.isComplete() && !this.isCanceled() && !(this.getCurrent() == 0)) {
             this.getSession().message(
-                    NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"));
-            Growl.instance().notify(
                     NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"),
                     this.getName());
         }

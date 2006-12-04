@@ -623,7 +623,7 @@ public class CDMainController extends CDController {
             NSWindow window = (NSWindow) windows.objectAtIndex(count);
             CDBrowserController controller = CDBrowserController.controllerForWindow(window);
             if (null != controller) {
-                controller.unmount(false, false);
+                controller.unmount(false);
             }
         }
     }
@@ -711,7 +711,8 @@ public class CDMainController extends CDController {
                         }
                     }
                     else {
-                        controller.unmount(true, false);
+                        controller.interrupt();
+                        controller.unmount(true);
                     }
                 }
             }

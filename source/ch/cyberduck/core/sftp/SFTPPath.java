@@ -27,7 +27,6 @@ import com.sshtools.j2ssh.sftp.SftpFileOutputStream;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -159,7 +158,6 @@ public class SFTPPath extends Path {
                     this.error("Listing directory failed", e);
                 }
                 catch(IOException e) {
-                    childs.attributes().setReadable(false);
                     this.error("Connection failed", e);
                     session.interrupt();
                 }
@@ -458,16 +456,10 @@ public class SFTPPath extends Path {
                 }
             }
             catch(SshException e) {
-                Growl.instance().notify(
-                        NSBundle.localizedString("Download failed", "Growl", "Growl Notification"),
-                        this.getName());
-                this.error("Download failed", e);
+                this.error("Download failed", e, this.getName());
             }
             catch(IOException e) {
-                Growl.instance().notify(
-                        NSBundle.localizedString("Download failed", "Growl", "Growl Notification"),
-                        this.getName());
-                this.error("Connection failed", e);
+                this.error("Connection failed", e, this.getName());
                 session.interrupt();
             }
             finally {
@@ -497,12 +489,11 @@ public class SFTPPath extends Path {
             try {
                 this.status.reset();
                 SftpFile f = null;
+                if(this.attributes.isDirectory()) {
+                    this.mkdir();
+                }
                 if(this.attributes.isFile()) {
                     session.check();
-                    in = new FileInputStream(this.getLocal());
-                    if(null == in) {
-                        throw new IOException("Unable to buffer data");
-                    }
                     if(this.status.isResume()) {
                         f = session.SFTP.openFile(this.getAbsolute(),
                                 SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
@@ -514,21 +505,47 @@ public class SFTPPath extends Path {
                                         SftpSubsystemClient.OPEN_WRITE | //File open flag, opens the file for writing.
                                         SftpSubsystemClient.OPEN_TRUNCATE); //File open flag, forces an existing file with the same name to be truncated to zero length when creating a file by specifying OPEN_CREATE.
                     }
-                    // We do set the permissions here as otehrwise we might have an empty mask for
-                    // interrupted file transfers
-                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        if(this.attributes.getPermission().isUndefined()) {
-                            if(this.attributes.isFile()
-                                    && Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                                this.attributes.setPermission(new Permission(
-                                        Preferences.instance().getProperty("queue.upload.permissions.default"))
-                                );
-                            }
-                            else {
-                                this.attributes.setPermission(this.getLocal().getPermission());
-                            }
+                }
+                // We do set the permissions here as otehrwise we might have an empty mask for
+                // interrupted file transfers
+                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                    if(this.attributes.getPermission().isUndefined()) {
+                        if(this.attributes.isFile()
+                                && Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                            this.attributes.setPermission(new Permission(
+                                    Preferences.instance().getProperty("queue.upload.permissions.default"))
+                            );
                         }
+                        else {
+                            this.attributes.setPermission(this.getLocal().getPermission());
+                        }
+                    }
+                    try {
                         session.SFTP.changePermissions(this.getAbsolute(), this.attributes.getPermission().getMask());
+                    }
+                    catch(SshException e) {
+                        // We might not be able to change the attributes if we are
+                        // not the owner of the file; but then we still want to proceed as we
+                        // might have group write privileges
+                    }
+                }
+                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                    FileAttributes attrs = new FileAttributes();
+                    attrs.setTimes(f.getAttributes().getModifiedTime(),
+                            new UnsignedInteger32(this.getLocal().getTimestamp() / 1000));
+                    try {
+                        session.SFTP.setAttributes(this.getAbsolute(), attrs);
+                    }
+                    catch(SshException e) {
+                        // We might not be able to change the attributes if we are
+                        // not the owner of the file; but then we still want to proceed as we
+                        // might have group write privileges
+                    }
+                }
+                if(this.attributes.isFile()) {
+                    in = new FileInputStream(this.getLocal());
+                    if(null == in) {
+                        throw new IOException("Unable to buffer data");
                     }
                     if(this.status.isResume()) {
                         this.status.setCurrent(f.getAttributes().getSize().intValue());
@@ -546,43 +563,13 @@ public class SFTPPath extends Path {
                     }
                     this.upload(out, in);
                 }
-                if(session.isConnected()) {
-                    if(this.attributes.isDirectory()) {
-                        this.mkdir();
-                        if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                            Permission perm = this.getLocal().getPermission();
-                            if(!perm.isUndefined()) {
-                                session.SFTP.changePermissions(this.getAbsolute(), perm.getMask());
-                            }
-                        }
-                        f = session.SFTP.openFile(this.getAbsolute(),
-                                SftpSubsystemClient.OPEN_READ);
-                    }
-                    if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                        try {
-                            FileAttributes attrs = new FileAttributes();
-                            attrs.setTimes(f.getAttributes().getModifiedTime(),
-                                    new UnsignedInteger32(this.getLocal().getTimestamp() / 1000));
-                            session.SFTP.setAttributes(this.getAbsolute(), attrs);
-                        }
-                        catch(SshException e) {
-                            log.warn("Cannot write timestamp:"+e.getMessage());
-                        }
-                    }
-                }
                 this.getParent().invalidate();
             }
             catch(SshException e) {
-                Growl.instance().notify(
-                        NSBundle.localizedString("Upload failed", "Growl", "Growl Notification"),
-                        this.getName());
-                this.error("Upload failed", e);
+                this.error("Upload failed", e, this.getName());
             }
             catch(IOException e) {
-                Growl.instance().notify(
-                        NSBundle.localizedString("Upload failed", "Growl", "Growl Notification"),
-                        this.getName());
-                this.error("Connection failed", e);
+                this.error("Connection failed", e, this.getName());
                 session.interrupt();
             }
             finally {

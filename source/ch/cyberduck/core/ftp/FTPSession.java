@@ -24,7 +24,6 @@ import com.enterprisedt.net.ftp.FTPMessageListener;
 import com.enterprisedt.net.ftp.FTPNullReplyException;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import com.apple.cocoa.foundation.NSBundle;
 
@@ -221,7 +220,7 @@ public class FTPSession extends Session {
                 workdir.attributes.setType(Path.DIRECTORY_TYPE);
             }
             catch(IOException e) {
-                this.error("Connection failed", e);
+                this.error(null, "Connection failed", e);
                 this.interrupt();
             }
             return workdir;

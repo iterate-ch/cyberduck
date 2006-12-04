@@ -334,7 +334,7 @@ public class SFTPSession extends Session {
                 log.error("SSH Error: " + e.getMessage());
             }
             catch(IOException e) {
-                this.error("Connection failed", e);
+                this.error(null, "Connection failed", e);
                 this.interrupt();
             }
             return workdir;

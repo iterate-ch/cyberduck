@@ -1678,10 +1678,10 @@ public class CDBrowserController extends CDWindowController
             if(this.session.getHost().getEncoding().equals(encoding)) {
                 return;
             }
-            final boolean force = this.activityRunning;
-            background(new BackgroundAction() {
+            this.interrupt();
+            this.background(new BackgroundAction() {
                 public void run() {
-                    unmount(false, force);
+                    unmount(false);
                 }
 
                 public void cleanup() {
@@ -2216,7 +2216,7 @@ public class CDBrowserController extends CDWindowController
 
     public void uploadPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
-            Path workdir = this.workdir();
+            final Path workdir = this.workdir();
             // selected files on the local filesystem
             NSArray selected = sheet.filenames();
             java.util.Enumeration iterator = selected.objectEnumerator();
@@ -2226,8 +2226,7 @@ public class CDBrowserController extends CDWindowController
                     if(isMounted()) {
                         CDBrowserController.this.invoke(new Runnable() {
                             public void run() {
-                                //hack because the browser has its own cache
-                                session.cache().invalidate(q.getRoot().getParent());
+                                workdir.invalidate();
                                 reloadData(true);
                             }
                         });
@@ -2275,29 +2274,25 @@ public class CDBrowserController extends CDWindowController
         controller.beginSheet(false);
     }
 
-    public void disconnectButtonClicked(final Object sender) {
-        final boolean force = this.activityRunning;
-        background(new BackgroundAction() {
-            public void run() {
-                unmount(false, force);
-            }
-
-            public void cleanup() {
-                ;
-            }
-        });
-    }
-
-    private NSButton interruptButton;
-
-    public void setInterruptButton(NSButton interruptButton) {
-        this.interruptButton = interruptButton;
-        this.interruptButton.setEnabled(false);
-        this.interruptButton.setAction(new NSSelector("interruptButtonClicked", new Class[]{Object.class}));
-    }
-
     public void interruptButtonClicked(final Object sender) {
-        this.session.interrupt();
+        this.interrupt();
+    }
+
+    public void disconnectButtonClicked(final Object sender) {
+        if(this.activityRunning) {
+            this.interrupt();
+        }
+        else {
+            this.background(new BackgroundAction() {
+                public void run() {
+                    unmount(false);
+                }
+
+                public void cleanup() {
+                    ;
+                }
+            });
+        }
     }
 
     public void showHiddenFilesClicked(final Object sender) {
@@ -2386,10 +2381,11 @@ public class CDBrowserController extends CDWindowController
             if(o != null) {
                 NSArray elements = (NSArray) o;
                 final Queue q = new UploadQueue();
+                final Path workdir = this.workdir();
                 Session session = (Session) this.getSession().clone();
                 for(int i = 0; i < elements.count(); i++) {
                     Path p = PathFactory.createPath(session,
-                            workdir().getAbsolute(),
+                            workdir.getAbsolute(),
                             new Local((String) elements.objectAtIndex(i)));
                     q.addRoot(p);
                 }
@@ -2400,8 +2396,7 @@ public class CDBrowserController extends CDWindowController
                             if(isMounted()) {
                                 CDBrowserController.this.invoke(new Runnable() {
                                     public void run() {
-                                        //hack because the browser has its own cache
-                                        CDBrowserController.this.session.cache().invalidate(q.getRoot().getParent());
+                                        workdir.invalidate();
                                         CDBrowserController.this.reloadData(true);
                                     }
                                 });
@@ -2545,6 +2540,10 @@ public class CDBrowserController extends CDWindowController
             // The connection has already been closed asynchronously;
             // this can happen if the user closes a connection that is about to be opened
             return;
+        }
+        if(path.isCached()) {
+            //Reset the readable attribute
+            path.cache().attributes().setReadable(true);
         }
         if(!path.list().attributes().isReadable()) {
             // the path given cannot be read either because it doesn't exist
@@ -2728,11 +2727,11 @@ public class CDBrowserController extends CDWindowController
         if(this.unmount(new CDSheetCallback() {
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
-                    final boolean force = activityRunning;
+                    interrupt();
                     // The user has approved closing the current session
                     background(new BackgroundAction() {
                         public void run() {
-                            unmount(true, force);
+                            unmount(true);
                         }
 
                         public void cleanup() {
@@ -2764,20 +2763,13 @@ public class CDBrowserController extends CDWindowController
      * Will close the session but still display the current working directory without any confirmation
      * from the user
      * @param forever The session won't be remounted in any case; will clear the cache
-     * @param force Close the underlying socket without properly exiting the session
      */
-    public void unmount(final boolean forever, final boolean force) {
+    public void unmount(final boolean forever) {
         // This is not synchronized to the <code>mountingLock</code> intentionally; this allows to unmount
         // sessions not yet connected
         if(this.hasSession()) {
-            if(force) {
-                //Interrupt any operation in progress; just closes the socket without any goodbye message
-                this.session.interrupt();
-            }
-            else {
-                //Close the connection gracefully
-                this.session.close();
-            }
+            //Close the connection gracefully
+            this.session.close();
             if(forever) {
                 this.session.cache().clear();
                 this.session = null;
@@ -2802,10 +2794,10 @@ public class CDBrowserController extends CDWindowController
                 ), callback);
                 return false;
             }
-            final boolean force = this.activityRunning;
+            this.interrupt();
             this.background(new BackgroundAction() {
                 public void run() {
-                    unmount(true, force);
+                    unmount(true);
                 }
 
                 public void cleanup() {
@@ -2815,6 +2807,16 @@ public class CDBrowserController extends CDWindowController
         }
         // Unmount succeeded
         return true;
+    }
+
+    protected void interrupt() {
+        if(this.hasSession()) {
+            if(this.activityRunning) {
+                //Interrupt any operation in progress; just
+                //closes the socket without any quit message
+                this.session.interrupt();
+            }
+        }
     }
 
     /**
@@ -2868,10 +2870,10 @@ public class CDBrowserController extends CDWindowController
         return this.unmount(new CDSheetCallback() {
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
-                    final boolean force = activityRunning;
+                    interrupt();
                     background(new BackgroundAction() {
                         public void run() {
-                            unmount(true, force);
+                            unmount(true);
                         }
 
                         public void cleanup() {

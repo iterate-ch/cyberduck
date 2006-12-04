@@ -109,7 +109,8 @@ public abstract class Session extends NSObject {
         }
         catch(SocketException e) {
             this.interrupt();
-            this.connect();
+            // Do not try to reconnect, because this exception is
+            // thrown when the socket is interrupted by the user
         }
         catch(SocketTimeoutException e) {
             this.interrupt();
@@ -182,10 +183,7 @@ public abstract class Session extends NSObject {
                 }
             }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                Growl.instance().notify(
-                        NSBundle.localizedString("Connection failed", "Growl", "Growl Notification"),
-                        host.getHostname());
+                this.error(null, "Connection failed", e, host.getHostname());
                 this.interrupt();
             }
             return null;
@@ -351,12 +349,23 @@ public abstract class Session extends NSObject {
         progressListeners.remove(listener);
     }
 
-    public void message(final String message) {
+    /**
+     * @param message
+     * @param title If not null, then send the message to Growl
+     */
+    public void message(final String message, String title) {
         log.info(message);
         ProgressListener[] l = (ProgressListener[]) progressListeners.toArray(new ProgressListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].message(message);
         }
+        if(title != null) {
+            Growl.instance().notify(NSBundle.localizedString(message, "Growl"), title);
+        }
+    }
+
+    public void message(final String message) {
+        this.message(message, null);
     }
 
     private Vector errorListeners = new Vector();
@@ -369,16 +378,26 @@ public abstract class Session extends NSObject {
         errorListeners.remove(listener);
     }
 
-    public void error(String message, Exception e) {
-        this.error(null, message, e);
+    public void error(Path path, String message, Exception e) {
+        this.error(path, message, e, null);
     }
 
-    public void error(Path path, String message, Exception e) {
+    /**
+     *
+     * @param path
+     * @param message
+     * @param e
+     * @param title If not null, send the error to Growl
+     */
+    public void error(Path path, String message, Exception e, String title) {
         log.info(e.getMessage());
         BackgroundException failure = new BackgroundException(this, path, message, e);
         ErrorListener[] l = (ErrorListener[]) errorListeners.toArray(new ErrorListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].error(failure);
+        }
+        if(title != null) {
+            Growl.instance().notify(NSBundle.localizedString(message, "Growl"), title);
         }
     }
 
