@@ -218,7 +218,13 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             if (o != null) {
                 NSArray elements = (NSArray) o;
                 final Queue q = new UploadQueue();
-                Session session = (Session)controller.workdir().getSession().clone();
+                Session session;
+                if(Preferences.instance().getInteger("connection.pool.max") == 1) {
+                    session = controller.getSession();
+                }
+                else {
+                    session = (Session) controller.getSession().clone();
+                }
                 for (int i = 0; i < elements.count(); i++) {
                     Path p = PathFactory.createPath(session,
                             destination.getAbsolute(),
@@ -226,7 +232,6 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     q.addRoot(p);
                 }
                 if (q.numberOfRoots() > 0) {
-                    CDQueueController.instance().startItem(q);
                     q.addListener(new QueueAdapter() {
                         public void queueStopped() {
                             if (controller.isMounted()) {
@@ -241,6 +246,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                             q.removeListener(this);
                         }
                     });
+                    controller.transfer(q);
                 }
             }
             return true;

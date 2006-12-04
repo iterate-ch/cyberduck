@@ -2086,20 +2086,32 @@ public class CDBrowserController extends CDWindowController
     public void downloadToPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
             Queue q = new DownloadQueue();
-            Session session = (Session) this.session.clone();
+            Session session;
+            if(Preferences.instance().getInteger("connection.pool.max") == 1) {
+                session = this.getSession();
+            }
+            else {
+                session = (Session) this.getSession().clone();
+            }
             for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
                 Path path = (Path) ((Path) i.next()).clone(session);
                 path.setLocal(new Local(sheet.filename(), path.getLocal().getName()));
                 q.addRoot(path);
             }
-            CDQueueController.instance().startItem(q);
+            this.transfer(q);
         }
         lastSelectedDownloadDirectory = sheet.filename();
     }
 
 
     public void downloadAsButtonClicked(final Object sender) {
-        Session session = (Session) this.session.clone();
+        Session session;
+        if(Preferences.instance().getInteger("connection.pool.max") == 1) {
+            session = this.getSession();
+        }
+        else {
+            session = (Session) this.getSession().clone();
+        }
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
             Path path = (Path) ((Path) i.next()).clone(session);
             NSSavePanel panel = NSSavePanel.savePanel();
@@ -2125,19 +2137,26 @@ public class CDBrowserController extends CDWindowController
                 path.setLocal(new Local(filename));
                 Queue q = new DownloadQueue();
                 q.addRoot(path);
-                CDQueueController.instance().startItem(q);
+                this.transfer(q);
             }
         }
     }
 
     public void syncButtonClicked(final Object sender) {
         Path selection;
-        if(this.getSelectionCount() == 1 &&
-                this.getSelectedPath().attributes.isDirectory()) {
-            selection = (Path) this.getSelectedPath().clone((Session) this.session.clone());
+        Session session;
+        if(Preferences.instance().getInteger("connection.pool.max") == 1) {
+            session = this.getSession();
         }
         else {
-            selection = (Path) this.workdir().clone((Session) this.session.clone());
+            session = (Session) this.getSession().clone();
+        }
+        if(this.getSelectionCount() == 1 &&
+                this.getSelectedPath().attributes.isDirectory()) {
+            selection = (Path) this.getSelectedPath().clone(session);
+        }
+        else {
+            selection = (Path) this.workdir().clone(session);
         }
         NSOpenPanel panel = NSOpenPanel.openPanel();
         panel.setCanChooseDirectories(selection.attributes.isDirectory());
@@ -2179,19 +2198,25 @@ public class CDBrowserController extends CDWindowController
                     }
                 });
                 q.addRoot(selection);
-                CDQueueController.instance().startItem(q);
+                this.transfer(q);
             }
         }
     }
 
     public void downloadButtonClicked(final Object sender) {
         Queue q = new DownloadQueue();
-        Session session = (Session) this.session.clone();
+        Session session;
+        if(Preferences.instance().getInteger("connection.pool.max") == 1) {
+            session = this.getSession();
+        }
+        else {
+            session = (Session) this.getSession().clone();
+        }
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
             Path path = (Path) ((Path) i.next()).clone(session);
             q.addRoot(path);
         }
-        CDQueueController.instance().startItem(q);
+        this.transfer(q);
     }
 
     private static String lastSelectedUploadDirectory = null;
@@ -2234,15 +2259,44 @@ public class CDBrowserController extends CDWindowController
                     q.removeListener(this);
                 }
             });
-            Session session = (Session) this.getSession().clone();
+            Session session;
+            if(Preferences.instance().getInteger("connection.pool.max") == 1) {
+                session = this.getSession();
+            }
+            else {
+                session = (Session) this.getSession().clone();
+            }
             while(iterator.hasMoreElements()) {
                 q.addRoot(PathFactory.createPath(session,
                         workdir.getAbsolute(),
                         new Local((String) iterator.nextElement())));
             }
-            CDQueueController.instance().startItem(q);
+            this.transfer(q);
         }
         lastSelectedUploadDirectory = new File(sheet.filename()).getParent();
+    }
+
+    /**
+     * Trasnfers the files either using the queue or using
+     * the browser session if #connection.pool.max is 1
+     * @param q
+     * @see CDQueueController
+     */
+    protected void transfer(final Queue q) {
+        if(Preferences.instance().getInteger("connection.pool.max") == 1) {
+            this.background(new BackgroundAction() {
+                public void run() {
+                    q.run(ValidatorFactory.create(q, CDBrowserController.this));
+                }
+
+                public void cleanup() {
+                    ;
+                }
+            });
+        }
+        else {
+            CDQueueController.instance().startItem(q);
+        }
     }
 
     public void insideButtonClicked(final Object sender) {
@@ -2390,7 +2444,6 @@ public class CDBrowserController extends CDWindowController
                     q.addRoot(p);
                 }
                 if(q.numberOfRoots() > 0) {
-                    CDQueueController.instance().startItem(q);
                     q.addListener(new QueueAdapter() {
                         public void queueStopped() {
                             if(isMounted()) {
@@ -2404,6 +2457,7 @@ public class CDBrowserController extends CDWindowController
                             q.removeListener(this);
                         }
                     });
+                    this.transfer(q);
                 }
             }
         }
