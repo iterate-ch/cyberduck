@@ -91,6 +91,8 @@
                 secureDataChannelCheckbox = NSButton; 
                 showHiddenCheckbox = NSButton; 
                 springLoadedFoldersCheckbox = NSButton; 
+                springLoadedFoldersDelayCheckbox = NSButton; 
+                springLoadedFoldersDelaySlider = NSSlider; 
                 systCheckbox = NSButton; 
                 tabView = NSTabView; 
                 timeoutField = NSTextField; 
