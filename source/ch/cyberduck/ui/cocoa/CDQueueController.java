@@ -298,7 +298,8 @@ public class CDQueueController extends CDWindowController
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                 }
                 else {
-                    urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL(),
+                    urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()
+                            + q.getRoot().getAbsolute(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                     localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiple files", ""),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
@@ -367,7 +368,7 @@ public class CDQueueController extends CDWindowController
      * @param resumeRequested
      * @param reloadRequested
      */
-    public void startItem(final Queue queue, final boolean resumeRequested, final boolean reloadRequested) {
+    private void startItem(final Queue queue, final boolean resumeRequested, final boolean reloadRequested) {
         synchronized(QueueCollection.instance()) {
             if(!QueueCollection.instance().contains(queue)) {
                 this.addItem(queue);
