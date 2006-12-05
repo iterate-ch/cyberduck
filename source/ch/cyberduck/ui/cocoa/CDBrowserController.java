@@ -2520,15 +2520,7 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void cleanup() {
-                try {
-                    statusLabel.setAttributedStringValue(new NSAttributedString(
-                            getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", ""),
-                            CDWindowController.TRUNCATE_MIDDLE_ATTRIBUTES));
-                    statusLabel.display();
-                }
-                finally {
-                    runnable.cleanup();
-                }
+                runnable.cleanup();
             }
         }, backgroundLock);
     }

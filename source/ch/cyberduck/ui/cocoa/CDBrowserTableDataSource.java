@@ -86,9 +86,13 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     // Delay until path is cached in the background
                     controller.background(new BackgroundAction() {
                         public void run() {
-                            path.list();
-                            synchronized(isLoadingListingInBackground) {
-                                isLoadingListingInBackground.remove(path);
+                            try {
+                                path.list();
+                            }
+                            finally {
+                                synchronized(isLoadingListingInBackground) {
+                                    isLoadingListingInBackground.remove(path);
+                                }
                             }
                         }
 
@@ -139,11 +143,11 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             icon = SYMLINK_ICON;
         }
         else if (item.attributes.isDirectory()) {
-            if(extension != null) {
-                icon = CDIconCache.instance().get(extension);
-                log.debug("Loaded icon:"+icon.name());
-                icon.setSize(new NSSize(16f, 16f));
-            }
+//            if(extension != null) {
+//                icon = CDIconCache.instance().get(extension);
+//                log.debug("Loaded icon:"+icon.name());
+//                icon.setSize(new NSSize(16f, 16f));
+//            }
             if(null == icon) {
                 icon = FOLDER_ICON;
             }
@@ -218,8 +222,9 @@ public abstract class CDBrowserTableDataSource extends NSObject {
 
     public int draggingSourceOperationMaskForLocal(boolean local) {
         log.debug("draggingSourceOperationMaskForLocal:" + local);
-        if (local)
+        if (local) {
             return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
+        }
         return NSDraggingInfo.DragOperationCopy;
     }
 

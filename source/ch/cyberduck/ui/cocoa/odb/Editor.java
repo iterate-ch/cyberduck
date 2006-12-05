@@ -111,6 +111,7 @@ public class Editor extends CDController {
 
             public void cleanup() {
                 if (path.status.isComplete()) {
+                    path.getSession().message(NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
                     Editor.this.jni_load();
                     // Important, should always be run on the main thread; otherwise applescript crashes
                     Editor.this.edit(path.getLocal().getAbsolute(), bundleIdentifier);

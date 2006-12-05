@@ -90,7 +90,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
         }
         List childs = this.childs(item);
         if (index < childs.size()) {
-            return (Path) this.childs(item).get(index);
+            return (Path) childs.get(index);
         }
         log.warn("outlineViewChildOfItem: Index "+index+" out of bounds for "+item);
         return null;
