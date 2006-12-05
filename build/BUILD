@@ -16,7 +16,7 @@ You need to install the Java Developer Tools from http://connect.apple.com (Free
 	You need the ant executable (or a symlink to) in /usr/bin/ant.
 
 - jUnit (http://junit.org)
-	Copy junit.jar to <ANT_HOME>/lib/junit.jar
+	Copy <CYBERDUCK_HOME>/lib/junit.jar to <ANT_HOME>/lib/junit.jar
 
 - xcodebuild and make
 	Included with the developer tools. You need XCode 2.3 or later and the Universal SDK.
