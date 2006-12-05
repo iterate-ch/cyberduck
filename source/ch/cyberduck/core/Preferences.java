@@ -285,6 +285,7 @@ public abstract class Preferences {
         defaults.put("ftp.tls.acceptAnyCertificate", "false");
 
         defaults.put("connection.pool.max", "10"); // maximumum concurrent connections to the same host
+        defaults.put("connection.pool.max.default", "10"); // maximumum concurrent connections to the same host
         defaults.put("connection.pool.force", "false"); // force to close an existing connection if the pool is too small
         defaults.put("connection.pool.timeout", "180"); // in seconds
         defaults.put("connection.login.name", System.getProperty("user.name"));

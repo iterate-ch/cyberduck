@@ -987,6 +987,21 @@ public class CDPreferencesController extends CDWindowController {
         }
     }
 
+    private NSButton concurrentConnectionsCheckbox; //IBOutlet
+
+    public void setConcurrentConnectionsCheckbox(NSButton concurrentConnectionsCheckbox) {
+        this.concurrentConnectionsCheckbox = concurrentConnectionsCheckbox;
+        this.concurrentConnectionsCheckbox.setTarget(this);
+        this.concurrentConnectionsCheckbox.setAction(new NSSelector("concurrentConnectionsCheckboxClicked", new Class[]{NSButton.class}));
+        this.concurrentConnectionsCheckbox.setState(Preferences.instance().getInteger("connection.pool.max") == 1 ? NSCell.OnState : NSCell.OffState);
+    }
+
+    public void concurrentConnectionsCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.OnState;
+        Preferences.instance().setProperty("connection.pool.max",
+                enabled ? "1" : Preferences.instance().getProperty("connection.pool.max.default"));
+    }
+
     private NSTextField concurrentConnectionsField; //IBOutlet
 
     public void setConcurrentConnectionsField(NSTextField concurrentConnectionsField) {

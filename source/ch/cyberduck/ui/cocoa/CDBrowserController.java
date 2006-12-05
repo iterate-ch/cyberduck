@@ -854,39 +854,7 @@ public class CDBrowserController extends CDWindowController
                 String identifier = (String) tableColumn.identifier();
                 if(item != null) {
                     if(identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
-                        final String extension = item.getExtension();
-                        NSImage icon = null;
-                        if(item.attributes.isSymbolicLink()) {
-                            icon = CDBrowserTableDataSource.SYMLINK_ICON;
-                        }
-                        else if(item.attributes.isDirectory()) {
-                            if(extension != null) {
-                                icon = CDIconCache.instance().get(extension);
-                                icon.setSize(new NSSize(16f, 16f));
-                            }
-                            if(null == icon) {
-                                icon = FOLDER_ICON;
-                            }
-                            if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")) {
-                                if (!item.attributes.isExecutable()
-                                        || (item.isCached() && !item.cache().attributes().isReadable())) {
-                                    icon = CDBrowserTableDataSource.FOLDER_NOACCESS_ICON;
-                                }
-                                else if(!item.attributes.isReadable()) {
-                                    if(item.attributes.isWritable()) {
-                                        icon = CDBrowserTableDataSource.FOLDER_WRITEONLY_ICON;
-                                    }
-                                }
-                            }
-                        }
-                        else if(item.attributes.isFile()) {
-                            icon = CDIconCache.instance().get(extension);
-                            icon.setSize(new NSSize(16f, 16f));
-                        }
-                        else {
-                            icon = CDBrowserTableDataSource.NOT_FOUND_ICON;
-                        }
-                        ((CDOutlineCell) cell).setIcon(icon);
+                        ((CDOutlineCell) cell).setIcon(browserOutlineModel.iconforPath(item));
                         ((CDOutlineCell) cell).setAttributedStringValue(new NSAttributedString(item.getName(),
                                 CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT));
                     }

@@ -132,42 +132,47 @@ public abstract class CDBrowserTableDataSource extends NSObject {
         }
     }
 
+    public NSImage iconforPath(final Path item) {
+        final String extension = item.getExtension();
+        NSImage icon = null;
+        if (item.attributes.isSymbolicLink()) {
+            icon = SYMLINK_ICON;
+        }
+        else if (item.attributes.isDirectory()) {
+            if(extension != null) {
+                icon = CDIconCache.instance().get(extension);
+                log.debug("Loaded icon:"+icon.name());
+                icon.setSize(new NSSize(16f, 16f));
+            }
+            if(null == icon) {
+                icon = FOLDER_ICON;
+            }
+            if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")) {
+                if (!item.attributes.isExecutable()
+                        || (item.isCached() && !item.cache().attributes().isReadable())) {
+                    icon = FOLDER_NOACCESS_ICON;
+                }
+                else if (!item.attributes.isReadable()) {
+                    if (item.attributes.isWritable()) {
+                        icon = FOLDER_WRITEONLY_ICON;
+                    }
+                }
+            }
+        }
+        else if (item.attributes.isFile()) {
+            icon = CDIconCache.instance().get(extension);
+        }
+        else {
+            icon = NOT_FOUND_ICON;
+        }
+        icon.setSize(new NSSize(16f, 16f));
+        return icon;
+    }
+
     public Object objectValueForItem(Path item, String identifier) {
         if (null != item) {
             if (identifier.equals(TYPE_COLUMN)) {
-                final String extension = item.getExtension();
-                NSImage icon = null;
-                if (item.attributes.isSymbolicLink()) {
-                    icon = SYMLINK_ICON;
-                }
-                else if (item.attributes.isDirectory()) {
-                    if(extension != null) {
-                        icon = CDIconCache.instance().get(extension);
-                        icon.setSize(new NSSize(16f, 16f));
-                    }
-                    if(null == icon) {
-                        icon = FOLDER_ICON;
-                    }
-                    if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")) {
-                        if (!item.attributes.isExecutable()
-                                || (item.isCached() && !item.cache().attributes().isReadable())) {
-                            icon = FOLDER_NOACCESS_ICON;
-                        }
-                        else if (!item.attributes.isReadable()) {
-                            if (item.attributes.isWritable()) {
-                                icon = FOLDER_WRITEONLY_ICON;
-                            }
-                        }
-                    }
-                }
-                else if (item.attributes.isFile()) {
-                    icon = CDIconCache.instance().get(extension);
-                }
-                else {
-                    icon = NOT_FOUND_ICON;
-                }
-                icon.setSize(new NSSize(16f, 16f));
-                return icon;
+                return this.iconforPath(item);
             }
             if (identifier.equals(FILENAME_COLUMN)) {
                 return new NSAttributedString(item.getName(),
