@@ -1000,6 +1000,7 @@ public class CDPreferencesController extends CDWindowController {
         boolean enabled = sender.state() == NSCell.OnState;
         Preferences.instance().setProperty("connection.pool.max",
                 enabled ? "1" : Preferences.instance().getProperty("connection.pool.max.default"));
+        this.concurrentConnectionsField.setStringValue(Preferences.instance().getProperty("connection.pool.max"));
     }
 
     private NSTextField concurrentConnectionsField; //IBOutlet
