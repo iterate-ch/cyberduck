@@ -23,6 +23,7 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.ui.cocoa.CDErrorCell;
 import ch.cyberduck.ui.cocoa.CDSheetController;
 import ch.cyberduck.ui.cocoa.CDWindowController;
+import ch.cyberduck.ui.cocoa.CDSheetCallback;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
@@ -40,7 +41,7 @@ import java.util.List;
  * @version $Id: BackgroundActionImpl.java 2524 2006-10-26 13:14:03Z dkocher $
  */
 public abstract class BackgroundActionImpl
-        implements BackgroundAction, ErrorListener, TranscriptListener {
+        implements BackgroundAction, CDSheetCallback, ErrorListener, TranscriptListener {
 
 
     private static Logger log = Logger.getLogger(BackgroundActionImpl.class);
@@ -87,6 +88,10 @@ public abstract class BackgroundActionImpl
     public abstract void run();
 
     public abstract void cleanup();
+
+    public void callback(final int returncode) {
+        ;
+    }
 
     /**
      *
@@ -171,6 +176,7 @@ public abstract class BackgroundActionImpl
                 if(transcript.length() > 0) {
                     transcript.delete(0, transcript.length()-1);
                 }
+                BackgroundActionImpl.this.callback(returncode);
                 if(returncode == DEFAULT_OPTION) { //Try Again
                     // Re-run the action with the previous lock used
                     controller.background(BackgroundActionImpl.this, lock);

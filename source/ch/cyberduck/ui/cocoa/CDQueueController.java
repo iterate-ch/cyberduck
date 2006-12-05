@@ -456,6 +456,13 @@ public class CDQueueController extends CDWindowController
                 }
             }
 
+            public void callback(final int returncode) {
+                if(returncode == CDSheetCallback.DEFAULT_OPTION) { //Try Again
+                    // Upon retry, use resume
+                    queue.setResumeReqested(true);
+                }
+            }
+
             public void cleanup() {
                 window.toolbar().validateVisibleItems();
                 if(queue.isComplete()) {

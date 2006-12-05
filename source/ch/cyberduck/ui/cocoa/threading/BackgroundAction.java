@@ -1,5 +1,7 @@
 package ch.cyberduck.ui.cocoa.threading;
 
+import ch.cyberduck.ui.cocoa.CDSheetCallback;
+
 /*
  *  Copyright (c) 2006 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
