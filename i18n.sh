@@ -237,12 +237,6 @@ while [ "$1" != "" ] # When there are arguments...
 				echo "*** DONE. ***";
 				exit 0;
 			;;
-			--index )
-				echo "Indexing Help Book Pages...";
-				index;
-				echo "*** DONE. ***";
-				exit 0;
-			;;
 			-o | --open)
 				echo "Opening localization .strings files...";
 				open;
