@@ -20,29 +20,26 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.NSDictionary;
 
-import java.util.Map;
-import java.util.HashMap;
-
 /**
  * @version $Id$
  */
-public abstract class QueueFactory {
+public abstract class TransferFactory {
 
     public static final int KIND_DOWNLOAD = 0;
     public static final int KIND_UPLOAD = 1;
     public static final int KIND_SYNC = 2;
 
-    public static Queue create(NSDictionary dict) {
+    public static Transfer create(NSDictionary dict) {
         Object kindObj = dict.objectForKey("Kind");
         if (kindObj != null) {
             int kind = Integer.parseInt((String) kindObj);
             switch (kind) {
                 case KIND_DOWNLOAD:
-                    return new DownloadQueue(dict);
+                    return new DownloadTransfer(dict);
                 case KIND_UPLOAD:
-                    return new UploadQueue(dict);
+                    return new UploadTransfer(dict);
                 case KIND_SYNC:
-                    return new SyncQueue(dict);
+                    return new SyncTransfer(dict);
             }
         }
         throw new IllegalArgumentException("Unknown queue");

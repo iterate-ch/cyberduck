@@ -198,7 +198,7 @@ public class CDBookmarkTableDataSource extends NSObject {
             NSArray filesList = (NSArray) info.draggingPasteboard().propertyListForType(
                     NSPasteboard.FilenamesPboardType);// get the filenames from pasteboard
             // If regular files are dropped, these will be uploaded to the dropped bookmark location
-            Queue q = new UploadQueue();
+            Transfer q = new UploadTransfer();
             Session session = null;
             for(int i = 0; i < filesList.count(); i++) {
                 String filename = (String) filesList.objectAtIndex(i);

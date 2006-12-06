@@ -18,9 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
-import ch.cyberduck.ui.cocoa.threading.BackgroundException;
-
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableArray;
@@ -39,8 +36,8 @@ import java.util.Vector;
 /**
  * @version $Id$
  */
-public abstract class Queue extends NSObject {
-    protected static Logger log = Logger.getLogger(Queue.class);
+public abstract class Transfer extends NSObject {
+    protected static Logger log = Logger.getLogger(Transfer.class);
 
     /**
      *
@@ -71,7 +68,7 @@ public abstract class Queue extends NSObject {
      * Creating an empty queue containing no items. Items have to be added later
      * using the <code>addRoot</code> method.
      */
-    public Queue() {
+    public Transfer() {
 
     }
 
@@ -79,7 +76,7 @@ public abstract class Queue extends NSObject {
      *
      * @param root
      */
-    public Queue(Path root) {
+    public Transfer(Path root) {
         this.roots.add(root);
     }
 
@@ -129,7 +126,7 @@ public abstract class Queue extends NSObject {
         }
     }
 
-    public Queue(NSDictionary dict) {
+    public Transfer(NSDictionary dict) {
         Object hostObj = dict.objectForKey("Host");
         if(hostObj != null) {
             Host host = new Host((NSDictionary) hostObj);

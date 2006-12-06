@@ -30,23 +30,23 @@ import java.util.StringTokenizer;
 /**
  * @version $Id$
  */
-public class SyncQueue extends Queue {
+public class SyncTransfer extends Transfer {
 
-    public SyncQueue() {
+    public SyncTransfer() {
         super();
     }
 
-    public SyncQueue(Path root) {
+    public SyncTransfer(Path root) {
         super(root);
     }
 
-    public SyncQueue(NSDictionary dict) {
+    public SyncTransfer(NSDictionary dict) {
         super(dict);
     }
 
     public NSMutableDictionary getAsDictionary() {
         NSMutableDictionary dict = super.getAsDictionary();
-        dict.setObjectForKey(String.valueOf(QueueFactory.KIND_SYNC), "Kind");
+        dict.setObjectForKey(String.valueOf(TransferFactory.KIND_SYNC), "Kind");
         return dict;
     }
 

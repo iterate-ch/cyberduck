@@ -58,8 +58,6 @@ public class CDQueueController extends CDWindowController
      */
     public void windowDidBecomeKey(NSNotification notification) {
         this.updateSelection();
-        //Saving state of transfer window
-        Preferences.instance().setProperty("queue.openByDefault", true);
     }
 
     /**
@@ -74,8 +72,6 @@ public class CDQueueController extends CDWindowController
      */
     public void windowWillClose(NSNotification notification) {
         QueueCollection.instance().save();
-        //Saving state of transfer window
-        Preferences.instance().setProperty("queue.openByDefault", false);
     }
 
     // ----------------------------------------------------------
@@ -134,7 +130,7 @@ public class CDQueueController extends CDWindowController
     public boolean hasRunningTransfers() {
         synchronized(QueueCollection.instance()) {
             for(int i = 0; i < QueueCollection.instance().size(); i++) {
-                Queue q = (Queue) QueueCollection.instance().get(i);
+                Transfer q = (Transfer) QueueCollection.instance().get(i);
                 if(q.isRunning()) {
                     return true;
                 }
@@ -149,6 +145,8 @@ public class CDQueueController extends CDWindowController
       */
     public static int applicationShouldTerminate(NSApplication app) {
         if(null != instance) {
+            //Saving state of transfer window
+            Preferences.instance().setProperty("queue.openByDefault", instance.window().isVisible());
             if(instance.hasRunningTransfers()) {
                 NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Transfer in progress", ""), //title
                         NSBundle.localizedString("There are items in the queue currently being transferred. Quit anyway?", ""), // message
@@ -161,9 +159,9 @@ public class CDQueueController extends CDWindowController
                         if(returncode == DEFAULT_OPTION) { //Quit
                             synchronized(QueueCollection.instance()) {
                                 for(int i = 0; i < QueueCollection.instance().size(); i++) {
-                                    Queue queue = (Queue) QueueCollection.instance().get(i);
-                                    if(queue.isRunning()) {
-                                        queue.interrupt();
+                                    Transfer transfer = (Transfer) QueueCollection.instance().get(i);
+                                    if(transfer.isRunning()) {
+                                        transfer.interrupt();
                                     }
                                 }
                             }
@@ -205,7 +203,7 @@ public class CDQueueController extends CDWindowController
             public void tableRowDoubleClicked(final Object sender) {
                 synchronized(QueueCollection.instance()) {
                     if(CDQueueController.this.queueTable.selectedRow() != -1) {
-                        Queue item = (Queue) QueueCollection.instance().get(CDQueueController.this.queueTable.selectedRow());
+                        Transfer item = (Transfer) QueueCollection.instance().get(CDQueueController.this.queueTable.selectedRow());
                         if(!item.isRunning()) {
                             reloadButtonClicked(sender);
                         }
@@ -289,7 +287,7 @@ public class CDQueueController extends CDWindowController
                 QueueCollection.instance().getController(i).setHighlighted(queueTable.isRowSelected(i) && key);
             }
             if(queueTable.selectedRow() != -1) {
-                final Queue q = (Queue) QueueCollection.instance().get(queueTable.selectedRow());
+                final Transfer q = (Transfer) QueueCollection.instance().get(queueTable.selectedRow());
                 if(q.numberOfRoots() == 1) {
                     urlField.setAttributedStringValue(new NSAttributedString(q.getRoot().getHost().getURL()
                             + q.getRoot().getAbsolute(),
@@ -330,11 +328,11 @@ public class CDQueueController extends CDWindowController
     /**
      * Remove this item form the list
      *
-     * @param queue
+     * @param transfer
      */
-    public void removeItem(final Queue queue) {
+    public void removeItem(final Transfer transfer) {
         synchronized(QueueCollection.instance()) {
-            QueueCollection.instance().remove(queue);
+            QueueCollection.instance().remove(transfer);
             this.reloadQueueTable();
         }
     }
@@ -342,12 +340,12 @@ public class CDQueueController extends CDWindowController
     /**
      * Add this item to the list; select it and scroll the view to make it visible
      *
-     * @param queue
+     * @param transfer
      */
-    public void addItem(final Queue queue) {
+    public void addItem(final Transfer transfer) {
         synchronized(QueueCollection.instance()) {
             int row = QueueCollection.instance().size();
-            QueueCollection.instance().add(row, queue);
+            QueueCollection.instance().add(row, transfer);
             this.reloadQueueTable();
             this.queueTable.selectRow(row, false);
             this.queueTable.scrollRowToVisible(row);
@@ -356,33 +354,35 @@ public class CDQueueController extends CDWindowController
 
     /**
      *
-     * @param queue
+     * @param transfer
      */
-    public void startItem(final Queue queue) {
-        this.startItem(queue, false, false);
+    public void startItem(final Transfer transfer) {
+        this.startItem(transfer, false, false);
     }
 
     /**
      *
-     * @param queue
+     * @param transfer
      * @param resumeRequested
      * @param reloadRequested
      */
-    private void startItem(final Queue queue, final boolean resumeRequested, final boolean reloadRequested) {
+    private void startItem(final Transfer transfer, final boolean resumeRequested, final boolean reloadRequested) {
         synchronized(QueueCollection.instance()) {
-            if(!QueueCollection.instance().contains(queue)) {
-                this.addItem(queue);
+            if(!QueueCollection.instance().contains(transfer)) {
+                this.addItem(transfer);
             }
         }
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
             this.window.makeKeyAndOrderFront(null);
         }
         this.background(new BackgroundActionImpl(this) {
+            boolean resume = resumeRequested;
+            boolean reload = reloadRequested;
             public void run() {
                 try {
-                    queue.getSession().addErrorListener(this);
-                    queue.getSession().addTranscriptListener(this);
-                    queue.addListener(new QueueListener() {
+                    transfer.getSession().addErrorListener(this);
+                    transfer.getSession().addTranscriptListener(this);
+                    transfer.addListener(new QueueListener() {
 
                         public void transferStarted(final Path path) {
                             if(path.attributes.isFile() && !path.getLocal().exists()) {
@@ -405,23 +405,23 @@ public class CDQueueController extends CDWindowController
                                     window.toolbar().validateVisibleItems();
                                 }
                             });
-                            if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
-                                ((ch.cyberduck.core.sftp.SFTPSession) queue.getSession()).setHostKeyVerificationController(
+                            if(transfer.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
+                                ((ch.cyberduck.core.sftp.SFTPSession) transfer.getSession()).setHostKeyVerificationController(
                                         new CDHostKeyController(CDQueueController.instance()));
                             }
-                            if(queue.getSession() instanceof ch.cyberduck.core.ftps.FTPSSession) {
-                                ((ch.cyberduck.core.ftps.FTPSSession) queue.getSession()).setTrustManager(
+                            if(transfer.getSession() instanceof ch.cyberduck.core.ftps.FTPSSession) {
+                                ((ch.cyberduck.core.ftps.FTPSSession) transfer.getSession()).setTrustManager(
                                         new CDX509TrustManagerController(CDQueueController.instance()));
                             }
-                            queue.getSession().setLoginController(new CDLoginController(CDQueueController.instance()));
+                            transfer.getSession().setLoginController(new CDLoginController(CDQueueController.instance()));
                         }
 
                         public void queueStopped() {
-                            queue.removeListener(this);
-                            if(queue.isComplete() && !queue.isCanceled()) {
-                                if(queue instanceof DownloadQueue) {
+                            transfer.removeListener(this);
+                            if(transfer.isComplete() && !transfer.isCanceled()) {
+                                if(transfer instanceof DownloadTransfer) {
                                     if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
-                                        boolean success = NSWorkspace.sharedWorkspace().openFile(queue.getRoot().getLocal().toString());
+                                        boolean success = NSWorkspace.sharedWorkspace().openFile(transfer.getRoot().getLocal().toString());
                                         log.info("Success opening file:" + success);
                                     }
                                 }
@@ -429,43 +429,44 @@ public class CDQueueController extends CDWindowController
                                     if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
                                         invoke(new Runnable() {
                                             public void run() {
-                                                removeItem(queue);
+                                                removeItem(transfer);
                                             }
                                         });
                                     }
                                 }
                             }
-                            if(queue.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
-                                ((ch.cyberduck.core.sftp.SFTPSession) queue.getSession()).setHostKeyVerificationController(null);
+                            if(transfer.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
+                                ((ch.cyberduck.core.sftp.SFTPSession) transfer.getSession()).setHostKeyVerificationController(null);
                             }
-                            if(queue.getSession() instanceof ch.cyberduck.core.ftps.FTPSSession) {
-                                ((ch.cyberduck.core.ftps.FTPSSession) queue.getSession()).setTrustManager(null);
+                            if(transfer.getSession() instanceof ch.cyberduck.core.ftps.FTPSSession) {
+                                ((ch.cyberduck.core.ftps.FTPSSession) transfer.getSession()).setTrustManager(null);
                             }
-                            queue.getSession().setLoginController(null);
+                            transfer.getSession().setLoginController(null);
                         }
                     });
-                    queue.setResumeReqested(resumeRequested);
-                    queue.setReloadRequested(reloadRequested);
-                    queue.run(ValidatorFactory.create(queue, CDQueueController.this));
+                    transfer.setResumeReqested(resume);
+                    transfer.setReloadRequested(reload);
+                    transfer.run(ValidatorFactory.create(transfer, CDQueueController.this));
                 }
                 finally {
-                    queue.getSession().close();
-                    queue.getSession().cache().clear();
-                    queue.getSession().removeErrorListener(this);
-                    queue.getSession().removeTranscriptListener(this);
+                    transfer.getSession().close();
+                    transfer.getSession().cache().clear();
+                    transfer.getSession().removeErrorListener(this);
+                    transfer.getSession().removeTranscriptListener(this);
                 }
             }
 
             public void callback(final int returncode) {
                 if(returncode == CDSheetCallback.DEFAULT_OPTION) { //Try Again
                     // Upon retry, use resume
-                    queue.setResumeReqested(true);
+                    reload = false;
+                    resume = true;
                 }
             }
 
             public void cleanup() {
                 window.toolbar().validateVisibleItems();
-                if(queue.isComplete()) {
+                if(transfer.isComplete()) {
                     if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
                         if(!hasRunningTransfers()) {
                             window().close();
@@ -570,7 +571,7 @@ public class CDQueueController extends CDWindowController
                 NSArray elements = (NSArray) o;
                 for(int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                    QueueCollection.instance().add(QueueFactory.create(dict));
+                    QueueCollection.instance().add(TransferFactory.create(dict));
                 }
                 pboard.setPropertyListForType(null, "QueuePBoardType");
                 this.reloadQueueTable();
@@ -581,18 +582,18 @@ public class CDQueueController extends CDWindowController
     public void stopButtonClicked(final Object sender) {
         NSEnumerator iterator = queueTable.selectedRowEnumerator();
         while(iterator.hasMoreElements()) {
-            Queue queue = (Queue) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
-            if(queue.isRunning()) {
-                queue.cancel();
+            Transfer transfer = (Transfer) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
+            if(transfer.isRunning()) {
+                transfer.cancel();
             }
         }
     }
 
     public void stopAllButtonClicked(final Object sender) {
         for(int i = 0; i < QueueCollection.instance().size(); i++) {
-            Queue queue = (Queue) QueueCollection.instance().get(i);
-            if(queue.isRunning()) {
-                queue.cancel();
+            Transfer transfer = (Transfer) QueueCollection.instance().get(i);
+            if(transfer.isRunning()) {
+                transfer.cancel();
             }
         }
     }
@@ -601,9 +602,9 @@ public class CDQueueController extends CDWindowController
         NSEnumerator iterator = queueTable.selectedRowEnumerator();
         while(iterator.hasMoreElements()) {
             int i = ((Integer) iterator.nextElement()).intValue();
-            Queue queue = (Queue) QueueCollection.instance().get(i);
-            if(!queue.isRunning()) {
-                this.startItem(queue, true, false);
+            Transfer transfer = (Transfer) QueueCollection.instance().get(i);
+            if(!transfer.isRunning()) {
+                this.startItem(transfer, true, false);
             }
         }
     }
@@ -612,16 +613,16 @@ public class CDQueueController extends CDWindowController
         NSEnumerator iterator = queueTable.selectedRowEnumerator();
         while(iterator.hasMoreElements()) {
             int i = ((Integer) iterator.nextElement()).intValue();
-            Queue queue = (Queue) QueueCollection.instance().get(i);
-            if(!queue.isRunning()) {
-                this.startItem(queue, false, true);
+            Transfer transfer = (Transfer) QueueCollection.instance().get(i);
+            if(!transfer.isRunning()) {
+                this.startItem(transfer, false, true);
             }
         }
     }
 
     public void openButtonClicked(final Object sender) {
         if(this.queueTable.selectedRow() != -1) {
-            Queue q = (Queue) QueueCollection.instance().get(this.queueTable.selectedRow());
+            Transfer q = (Transfer) QueueCollection.instance().get(this.queueTable.selectedRow());
             String file = q.getRoot().getLocal().toString();
             if(!NSWorkspace.sharedWorkspace().openFile(file)) {
                 if(q.isComplete()) {
@@ -650,7 +651,7 @@ public class CDQueueController extends CDWindowController
 
     public void revealButtonClicked(final Object sender) {
         if(this.queueTable.selectedRow() != -1) {
-            Queue q = (Queue) QueueCollection.instance().get(this.queueTable.selectedRow());
+            Transfer q = (Transfer) QueueCollection.instance().get(this.queueTable.selectedRow());
             String file = q.getRoot().getLocal().toString();
             if(!NSWorkspace.sharedWorkspace().selectFile(file, "")) {
                 if(q.isComplete()) {
@@ -682,7 +683,7 @@ public class CDQueueController extends CDWindowController
         int j = 0;
         while(iterator.hasMoreElements()) {
             int i = ((Integer) iterator.nextElement()).intValue();
-            Queue q = (Queue) QueueCollection.instance().get(i - j);
+            Transfer q = (Transfer) QueueCollection.instance().get(i - j);
             if(!q.isRunning()) {
                 QueueCollection.instance().remove(i - j);
                 j++;
@@ -755,7 +756,7 @@ public class CDQueueController extends CDWindowController
                     NSArray elements = (NSArray) o;
                     for(int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                        Queue q = QueueFactory.create(dict);
+                        Transfer q = TransferFactory.create(dict);
                         if(q.numberOfRoots() == 1)
                             item.setTitle(NSBundle.localizedString("Paste", "Menu item") + " \""
                                     + q.getRoot().getName() + "\"");
@@ -803,11 +804,11 @@ public class CDQueueController extends CDWindowController
             NSEnumerator iterator = queueTable.selectedRowEnumerator();
             synchronized(QueueCollection.instance()) {
                 while(iterator.hasMoreElements()) {
-                    Queue queue = (Queue) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
-                    if(null == queue) {
+                    Transfer transfer = (Transfer) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
+                    if(null == transfer) {
                         return false;
                     }
-                    if(queue.isRunning()) {
+                    if(transfer.isRunning()) {
                         return true;
                     }
                 }
@@ -817,11 +818,11 @@ public class CDQueueController extends CDWindowController
         if(identifier.equals("resumeButtonClicked:")) {
             if(this.queueTable.numberOfSelectedRows() > 0) {
                 synchronized(QueueCollection.instance()) {
-                    Queue queue = (Queue) QueueCollection.instance().get(this.queueTable.selectedRow());
-                    if(null == queue) {
+                    Transfer transfer = (Transfer) QueueCollection.instance().get(this.queueTable.selectedRow());
+                    if(null == transfer) {
                         return false;
                     }
-                    return !queue.isRunning() && !queue.isComplete();
+                    return !transfer.isRunning() && !transfer.isComplete();
                 }
             }
             return false;
@@ -829,11 +830,11 @@ public class CDQueueController extends CDWindowController
         if(identifier.equals("reloadButtonClicked:")) {
             if(this.queueTable.numberOfSelectedRows() > 0) {
                 synchronized(QueueCollection.instance()) {
-                    Queue queue = (Queue) QueueCollection.instance().get(this.queueTable.selectedRow());
-                    if(null == queue) {
+                    Transfer transfer = (Transfer) QueueCollection.instance().get(this.queueTable.selectedRow());
+                    if(null == transfer) {
                         return false;
                     }
-                    return !queue.isRunning();
+                    return !transfer.isRunning();
                 }
             }
             return false;
@@ -842,11 +843,11 @@ public class CDQueueController extends CDWindowController
                 || identifier.equals(TOOLBAR_SHOW) || identifier.equals("revealButtonClicked:")) {
             if(this.queueTable.numberOfSelectedRows() == 1) {
                 synchronized(QueueCollection.instance()) {
-                    Queue queue = (Queue) QueueCollection.instance().get(this.queueTable.selectedRow());
-                    if(null == queue) {
+                    Transfer transfer = (Transfer) QueueCollection.instance().get(this.queueTable.selectedRow());
+                    if(null == transfer) {
                         return false;
                     }
-                    return queue.getRoot().getLocal().exists();
+                    return transfer.getRoot().getLocal().exists();
                 }
             }
             return false;
@@ -861,11 +862,11 @@ public class CDQueueController extends CDWindowController
             NSEnumerator iterator = queueTable.selectedRowEnumerator();
             while(iterator.hasMoreElements()) {
                 synchronized(QueueCollection.instance()) {
-                    Queue queue = (Queue) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
-                    if(null == queue) {
+                    Transfer transfer = (Transfer) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
+                    if(null == transfer) {
                         return false;
                     }
-                    if(queue.isRunning()) {
+                    if(transfer.isRunning()) {
                         return false;
                     }
                 }

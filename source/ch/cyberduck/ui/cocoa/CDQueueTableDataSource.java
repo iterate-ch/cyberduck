@@ -63,15 +63,15 @@ public class CDQueueTableDataSource extends NSObject {
         synchronized(QueueCollection.instance()) {
             if (row < numberOfRowsInTableView(view)) {
                 final String identifier = (String) tableColumn.identifier();
-                final Queue queue = (Queue)QueueCollection.instance().get(row);
+                final Transfer transfer = (Transfer)QueueCollection.instance().get(row);
                 if (identifier.equals(ICON_COLUMN)) {
-                    return queue;
+                    return transfer;
                 }
                 if (identifier.equals(PROGRESS_COLUMN)) {
                     return QueueCollection.instance().getController(row).view();
                 }
                 if (identifier.equals(TYPEAHEAD_COLUMN)) {
-                    return queue.getName();
+                    return transfer.getName();
                 }
                 throw new IllegalArgumentException("Unknown identifier: " + identifier);
             }
@@ -121,7 +121,7 @@ public class CDQueueTableDataSource extends NSObject {
                     String file = h.getDefaultPath();
                     if (file.length() > 1) {
                         Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
-                        Queue q = new DownloadQueue();
+                        Transfer q = new DownloadTransfer();
                         q.addRoot(p);
                         CDQueueController.instance().startItem(q);
                         return true;
@@ -145,7 +145,7 @@ public class CDQueueTableDataSource extends NSObject {
                     synchronized(QueueCollection.instance()) {
                         for (int i = 0; i < elements.count(); i++) {
                             NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                            QueueCollection.instance().add(row, QueueFactory.create(dict));
+                            QueueCollection.instance().add(row, TransferFactory.create(dict));
                             tableView.reloadData();
                             tableView.selectRow(row, false);
                         }

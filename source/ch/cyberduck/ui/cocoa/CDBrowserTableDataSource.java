@@ -234,7 +234,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
             if (o != null) {
                 NSArray elements = (NSArray) o;
-                final Queue q = new UploadQueue();
+                final Transfer q = new UploadTransfer();
                 Session session;
                 if(Preferences.instance().getInteger("connection.pool.max") == 1) {
                     session = controller.getSession();
@@ -275,7 +275,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                 final Map files = new HashMap();
                 for (int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                    Queue q = QueueFactory.create(dict);
+                    Transfer q = TransferFactory.create(dict);
                     for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                         Path current = PathFactory.createPath(controller.workdir().getSession(),
                                 ((Path) iter.next()).getAbsolute());
@@ -312,7 +312,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     NSArray elements = (NSArray) o;
                     for (int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                        Queue q = QueueFactory.create(dict);
+                        Transfer q = TransferFactory.create(dict);
                         for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                             Path item = (Path) iter.next();
                             if(!item.getSession().equals(this.controller.getSession())) {
@@ -362,7 +362,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                 // with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory
                 // of files, only include the top directory in the array.
                 NSMutableArray fileTypes = new NSMutableArray();
-                Queue q = new DownloadQueue();
+                Transfer q = new DownloadTransfer();
                 Session session = (Session)controller.workdir().getSession().clone();
                 for (int i = 0; i < items.count(); i++) {
                     promisedDragPaths[i] = (Path)((Path) items.objectAtIndex(i)).clone(session);
@@ -440,7 +440,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     this.promisedDragPaths[0].getLocal().mkdir();
                 }
             }
-            Queue q = new DownloadQueue();
+            Transfer q = new DownloadTransfer();
             for (int i = 0; i < promisedDragPaths.length; i++) {
                 q.addRoot(promisedDragPaths[i]);
             }

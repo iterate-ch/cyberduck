@@ -29,23 +29,23 @@ import java.util.StringTokenizer;
 /**
  * @version $Id$
  */
-public class UploadQueue extends Queue {
+public class UploadTransfer extends Transfer {
 
-    public UploadQueue() {
+    public UploadTransfer() {
         super();
     }
 
-    public UploadQueue(Path root) {
+    public UploadTransfer(Path root) {
         super(root);
     }
 
-    public UploadQueue(NSDictionary dict) {
+    public UploadTransfer(NSDictionary dict) {
         super(dict);
     }
 
     public NSMutableDictionary getAsDictionary() {
         NSMutableDictionary dict = super.getAsDictionary();
-        dict.setObjectForKey(String.valueOf(QueueFactory.KIND_UPLOAD), "Kind");
+        dict.setObjectForKey(String.valueOf(TransferFactory.KIND_UPLOAD), "Kind");
         return dict;
     }
 

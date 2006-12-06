@@ -28,14 +28,14 @@ import ch.cyberduck.ui.cocoa.CDWindowController;
  */
 public class ValidatorFactory {
 
-    public static Validator create(final Queue q, final CDWindowController parent) {
-        if(q instanceof DownloadQueue) {
+    public static Validator create(final Transfer q, final CDWindowController parent) {
+        if(q instanceof DownloadTransfer) {
             return new CDDownloadQueueValidatorController(parent);
         }
-        if(q instanceof UploadQueue) {
+        if(q instanceof UploadTransfer) {
             return new CDUploadQueueValidatorController(parent);
         }
-        if(q instanceof SyncQueue) {
+        if(q instanceof SyncTransfer) {
             return new CDSyncQueueValidatorController(parent);
         }
         return null;

@@ -463,7 +463,7 @@ public class CDMainController extends CDController {
                     if (null != controller) {
                         if (controller.isMounted()) {
                             final Path workdir = controller.workdir();
-                            final Queue q = new UploadQueue();
+                            final Transfer q = new UploadTransfer();
                             q.addListener(new QueueAdapter() {
                                 public void queueStopped() {
                                     if (controller.isMounted()) {
@@ -623,6 +623,9 @@ public class CDMainController extends CDController {
             NSWindow window = (NSWindow) windows.objectAtIndex(count);
             CDBrowserController controller = CDBrowserController.controllerForWindow(window);
             if (null != controller) {
+                if(controller.isBusy()) {
+                    controller.interrupt();
+                }
                 controller.unmount(false);
             }
         }
@@ -711,7 +714,9 @@ public class CDMainController extends CDController {
                         }
                     }
                     else {
-                        controller.interrupt();
+                        if(controller.isBusy()) {
+                            controller.interrupt();
+                        }
                         controller.unmount(true);
                     }
                 }

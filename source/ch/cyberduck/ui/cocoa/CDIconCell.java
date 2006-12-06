@@ -18,12 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.SyncQueue;
+import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.SyncTransfer;
 
-import com.apple.cocoa.application.NSEvent;
 import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSText;
 import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSPoint;
@@ -35,14 +33,14 @@ import com.apple.cocoa.foundation.NSSize;
  */
 public class CDIconCell extends CDTableCell {
 
-    private Queue queue;
+    private Transfer transfer;
 
     public CDIconCell() {
         super();
     }
 
     public void setObjectValue(Object q) {
-        this.queue = (Queue) q;
+        this.transfer = (Transfer) q;
     }
 
     private static final NSImage MULTIPLE_DOCUMENTS_ICON = NSImage.imageNamed("multipleDocuments32.tiff");
@@ -58,18 +56,18 @@ public class CDIconCell extends CDTableCell {
     }
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
-        if(null == queue) {
+        if(null == transfer) {
             return;
         }
         NSPoint cellPoint = cellFrame.origin();
         NSImage fileIcon = NOT_FOUND_ICON;
-        if(queue instanceof SyncQueue) {
+        if(transfer instanceof SyncTransfer) {
             fileIcon = FOLDER_ICON;
         }
-        else if(queue.getRoot().getLocal().exists()) {
-            if(queue.numberOfRoots() == 1) {
-                fileIcon = queue.getRoot().getLocal().attributes.isFile() ? NSWorkspace.sharedWorkspace().iconForFile(
-                        queue.getRoot().getLocal().getAbsolute()) : FOLDER_ICON;
+        else if(transfer.getRoot().getLocal().exists()) {
+            if(transfer.numberOfRoots() == 1) {
+                fileIcon = transfer.getRoot().getLocal().attributes.isFile() ? NSWorkspace.sharedWorkspace().iconForFile(
+                        transfer.getRoot().getLocal().getAbsolute()) : FOLDER_ICON;
                 fileIcon.setSize(new NSSize(32f, 32f));
             }
             else {

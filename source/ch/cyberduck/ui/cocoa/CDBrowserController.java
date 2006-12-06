@@ -256,7 +256,7 @@ public class CDBrowserController extends CDWindowController
             if(localObj != null) {
                 path.setLocal(new Local((String) localObj));
             }
-            final Queue q = new SyncQueue(path);
+            final Transfer q = new SyncTransfer(path);
             q.setResumeReqested(false);
             q.setReloadRequested(false);
             q.run(ValidatorFactory.create(q, this));
@@ -286,7 +286,7 @@ public class CDBrowserController extends CDWindowController
             if(nameObj != null) {
                 path.setLocal(new Local(path.getLocal().getParent(), (String) nameObj));
             }
-            Queue q = new DownloadQueue(path);
+            Transfer q = new DownloadTransfer(path);
             q.setResumeReqested(false);
             q.setReloadRequested(false);
             q.run(ValidatorFactory.create(q, this));
@@ -315,7 +315,7 @@ public class CDBrowserController extends CDWindowController
             if(nameObj != null) {
                 path.setPath(this.workdir().getAbsolute(), (String) nameObj);
             }
-            final Queue q = new UploadQueue(path);
+            final Transfer q = new UploadTransfer(path);
             q.setResumeReqested(false);
             q.setReloadRequested(false);
             q.run(ValidatorFactory.create(q, this));
@@ -1653,7 +1653,9 @@ public class CDBrowserController extends CDWindowController
             if(this.session.getHost().getEncoding().equals(encoding)) {
                 return;
             }
-            this.interrupt();
+            if(this.isBusy()) {
+                this.interrupt();
+            }
             this.background(new BackgroundAction() {
                 public void run() {
                     unmount(false);
@@ -2060,7 +2062,7 @@ public class CDBrowserController extends CDWindowController
 
     public void downloadToPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
-            Queue q = new DownloadQueue();
+            Transfer q = new DownloadTransfer();
             Session session;
             if(Preferences.instance().getInteger("connection.pool.max") == 1) {
                 session = this.getSession();
@@ -2110,7 +2112,7 @@ public class CDBrowserController extends CDWindowController
             if((filename = sheet.filename()) != null) {
                 Path path = (Path) contextInfo;
                 path.setLocal(new Local(filename));
-                Queue q = new DownloadQueue();
+                Transfer q = new DownloadTransfer();
                 q.addRoot(path);
                 this.transfer(q);
             }
@@ -2158,7 +2160,7 @@ public class CDBrowserController extends CDWindowController
             final Path selection = (Path) contextInfo;
             if(sheet.filenames().count() > 0) {
                 selection.setLocal(new Local((String) sheet.filenames().lastObject()));
-                final Queue q = new SyncQueue();
+                final Transfer q = new SyncTransfer();
                 q.addListener(new QueueAdapter() {
                     public void queueStopped() {
                         if(isMounted()) {
@@ -2179,7 +2181,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void downloadButtonClicked(final Object sender) {
-        Queue q = new DownloadQueue();
+        Transfer q = new DownloadTransfer();
         Session session;
         if(Preferences.instance().getInteger("connection.pool.max") == 1) {
             session = this.getSession();
@@ -2220,7 +2222,7 @@ public class CDBrowserController extends CDWindowController
             // selected files on the local filesystem
             NSArray selected = sheet.filenames();
             java.util.Enumeration iterator = selected.objectEnumerator();
-            final Queue q = new UploadQueue();
+            final Transfer q = new UploadTransfer();
             q.addListener(new QueueAdapter() {
                 public void queueStopped() {
                     if(isMounted()) {
@@ -2257,7 +2259,7 @@ public class CDBrowserController extends CDWindowController
      * @param q
      * @see CDQueueController
      */
-    protected void transfer(final Queue q) {
+    protected void transfer(final Transfer q) {
         if(Preferences.instance().getInteger("connection.pool.max") == 1) {
             this.background(new BackgroundAction() {
                 public void run() {
@@ -2308,7 +2310,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void disconnectButtonClicked(final Object sender) {
-        if(this.activityRunning) {
+        if(this.isBusy()) {
             this.interrupt();
         }
         else {
@@ -2388,7 +2390,7 @@ public class CDBrowserController extends CDWindowController
                 }
                 for(int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                    Queue q = QueueFactory.create(dict);
+                    Transfer q = TransferFactory.create(dict);
                     for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                         Path current = PathFactory.createPath(getSession(),
                                 ((Path) iter.next()).getAbsolute());
@@ -2409,7 +2411,7 @@ public class CDBrowserController extends CDWindowController
             Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
             if(o != null) {
                 NSArray elements = (NSArray) o;
-                final Queue q = new UploadQueue();
+                final Transfer q = new UploadTransfer();
                 final Path workdir = this.workdir();
                 Session session;
                 if(Preferences.instance().getInteger("connection.pool.max") == 1) {
@@ -2463,7 +2465,7 @@ public class CDBrowserController extends CDWindowController
 
     public void cut(final Object sender) {
         if(this.getSelectionCount() > 0) {
-            Queue q = new DownloadQueue();
+            Transfer q = new DownloadTransfer();
             for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
                 q.addRoot((Path) i.next());
             }
@@ -2486,6 +2488,14 @@ public class CDBrowserController extends CDWindowController
      * A task is in progress; e.g. a file listing is expected from the server
      */
     private boolean activityRunning;
+
+    /**
+     *
+     * @return true if there is any network activity running in the background
+     */
+    public boolean isBusy() {
+        return this.activityRunning;
+    }
 
     /**
      * A lock to make sure that actions are not run in parallel
@@ -2754,7 +2764,9 @@ public class CDBrowserController extends CDWindowController
         if(this.unmount(new CDSheetCallback() {
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
-                    interrupt();
+                    if(isBusy()) {
+                        interrupt();
+                    }
                     // The user has approved closing the current session
                     background(new BackgroundAction() {
                         public void run() {
@@ -2810,7 +2822,7 @@ public class CDBrowserController extends CDWindowController
      */
     public boolean unmount(final CDSheetCallback callback) {
         log.debug("unmount");
-        if(this.isConnected() || this.activityRunning) {
+        if(this.isConnected() || this.isBusy()) {
             if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                 // Defer the unmount to the callback function
                 this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + this.session.getHost().getHostname(), //title
@@ -2821,28 +2833,22 @@ public class CDBrowserController extends CDWindowController
                 ), callback);
                 return false;
             }
-            this.interrupt();
-            this.background(new BackgroundAction() {
-                public void run() {
-                    unmount(true);
-                }
-
-                public void cleanup() {
-                    ;
-                }
-            });
+            if(this.isBusy()) {
+                this.interrupt();
+            }
+            this.unmount(true);
         }
         // Unmount succeeded
         return true;
     }
 
+    /**
+     * Interrupt any operation in progress;
+     * just closes the socket without any quit message sent to the server
+     */
     protected void interrupt() {
         if(this.hasSession()) {
-            if(this.activityRunning) {
-                //Interrupt any operation in progress; just
-                //closes the socket without any quit message
-                this.session.interrupt();
-            }
+            this.session.interrupt();
         }
     }
 
@@ -2897,7 +2903,9 @@ public class CDBrowserController extends CDWindowController
         return this.unmount(new CDSheetCallback() {
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
-                    interrupt();
+                    if(isBusy()) {
+                        interrupt();
+                    }
                     background(new BackgroundAction() {
                         public void run() {
                             unmount(true);
@@ -2922,7 +2930,7 @@ public class CDBrowserController extends CDWindowController
 
         this.pathPopupButton.setEnabled(this.isMounted());
         this.searchField.setEnabled(this.isMounted());
-        this.encodingPopup.setEnabled(!this.activityRunning);
+        this.encodingPopup.setEnabled(!this.isBusy());
     }
 
     /**
@@ -2966,7 +2974,7 @@ public class CDBrowserController extends CDWindowController
                         NSArray elements = (NSArray) o;
                         for(int i = 0; i < elements.count(); i++) {
                             NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                            Queue q = QueueFactory.create(dict);
+                            Transfer q = TransferFactory.create(dict);
                             if(q.numberOfRoots() == 1)
                                 item.setTitle(NSBundle.localizedString("Paste", "Menu item") + " \""
                                         + q.getRoot().getName() + "\"");
@@ -3077,7 +3085,7 @@ public class CDBrowserController extends CDWindowController
             return false;
         }
         if(identifier.equals("encodingButtonClicked:")) {
-            return !activityRunning;
+            return !isBusy();
         }
         if(identifier.equals("deleteBookmarkButtonClicked:")) {
             return bookmarkTable.selectedRow() != -1;
@@ -3169,12 +3177,12 @@ public class CDBrowserController extends CDWindowController
         }
         if(identifier.equals("disconnectButtonClicked:")) {
             if(!this.isConnected()) {
-                return this.activityRunning;
+                return this.isBusy();
             }
             return this.isConnected();
         }
         if(identifier.equals("interruptButtonClicked:")) {
-            return this.activityRunning;
+            return this.isBusy();
         }
         this.validateNavigationButtons();
         return true; // by default everything is enabled
@@ -3198,7 +3206,7 @@ public class CDBrowserController extends CDWindowController
             }
         }
         if(identifier.equals("disconnectButtonClicked:")) {
-            if(activityRunning) {
+            if(this.isBusy()) {
                 item.setLabel(NSBundle.localizedString(TOOLBAR_INTERRUPT, "Toolbar item"));
                 item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_INTERRUPT, "Toolbar item"));
                 item.setToolTip(NSBundle.localizedString("Cancel current operation in progress", "Toolbar item tooltip"));

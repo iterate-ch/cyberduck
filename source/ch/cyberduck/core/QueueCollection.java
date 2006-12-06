@@ -66,7 +66,7 @@ public class QueueCollection extends Collection {
                 try {
                     NSMutableArray list = new NSMutableArray();
                     for(int i = 0; i < this.size(); i++) {
-                        list.addObject(((Queue) this.get(i)).getAsDictionary());
+                        list.addObject(((Transfer) this.get(i)).getAsDictionary());
                     }
                     NSMutableData collection = new NSMutableData();
                     String[] errorString = new String[]{null};
@@ -118,7 +118,7 @@ public class QueueCollection extends Collection {
                         element = i.nextElement();
                         if(element instanceof NSDictionary) {
                             super.add(new CDProgressController(
-                                    QueueFactory.create((NSDictionary) element)));
+                                    TransferFactory.create((NSDictionary) element)));
                         }
                     }
                 }
@@ -127,13 +127,13 @@ public class QueueCollection extends Collection {
     }
 
     public boolean add(Object queue) {
-        super.add(new CDProgressController((Queue) queue));
+        super.add(new CDProgressController((Transfer) queue));
         this.save();
         return true;
     }
 
     public void add(int row, Object queue) {
-        super.add(row, new CDProgressController((Queue) queue));
+        super.add(row, new CDProgressController((Transfer) queue));
         this.save();
     }
 

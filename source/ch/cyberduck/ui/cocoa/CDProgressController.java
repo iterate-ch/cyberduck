@@ -48,10 +48,10 @@ public class CDProgressController extends CDController {
     private static final NSDictionary TRUNCATE_TAIL_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingTailParagraph},
             new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
-    private Queue queue;
+    private Transfer transfer;
 
-    public CDProgressController(final Queue queue) {
-        this.queue = queue;
+    public CDProgressController(final Transfer transfer) {
+        this.transfer = transfer;
         QueueCollection.instance().addListener(new CollectionListener() {
             public void collectionItemAdded(Object item) {
                 ;
@@ -76,7 +76,7 @@ public class CDProgressController extends CDController {
     }
 
     private void init() {
-        this.queue.addListener(new QueueListener() {
+        this.transfer.addListener(new QueueListener() {
             private ProgressListener progress;
             private ConnectionListener connection;
 
@@ -89,9 +89,9 @@ public class CDProgressController extends CDController {
                         progressBar.setNeedsDisplay(true);
                     }
                 });
-                queue.getSession().addConnectionListener(connection = new ConnectionAdapter() {
+                transfer.getSession().addConnectionListener(connection = new ConnectionAdapter() {
                     public void connectionWillOpen() {
-                        queue.getSession().addProgressListener(progress = new ProgressListener() {
+                        transfer.getSession().addProgressListener(progress = new ProgressListener() {
                             public void message(final String message) {
                                 CDProgressController.this.invoke(new Runnable() {
                                     public void run() {
@@ -114,8 +114,8 @@ public class CDProgressController extends CDController {
                         progressBar.setHidden(true);
                     }
                 });
-                queue.getSession().removeProgressListener(progress);
-                queue.getSession().removeConnectionListener(connection);
+                transfer.getSession().removeProgressListener(progress);
+                transfer.getSession().removeConnectionListener(connection);
             }
 
             public void transferStarted(final Path path) {
@@ -123,7 +123,7 @@ public class CDProgressController extends CDController {
                 progressTimer = new NSTimer(0.1, //seconds
                         CDProgressController.this, //target
                         new NSSelector("update", new Class[]{NSTimer.class}),
-                        queue, //userInfo
+                        transfer, //userInfo
                         true); //repeating
                 mainRunLoop.addTimerForMode(progressTimer,
                         NSRunLoop.DefaultRunLoopMode);
@@ -137,7 +137,7 @@ public class CDProgressController extends CDController {
     }
 
     public void awakeFromNib() {
-        this.filenameField.setAttributedStringValue(new NSAttributedString(this.queue.getName(),
+        this.filenameField.setAttributedStringValue(new NSAttributedString(this.transfer.getName(),
                 TRUNCATE_TAIL_PARAGRAPH_DICTIONARY));
         this.progressField.setAttributedStringValue(new NSAttributedString(
                 this.getProgressText(),
@@ -153,15 +153,15 @@ public class CDProgressController extends CDController {
         this.progressField.setAttributedStringValue(
                 new NSAttributedString(this.getProgressText(),
                         TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-        if(queue.isInitialized()) {
-            if(queue.getSize() != -1) {
+        if(transfer.isInitialized()) {
+            if(transfer.getSize() != -1) {
                 this.progressBar.setIndeterminate(false);
                 this.progressBar.setMinValue(0);
-                this.progressBar.setMaxValue(queue.getSize());
-                this.progressBar.setDoubleValue(queue.getCurrent());
+                this.progressBar.setMaxValue(transfer.getSize());
+                this.progressBar.setDoubleValue(transfer.getCurrent());
             }
         }
-        else if(queue.isRunning()) {
+        else if(transfer.isRunning()) {
             this.progressBar.setIndeterminate(true);
         }
     }
@@ -172,7 +172,7 @@ public class CDProgressController extends CDController {
         //the time to start counting bytes transfered
         private long timestamp = System.currentTimeMillis();
         //initial data already transfered
-        private final double initialBytesTransfered = queue.getCurrent();
+        private final double initialBytesTransfered = transfer.getCurrent();
         private double bytesTransferred = 0;
 
         /**
@@ -182,7 +182,7 @@ public class CDProgressController extends CDController {
          * @return The bytes being processed per second
          */
         public float getSpeed() {
-            bytesTransferred = queue.getCurrent();
+            bytesTransferred = transfer.getCurrent();
             if(bytesTransferred > initialBytesTransfered) {
                 // number of seconds data was actually transferred
                 double elapsedTime = (System.currentTimeMillis() - timestamp) / 1000;
@@ -204,18 +204,18 @@ public class CDProgressController extends CDController {
 
     private String getProgressText() {
         StringBuffer b = new StringBuffer();
-        b.append(Status.getSizeAsString(this.queue.getCurrent()));
+        b.append(Status.getSizeAsString(this.transfer.getCurrent()));
         b.append(" ");
         b.append(NSBundle.localizedString("of", "1.2MB of 3.4MB"));
         b.append(" ");
-        b.append(Status.getSizeAsString(queue.getSize()));
-        if(queue.isRunning() && null != meter) {
+        b.append(Status.getSizeAsString(transfer.getSize()));
+        if(transfer.isRunning() && null != meter) {
             float speed = meter.getSpeed();
             if(speed > -1) {
                 b.append(" (");
                 b.append(Status.getSizeAsString(speed));
                 b.append("/sec, ");
-                int remaining = (int) ((queue.getSize() - meter.getBytesTransfered()) / speed);
+                int remaining = (int) ((transfer.getSize() - meter.getBytesTransfered()) / speed);
                 if(remaining > 120) {
                     b.append(remaining / 60);
                     b.append(" ");
@@ -237,8 +237,8 @@ public class CDProgressController extends CDController {
         return b.toString();
     }
 
-    public Queue getQueue() {
-        return this.queue;
+    public Transfer getQueue() {
+        return this.transfer;
     }
 
     private boolean highlighted;
@@ -307,10 +307,10 @@ public class CDProgressController extends CDController {
     public void setTypeIconView(final NSImageView typeIconView) {
         this.typeIconView = typeIconView;
         NSImage icon = ARROW_DOWN_ICON;
-        if(queue instanceof UploadQueue) {
+        if(transfer instanceof UploadTransfer) {
             icon = ARROW_UP_ICON;
         }
-        else if(queue instanceof SyncQueue) {
+        else if(transfer instanceof SyncTransfer) {
             icon = SYNC_ICON;
         }
         this.typeIconView.setImage(icon);
