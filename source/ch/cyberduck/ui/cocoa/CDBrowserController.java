@@ -2062,14 +2062,8 @@ public class CDBrowserController extends CDWindowController
 
     public void downloadToPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
-            Transfer q = new DownloadTransfer();
-            Session session;
-            if(Preferences.instance().getInteger("connection.pool.max") == 1) {
-                session = this.getSession();
-            }
-            else {
-                session = (Session) this.getSession().clone();
-            }
+            final Transfer q = new DownloadTransfer();
+            final Session session = this.getTransferSession();
             for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
                 Path path = (Path) ((Path) i.next()).clone(session);
                 path.setLocal(new Local(sheet.filename(), path.getLocal().getName()));
@@ -2082,13 +2076,7 @@ public class CDBrowserController extends CDWindowController
 
 
     public void downloadAsButtonClicked(final Object sender) {
-        Session session;
-        if(Preferences.instance().getInteger("connection.pool.max") == 1) {
-            session = this.getSession();
-        }
-        else {
-            session = (Session) this.getSession().clone();
-        }
+        final Session session = this.getTransferSession();
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
             Path path = (Path) ((Path) i.next()).clone(session);
             NSSavePanel panel = NSSavePanel.savePanel();
@@ -2120,14 +2108,8 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void syncButtonClicked(final Object sender) {
-        Path selection;
-        Session session;
-        if(Preferences.instance().getInteger("connection.pool.max") == 1) {
-            session = this.getSession();
-        }
-        else {
-            session = (Session) this.getSession().clone();
-        }
+        final Path selection;
+        final Session session = this.getTransferSession();
         if(this.getSelectionCount() == 1 &&
                 this.getSelectedPath().attributes.isDirectory()) {
             selection = (Path) this.getSelectedPath().clone(session);
@@ -2182,13 +2164,7 @@ public class CDBrowserController extends CDWindowController
 
     public void downloadButtonClicked(final Object sender) {
         Transfer q = new DownloadTransfer();
-        Session session;
-        if(Preferences.instance().getInteger("connection.pool.max") == 1) {
-            session = this.getSession();
-        }
-        else {
-            session = (Session) this.getSession().clone();
-        }
+        final Session session = this.getTransferSession();
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
             Path path = (Path) ((Path) i.next()).clone(session);
             q.addRoot(path);
@@ -2236,13 +2212,7 @@ public class CDBrowserController extends CDWindowController
                     q.removeListener(this);
                 }
             });
-            Session session;
-            if(Preferences.instance().getInteger("connection.pool.max") == 1) {
-                session = this.getSession();
-            }
-            else {
-                session = (Session) this.getSession().clone();
-            }
+            final Session session = this.getTransferSession();
             while(iterator.hasMoreElements()) {
                 q.addRoot(PathFactory.createPath(session,
                         workdir.getAbsolute(),
@@ -2251,6 +2221,17 @@ public class CDBrowserController extends CDWindowController
             this.transfer(q);
         }
         lastSelectedUploadDirectory = new File(sheet.filename()).getParent();
+    }
+
+    /**
+     *
+     * @return The session to be used for file transfers
+     */
+    protected Session getTransferSession() {
+        if(Preferences.instance().getInteger("connection.pool.max") == 1) {
+            return this.session;
+        }
+        return (Session) this.getSession().clone();
     }
 
     /**
@@ -2413,13 +2394,7 @@ public class CDBrowserController extends CDWindowController
                 NSArray elements = (NSArray) o;
                 final Transfer q = new UploadTransfer();
                 final Path workdir = this.workdir();
-                Session session;
-                if(Preferences.instance().getInteger("connection.pool.max") == 1) {
-                    session = this.getSession();
-                }
-                else {
-                    session = (Session) this.getSession().clone();
-                }
+                final Session session = this.getTransferSession();
                 for(int i = 0; i < elements.count(); i++) {
                     Path p = PathFactory.createPath(session,
                             workdir.getAbsolute(),

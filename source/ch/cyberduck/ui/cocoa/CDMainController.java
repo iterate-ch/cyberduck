@@ -478,9 +478,9 @@ public class CDMainController extends CDController {
                                     q.removeListener(this);
                                 }
                             });
-                            Session session = (Session)workdir.getSession().clone();
+                            final Session session = controller.getTransferSession();
                             q.addRoot(PathFactory.createPath(session, workdir.getAbsolute(), new Local(f.getAbsolutePath())));
-                            CDQueueController.instance().startItem(q);
+                            controller.transfer(q);
                             break;
                         }
                     }

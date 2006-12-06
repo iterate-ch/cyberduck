@@ -235,13 +235,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             if (o != null) {
                 NSArray elements = (NSArray) o;
                 final Transfer q = new UploadTransfer();
-                Session session;
-                if(Preferences.instance().getInteger("connection.pool.max") == 1) {
-                    session = controller.getSession();
-                }
-                else {
-                    session = (Session) controller.getSession().clone();
-                }
+                final Session session = controller.getTransferSession();
                 for (int i = 0; i < elements.count(); i++) {
                     Path p = PathFactory.createPath(session,
                             destination.getAbsolute(),
@@ -363,7 +357,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                 // of files, only include the top directory in the array.
                 NSMutableArray fileTypes = new NSMutableArray();
                 Transfer q = new DownloadTransfer();
-                Session session = (Session)controller.workdir().getSession().clone();
+                final Session session = controller.getTransferSession();
                 for (int i = 0; i < items.count(); i++) {
                     promisedDragPaths[i] = (Path)((Path) items.objectAtIndex(i)).clone(session);
                     if (promisedDragPaths[i].attributes.isFile()) {
@@ -445,7 +439,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                 q.addRoot(promisedDragPaths[i]);
             }
             if (q.numberOfRoots() > 0) {
-                CDQueueController.instance().startItem(q);
+                controller.transfer(q);
             }
         }
         catch (UnsupportedEncodingException e) {
