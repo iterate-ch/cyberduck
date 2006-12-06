@@ -36,6 +36,7 @@
                 columnPermissionsCheckbox = NSButton; 
                 columnSizeCheckbox = NSButton; 
                 concurrentConnectionForceDisconnectCheckbox = NSButton; 
+                concurrentConnectionsCheckbox = NSButton; 
                 concurrentConnectionsField = NSTextField; 
                 concurrentConnectionsTimeoutField = NSTextField; 
                 confirmDisconnectCheckbox = NSButton; 
