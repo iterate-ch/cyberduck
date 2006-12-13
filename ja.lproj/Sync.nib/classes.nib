@@ -8,19 +8,18 @@
             LANGUAGE = Java; 
             OUTLETS = {
                 cancelButton = NSButton; 
-                downloadRadioCell = NSCell; 
+                downloadRadioCell = NSButton; 
                 fileTableView = NSTableView; 
                 localModificationField = NSTextField; 
                 localSizeField = NSTextField; 
                 localURLField = NSTextField; 
-                mirrorRadioCell = NSCell; 
                 remoteModificationField = NSTextField; 
                 remoteSizeField = NSTextField; 
                 remoteURLField = NSTextField; 
                 statusIndicator = NSProgressIndicator; 
                 syncButton = NSButton; 
                 timezonePopupButton = NSPopUpButton; 
-                uploadRadioCell = NSCell; 
+                uploadRadioCell = NSButton; 
                 window = NSWindow; 
             }; 
             SUPERCLASS = NSObject; 
