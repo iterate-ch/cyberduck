@@ -22,28 +22,28 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public interface QueueListener {
+public interface TransferListener {
 
     /**
      *
      */
-    public abstract  void queueStarted();
+    public abstract void queueStarted();
 
     /**
      *
      */
-    public abstract  void queueStopped();
-
-    /**
-     *
-     * @param path
-     */
-    public abstract  void transferStarted(Path path);
+    public abstract void queueStopped();
 
     /**
      *
      * @param path
      */
-    public abstract  void transferStopped(Path path);
+    public abstract void transferStarted(Path path);
+
+    /**
+     *
+     * @param path
+     */
+    public abstract void transferStopped(Path path);
 
 }

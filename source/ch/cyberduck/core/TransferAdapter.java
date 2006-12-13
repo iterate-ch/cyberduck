@@ -21,7 +21,7 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public class QueueAdapter implements QueueListener {
+public class TransferAdapter implements TransferListener {
 
     public void queueStarted() {
     }
