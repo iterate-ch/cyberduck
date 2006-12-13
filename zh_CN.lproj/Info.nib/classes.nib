@@ -24,7 +24,9 @@
                 pathField = NSTextField; 
                 permissionsBox = NSBox; 
                 recursiveCheckbox = NSButton; 
+                sizeButton = NSButton; 
                 sizeField = NSTextField; 
+                sizeProgress = NSProgressIndicator; 
                 window = NSWindow; 
             }; 
             SUPERCLASS = NSObject; 
