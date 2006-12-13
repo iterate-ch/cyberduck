@@ -26,6 +26,8 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
+import java.util.Vector;
+
 /**
  * @version $Id$
  */
@@ -88,6 +90,8 @@ public abstract class CDWindowController extends CDController
                         runnable.run();
                     }
                     catch(NullPointerException e) {
+                        log.warn(e.getMessage());
+                        log.warn(e.getStackTrace());
                         // We might get a null pointer if the session has been interrupted
                         // during the action in progress and closing the underlying socket
                         // asynchronously. See Session#interrupt
@@ -130,6 +134,22 @@ public abstract class CDWindowController extends CDController
         super.post(timer);
     }
 
+    private Vector listeners = new Vector();
+
+    /**
+     * @param listener
+     */
+    public void addListener(CDWindowListener listener) {
+        listeners.add(listener);
+    }
+
+    /**
+     * @param listener
+     */
+    public void removeListener(CDWindowListener listener) {
+        listeners.remove(listener);
+    }
+
     public void setWindow(NSWindow window) {
         this.window = window;
         (NSNotificationCenter.defaultCenter()).addObserver(this,
@@ -153,6 +173,10 @@ public abstract class CDWindowController extends CDController
      */
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose:"+notification);
+        CDWindowListener[] l = (CDWindowListener[]) listeners.toArray(new CDWindowListener[]{});
+        for(int i = 0; i < l.length; i++) {
+            l[i].windowWillClose();
+        }
         //If the window is closed it is assumed the controller object is no longer used
         this.invalidate();
     }
