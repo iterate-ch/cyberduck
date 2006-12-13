@@ -22,8 +22,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.framework.TestCase;
 
-public class QueueTest extends TestCase {
-    public QueueTest(String name) {
+public class TransferTest extends TestCase {
+    public TransferTest(String name) {
         super(name);
     }
 
@@ -96,6 +96,6 @@ public class QueueTest extends TestCase {
     }
 
     public static Test suite() {
-        return new TestSuite(QueueTest.class);
+        return new TestSuite(TransferTest.class);
     }
 }
