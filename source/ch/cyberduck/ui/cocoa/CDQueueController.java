@@ -382,7 +382,7 @@ public class CDQueueController extends CDWindowController
                 try {
                     transfer.getSession().addErrorListener(this);
                     transfer.getSession().addTranscriptListener(this);
-                    transfer.addListener(new QueueListener() {
+                    transfer.addListener(new TransferListener() {
 
                         public void transferStarted(final Path path) {
                             if(path.attributes.isFile() && !path.getLocal().exists()) {
@@ -421,8 +421,7 @@ public class CDQueueController extends CDWindowController
                             if(transfer.isComplete() && !transfer.isCanceled()) {
                                 if(transfer instanceof DownloadTransfer) {
                                     if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
-                                        boolean success = NSWorkspace.sharedWorkspace().openFile(transfer.getRoot().getLocal().toString());
-                                        log.info("Success opening file:" + success);
+                                        NSWorkspace.sharedWorkspace().openFile(transfer.getRoot().getLocal().toString());
                                     }
                                 }
                                 if(!hasFailed()) {

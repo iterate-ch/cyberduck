@@ -243,21 +243,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     q.addRoot(p);
                 }
                 if (q.numberOfRoots() > 0) {
-                    q.addListener(new QueueAdapter() {
-                        public void queueStopped() {
-                            if (controller.isMounted()) {
-                                controller.invoke(new Runnable() {
-                                    public void run() {
-                                        //hack because the browser has its own cache
-                                        destination.invalidate();
-                                        controller.reloadData(true);
-                                    }
-                                });
-                            }
-                            q.removeListener(this);
-                        }
-                    });
-                    controller.transfer(q);
+                    controller.transfer(q, destination);
                 }
             }
             return true;

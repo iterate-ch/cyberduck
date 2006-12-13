@@ -249,7 +249,7 @@ public class CDBrowserController extends CDWindowController
         log.debug("handleSyncScriptCommand:" + command);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
-            final Path path = PathFactory.createPath((Session)this.session,
+            final Path path = PathFactory.createPath(this.session,
                     (String) args.objectForKey("Path"));
             path.attributes.setType(Path.DIRECTORY_TYPE);
             Object localObj = args.objectForKey("Local");
@@ -268,7 +268,7 @@ public class CDBrowserController extends CDWindowController
         log.debug("handleDownloadScriptCommand:" + command);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
-            final Path path = PathFactory.createPath((Session)this.session,
+            final Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"));
             try {
@@ -298,7 +298,7 @@ public class CDBrowserController extends CDWindowController
         log.debug("handleUploadScriptCommand:" + command);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
-            final Path path = PathFactory.createPath((Session)this.session,
+            final Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     new Local((String) args.objectForKey("Path")));
             if(path.getLocal().isFile()) {
@@ -484,7 +484,8 @@ public class CDBrowserController extends CDWindowController
         if(this.isMounted()) {
             if(!this.workdir().isCached() || this.workdir().cache().attributes().isDirty()) {
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
-                // Delay until path is cached in the background
+                // Delay until path is cached in the
+
                 this.background(new BackgroundAction() {
                     public void run() {
                         workdir().list();
@@ -1964,7 +1965,8 @@ public class CDBrowserController extends CDWindowController
                 return true;
             }
             if(selected.getExtension() != null) {
-                StringTokenizer binaryTypes = new StringTokenizer(Preferences.instance().getProperty("editor.disabledFiles"), " ");
+                StringTokenizer binaryTypes = new StringTokenizer(
+                        Preferences.instance().getProperty("editor.disabledFiles"), " ");
                 while(binaryTypes.hasMoreTokens()) {
                     if(binaryTypes.nextToken().equalsIgnoreCase(selected.getExtension())) {
                         return false;
@@ -2143,21 +2145,8 @@ public class CDBrowserController extends CDWindowController
             if(sheet.filenames().count() > 0) {
                 selection.setLocal(new Local((String) sheet.filenames().lastObject()));
                 final Transfer q = new SyncTransfer();
-                q.addListener(new QueueAdapter() {
-                    public void queueStopped() {
-                        if(isMounted()) {
-                            CDBrowserController.this.invoke(new Runnable() {
-                                public void run() {
-                                    selection.invalidate();
-                                    reloadData(true);
-                                }
-                            });
-                        }
-                        q.removeListener(this);
-                    }
-                });
                 q.addRoot(selection);
-                this.transfer(q);
+                this.transfer(q, selection);
             }
         }
     }
@@ -2199,26 +2188,13 @@ public class CDBrowserController extends CDWindowController
             NSArray selected = sheet.filenames();
             java.util.Enumeration iterator = selected.objectEnumerator();
             final Transfer q = new UploadTransfer();
-            q.addListener(new QueueAdapter() {
-                public void queueStopped() {
-                    if(isMounted()) {
-                        CDBrowserController.this.invoke(new Runnable() {
-                            public void run() {
-                                workdir.invalidate();
-                                reloadData(true);
-                            }
-                        });
-                    }
-                    q.removeListener(this);
-                }
-            });
             final Session session = this.getTransferSession();
             while(iterator.hasMoreElements()) {
                 q.addRoot(PathFactory.createPath(session,
                         workdir.getAbsolute(),
                         new Local((String) iterator.nextElement())));
             }
-            this.transfer(q);
+            this.transfer(q, workdir);
         }
         lastSelectedUploadDirectory = new File(sheet.filename()).getParent();
     }
@@ -2232,6 +2208,35 @@ public class CDBrowserController extends CDWindowController
             return this.session;
         }
         return (Session) this.getSession().clone();
+    }
+
+    /**
+     * 
+     * @param q
+     * @param workdir Will reload the data for this directory in the browser after the
+     * transfer completes
+     * @see #transfer(Transfer)
+     */
+    protected void transfer(final Transfer q, final Path workdir) {
+        final TransferListener l;
+        q.addListener(l = new TransferAdapter() {
+            public void queueStopped() {
+                if (isMounted()) {
+                    workdir.invalidate();
+                    invoke(new Runnable() {
+                        public void run() {
+                            reloadData(true);
+                        }
+                    });
+                }
+            }
+        });
+        this.addListener(new CDWindowListener() {
+            public void windowWillClose() {
+                q.removeListener(l);
+            }
+        });
+        this.transfer(q);
     }
 
     /**
@@ -2402,20 +2407,7 @@ public class CDBrowserController extends CDWindowController
                     q.addRoot(p);
                 }
                 if(q.numberOfRoots() > 0) {
-                    q.addListener(new QueueAdapter() {
-                        public void queueStopped() {
-                            if(isMounted()) {
-                                CDBrowserController.this.invoke(new Runnable() {
-                                    public void run() {
-                                        workdir.invalidate();
-                                        CDBrowserController.this.reloadData(true);
-                                    }
-                                });
-                            }
-                            q.removeListener(this);
-                        }
-                    });
-                    this.transfer(q);
+                    this.transfer(q, workdir);
                 }
             }
         }

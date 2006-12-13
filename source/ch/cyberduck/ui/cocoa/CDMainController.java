@@ -464,23 +464,9 @@ public class CDMainController extends CDController {
                         if (controller.isMounted()) {
                             final Path workdir = controller.workdir();
                             final Transfer q = new UploadTransfer();
-                            q.addListener(new QueueAdapter() {
-                                public void queueStopped() {
-                                    if (controller.isMounted()) {
-                                        controller.invoke(new Runnable() {
-                                            public void run() {
-                                                //hack because the browser has its own cache
-                                                workdir.invalidate();
-                                                controller.reloadData(true);
-                                            }
-                                        });
-                                    }
-                                    q.removeListener(this);
-                                }
-                            });
                             final Session session = controller.getTransferSession();
                             q.addRoot(PathFactory.createPath(session, workdir.getAbsolute(), new Local(f.getAbsolutePath())));
-                            controller.transfer(q);
+                            controller.transfer(q, workdir);
                             break;
                         }
                     }
