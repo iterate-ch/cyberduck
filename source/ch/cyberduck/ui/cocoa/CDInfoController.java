@@ -110,6 +110,23 @@ public class CDInfoController extends CDWindowController {
         this.applyButton.setAction(new NSSelector("applyButtonClicked", new Class[]{Object.class}));
     }
 
+    private NSButton sizeButton;
+
+    public void setSizeButton(NSButton sizeButton) {
+        this.sizeButton = sizeButton;
+        this.sizeButton.setTarget(this);
+        this.sizeButton.setAction(new NSSelector("sizeButtonClicked", new Class[]{Object.class}));
+    }
+
+    private NSProgressIndicator sizeProgress; // IBOutlet
+
+    public void setSizeProgress(final NSProgressIndicator sizeProgress) {
+        this.sizeProgress = sizeProgress;
+        this.sizeProgress.setDisplayedWhenStopped(false);
+        this.sizeProgress.setStyle(NSProgressIndicator.ProgressIndicatorSpinningStyle);
+        this.sizeProgress.setUsesThreadedAnimation(true);
+    }
+
     public NSButton ownerr; //IBOutlet
     public NSButton ownerw; //IBOutlet
     public NSButton ownerx; //IBOutlet
@@ -262,12 +279,8 @@ public class CDInfoController extends CDWindowController {
             }
             this.ownerField.setStringValue(this.numberOfFiles() > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.attributes.getOwner());
-            int size = 0;
-            for (Iterator i = files.iterator(); i.hasNext();) {
-                size += ((Path) i.next()).attributes.getSize();
-            }
-            this.sizeField.setAttributedStringValue(new NSAttributedString(Status.getSizeAsString(size) + " (" + size + " bytes)",
-                    TRUNCATE_MIDDLE_ATTRIBUTES));
+            this.sizeButton.setEnabled(file.attributes.isDirectory());
+            this.updateSize();
             {
                 ownerr.setAllowsMixedState(true);
                 ownerr.setEnabled(false);
@@ -427,5 +440,44 @@ public class CDInfoController extends CDWindowController {
                 controller.reloadData(true);
             }
         });
+    }
+
+    public void sizeButtonClicked(final Object sender) {
+        log.debug("sizeButtonClicked");
+        this.sizeButton.setEnabled(false);
+        this.sizeProgress.startAnimation(null);
+        // send the changes to the remote host
+        controller.background(new BackgroundAction() {
+            public void run() {
+                for (Iterator i = files.iterator(); i.hasNext();) {
+                    Path p = (Path) i.next();
+                    p.attributes.setSize(p.size());
+                    if(!controller.isConnected()) {
+                        break;
+                    }
+                }
+            }
+
+            public void cleanup() {
+                controller.reloadData(true);
+                updateSize();
+                sizeButton.setEnabled(true);
+                sizeProgress.stopAnimation(null);
+            }
+        });
+    }
+
+    /**
+     * Updates the size field by iterating over all files and
+     * rading the cached size value in the attributes of the path
+     */
+    private void updateSize() {
+        int size = 0;
+        for (Iterator i = files.iterator(); i.hasNext();) {
+            size += ((Path) i.next()).attributes.getSize();
+        }
+        this.sizeField.setAttributedStringValue(
+                new NSAttributedString(Status.getSizeAsString(size) + " (" + size + " bytes)",
+                TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 }

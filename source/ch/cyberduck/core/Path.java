@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Iterator;
 
 /**
  * @version $Id$
@@ -350,6 +351,22 @@ public abstract class Path extends NSObject {
     public abstract void changePermissions(Permission perm, boolean recursive);
 
     /**
+     * Calculates recursively the size of this path
+     * @return The size of the file or the sum of all containing files if a directory
+     * @warn Potentially lengthy operation
+     */
+    public double size() {
+        if(this.attributes.isDirectory()) {
+            double size = 0;
+            for(Iterator iter = this.list().iterator(); iter.hasNext(); ) {
+                size += ((Path)iter.next()).size();
+            }
+            return size;
+        }
+        return this.attributes.getSize();
+    }
+
+    /**
      * @return true if this paths points to '/'
      */
     public boolean isRoot() {
@@ -442,7 +459,9 @@ public abstract class Path extends NSObject {
      */
     public abstract void upload();
 
-
+    /**
+     *
+     */
     public void sync() {
         try {
             Preferences.instance().setProperty("queue.upload.preserveDate.fallback", true);
