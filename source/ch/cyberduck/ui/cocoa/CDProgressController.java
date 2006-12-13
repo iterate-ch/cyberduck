@@ -76,10 +76,28 @@ public class CDProgressController extends CDController {
     }
 
     private void init() {
-        this.transfer.addListener(new QueueListener() {
-            private ProgressListener progress;
-            private ConnectionListener connection;
+        final ProgressListener pl = new ProgressListener() {
+            public void message(final String message) {
+                CDProgressController.this.invoke(new Runnable() {
+                    public void run() {
+                        statusText = message;
+                        progressField.setAttributedStringValue(new NSAttributedString(getProgressText(),
+                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                    }
+                });
+            }
+        };
+        final ConnectionListener cl = new ConnectionAdapter() {
+            public void connectionWillOpen() {
+                transfer.getSession().addProgressListener(pl);
+            }
 
+            public void connectionDidClose() {
+                transfer.getSession().removeProgressListener(pl);
+                transfer.getSession().removeConnectionListener(this);
+            }
+        };
+        final TransferListener tl = new TransferListener() {
             public void queueStarted() {
                 CDProgressController.this.invoke(new Runnable() {
                     public void run() {
@@ -89,21 +107,7 @@ public class CDProgressController extends CDController {
                         progressBar.setNeedsDisplay(true);
                     }
                 });
-                transfer.getSession().addConnectionListener(connection = new ConnectionAdapter() {
-                    public void connectionWillOpen() {
-                        transfer.getSession().addProgressListener(progress = new ProgressListener() {
-                            public void message(final String message) {
-                                CDProgressController.this.invoke(new Runnable() {
-                                    public void run() {
-                                        statusText = message;
-                                        progressField.setAttributedStringValue(new NSAttributedString(getProgressText(),
-                                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
+                transfer.getSession().addConnectionListener(cl);
             }
 
             public void queueStopped() {
@@ -114,8 +118,9 @@ public class CDProgressController extends CDController {
                         progressBar.setHidden(true);
                     }
                 });
-                transfer.getSession().removeProgressListener(progress);
-                transfer.getSession().removeConnectionListener(connection);
+                if(transfer.isComplete() && !transfer.isCanceled()) {
+                    transfer.getSession().removeProgressListener(pl);
+                }
             }
 
             public void transferStarted(final Path path) {
@@ -133,7 +138,8 @@ public class CDProgressController extends CDController {
                 progressTimer.invalidate();
                 meter = null;
             }
-        });
+        };
+        this.transfer.addListener(tl);
     }
 
     public void awakeFromNib() {
