@@ -50,7 +50,7 @@ public class UploadTransfer extends Transfer {
     }
 
     public void fireQueueStoppedEvent() {
-        if(this.isComplete() && !this.isCanceled() && !(this.getCurrent() == 0)) {
+        if(this.isComplete() && !this.isCanceled()) {
             this.getSession().message(
                     NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"),
                     this.getName());

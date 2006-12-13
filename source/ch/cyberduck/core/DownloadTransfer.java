@@ -50,7 +50,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     public void fireQueueStoppedEvent() {
-        if(this.isComplete() && !this.isCanceled() && !(this.getCurrent() == 0)) {
+        if(this.isComplete() && !this.isCanceled()) {
             this.getSession().message(
                     NSBundle.localizedString("Download complete", "Growl", "Growl Notification"),
                     this.getName());

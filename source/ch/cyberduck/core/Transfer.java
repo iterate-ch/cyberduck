@@ -85,20 +85,20 @@ public abstract class Transfer extends NSObject {
     /**
      * @param listener
      */
-    public void addListener(QueueListener listener) {
+    public void addListener(TransferListener listener) {
         queueListeners.add(listener);
     }
 
     /**
      * @param listener
      */
-    public void removeListener(QueueListener listener) {
+    public void removeListener(TransferListener listener) {
         queueListeners.remove(listener);
     }
 
     protected void fireQueueStartedEvent() {
         running = true;
-        QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
+        TransferListener[] l = (TransferListener[]) queueListeners.toArray(new TransferListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].queueStarted();
         }
@@ -106,21 +106,21 @@ public abstract class Transfer extends NSObject {
 
     protected void fireQueueStoppedEvent() {
         running = false;
-        QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
+        TransferListener[] l = (TransferListener[]) queueListeners.toArray(new TransferListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].queueStopped();
         }
     }
 
     protected void fireTransferStartedEvent(Path path) {
-        QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
+        TransferListener[] l = (TransferListener[]) queueListeners.toArray(new TransferListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].transferStarted(path);
         }
     }
 
     protected void fireTransferStoppedEvent(Path path) {
-        QueueListener[] l = (QueueListener[]) queueListeners.toArray(new QueueListener[]{});
+        TransferListener[] l = (TransferListener[]) queueListeners.toArray(new TransferListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].transferStopped(path);
         }
@@ -394,7 +394,7 @@ public abstract class Transfer extends NSObject {
     }
 
     public boolean isComplete() {
-        return this.getSize() == this.getCurrent();
+        return this.getSize() == this.getCurrent() && !(this.getCurrent() == 0);
     }
 
     public double getSize() {
