@@ -8,6 +8,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] When the number of allowed concurrent connections to a server is set to one, use the browser session to transfer files [#--]
 - [Feature] Delay for spring-loaded folders can be set [#--]
 - [Feature] Don't use general folder icon for bundles [#--]
+- [Feature] Calculate size of directory [#5]
 - [Bugfix] Disconnecting in the background not blocking the user interface [#--]
 - [Bugfix] Folders marked as inaccessible after timeouts and cannot be opened after reconnecting [#--]
 - [Bugfix] Applescript/Dashboard should not use seperate session for transfers [#--]
