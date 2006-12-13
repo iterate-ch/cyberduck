@@ -72,6 +72,10 @@ public class CDApplescriptabilityController extends NSScriptCommand {
                     });
 				}
             }
+            else {
+                CDBrowserController doc = ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
+                doc.mount(h);
+            }
         }
         catch (java.net.MalformedURLException e) {
             log.error(e.getMessage());
