@@ -30,7 +30,7 @@ Every file dropped onto this folder will then be uploaded to the server specifie
 
 Shows how to check for the existance of a file, create new folders and files and opening a file for editing with the external editor.
 
-- List Sample.scpt
+- Download Sample.scpt
 
 Recursively lists a folder content on the server and prompts for each file found to download.
 
