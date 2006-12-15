@@ -280,7 +280,12 @@ public class Host extends NSObject {
      * @param defaultpath The path to change the working directory to upon connecting
      */
     public void setDefaultPath(String defaultpath) {
-        this.defaultpath = defaultpath;
+        if(null == defaultpath || "".equals(defaultpath)) {
+            this.defaultpath = null;
+        }
+        else {
+            this.defaultpath = Path.normalize(defaultpath);
+        }
     }
 
     /**

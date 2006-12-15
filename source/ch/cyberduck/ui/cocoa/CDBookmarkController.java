@@ -22,7 +22,6 @@ import ch.cyberduck.core.CollectionListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostCollection;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 
 import com.apple.cocoa.application.*;
@@ -92,12 +91,20 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setNicknameField(NSTextField nicknameField) {
         this.nicknameField = nicknameField;
+        (NSNotificationCenter.defaultCenter()).addObserver(this,
+                new NSSelector("nicknameInputDidEndEditing", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.nicknameField);
     }
 
     private NSTextField hostField; // IBOutlet
 
     public void setHostField(NSTextField hostField) {
         this.hostField = hostField;
+        (NSNotificationCenter.defaultCenter()).addObserver(this,
+                new NSSelector("hostInputDidEndEditing", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.hostField);
     }
 
     private NSButton alertIcon; // IBOutlet
@@ -117,12 +124,20 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setPortField(NSTextField portField) {
         this.portField = portField;
+        (NSNotificationCenter.defaultCenter()).addObserver(this,
+                new NSSelector("portInputDidEndEditing", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.portField);
     }
 
     private NSTextField pathField; // IBOutlet
 
     public void setPathField(NSTextField pathField) {
         this.pathField = pathField;
+        (NSNotificationCenter.defaultCenter()).addObserver(this,
+                new NSSelector("pathInputDidEndEditing", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidEndEditingNotification,
+                this.pathField);
     }
 
     private NSTextField urlField; // IBOutlet
@@ -135,6 +150,10 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setUsernameField(NSTextField usernameField) {
         this.usernameField = usernameField;
+        (NSNotificationCenter.defaultCenter()).addObserver(this,
+                new NSSelector("usernameInputDidEndEditing", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.usernameField);
     }
 
     private NSPopUpButton connectmodePopup; //IBOutlet
@@ -232,27 +251,6 @@ public class CDBookmarkController extends CDWindowController {
     public void awakeFromNib() {
         this.cascade();
         this.window.setTitle(this.host.getNickname());
-        // Live editing of values
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
-                new NSSelector("hostInputDidEndEditing", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidChangeNotification,
-                hostField);
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
-                new NSSelector("portInputDidEndEditing", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidChangeNotification,
-                portField);
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
-                new NSSelector("pathInputDidEndEditing", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidChangeNotification,
-                pathField);
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
-                new NSSelector("nicknameInputDidEndEditing", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidChangeNotification,
-                nicknameField);
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
-                new NSSelector("usernameInputDidEndEditing", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidChangeNotification,
-                usernameField);
         this.updateFields();
     }
 

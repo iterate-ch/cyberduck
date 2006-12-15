@@ -156,7 +156,7 @@ public abstract class Path extends NSObject {
      * @param p
      */
     public void setPath(String p) {
-        this.path = this.normalize(p);
+        this.path = Path.normalize(p);
         this.parent = null;
     }
 
@@ -222,7 +222,7 @@ public abstract class Path extends NSObject {
      * @author Adapted from org.apache.webdav
      * @license http://www.apache.org/licenses/LICENSE-2.0
      */
-    private String normalize(final String path) {
+    public static String normalize(final String path) {
         String normalized = path;
         while(!normalized.startsWith(DELIMITER)) {
             normalized = DELIMITER + normalized;

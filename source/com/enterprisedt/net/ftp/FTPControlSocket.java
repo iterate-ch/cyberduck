@@ -616,7 +616,7 @@ public class FTPControlSocket {
             throws IOException
     {
         if(null == controlSock) {
-            log.warn("Cannot interrupt; no socket");
+            log.warn("No control socket to interrupt");
             return;
         }
         controlSock.close();

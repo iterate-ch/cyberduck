@@ -211,6 +211,14 @@ public class CDConnectionController extends CDSheetController {
                 return null;
             }
         });
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("hostFieldTextDidChange", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.hostField);
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("getPasswordFromKeychain", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidEndEditingNotification,
+                this.hostField);
     }
 
     public void hostFieldTextDidChange(final NSNotification sender) {
@@ -266,12 +274,27 @@ public class CDConnectionController extends CDSheetController {
 
     public void setPathField(NSTextField pathField) {
         this.pathField = pathField;
+        (NSNotificationCenter.defaultCenter()).addObserver(this,
+                new NSSelector("pathInputDidEndEditing", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidEndEditingNotification,
+                this.pathField);
+    }
+
+    public void pathInputDidEndEditing(final NSNotification sender) {
+        if(null == pathField.stringValue() || "".equals(pathField.stringValue())) {
+            return;
+        }
+        this.pathField.setStringValue(Path.normalize(pathField.stringValue()));
     }
 
     private NSTextField portField;
 
     public void setPortField(NSTextField portField) {
         this.portField = portField;
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("portFieldTextDidChange", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.portField);
     }
 
     public void portFieldTextDidChange(final NSNotification sender) {
@@ -292,6 +315,10 @@ public class CDConnectionController extends CDSheetController {
 
     public void setUsernameField(NSTextField usernameField) {
         this.usernameField = usernameField;
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("getPasswordFromKeychain", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidEndEditingNotification,
+                this.usernameField);
     }
 
     private NSTextField passField;
@@ -436,10 +463,6 @@ public class CDConnectionController extends CDSheetController {
     public void awakeFromNib() {
         //ControlTextDidChangeNotification
         NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("hostFieldTextDidChange", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidChangeNotification,
-                this.hostField);
-        NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("updateURLLabel", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.hostField);
@@ -452,20 +475,8 @@ public class CDConnectionController extends CDSheetController {
                 NSControl.ControlTextDidChangeNotification,
                 this.portField);
         NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("portFieldTextDidChange", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidChangeNotification,
-                this.portField);
-        NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("updateURLLabel", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
-                this.usernameField);
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("getPasswordFromKeychain", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidEndEditingNotification,
-                this.hostField);
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("getPasswordFromKeychain", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidEndEditingNotification,
                 this.usernameField);
 
         this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
