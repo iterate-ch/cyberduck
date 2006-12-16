@@ -40,11 +40,34 @@ public class Host extends NSObject {
     private String protocol;
     private int port;
     private String hostname;
+    /**
+     * The given name by the user for the bookmark
+     */
     private String nickname;
+    /**
+     * The initial working directory if any
+     */
     private String defaultpath;
+    /**
+     * The credentials to authenticate with
+     */
     private Login login;
+    /**
+     * The character encoding to use for file listings
+     */
     private String encoding;
-    private com.enterprisedt.net.ftp.FTPConnectMode connectMode;
+    /**
+     * The connect mode to use if FTP
+     */
+    private FTPConnectMode connectMode;
+    /**
+     * The maximum number of concurrent sessions to this host
+     */
+    private int maxConnections = -1;
+    /**
+     * The custom download folder
+     */
+    private String downloadFolder;
 
     public static final String HOSTNAME = "Hostname";
     public static final String NICKNAME = "Nickname";
@@ -55,6 +78,8 @@ public class Host extends NSObject {
     public static final String ENCODING = "Encoding";
     public static final String KEYFILE = "Private Key File";
     public static final String FTPCONNECTMODE = "FTP Connect Mode";
+    public static final String MAXCONNECTIONS = "Maximum Connections";
+    public static final String DOWNLOADFOLDER = "Download Folder";
 
     /**
      *
@@ -92,12 +117,20 @@ public class Host extends NSObject {
         }
         Object connectModeObj = dict.objectForKey(Host.FTPCONNECTMODE);
         if(connectModeObj != null) {
-            if(connectModeObj.equals(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE.toString())) {
-                this.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
+            if(connectModeObj.equals(FTPConnectMode.ACTIVE.toString())) {
+                this.setFTPConnectMode(FTPConnectMode.ACTIVE);
             }
-            if(connectModeObj.equals(com.enterprisedt.net.ftp.FTPConnectMode.PASV.toString())) {
-                this.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
+            if(connectModeObj.equals(FTPConnectMode.PASV.toString())) {
+                this.setFTPConnectMode(FTPConnectMode.PASV);
             }
+        }
+        Object connObj = dict.objectForKey(Host.MAXCONNECTIONS);
+        if(connObj != null) {
+            this.setMaxConnections(Integer.parseInt((String) connObj));
+        }
+        Object downloadObj = dict.objectForKey(Host.DOWNLOADFOLDER);
+        if(downloadObj != null) {
+            this.setDownloadFolder((String) downloadObj);
         }
     }
 
@@ -113,17 +146,25 @@ public class Host extends NSObject {
         dict.setObjectForKey(String.valueOf(this.getPort()), Host.PORT);
         dict.setObjectForKey(this.getCredentials().getUsername(), Host.USERNAME);
         dict.setObjectForKey(this.getDefaultPath(), Host.PATH);
-        dict.setObjectForKey(this.getEncoding(), Host.ENCODING);
+        if(null != this.encoding) {
+            dict.setObjectForKey(this.encoding, Host.ENCODING);
+        }
         if(this.getCredentials().getPrivateKeyFile() != null) {
             dict.setObjectForKey(this.getCredentials().getPrivateKeyFile(), Host.KEYFILE);
         }
         if(this.getProtocol().equals(Session.FTP) || this.getProtocol().equals(Session.FTP_TLS)) {
-            if(this.getFTPConnectMode().equals(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE)) {
-                dict.setObjectForKey("active", Host.FTPCONNECTMODE);
+            if(null != this.connectMode) {
+                if(connectMode.equals(FTPConnectMode.ACTIVE))
+                    dict.setObjectForKey(FTPConnectMode.ACTIVE.toString(), Host.FTPCONNECTMODE);
+                else if(connectMode.equals(FTPConnectMode.PASV))
+                    dict.setObjectForKey(FTPConnectMode.PASV.toString(), Host.FTPCONNECTMODE);
             }
-            else {
-                dict.setObjectForKey("passive", Host.FTPCONNECTMODE);
-            }
+        }
+        if(-1 != this.maxConnections) {
+            dict.setObjectForKey(String.valueOf(this.maxConnections), Host.MAXCONNECTIONS);
+        }
+        if(null != this.downloadFolder) {
+            dict.setObjectForKey(this.downloadFolder, Host.DOWNLOADFOLDER);
         }
         return dict;
     }
@@ -469,27 +510,62 @@ public class Host extends NSObject {
     }
 
     public String getEncoding() {
-        if(null == this.encoding)
+        if(null == this.encoding) {
             this.encoding = Preferences.instance().getProperty("browser.charset.encoding");
+        }
         return this.encoding;
     }
 
-    public void setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode connectMode) {
+    public void setFTPConnectMode(FTPConnectMode connectMode) {
         this.connectMode = connectMode;
     }
 
-    public com.enterprisedt.net.ftp.FTPConnectMode getFTPConnectMode() {
-        if(null == this.connectMode) {
-            if(Preferences.instance().getProperty("ftp.connectmode").equals(FTPConnectMode.ACTIVE.toString()))
-                this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE;
-            if(Preferences.instance().getProperty("ftp.connectmode").equals(FTPConnectMode.PASV.toString()))
-                this.connectMode = com.enterprisedt.net.ftp.FTPConnectMode.PASV;
-        }
+    public FTPConnectMode getFTPConnectMode() {
         return this.connectMode;
     }
 
     /**
+     * Set a custom number of concurrent sessions allowed for this host
+     * If not set, connection.pool.max is used.
+     * @param n
+     */
+    public void setMaxConnections(int n) {
+        this.maxConnections = n;
+    }
+
+    /**
+     *
+     * @return The number of concurrent sessions allowed
+     */
+    public int getMaxConnections() {
+        if(-1 == maxConnections) {
+            return Preferences.instance().getInteger("connection.pool.max");
+        }
+        return maxConnections;
+    }
+
+    /**
+     * Set a custom download folder instead of queue.download.folder
+     * @param folder
+     */
+    public void setDownloadFolder(String folder) {
+        this.downloadFolder = folder;
+    }
+
+    /**
+     * The custom folder if any or the default download location
+     * @return
+     */
+    public String getDownloadFolder() {
+        if(null == downloadFolder) {
+            return Preferences.instance().getProperty("queue.download.folder");
+        }
+        return downloadFolder;
+    }
+
+    /**
      * @return The IP address of the remote host if available
+     * @throws UnknownHostException If the address cannot be resolved
      */
     public String getIp() throws UnknownHostException {
         try {

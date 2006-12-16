@@ -54,8 +54,8 @@ public class SessionPool extends Hashtable {
     public synchronized int getSize(Host h) {
         String key = h.getURL();
         if (this.containsKey(key))
-            return Preferences.instance().getInteger("connection.pool.max") - ((List) this.get(key)).size();
-        return Preferences.instance().getInteger("connection.pool.max");
+            return h.getMaxConnections() - ((List) this.get(key)).size();
+        return h.getMaxConnections();
     }
 
     /**
@@ -70,7 +70,7 @@ public class SessionPool extends Hashtable {
         List connections = null;
         if (this.containsKey(key)) {
             connections = (List) this.get(key);
-            while (connections.size() >= Preferences.instance().getInteger("connection.pool.max")) {
+            while (connections.size() >= session.getHost().getMaxConnections()) {
                 try {
                     if (Preferences.instance().getBoolean("connection.pool.force")) {
                         ((Session) connections.get(connections.size() - 1)).close();
@@ -83,7 +83,7 @@ public class SessionPool extends Hashtable {
                 catch (InterruptedException ignored) {
                     //
                 }
-                if (connections.size() >= Preferences.instance().getInteger("connection.pool.max")) {
+                if (connections.size() >= session.getHost().getMaxConnections()) {
                     // not awakened by another session but because of the timeout
                     //I gave up after waiting for "+Preferences.instance().getProperty("connection.pool.timeout")+" seconds
                     throw new IOException(NSBundle.localizedString("Too many simultaneous connections. " +

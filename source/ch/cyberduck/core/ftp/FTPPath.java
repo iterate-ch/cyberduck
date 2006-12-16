@@ -229,7 +229,7 @@ public class FTPPath extends Path {
                     catch(FTPException e) {
                         log.warn("Cannot read timestamp:"+e.getMessage());
                     }
-                    if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+                    if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                         if(this.isASCIIType()) {
                             session.FTP.setTransferType(FTPTransferType.ASCII);
                         }
@@ -237,10 +237,10 @@ public class FTPPath extends Path {
                             session.FTP.setTransferType(FTPTransferType.BINARY);
                         }
                     }
-                    else if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+                    else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.BINARY.toString())) {
                         session.FTP.setTransferType(FTPTransferType.BINARY);
                     }
-                    else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+                    else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.ASCII.toString())) {
                         session.FTP.setTransferType(FTPTransferType.ASCII);
                     }
                     else {
@@ -427,7 +427,7 @@ public class FTPPath extends Path {
                 this.status.reset();
                 if(this.attributes.isFile()) {
                     session.check();
-                    if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+                    if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                         if(this.isASCIIType()) {
                             this.downloadASCII();
                         }
@@ -435,10 +435,10 @@ public class FTPPath extends Path {
                             this.downloadBinary();
                         }
                     }
-                    else if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+                    else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.BINARY.toString())) {
                         this.downloadBinary();
                     }
-                    else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+                    else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.ASCII.toString())) {
                         this.downloadASCII();
                     }
                     else {
@@ -625,7 +625,7 @@ public class FTPPath extends Path {
                 if(this.attributes.isFile()) {
                     session.check();
                     this.attributes.setSize(this.getLocal().getSize());
-                    if(Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+                    if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                         if(this.isASCIIType()) {
                             this.uploadASCII();
                         }
@@ -633,10 +633,10 @@ public class FTPPath extends Path {
                             this.uploadBinary();
                         }
                     }
-                    else if(Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+                    else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.BINARY.toString())) {
                         this.uploadBinary();
                     }
-                    else if(Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+                    else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.ASCII.toString())) {
                         this.uploadASCII();
                     }
                     else {

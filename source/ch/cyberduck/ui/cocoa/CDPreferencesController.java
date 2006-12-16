@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.enterprisedt.net.ftp.FTPConnectMode;
+import com.enterprisedt.net.ftp.FTPTransferType;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.odb.Editor;
@@ -325,6 +326,7 @@ public class CDPreferencesController extends CDWindowController {
         this.defaultBookmarkCombobox.setToolTip(NSBundle.localizedString("Bookmarks", ""));
         this.defaultBookmarkCombobox.removeAllItems();
         this.defaultBookmarkCombobox.addItem(NSBundle.localizedString("None", ""));
+        this.defaultBookmarkCombobox.menu().addItem(new NSMenuItem().separatorItem());
         Iterator iter = HostCollection.instance().iterator();
         while(iter.hasNext()) {
             Host bookmark = (Host) iter.next();
@@ -962,7 +964,9 @@ public class CDPreferencesController extends CDWindowController {
             String filename;
             if ((filename = (String) selected.lastObject()) != null) {
                 Preferences.instance().setProperty("queue.download.folder", filename);
-                this.downloadPathField.setStringValue(Preferences.instance().getProperty("queue.download.folder"));
+                this.downloadPathField.setAttributedStringValue(
+                        new NSAttributedString(Preferences.instance().getProperty("queue.download.folder"),
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
         }
     }
@@ -1186,15 +1190,10 @@ public class CDPreferencesController extends CDWindowController {
 
     public void setDownloadPathField(NSTextField downloadPathField) {
         this.downloadPathField = downloadPathField;
-        this.downloadPathField.setStringValue(Preferences.instance().getProperty("queue.download.folder"));
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("downloadPathFieldDidChange", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidChangeNotification,
-                this.downloadPathField);
-    }
-
-    public void downloadPathFieldDidChange(NSNotification sender) {
-        Preferences.instance().setProperty("queue.download.folder", this.downloadPathField.stringValue());
+        this.downloadPathField.setEditable(false);
+        this.downloadPathField.setAttributedStringValue(
+                new NSAttributedString(Preferences.instance().getProperty("queue.download.folder"),
+                TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private NSTextField extensionsField; //IBOutlet
@@ -1509,30 +1508,30 @@ public class CDPreferencesController extends CDWindowController {
         this.transfermodeCombobox.setAction(new NSSelector("transfermodeComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.transfermodeCombobox.removeAllItems();
         this.transfermodeCombobox.addItemsWithTitles(new NSArray(new String[]{TRANSFERMODE_AUTO, TRANSFERMODE_BINARY, TRANSFERMODE_ASCII}));
-        if (Preferences.instance().getProperty("ftp.transfermode").equals("binary")) {
+        if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.BINARY.toString())) {
             this.transfermodeCombobox.setTitle(TRANSFERMODE_BINARY);
         }
-        else if (Preferences.instance().getProperty("ftp.transfermode").equals("ascii")) {
+        else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.ASCII.toString())) {
             this.transfermodeCombobox.setTitle(TRANSFERMODE_ASCII);
         }
-        else if (Preferences.instance().getProperty("ftp.transfermode").equals("auto")) {
+        else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
             this.transfermodeCombobox.setTitle(TRANSFERMODE_AUTO);
         }
     }
 
     public void transfermodeComboboxClicked(NSPopUpButton sender) {
         if (sender.selectedItem().title().equals(TRANSFERMODE_BINARY)) {
-            Preferences.instance().setProperty("ftp.transfermode", "binary");
+            Preferences.instance().setProperty("ftp.transfermode", FTPTransferType.BINARY.toString());
             this.lineEndingCombobox.setEnabled(false);
             this.extensionsField.setEnabled(false);
         }
         else if (sender.selectedItem().title().equals(TRANSFERMODE_ASCII)) {
-            Preferences.instance().setProperty("ftp.transfermode", "ascii");
+            Preferences.instance().setProperty("ftp.transfermode", FTPTransferType.ASCII.toString());
             this.lineEndingCombobox.setEnabled(true);
             this.extensionsField.setEnabled(false);
         }
         else if (sender.selectedItem().title().equals(TRANSFERMODE_AUTO)) {
-            Preferences.instance().setProperty("ftp.transfermode", "auto");
+            Preferences.instance().setProperty("ftp.transfermode", FTPTransferType.AUTO.toString());
             this.lineEndingCombobox.setEnabled(true);
             this.extensionsField.setEnabled(true);
         }

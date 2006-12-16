@@ -35,6 +35,8 @@ public abstract class CDWindowController extends CDController
 {
     protected static Logger log = Logger.getLogger(CDWindowController.class);
 
+    protected static final String DEFAULT = NSBundle.localizedString("Default", "");
+
     public CDWindowController() {
         super();
     }

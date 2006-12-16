@@ -146,7 +146,6 @@ public class SFTPSession extends Session {
             if(this.isConnected()) {
                 return;
             }
-            SessionPool.instance().add(this);
             this.fireConnectionWillOpenEvent();
             this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getHostname() + "...");
             SSH = new SshClient();

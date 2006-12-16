@@ -18,17 +18,20 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.enterprisedt.net.ftp.FTPConnectMode;
+import com.enterprisedt.net.ftp.FTPTransferType;
+
 import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
-import ch.cyberduck.ui.cocoa.CDPreferencesImpl;
 import ch.cyberduck.ui.cocoa.CDPortablePreferencesImpl;
+import ch.cyberduck.ui.cocoa.CDPreferencesImpl;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
 
-import java.util.HashMap;
 import java.io.File;
+import java.util.HashMap;
 
 /**
  * Holding all application preferences. Default values get overwritten when loading
@@ -266,8 +269,8 @@ public abstract class Preferences {
         //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");
         defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
-        defaults.put("ftp.connectmode", "passive");
-        defaults.put("ftp.transfermode", "binary");
+        defaults.put("ftp.connectmode", FTPConnectMode.PASV.toString());
+        defaults.put("ftp.transfermode", FTPTransferType.BINARY.toString());
         defaults.put("ftp.transfermode.ascii.extensions", "txt cgi htm html shtml xml xsl php php3 js css asp java c cp cpp m h pl py rb sh");
         defaults.put("ftp.line.separator", "unix");
         /**

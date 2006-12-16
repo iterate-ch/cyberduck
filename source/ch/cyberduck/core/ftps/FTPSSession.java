@@ -87,7 +87,6 @@ public class FTPSSession extends FTPSession {
             if(this.isConnected()) {
                 return;
             }
-            SessionPool.instance().add(this);
             this.fireConnectionWillOpenEvent();
             this.message(NSBundle.localizedString("Opening FTP-TLS connection to", "Status", "") + " " + host.getHostname() + "...");
             this.FTP = new FTPSClient(host.getEncoding(), new FTPMessageListener() {
@@ -113,7 +112,7 @@ public class FTPSSession extends FTPSession {
                 else {
                     FTPClient.clearSOCKS();
                 }
-                this.FTP.setConnectMode(this.host.getFTPConnectMode());
+                this.FTP.setConnectMode(this.getConnectMode());
                 this.message(NSBundle.localizedString("FTP connection opened", "Status", ""));
                 ((FTPSClient) this.FTP).auth();
                 this.login();

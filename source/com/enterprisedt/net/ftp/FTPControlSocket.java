@@ -27,15 +27,14 @@ package com.enterprisedt.net.ftp;
 
 import ch.cyberduck.core.Preferences;
 
+import org.apache.log4j.Logger;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.InetSocketAddress;
 import java.util.Vector;
-
-import org.apache.log4j.Logger;
 
 /**
  * Supports client-side FTP operations

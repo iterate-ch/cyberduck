@@ -18,9 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.enterprisedt.net.ftp.FTPConnectMode;
+
 import ch.cyberduck.core.CollectionListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostCollection;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 
@@ -45,7 +48,8 @@ public class CDBookmarkController extends CDWindowController {
         this.protocolPopup = protocolPopup;
         this.protocolPopup.setEnabled(true);
         this.protocolPopup.removeAllItems();
-        this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{Session.FTP_STRING,
+        this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{
+                Session.FTP_STRING,
                 Session.FTP_TLS_STRING,
                 Session.SFTP_STRING}));
         this.protocolPopup.setTarget(this);
@@ -54,15 +58,15 @@ public class CDBookmarkController extends CDWindowController {
 
     public void protocolSelectionChanged(final NSPopUpButton sender) {
         log.debug("protocolSelectionChanged:" + sender);
-        if (protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
+        if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
             this.host.setProtocol(Session.SFTP);
             this.host.setPort(Session.SSH_PORT);
         }
-        if (protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
+        if(protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
             this.host.setProtocol(Session.FTP_TLS);
             this.host.setPort(Session.FTP_PORT);
         }
-        if (protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
+        if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
             this.host.setProtocol(Session.FTP);
             this.host.setPort(Session.FTP_PORT);
         }
@@ -76,15 +80,28 @@ public class CDBookmarkController extends CDWindowController {
         this.encodingPopup = encodingPopup;
         this.encodingPopup.setEnabled(true);
         this.encodingPopup.removeAllItems();
-        this.encodingPopup.addItemsWithTitles(new NSArray(((CDMainController)NSApplication.sharedApplication().delegate()).availableCharsets()));
-        this.encodingPopup.setTitle(this.host.getEncoding());
+        this.encodingPopup.addItem(DEFAULT);
+        this.encodingPopup.menu().addItem(new NSMenuItem().separatorItem());
+        this.encodingPopup.addItemsWithTitles(new NSArray(
+                ((CDMainController) NSApplication.sharedApplication().delegate()).availableCharsets()));
+        if(Preferences.instance().getProperty("browser.charset.encoding").equals(this.host.getEncoding())) {
+            this.encodingPopup.setTitle(DEFAULT);
+        }
+        else {
+            this.encodingPopup.setTitle(this.host.getEncoding());
+        }
         this.encodingPopup.setTarget(this);
         this.encodingPopup.setAction(new NSSelector("encodingSelectionChanged", new Class[]{Object.class}));
     }
 
     public void encodingSelectionChanged(final NSPopUpButton sender) {
         log.debug("encodingSelectionChanged:" + sender);
-        this.host.setEncoding(sender.titleOfSelectedItem());
+        if(sender.titleOfSelectedItem().equals(DEFAULT)) {
+            this.host.setEncoding(null);
+        }
+        else {
+            this.host.setEncoding(sender.titleOfSelectedItem());
+        }
     }
 
     private NSTextField nicknameField; // IBOutlet
@@ -166,26 +183,86 @@ public class CDBookmarkController extends CDWindowController {
         this.connectmodePopup.setTarget(this);
         this.connectmodePopup.setAction(new NSSelector("connectmodePopupClicked", new Class[]{NSPopUpButton.class}));
         this.connectmodePopup.removeAllItems();
+        this.connectmodePopup.addItem(DEFAULT);
+        this.connectmodePopup.menu().addItem(new NSMenuItem().separatorItem());
         this.connectmodePopup.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
-        this.connectmodePopup.itemWithTitle(CONNECTMODE_PASSIVE).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-        this.connectmodePopup.itemWithTitle(CONNECTMODE_ACTIVE).setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-        if (this.host.getProtocol().equals(Session.FTP) || this.host.getProtocol().equals(Session.FTP_TLS)) {
-            if (host.getFTPConnectMode().equals(com.enterprisedt.net.ftp.FTPConnectMode.PASV)) {
+        if(this.host.getProtocol().equals(Session.FTP) || this.host.getProtocol().equals(Session.FTP_TLS)) {
+            if(null == host.getFTPConnectMode()) {
+                this.connectmodePopup.setTitle(DEFAULT);
+            }
+            else if(host.getFTPConnectMode().equals(FTPConnectMode.PASV)) {
                 this.connectmodePopup.setTitle(CONNECTMODE_PASSIVE);
             }
-            if (host.getFTPConnectMode().equals(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE)) {
+            else if(host.getFTPConnectMode().equals(FTPConnectMode.ACTIVE)) {
                 this.connectmodePopup.setTitle(CONNECTMODE_ACTIVE);
             }
         }
     }
 
     public void connectmodePopupClicked(final NSPopUpButton sender) {
-        if (sender.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
-            this.host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
+        if(sender.selectedItem().title().equals(DEFAULT)) {
+            this.host.setFTPConnectMode(null);
         }
-        if (sender.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
-            this.host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
+        else if(sender.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
+            this.host.setFTPConnectMode(FTPConnectMode.ACTIVE);
         }
+        else if(sender.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
+            this.host.setFTPConnectMode(FTPConnectMode.PASV);
+        }
+    }
+
+    private NSButton limitConnectionsButton; //IBOutlet
+
+    public void setLimitConnectionsButton(NSButton limitConnectionsButton) {
+        this.limitConnectionsButton = limitConnectionsButton;
+        this.limitConnectionsButton.setHidden(true);
+        this.limitConnectionsButton.setTarget(this);
+        this.limitConnectionsButton.setAction(new NSSelector("limitConnectionsButtonClicked", new Class[]{NSButton.class}));
+    }
+
+    public void limitConnectionsButtonClicked(final NSButton sender) {
+        this.host.setMaxConnections(sender.state() == NSCell.OnState ? 1 : -1);
+    }
+
+    private NSTextField downloadPathField; //IBOutlet
+
+    public void setDownloadPathField(NSTextField downloadPathField) {
+        this.downloadPathField = downloadPathField;
+        this.downloadPathField.setEditable(false);
+        this.downloadPathField.setAttributedStringValue(new NSAttributedString(host.getDownloadFolder(),
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
+    }
+
+    private NSButton downloadPathButton; //IBOutlet
+
+    public void setDownloadPathButton(NSButton downloadPathButton) {
+        this.downloadPathButton = downloadPathButton;
+        this.downloadPathButton.setTarget(this);
+        this.downloadPathButton.setAction(new NSSelector("downloadPathButtonClicked", new Class[]{NSButton.class}));
+    }
+
+    public void downloadPathButtonClicked(final NSButton sender) {
+        NSOpenPanel panel = NSOpenPanel.openPanel();
+        panel.setCanChooseFiles(false);
+        panel.setCanChooseDirectories(true);
+        panel.setAllowsMultipleSelection(false);
+        panel.setCanCreateDirectories(true);
+        panel.beginSheetForDirectory(null, null, null, this.window, this, new NSSelector("downloadPathPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+    }
+
+    public void downloadPathPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
+        if(returncode == CDSheetCallback.DEFAULT_OPTION) {
+            NSArray selected = sheet.filenames();
+            String filename;
+            if ((filename = (String) selected.lastObject()) != null) {
+                host.setDownloadFolder(filename);
+            }
+        }
+        else {
+            host.setDownloadFolder(null);
+        }
+        this.downloadPathField.setAttributedStringValue(new NSAttributedString(host.getDownloadFolder(),
+                TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private Host host;
@@ -198,7 +275,7 @@ public class CDBookmarkController extends CDWindowController {
 
         public static CDBookmarkController create(final Host host) {
             if(open.containsKey(host)) {
-                return (CDBookmarkController)open.get(host);
+                return (CDBookmarkController) open.get(host);
             }
             final CDBookmarkController c = new CDBookmarkController(host) {
                 public void windowWillClose(NSNotification notification) {
@@ -212,7 +289,6 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     /**
-     *
      * @param host
      */
     private CDBookmarkController(final Host host) {
@@ -237,7 +313,7 @@ public class CDBookmarkController extends CDWindowController {
             }
         });
         synchronized(NSApplication.sharedApplication()) {
-            if (!NSApplication.loadNibNamed("Bookmark", this)) {
+            if(!NSApplication.loadNibNamed("Bookmark", this)) {
                 log.fatal("Couldn't load Bookmark.nib");
             }
         }
@@ -271,7 +347,7 @@ public class CDBookmarkController extends CDWindowController {
 
     public void pkCheckboxSelectionChanged(final NSButton sender) {
         log.debug("pkCheckboxSelectionChanged");
-        if (this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected", ""))) {
+        if(this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected", ""))) {
             NSOpenPanel panel = NSOpenPanel.openPanel();
             panel.setCanChooseDirectories(false);
             panel.setCanChooseFiles(true);
@@ -292,7 +368,7 @@ public class CDBookmarkController extends CDWindowController {
         if(returncode == NSPanel.OKButton) {
             NSArray selected = sheet.filenames();
             java.util.Enumeration enumerator = selected.objectEnumerator();
-            while (enumerator.hasMoreElements()) {
+            while(enumerator.hasMoreElements()) {
                 String pk = NSPathUtilities.stringByAbbreviatingWithTildeInPath(
                         (String) enumerator.nextElement());
                 this.host.getCredentials().setPrivateKeyFile(pk);
@@ -362,19 +438,19 @@ public class CDBookmarkController extends CDWindowController {
         this.nicknameField.setStringValue(this.host.getNickname());
         this.pathField.setStringValue(this.host.getDefaultPath());
         this.usernameField.setStringValue(this.host.getCredentials().getUsername());
-        if (this.host.getProtocol().equals(Session.FTP)) {
+        if(this.host.getProtocol().equals(Session.FTP)) {
             this.protocolPopup.setTitle(Session.FTP_STRING);
         }
-        if (this.host.getProtocol().equals(Session.FTP_TLS)) {
+        if(this.host.getProtocol().equals(Session.FTP_TLS)) {
             this.protocolPopup.setTitle(Session.FTP_TLS_STRING);
         }
-        if (this.host.getProtocol().equals(Session.SFTP)) {
+        if(this.host.getProtocol().equals(Session.SFTP)) {
             this.protocolPopup.setTitle(Session.SFTP_STRING);
         }
         this.connectmodePopup.setEnabled(this.host.getProtocol().equals(Session.FTP) ||
-            this.host.getProtocol().equals(Session.FTP_TLS));
+                this.host.getProtocol().equals(Session.FTP_TLS));
         this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Session.SFTP));
-        if (this.host.getCredentials().usesPublicKeyAuthentication()) {
+        if(this.host.getCredentials().usesPublicKeyAuthentication()) {
             this.pkCheckbox.setState(NSCell.OnState);
             this.pkLabel.setStringValue(this.host.getCredentials().getPrivateKeyFile());
         }

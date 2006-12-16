@@ -248,8 +248,9 @@ public abstract class Session extends NSObject {
         connectionListners.remove(listener);
     }
 
-    protected void fireConnectionWillOpenEvent() {
+    protected void fireConnectionWillOpenEvent() throws IOException {
         log.debug("connectionWillOpen");
+        SessionPool.instance().add(this);
         ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].connectionWillOpen();

@@ -120,9 +120,9 @@ public class CDBrowserController extends CDWindowController
             Object modeObj = args.objectForKey("Mode");
             if(modeObj != null) {
                 if(modeObj.equals(FTPConnectMode.ACTIVE.toString()))
-                    host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.ACTIVE);
+                    host.setFTPConnectMode(FTPConnectMode.ACTIVE);
                 if(modeObj.equals(FTPConnectMode.PASV.toString()))
-                    host.setFTPConnectMode(com.enterprisedt.net.ftp.FTPConnectMode.PASV);
+                    host.setFTPConnectMode(FTPConnectMode.PASV);
             }
         }
         Session session = this.init(host);
@@ -1170,14 +1170,6 @@ public class CDBrowserController extends CDWindowController
             public void tableRowDoubleClicked(final Object sender) {
                 if(bookmarkTable.numberOfSelectedRows() == 1) {
                     final Host selected = (Host) HostCollection.instance().get(bookmarkTable.selectedRow());
-//                    if(CDBrowserController.this.isMounted()) {
-//                        if(Preferences.instance().getBoolean("browser.openBookmarkinNewWindowIfMounted")) {
-//                            CDBrowserController browser =
-//                                    ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument(true);
-//                            browser.mount(selected);
-//                            return;
-//                        }
-//                    }
                     CDBrowserController.this.mount(selected);
                     if(Preferences.instance().getBoolean("browser.closeDrawer")) {
                         bookmarkDrawer.close();
@@ -2204,7 +2196,7 @@ public class CDBrowserController extends CDWindowController
      * @return The session to be used for file transfers
      */
     protected Session getTransferSession() {
-        if(Preferences.instance().getInteger("connection.pool.max") == 1) {
+        if(this.session.getHost().getMaxConnections() == 1) {
             return this.session;
         }
         return (Session) this.getSession().clone();
@@ -2246,7 +2238,7 @@ public class CDBrowserController extends CDWindowController
      * @see CDQueueController
      */
     protected void transfer(final Transfer q) {
-        if(Preferences.instance().getInteger("connection.pool.max") == 1) {
+        if(q.getHost().getMaxConnections() == 1) {
             this.background(new BackgroundAction() {
                 public void run() {
                     q.run(ValidatorFactory.create(q, CDBrowserController.this));

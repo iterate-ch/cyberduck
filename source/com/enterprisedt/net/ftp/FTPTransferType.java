@@ -38,14 +38,28 @@ public class FTPTransferType {
 	/**
 	 * Represents ASCII transfer type
 	 */
-	public static FTPTransferType ASCII = new FTPTransferType();
+	public static FTPTransferType ASCII = new FTPTransferType() {
+        public String toString() {
+            return "ascii";
+        }
+    };
 
 	/**
 	 * Represents Image (or binary) transfer type
 	 */
-	public static FTPTransferType BINARY = new FTPTransferType();
+	public static FTPTransferType BINARY = new FTPTransferType() {
+        public String toString() {
+            return "binary";
+        }
+    };
 
-	/**
+    public static FTPTransferType AUTO = new FTPTransferType() {
+        public String toString() {
+            return "auto";
+        }
+    };
+
+    /**
 	 * The char sent to the server to set ASCII
 	 */
 	static String ASCII_CHAR = "A";

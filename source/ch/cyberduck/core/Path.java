@@ -420,7 +420,7 @@ public abstract class Path extends NSObject {
     public Local getLocal() {
         //default value if not set explicitly, i.e. with drag and drop
         if(null == this.local) {
-            return new Local(Preferences.instance().getProperty("queue.download.folder"), this.getName());
+            return new Local(this.getHost().getDownloadFolder(), this.getName());
         }
         return this.local;
     }

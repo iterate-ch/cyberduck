@@ -22,6 +22,7 @@ import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPMessageListener;
 import com.enterprisedt.net.ftp.FTPNullReplyException;
+import com.enterprisedt.net.ftp.FTPConnectMode;
 
 import ch.cyberduck.core.*;
 
@@ -138,7 +139,6 @@ public class FTPSession extends Session {
             if(this.isConnected()) {
                 return;
             }
-            SessionPool.instance().add(this);
             this.fireConnectionWillOpenEvent();
             this.message(NSBundle.localizedString("Opening FTP connection to", "Status", "") + " " + host.getHostname() + "...");
             this.FTP = new FTPClient(host.getEncoding(), new FTPMessageListener() {
@@ -164,7 +164,7 @@ public class FTPSession extends Session {
                 else {
                     FTPClient.clearSOCKS();
                 }
-                this.FTP.setConnectMode(host.getFTPConnectMode());
+                this.FTP.setConnectMode(this.getConnectMode());
                 this.message(NSBundle.localizedString("FTP connection opened", "Status", ""));
                 this.login();
                 if(Preferences.instance().getBoolean("ftp.sendSystemCommand")) {
@@ -179,6 +179,17 @@ public class FTPSession extends Session {
                 throw new ConnectionCanceledException();
             }
         }
+    }
+
+    protected FTPConnectMode getConnectMode() {
+        if(null == this.host.getFTPConnectMode()) {
+            if(Preferences.instance().getProperty("ftp.connectmode").equals(FTPConnectMode.ACTIVE.toString()))
+                return FTPConnectMode.ACTIVE;
+            if(Preferences.instance().getProperty("ftp.connectmode").equals(FTPConnectMode.PASV.toString()))
+                return FTPConnectMode.PASV;
+        }
+        return this.host.getFTPConnectMode();
+
     }
 
     protected void login() throws IOException, ConnectionCanceledException, LoginCanceledException {
