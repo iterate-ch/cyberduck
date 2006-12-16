@@ -5,15 +5,16 @@ Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
 2.7.2 [http://trac.cyberduck.ch/query?status=closed&milestone=2.7.2]
-- [Feature] When the number of allowed concurrent connections to a server is set to one, use the browser session to transfer files [#--]
-- [Feature] Delay for spring-loaded folders can be set [#--]
-- [Feature] Don't use general folder icon for bundles [#--]
+- [Feature] Option to use single connection for browser and transfers [#57]
+- [Feature] Delay for spring-loaded folders can be set [#633]
 - [Feature] Calculate size of directory [#5]
+- [Feature] Individual download folder per bookmark [#158]
 - [Bugfix] Disconnecting in the background not blocking the user interface [#--]
-- [Bugfix] Folders marked as inaccessible after timeouts and cannot be opened after reconnecting [#--]
+- [Bugfix] Folders marked as inaccessible after timeouts and cannot be opened after reconnecting [#611]
 - [Bugfix] Applescript/Dashboard should not use seperate session for transfers [#--]
 - [Bugfix] Cannot write to group writable files (SFTP) [#173]
 - [Bugfix] File length is set to zero if updating permission fails (SFTP) [#974]
+- [Bugfix] Directory listing is not refreshed when upload is completed after "Try Again" [#982]
 
 2.7.1 [http://trac.cyberduck.ch/query?status=closed&milestone=2.7.1]
 - [Localize] Portuguese Localization
