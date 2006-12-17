@@ -199,7 +199,7 @@ public class SFTPSession extends Session {
                     public void onDataSent(Channel channel, byte[] data) {
                         log(new String(data));
                     }
-                }, host.getEncoding());
+                }, this.getEncoding());
                 if(!this.isConnected()) {
                     return;
                 }

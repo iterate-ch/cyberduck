@@ -523,10 +523,6 @@ public class CDConnectionController extends CDSheetController {
                     log.info("Password for " + usernameField.stringValue() + " found in Keychain");
                     this.passField.setStringValue(passFromKeychain);
                 }
-                else {
-                    log.info("Password for " + usernameField.stringValue() + " *not* found in Keychain");
-                    this.passField.setStringValue("");
-                }
             }
         }
     }
@@ -565,7 +561,7 @@ public class CDConnectionController extends CDSheetController {
         else {
             this.pkCheckbox.setState(NSCell.OffState);
         }
-        if(Preferences.instance().getProperty("browser.charset.encoding").equals(selected.getEncoding())) {
+        if(null == selected.getEncoding()) {
             this.encodingPopup.setTitle(DEFAULT);
         }
         else {

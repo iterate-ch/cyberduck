@@ -141,7 +141,7 @@ public class FTPSession extends Session {
             }
             this.fireConnectionWillOpenEvent();
             this.message(NSBundle.localizedString("Opening FTP connection to", "Status", "") + " " + host.getHostname() + "...");
-            this.FTP = new FTPClient(host.getEncoding(), new FTPMessageListener() {
+            this.FTP = new FTPClient(this.getEncoding(), new FTPMessageListener() {
                 public void logCommand(String cmd) {
                     FTPSession.this.log(cmd);
                 }
@@ -181,6 +181,13 @@ public class FTPSession extends Session {
         }
     }
 
+    /**
+     *
+     * @return The custom encoding specified in the host of this session
+     * or the default encoding if no cusdtom encoding is set
+     * @see Preferences
+     * @see Host
+     */
     protected FTPConnectMode getConnectMode() {
         if(null == this.host.getFTPConnectMode()) {
             if(Preferences.instance().getProperty("ftp.connectmode").equals(FTPConnectMode.ACTIVE.toString()))

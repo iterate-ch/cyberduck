@@ -206,6 +206,20 @@ public abstract class Session extends NSObject {
     }
 
     /**
+     *
+     * @return The custom character encoding specified by the host
+     * of this session or the default encoding if not specified
+     * @see Preferences
+     * @see Host
+     */
+    public String getEncoding() {
+        if(null == this.host.getEncoding()) {
+            return Preferences.instance().getProperty("browser.charset.encoding");
+        }
+        return this.host.getEncoding();
+    }
+
+    /**
      * @return The current working directory (pwd) or null if it cannot be retrieved for whatever reason
      * @throws ConnectionCanceledException If the underlying connection has already been closed before
      */

@@ -128,7 +128,7 @@ public class FTPPath extends Path {
                     session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
                     session.FTP.setTransferType(FTPTransferType.ASCII);
                     this.cwdir();
-                    String[] lines = session.FTP.dir(this.session.getHost().getEncoding());
+                    String[] lines = session.FTP.dir(this.session.getEncoding());
                     // Read line for line if the connection hasn't been interrupted since
                     for(int i = 0; i < lines.length; i++) {
                         Path p = session.parser.parseFTPEntry(this, lines[i]);

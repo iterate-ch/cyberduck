@@ -23,7 +23,6 @@ import com.enterprisedt.net.ftp.FTPConnectMode;
 import ch.cyberduck.core.CollectionListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostCollection;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 
@@ -84,7 +83,7 @@ public class CDBookmarkController extends CDWindowController {
         this.encodingPopup.menu().addItem(new NSMenuItem().separatorItem());
         this.encodingPopup.addItemsWithTitles(new NSArray(
                 ((CDMainController) NSApplication.sharedApplication().delegate()).availableCharsets()));
-        if(Preferences.instance().getProperty("browser.charset.encoding").equals(this.host.getEncoding())) {
+        if(null == this.host.getEncoding()) {
             this.encodingPopup.setTitle(DEFAULT);
         }
         else {
@@ -215,7 +214,6 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setLimitConnectionsButton(NSButton limitConnectionsButton) {
         this.limitConnectionsButton = limitConnectionsButton;
-        this.limitConnectionsButton.setHidden(true);
         this.limitConnectionsButton.setTarget(this);
         this.limitConnectionsButton.setAction(new NSSelector("limitConnectionsButtonClicked", new Class[]{NSButton.class}));
     }
@@ -224,30 +222,30 @@ public class CDBookmarkController extends CDWindowController {
         this.host.setMaxConnections(sender.state() == NSCell.OnState ? 1 : -1);
     }
 
-    private NSTextField downloadPathField; //IBOutlet
+    private NSPopUpButton downloadPathPopup; //IBOutlet
 
-    public void setDownloadPathField(NSTextField downloadPathField) {
-        this.downloadPathField = downloadPathField;
-        this.downloadPathField.setEditable(false);
-        this.downloadPathField.setAttributedStringValue(new NSAttributedString(host.getDownloadFolder(),
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
+    private static final String CHOOSE = NSBundle.localizedString("Choose", "")+"...";
+
+    public void setDownloadPathPopup(NSPopUpButton downloadPathPopup) {
+        this.downloadPathPopup = downloadPathPopup;
+        this.downloadPathPopup.setTarget(this);
+        this.downloadPathPopup.setAction(new NSSelector("downloadPathPopupClicked", new Class[]{NSPopUpButton.class}));
+        this.downloadPathPopup.removeAllItems();
+        this.downloadPathPopup.addItem(NSPathUtilities.lastPathComponent(host.getDownloadFolder()));
+        this.downloadPathPopup.itemAtIndex(0).setImage(NSImage.imageNamed("folder16.tiff"));
+        this.downloadPathPopup.menu().addItem(new NSMenuItem().separatorItem());
+        this.downloadPathPopup.addItem(CHOOSE);
     }
 
-    private NSButton downloadPathButton; //IBOutlet
-
-    public void setDownloadPathButton(NSButton downloadPathButton) {
-        this.downloadPathButton = downloadPathButton;
-        this.downloadPathButton.setTarget(this);
-        this.downloadPathButton.setAction(new NSSelector("downloadPathButtonClicked", new Class[]{NSButton.class}));
-    }
-
-    public void downloadPathButtonClicked(final NSButton sender) {
-        NSOpenPanel panel = NSOpenPanel.openPanel();
-        panel.setCanChooseFiles(false);
-        panel.setCanChooseDirectories(true);
-        panel.setAllowsMultipleSelection(false);
-        panel.setCanCreateDirectories(true);
-        panel.beginSheetForDirectory(null, null, null, this.window, this, new NSSelector("downloadPathPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+    public void downloadPathPopupClicked(final NSPopUpButton sender) {
+        if(sender.selectedItem().title().equals(CHOOSE)) {
+            NSOpenPanel panel = NSOpenPanel.openPanel();
+            panel.setCanChooseFiles(false);
+            panel.setCanChooseDirectories(true);
+            panel.setAllowsMultipleSelection(false);
+            panel.setCanCreateDirectories(true);
+            panel.beginSheetForDirectory(null, null, null, this.window, this, new NSSelector("downloadPathPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+        }
     }
 
     public void downloadPathPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
@@ -261,8 +259,8 @@ public class CDBookmarkController extends CDWindowController {
         else {
             host.setDownloadFolder(null);
         }
-        this.downloadPathField.setAttributedStringValue(new NSAttributedString(host.getDownloadFolder(),
-                TRUNCATE_MIDDLE_ATTRIBUTES));
+        this.downloadPathPopup.itemAtIndex(0).setTitle(NSPathUtilities.lastPathComponent(host.getDownloadFolder()));
+        this.downloadPathPopup.selectItemAtIndex(0);
     }
 
     private Host host;
@@ -289,7 +287,7 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     /**
-     * @param host
+     * @param host The bookmark to edit
      */
     private CDBookmarkController(final Host host) {
         this.host = host;

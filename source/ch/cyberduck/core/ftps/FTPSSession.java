@@ -89,7 +89,7 @@ public class FTPSSession extends FTPSession {
             }
             this.fireConnectionWillOpenEvent();
             this.message(NSBundle.localizedString("Opening FTP-TLS connection to", "Status", "") + " " + host.getHostname() + "...");
-            this.FTP = new FTPSClient(host.getEncoding(), new FTPMessageListener() {
+            this.FTP = new FTPSClient(this.getEncoding(), new FTPMessageListener() {
                 public void logCommand(String cmd) {
                     FTPSSession.this.log(cmd);
                 }

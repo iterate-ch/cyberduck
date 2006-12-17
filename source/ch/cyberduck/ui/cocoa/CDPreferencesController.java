@@ -941,34 +941,44 @@ public class CDPreferencesController extends CDWindowController {
             Preferences.instance().setProperty("ssh.compression", "none");
     }
 
-    private NSButton downloadPathButton; //IBOutlet
+    private NSPopUpButton downloadPathPopup; //IBOutlet
 
-    public void setDownloadPathButton(NSButton downloadPathButton) {
-        this.downloadPathButton = downloadPathButton;
-        this.downloadPathButton.setTarget(this);
-        this.downloadPathButton.setAction(new NSSelector("downloadPathButtonClicked", new Class[]{NSButton.class}));
+    private static final String CHOOSE = NSBundle.localizedString("Choose", "")+"...";
+
+    public void setDownloadPathPopup(NSPopUpButton downloadPathPopup) {
+        this.downloadPathPopup = downloadPathPopup;
+        this.downloadPathPopup.setTarget(this);
+        this.downloadPathPopup.setAction(new NSSelector("downloadPathPopupClicked", new Class[]{NSPopUpButton.class}));
+        this.downloadPathPopup.removeAllItems();
+        this.downloadPathPopup.addItem(NSPathUtilities.lastPathComponent(
+                Preferences.instance().getProperty("queue.download.folder")));
+        this.downloadPathPopup.itemAtIndex(0).setImage(NSImage.imageNamed("folder16.tiff"));
+        this.downloadPathPopup.menu().addItem(new NSMenuItem().separatorItem());
+        this.downloadPathPopup.addItem(CHOOSE);
     }
 
-    public void downloadPathButtonClicked(final NSButton sender) {
-        NSOpenPanel panel = NSOpenPanel.openPanel();
-        panel.setCanChooseFiles(false);
-        panel.setCanChooseDirectories(true);
-        panel.setAllowsMultipleSelection(false);
-        panel.setCanCreateDirectories(true);
-        panel.beginSheetForDirectory(null, null, null, this.window, this, new NSSelector("openPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+    public void downloadPathPopupClicked(final NSPopUpButton sender) {
+        if(sender.selectedItem().title().equals(CHOOSE)) {
+            NSOpenPanel panel = NSOpenPanel.openPanel();
+            panel.setCanChooseFiles(false);
+            panel.setCanChooseDirectories(true);
+            panel.setAllowsMultipleSelection(false);
+            panel.setCanCreateDirectories(true);
+            panel.beginSheetForDirectory(null, null, null, this.window, this, new NSSelector("downloadPathPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+        }
     }
 
-    public void openPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
+    public void downloadPathPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
             NSArray selected = sheet.filenames();
             String filename;
             if ((filename = (String) selected.lastObject()) != null) {
                 Preferences.instance().setProperty("queue.download.folder", filename);
-                this.downloadPathField.setAttributedStringValue(
-                        new NSAttributedString(Preferences.instance().getProperty("queue.download.folder"),
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
         }
+        this.downloadPathPopup.itemAtIndex(0).setTitle(NSPathUtilities.lastPathComponent(
+                Preferences.instance().getProperty("queue.download.folder")));
+        this.downloadPathPopup.selectItemAtIndex(0);
     }
 
     private NSButton defaultBufferButton; //IBOutlet
@@ -1184,16 +1194,6 @@ public class CDPreferencesController extends CDWindowController {
 
     public void anonymousFieldDidChange(NSNotification sender) {
         Preferences.instance().setProperty("ftp.anonymous.pass", this.anonymousField.stringValue());
-    }
-
-    private NSTextField downloadPathField; //IBOutlet
-
-    public void setDownloadPathField(NSTextField downloadPathField) {
-        this.downloadPathField = downloadPathField;
-        this.downloadPathField.setEditable(false);
-        this.downloadPathField.setAttributedStringValue(
-                new NSAttributedString(Preferences.instance().getProperty("queue.download.folder"),
-                TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private NSTextField extensionsField; //IBOutlet

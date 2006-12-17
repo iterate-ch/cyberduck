@@ -145,7 +145,9 @@ public class Host extends NSObject {
         dict.setObjectForKey(this.getHostname(), Host.HOSTNAME);
         dict.setObjectForKey(String.valueOf(this.getPort()), Host.PORT);
         dict.setObjectForKey(this.getCredentials().getUsername(), Host.USERNAME);
-        dict.setObjectForKey(this.getDefaultPath(), Host.PATH);
+        if(null != this.defaultpath) {
+            dict.setObjectForKey(this.defaultpath, Host.PATH);
+        }
         if(null != this.encoding) {
             dict.setObjectForKey(this.encoding, Host.ENCODING);
         }
@@ -509,10 +511,12 @@ public class Host extends NSObject {
         this.encoding = encoding;
     }
 
+    /**
+     *
+     * @return The character encoding to be used when connecting
+     * to this server or null if the default encoding should be used
+     */
     public String getEncoding() {
-        if(null == this.encoding) {
-            this.encoding = Preferences.instance().getProperty("browser.charset.encoding");
-        }
         return this.encoding;
     }
 
@@ -520,6 +524,11 @@ public class Host extends NSObject {
         this.connectMode = connectMode;
     }
 
+    /**
+     *
+     * @return The connect mode to be used when connecting 
+     * to this server or null if the default connect mode should be used
+     */
     public FTPConnectMode getFTPConnectMode() {
         return this.connectMode;
     }

@@ -1643,7 +1643,7 @@ public class CDBrowserController extends CDWindowController
         }
         this.setEncoding(encoding);
         if(this.isMounted()) {
-            if(this.session.getHost().getEncoding().equals(encoding)) {
+            if(this.session.getEncoding().equals(encoding)) {
                 return;
             }
             if(this.isBusy()) {
@@ -2601,7 +2601,7 @@ public class CDBrowserController extends CDWindowController
         }
         this.session.setLoginController(new CDLoginController(this));
         this.setWorkdir(null);
-        this.setEncoding(host.getEncoding());
+        this.setEncoding(this.session.getEncoding());
         this.window.setTitle(host.getProtocol() + ":" + host.getHostname());
         HostCollection.instance().exportBookmark(host, this.getRepresentedFile());
         if(this.getRepresentedFile().exists()) {
