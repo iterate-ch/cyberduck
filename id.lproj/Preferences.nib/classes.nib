@@ -55,8 +55,7 @@
                 downerr = NSButton; 
                 downerw = NSButton; 
                 downerx = NSButton; 
-                downloadPathButton = NSButton; 
-                downloadPathField = NSTextField; 
+                downloadPathPopup = NSPopUpButton; 
                 duplicateDownloadCombobox = NSPopUpButton; 
                 duplicateDownloadOverwriteButton = NSButton; 
                 duplicateUploadCombobox = NSPopUpButton; 
