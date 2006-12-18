@@ -171,7 +171,8 @@ public class FTPPath extends Path {
                 }
                 session.check();
                 session.message(NSBundle.localizedString("Make directory", "Status", "") + " " + this.getName());
-                session.FTP.mkdir(this.getAbsolute());
+                this.getParent().cwdir();
+                session.FTP.mkdir(this.getName());
                 session.cache().put(this, new AttributedList());
                 this.getParent().invalidate();
             }
@@ -194,7 +195,8 @@ public class FTPPath extends Path {
             try {
                 session.check();
                 session.message(NSBundle.localizedString("Renaming to", "Status", "") + " " + filename + " (" + this.getName() + ")");
-                session.FTP.rename(this.getAbsolute(), filename);
+                this.getParent().cwdir();
+                session.FTP.rename(this.getName(), filename);
                 this.getParent().invalidate();
                 this.setPath(filename);
                 this.getParent().invalidate();
@@ -320,11 +322,12 @@ public class FTPPath extends Path {
             try {
                 session.check();
                 session.message(NSBundle.localizedString("Changing owner to", "Status", "") + " " + this.attributes.getOwner() + " (" + this.getName() + ")");
+                this.getParent().cwdir();
                 if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-                    session.FTP.site(command + " " + owner + " " + this.getAbsolute());
+                    session.FTP.site(command + " " + owner + " " + this.getName());
                 }
                 else if(this.attributes.isDirectory()) {
-                    session.FTP.site(command + " " + owner + " " + this.getAbsolute());
+                    session.FTP.site(command + " " + owner + " " + this.getName());
                     if(recursive) {
                         for(Iterator iter = this.list().iterator(); iter.hasNext();) {
                             if(!session.isConnected()) {
@@ -355,11 +358,12 @@ public class FTPPath extends Path {
             try {
                 session.check();
                 session.message(NSBundle.localizedString("Changing group to", "Status", "") + " " + this.attributes.getGroup() + " (" + this.getName() + ")");
+                this.getParent().cwdir();
                 if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-                    session.FTP.site(command + " " + group + " " + this.getAbsolute());
+                    session.FTP.site(command + " " + group + " " + this.getName());
                 }
                 else if(this.attributes.isDirectory()) {
-                    session.FTP.site(command + " " + group + " " + this.getAbsolute());
+                    session.FTP.site(command + " " + group + " " + this.getName());
                     if(recursive) {
                         for(Iterator iter = this.list().iterator(); iter.hasNext();) {
                             if(!session.isConnected()) {
@@ -387,15 +391,16 @@ public class FTPPath extends Path {
     public void changePermissions(Permission perm, boolean recursive) {
         synchronized(session) {
             log.debug("changePermissions:" + perm);
-            String command = "CHMOD";
+            final String command = "CHMOD";
             try {
                 session.check();
                 session.message(NSBundle.localizedString("Changing permission to", "Status", "") + " " + perm.getOctalCode() + " (" + this.getName() + ")");
+                this.getParent().cwdir();
                 if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-                    session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getAbsolute());
+                    session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getName());
                 }
                 else if(this.attributes.isDirectory()) {
-                    session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getAbsolute());
+                    session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getName());
                     if(recursive) {
                         for(Iterator iter = this.list().iterator(); iter.hasNext();) {
                             if(!session.isConnected()) {
@@ -427,6 +432,7 @@ public class FTPPath extends Path {
                 this.status.reset();
                 if(this.attributes.isFile()) {
                     session.check();
+                    this.getParent().cwdir();
                     if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                         if(this.isASCIIType()) {
                             this.downloadASCII();
@@ -510,7 +516,7 @@ public class FTPPath extends Path {
             if(null == out) {
                 throw new IOException("Unable to buffer data");
             }
-            in = session.FTP.get(this.getAbsolute(), this.status.isResume() ? (long) this.getLocal().getSize() : 0);
+            in = session.FTP.get(this.getName(), this.status.isResume() ? (long) this.getLocal().getSize() : 0);
             if(null == in) {
                 throw new IOException("Unable opening data stream");
             }
@@ -573,7 +579,7 @@ public class FTPPath extends Path {
             if(null == out) {
                 throw new IOException("Unable to buffer data");
             }
-            in = new FromNetASCIIInputStream(session.FTP.get(this.getAbsolute(), 0),
+            in = new FromNetASCIIInputStream(session.FTP.get(this.getName(), 0),
                     lineSeparator);
             if(null == in) {
                 throw new IOException("Unable opening data stream");
@@ -624,6 +630,7 @@ public class FTPPath extends Path {
                 this.status.reset();
                 if(this.attributes.isFile()) {
                     session.check();
+                    this.getParent().cwdir();
                     this.attributes.setSize(this.getLocal().getSize());
                     if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                         if(this.isASCIIType()) {
@@ -660,7 +667,7 @@ public class FTPPath extends Path {
                             }
                         }
                         try {
-                            session.FTP.setPermissions(this.attributes.getPermission().getOctalCode(), this.getAbsolute());
+                            session.FTP.setPermissions(this.attributes.getPermission().getOctalCode(), this.getName());
                         }
                         catch(FTPException ignore) {
                             //CHMOD not supported; ignore
@@ -669,13 +676,13 @@ public class FTPPath extends Path {
                     }
                     if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                         try {
-                            session.FTP.setmodtime(this.getLocal().getTimestamp(), this.getAbsolute());
+                            session.FTP.setmodtime(this.getLocal().getTimestamp(), this.getName());
                         }
                         catch(FTPException e) {
                             try {
                                 if(Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
                                     if(!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
-                                        this.getLocal().setLastModified(session.FTP.modtime(this.getAbsolute()).getTime());
+                                        this.getLocal().setLastModified(session.FTP.modtime(this.getName()).getTime());
                                     }
                                 }
                             }
@@ -708,7 +715,7 @@ public class FTPPath extends Path {
             session.FTP.setTransferType(FTPTransferType.BINARY);
             if(this.status.isResume()) {
                 try {
-                    this.status.setCurrent(this.session.FTP.size(this.getAbsolute()));
+                    this.status.setCurrent(this.session.FTP.size(this.getName()));
                 }
                 catch(FTPException e) {
                     log.error(e.getMessage());
@@ -720,7 +727,7 @@ public class FTPPath extends Path {
             if(null == in) {
                 throw new IOException("Unable to buffer data");
             }
-            out = session.FTP.put(this.getAbsolute(), this.status.isResume());
+            out = session.FTP.put(this.getName(), this.status.isResume());
             if(null == out) {
                 throw new IOException("Unable opening data stream");
             }
@@ -770,7 +777,7 @@ public class FTPPath extends Path {
             session.FTP.setTransferType(FTPTransferType.ASCII);
             if(this.status.isResume()) {
                 try {
-                    this.status.setCurrent(this.session.FTP.size(this.getAbsolute()));
+                    this.status.setCurrent(this.session.FTP.size(this.getName()));
                 }
                 catch(FTPException e) {
                     log.error(e.getMessage());
@@ -782,7 +789,7 @@ public class FTPPath extends Path {
             if(null == in) {
                 throw new IOException("Unable to buffer data");
             }
-            out = new ToNetASCIIOutputStream(session.FTP.put(this.getAbsolute(),
+            out = new ToNetASCIIOutputStream(session.FTP.put(this.getName(),
                     this.status.isResume()));
             if(null == out) {
                 throw new IOException("Unable opening data stream");
