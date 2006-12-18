@@ -547,10 +547,7 @@ public class Host extends NSObject {
      * @return The number of concurrent sessions allowed
      */
     public int getMaxConnections() {
-        if(-1 == maxConnections) {
-            return Preferences.instance().getInteger("connection.pool.max");
-        }
-        return maxConnections;
+        return this.maxConnections;
     }
 
     /**
@@ -566,10 +563,10 @@ public class Host extends NSObject {
      * @return
      */
     public String getDownloadFolder() {
-        if(null == downloadFolder) {
+        if(null == this.downloadFolder) {
             return Preferences.instance().getProperty("queue.download.folder");
         }
-        return downloadFolder;
+        return this.downloadFolder;
     }
 
     /**

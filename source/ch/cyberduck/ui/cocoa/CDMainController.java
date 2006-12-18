@@ -235,7 +235,7 @@ public class CDMainController extends CDController {
                     }
                 });
                 for (int i = 0; i < files.length; i++) {
-                    cache.add(HostCollection.instance().importBookmark(files[i]));
+                    cache.add(importBookmark(files[i]));
                 }
             }
             if (cache.size() > 0) {
@@ -448,7 +448,7 @@ public class CDMainController extends CDController {
         File f = new File(filename);
         if (f.exists()) {
             if (f.getAbsolutePath().endsWith(".duck")) {
-                Host host = HostCollection.instance().importBookmark(f);
+                Host host = this.importBookmark(f);
                 if (host != null) {
                     this.newDocument().mount(host);
                     return true;
@@ -555,6 +555,13 @@ public class CDMainController extends CDController {
         return false;
     }
 
+    private static final File SESSIONS_FOLDER
+            = new File(Preferences.instance().getProperty("application.support.path"), "Sessions");
+
+    static {
+        SESSIONS_FOLDER.mkdir();
+    }
+
     /**
      * Sent by the default notification center after the application has been launched and initialized but
      * before it has received its first event. aNotification is always an
@@ -585,6 +592,16 @@ public class CDMainController extends CDController {
         });
         if (Preferences.instance().getBoolean("rendezvous.enable")) {
             Rendezvous.instance().init();
+        }
+        if (Preferences.instance().getBoolean("browser.serialize")) {
+            File[] files = SESSIONS_FOLDER.listFiles(new java.io.FilenameFilter() {
+                public boolean accept(File dir, String name) {
+                    return name.endsWith(".duck");
+                }
+            });
+            for(int i = 0; i < files.length; i++) {
+                this.newDocument().mount(this.importBookmark(files[i])); files[i].delete();
+            }
         }
     }
 
@@ -679,6 +696,14 @@ public class CDMainController extends CDController {
             NSWindow window = (NSWindow) windows.objectAtIndex(count);
             CDBrowserController controller = CDBrowserController.controllerForWindow(window);
             if (null != controller) {
+                if (controller.isMounted()) {
+                    if (Preferences.instance().getBoolean("browser.serialize")) {
+                        Host bookmark = (Host)controller.getSession().getHost().clone();
+                        bookmark.setDefaultPath(controller.workdir().getAbsolute());
+                        this.exportBookmark(bookmark,
+                                new File(SESSIONS_FOLDER, bookmark.getNickname()+".duck"));
+                    }
+                }
                 if (controller.isConnected()) {
                     if (Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                         int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Quit", ""),
@@ -802,5 +827,57 @@ public class CDMainController extends CDController {
             }
         }
         return (String[])charsets.toArray(new String[0]);
+    }
+
+    /**
+     * @param file
+     * @return The imported bookmark deserialized as a #Host
+     */
+    public Host importBookmark(final File file) {
+        NSData plistData = new NSData(file);
+        String[] errorString = new String[]{null};
+        Object propertyListFromXMLData =
+                NSPropertyListSerialization.propertyListFromData(plistData,
+                        NSPropertyListSerialization.PropertyListImmutable,
+                        new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
+                        errorString);
+        if(errorString[0] != null) {
+            log.error("Problem reading bookmark file: " + errorString[0]);
+            return null;
+        }
+        if(propertyListFromXMLData instanceof NSDictionary) {
+            return new Host((NSDictionary) propertyListFromXMLData);
+        }
+        log.error("Invalid file format:" + file);
+        return null;
+    }
+
+    /**
+     * @param bookmark
+     * @param file
+     */
+    public void exportBookmark(final Host bookmark, File file) {
+        try {
+            file = new File(file.getParentFile(), file.getName().replace('/', ':'));
+            log.info("Exporting bookmark " + bookmark + " to " + file);
+            NSMutableData collection = new NSMutableData();
+            String[] errorString = new String[]{null};
+            collection.appendData(NSPropertyListSerialization.dataFromPropertyList(bookmark.getAsDictionary(),
+                    NSPropertyListSerialization.PropertyListXMLFormat,
+                    errorString));
+            if(errorString[0] != null) {
+                log.error("Problem writing bookmark file: " + errorString[0]);
+            }
+            if(collection.writeToURL(file.toURL(), true)) {
+                log.info("Bookmarks sucessfully saved in :" + file.toString());
+                NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(file.getAbsolutePath());
+            }
+            else {
+                log.error("Error saving Bookmarks in :" + file.toString());
+            }
+        }
+        catch(java.net.MalformedURLException e) {
+            log.error(e.getMessage());
+        }
     }
 }

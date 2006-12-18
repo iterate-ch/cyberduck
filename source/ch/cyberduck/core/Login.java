@@ -18,11 +18,17 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import sun.misc.BASE64Encoder;
+
 import ch.cyberduck.ui.LoginController;
 
 import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
+
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * @version $Id$
@@ -74,7 +80,35 @@ public class Login {
     }
 
     public String getPassword() {
+        return this.getPassword(false);
+    }
+
+    /**
+     *
+     * @param encrypted
+     * @return
+     */
+    public String getPassword(boolean encrypted) {
+        if(!encrypted) {
         return this.pass;
+        }
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA");
+        }
+        catch(NoSuchAlgorithmException e) {
+            log.error(e.getMessage());
+            return null;
+        }
+        try {
+            md.update(this.pass.getBytes("UTF-8"));
+        }
+        catch(UnsupportedEncodingException e) {
+            log.error(e.getMessage());
+            return null;
+        }
+        byte raw[] = md.digest();
+        return (new BASE64Encoder()).encode(raw);
     }
 
     public void setPassword(String pass) {

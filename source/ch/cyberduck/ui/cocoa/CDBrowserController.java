@@ -1626,7 +1626,7 @@ public class CDBrowserController extends CDWindowController
         this.encodingPopup.removeAllItems();
         this.encodingPopup.addItemsWithTitles(new NSArray(
                 ((CDMainController)NSApplication.sharedApplication().delegate()).availableCharsets()));
-         this.encodingPopup.setTitle(Preferences.instance().getProperty("browser.charset.encoding"));
+         this.encodingPopup.selectItemWithTitle(Preferences.instance().getProperty("browser.charset.encoding"));
     }
 
     public void encodingButtonClicked(final Object sender) {
@@ -1666,7 +1666,7 @@ public class CDBrowserController extends CDWindowController
      * @param encoding
      */
     private void setEncoding(final String encoding) {
-        this.encodingPopup.setTitle(encoding);
+        this.encodingPopup.selectItemWithTitle(encoding);
     }
 
     // ----------------------------------------------------------
@@ -2196,7 +2196,7 @@ public class CDBrowserController extends CDWindowController
      * @return The session to be used for file transfers
      */
     protected Session getTransferSession() {
-        if(this.session.getHost().getMaxConnections() == 1) {
+        if(this.session.getMaxConnections() == 1) {
             return this.session;
         }
         return (Session) this.getSession().clone();
@@ -2238,7 +2238,7 @@ public class CDBrowserController extends CDWindowController
      * @see CDQueueController
      */
     protected void transfer(final Transfer q) {
-        if(q.getHost().getMaxConnections() == 1) {
+        if(q.getSession().getMaxConnections() == 1) {
             this.background(new BackgroundAction() {
                 public void run() {
                     q.run(ValidatorFactory.create(q, CDBrowserController.this));
@@ -2603,7 +2603,8 @@ public class CDBrowserController extends CDWindowController
         this.setWorkdir(null);
         this.setEncoding(this.session.getEncoding());
         this.window.setTitle(host.getProtocol() + ":" + host.getHostname());
-        HostCollection.instance().exportBookmark(host, this.getRepresentedFile());
+        ((CDMainController)NSApplication.sharedApplication().delegate()).exportBookmark(host,
+                this.getRepresentedFile());
         if(this.getRepresentedFile().exists()) {
             // Set the window title
             this.window.setRepresentedFilename(this.getRepresentedFile().getAbsolutePath());
@@ -2684,7 +2685,7 @@ public class CDBrowserController extends CDWindowController
      */
     private File getRepresentedFile() {
         if(this.hasSession()) {
-            return new File(HISTORY_FOLDER, this.session.getHost().getHostname() + ".duck");
+            return new File(HISTORY_FOLDER, this.session.getHost().getNickname() + ".duck");
         }
         return null;
     }
@@ -2991,7 +2992,7 @@ public class CDBrowserController extends CDWindowController
         }
         if(identifier.equals("encodingButtonClicked:")) {
             if(this.isMounted()) {
-                item.setState(this.session.getHost().getEncoding().equalsIgnoreCase(item.title()) ? NSCell.OnState : NSCell.OffState);
+                item.setState(this.session.getEncoding().equalsIgnoreCase(item.title()) ? NSCell.OnState : NSCell.OffState);
             }
             else {
                 item.setState(Preferences.instance().getProperty("browser.charset.encoding").equalsIgnoreCase(item.title()) ? NSCell.OnState : NSCell.OffState);

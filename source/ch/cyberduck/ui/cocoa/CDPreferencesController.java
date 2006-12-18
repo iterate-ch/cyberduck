@@ -294,7 +294,7 @@ public class CDPreferencesController extends CDWindowController {
         }
         this.editorCombobox.setTarget(this);
         this.editorCombobox.setAction(new NSSelector("editorComboboxClicked", new Class[]{NSPopUpButton.class}));
-        this.editorCombobox.setTitle(Preferences.instance().getProperty("editor.name"));
+        this.editorCombobox.selectItemWithTitle(Preferences.instance().getProperty("editor.name"));
     }
 
     public void editorComboboxClicked(NSPopUpButton sender) {
@@ -315,6 +315,20 @@ public class CDPreferencesController extends CDWindowController {
     public void openUntitledBrowserCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.OnState;
         Preferences.instance().setProperty("browser.openUntitled", enabled);
+    }
+
+    private NSButton browserSerializeCheckbox; //IBOutlet
+
+    public void setBrowserSerializeCheckbox(NSButton browserSerializeCheckbox) {
+        this.browserSerializeCheckbox = browserSerializeCheckbox;
+        this.browserSerializeCheckbox.setTarget(this);
+        this.browserSerializeCheckbox.setAction(new NSSelector("browserSerializeCheckboxClicked", new Class[]{NSButton.class}));
+        this.browserSerializeCheckbox.setState(Preferences.instance().getBoolean("browser.serialize") ? NSCell.OnState : NSCell.OffState);
+    }
+
+    public void browserSerializeCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.OnState;
+        Preferences.instance().setProperty("browser.serialize", enabled);
     }
 
     private NSPopUpButton defaultBookmarkCombobox; //IBOutlet
@@ -359,15 +373,15 @@ public class CDPreferencesController extends CDWindowController {
         this.defaultBookmarkCombobox.setAction(new NSSelector("defaultBookmarkComboboxClicked", new Class[]{NSPopUpButton.class}));
         String defaultBookmark = Preferences.instance().getProperty("browser.defaultBookmark");
         if(null == defaultBookmark) {
-            this.defaultBookmarkCombobox.setTitle(NSBundle.localizedString("None", ""));
+            this.defaultBookmarkCombobox.selectItemWithTitle(NSBundle.localizedString("None", ""));
 
         }
         else {
             if(null == this.bookmarks.get(defaultBookmark)) {
-                this.defaultBookmarkCombobox.setTitle(NSBundle.localizedString("None", ""));
+                this.defaultBookmarkCombobox.selectItemWithTitle(NSBundle.localizedString("None", ""));
             }
             else {
-                this.defaultBookmarkCombobox.setTitle(defaultBookmark);
+                this.defaultBookmarkCombobox.selectItemWithTitle(defaultBookmark);
             }
         }
     }
@@ -389,7 +403,7 @@ public class CDPreferencesController extends CDWindowController {
         this.encodingCombobox.setAction(new NSSelector("encodingComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.encodingCombobox.removeAllItems();
         this.encodingCombobox.addItemsWithTitles(new NSArray(((CDMainController)NSApplication.sharedApplication().delegate()).availableCharsets()));
-        this.encodingCombobox.setTitle(Preferences.instance().getProperty("browser.charset.encoding"));
+        this.encodingCombobox.selectItemWithTitle(Preferences.instance().getProperty("browser.charset.encoding"));
     }
 
     public void encodingComboboxClicked(NSPopUpButton sender) {
@@ -798,7 +812,7 @@ public class CDPreferencesController extends CDWindowController {
                 SSH_RSA
         }));
 
-        publickeyCombobox.setTitle(Preferences.instance().getProperty("ssh.publickey"));
+        publickeyCombobox.selectItemWithTitle(Preferences.instance().getProperty("ssh.publickey"));
     }
 
     public void publickeyComboboxClicked(NSPopUpButton sender) {
@@ -834,7 +848,7 @@ public class CDPreferencesController extends CDWindowController {
                 aes128_cbc,
                 cast128_cbc
         }));
-        this.csEncryptionCombobox.setTitle(Preferences.instance().getProperty("ssh.CSEncryption"));
+        this.csEncryptionCombobox.selectItemWithTitle(Preferences.instance().getProperty("ssh.CSEncryption"));
     }
 
     public void csEncryptionComboboxClicked(NSPopUpButton sender) {
@@ -860,7 +874,7 @@ public class CDPreferencesController extends CDWindowController {
                 cast128_cbc
         }));
 
-        this.scEncryptionCombobox.setTitle(Preferences.instance().getProperty("ssh.SCEncryption"));
+        this.scEncryptionCombobox.selectItemWithTitle(Preferences.instance().getProperty("ssh.SCEncryption"));
     }
 
     public void scEncryptionComboboxClicked(NSPopUpButton sender) {
@@ -888,7 +902,7 @@ public class CDPreferencesController extends CDWindowController {
                 hmac_md5_96
         }));
 
-        this.scAuthenticationCombobox.setTitle(Preferences.instance().getProperty("ssh.SCAuthentication"));
+        this.scAuthenticationCombobox.selectItemWithTitle(Preferences.instance().getProperty("ssh.SCAuthentication"));
     }
 
     public void scAuthenticationComboboxClicked(NSPopUpButton sender) {
@@ -910,7 +924,7 @@ public class CDPreferencesController extends CDWindowController {
                 hmac_md5_96
         }));
 
-        this.csAuthenticationCombobox.setTitle(Preferences.instance().getProperty("ssh.CSAuthentication"));
+        this.csAuthenticationCombobox.selectItemWithTitle(Preferences.instance().getProperty("ssh.CSAuthentication"));
     }
 
     public void csAuthenticationComboboxClicked(NSPopUpButton sender) {
@@ -931,7 +945,7 @@ public class CDPreferencesController extends CDWindowController {
                 ZLIB
         }));
 
-        this.compressionCombobox.setTitle(Preferences.instance().getProperty("ssh.compression"));
+        this.compressionCombobox.selectItemWithTitle(Preferences.instance().getProperty("ssh.compression"));
     }
 
     public void compressionComboboxClicked(NSPopUpButton sender) {
@@ -1007,13 +1021,14 @@ public class CDPreferencesController extends CDWindowController {
         this.concurrentConnectionsCheckbox = concurrentConnectionsCheckbox;
         this.concurrentConnectionsCheckbox.setTarget(this);
         this.concurrentConnectionsCheckbox.setAction(new NSSelector("concurrentConnectionsCheckboxClicked", new Class[]{NSButton.class}));
-        this.concurrentConnectionsCheckbox.setState(Preferences.instance().getInteger("connection.pool.max") == 1 ? NSCell.OnState : NSCell.OffState);
+        this.concurrentConnectionsCheckbox.setState(
+                Preferences.instance().getInteger("connection.pool.max") == 1 ? NSCell.OffState : NSCell.OnState);
     }
 
     public void concurrentConnectionsCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.OnState;
         Preferences.instance().setProperty("connection.pool.max",
-                enabled ? "1" : Preferences.instance().getProperty("connection.pool.max.default"));
+                enabled ? Preferences.instance().getProperty("connection.pool.max.default") : "1");
         this.concurrentConnectionsField.setStringValue(Preferences.instance().getProperty("connection.pool.max"));
     }
 
@@ -1333,16 +1348,16 @@ public class CDPreferencesController extends CDWindowController {
         this.duplicateDownloadCombobox.removeAllItems();
         this.duplicateDownloadCombobox.addItemsWithTitles(new NSArray(new String[]{ASK_ME_WHAT_TO_DO, OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME}));
         if (Preferences.instance().getProperty("queue.download.fileExists").equals(Validator.ASK)) {
-            this.duplicateDownloadCombobox.setTitle(ASK_ME_WHAT_TO_DO);
+            this.duplicateDownloadCombobox.selectItemWithTitle(ASK_ME_WHAT_TO_DO);
         }
         if (Preferences.instance().getProperty("queue.download.fileExists").equals(Validator.OVERWRITE)) {
-            this.duplicateDownloadCombobox.setTitle(OVERWRITE_EXISTING_FILE);
+            this.duplicateDownloadCombobox.selectItemWithTitle(OVERWRITE_EXISTING_FILE);
         }
         else if (Preferences.instance().getProperty("queue.download.fileExists").equals(Validator.RESUME)) {
-            this.duplicateDownloadCombobox.setTitle(TRY_TO_RESUME_TRANSFER);
+            this.duplicateDownloadCombobox.selectItemWithTitle(TRY_TO_RESUME_TRANSFER);
         }
         else if (Preferences.instance().getProperty("queue.download.fileExists").equals(Validator.SIMILAR)) {
-            this.duplicateDownloadCombobox.setTitle(USE_A_SIMILAR_NAME);
+            this.duplicateDownloadCombobox.selectItemWithTitle(USE_A_SIMILAR_NAME);
         }
     }
 
@@ -1405,16 +1420,16 @@ public class CDPreferencesController extends CDWindowController {
         this.duplicateUploadCombobox.removeAllItems();
         this.duplicateUploadCombobox.addItemsWithTitles(new NSArray(new String[]{ASK_ME_WHAT_TO_DO, OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME}));
         if (Preferences.instance().getProperty("queue.upload.fileExists").equals(Validator.ASK)) {
-            this.duplicateUploadCombobox.setTitle(ASK_ME_WHAT_TO_DO);
+            this.duplicateUploadCombobox.selectItemWithTitle(ASK_ME_WHAT_TO_DO);
         }
         if (Preferences.instance().getProperty("queue.upload.fileExists").equals(Validator.OVERWRITE)) {
-            this.duplicateUploadCombobox.setTitle(OVERWRITE_EXISTING_FILE);
+            this.duplicateUploadCombobox.selectItemWithTitle(OVERWRITE_EXISTING_FILE);
         }
         else if (Preferences.instance().getProperty("queue.upload.fileExists").equals(Validator.RESUME)) {
-            this.duplicateUploadCombobox.setTitle(TRY_TO_RESUME_TRANSFER);
+            this.duplicateUploadCombobox.selectItemWithTitle(TRY_TO_RESUME_TRANSFER);
         }
         else if (Preferences.instance().getProperty("queue.upload.fileExists").equals(Validator.SIMILAR)) {
-            this.duplicateUploadCombobox.setTitle(USE_A_SIMILAR_NAME);
+            this.duplicateUploadCombobox.selectItemWithTitle(USE_A_SIMILAR_NAME);
         }
     }
 
@@ -1477,13 +1492,13 @@ public class CDPreferencesController extends CDWindowController {
         this.lineEndingCombobox.removeAllItems();
         this.lineEndingCombobox.addItemsWithTitles(new NSArray(new String[]{UNIX_LINE_ENDINGS, MAC_LINE_ENDINGS, WINDOWS_LINE_ENDINGS}));
         if (Preferences.instance().getProperty("ftp.line.separator").equals("unix")) {
-            this.lineEndingCombobox.setTitle(UNIX_LINE_ENDINGS);
+            this.lineEndingCombobox.selectItemWithTitle(UNIX_LINE_ENDINGS);
         }
         else if (Preferences.instance().getProperty("ftp.line.separator").equals("mac")) {
-            this.lineEndingCombobox.setTitle(MAC_LINE_ENDINGS);
+            this.lineEndingCombobox.selectItemWithTitle(MAC_LINE_ENDINGS);
         }
         else if (Preferences.instance().getProperty("ftp.line.separator").equals("win")) {
-            this.lineEndingCombobox.setTitle(WINDOWS_LINE_ENDINGS);
+            this.lineEndingCombobox.selectItemWithTitle(WINDOWS_LINE_ENDINGS);
         }
     }
 
@@ -1509,13 +1524,13 @@ public class CDPreferencesController extends CDWindowController {
         this.transfermodeCombobox.removeAllItems();
         this.transfermodeCombobox.addItemsWithTitles(new NSArray(new String[]{TRANSFERMODE_AUTO, TRANSFERMODE_BINARY, TRANSFERMODE_ASCII}));
         if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.BINARY.toString())) {
-            this.transfermodeCombobox.setTitle(TRANSFERMODE_BINARY);
+            this.transfermodeCombobox.selectItemWithTitle(TRANSFERMODE_BINARY);
         }
         else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.ASCII.toString())) {
-            this.transfermodeCombobox.setTitle(TRANSFERMODE_ASCII);
+            this.transfermodeCombobox.selectItemWithTitle(TRANSFERMODE_ASCII);
         }
         else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
-            this.transfermodeCombobox.setTitle(TRANSFERMODE_AUTO);
+            this.transfermodeCombobox.selectItemWithTitle(TRANSFERMODE_AUTO);
         }
     }
 
@@ -1546,10 +1561,10 @@ public class CDPreferencesController extends CDWindowController {
         this.connectmodeCombobox.removeAllItems();
         this.connectmodeCombobox.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
         if (Preferences.instance().getProperty("ftp.connectmode").equals("passive")) {
-            this.connectmodeCombobox.setTitle(CONNECTMODE_PASSIVE);
+            this.connectmodeCombobox.selectItemWithTitle(CONNECTMODE_PASSIVE);
         }
         else {
-            this.connectmodeCombobox.setTitle(CONNECTMODE_ACTIVE);
+            this.connectmodeCombobox.selectItemWithTitle(CONNECTMODE_ACTIVE);
         }
     }
 
@@ -1573,13 +1588,13 @@ public class CDPreferencesController extends CDWindowController {
                 PROTOCOL_FTP_TLS,
                 PROTOCOL_SFTP}));
         if (Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP)) {
-            this.protocolCombobox.setTitle(PROTOCOL_FTP);
+            this.protocolCombobox.selectItemWithTitle(PROTOCOL_FTP);
         }
         if (Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP_TLS)) {
-            this.protocolCombobox.setTitle(PROTOCOL_FTP_TLS);
+            this.protocolCombobox.selectItemWithTitle(PROTOCOL_FTP_TLS);
         }
         if (Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP)) {
-            this.protocolCombobox.setTitle(PROTOCOL_SFTP);
+            this.protocolCombobox.selectItemWithTitle(PROTOCOL_SFTP);
         }
     }
 

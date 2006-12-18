@@ -25,6 +25,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
 
 import java.util.Vector;
 
@@ -72,8 +73,11 @@ public abstract class CDWindowController extends CDController
     );
 
     /**
-     * Run the runnable in the background using a new thread
-     * @param runnable
+     * Run the runnable in the background using a new thread. Will return
+     * immediatly but not run the runnable before the lock is acquired
+     * @param runnable The runnable to execute in a secondary Thread
+     * @param lock The synchronisation object to use
+     * @see java.lang.Thread
      */
     public void background(final BackgroundActionImpl runnable, final Object lock) {
         log.debug("background:"+runnable);
@@ -92,12 +96,13 @@ public abstract class CDWindowController extends CDController
                         runnable.run();
                     }
                     catch(NullPointerException e) {
-                        log.warn(e.getMessage());
-                        log.warn(e.getStackTrace());
+                        if(log.getLevel().equals(Level.WARN)) {
+                            e.printStackTrace();
+                        }
                         // We might get a null pointer if the session has been interrupted
                         // during the action in progress and closing the underlying socket
                         // asynchronously. See Session#interrupt
-                        log.info("Due to closing the underlying socket asynchronously, the " +
+                        log.warn("Due to closing the underlying socket asynchronously, the " +
                                 "action was interrupted while still pending completion");
                     }
                     finally {

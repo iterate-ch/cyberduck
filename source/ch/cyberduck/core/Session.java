@@ -110,7 +110,8 @@ public abstract class Session extends NSObject {
         catch(SocketException e) {
             this.interrupt();
             // Do not try to reconnect, because this exception is
-            // thrown when the socket is interrupted by the user
+            // thrown when the socket is interrupted by the user asynchroneously
+            throw e;
         }
         catch(SocketTimeoutException e) {
             this.interrupt();
@@ -217,6 +218,13 @@ public abstract class Session extends NSObject {
             return Preferences.instance().getProperty("browser.charset.encoding");
         }
         return this.host.getEncoding();
+    }
+
+    public int getMaxConnections() {
+        if(-1 == host.getMaxConnections()) {
+            return Preferences.instance().getInteger("connection.pool.max");
+        }
+        return host.getMaxConnections();
     }
 
     /**

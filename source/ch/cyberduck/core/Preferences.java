@@ -156,6 +156,10 @@ public abstract class Preferences {
          * Current default browser view is outline view (0-List view, 1-Outline view, 2-Column view)
          */
         defaults.put("browser.view", "1");
+        /**
+         * Save browser sessions when quitting and restore upon relaunch
+         */
+        defaults.put("browser.serialize", "true");
 
         defaults.put("browser.view.autoexpand", "true");
         defaults.put("browser.view.autoexpand.useDelay", "true");
@@ -241,7 +245,8 @@ public abstract class Preferences {
         defaults.put("queue.download.fileExists", Validator.ASK);
         defaults.put("queue.upload.fileExists", Validator.ASK);
         /**
-         * When triggered manually using 'Reload' in the transfer window
+         * When triggered manually using 'Reload' in the
+         *  window
          */
         defaults.put("queue.download.reload.fileExists", Validator.ASK);
         defaults.put("queue.upload.reload.fileExists", Validator.ASK);

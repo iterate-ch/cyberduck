@@ -24,6 +24,7 @@ import ch.cyberduck.core.CollectionListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostCollection;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 
 import com.apple.cocoa.application.*;
@@ -84,10 +85,10 @@ public class CDBookmarkController extends CDWindowController {
         this.encodingPopup.addItemsWithTitles(new NSArray(
                 ((CDMainController) NSApplication.sharedApplication().delegate()).availableCharsets()));
         if(null == this.host.getEncoding()) {
-            this.encodingPopup.setTitle(DEFAULT);
+            this.encodingPopup.selectItemWithTitle(DEFAULT);
         }
         else {
-            this.encodingPopup.setTitle(this.host.getEncoding());
+            this.encodingPopup.selectItemWithTitle(this.host.getEncoding());
         }
         this.encodingPopup.setTarget(this);
         this.encodingPopup.setAction(new NSSelector("encodingSelectionChanged", new Class[]{Object.class}));
@@ -187,13 +188,13 @@ public class CDBookmarkController extends CDWindowController {
         this.connectmodePopup.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
         if(this.host.getProtocol().equals(Session.FTP) || this.host.getProtocol().equals(Session.FTP_TLS)) {
             if(null == host.getFTPConnectMode()) {
-                this.connectmodePopup.setTitle(DEFAULT);
+                this.connectmodePopup.selectItemWithTitle(DEFAULT);
             }
             else if(host.getFTPConnectMode().equals(FTPConnectMode.PASV)) {
-                this.connectmodePopup.setTitle(CONNECTMODE_PASSIVE);
+                this.connectmodePopup.selectItemWithTitle(CONNECTMODE_PASSIVE);
             }
             else if(host.getFTPConnectMode().equals(FTPConnectMode.ACTIVE)) {
-                this.connectmodePopup.setTitle(CONNECTMODE_ACTIVE);
+                this.connectmodePopup.selectItemWithTitle(CONNECTMODE_ACTIVE);
             }
         }
     }
@@ -210,16 +211,35 @@ public class CDBookmarkController extends CDWindowController {
         }
     }
 
-    private NSButton limitConnectionsButton; //IBOutlet
+    private NSPopUpButton transferPopup; //IBOutlet
 
-    public void setLimitConnectionsButton(NSButton limitConnectionsButton) {
-        this.limitConnectionsButton = limitConnectionsButton;
-        this.limitConnectionsButton.setTarget(this);
-        this.limitConnectionsButton.setAction(new NSSelector("limitConnectionsButtonClicked", new Class[]{NSButton.class}));
+    public void setTransferPopup(NSPopUpButton transferPopup) {
+        this.transferPopup = transferPopup;
+        this.transferPopup.setTarget(this);
+        this.transferPopup.setAction(new NSSelector("transferPopupClicked", new Class[]{NSPopUpButton.class}));
+        if(host.getMaxConnections() == -1) {
+            this.transferPopup.selectItemAtIndex(DEFAULT_INDEX);
+        }
+        else {
+            this.transferPopup.selectItemAtIndex(
+                    host.getMaxConnections() == 1 ? USE_BROWSER_SESSION_INDEX : USE_QUEUE_SESSION_INDEX);
+        }
     }
 
-    public void limitConnectionsButtonClicked(final NSButton sender) {
-        this.host.setMaxConnections(sender.state() == NSCell.OnState ? 1 : -1);
+    private final int DEFAULT_INDEX = 0;
+    private final int USE_QUEUE_SESSION_INDEX = 2;
+    private final int USE_BROWSER_SESSION_INDEX = 3;
+
+    public void transferPopupClicked(final NSPopUpButton sender) {
+        if(sender.indexOfSelectedItem() == DEFAULT_INDEX) {
+            this.host.setMaxConnections(-1);
+        }
+        else if(sender.indexOfSelectedItem() == USE_BROWSER_SESSION_INDEX) {
+            this.host.setMaxConnections(1);
+        }
+        else if(sender.indexOfSelectedItem() == USE_QUEUE_SESSION_INDEX) {
+            this.host.setMaxConnections(Preferences.instance().getInteger("connection.pool.max"));
+        }
     }
 
     private NSPopUpButton downloadPathPopup; //IBOutlet
@@ -437,13 +457,13 @@ public class CDBookmarkController extends CDWindowController {
         this.pathField.setStringValue(this.host.getDefaultPath());
         this.usernameField.setStringValue(this.host.getCredentials().getUsername());
         if(this.host.getProtocol().equals(Session.FTP)) {
-            this.protocolPopup.setTitle(Session.FTP_STRING);
+            this.protocolPopup.selectItemWithTitle(Session.FTP_STRING);
         }
         if(this.host.getProtocol().equals(Session.FTP_TLS)) {
-            this.protocolPopup.setTitle(Session.FTP_TLS_STRING);
+            this.protocolPopup.selectItemWithTitle(Session.FTP_TLS_STRING);
         }
         if(this.host.getProtocol().equals(Session.SFTP)) {
-            this.protocolPopup.setTitle(Session.SFTP_STRING);
+            this.protocolPopup.selectItemWithTitle(Session.SFTP_STRING);
         }
         this.connectmodePopup.setEnabled(this.host.getProtocol().equals(Session.FTP) ||
                 this.host.getProtocol().equals(Session.FTP_TLS));

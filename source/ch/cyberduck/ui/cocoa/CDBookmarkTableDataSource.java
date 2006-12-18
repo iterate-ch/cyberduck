@@ -210,7 +210,8 @@ public class CDBookmarkTableDataSource extends NSObject {
                     if(index > view.numberOfRows()) {
                         index = view.numberOfRows();
                     }
-                    Host bookmark = HostCollection.instance().importBookmark(new File(filename));
+                    Host bookmark = ((CDMainController)NSApplication.sharedApplication().delegate()).importBookmark(
+                            new File(filename));
                     if(bookmark != null) {
                         //parsing succeeded
                         HostCollection.instance().add(index, bookmark);
@@ -321,7 +322,7 @@ public class CDBookmarkTableDataSource extends NSObject {
             try {
                 // See trac #933
                 final String filename = promisedDragBookmarks[i].getNickname().replace('/', ':') + ".duck";
-                HostCollection.instance().exportBookmark(
+                ((CDMainController)NSApplication.sharedApplication().delegate()).exportBookmark(
                         promisedDragBookmarks[i],
                         // utf-8 is just a wild guess
                         new File(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), filename));

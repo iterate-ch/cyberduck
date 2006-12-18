@@ -106,7 +106,7 @@ public class CDConnectionController extends CDSheetController {
             }
         });
         for(int i = 0; i < files.length; i++) {
-            Host h = HostCollection.instance().importBookmark(files[i]);
+            Host h = ((CDMainController)NSApplication.sharedApplication().delegate()).importBookmark(files[i]);
             historyPopup.addItem(h.getNickname());
             history.put(h.getNickname(), h);
         }
@@ -431,7 +431,7 @@ public class CDConnectionController extends CDSheetController {
         this.encodingPopup.addItem(DEFAULT);
         this.encodingPopup.menu().addItem(new NSMenuItem().separatorItem());
         this.encodingPopup.addItemsWithTitles(new NSArray(((CDMainController)NSApplication.sharedApplication().delegate()).availableCharsets()));
-        this.encodingPopup.setTitle(DEFAULT);
+        this.encodingPopup.selectItemWithTitle(DEFAULT);
     }
 
     private NSPopUpButton connectmodePopup; //IBOutlet
@@ -445,7 +445,7 @@ public class CDConnectionController extends CDSheetController {
         this.connectmodePopup.addItem(DEFAULT);
         this.connectmodePopup.menu().addItem(new NSMenuItem().separatorItem());
         this.connectmodePopup.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
-        this.connectmodePopup.setTitle(DEFAULT);
+        this.connectmodePopup.selectItemWithTitle(DEFAULT);
         this.connectmodePopup.setEnabled(
                 Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP));
     }
@@ -483,15 +483,15 @@ public class CDConnectionController extends CDSheetController {
                 this.usernameField);
 
         if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP)) {
-            this.protocolPopup.setTitle(Session.FTP_STRING);
+            this.protocolPopup.selectItemWithTitle(Session.FTP_STRING);
             this.portField.setIntValue(Session.FTP_PORT);
         }
         if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP_TLS)) {
-            this.protocolPopup.setTitle(Session.FTP_TLS_STRING);
+            this.protocolPopup.selectItemWithTitle(Session.FTP_TLS_STRING);
             this.portField.setIntValue(Session.FTP_PORT);
         }
         if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP)) {
-            this.protocolPopup.setTitle(Session.SFTP_STRING);
+            this.protocolPopup.selectItemWithTitle(Session.SFTP_STRING);
             this.portField.setIntValue(Session.SSH_PORT);
         }
     }
@@ -544,13 +544,13 @@ public class CDConnectionController extends CDSheetController {
         this.connectmodePopup.setEnabled(selected.getProtocol().equals(Session.FTP)
                 || selected.getProtocol().equals(Session.FTP_TLS));
         if(null == selected.getFTPConnectMode()) {
-            this.connectmodePopup.setTitle(DEFAULT);
+            this.connectmodePopup.selectItemWithTitle(DEFAULT);
         }
         else if(selected.getFTPConnectMode().equals(FTPConnectMode.PASV)) {
-            this.connectmodePopup.setTitle(CONNECTMODE_PASSIVE);
+            this.connectmodePopup.selectItemWithTitle(CONNECTMODE_PASSIVE);
         }
         else if(selected.getFTPConnectMode().equals(FTPConnectMode.ACTIVE)) {
-            this.connectmodePopup.setTitle(CONNECTMODE_ACTIVE);
+            this.connectmodePopup.selectItemWithTitle(CONNECTMODE_ACTIVE);
         }
         this.pkCheckbox.setEnabled(selected.getProtocol().equals(Session.SFTP));
         if(selected.getCredentials().getPrivateKeyFile() != null) {
@@ -562,10 +562,10 @@ public class CDConnectionController extends CDSheetController {
             this.pkCheckbox.setState(NSCell.OffState);
         }
         if(null == selected.getEncoding()) {
-            this.encodingPopup.setTitle(DEFAULT);
+            this.encodingPopup.selectItemWithTitle(DEFAULT);
         }
         else {
-            this.encodingPopup.setTitle(selected.getEncoding());
+            this.encodingPopup.selectItemWithTitle(selected.getEncoding());
         }
         this.updateURLLabel(null);
     }
