@@ -24,6 +24,7 @@
                 anonymousField = NSTextField; 
                 bringQueueToBackCheckbox = NSButton; 
                 bringQueueToFrontCheckbox = NSButton; 
+                browserSerializeCheckbox = NSButton; 
                 bufferField = NSTextField; 
                 chmodDownloadCheckbox = NSButton; 
                 chmodDownloadCustomCheckbox = NSButton; 
