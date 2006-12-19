@@ -6,6 +6,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 
 2.7.2 [http://trac.cyberduck.ch/query?status=closed&milestone=2.7.2]
 - [Feature] Option to use single connection for browser and transfers [#57]
+- [Feature] Option to remember open browser windows and reconnect upon relaunching the application [--]
 - [Feature] Delay for spring-loaded folders can be set [#633]
 - [Feature] Calculate size of directory [#5]
 - [Feature] Per bookmark setting for download folder [#158]
