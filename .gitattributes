@@ -322,6 +322,7 @@ ca.lproj/Alert.nib/data.dependency -text
 ca.lproj/Alert.nib/info.nib -text
 ca.lproj/Alert.nib/keyedobjects.nib -text
 ca.lproj/Alert.strings -text
+ca.lproj/Bookmark.nib/data.dependency -text
 ca.lproj/Bookmark.nib/keyedobjects.nib -text
 ca.lproj/Bookmark.strings -text
 ca.lproj/Browser.nib/keyedobjects.nib -text
@@ -330,6 +331,7 @@ ca.lproj/Certificate.nib/keyedobjects.nib -text
 ca.lproj/Certificate.strings -text
 ca.lproj/Command.nib/keyedobjects.nib -text
 ca.lproj/Command.strings -text
+ca.lproj/Connection.nib/data.dependency -text
 ca.lproj/Connection.nib/keyedobjects.nib -text
 ca.lproj/Connection.strings -text
 ca.lproj/Crash.strings -text
@@ -369,6 +371,7 @@ cs.lproj/Alert.nib/data.dependency -text
 cs.lproj/Alert.nib/info.nib -text
 cs.lproj/Alert.nib/keyedobjects.nib -text
 cs.lproj/Alert.strings -text
+cs.lproj/Bookmark.nib/data.dependency -text
 cs.lproj/Bookmark.nib/keyedobjects.nib -text
 cs.lproj/Bookmark.strings -text
 cs.lproj/Browser.nib/keyedobjects.nib -text
@@ -377,6 +380,7 @@ cs.lproj/Certificate.nib/keyedobjects.nib -text
 cs.lproj/Certificate.strings -text
 cs.lproj/Command.nib/keyedobjects.nib -text
 cs.lproj/Command.strings -text
+cs.lproj/Connection.nib/data.dependency -text
 cs.lproj/Connection.nib/keyedobjects.nib -text
 cs.lproj/Connection.strings -text
 cs.lproj/Crash.strings -text
@@ -416,6 +420,7 @@ cy.lproj/Alert.nib/data.dependency -text
 cy.lproj/Alert.nib/info.nib -text
 cy.lproj/Alert.nib/keyedobjects.nib -text
 cy.lproj/Alert.strings -text
+cy.lproj/Bookmark.nib/data.dependency -text
 cy.lproj/Bookmark.nib/keyedobjects.nib -text
 cy.lproj/Bookmark.strings -text
 cy.lproj/Browser.nib/keyedobjects.nib -text
@@ -424,6 +429,7 @@ cy.lproj/Certificate.nib/keyedobjects.nib -text
 cy.lproj/Certificate.strings -text
 cy.lproj/Command.nib/keyedobjects.nib -text
 cy.lproj/Command.strings -text
+cy.lproj/Connection.nib/data.dependency -text
 cy.lproj/Connection.nib/keyedobjects.nib -text
 cy.lproj/Connection.strings -text
 cy.lproj/Crash.strings -text
@@ -467,6 +473,7 @@ da.lproj/Alert.nib/data.dependency -text
 da.lproj/Alert.nib/info.nib -text
 da.lproj/Alert.nib/keyedobjects.nib -text
 da.lproj/Alert.strings -text
+da.lproj/Bookmark.nib/data.dependency -text
 da.lproj/Bookmark.nib/keyedobjects.nib -text
 da.lproj/Bookmark.strings -text
 da.lproj/Browser.nib/keyedobjects.nib -text
@@ -475,6 +482,7 @@ da.lproj/Certificate.nib/keyedobjects.nib -text
 da.lproj/Certificate.strings -text
 da.lproj/Command.nib/keyedobjects.nib -text
 da.lproj/Command.strings -text
+da.lproj/Connection.nib/data.dependency -text
 da.lproj/Connection.nib/keyedobjects.nib -text
 da.lproj/Connection.strings -text
 da.lproj/Crash.strings -text
@@ -514,6 +522,7 @@ de.lproj/Alert.nib/data.dependency -text
 de.lproj/Alert.nib/info.nib -text
 de.lproj/Alert.nib/keyedobjects.nib -text
 de.lproj/Alert.strings -text
+de.lproj/Bookmark.nib/data.dependency -text
 de.lproj/Bookmark.nib/keyedobjects.nib -text
 de.lproj/Bookmark.strings -text
 de.lproj/Browser.nib/keyedobjects.nib -text
@@ -522,6 +531,7 @@ de.lproj/Certificate.nib/keyedobjects.nib -text
 de.lproj/Certificate.strings -text
 de.lproj/Command.nib/keyedobjects.nib -text
 de.lproj/Command.strings -text
+de.lproj/Connection.nib/data.dependency -text
 de.lproj/Connection.nib/keyedobjects.nib -text
 de.lproj/Connection.strings -text
 de.lproj/Crash.strings -text
@@ -561,6 +571,7 @@ en.lproj/Alert.nib/data.dependency -text
 en.lproj/Alert.nib/info.nib -text
 en.lproj/Alert.nib/keyedobjects.nib -text
 en.lproj/Alert.strings -text
+en.lproj/Bookmark.nib/data.dependency -text
 en.lproj/Bookmark.nib/keyedobjects.nib -text
 en.lproj/Bookmark.strings -text
 en.lproj/Browser.nib/keyedobjects.nib -text
@@ -615,6 +626,7 @@ es.lproj/Alert.nib/data.dependency -text
 es.lproj/Alert.nib/info.nib -text
 es.lproj/Alert.nib/keyedobjects.nib -text
 es.lproj/Alert.strings -text
+es.lproj/Bookmark.nib/data.dependency -text
 es.lproj/Bookmark.nib/keyedobjects.nib -text
 es.lproj/Bookmark.strings -text
 es.lproj/Browser.nib/keyedobjects.nib -text
@@ -623,6 +635,7 @@ es.lproj/Certificate.nib/keyedobjects.nib -text
 es.lproj/Certificate.strings -text
 es.lproj/Command.nib/keyedobjects.nib -text
 es.lproj/Command.strings -text
+es.lproj/Connection.nib/data.dependency -text
 es.lproj/Connection.nib/keyedobjects.nib -text
 es.lproj/Connection.strings -text
 es.lproj/Crash.strings -text
@@ -662,6 +675,7 @@ fi.lproj/Alert.nib/data.dependency -text
 fi.lproj/Alert.nib/info.nib -text
 fi.lproj/Alert.nib/keyedobjects.nib -text
 fi.lproj/Alert.strings -text
+fi.lproj/Bookmark.nib/data.dependency -text
 fi.lproj/Bookmark.nib/keyedobjects.nib -text
 fi.lproj/Bookmark.strings -text
 fi.lproj/Browser.nib/keyedobjects.nib -text
@@ -670,6 +684,7 @@ fi.lproj/Certificate.nib/keyedobjects.nib -text
 fi.lproj/Certificate.strings -text
 fi.lproj/Command.nib/keyedobjects.nib -text
 fi.lproj/Command.strings -text
+fi.lproj/Connection.nib/data.dependency -text
 fi.lproj/Connection.nib/keyedobjects.nib -text
 fi.lproj/Connection.strings -text
 fi.lproj/Crash.strings -text
@@ -709,6 +724,7 @@ fr.lproj/Alert.nib/data.dependency -text
 fr.lproj/Alert.nib/info.nib -text
 fr.lproj/Alert.nib/keyedobjects.nib -text
 fr.lproj/Alert.strings -text
+fr.lproj/Bookmark.nib/data.dependency -text
 fr.lproj/Bookmark.nib/keyedobjects.nib -text
 fr.lproj/Bookmark.strings -text
 fr.lproj/Browser.nib/keyedobjects.nib -text
@@ -717,6 +733,7 @@ fr.lproj/Certificate.nib/keyedobjects.nib -text
 fr.lproj/Certificate.strings -text
 fr.lproj/Command.nib/keyedobjects.nib -text
 fr.lproj/Command.strings -text
+fr.lproj/Connection.nib/data.dependency -text
 fr.lproj/Connection.nib/keyedobjects.nib -text
 fr.lproj/Connection.strings -text
 fr.lproj/Crash.strings -text
@@ -759,6 +776,7 @@ he.lproj/Alert.nib/info.nib -text
 he.lproj/Alert.nib/keyedobjects.nib -text
 he.lproj/Alert.strings -text
 he.lproj/Bookmark.nib/classes.nib -text
+he.lproj/Bookmark.nib/data.dependency -text
 he.lproj/Bookmark.nib/info.nib -text
 he.lproj/Bookmark.nib/keyedobjects.nib -text
 he.lproj/Bookmark.strings -text
@@ -775,6 +793,7 @@ he.lproj/Command.nib/info.nib -text
 he.lproj/Command.nib/keyedobjects.nib -text
 he.lproj/Command.strings -text
 he.lproj/Connection.nib/classes.nib -text
+he.lproj/Connection.nib/data.dependency -text
 he.lproj/Connection.nib/info.nib -text
 he.lproj/Connection.nib/keyedobjects.nib -text
 he.lproj/Connection.strings -text
@@ -839,6 +858,7 @@ hu.lproj/Alert.nib/data.dependency -text
 hu.lproj/Alert.nib/info.nib -text
 hu.lproj/Alert.nib/keyedobjects.nib -text
 hu.lproj/Alert.strings -text
+hu.lproj/Bookmark.nib/data.dependency -text
 hu.lproj/Bookmark.nib/keyedobjects.nib -text
 hu.lproj/Bookmark.strings -text
 hu.lproj/Browser.nib/keyedobjects.nib -text
@@ -847,6 +867,7 @@ hu.lproj/Certificate.nib/keyedobjects.nib -text
 hu.lproj/Certificate.strings -text
 hu.lproj/Command.nib/keyedobjects.nib -text
 hu.lproj/Command.strings -text
+hu.lproj/Connection.nib/data.dependency -text
 hu.lproj/Connection.nib/keyedobjects.nib -text
 hu.lproj/Connection.strings -text
 hu.lproj/Crash.strings -text
@@ -886,6 +907,7 @@ id.lproj/Alert.nib/data.dependency -text
 id.lproj/Alert.nib/info.nib -text
 id.lproj/Alert.nib/keyedobjects.nib -text
 id.lproj/Alert.strings -text
+id.lproj/Bookmark.nib/data.dependency -text
 id.lproj/Bookmark.nib/keyedobjects.nib -text
 id.lproj/Bookmark.strings -text
 id.lproj/Browser.nib/keyedobjects.nib -text
@@ -894,6 +916,7 @@ id.lproj/Certificate.nib/keyedobjects.nib -text
 id.lproj/Certificate.strings -text
 id.lproj/Command.nib/keyedobjects.nib -text
 id.lproj/Command.strings -text
+id.lproj/Connection.nib/data.dependency -text
 id.lproj/Connection.nib/keyedobjects.nib -text
 id.lproj/Connection.strings -text
 id.lproj/Crash.strings -text
@@ -1028,6 +1051,7 @@ it.lproj/Alert.nib/data.dependency -text
 it.lproj/Alert.nib/info.nib -text
 it.lproj/Alert.nib/keyedobjects.nib -text
 it.lproj/Alert.strings -text
+it.lproj/Bookmark.nib/data.dependency -text
 it.lproj/Bookmark.nib/keyedobjects.nib -text
 it.lproj/Bookmark.strings -text
 it.lproj/Browser.nib/keyedobjects.nib -text
@@ -1036,6 +1060,7 @@ it.lproj/Certificate.nib/keyedobjects.nib -text
 it.lproj/Certificate.strings -text
 it.lproj/Command.nib/keyedobjects.nib -text
 it.lproj/Command.strings -text
+it.lproj/Connection.nib/data.dependency -text
 it.lproj/Connection.nib/keyedobjects.nib -text
 it.lproj/Connection.strings -text
 it.lproj/Crash.strings -text
@@ -1075,6 +1100,7 @@ ja.lproj/Alert.nib/data.dependency -text
 ja.lproj/Alert.nib/info.nib -text
 ja.lproj/Alert.nib/keyedobjects.nib -text
 ja.lproj/Alert.strings -text
+ja.lproj/Bookmark.nib/data.dependency -text
 ja.lproj/Bookmark.nib/keyedobjects.nib -text
 ja.lproj/Bookmark.strings -text
 ja.lproj/Browser.nib/keyedobjects.nib -text
@@ -1083,6 +1109,7 @@ ja.lproj/Certificate.nib/keyedobjects.nib -text
 ja.lproj/Certificate.strings -text
 ja.lproj/Command.nib/keyedobjects.nib -text
 ja.lproj/Command.strings -text
+ja.lproj/Connection.nib/data.dependency -text
 ja.lproj/Connection.nib/keyedobjects.nib -text
 ja.lproj/Connection.strings -text
 ja.lproj/Crash.strings -text
@@ -1123,6 +1150,7 @@ ko.lproj/Alert.nib/data.dependency -text
 ko.lproj/Alert.nib/info.nib -text
 ko.lproj/Alert.nib/keyedobjects.nib -text
 ko.lproj/Alert.strings -text
+ko.lproj/Bookmark.nib/data.dependency -text
 ko.lproj/Bookmark.nib/keyedobjects.nib -text
 ko.lproj/Bookmark.strings -text
 ko.lproj/Browser.nib/keyedobjects.nib -text
@@ -1131,6 +1159,7 @@ ko.lproj/Certificate.nib/keyedobjects.nib -text
 ko.lproj/Certificate.strings -text
 ko.lproj/Command.nib/keyedobjects.nib -text
 ko.lproj/Command.strings -text
+ko.lproj/Connection.nib/data.dependency -text
 ko.lproj/Connection.nib/keyedobjects.nib -text
 ko.lproj/Connection.strings -text
 ko.lproj/Crash.strings -text
@@ -1173,6 +1202,7 @@ nl.lproj/Alert.nib/data.dependency -text
 nl.lproj/Alert.nib/info.nib -text
 nl.lproj/Alert.nib/keyedobjects.nib -text
 nl.lproj/Alert.strings -text
+nl.lproj/Bookmark.nib/data.dependency -text
 nl.lproj/Bookmark.nib/keyedobjects.nib -text
 nl.lproj/Bookmark.strings -text
 nl.lproj/Browser.nib/keyedobjects.nib -text
@@ -1181,6 +1211,7 @@ nl.lproj/Certificate.nib/keyedobjects.nib -text
 nl.lproj/Certificate.strings -text
 nl.lproj/Command.nib/keyedobjects.nib -text
 nl.lproj/Command.strings -text
+nl.lproj/Connection.nib/data.dependency -text
 nl.lproj/Connection.nib/keyedobjects.nib -text
 nl.lproj/Connection.strings -text
 nl.lproj/Crash.strings -text svneol=unset#application/octet-stream
@@ -1220,6 +1251,7 @@ no.lproj/Alert.nib/data.dependency -text
 no.lproj/Alert.nib/info.nib -text
 no.lproj/Alert.nib/keyedobjects.nib -text
 no.lproj/Alert.strings -text
+no.lproj/Bookmark.nib/data.dependency -text
 no.lproj/Bookmark.nib/keyedobjects.nib -text
 no.lproj/Bookmark.strings -text
 no.lproj/Browser.nib/keyedobjects.nib -text
@@ -1228,6 +1260,7 @@ no.lproj/Certificate.nib/keyedobjects.nib -text
 no.lproj/Certificate.strings -text
 no.lproj/Command.nib/keyedobjects.nib -text
 no.lproj/Command.strings -text
+no.lproj/Connection.nib/data.dependency -text
 no.lproj/Connection.nib/keyedobjects.nib -text
 no.lproj/Connection.strings -text
 no.lproj/Crash.strings -text
@@ -1267,6 +1300,7 @@ pl.lproj/Alert.nib/data.dependency -text
 pl.lproj/Alert.nib/info.nib -text
 pl.lproj/Alert.nib/keyedobjects.nib -text
 pl.lproj/Alert.strings -text
+pl.lproj/Bookmark.nib/data.dependency -text
 pl.lproj/Bookmark.nib/keyedobjects.nib -text
 pl.lproj/Bookmark.strings -text
 pl.lproj/Browser.nib/keyedobjects.nib -text
@@ -1275,6 +1309,7 @@ pl.lproj/Certificate.nib/keyedobjects.nib -text
 pl.lproj/Certificate.strings -text
 pl.lproj/Command.nib/keyedobjects.nib -text
 pl.lproj/Command.strings -text
+pl.lproj/Connection.nib/data.dependency -text
 pl.lproj/Connection.nib/keyedobjects.nib -text
 pl.lproj/Connection.strings -text
 pl.lproj/Crash.strings -text
@@ -1315,6 +1350,7 @@ pt.lproj/Alert.nib/data.dependency -text
 pt.lproj/Alert.nib/info.nib -text
 pt.lproj/Alert.nib/keyedobjects.nib -text
 pt.lproj/Alert.strings -text
+pt.lproj/Bookmark.nib/data.dependency -text
 pt.lproj/Bookmark.nib/keyedobjects.nib -text
 pt.lproj/Bookmark.strings -text
 pt.lproj/Browser.nib/keyedobjects.nib -text
@@ -1323,6 +1359,7 @@ pt.lproj/Certificate.nib/keyedobjects.nib -text
 pt.lproj/Certificate.strings -text
 pt.lproj/Command.nib/keyedobjects.nib -text
 pt.lproj/Command.strings -text
+pt.lproj/Connection.nib/data.dependency -text
 pt.lproj/Connection.nib/keyedobjects.nib -text
 pt.lproj/Connection.strings -text
 pt.lproj/Crash.strings -text
@@ -1362,6 +1399,7 @@ ru.lproj/Alert.nib/data.dependency -text
 ru.lproj/Alert.nib/info.nib -text
 ru.lproj/Alert.nib/keyedobjects.nib -text
 ru.lproj/Alert.strings -text
+ru.lproj/Bookmark.nib/data.dependency -text
 ru.lproj/Bookmark.nib/keyedobjects.nib -text
 ru.lproj/Bookmark.strings -text
 ru.lproj/Browser.nib/keyedobjects.nib -text
@@ -1370,6 +1408,7 @@ ru.lproj/Certificate.nib/keyedobjects.nib -text
 ru.lproj/Certificate.strings -text
 ru.lproj/Command.nib/keyedobjects.nib -text
 ru.lproj/Command.strings -text
+ru.lproj/Connection.nib/data.dependency -text
 ru.lproj/Connection.nib/keyedobjects.nib -text
 ru.lproj/Connection.strings -text
 ru.lproj/Crash.strings -text
@@ -1409,6 +1448,7 @@ sk.lproj/Alert.nib/data.dependency -text
 sk.lproj/Alert.nib/info.nib -text
 sk.lproj/Alert.nib/keyedobjects.nib -text
 sk.lproj/Alert.strings -text
+sk.lproj/Bookmark.nib/data.dependency -text
 sk.lproj/Bookmark.nib/keyedobjects.nib -text
 sk.lproj/Bookmark.strings -text
 sk.lproj/Browser.nib/keyedobjects.nib -text
@@ -1417,6 +1457,7 @@ sk.lproj/Certificate.nib/keyedobjects.nib -text
 sk.lproj/Certificate.strings -text
 sk.lproj/Command.nib/keyedobjects.nib -text
 sk.lproj/Command.strings -text
+sk.lproj/Connection.nib/data.dependency -text
 sk.lproj/Connection.nib/keyedobjects.nib -text
 sk.lproj/Connection.strings -text
 sk.lproj/Crash.strings -text
@@ -1469,6 +1510,7 @@ sv.lproj/Alert.nib/data.dependency -text
 sv.lproj/Alert.nib/info.nib -text
 sv.lproj/Alert.nib/keyedobjects.nib -text
 sv.lproj/Alert.strings -text
+sv.lproj/Bookmark.nib/data.dependency -text
 sv.lproj/Bookmark.nib/keyedobjects.nib -text
 sv.lproj/Bookmark.strings -text
 sv.lproj/Browser.nib/keyedobjects.nib -text
@@ -1477,6 +1519,7 @@ sv.lproj/Certificate.nib/keyedobjects.nib -text
 sv.lproj/Certificate.strings -text
 sv.lproj/Command.nib/keyedobjects.nib -text
 sv.lproj/Command.strings -text
+sv.lproj/Connection.nib/data.dependency -text
 sv.lproj/Connection.nib/keyedobjects.nib -text
 sv.lproj/Connection.strings -text
 sv.lproj/Crash.strings -text
@@ -1517,6 +1560,7 @@ th.lproj/Alert.nib/info.nib -text
 th.lproj/Alert.nib/keyedobjects.nib -text
 th.lproj/Alert.strings -text
 th.lproj/Bookmark.nib/classes.nib -text
+th.lproj/Bookmark.nib/data.dependency -text
 th.lproj/Bookmark.nib/info.nib -text
 th.lproj/Bookmark.nib/keyedobjects.nib -text
 th.lproj/Bookmark.strings -text
@@ -1533,6 +1577,7 @@ th.lproj/Command.nib/info.nib -text
 th.lproj/Command.nib/keyedobjects.nib -text
 th.lproj/Command.strings -text
 th.lproj/Connection.nib/classes.nib -text
+th.lproj/Connection.nib/data.dependency -text
 th.lproj/Connection.nib/info.nib -text
 th.lproj/Connection.nib/keyedobjects.nib -text
 th.lproj/Connection.strings -text
@@ -1598,6 +1643,7 @@ tr.lproj/Alert.nib/info.nib -text
 tr.lproj/Alert.nib/keyedobjects.nib -text
 tr.lproj/Alert.strings -text
 tr.lproj/Bookmark.nib/classes.nib -text
+tr.lproj/Bookmark.nib/data.dependency -text
 tr.lproj/Bookmark.nib/info.nib -text
 tr.lproj/Bookmark.nib/keyedobjects.nib -text
 tr.lproj/Bookmark.strings -text
@@ -1614,6 +1660,7 @@ tr.lproj/Command.nib/info.nib -text
 tr.lproj/Command.nib/keyedobjects.nib -text
 tr.lproj/Command.strings -text
 tr.lproj/Connection.nib/classes.nib -text
+tr.lproj/Connection.nib/data.dependency -text
 tr.lproj/Connection.nib/info.nib -text
 tr.lproj/Connection.nib/keyedobjects.nib -text
 tr.lproj/Connection.strings -text
@@ -1782,6 +1829,7 @@ zh_CN.lproj/Alert.nib/data.dependency -text
 zh_CN.lproj/Alert.nib/info.nib -text
 zh_CN.lproj/Alert.nib/keyedobjects.nib -text
 zh_CN.lproj/Alert.strings -text
+zh_CN.lproj/Bookmark.nib/data.dependency -text
 zh_CN.lproj/Bookmark.nib/keyedobjects.nib -text
 zh_CN.lproj/Bookmark.strings -text
 zh_CN.lproj/Browser.nib/keyedobjects.nib -text
@@ -1790,6 +1838,7 @@ zh_CN.lproj/Certificate.nib/keyedobjects.nib -text
 zh_CN.lproj/Certificate.strings -text
 zh_CN.lproj/Command.nib/keyedobjects.nib -text
 zh_CN.lproj/Command.strings -text
+zh_CN.lproj/Connection.nib/data.dependency -text
 zh_CN.lproj/Connection.nib/keyedobjects.nib -text
 zh_CN.lproj/Connection.strings -text
 zh_CN.lproj/Crash.strings -text
@@ -1829,6 +1878,7 @@ zh_TW.lproj/Alert.nib/data.dependency -text
 zh_TW.lproj/Alert.nib/info.nib -text
 zh_TW.lproj/Alert.nib/keyedobjects.nib -text
 zh_TW.lproj/Alert.strings -text
+zh_TW.lproj/Bookmark.nib/data.dependency -text
 zh_TW.lproj/Bookmark.nib/keyedobjects.nib -text
 zh_TW.lproj/Bookmark.strings -text
 zh_TW.lproj/Browser.nib/keyedobjects.nib -text
@@ -1837,6 +1887,7 @@ zh_TW.lproj/Certificate.nib/keyedobjects.nib -text
 zh_TW.lproj/Certificate.strings -text
 zh_TW.lproj/Command.nib/keyedobjects.nib -text
 zh_TW.lproj/Command.strings -text
+zh_TW.lproj/Connection.nib/data.dependency -text
 zh_TW.lproj/Connection.nib/keyedobjects.nib -text
 zh_TW.lproj/Connection.strings -text
 zh_TW.lproj/Crash.strings -text
