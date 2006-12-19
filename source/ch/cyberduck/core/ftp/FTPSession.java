@@ -128,6 +128,10 @@ public class FTPSession extends Session {
         try {
             super.check();
         }
+        catch(FTPException e) {
+            this.interrupt();
+            this.connect();
+        }
         catch(FTPNullReplyException e) {
             this.interrupt();
             this.connect();
