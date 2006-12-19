@@ -2,12 +2,12 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
-            ACTIONS = {permissionsSelectionChanged = id; }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDBookmarkController"; 
             LANGUAGE = Java; 
             OUTLETS = {
                 alertIcon = NSButton; 
                 connectmodePopup = NSPopUpButton; 
+                downloadPathPopup = NSPopUpButton; 
                 encodingPopup = NSPopUpButton; 
                 hostField = NSTextField; 
                 nicknameField = NSTextField; 
@@ -16,6 +16,7 @@
                 pkLabel = NSTextField; 
                 portField = NSTextField; 
                 protocolPopup = NSPopUpButton; 
+                transferPopup = NSPopUpButton; 
                 urlField = NSTextField; 
                 usernameField = NSTextField; 
                 window = NSWindow; 
