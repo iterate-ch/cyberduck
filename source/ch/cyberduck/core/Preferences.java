@@ -196,9 +196,13 @@ public abstract class Preferences {
         defaults.put("browser.showHidden", "false");
         defaults.put("browser.charset.encoding", "UTF-8");
         /**
-         * Edit double clicked files in browser instead of downloading
+         * Edit double clicked files instead of downloading
          */
         defaults.put("browser.doubleclick.edit", "false");
+        /**
+         * Rename files when return or enter key is pressed
+         */
+        defaults.put("browser.enterkey.rename", "true");
 
         /**
          * Enable inline editing in browser

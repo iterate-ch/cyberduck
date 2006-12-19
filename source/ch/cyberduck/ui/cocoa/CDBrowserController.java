@@ -839,11 +839,16 @@ public class CDBrowserController extends CDWindowController
         this.browserOutlineView.setDelegate(this.browserOutlineViewDelegate = new AbstractBrowserTableDelegate() {
 
             public void enterKeyPressed(final Object sender) {
-                if(CDBrowserController.this.browserOutlineView.numberOfSelectedRows() == 1) {
-                    CDBrowserController.this.browserOutlineView.editLocation(
-                            CDBrowserController.this.browserOutlineView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
-                            CDBrowserController.this.browserOutlineView.selectedRow(),
-                            null, true);
+                if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
+                    if(CDBrowserController.this.browserOutlineView.numberOfSelectedRows() == 1) {
+                        CDBrowserController.this.browserOutlineView.editLocation(
+                                CDBrowserController.this.browserOutlineView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
+                                CDBrowserController.this.browserOutlineView.selectedRow(),
+                                null, true);
+                    }
+                }
+                else {
+                    this.tableRowDoubleClicked(sender);
                 }
             }
 
@@ -971,11 +976,16 @@ public class CDBrowserController extends CDWindowController
         this.browserListView.setDataSource(this.browserListModel = new CDBrowserListViewModel(this));
         this.browserListView.setDelegate(this.browserListViewDelegate = new AbstractBrowserTableDelegate() {
             public void enterKeyPressed(final Object sender) {
-                if(CDBrowserController.this.browserListView.numberOfSelectedRows() == 1) {
-                    CDBrowserController.this.browserListView.editLocation(
-                            CDBrowserController.this.browserListView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
-                            CDBrowserController.this.browserListView.selectedRow(),
-                            null, true);
+                if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
+                    if(CDBrowserController.this.browserListView.numberOfSelectedRows() == 1) {
+                        CDBrowserController.this.browserListView.editLocation(
+                                CDBrowserController.this.browserListView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
+                                CDBrowserController.this.browserListView.selectedRow(),
+                                null, true);
+                    }
+                }
+                else {
+                    this.tableRowDoubleClicked(sender);
                 }
             }
 
