@@ -1015,87 +1015,26 @@ public class CDPreferencesController extends CDWindowController {
         }
     }
 
-    private NSButton concurrentConnectionsCheckbox; //IBOutlet
+    private NSPopUpButton transferPopup; //IBOutlet
 
-    public void setConcurrentConnectionsCheckbox(NSButton concurrentConnectionsCheckbox) {
-        this.concurrentConnectionsCheckbox = concurrentConnectionsCheckbox;
-        this.concurrentConnectionsCheckbox.setTarget(this);
-        this.concurrentConnectionsCheckbox.setAction(new NSSelector("concurrentConnectionsCheckboxClicked", new Class[]{NSButton.class}));
-        this.concurrentConnectionsCheckbox.setState(
-                Preferences.instance().getInteger("connection.pool.max") == 1 ? NSCell.OffState : NSCell.OnState);
+    public void setTransferPopup(NSPopUpButton transferPopup) {
+        this.transferPopup = transferPopup;
+        this.transferPopup.setTarget(this);
+        this.transferPopup.setAction(new NSSelector("transferPopupClicked", new Class[]{NSPopUpButton.class}));
+        this.transferPopup.selectItemAtIndex(
+                Preferences.instance().getInteger("connection.pool.max") == 1 ? USE_BROWSER_SESSION_INDEX : USE_QUEUE_SESSION_INDEX);
     }
 
-    public void concurrentConnectionsCheckboxClicked(final NSButton sender) {
-        boolean enabled = sender.state() == NSCell.OnState;
-        Preferences.instance().setProperty("connection.pool.max",
-                enabled ? Preferences.instance().getProperty("connection.pool.max.default") : "1");
-        this.concurrentConnectionsField.setStringValue(Preferences.instance().getProperty("connection.pool.max"));
-    }
+    private final int USE_QUEUE_SESSION_INDEX = 0;
+    private final int USE_BROWSER_SESSION_INDEX = 1;
 
-    private NSTextField concurrentConnectionsField; //IBOutlet
-
-    public void setConcurrentConnectionsField(NSTextField concurrentConnectionsField) {
-        this.concurrentConnectionsField = concurrentConnectionsField;
-        this.concurrentConnectionsField.setStringValue(Preferences.instance().getProperty("connection.pool.max"));
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("concurrentConnectionsFieldDidChange", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidChangeNotification,
-                this.concurrentConnectionsField);
-    }
-
-    public void concurrentConnectionsFieldDidChange(NSNotification sender) {
-        try {
-            int max = Integer.parseInt(this.concurrentConnectionsField.stringValue());
-            if(max < 1) {
-                this.concurrentConnectionsField.setStringValue(String.valueOf(1));
-            }
-            Preferences.instance().setProperty("connection.pool.max", max);
-            synchronized (SessionPool.instance()) {
-                SessionPool.instance().notifyAll();
-            }
+    public void transferPopupClicked(final NSPopUpButton sender) {
+        if(sender.indexOfSelectedItem() == USE_BROWSER_SESSION_INDEX) {
+            Preferences.instance().setProperty("connection.pool.max", 1);
         }
-        catch (NumberFormatException e) {
-            log.error(e.getMessage());
+        else if(sender.indexOfSelectedItem() == USE_QUEUE_SESSION_INDEX) {
+            Preferences.instance().setProperty("connection.pool.max", -1);
         }
-    }
-
-    private NSTextField concurrentConnectionsTimeoutField; //IBOutlet
-
-    public void setConcurrentConnectionsTimeoutField(NSTextField concurrentConnectionsTimeoutField) {
-        this.concurrentConnectionsTimeoutField = concurrentConnectionsTimeoutField;
-        this.concurrentConnectionsTimeoutField.setStringValue(Preferences.instance().getProperty("connection.pool.timeout"));
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("concurrentConnectionsTimeoutFieldDidChange", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidChangeNotification,
-                this.concurrentConnectionsTimeoutField);
-    }
-
-    public void concurrentConnectionsTimeoutFieldDidChange(NSNotification sender) {
-        try {
-            int timeout = Integer.parseInt(this.concurrentConnectionsTimeoutField.stringValue());
-            int MIN_VALUE = 10;
-            if(timeout < MIN_VALUE) {
-                this.concurrentConnectionsTimeoutField.setStringValue(String.valueOf(MIN_VALUE));
-            }
-            Preferences.instance().setProperty("connection.pool.timeout", timeout);
-        }
-        catch (NumberFormatException e) {
-            log.error(e.getMessage());
-        }
-    }
-
-    private NSButton concurrentConnectionForceDisconnectCheckbox; //IBOutlet
-
-    public void setConcurrentConnectionForceDisconnectCheckbox(NSButton concurrentConnectionForceDisconnectCheckbox) {
-        this.concurrentConnectionForceDisconnectCheckbox = concurrentConnectionForceDisconnectCheckbox;
-        this.concurrentConnectionForceDisconnectCheckbox.setTarget(this);
-        this.concurrentConnectionForceDisconnectCheckbox.setAction(new NSSelector("concurrentConnectionForceDisconnectCheckboxClicked", new Class[]{NSButton.class}));
-        this.concurrentConnectionForceDisconnectCheckbox.setState(Preferences.instance().getBoolean("connection.pool.force") ? NSCell.OnState : NSCell.OffState);
-    }
-
-    public void concurrentConnectionForceDisconnectCheckboxClicked(final NSButton sender) {
-        boolean enabled = sender.state() == NSCell.OnState;
-        Preferences.instance().setProperty("connection.pool.force", enabled);
     }
 
     private NSTextField bufferField; //IBOutlet

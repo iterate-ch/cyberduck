@@ -36,10 +36,6 @@
                 columnOwnerCheckbox = NSButton; 
                 columnPermissionsCheckbox = NSButton; 
                 columnSizeCheckbox = NSButton; 
-                concurrentConnectionForceDisconnectCheckbox = NSButton; 
-                concurrentConnectionsCheckbox = NSButton; 
-                concurrentConnectionsField = NSTextField; 
-                concurrentConnectionsTimeoutField = NSTextField; 
                 confirmDisconnectCheckbox = NSButton; 
                 connectmodeCombobox = NSPopUpButton; 
                 csAuthenticationCombobox = NSPopUpButton; 
@@ -97,6 +93,7 @@
                 systCheckbox = NSButton; 
                 tabView = NSTabView; 
                 timeoutField = NSTextField; 
+                transferPopup = NSPopUpButton; 
                 transfermodeCombobox = NSPopUpButton; 
                 ugroupr = NSButton; 
                 ugroupw = NSButton; 
