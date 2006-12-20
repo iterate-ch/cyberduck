@@ -234,6 +234,7 @@ public class CDMainController extends CDController {
                         return 0;
                     }
                 });
+                cache.clear();
                 for(int i = 0; i < files.length; i++) {
                     cache.add(importBookmark(files[i]));
                 }
