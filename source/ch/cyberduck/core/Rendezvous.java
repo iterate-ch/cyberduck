@@ -111,7 +111,8 @@ public class Rendezvous
 //            }
             RendezvousListener[] l = null;
             synchronized(this) {
-                l = (RendezvousListener[]) listeners.toArray(new RendezvousListener[]{});
+                l = (RendezvousListener[]) listeners.toArray(
+                        new RendezvousListener[listeners.size()]);
             }
             for(int i = 0; i < l.length; i++) {
                 l[i].serviceResolved(servicename);
@@ -122,7 +123,8 @@ public class Rendezvous
             log.info("Service lost:"+servicename);
             RendezvousListener[] l = null;
             synchronized(this) {
-                l = (RendezvousListener[]) listeners.toArray(new RendezvousListener[]{});
+                l = (RendezvousListener[]) listeners.toArray(
+                        new RendezvousListener[listeners.size()]);
             }
             for(int i = 0; i < l.length; i++) {
                 l[i].serviceLost(servicename);
@@ -195,7 +197,7 @@ public class Rendezvous
     public String getDisplayedName(int index) {
         if(index < this.numberOfServices()) {
             synchronized(this) {
-                return ((Host[]) services.values().toArray(new Host[]{}))[index].getNickname();
+                return ((Host[]) services.values().toArray(new Host[services.size()]))[index].getNickname();
             }
         }
         return NSBundle.localizedString("Unknown", "");

@@ -91,7 +91,7 @@ public class CDMainController extends CDController {
          */
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
             if(index >= this.numberOfItemsInMenu(menu)) {
-                log.warn("Invalid index in menuUpdateItemAtIndex:"+index);
+                log.warn("Invalid index in menuUpdateItemAtIndex:" + index);
                 return false;
             }
             Host h = (Host) HostCollection.instance().get(index);
@@ -115,7 +115,7 @@ public class CDMainController extends CDController {
 
     public void setEncodingMenu(NSMenu encodingMenu) {
         this.encodingMenu = encodingMenu;
-        String[] charsets = ((CDMainController)NSApplication.sharedApplication().delegate()).availableCharsets();
+        String[] charsets = ((CDMainController) NSApplication.sharedApplication().delegate()).availableCharsets();
         this.encodingMenuItems = new ArrayList(charsets.length);
         for(int i = 0; i < charsets.length; i++) {
             NSMenuItem item = new NSMenuItem(charsets[i],
@@ -171,24 +171,24 @@ public class CDMainController extends CDController {
          */
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
             if(index >= this.numberOfItemsInMenu(menu)) {
-                log.warn("Invalid index in menuUpdateItemAtIndex:"+index);
+                log.warn("Invalid index in menuUpdateItemAtIndex:" + index);
                 return false;
             }
-            if (index == 4) {
+            if(index == 4) {
                 item.setEnabled(true);
                 NSImage icon = NSImage.imageNamed("idisk.tiff");
                 icon.setSize(new NSSize(16f, 16f));
                 item.setImage(icon);
             }
-            if (index == 5) {
+            if(index == 5) {
                 item.setEnabled(true);
                 item.setImage(NSImage.imageNamed("history.tiff"));
             }
-            if (index == 6) {
+            if(index == 6) {
                 item.setEnabled(true);
                 item.setImage(NSImage.imageNamed("rendezvous16.tiff"));
             }
-            if (index > 7) {
+            if(index > 7) {
                 Host h = (Host) HostCollection.instance().get(index - 8);
                 item.setTitle(h.getNickname());
                 item.setTarget(this);
@@ -220,42 +220,42 @@ public class CDMainController extends CDController {
 
         public int numberOfItemsInMenu(NSMenu menu) {
             File[] files = this.listFiles();
-            if (cache.size() != files.length) {
+            if(cache.size() != files.length) {
                 Arrays.sort(files, new Comparator() {
                     public int compare(Object o1, Object o2) {
                         File f1 = (File) o1;
                         File f2 = (File) o2;
-                        if (f1.lastModified() < f2.lastModified()) {
+                        if(f1.lastModified() < f2.lastModified()) {
                             return 1;
                         }
-                        if (f1.lastModified() > f2.lastModified()) {
+                        if(f1.lastModified() > f2.lastModified()) {
                             return -1;
                         }
                         return 0;
                     }
                 });
-                for (int i = 0; i < files.length; i++) {
+                for(int i = 0; i < files.length; i++) {
                     cache.add(importBookmark(files[i]));
                 }
             }
-            if (cache.size() > 0) {
+            if(cache.size() > 0) {
                 return cache.size();
             }
             return 1;
         }
 
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
-            if (cache.size() == 0) {
+            if(cache.size() == 0) {
                 sender.setTitle(NSBundle.localizedString("No recently connected servers available", ""));
                 sender.setImage(null);
                 sender.setEnabled(false);
                 return false;
             }
             if(index >= cache.size()) {
-                log.warn("Invalid index in menuUpdateItemAtIndex:"+index);
+                log.warn("Invalid index in menuUpdateItemAtIndex:" + index);
                 return false;
             }
-            Host h = (Host)cache.get(index);
+            Host h = (Host) cache.get(index);
             sender.setTitle(h.getNickname());
             sender.setRepresentedObject(h);
             sender.setTarget(this);
@@ -276,7 +276,7 @@ public class CDMainController extends CDController {
         public int numberOfItemsInMenu(NSMenu menu) {
             synchronized(Rendezvous.instance()) {
                 int n = Rendezvous.instance().numberOfServices();
-                if (n > 0) {
+                if(n > 0) {
                     return n;
                 }
                 return 1;
@@ -293,14 +293,14 @@ public class CDMainController extends CDController {
          */
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
             synchronized(Rendezvous.instance()) {
-                if (Rendezvous.instance().numberOfServices() == 0) {
+                if(Rendezvous.instance().numberOfServices() == 0) {
                     sender.setTitle(NSBundle.localizedString("No Bonjour services available", ""));
                     sender.setEnabled(false);
                     return !shouldCancel;
                 }
                 else {
                     if(index >= this.numberOfItemsInMenu(menu)) {
-                        log.warn("Invalid index in menuUpdateItemAtIndex:"+index);
+                        log.warn("Invalid index in menuUpdateItemAtIndex:" + index);
                         return false;
                     }
                     String title = Rendezvous.instance().getDisplayedName(index);
@@ -316,7 +316,7 @@ public class CDMainController extends CDController {
 
         public void rendezvousMenuClicked(NSMenuItem sender) {
             CDBrowserController controller = CDMainController.this.newDocument();
-            controller.mount((Host)sender.representedObject());
+            controller.mount((Host) sender.representedObject());
         }
     }
 
@@ -325,7 +325,7 @@ public class CDMainController extends CDController {
             NSWorkspace.sharedWorkspace().openURL(
                     new java.net.URL(Preferences.instance().getProperty("website.bug")));
         }
-        catch (java.net.MalformedURLException e) {
+        catch(java.net.MalformedURLException e) {
             log.error(e.getMessage());
         }
     }
@@ -335,13 +335,13 @@ public class CDMainController extends CDController {
             String locale = "en";
             NSArray preferredLocalizations = NSBundle.preferredLocalizations(
                     NSBundle.mainBundle().localizations());
-            if (preferredLocalizations.count() > 0) {
+            if(preferredLocalizations.count() > 0) {
                 locale = (String) preferredLocalizations.objectAtIndex(0);
             }
             NSWorkspace.sharedWorkspace().openURL(
                     new java.net.URL(Preferences.instance().getProperty("website.help") + locale + "/"));
         }
-        catch (java.net.MalformedURLException e) {
+        catch(java.net.MalformedURLException e) {
             log.error(e.getMessage());
         }
     }
@@ -360,7 +360,7 @@ public class CDMainController extends CDController {
         try {
             NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.home")));
         }
-        catch (java.net.MalformedURLException e) {
+        catch(java.net.MalformedURLException e) {
             log.error(e.getMessage());
         }
     }
@@ -369,7 +369,7 @@ public class CDMainController extends CDController {
         try {
             NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.forum")));
         }
-        catch (java.net.MalformedURLException e) {
+        catch(java.net.MalformedURLException e) {
             log.error(e.getMessage());
         }
     }
@@ -378,7 +378,7 @@ public class CDMainController extends CDController {
         try {
             NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.donate")));
         }
-        catch (java.net.MalformedURLException e) {
+        catch(java.net.MalformedURLException e) {
             log.error(e.getMessage());
         }
     }
@@ -397,7 +397,7 @@ public class CDMainController extends CDController {
             NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail.feedback")
                     + "?subject=Cyberduck-" + versionString));
         }
-        catch (java.net.MalformedURLException e) {
+        catch(java.net.MalformedURLException e) {
             log.error(e.getMessage());
         }
     }
@@ -438,7 +438,6 @@ public class CDMainController extends CDController {
     // ----------------------------------------------------------
 
     /**
-     *
      * @param app
      * @param filename
      * @return
@@ -446,10 +445,10 @@ public class CDMainController extends CDController {
     public boolean applicationOpenFile(NSApplication app, String filename) {
         log.debug("applicationOpenFile:" + filename);
         File f = new File(filename);
-        if (f.exists()) {
-            if (f.getAbsolutePath().endsWith(".duck")) {
+        if(f.exists()) {
+            if(f.getAbsolutePath().endsWith(".duck")) {
                 Host host = this.importBookmark(f);
-                if (host != null) {
+                if(host != null) {
                     this.newDocument().mount(host);
                     return true;
                 }
@@ -457,11 +456,11 @@ public class CDMainController extends CDController {
             else {
                 NSArray windows = NSApplication.sharedApplication().windows();
                 int count = windows.count();
-                while (0 != count--) {
+                while(0 != count--) {
                     NSWindow window = (NSWindow) windows.objectAtIndex(count);
                     final CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-                    if (null != controller) {
-                        if (controller.isMounted()) {
+                    if(null != controller) {
+                        if(controller.isMounted()) {
                             final Path workdir = controller.workdir();
                             final Transfer q = new UploadTransfer();
                             final Session session = controller.getTransferSession();
@@ -481,6 +480,7 @@ public class CDMainController extends CDController {
      * returning true if the file is successfully opened, and false otherwise. By design, a
      * file opened through this method is assumed to be temporary—it’s the application’s
      * responsibility to remove the file at the appropriate time.
+     *
      * @param app
      * @param filename
      * @return
@@ -494,6 +494,7 @@ public class CDMainController extends CDController {
      * Invoked immediately before opening an untitled file. Return false to prevent
      * the application from opening an untitled file; return true otherwise.
      * Note that applicationOpenUntitledFile is invoked if this method returns true.
+     *
      * @param sender
      * @return
      */
@@ -507,12 +508,14 @@ public class CDMainController extends CDController {
      */
     public boolean applicationOpenUntitledFile(NSApplication app) {
         log.debug("applicationOpenUntitledFile");
-        this.openDefaultBookmark(this.newDocument());
-        return true;
+        if(!Preferences.instance().getBoolean("browser.serialize")) {
+            this.openDefaultBookmark(this.newDocument());
+            return true;
+        }
+        return false;
     }
 
     /**
-     *
      * @param controller
      */
     private void openDefaultBookmark(CDBrowserController controller) {
@@ -520,8 +523,8 @@ public class CDMainController extends CDController {
         if(null == defaultBookmark) {
             return; //No default bookmark given
         }
-        for(Iterator iter = HostCollection.instance().iterator(); iter.hasNext(); ) {
-            Host host = (Host)iter.next();
+        for(Iterator iter = HostCollection.instance().iterator(); iter.hasNext();) {
+            Host host = (Host) iter.next();
             if(host.getNickname().equals(defaultBookmark)) {
                 controller.mount(host);
                 return;
@@ -543,13 +546,14 @@ public class CDMainController extends CDController {
      * So, you can either implement this method, do nothing, and return false if you do not
      * want anything to happen at all (not recommended), or you can implement this method,
      * handle the event yourself in some custom way, and return false.
+     *
      * @param app
      * @param visibleWindowsFound
      * @return
      */
     public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
         log.debug("applicationShouldHandleReopen");
-        if (this.orderedBrowsers().count() == 0 && this.orderedTransfers().count() == 0) {
+        if(this.orderedBrowsers().count() == 0 && this.orderedTransfers().count() == 0) {
             this.openDefaultBookmark(this.newDocument());
         }
         return false;
@@ -570,14 +574,15 @@ public class CDMainController extends CDController {
      * this method to perform further initialization. If the user started up the application
      * by double-clicking a file, the delegate receives the applicationOpenFile message before receiving
      * applicationDidFinishLaunching. (applicationWillFinishLaunching is sent before applicationOpenFile.)
+     *
      * @param notification
      */
     public void applicationDidFinishLaunching(NSNotification notification) {
         log.info("Running Java " + System.getProperty("java.version"));
         Growl.instance().register();
-        if (log.isInfoEnabled())
+        if(log.isInfoEnabled())
             log.info("Available localizations:" + NSBundle.mainBundle().localizations());
-        if (Preferences.instance().getBoolean("queue.openByDefault")) {
+        if(Preferences.instance().getBoolean("queue.openByDefault")) {
             this.showTransferQueueClicked(null);
         }
         Rendezvous.instance().addListener(new RendezvousListener() {
@@ -590,17 +595,18 @@ public class CDMainController extends CDController {
                 ;
             }
         });
-        if (Preferences.instance().getBoolean("rendezvous.enable")) {
+        if(Preferences.instance().getBoolean("rendezvous.enable")) {
             Rendezvous.instance().init();
         }
-        if (Preferences.instance().getBoolean("browser.serialize")) {
+        if(Preferences.instance().getBoolean("browser.serialize")) {
             File[] files = SESSIONS_FOLDER.listFiles(new java.io.FilenameFilter() {
                 public boolean accept(File dir, String name) {
                     return name.endsWith(".duck");
                 }
             });
             for(int i = 0; i < files.length; i++) {
-                this.newDocument().mount(this.importBookmark(files[i])); files[i].delete();
+                this.newDocument(true).mount(this.importBookmark(files[i]));
+                files[i].delete();
             }
         }
     }
@@ -608,12 +614,13 @@ public class CDMainController extends CDController {
     /**
      * Posted before the machine goes to sleep. An observer of this message
      * can delay sleep for up to 30 seconds while handling this notification.
+     *
      * @param o
      */
     public void applicationShouldSleep(Object o) {
         log.debug("applicationShouldSleep");
         //Stopping rendezvous service discovery
-        if (Preferences.instance().getBoolean("rendezvous.enable")) {
+        if(Preferences.instance().getBoolean("rendezvous.enable")) {
             Rendezvous.instance().quit();
         }
         //halt all transfers
@@ -622,10 +629,10 @@ public class CDMainController extends CDController {
         NSArray windows = NSApplication.sharedApplication().windows();
         int count = windows.count();
         // Determine if there are any open connections
-        while (0 != count--) {
+        while(0 != count--) {
             NSWindow window = (NSWindow) windows.objectAtIndex(count);
             CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-            if (null != controller) {
+            if(null != controller) {
                 if(controller.isBusy()) {
                     controller.interrupt();
                 }
@@ -644,12 +651,13 @@ public class CDMainController extends CDController {
      * application terminates. sender is the NSApplication to be terminated.
      * If this method returns false, the application is not terminated,
      * and control returns to the main event loop.
+     *
      * @param app
      * @return Return true to allow the application to terminate.
      */
     public int applicationShouldTerminate(NSApplication app) {
         log.debug("applicationShouldTerminate");
-        if (!donationBoxDisplayed && Preferences.instance().getBoolean("donate.reminder")) {
+        if(!donationBoxDisplayed && Preferences.instance().getBoolean("donate.reminder")) {
             final int uses = Preferences.instance().getInteger("uses");
             CDWindowController c = new CDWindowController() {
                 private NSButton neverShowDonationCheckbox;
@@ -669,12 +677,12 @@ public class CDMainController extends CDController {
                 public void closeDonationSheet(final NSButton sender) {
                     this.window().close();
                     Preferences.instance().setProperty("donate.reminder", neverShowDonationCheckbox.state() == NSCell.OffState);
-                    if (sender.tag() == CDSheetCallback.DEFAULT_OPTION) {
+                    if(sender.tag() == CDSheetCallback.DEFAULT_OPTION) {
                         try {
                             NSWorkspace.sharedWorkspace().openURL(
                                     new java.net.URL(Preferences.instance().getProperty("website.donate")));
                         }
-                        catch (java.net.MalformedURLException e) {
+                        catch(java.net.MalformedURLException e) {
                             log.error(e.getMessage());
                         }
                     }
@@ -682,7 +690,7 @@ public class CDMainController extends CDController {
                 }
             };
             synchronized(NSApplication.sharedApplication()) {
-                if (!NSApplication.loadNibNamed("Donate", c)) {
+                if(!NSApplication.loadNibNamed("Donate", c)) {
                     log.fatal("Couldn't load Donate.nib");
                 }
             }
@@ -692,34 +700,34 @@ public class CDMainController extends CDController {
         NSArray windows = app.windows();
         int count = windows.count();
         // Determine if there are any open connections
-        while (0 != count--) {
+        while(0 != count--) {
             NSWindow window = (NSWindow) windows.objectAtIndex(count);
             CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-            if (null != controller) {
-                if (controller.isMounted()) {
-                    if (Preferences.instance().getBoolean("browser.serialize")) {
-                        Host bookmark = (Host)controller.getSession().getHost().clone();
+            if(null != controller) {
+                if(controller.isMounted()) {
+                    if(Preferences.instance().getBoolean("browser.serialize")) {
+                        Host bookmark = (Host) controller.getSession().getHost().clone();
                         bookmark.setDefaultPath(controller.workdir().getAbsolute());
                         this.exportBookmark(bookmark,
-                                new File(SESSIONS_FOLDER, bookmark.getNickname()+".duck"));
+                                new File(SESSIONS_FOLDER, bookmark.getNickname() + ".duck"));
                     }
                 }
-                if (controller.isConnected()) {
-                    if (Preferences.instance().getBoolean("browser.confirmDisconnect")) {
+                if(controller.isConnected()) {
+                    if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                         int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Quit", ""),
                                 NSBundle.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
                                 NSBundle.localizedString("Quit Anyway", ""), //default
                                 NSBundle.localizedString("Cancel", ""), //other
                                 NSBundle.localizedString("Review...", "")); //alternate
-                        if (choice == CDSheetCallback.ALTERNATE_OPTION) {
+                        if(choice == CDSheetCallback.ALTERNATE_OPTION) {
                             // Review if at least one window reqested to terminate later, we shall wait
                             return CDBrowserController.applicationShouldTerminate(app);
                         }
-                        if (choice == CDSheetCallback.CANCEL_OPTION) {
+                        if(choice == CDSheetCallback.CANCEL_OPTION) {
                             // Cancel
                             return NSApplication.TerminateCancel;
                         }
-                        if (choice == CDSheetCallback.DEFAULT_OPTION) {
+                        if(choice == CDSheetCallback.DEFAULT_OPTION) {
                             // Quit
                             return CDQueueController.applicationShouldTerminate(app);
                         }
@@ -753,18 +761,18 @@ public class CDMainController extends CDController {
     public CDBrowserController newDocument(boolean force) {
         log.debug("newDocument");
         NSArray browsers = this.orderedBrowsers();
-        if (!force) {
+        if(!force) {
             java.util.Enumeration enumerator = browsers.objectEnumerator();
-            while (enumerator.hasMoreElements()) {
+            while(enumerator.hasMoreElements()) {
                 CDBrowserController controller = (CDBrowserController) enumerator.nextElement();
-                if (!controller.hasSession()) {
+                if(!controller.hasSession()) {
                     controller.window().makeKeyAndOrderFront(null);
                     return controller;
                 }
             }
         }
         CDBrowserController controller = new CDBrowserController();
-        if (browsers.count() > 0) {
+        if(browsers.count() > 0) {
             controller.cascade();
         }
         controller.window().makeKeyAndOrderFront(null);
@@ -784,10 +792,10 @@ public class CDMainController extends CDController {
         NSArray orderedWindows = (NSArray) NSKeyValue.valueForKey(app, "orderedWindows");
         int c = orderedWindows.count();
         NSMutableArray orderedDocs = new NSMutableArray();
-        for (int i = 0; i < c; i++) {
-            if (((NSWindow) orderedWindows.objectAtIndex(i)).isVisible()) {
+        for(int i = 0; i < c; i++) {
+            if(((NSWindow) orderedWindows.objectAtIndex(i)).isVisible()) {
                 Object delegate = ((NSWindow) orderedWindows.objectAtIndex(i)).delegate();
-                if ((delegate != null) && (delegate instanceof CDQueueController)) {
+                if((delegate != null) && (delegate instanceof CDQueueController)) {
                     orderedDocs.addObject(delegate);
                     return orderedDocs;
                 }
@@ -802,10 +810,10 @@ public class CDMainController extends CDController {
         NSArray orderedWindows = (NSArray) NSKeyValue.valueForKey(app, "orderedWindows");
         int c = orderedWindows.count();
         NSMutableArray orderedDocs = new NSMutableArray();
-        for (int i = 0; i < c; i++) {
-            if (((NSWindow) orderedWindows.objectAtIndex(i)).isVisible()) {
+        for(int i = 0; i < c; i++) {
+            if(((NSWindow) orderedWindows.objectAtIndex(i)).isVisible()) {
                 Object delegate = ((NSWindow) orderedWindows.objectAtIndex(i)).delegate();
-                if ((delegate != null) && (delegate instanceof CDBrowserController)) {
+                if((delegate != null) && (delegate instanceof CDBrowserController)) {
                     orderedDocs.addObject(delegate);
                 }
             }
@@ -820,13 +828,13 @@ public class CDMainController extends CDController {
 
     protected String[] availableCharsets() {
         List charsets = new ArrayList();
-        for (Iterator iter = java.nio.charset.Charset.availableCharsets().values().iterator(); iter.hasNext(); ) {
+        for(Iterator iter = java.nio.charset.Charset.availableCharsets().values().iterator(); iter.hasNext();) {
             String name = ((java.nio.charset.Charset) iter.next()).displayName();
             if(!(name.startsWith("IBM") || name.startsWith("x-"))) {
                 charsets.add(name);
             }
         }
-        return (String[])charsets.toArray(new String[0]);
+        return (String[]) charsets.toArray(new String[0]);
     }
 
     /**

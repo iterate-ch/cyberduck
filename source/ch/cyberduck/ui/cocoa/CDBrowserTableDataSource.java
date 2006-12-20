@@ -370,11 +370,13 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     log.debug("QueuePBoardType data sucessfully written to pasteboard");
                 }
                 NSEvent event = NSApplication.sharedApplication().currentEvent();
-                NSPoint dragPosition = view.convertPointFromView(event.locationInWindow(), null);
-                NSRect imageRect = new NSRect(new NSPoint(dragPosition.x() - 16, dragPosition.y() - 16), new NSSize(32, 32));
-                view.dragPromisedFilesOfTypes(fileTypes, imageRect, this, true, event);
-                // @see http://www.cocoabuilder.com/archive/message/cocoa/2003/5/15/81424
-                return true;
+                if (event != null) {
+                    NSPoint dragPosition = view.convertPointFromView(event.locationInWindow(), null);
+                    NSRect imageRect = new NSRect(new NSPoint(dragPosition.x() - 16, dragPosition.y() - 16), new NSSize(32, 32));
+                    view.dragPromisedFilesOfTypes(fileTypes, imageRect, this, true, event);
+                    // @see http://www.cocoabuilder.com/archive/message/cocoa/2003/5/15/81424
+                    return true;
+                }
             }
         }
         return false;

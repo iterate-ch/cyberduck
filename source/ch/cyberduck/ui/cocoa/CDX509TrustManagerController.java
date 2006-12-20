@@ -136,7 +136,8 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
     }
 
     public X509Certificate[] getAcceptedIssuers() {
-        return (X509Certificate[])this.acceptedCertificates.toArray(new X509Certificate[]{});
+        return (X509Certificate[])this.acceptedCertificates.toArray(
+                new X509Certificate[this.acceptedCertificates.size()]);
     }
 
     public boolean keychainKnowsAbout(X509Certificate certificate) {

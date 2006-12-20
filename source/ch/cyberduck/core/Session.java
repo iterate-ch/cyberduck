@@ -220,6 +220,10 @@ public abstract class Session extends NSObject {
         return this.host.getEncoding();
     }
 
+    /**
+     *
+     * @return The maximum number of concurrent connections allowed or -1 if no limit is set
+     */
     public int getMaxConnections() {
         if(-1 == host.getMaxConnections()) {
             return Preferences.instance().getInteger("connection.pool.max");
@@ -260,23 +264,24 @@ public abstract class Session extends NSObject {
 
     private Timer keepAliveTimer = null;
 
-    private Vector connectionListners = new Vector();
+    private Vector listeners = new Vector();
 
     public void addConnectionListener(ConnectionListener listener) {
-        connectionListners.add(listener);
+        listeners.add(listener);
     }
 
     public void removeConnectionListener(ConnectionListener listener) {
-        connectionListners.remove(listener);
+        listeners.remove(listener);
     }
 
     protected void fireConnectionWillOpenEvent() throws IOException {
         log.debug("connectionWillOpen");
-        SessionPool.instance().add(this);
-        ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
+        ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
+                new ConnectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].connectionWillOpen();
         }
+        SessionPool.instance().add(this);
     }
 
     protected void fireConnectionDidOpenEvent() {
@@ -288,7 +293,8 @@ public abstract class Session extends NSObject {
                     Preferences.instance().getInteger("connection.keepalive.interval"));
         }
 
-        ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
+        ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
+                new ConnectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].connectionDidOpen();
         }
@@ -297,7 +303,8 @@ public abstract class Session extends NSObject {
     protected void fireConnectionWillCloseEvent() {
         log.debug("connectionWillClose");
         this.message(NSBundle.localizedString("Disconnecting...", "Status", ""));
-        ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
+        ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
+                new ConnectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].connectionWillClose();
         }
@@ -311,7 +318,8 @@ public abstract class Session extends NSObject {
         SessionPool.instance().release(this);
 
         this.message(NSBundle.localizedString("Disconnected", "Status", ""));
-        ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
+        ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
+                new ConnectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].connectionDidClose();
         }
@@ -322,7 +330,8 @@ public abstract class Session extends NSObject {
      */
     public void fireActivityStartedEvent() {
         log.debug("activityStarted");
-        ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
+        ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
+                new ConnectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].activityStarted();
         }
@@ -333,7 +342,8 @@ public abstract class Session extends NSObject {
      */
     public void fireActivityStoppedEvent() {
         log.debug("activityStopped");
-        ConnectionListener[] l = (ConnectionListener[]) connectionListners.toArray(new ConnectionListener[]{});
+        ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
+                new ConnectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].activityStopped();
         }
@@ -356,7 +366,8 @@ public abstract class Session extends NSObject {
      */
     protected void log(final String message) {
         log.info(message);
-        TranscriptListener[] l = (TranscriptListener[]) transcriptListeners.toArray(new TranscriptListener[]{});
+        TranscriptListener[] l = (TranscriptListener[]) transcriptListeners.toArray(
+                new TranscriptListener[transcriptListeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].log(message);
         }
@@ -378,7 +389,8 @@ public abstract class Session extends NSObject {
      */
     public void message(final String message, String title) {
         log.info(message);
-        ProgressListener[] l = (ProgressListener[]) progressListeners.toArray(new ProgressListener[]{});
+        ProgressListener[] l = (ProgressListener[]) progressListeners.toArray(
+                new ProgressListener[progressListeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].message(message);
         }
@@ -415,7 +427,8 @@ public abstract class Session extends NSObject {
     public void error(Path path, String message, Exception e, String title) {
         log.info(e.getMessage());
         BackgroundException failure = new BackgroundException(this, path, message, e);
-        ErrorListener[] l = (ErrorListener[]) errorListeners.toArray(new ErrorListener[]{});
+        ErrorListener[] l = (ErrorListener[]) errorListeners.toArray(
+                new ErrorListener[errorListeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].error(failure);
         }

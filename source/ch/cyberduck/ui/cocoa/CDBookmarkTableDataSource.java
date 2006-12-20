@@ -297,11 +297,13 @@ public class CDBookmarkTableDataSource extends NSObject {
                         = (Host) HostCollection.instance().get(((Integer) rows.objectAtIndex(i)).intValue());
             }
             NSEvent event = NSApplication.sharedApplication().currentEvent();
-            NSPoint dragPosition = view.convertPointFromView(event.locationInWindow(), null);
-            NSRect imageRect = new NSRect(new NSPoint(dragPosition.x() - 16, dragPosition.y() - 16), new NSSize(32, 32));
-            // Writing a promised file of the host as a bookmark file to the clipboard
-            view.dragPromisedFilesOfTypes(new NSArray("duck"), imageRect, this, true, event);
-            return true;
+            if (event != null) {
+                NSPoint dragPosition = view.convertPointFromView(event.locationInWindow(), null);
+                NSRect imageRect = new NSRect(new NSPoint(dragPosition.x() - 16, dragPosition.y() - 16), new NSSize(32, 32));
+                // Writing a promised file of the host as a bookmark file to the clipboard
+                view.dragPromisedFilesOfTypes(new NSArray("duck"), imageRect, this, true, event);
+                return true;
+            }
         }
         return false;
     }

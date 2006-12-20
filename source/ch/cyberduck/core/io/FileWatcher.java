@@ -84,21 +84,24 @@ public class FileWatcher extends NSObject {
     }
 
     public void fileWritten(NSNotification notification) {
-        FileWatcherListener[] l = (FileWatcherListener[])listeners.toArray(new FileWatcherListener[]{});
+        FileWatcherListener[] l = (FileWatcherListener[])listeners.toArray(
+                new FileWatcherListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].fileWritten(new Local((String) notification.object()));
         }
     }
 
     public void fileRenamed(NSNotification notification) {
-        FileWatcherListener[] l = (FileWatcherListener[])listeners.toArray(new FileWatcherListener[]{});
+        FileWatcherListener[] l = (FileWatcherListener[])listeners.toArray(
+                new FileWatcherListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].fileRenamed(new Local((String) notification.object()));
         }
     }
 
     public void fileDeleted(NSNotification notification) {
-        FileWatcherListener[] l = (FileWatcherListener[])listeners.toArray(new FileWatcherListener[]{});
+        FileWatcherListener[] l = (FileWatcherListener[])listeners.toArray(
+                new FileWatcherListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].fileDeleted(new Local((String) notification.object()));
         }

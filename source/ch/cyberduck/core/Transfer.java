@@ -80,25 +80,26 @@ public abstract class Transfer extends NSObject {
         this.roots.add(root);
     }
 
-    private Vector queueListeners = new Vector();
+    private Vector listeners = new Vector();
 
     /**
      * @param listener
      */
     public void addListener(TransferListener listener) {
-        queueListeners.add(listener);
+        listeners.add(listener);
     }
 
     /**
      * @param listener
      */
     public void removeListener(TransferListener listener) {
-        queueListeners.remove(listener);
+        listeners.remove(listener);
     }
 
     protected void fireQueueStartedEvent() {
         running = true;
-        TransferListener[] l = (TransferListener[]) queueListeners.toArray(new TransferListener[]{});
+        TransferListener[] l = (TransferListener[]) listeners.toArray(
+                new TransferListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].queueStarted();
         }
@@ -106,21 +107,24 @@ public abstract class Transfer extends NSObject {
 
     protected void fireQueueStoppedEvent() {
         running = false;
-        TransferListener[] l = (TransferListener[]) queueListeners.toArray(new TransferListener[]{});
+        TransferListener[] l = (TransferListener[]) listeners.toArray(
+                new TransferListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].queueStopped();
         }
     }
 
     protected void fireTransferStartedEvent(Path path) {
-        TransferListener[] l = (TransferListener[]) queueListeners.toArray(new TransferListener[]{});
+        TransferListener[] l = (TransferListener[]) listeners.toArray(
+                new TransferListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].transferStarted(path);
         }
     }
 
     protected void fireTransferStoppedEvent(Path path) {
-        TransferListener[] l = (TransferListener[]) queueListeners.toArray(new TransferListener[]{});
+        TransferListener[] l = (TransferListener[]) listeners.toArray(
+                new TransferListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].transferStopped(path);
         }

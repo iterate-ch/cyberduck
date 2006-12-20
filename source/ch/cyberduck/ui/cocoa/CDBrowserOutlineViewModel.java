@@ -53,11 +53,14 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
             return false;
         }
         if(item.attributes.isDirectory()) {
-            if(NSEvent.LeftMouseDragged == NSApplication.sharedApplication().currentEvent().type()) {
-                if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
-                    log.info("Returning false to outlineViewIsItemExpandable:"+item.getName()+" while dragging");
-                    // See tickets #98 and #633
-                    return false;
+            NSEvent event = NSApplication.sharedApplication().currentEvent();
+            if (event != null) {
+                if(NSEvent.LeftMouseDragged == event.type()) {
+                    if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
+                        log.info("Returning false to outlineViewIsItemExpandable:"+item.getName()+" while dragging");
+                        // See tickets #98 and #633
+                        return false;
+                    }
                 }
             }
             return true;

@@ -95,21 +95,24 @@ public class Collection extends ArrayList implements CollectionListener {
     }
 
     public void collectionItemAdded(Object item) {
-        CollectionListener[] l = (CollectionListener[])listeners.toArray(new CollectionListener[]{});
+        CollectionListener[] l = (CollectionListener[])listeners.toArray(
+                new CollectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].collectionItemAdded(item);
         }
     }
 
     public void collectionItemRemoved(Object item) {
-        CollectionListener[] l = (CollectionListener[])listeners.toArray(new CollectionListener[]{});
+        CollectionListener[] l = (CollectionListener[])listeners.toArray(
+                new CollectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].collectionItemRemoved(item);
         }
     }
 
     public void collectionItemChanged(Object item) {
-        CollectionListener[] l = (CollectionListener[])listeners.toArray(new CollectionListener[]{});
+        CollectionListener[] l = (CollectionListener[])listeners.toArray(
+                new CollectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].collectionItemChanged(item);
         }

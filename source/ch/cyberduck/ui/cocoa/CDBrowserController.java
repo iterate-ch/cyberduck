@@ -22,8 +22,8 @@ import com.enterprisedt.net.ftp.FTPConnectMode;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.odb.Editor;
-import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
