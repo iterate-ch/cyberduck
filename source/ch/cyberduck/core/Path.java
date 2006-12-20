@@ -224,46 +224,48 @@ public abstract class Path extends NSObject {
      */
     public static String normalize(final String path) {
         String normalized = path;
-        while(!normalized.startsWith(DELIMITER)) {
-            normalized = DELIMITER + normalized;
-        }
-        while(!normalized.endsWith(DELIMITER)) {
-            normalized = normalized + DELIMITER;
-        }
-        // Resolve occurrences of "/./" in the normalized path
-        while(true) {
-            int index = normalized.indexOf("/./");
-            if(index < 0) {
-                break;
+        if(Preferences.instance().getBoolean("path.normalize")) {
+            while(!normalized.startsWith(DELIMITER)) {
+                normalized = DELIMITER + normalized;
             }
-            normalized = normalized.substring(0, index) +
-                    normalized.substring(index + 2);
-        }
-        // Resolve occurrences of "/../" in the normalized path
-        while(true) {
-            int index = normalized.indexOf("/../");
-            if(index < 0) {
-                break;
+            while(!normalized.endsWith(DELIMITER)) {
+                normalized = normalized + DELIMITER;
             }
-            if (index == 0) {
-                return DELIMITER;  // The only left path is the root.
+            // Resolve occurrences of "/./" in the normalized path
+            while(true) {
+                int index = normalized.indexOf("/./");
+                if(index < 0) {
+                    break;
+                }
+                normalized = normalized.substring(0, index) +
+                        normalized.substring(index + 2);
             }
-            normalized = normalized.substring(0, normalized.lastIndexOf('/', index - 1)) +
-                    normalized.substring(index + 3);
-        }
-        // Resolve occurrences of "//" in the normalized path
-        while(true) {
-            int index = normalized.indexOf("//");
-            if(index < 0) {
-                break;
+            // Resolve occurrences of "/../" in the normalized path
+            while(true) {
+                int index = normalized.indexOf("/../");
+                if(index < 0) {
+                    break;
+                }
+                if (index == 0) {
+                    return DELIMITER;  // The only left path is the root.
+                }
+                normalized = normalized.substring(0, normalized.lastIndexOf('/', index - 1)) +
+                        normalized.substring(index + 3);
             }
-            normalized = normalized.substring(0, index) +
-                    normalized.substring(index + 1);
-        }
-        while((normalized.endsWith(DELIMITER) && (normalized.length()
-                > 1))) {
-            //Strip any redundant delimiter at the end of the path
-            normalized = normalized.substring(0, normalized.length() - 1);
+            // Resolve occurrences of "//" in the normalized path
+            while(true) {
+                int index = normalized.indexOf("//");
+                if(index < 0) {
+                    break;
+                }
+                normalized = normalized.substring(0, index) +
+                        normalized.substring(index + 1);
+            }
+            while((normalized.endsWith(DELIMITER) && (normalized.length()
+                    > 1))) {
+                //Strip any redundant delimiter at the end of the path
+                normalized = normalized.substring(0, normalized.length() - 1);
+            }
         }
         // Return the normalized path that we have completed
         return normalized;
