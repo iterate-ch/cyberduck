@@ -24,6 +24,7 @@ import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSObject;
+
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -225,10 +226,10 @@ public abstract class Session extends NSObject {
      * @return The maximum number of concurrent connections allowed or -1 if no limit is set
      */
     public int getMaxConnections() {
-        if(-1 == host.getMaxConnections()) {
-            return Preferences.instance().getInteger("connection.pool.max");
+        if(null == host.getMaxConnections()) {
+            return Preferences.instance().getInteger("connection.host.max");
         }
-        return host.getMaxConnections();
+        return host.getMaxConnections().intValue();
     }
 
     /**
@@ -281,7 +282,6 @@ public abstract class Session extends NSObject {
         for(int i = 0; i < l.length; i++) {
             l[i].connectionWillOpen();
         }
-        SessionPool.instance().add(this);
     }
 
     protected void fireConnectionDidOpenEvent() {
@@ -315,8 +315,6 @@ public abstract class Session extends NSObject {
         if(this.keepAliveTimer != null) {
             this.keepAliveTimer.cancel();
         }
-        SessionPool.instance().release(this);
-
         this.message(NSBundle.localizedString("Disconnected", "Status", ""));
         ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
                 new ConnectionListener[listeners.size()]);

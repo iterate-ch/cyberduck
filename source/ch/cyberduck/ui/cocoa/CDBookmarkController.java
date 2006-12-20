@@ -217,12 +217,12 @@ public class CDBookmarkController extends CDWindowController {
         this.transferPopup = transferPopup;
         this.transferPopup.setTarget(this);
         this.transferPopup.setAction(new NSSelector("transferPopupClicked", new Class[]{NSPopUpButton.class}));
-        if(host.getMaxConnections() == -1) {
+        if(null == host.getMaxConnections()) {
             this.transferPopup.selectItemAtIndex(DEFAULT_INDEX);
         }
         else {
             this.transferPopup.selectItemAtIndex(
-                    host.getMaxConnections() == 1 ? USE_BROWSER_SESSION_INDEX : USE_QUEUE_SESSION_INDEX);
+                    host.getMaxConnections().intValue() == 1 ? USE_BROWSER_SESSION_INDEX : USE_QUEUE_SESSION_INDEX);
         }
     }
 
@@ -232,13 +232,13 @@ public class CDBookmarkController extends CDWindowController {
 
     public void transferPopupClicked(final NSPopUpButton sender) {
         if(sender.indexOfSelectedItem() == DEFAULT_INDEX) {
-            this.host.setMaxConnections(-1);
+            this.host.setMaxConnections(null);
         }
         else if(sender.indexOfSelectedItem() == USE_BROWSER_SESSION_INDEX) {
-            this.host.setMaxConnections(1);
+            this.host.setMaxConnections(new Integer(1));
         }
         else if(sender.indexOfSelectedItem() == USE_QUEUE_SESSION_INDEX) {
-            this.host.setMaxConnections(Preferences.instance().getInteger("connection.pool.max"));
+            this.host.setMaxConnections(new Integer(-1));
         }
     }
 

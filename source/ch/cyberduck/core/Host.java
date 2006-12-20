@@ -63,7 +63,7 @@ public class Host extends NSObject {
     /**
      * The maximum number of concurrent sessions to this host
      */
-    private int maxConnections = -1;
+    private Integer maxConnections;
     /**
      * The custom download folder
      */
@@ -126,7 +126,7 @@ public class Host extends NSObject {
         }
         Object connObj = dict.objectForKey(Host.MAXCONNECTIONS);
         if(connObj != null) {
-            this.setMaxConnections(Integer.parseInt((String) connObj));
+            this.setMaxConnections(Integer.valueOf((String) connObj));
         }
         Object downloadObj = dict.objectForKey(Host.DOWNLOADFOLDER);
         if(downloadObj != null) {
@@ -162,7 +162,7 @@ public class Host extends NSObject {
                     dict.setObjectForKey(FTPConnectMode.PASV.toString(), Host.FTPCONNECTMODE);
             }
         }
-        if(-1 != this.maxConnections) {
+        if(null != this.maxConnections) {
             dict.setObjectForKey(String.valueOf(this.maxConnections), Host.MAXCONNECTIONS);
         }
         if(null != this.downloadFolder) {
@@ -508,6 +508,7 @@ public class Host extends NSObject {
     }
 
     public void setEncoding(String encoding) {
+        log.debug("setEncoding:"+encoding);
         this.encoding = encoding;
     }
 
@@ -521,6 +522,7 @@ public class Host extends NSObject {
     }
 
     public void setFTPConnectMode(FTPConnectMode connectMode) {
+        log.debug("setFTPConnectMode:"+connectMode);
         this.connectMode = connectMode;
     }
 
@@ -536,17 +538,19 @@ public class Host extends NSObject {
     /**
      * Set a custom number of concurrent sessions allowed for this host
      * If not set, connection.pool.max is used.
-     * @param n
+     * @param n null to use the default value or -1 if no limit
      */
-    public void setMaxConnections(int n) {
+    public void setMaxConnections(Integer n) {
+        log.debug("setMaxConnections:"+n);
         this.maxConnections = n;
     }
 
     /**
      *
-     * @return The number of concurrent sessions allowed
+     * @return The number of concurrent sessions allowed. -1 if unlimited or null
+     * if the default should be used
      */
-    public int getMaxConnections() {
+    public Integer getMaxConnections() {
         return this.maxConnections;
     }
 
@@ -555,6 +559,7 @@ public class Host extends NSObject {
      * @param folder
      */
     public void setDownloadFolder(String folder) {
+        log.debug("setDownloadFolder:"+folder);
         this.downloadFolder = folder;
     }
 

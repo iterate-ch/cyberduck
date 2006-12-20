@@ -1022,7 +1022,7 @@ public class CDPreferencesController extends CDWindowController {
         this.transferPopup.setTarget(this);
         this.transferPopup.setAction(new NSSelector("transferPopupClicked", new Class[]{NSPopUpButton.class}));
         this.transferPopup.selectItemAtIndex(
-                Preferences.instance().getInteger("connection.pool.max") == 1 ? USE_BROWSER_SESSION_INDEX : USE_QUEUE_SESSION_INDEX);
+                Preferences.instance().getInteger("connection.host.max") == 1 ? USE_BROWSER_SESSION_INDEX : USE_QUEUE_SESSION_INDEX);
     }
 
     private final int USE_QUEUE_SESSION_INDEX = 0;
@@ -1030,10 +1030,10 @@ public class CDPreferencesController extends CDWindowController {
 
     public void transferPopupClicked(final NSPopUpButton sender) {
         if(sender.indexOfSelectedItem() == USE_BROWSER_SESSION_INDEX) {
-            Preferences.instance().setProperty("connection.pool.max", 1);
+            Preferences.instance().setProperty("connection.host.max", 1);
         }
         else if(sender.indexOfSelectedItem() == USE_QUEUE_SESSION_INDEX) {
-            Preferences.instance().setProperty("connection.pool.max", -1);
+            Preferences.instance().setProperty("connection.host.max", -1);
         }
     }
 

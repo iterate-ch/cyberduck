@@ -278,9 +278,13 @@ public abstract class Preferences {
         //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");
         defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
+
         defaults.put("ftp.connectmode", FTPConnectMode.PASV.toString());
         defaults.put("ftp.transfermode", FTPTransferType.BINARY.toString());
         defaults.put("ftp.transfermode.ascii.extensions", "txt cgi htm html shtml xml xsl php php3 js css asp java c cp cpp m h pl py rb sh");
+        /**
+         * Line seperator to use for ASCII transfers
+         */
         defaults.put("ftp.line.separator", "unix");
         /**
          * Send SYST
@@ -290,27 +294,56 @@ public abstract class Preferences {
          * Send LIST -a
          */
         defaults.put("ftp.sendExtendedListCommand", "true");
+        /**
+         * Fallback to active or passive mode respectively
+         */
         defaults.put("ftp.connectmode.fallback", "true");
-
+        /**
+         * Protect the data channel by default
+         */
         defaults.put("ftp.tls.datachannel", "P"); //C
+        /**
+         * Still open connection if securing data channel fails
+         */
         defaults.put("ftp.tls.datachannel.failOnError", "false");
+        /**
+         * Do not accept certificates that can't be found in the Keychain
+         */
         defaults.put("ftp.tls.acceptAnyCertificate", "false");
-
-        defaults.put("connection.pool.max", "10"); // maximumum concurrent connections to the same host
-        defaults.put("connection.pool.max.default", "10"); // maximumum concurrent connections to the same host
-        defaults.put("connection.pool.force", "false"); // force to close an existing connection if the pool is too small
-        defaults.put("connection.pool.timeout", "180"); // in seconds
+        /**
+         * Maximum concurrent connections to the same host
+         * Unlimited by default
+         */
+        defaults.put("connection.host.max", "-1");
+        /**
+         * Default login name
+         */
         defaults.put("connection.login.name", System.getProperty("user.name"));
+        /**
+         * Search for passphrases in Keychain
+         */
         defaults.put("connection.login.useKeychain", "true");
+
         defaults.put("connection.buffer", "16384"); //in bytes, is 128kbit
         defaults.put("connection.buffer.default", "16384");
+
         defaults.put("connection.port.default", "21");
         defaults.put("connection.protocol.default", "ftp");
+
         defaults.put("connection.timeout", "30000"); //in milliseconds
+        /**
+         * Send no operation commands to the server
+         */
         defaults.put("connection.keepalive", "false");
         defaults.put("connection.keepalive.interval", "30000");
-
+        /**
+         * Try to resolve the hostname when entered in connection dialog
+         */
         defaults.put("connection.hostname.check", "true"); //Check hostname reachability using NSNetworkDiagnostics
+        /**
+         * Normalize path names
+         */
+        defaults.put("path.normalize", "true");
 
         /**
          * Locatoin of the openssh known_hosts file
