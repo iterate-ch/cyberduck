@@ -226,7 +226,7 @@ public class FTPControlSocket {
                 return this.createDataSocketPASV();
             }
         }
-        catch(IOException e) {
+        catch(FTPException e) {
             if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
                 // Fallback to other connect mode
                 if(connectMode == FTPConnectMode.ACTIVE) {
