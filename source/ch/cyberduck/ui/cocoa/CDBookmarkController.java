@@ -24,7 +24,6 @@ import ch.cyberduck.core.CollectionListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostCollection;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 
 import com.apple.cocoa.application.*;
@@ -251,20 +250,51 @@ public class CDBookmarkController extends CDWindowController {
         this.downloadPathPopup.setTarget(this);
         this.downloadPathPopup.setAction(new NSSelector("downloadPathPopupClicked", new Class[]{NSPopUpButton.class}));
         this.downloadPathPopup.removeAllItems();
-        this.downloadPathPopup.addItem(NSPathUtilities.lastPathComponent(host.getDownloadFolder()));
+        // The currently set download folder
+        final String CUSTOM = host.getDownloadFolder();
+        this.downloadPathPopup.addItem(NSPathUtilities.displayNameAtPath(
+                NSPathUtilities.stringByExpandingTildeInPath(CUSTOM))
+        );
         this.downloadPathPopup.itemAtIndex(0).setImage(NSImage.imageNamed("folder16.tiff"));
+        this.downloadPathPopup.itemAtIndex(0).setRepresentedObject(
+                NSPathUtilities.stringByExpandingTildeInPath(CUSTOM));
+
+        this.downloadPathPopup.menu().addItem(new NSMenuItem().separatorItem());
+        // Shortcut to the Desktop
+        final String DESKTOP = "~/Desktop";
+        this.downloadPathPopup.addItem(NSPathUtilities.displayNameAtPath(
+                NSPathUtilities.stringByExpandingTildeInPath(DESKTOP)
+        ));
+        this.downloadPathPopup.itemAtIndex(2).setImage(DESKTOP_ICON);
+        this.downloadPathPopup.itemAtIndex(2).setRepresentedObject(
+                NSPathUtilities.stringByExpandingTildeInPath(DESKTOP));
+        // Shortcut to user home
+        final String HOME = "~";
+        this.downloadPathPopup.addItem(NSPathUtilities.displayNameAtPath(
+                NSPathUtilities.stringByExpandingTildeInPath(HOME)
+        ));
+        this.downloadPathPopup.itemAtIndex(3).setRepresentedObject(
+                NSPathUtilities.stringByExpandingTildeInPath(HOME));
+        this.downloadPathPopup.itemAtIndex(3).setImage(HOME_ICON);
+        // Choose another folder
         this.downloadPathPopup.menu().addItem(new NSMenuItem().separatorItem());
         this.downloadPathPopup.addItem(CHOOSE);
     }
 
+    private NSOpenPanel downloadPathPanel;
+
     public void downloadPathPopupClicked(final NSPopUpButton sender) {
         if(sender.selectedItem().title().equals(CHOOSE)) {
-            NSOpenPanel panel = NSOpenPanel.openPanel();
-            panel.setCanChooseFiles(false);
-            panel.setCanChooseDirectories(true);
-            panel.setAllowsMultipleSelection(false);
-            panel.setCanCreateDirectories(true);
-            panel.beginSheetForDirectory(null, null, null, this.window, this, new NSSelector("downloadPathPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+            downloadPathPanel = NSOpenPanel.openPanel();
+            downloadPathPanel.setCanChooseFiles(false);
+            downloadPathPanel.setCanChooseDirectories(true);
+            downloadPathPanel.setAllowsMultipleSelection(false);
+            downloadPathPanel.setCanCreateDirectories(true);
+            downloadPathPanel.beginSheetForDirectory(null, null, null, this.window, this, new NSSelector("downloadPathPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+        }
+        else {
+            host.setDownloadFolder(NSPathUtilities.stringByAbbreviatingWithTildeInPath(
+                    sender.selectedItem().representedObject().toString()));
         }
     }
 
@@ -273,14 +303,18 @@ public class CDBookmarkController extends CDWindowController {
             NSArray selected = sheet.filenames();
             String filename;
             if ((filename = (String) selected.lastObject()) != null) {
-                host.setDownloadFolder(filename);
+                host.setDownloadFolder(
+                        NSPathUtilities.stringByAbbreviatingWithTildeInPath(filename));
             }
         }
         else {
             host.setDownloadFolder(null);
         }
-        this.downloadPathPopup.itemAtIndex(0).setTitle(NSPathUtilities.lastPathComponent(host.getDownloadFolder()));
+        String custom = NSPathUtilities.stringByExpandingTildeInPath(host.getDownloadFolder());
+        this.downloadPathPopup.itemAtIndex(0).setTitle(NSPathUtilities.displayNameAtPath(custom));
+        this.downloadPathPopup.itemAtIndex(0).setRepresentedObject(custom);
         this.downloadPathPopup.selectItemAtIndex(0);
+        this.downloadPathPanel = null;
     }
 
     private Host host;
@@ -363,14 +397,16 @@ public class CDBookmarkController extends CDWindowController {
         this.pkCheckbox.setAction(new NSSelector("pkCheckboxSelectionChanged", new Class[]{Object.class}));
     }
 
+    private NSOpenPanel publicKeyPanel;
+
     public void pkCheckboxSelectionChanged(final NSButton sender) {
         log.debug("pkCheckboxSelectionChanged");
         if(this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected", ""))) {
-            NSOpenPanel panel = NSOpenPanel.openPanel();
-            panel.setCanChooseDirectories(false);
-            panel.setCanChooseFiles(true);
-            panel.setAllowsMultipleSelection(false);
-            panel.beginSheetForDirectory(System.getProperty("user.home") + "/.ssh", null, null, this.window(),
+            publicKeyPanel = NSOpenPanel.openPanel();
+            publicKeyPanel.setCanChooseDirectories(false);
+            publicKeyPanel.setCanChooseFiles(true);
+            publicKeyPanel.setAllowsMultipleSelection(false);
+            publicKeyPanel.beginSheetForDirectory(NSPathUtilities.stringByExpandingTildeInPath("~/.ssh"), null, null, this.window(),
                     this,
                     new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
         }
@@ -398,6 +434,7 @@ public class CDBookmarkController extends CDWindowController {
             this.pkCheckbox.setState(NSCell.OffState);
             this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
         }
+        publicKeyPanel = null;
     }
 
     public void hostInputDidEndEditing(final NSNotification sender) {

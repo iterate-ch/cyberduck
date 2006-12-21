@@ -242,7 +242,7 @@ public abstract class Preferences {
         defaults.put("queue.orderFrontOnStart", "true");
         defaults.put("queue.orderBackOnStop", "false");
 
-        defaults.put("queue.download.folder", System.getProperty("user.home") + "/Desktop");
+        defaults.put("queue.download.folder", "~/Desktop");
         /**
          * Action when duplicate file exists
          */
@@ -348,7 +348,7 @@ public abstract class Preferences {
         /**
          * Locatoin of the openssh known_hosts file
          */
-        defaults.put("ssh.knownhosts", System.getProperty("user.home") + "/.ssh/known_hosts");
+        defaults.put("ssh.knownhosts",  "~/.ssh/known_hosts");
 
         defaults.put("ssh.CSEncryption", "blowfish-cbc"); //client -> server encryption cipher
         defaults.put("ssh.SCEncryption", "blowfish-cbc"); //server -> client encryption cipher

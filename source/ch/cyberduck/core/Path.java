@@ -22,6 +22,7 @@ import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 import com.apple.cocoa.foundation.NSObject;
+import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
 
@@ -422,7 +423,8 @@ public abstract class Path extends NSObject {
     public Local getLocal() {
         //default value if not set explicitly, i.e. with drag and drop
         if(null == this.local) {
-            return new Local(this.getHost().getDownloadFolder(), this.getName());
+            return new Local(NSPathUtilities.stringByExpandingTildeInPath(this.getHost().getDownloadFolder()),
+                    this.getName());
         }
         return this.local;
     }

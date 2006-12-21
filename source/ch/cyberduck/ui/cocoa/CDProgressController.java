@@ -191,10 +191,10 @@ public class CDProgressController extends CDController {
             bytesTransferred = transfer.getCurrent();
             if(bytesTransferred > initialBytesTransfered) {
                 // number of seconds data was actually transferred
-                double elapsedTime = (System.currentTimeMillis() - timestamp) / 1000;
-                if(elapsedTime > 1) {
+                double elapsedSeconds = (System.currentTimeMillis() - timestamp) / 1000;
+                if(elapsedSeconds > 1) {
                     // bytes per second
-                    return (float) ((bytesTransferred - initialBytesTransfered) / (elapsedTime));
+                    return (float) ((bytesTransferred - initialBytesTransfered) / (elapsedSeconds));
                 }
             }
             return -1;

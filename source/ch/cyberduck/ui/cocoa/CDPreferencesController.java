@@ -964,21 +964,51 @@ public class CDPreferencesController extends CDWindowController {
         this.downloadPathPopup.setTarget(this);
         this.downloadPathPopup.setAction(new NSSelector("downloadPathPopupClicked", new Class[]{NSPopUpButton.class}));
         this.downloadPathPopup.removeAllItems();
-        this.downloadPathPopup.addItem(NSPathUtilities.lastPathComponent(
-                Preferences.instance().getProperty("queue.download.folder")));
+        // The currently set download folder
+        final String CUSTOM = Preferences.instance().getProperty("queue.download.folder");
+        this.downloadPathPopup.addItem(NSPathUtilities.displayNameAtPath(
+                NSPathUtilities.stringByExpandingTildeInPath(CUSTOM))
+        );
         this.downloadPathPopup.itemAtIndex(0).setImage(NSImage.imageNamed("folder16.tiff"));
+        this.downloadPathPopup.itemAtIndex(0).setRepresentedObject(
+                NSPathUtilities.stringByExpandingTildeInPath(CUSTOM));
+
+        this.downloadPathPopup.menu().addItem(new NSMenuItem().separatorItem());
+        // Shortcut to the Desktop
+        final String DESKTOP = "~/Desktop";
+        this.downloadPathPopup.addItem(NSPathUtilities.displayNameAtPath(
+                NSPathUtilities.stringByExpandingTildeInPath(DESKTOP)
+        ));
+        this.downloadPathPopup.itemAtIndex(2).setImage(DESKTOP_ICON);
+        this.downloadPathPopup.itemAtIndex(2).setRepresentedObject(
+                NSPathUtilities.stringByExpandingTildeInPath(DESKTOP));
+        // Shortcut to user home
+        final String HOME = "~";
+        this.downloadPathPopup.addItem(NSPathUtilities.displayNameAtPath(
+                NSPathUtilities.stringByExpandingTildeInPath(HOME)
+        ));
+        this.downloadPathPopup.itemAtIndex(3).setRepresentedObject(
+                NSPathUtilities.stringByExpandingTildeInPath(HOME));
+        this.downloadPathPopup.itemAtIndex(3).setImage(HOME_ICON);
+        // Choose another folder
         this.downloadPathPopup.menu().addItem(new NSMenuItem().separatorItem());
         this.downloadPathPopup.addItem(CHOOSE);
     }
 
+    private NSOpenPanel downloadPathPanel;
+
     public void downloadPathPopupClicked(final NSPopUpButton sender) {
         if(sender.selectedItem().title().equals(CHOOSE)) {
-            NSOpenPanel panel = NSOpenPanel.openPanel();
-            panel.setCanChooseFiles(false);
-            panel.setCanChooseDirectories(true);
-            panel.setAllowsMultipleSelection(false);
-            panel.setCanCreateDirectories(true);
-            panel.beginSheetForDirectory(null, null, null, this.window, this, new NSSelector("downloadPathPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+            downloadPathPanel = NSOpenPanel.openPanel();
+            downloadPathPanel.setCanChooseFiles(false);
+            downloadPathPanel.setCanChooseDirectories(true);
+            downloadPathPanel.setAllowsMultipleSelection(false);
+            downloadPathPanel.setCanCreateDirectories(true);
+            downloadPathPanel.beginSheetForDirectory(null, null, null, this.window, this, new NSSelector("downloadPathPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+        }
+        else {
+            Preferences.instance().setProperty("queue.download.folder", NSPathUtilities.stringByAbbreviatingWithTildeInPath(
+                    sender.selectedItem().representedObject().toString()));
         }
     }
 
@@ -987,12 +1017,16 @@ public class CDPreferencesController extends CDWindowController {
             NSArray selected = sheet.filenames();
             String filename;
             if ((filename = (String) selected.lastObject()) != null) {
-                Preferences.instance().setProperty("queue.download.folder", filename);
+                Preferences.instance().setProperty("queue.download.folder",
+                        NSPathUtilities.stringByAbbreviatingWithTildeInPath(filename));
             }
         }
-        this.downloadPathPopup.itemAtIndex(0).setTitle(NSPathUtilities.lastPathComponent(
-                Preferences.instance().getProperty("queue.download.folder")));
+        String custom = NSPathUtilities.stringByExpandingTildeInPath(
+                Preferences.instance().getProperty("queue.download.folder"));
+        this.downloadPathPopup.itemAtIndex(0).setTitle(NSPathUtilities.displayNameAtPath(custom));
+        this.downloadPathPopup.itemAtIndex(0).setRepresentedObject(custom);
         this.downloadPathPopup.selectItemAtIndex(0);
+        this.downloadPathPanel = null;
     }
 
     private NSButton defaultBufferButton; //IBOutlet

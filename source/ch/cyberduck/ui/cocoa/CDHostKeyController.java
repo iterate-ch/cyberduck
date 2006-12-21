@@ -27,6 +27,7 @@ import ch.cyberduck.core.Preferences;
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
 
@@ -44,7 +45,8 @@ public class CDHostKeyController extends AbstractKnownHostsKeyVerification
     public CDHostKeyController(final CDWindowController windowController) {
         this.parent = windowController;
         try {
-            this.setKnownHostFile(Preferences.instance().getProperty("ssh.knownhosts"));
+            this.setKnownHostFile(NSPathUtilities.stringByExpandingTildeInPath(
+                    Preferences.instance().getProperty("ssh.knownhosts")));
         }
         catch (Exception e) {
             log.error("Could not open or read the host file");

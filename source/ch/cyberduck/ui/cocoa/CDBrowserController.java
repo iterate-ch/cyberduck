@@ -2045,15 +2045,17 @@ public class CDBrowserController extends CDWindowController
 
     private static String lastSelectedDownloadDirectory = null;
 
+    private NSOpenPanel downloadToPanel;
+
     public void downloadToButtonClicked(final Object sender) {
-        NSOpenPanel panel = NSOpenPanel.openPanel();
-        panel.setCanChooseDirectories(true);
-        panel.setCanCreateDirectories(true);
-        panel.setCanChooseFiles(false);
-        panel.setAllowsMultipleSelection(false);
-        panel.setPrompt(NSBundle.localizedString("Download To", ""));
-        panel.setTitle(NSBundle.localizedString("Download To", ""));
-        panel.beginSheetForDirectory(
+        downloadToPanel = NSOpenPanel.openPanel();
+        downloadToPanel.setCanChooseDirectories(true);
+        downloadToPanel.setCanCreateDirectories(true);
+        downloadToPanel.setCanChooseFiles(false);
+        downloadToPanel.setAllowsMultipleSelection(false);
+        downloadToPanel.setPrompt(NSBundle.localizedString("Download To", ""));
+        downloadToPanel.setTitle(NSBundle.localizedString("Download To", ""));
+        downloadToPanel.beginSheetForDirectory(
                 lastSelectedDownloadDirectory, //trying to be smart
                 null,
                 null,
@@ -2076,6 +2078,7 @@ public class CDBrowserController extends CDWindowController
             this.transfer(q);
         }
         lastSelectedDownloadDirectory = sheet.filename();
+        downloadToPanel = null;
     }
 
 
@@ -2111,6 +2114,8 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
+    private NSOpenPanel syncPanel;
+
     public void syncButtonClicked(final Object sender) {
         final Path selection;
         final Session session = this.getTransferSession();
@@ -2121,17 +2126,17 @@ public class CDBrowserController extends CDWindowController
         else {
             selection = (Path) this.workdir().clone(session);
         }
-        NSOpenPanel panel = NSOpenPanel.openPanel();
-        panel.setCanChooseDirectories(selection.attributes.isDirectory());
-        panel.setCanChooseFiles(selection.attributes.isFile());
-        panel.setCanCreateDirectories(true);
-        panel.setAllowsMultipleSelection(false);
-        panel.setMessage(NSBundle.localizedString("Synchronize", "")
+        syncPanel = NSOpenPanel.openPanel();
+        syncPanel.setCanChooseDirectories(selection.attributes.isDirectory());
+        syncPanel.setCanChooseFiles(selection.attributes.isFile());
+        syncPanel.setCanCreateDirectories(true);
+        syncPanel.setAllowsMultipleSelection(false);
+        syncPanel.setMessage(NSBundle.localizedString("Synchronize", "")
                 + " " + selection.getName() + " "
                 + NSBundle.localizedString("with", "Synchronize <file> with <file>") + "...");
-        panel.setPrompt(NSBundle.localizedString("Choose", ""));
-        panel.setTitle(NSBundle.localizedString("Synchronize", ""));
-        panel.beginSheetForDirectory(null,
+        syncPanel.setPrompt(NSBundle.localizedString("Choose", ""));
+        syncPanel.setTitle(NSBundle.localizedString("Synchronize", ""));
+        syncPanel.beginSheetForDirectory(null,
                 null,
                 null,
                 this.window, //parent window
@@ -2151,6 +2156,7 @@ public class CDBrowserController extends CDWindowController
                 this.transfer(q, selection);
             }
         }
+        syncPanel = null;
     }
 
     public void downloadButtonClicked(final Object sender) {
@@ -2165,15 +2171,17 @@ public class CDBrowserController extends CDWindowController
 
     private static String lastSelectedUploadDirectory = null;
 
+    private NSOpenPanel uploadPanel;
+
     public void uploadButtonClicked(final Object sender) {
-        NSOpenPanel panel = NSOpenPanel.openPanel();
-        panel.setCanChooseDirectories(true);
-        panel.setCanCreateDirectories(false);
-        panel.setCanChooseFiles(true);
-        panel.setAllowsMultipleSelection(true);
-        panel.setPrompt(NSBundle.localizedString("Upload", ""));
-        panel.setTitle(NSBundle.localizedString("Upload", ""));
-        panel.beginSheetForDirectory(
+        uploadPanel = NSOpenPanel.openPanel();
+        uploadPanel.setCanChooseDirectories(true);
+        uploadPanel.setCanCreateDirectories(false);
+        uploadPanel.setCanChooseFiles(true);
+        uploadPanel.setAllowsMultipleSelection(true);
+        uploadPanel.setPrompt(NSBundle.localizedString("Upload", ""));
+        uploadPanel.setTitle(NSBundle.localizedString("Upload", ""));
+        uploadPanel.beginSheetForDirectory(
                 lastSelectedUploadDirectory, //trying to be smart
                 null,
                 null,
@@ -2199,6 +2207,7 @@ public class CDBrowserController extends CDWindowController
             this.transfer(q, workdir);
         }
         lastSelectedUploadDirectory = new File(sheet.filename()).getParent();
+        uploadPanel = null;
     }
 
     /**

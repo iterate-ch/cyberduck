@@ -376,14 +376,16 @@ public class CDConnectionController extends CDSheetController {
                 Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP));
     }
 
+    private NSOpenPanel publicKeyPanel;
+
     public void pkCheckboxSelectionDidChange(final NSNotification sender) {
         log.debug("pkCheckboxSelectionDidChange");
         if(this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected", ""))) {
-            NSOpenPanel panel = NSOpenPanel.openPanel();
-            panel.setCanChooseDirectories(false);
-            panel.setCanChooseFiles(true);
-            panel.setAllowsMultipleSelection(false);
-            panel.beginSheetForDirectory(System.getProperty("user.home") + "/.ssh",
+            publicKeyPanel = NSOpenPanel.openPanel();
+            publicKeyPanel.setCanChooseDirectories(false);
+            publicKeyPanel.setCanChooseFiles(true);
+            publicKeyPanel.setAllowsMultipleSelection(false);
+            publicKeyPanel.beginSheetForDirectory(NSPathUtilities.stringByExpandingTildeInPath("~/.ssh"),
                     null,
                     null,
                     this.window(),
@@ -414,6 +416,7 @@ public class CDConnectionController extends CDSheetController {
             this.pkCheckbox.setState(NSCell.OffState);
             this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
         }
+        publicKeyPanel = null;
     }
 
     private NSTextField urlLabel;
