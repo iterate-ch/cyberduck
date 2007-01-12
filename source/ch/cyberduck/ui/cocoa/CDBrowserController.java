@@ -21,6 +21,8 @@ package ch.cyberduck.ui.cocoa;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
@@ -33,6 +35,7 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.Collection;
 
 /**
  * @version $Id$
@@ -40,13 +43,6 @@ import java.util.*;
 public class CDBrowserController extends CDWindowController
         implements NSToolbarItem.ItemValidation {
     private static Logger log = Logger.getLogger(CDBrowserController.class);
-
-    protected static final File HISTORY_FOLDER
-            = new File(Preferences.instance().getProperty("application.support.path"), "History");
-
-    static {
-        HISTORY_FOLDER.mkdirs();
-    }
 
     /**
      * Applescriptability
@@ -548,7 +544,7 @@ public class CDBrowserController extends CDWindowController
         this.setSelectedPaths(list);
     }
 
-    protected void setSelectedPaths(List selected) {
+    protected void setSelectedPaths(Collection selected) {
         this.deselectAll();
         switch(this.browserSwitchView.selectedSegment()) {
             case LIST_VIEW: {
@@ -1177,6 +1173,13 @@ public class CDBrowserController extends CDWindowController
             }
         });
         this.bookmarkTable.setDelegate(this.bookmarkTableDelegate = new CDAbstractTableDelegate() {
+            public float tableViewHeightOfRow(NSTableView view, int row) {
+                if(Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems")) {
+                    return 18;
+                }
+                return 45;
+            }
+
             public void tableRowDoubleClicked(final Object sender) {
                 if(bookmarkTable.numberOfSelectedRows() == 1) {
                     final Host selected = (Host) HostCollection.instance().get(bookmarkTable.selectedRow());
@@ -1263,59 +1266,6 @@ public class CDBrowserController extends CDWindowController
         this.bookmarkTable.setAllowsColumnSelection(false);
         this.bookmarkTable.setAllowsColumnReordering(false);
         this.bookmarkTable.sizeToFit();
-    }
-
-    private NSMenu contextEditMenu;
-    private NSObject contextEditMenuDelegate; // NSMenu.Delegate
-
-    public void setContextEditMenu(NSMenu contextEditMenu) {
-        this.contextEditMenu = contextEditMenu;
-        this.contextEditMenu.setAutoenablesItems(true);
-        this.contextEditMenu.setDelegate(this.contextEditMenuDelegate = new EditMenuDelegate());
-    }
-
-    /**
-     * Used to provide a custom icon for the edit menu and disable the menu if no external editor
-     * can be found
-     */
-    protected class EditMenuDelegate extends NSObject {
-
-        public int numberOfItemsInMenu(NSMenu menu) {
-            int n = Editor.INSTALLED_EDITORS.size();
-            if(0 == n) {
-                return 1;
-            }
-            return n;
-        }
-
-        public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
-            if(Editor.INSTALLED_EDITORS.size() == 0) {
-                item.setTitle(NSBundle.localizedString("No external editor available"));
-                return false;
-            }
-            String identifier = (String) Editor.INSTALLED_EDITORS.values().toArray(new String[]{})[index];
-            String editor = (String) Editor.INSTALLED_EDITORS.keySet().toArray(new String[]{})[index];
-            item.setTitle(editor);
-            if(editor.equals(Preferences.instance().getProperty("editor.name"))) {
-                item.setKeyEquivalent("j");
-                item.setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-            }
-            else {
-                item.setKeyEquivalent("");
-            }
-            String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                    identifier);
-            if(path != null) {
-                NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
-                icon.setSize(new NSSize(16f, 16f));
-                item.setImage(icon);
-            }
-            else {
-                item.setImage(NSImage.imageNamed("pencil.tiff"));
-            }
-            item.setAction(new NSSelector("editButtonContextMenuClicked", new Class[]{Object.class}));
-            return !shouldCancel;
-        }
     }
 
     private NSPopUpButton actionPopupButton;
@@ -1590,8 +1540,7 @@ public class CDBrowserController extends CDWindowController
     public void setPathPopup(NSPopUpButton pathPopupButton) {
         this.pathPopupButton = pathPopupButton;
         this.pathPopupButton.setTarget(this);
-        this.pathPopupButton.setAction(new NSSelector("pathPopupSelectionChanged",
-                new Class[]{Object.class}));
+        this.pathPopupButton.setAction(new NSSelector("pathPopupSelectionChanged", new Class[]{Object.class}));
     }
 
     public void pathPopupSelectionChanged(final Object sender) {
@@ -1802,6 +1751,53 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
+     * 
+     * @param source
+     * @param destination
+     * @param edit
+     */
+    protected void duplicatePath(final Path source, final Path destination, boolean edit) {
+        this.duplicatePaths(Collections.singletonMap(source, destination), edit);
+    }
+
+    /**
+     *
+     * @param files
+     * @param edit
+     */
+    protected void duplicatePaths(final Map files, final boolean edit) {
+        this.checkOverwrite(files.values(), new BackgroundAction() {
+            public void run() {
+                Iterator sourcesIter = files.keySet().iterator();
+                Iterator destinationsIter = files.values().iterator();
+                for(; sourcesIter.hasNext(); ) {
+                    final Path original = ((Path)sourcesIter.next());
+                    original.duplicate((Path)destinationsIter.next());
+                    if(!isConnected()) {
+                        break;
+                    }
+                }
+            }
+
+            public void cleanup() {
+                for(Iterator iter = files.values().iterator(); iter.hasNext(); ) {
+                    Path duplicate = (Path)iter.next();
+                    if(edit) {
+                        Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"),
+                                CDBrowserController.this);
+                        editor.open(duplicate);
+                    }
+                    if(duplicate.getName().charAt(0) == '.') {
+                        setShowHiddenFiles(true);
+                    }
+                }
+                reloadData(false);
+                setSelectedPaths(files.values());
+            }
+        });
+    }
+
+    /**
      *
      * @param path
      * @param renamed
@@ -1815,13 +1811,37 @@ public class CDBrowserController extends CDWindowController
      * @param files
      */
     protected void renamePaths(final Map files) {
+        this.checkOverwrite(files.values(), new BackgroundAction() {
+            public void run() {
+                Iterator originalIterator = files.keySet().iterator();
+                Iterator renamedIterator = files.values().iterator();
+                while(originalIterator.hasNext()) {
+                    ((Path)originalIterator.next()).rename(((Path)renamedIterator.next()).getAbsolute());
+                    if(!isConnected()) {
+                        break;
+                    }
+                }
+            }
+
+            public void cleanup() {
+                reloadData(false);
+                setSelectedPaths(new ArrayList(files.values()));
+            }
+        });
+    }
+
+    /**
+     *
+     * @param files
+     */
+    private void checkOverwrite(final Collection files, final BackgroundAction action) {
         if(files.size() > 0) {
             StringBuffer alertText = new StringBuffer(
                     NSBundle.localizedString("A file with the same name already exists. Do you want to replace the existing file?", ""));
             int i = 0;
             Iterator iter = null;
             boolean alert = false;
-            for(iter = files.values().iterator(); i < 10 && iter.hasNext();) {
+            for(iter = files.iterator(); i < 10 && iter.hasNext();) {
                 Path item = (Path) iter.next();
                 if(item.exists()) {
                     alertText.append("\n"+Character.toString('\u2022')+" "+item.getName());
@@ -1843,36 +1863,16 @@ public class CDBrowserController extends CDWindowController
                 CDSheetController c = new CDSheetController(this, sheet) {
                     public void callback(final int returncode) {
                         if(returncode == DEFAULT_OPTION) {
-                            CDBrowserController.this.renamePathsImpl(files);
+                            CDBrowserController.this.background(action);
                         }
                     }
                 };
                 c.beginSheet(true);
             }
             else {
-                this.renamePathsImpl(files);
+                this.background(action);
             }
         }
-    }
-
-    private void renamePathsImpl(final Map files) {
-        this.background(new BackgroundAction() {
-            public void run() {
-                Iterator originalIterator = files.keySet().iterator();
-                Iterator renamedIterator = files.values().iterator();
-                while(originalIterator.hasNext()) {
-                    ((Path)originalIterator.next()).rename(((Path)renamedIterator.next()).getAbsolute());
-                    if(!isConnected()) {
-                        break;
-                    }
-                }
-            }
-
-            public void cleanup() {
-                reloadData(false);
-                setSelectedPaths(new ArrayList(files.values()));
-            }
-        });
     }
 
     /**
@@ -1932,29 +1932,6 @@ public class CDBrowserController extends CDWindowController
                 reloadData(false);
             }
         });
-    }
-
-    public void editButtonContextMenuClicked(final Object sender) {
-        this.editButtonClicked(sender);
-    }
-
-    public void editButtonClicked(final Object sender) {
-        for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
-            final Path selected = (Path) i.next();
-            if(this.isEditable(selected)) {
-                Editor editor = null;
-                if(sender instanceof NSMenuItem) {
-                    Object identifier = Editor.SUPPORTED_EDITORS.get(((NSMenuItem) sender).title());
-                    if(identifier != null) {
-                        editor = new Editor((String) identifier, this);
-                    }
-                }
-                if(null == editor) {
-                    editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"), this);
-                }
-                editor.open(selected);
-            }
-        }
     }
 
     /**
@@ -2017,6 +1994,28 @@ public class CDBrowserController extends CDWindowController
         controller.beginSheet(false);
     }
 
+    public void editMenuClicked(final Object sender) {
+        this.editButtonClicked(sender);
+    }
+
+    public void editButtonClicked(final Object sender) {
+        for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
+            final Path selected = (Path) i.next();
+            if(this.isEditable(selected)) {
+                Editor editor = null;
+                if(sender instanceof NSMenuItem) {
+                    Object identifier = Editor.SUPPORTED_EDITORS.get(((NSMenuItem) sender).title());
+                    if(identifier != null) {
+                        editor = new Editor((String) identifier, this);
+                    }
+                }
+                if(null == editor) {
+                    editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"), this);
+                }
+                editor.open(selected);
+            }
+        }
+    }
 
     private CDInfoController inspector = null;
 
@@ -2704,7 +2703,7 @@ public class CDBrowserController extends CDWindowController
      */
     private File getRepresentedFile() {
         if(this.hasSession()) {
-            return new File(HISTORY_FOLDER, this.session.getHost().getNickname() + ".duck");
+            return new File(HistoryMenuDelegate.HISTORY_FOLDER, this.session.getHost().getNickname() + ".duck");
         }
         return null;
     }
@@ -2718,7 +2717,7 @@ public class CDBrowserController extends CDWindowController
      * @param host
      * @return The session to be used for any further operations
      */
-    protected Session mount(final Host host) {
+    public Session mount(final Host host) {
             log.debug("mount:" + host);
         if(this.isMounted()) {
             if(this.session.getHost().getURL().equals(host.getURL())) {
@@ -2986,26 +2985,6 @@ public class CDBrowserController extends CDWindowController
             else
                 item.setTitle(NSBundle.localizedString("Cut", "Menu item"));
         }
-        if(identifier.equals("editButtonClicked:")) {
-            String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                    Preferences.instance().getProperty("editor.bundleIdentifier"));
-            if(editorPath != null) {
-                NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(editorPath);
-                icon.setSize(new NSSize(16f, 16f));
-                item.setImage(icon);
-            }
-        }
-        if(identifier.equals("editButtonContextMenuClicked:")) {
-            String bundleIdentifier = (String) Editor.SUPPORTED_EDITORS.get(item.title());
-            if(null != bundleIdentifier) {
-                String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
-                if(editorPath != null) {
-                    NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(editorPath);
-                    icon.setSize(new NSSize(16f, 16f));
-                    item.setImage(icon);
-                }
-            }
-        }
         if(identifier.equals("showHiddenFilesClicked:")) {
             item.setState((this.getFileFilter() instanceof NullPathFilter) ? NSCell.OnState : NSCell.OffState);
         }
@@ -3085,7 +3064,7 @@ public class CDBrowserController extends CDWindowController
             }
             return false;
         }
-        if(identifier.equals("editButtonContextMenuClicked:")) {
+        if(identifier.equals("editMenuClicked:")) {
             if(this.isMounted()) {
                 Path selected = this.getSelectedPath();
                 if(selected != null) {
@@ -3219,6 +3198,12 @@ public class CDBrowserController extends CDWindowController
     private static final String TOOLBAR_DISCONNECT = "Disconnect";
     private static final String TOOLBAR_INTERRUPT = "Stop";
 
+    /**
+     *
+     */
+    private final EditMenuDelegate editMenuDelegate
+            = new EditMenuDelegate();
+
     public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, String itemIdentifier, boolean flag) {
         NSToolbarItem item = new NSToolbarItem(itemIdentifier);
         if(itemIdentifier.equals(TOOLBAR_BROWSER_VIEW)) {
@@ -3226,6 +3211,7 @@ public class CDBrowserController extends CDWindowController
             item.setPaletteLabel(NSBundle.localizedString("View", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Switch Browser View", "Toolbar item tooltip"));
             item.setView(this.browserSwitchView);
+            // Add a menu representation for text mode of toolbar
             NSMenuItem viewMenu = new NSMenuItem();
             viewMenu.setTitle(NSBundle.localizedString("View", "Toolbar item"));
             NSMenu viewSubmenu = new NSMenu();
@@ -3274,6 +3260,7 @@ public class CDBrowserController extends CDWindowController
             item.setLabel(NSBundle.localizedString("Action", "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString("Action", "Toolbar item"));
             item.setView(this.actionPopupButton);
+            // Add a menu representation for text mode of toolbar
             NSMenuItem toolMenu = new NSMenuItem();
             toolMenu.setTitle(NSBundle.localizedString("Action", "Toolbar item"));
             NSMenu toolSubmenu = new NSMenu();
@@ -3303,6 +3290,7 @@ public class CDBrowserController extends CDWindowController
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_ENCODING, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Character Encoding", "Toolbar item tooltip"));
             item.setView(this.encodingPopup);
+            // Add a menu representation for text mode of toolbar
             NSMenuItem encodingMenu = new NSMenuItem(NSBundle.localizedString(TOOLBAR_ENCODING, "Toolbar item"),
                     new NSSelector("encodingButtonClicked", new Class[]{Object.class}),
                     "");
@@ -3376,25 +3364,13 @@ public class CDBrowserController extends CDWindowController
             }
             item.setTarget(this);
             item.setAction(new NSSelector("editButtonClicked", new Class[]{Object.class}));
+            // Add a menu representation for text mode of toolbar
             NSMenuItem toolbarMenu = new NSMenuItem(NSBundle.localizedString(TOOLBAR_EDIT, "Toolbar item"),
                     new NSSelector("editButtonClicked", new Class[]{Object.class}),
                     "");
             NSMenu editMenu = new NSMenu();
             editMenu.setAutoenablesItems(true);
-            java.util.Map editors = Editor.SUPPORTED_EDITORS;
-            java.util.Iterator editorNames = editors.keySet().iterator();
-            java.util.Iterator editorIdentifiers = editors.values().iterator();
-            while(editorNames.hasNext()) {
-                String editor = (String) editorNames.next();
-                String identifier = (String) editorIdentifiers.next();
-                boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                        identifier) != null;
-                if(enabled) {
-                    editMenu.addItem(new NSMenuItem(editor,
-                            new NSSelector("editButtonContextMenuClicked", new Class[]{Object.class}),
-                            ""));
-                }
-            }
+            editMenu.setDelegate(editMenuDelegate);
             toolbarMenu.setSubmenu(editMenu);
             item.setMenuFormRepresentation(toolbarMenu);
             return item;
@@ -3509,10 +3485,6 @@ public class CDBrowserController extends CDWindowController
         this.browserOutlineView.setDelegate(null);
         this.browserOutlineViewDelegate = null;
         this.browserOutlineView = null;
-
-        this.contextEditMenu.setDelegate(null);
-        this.contextEditMenuDelegate = null;
-        this.contextEditMenu = null;
 
         this.browserSwitchView.setTarget(null);
         this.browserSwitchView = null;

@@ -20,6 +20,8 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.delegate.BookmarkMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -30,8 +32,6 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -63,261 +63,16 @@ public class CDMainController extends CDController {
     // Outlets
     // ----------------------------------------------------------
 
-    private NSMenu dockMenu;
-    private NSMenu dockBookmarkMenu;
-    private DockBookmarkMenuDelegate dockBookmarkMenuDelegate;
-
-    public void setDockMenu(NSMenu dockMenu) {
-        this.dockMenu = dockMenu;
-        this.dockBookmarkMenu = new NSMenu();
-        this.dockBookmarkMenu.setAutoenablesItems(false);
-        this.dockBookmarkMenu.setDelegate(this.dockBookmarkMenuDelegate = new DockBookmarkMenuDelegate());
-        this.dockMenu.setSubmenuForItem(dockBookmarkMenu, this.dockMenu.itemAtIndex(2));
-    }
-
-    private class DockBookmarkMenuDelegate extends NSObject {
-
-        public int numberOfItemsInMenu(NSMenu menu) {
-            return HostCollection.instance().size();
-        }
-
-        /**
-         * Called to let you update a menu item before it is displayed. If your
-         * numberOfItemsInMenu delegate method returns a positive value,
-         * then your menuUpdateItemAtIndex method is called for each item in the menu.
-         * You can then update the menu title, image, and so forth for the menu item.
-         * Return true to continue the process. If you return false, your menuUpdateItemAtIndex
-         * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
-         */
-        public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
-            if(index >= this.numberOfItemsInMenu(menu)) {
-                log.warn("Invalid index in menuUpdateItemAtIndex:" + index);
-                return false;
-            }
-            Host h = (Host) HostCollection.instance().get(index);
-            item.setTitle(h.getNickname());
-            item.setTarget(this);
-            item.setImage(NSImage.imageNamed("bookmark16.tiff"));
-            item.setAction(new NSSelector("bookmarkMenuItemClicked", new Class[]{Object.class}));
-            item.setRepresentedObject(h);
-            return true;
-        }
-
-        public void bookmarkMenuItemClicked(final NSMenuItem sender) {
-            log.debug("bookmarkMenuItemClicked:" + sender);
-            CDBrowserController controller = CDMainController.this.newDocument();
-            controller.mount((Host) sender.representedObject());
-        }
-    }
-
     private NSMenu encodingMenu;
-    private List encodingMenuItems;
 
     public void setEncodingMenu(NSMenu encodingMenu) {
         this.encodingMenu = encodingMenu;
         String[] charsets = ((CDMainController) NSApplication.sharedApplication().delegate()).availableCharsets();
-        this.encodingMenuItems = new ArrayList(charsets.length);
         for(int i = 0; i < charsets.length; i++) {
             NSMenuItem item = new NSMenuItem(charsets[i],
                     new NSSelector("encodingButtonClicked", new Class[]{Object.class}),
                     "");
             this.encodingMenu.addItem(item);
-            this.encodingMenuItems.add(item);
-        }
-    }
-
-    private NSMenu bookmarkMenu;
-    private BookmarkMenuDelegate bookmarkMenuDelegate;
-    private NSMenu rendezvousMenu;
-    private RendezvousMenuDelegate rendezvousMenuDelegate;
-    private NSMenu historyMenu;
-    private HistoryMenuDelegate historyMenuDelegate;
-
-    public void setBookmarkMenu(NSMenu bookmarkMenu) {
-        this.bookmarkMenu = bookmarkMenu;
-        this.rendezvousMenu = new NSMenu();
-        this.rendezvousMenu.setAutoenablesItems(false);
-        this.historyMenu = new NSMenu();
-        this.historyMenu.setAutoenablesItems(false);
-        this.bookmarkMenu.setDelegate(this.bookmarkMenuDelegate = new BookmarkMenuDelegate());
-        this.historyMenu.setDelegate(this.historyMenuDelegate = new HistoryMenuDelegate());
-        this.rendezvousMenu.setDelegate(this.rendezvousMenuDelegate = new RendezvousMenuDelegate());
-        this.bookmarkMenu.itemAtIndex(5).setAction(
-                new NSSelector("historyMenuClicked", new Class[]{NSMenuItem.class})
-        );
-        this.bookmarkMenu.setSubmenuForItem(historyMenu, this.bookmarkMenu.itemAtIndex(5));
-        this.bookmarkMenu.setSubmenuForItem(rendezvousMenu, this.bookmarkMenu.itemAtIndex(6));
-    }
-
-    public void historyMenuClicked(NSMenuItem sender) {
-        NSWorkspace.sharedWorkspace().selectFile(CDBrowserController.HISTORY_FOLDER.getAbsolutePath(), "");
-    }
-
-    private class BookmarkMenuDelegate extends NSObject {
-
-        public int numberOfItemsInMenu(NSMenu menu) {
-            return HostCollection.instance().size() + 8;
-            //index 0-2 are static menu items, 3 is sepeartor, 4 is iDisk with submenu, 5 is History with submenu,
-            // 6 is Bonjour with submenu, 7 is sepearator
-        }
-
-        /**
-         * Called to let you update a menu item before it is displayed. If your
-         * numberOfItemsInMenu delegate method returns a positive value,
-         * then your menuUpdateItemAtIndex method is called for each item in the menu.
-         * You can then update the menu title, image, and so forth for the menu item.
-         * Return true to continue the process. If you return false, your menuUpdateItemAtIndex
-         * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
-         */
-        public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
-            if(index >= this.numberOfItemsInMenu(menu)) {
-                log.warn("Invalid index in menuUpdateItemAtIndex:" + index);
-                return false;
-            }
-            if(index == 4) {
-                item.setEnabled(true);
-                NSImage icon = NSImage.imageNamed("idisk.tiff");
-                icon.setSize(new NSSize(16f, 16f));
-                item.setImage(icon);
-            }
-            if(index == 5) {
-                item.setEnabled(true);
-                item.setImage(NSImage.imageNamed("history.tiff"));
-            }
-            if(index == 6) {
-                item.setEnabled(true);
-                item.setImage(NSImage.imageNamed("rendezvous16.tiff"));
-            }
-            if(index > 7) {
-                Host h = (Host) HostCollection.instance().get(index - 8);
-                item.setTitle(h.getNickname());
-                item.setTarget(this);
-                item.setImage(NSImage.imageNamed("bookmark16.tiff"));
-                item.setAction(new NSSelector("bookmarkMenuItemClicked", new Class[]{Object.class}));
-                item.setRepresentedObject(h);
-            }
-            return true;
-        }
-
-        public void bookmarkMenuItemClicked(final NSMenuItem sender) {
-            log.debug("bookmarkMenuItemClicked:" + sender);
-            CDBrowserController controller = CDMainController.this.newDocument();
-            controller.mount((Host) sender.representedObject());
-        }
-    }
-
-    private class HistoryMenuDelegate extends NSObject {
-
-        private List cache = new ArrayList();
-
-        private File[] listFiles() {
-            return CDBrowserController.HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    return name.endsWith(".duck");
-                }
-            });
-        }
-
-        public int numberOfItemsInMenu(NSMenu menu) {
-            File[] files = this.listFiles();
-            if(cache.size() != files.length) {
-                Arrays.sort(files, new Comparator() {
-                    public int compare(Object o1, Object o2) {
-                        File f1 = (File) o1;
-                        File f2 = (File) o2;
-                        if(f1.lastModified() < f2.lastModified()) {
-                            return 1;
-                        }
-                        if(f1.lastModified() > f2.lastModified()) {
-                            return -1;
-                        }
-                        return 0;
-                    }
-                });
-                cache.clear();
-                for(int i = 0; i < files.length; i++) {
-                    cache.add(importBookmark(files[i]));
-                }
-            }
-            if(cache.size() > 0) {
-                return cache.size();
-            }
-            return 1;
-        }
-
-        public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
-            if(cache.size() == 0) {
-                sender.setTitle(NSBundle.localizedString("No recently connected servers available", ""));
-                sender.setImage(null);
-                sender.setEnabled(false);
-                return false;
-            }
-            if(index >= cache.size()) {
-                log.warn("Invalid index in menuUpdateItemAtIndex:" + index);
-                return false;
-            }
-            Host h = (Host) cache.get(index);
-            sender.setTitle(h.getNickname());
-            sender.setRepresentedObject(h);
-            sender.setTarget(this);
-            sender.setEnabled(true);
-            sender.setImage(NSImage.imageNamed("bookmark16.tiff"));
-            sender.setAction(new NSSelector("historyMenuItemClicked", new Class[]{NSMenuItem.class}));
-            return !shouldCancel;
-        }
-
-        public void historyMenuItemClicked(NSMenuItem sender) {
-            CDBrowserController controller = CDMainController.this.newDocument();
-            controller.mount((Host) sender.representedObject());
-        }
-    }
-
-    private class RendezvousMenuDelegate extends NSObject {
-
-        public int numberOfItemsInMenu(NSMenu menu) {
-            synchronized(Rendezvous.instance()) {
-                int n = Rendezvous.instance().numberOfServices();
-                if(n > 0) {
-                    return n;
-                }
-                return 1;
-            }
-        }
-
-        /**
-         * Called to let you update a menu item before it is displayed. If your
-         * numberOfItemsInMenu delegate method returns a positive value,
-         * then your menuUpdateItemAtIndex method is called for each item in the menu.
-         * You can then update the menu title, image, and so forth for the menu item.
-         * Return true to continue the process. If you return false, your menuUpdateItemAtIndex
-         * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
-         */
-        public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
-            synchronized(Rendezvous.instance()) {
-                if(Rendezvous.instance().numberOfServices() == 0) {
-                    sender.setTitle(NSBundle.localizedString("No Bonjour services available", ""));
-                    sender.setEnabled(false);
-                    return !shouldCancel;
-                }
-                else {
-                    if(index >= this.numberOfItemsInMenu(menu)) {
-                        log.warn("Invalid index in menuUpdateItemAtIndex:" + index);
-                        return false;
-                    }
-                    String title = Rendezvous.instance().getDisplayedName(index);
-                    sender.setTitle(title);
-                    sender.setTarget(this);
-                    sender.setEnabled(true);
-                    sender.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
-                    sender.setRepresentedObject(Rendezvous.instance().getServiceWithDisplayedName(title));
-                    return !shouldCancel;
-                }
-            }
-        }
-
-        public void rendezvousMenuClicked(NSMenuItem sender) {
-            CDBrowserController controller = CDMainController.this.newDocument();
-            controller.mount((Host) sender.representedObject());
         }
     }
 
