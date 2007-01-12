@@ -582,6 +582,19 @@ public abstract class Path extends NSObject {
     }
 
     /**
+     * 
+     * @param destination
+     */
+    public void duplicate(Path destination) {
+        Local local = new Local(NSPathUtilities.temporaryDirectory(), destination.getName());
+        this.setLocal(local);
+        this.download();
+        this.setLocal(null);
+        destination.setLocal(local);
+        destination.upload();
+    }
+    
+    /**
      * @return true if the path exists (or is cached!)
      */
     public boolean exists() {

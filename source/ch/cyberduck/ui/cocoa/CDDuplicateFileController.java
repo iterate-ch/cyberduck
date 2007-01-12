@@ -20,9 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.ui.cocoa.odb.Editor;
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSImage;
@@ -90,34 +87,8 @@ public class CDDuplicateFileController extends CDFileController {
     }
 
     private void duplicateFile(final Path selected, final String filename, final boolean edit) {
-        final CDBrowserController c = (CDBrowserController)parent;
-        c.background(new BackgroundAction() {
-            final Path file = (Path)selected.clone();
-
-            public void run() {
-                file.setLocal(new Local(NSPathUtilities.temporaryDirectory(),
-                        selected.getName()));
-                file.download();
-                file.setPath(selected.getParent().getAbsolute(), filename);
-                file.upload();
-                file.setLocal(null);
-                if(file.exists()) {
-                    if(edit) {
-                        Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"), c);
-                        editor.open(file);
-                    }
-                }
-            }
-
-            public void cleanup() {
-                if(file.exists()) {
-                    if(filename.charAt(0) == '.') {
-                        c.setShowHiddenFiles(true);
-                    }
-                    c.reloadData(false);
-                    c.setSelectedPath(file);
-                }
-            }
-        });
+        final Path duplicate = (Path)selected.clone();
+        duplicate.setPath(duplicate.getParent().getAbsolute(), filename);
+        ((CDBrowserController)parent).duplicatePath(selected, duplicate, edit);
     }
 }
