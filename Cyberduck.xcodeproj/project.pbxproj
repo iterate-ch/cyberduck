@@ -1096,6 +1096,19 @@
 		4749576507EDED4E00B34D53 /* list.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = list.tiff; sourceTree = "<group>"; };
 		47497C1D073F9618009BF63D /* Changelog.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Changelog.txt; sourceTree = "<group>"; };
 		474B5BA30AEFB7F5009FD459 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Alert.nib; sourceTree = "<group>"; };
+		474DC8790B4319E100F0D79C /* AttributesTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AttributesTest.java; sourceTree = "<group>"; };
+		474DC87A0B4319E100F0D79C /* CodecTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CodecTest.java; sourceTree = "<group>"; };
+		474DC87B0B4319E100F0D79C /* HostTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = HostTest.java; sourceTree = "<group>"; };
+		474DC87C0B4319E100F0D79C /* LoginTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = LoginTest.java; sourceTree = "<group>"; };
+		474DC87D0B4319E100F0D79C /* PathTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PathTest.java; sourceTree = "<group>"; };
+		474DC87E0B4319E100F0D79C /* PermissionTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PermissionTest.java; sourceTree = "<group>"; };
+		474DC87F0B4319E100F0D79C /* RendezvousTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RendezvousTest.java; sourceTree = "<group>"; };
+		474DC8800B4319E100F0D79C /* SessionTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SessionTest.java; sourceTree = "<group>"; };
+		474DC8810B4319E100F0D79C /* StatusTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = StatusTest.java; sourceTree = "<group>"; };
+		474DC8820B4319E100F0D79C /* TransferTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TransferTest.java; sourceTree = "<group>"; };
+		474DC8830B431A0000F0D79C /* EPLFEntryParserTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = EPLFEntryParserTest.java; sourceTree = "<group>"; };
+		474DC8840B431A0000F0D79C /* NTFTPEntryParserTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NTFTPEntryParserTest.java; sourceTree = "<group>"; };
+		474DC8850B431A0000F0D79C /* UnixFTPEntryParserTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = UnixFTPEntryParserTest.java; sourceTree = "<group>"; };
 		4751799D097943FA008F671F /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Credentials.strings; sourceTree = "<group>"; };
 		475179A409794467008F671F /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Credentials.strings; sourceTree = "<group>"; };
 		475179A509794472008F671F /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Credentials.strings; sourceTree = "<group>"; };
@@ -1258,7 +1271,6 @@
 		47729074080D5957007126E4 /* Keychain.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Keychain.java; sourceTree = "<group>"; };
 		4774897F085825460030AED1 /* Cyberduck.scriptTerminology */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Cyberduck.scriptTerminology; sourceTree = "<group>"; };
 		47748980085825460030AED1 /* Cyberduck.scriptSuite */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Cyberduck.scriptSuite; sourceTree = "<group>"; };
-		477832F405C3294200354CAF /* QueueTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = QueueTest.java; sourceTree = "<group>"; };
 		477B1B770AF383DC0023BA7F /* SNDisclosureArrowDown.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = SNDisclosureArrowDown.tiff; sourceTree = "<group>"; };
 		477B1B780AF383DC0023BA7F /* SNDisclosureArrowRight.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = SNDisclosureArrowRight.tiff; sourceTree = "<group>"; };
 		477B1B7C0AF384350023BA7F /* SNDisclosableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SNDisclosableView.h; sourceTree = "<group>"; };
@@ -2796,6 +2808,9 @@
 		47C75B7A06A5A36900B464FF /* parser */ = {
 			isa = PBXGroup;
 			children = (
+				474DC8830B431A0000F0D79C /* EPLFEntryParserTest.java */,
+				474DC8840B431A0000F0D79C /* NTFTPEntryParserTest.java */,
+				474DC8850B431A0000F0D79C /* UnixFTPEntryParserTest.java */,
 				47C75B7B06A5A36900B464FF /* EPLFEntryParserTest.java */,
 			);
 			path = parser;
@@ -2909,9 +2924,18 @@
 		47F2E90905BD4244003D2875 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				474DC8790B4319E100F0D79C /* AttributesTest.java */,
+				474DC87A0B4319E100F0D79C /* CodecTest.java */,
+				474DC87B0B4319E100F0D79C /* HostTest.java */,
+				474DC87C0B4319E100F0D79C /* LoginTest.java */,
+				474DC87D0B4319E100F0D79C /* PathTest.java */,
+				474DC87E0B4319E100F0D79C /* PermissionTest.java */,
+				474DC87F0B4319E100F0D79C /* RendezvousTest.java */,
+				474DC8800B4319E100F0D79C /* SessionTest.java */,
+				474DC8810B4319E100F0D79C /* StatusTest.java */,
+				474DC8820B4319E100F0D79C /* TransferTest.java */,
 				47F2E9BA05BD5356003D2875 /* LoginTest.java */,
 				47F2EAA405BD7F7E003D2875 /* CodecTest.java */,
-				477832F405C3294200354CAF /* QueueTest.java */,
 			);
 			path = core;
 			sourceTree = "<group>";
