@@ -43,7 +43,6 @@
                 browserOutlineView = NSOutlineView; 
                 browserSwitchView = NSSegmentedControl; 
                 browserTabView = NSTabView; 
-                contextEditMenu = NSMenu; 
                 deleteBookmarkButton = NSButton; 
                 editBookmarkButton = NSButton; 
                 encodingPopup = NSPopUpButton; 
@@ -57,6 +56,11 @@
                 upButton = NSSegmentedControl; 
                 window = NSWindow; 
             }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            CLASS = "ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate"; 
+            LANGUAGE = Java; 
             SUPERCLASS = NSObject; 
         }
     ); 
