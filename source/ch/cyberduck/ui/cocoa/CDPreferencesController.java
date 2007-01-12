@@ -370,7 +370,8 @@ public class CDPreferencesController extends CDWindowController {
             }
         });
         this.defaultBookmarkCombobox.setTarget(this);
-        this.defaultBookmarkCombobox.setAction(new NSSelector("defaultBookmarkComboboxClicked", new Class[]{NSPopUpButton.class}));
+        final NSSelector action = new NSSelector("defaultBookmarkComboboxClicked", new Class[]{NSPopUpButton.class});
+        this.defaultBookmarkCombobox.setAction(action);
         String defaultBookmark = Preferences.instance().getProperty("browser.defaultBookmark");
         if(null == defaultBookmark) {
             this.defaultBookmarkCombobox.selectItemWithTitle(NSBundle.localizedString("None", ""));
@@ -962,43 +963,54 @@ public class CDPreferencesController extends CDWindowController {
     public void setDownloadPathPopup(NSPopUpButton downloadPathPopup) {
         this.downloadPathPopup = downloadPathPopup;
         this.downloadPathPopup.setTarget(this);
-        this.downloadPathPopup.setAction(new NSSelector("downloadPathPopupClicked", new Class[]{NSPopUpButton.class}));
+        final NSSelector action = new NSSelector("downloadPathPopupClicked", new Class[]{NSPopUpButton.class});
+        this.downloadPathPopup.setAction(action);
         this.downloadPathPopup.removeAllItems();
         // The currently set download folder
         final String CUSTOM = Preferences.instance().getProperty("queue.download.folder");
-        this.downloadPathPopup.addItem(NSPathUtilities.displayNameAtPath(
-                NSPathUtilities.stringByExpandingTildeInPath(CUSTOM))
+        this.downloadPathPopup.menu().addItem(NSPathUtilities.displayNameAtPath(
+                NSPathUtilities.stringByExpandingTildeInPath(CUSTOM)
+        ), action, "");
+        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setTarget(this);
+        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setImage(NSImage.imageNamed("folder16.tiff"));
+        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setRepresentedObject(
+                NSPathUtilities.stringByExpandingTildeInPath(CUSTOM)
         );
-        this.downloadPathPopup.itemAtIndex(0).setImage(NSImage.imageNamed("folder16.tiff"));
-        this.downloadPathPopup.itemAtIndex(0).setRepresentedObject(
-                NSPathUtilities.stringByExpandingTildeInPath(CUSTOM));
-
         this.downloadPathPopup.menu().addItem(new NSMenuItem().separatorItem());
         // Shortcut to the Desktop
         final String DESKTOP = "~/Desktop";
-        this.downloadPathPopup.addItem(NSPathUtilities.displayNameAtPath(
+        this.downloadPathPopup.menu().addItem(NSPathUtilities.displayNameAtPath(
                 NSPathUtilities.stringByExpandingTildeInPath(DESKTOP)
-        ));
-        this.downloadPathPopup.itemAtIndex(2).setImage(DESKTOP_ICON);
-        this.downloadPathPopup.itemAtIndex(2).setRepresentedObject(
+        ), action, "");
+        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setTarget(this);
+        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setImage(DESKTOP_ICON);
+        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setRepresentedObject(
                 NSPathUtilities.stringByExpandingTildeInPath(DESKTOP));
+        if(CUSTOM.equals(DESKTOP)) {
+            this.downloadPathPopup.selectItemAtIndex(this.downloadPathPopup.numberOfItems()-1);
+        }
         // Shortcut to user home
         final String HOME = "~";
-        this.downloadPathPopup.addItem(NSPathUtilities.displayNameAtPath(
+        this.downloadPathPopup.menu().addItem(NSPathUtilities.displayNameAtPath(
                 NSPathUtilities.stringByExpandingTildeInPath(HOME)
-        ));
-        this.downloadPathPopup.itemAtIndex(3).setRepresentedObject(
+        ), action, "");
+        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setTarget(this);
+        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setImage(HOME_ICON);
+        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setRepresentedObject(
                 NSPathUtilities.stringByExpandingTildeInPath(HOME));
-        this.downloadPathPopup.itemAtIndex(3).setImage(HOME_ICON);
+        if(CUSTOM.equals(HOME)) {
+            this.downloadPathPopup.selectItemAtIndex(this.downloadPathPopup.numberOfItems()-1);
+        }
         // Choose another folder
         this.downloadPathPopup.menu().addItem(new NSMenuItem().separatorItem());
-        this.downloadPathPopup.addItem(CHOOSE);
+        this.downloadPathPopup.menu().addItem(CHOOSE, action, "");
+        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setTarget(this);
     }
 
     private NSOpenPanel downloadPathPanel;
 
-    public void downloadPathPopupClicked(final NSPopUpButton sender) {
-        if(sender.selectedItem().title().equals(CHOOSE)) {
+    public void downloadPathPopupClicked(final NSMenuItem sender) {
+        if(sender.title().equals(CHOOSE)) {
             downloadPathPanel = NSOpenPanel.openPanel();
             downloadPathPanel.setCanChooseFiles(false);
             downloadPathPanel.setCanChooseDirectories(true);
@@ -1008,7 +1020,7 @@ public class CDPreferencesController extends CDWindowController {
         }
         else {
             Preferences.instance().setProperty("queue.download.folder", NSPathUtilities.stringByAbbreviatingWithTildeInPath(
-                    sender.selectedItem().representedObject().toString()));
+                    sender.representedObject().toString()));
         }
     }
 
