@@ -212,6 +212,7 @@ public abstract class Preferences {
          * Bookmark drawer should be opened for new browser windows
          */
         defaults.put("browser.bookmarkDrawer.isOpen", "false");
+        defaults.put("browser.bookmarkDrawer.smallItems", "false");
         /**
          * Close bookmark drawer upon opening a connection
          */

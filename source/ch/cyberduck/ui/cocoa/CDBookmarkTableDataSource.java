@@ -34,9 +34,11 @@ public class CDBookmarkTableDataSource extends NSObject {
     private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 
     private static final NSImage DOCUMENT_ICON;
+    private static final NSImage DOCUMENT_ICON_SMALL;
 
     static {
         DOCUMENT_ICON = NSImage.imageNamed("bookmark40.tiff");
+        DOCUMENT_ICON_SMALL = NSImage.imageNamed("bookmark16.tiff");
     }
 
     public static final String ICON_COLUMN = "ICON";
@@ -135,6 +137,9 @@ public class CDBookmarkTableDataSource extends NSObject {
         if(row < this.numberOfRowsInTableView(view)) {
             String identifier = (String) tableColumn.identifier();
             if(identifier.equals(ICON_COLUMN)) {
+                if(Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems")) {
+                    return DOCUMENT_ICON_SMALL;
+                }
                 return DOCUMENT_ICON;
             }
             if(identifier.equals(BOOKMARK_COLUMN)) {
