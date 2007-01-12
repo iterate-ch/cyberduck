@@ -50,8 +50,8 @@ public class CDConnectionController extends CDSheetController {
 
     private Map bookmarks = new HashMap();
 
-    public void setBookmarksPopup(NSPopUpButton bookmarksPopup) {
-        this.bookmarksPopup = bookmarksPopup;
+    public void setBookmarksPopup(NSPopUpButton button) {
+        this.bookmarksPopup = button;
         this.bookmarksPopup.setImage(NSImage.imageNamed("bookmarks.tiff"));
         this.bookmarksPopup.setToolTip(NSBundle.localizedString("Bookmarks", ""));
         Iterator iter = HostCollection.instance().iterator();
@@ -63,13 +63,13 @@ public class CDConnectionController extends CDSheetController {
         HostCollection.instance().addListener(this.bookmarkCollectionListener = new CollectionListener() {
             public void collectionItemAdded(Object item) {
                 Host bookmark = (Host) item;
-                CDConnectionController.this.bookmarksPopup.addItem(bookmark.getNickname());
+                bookmarksPopup.addItem(bookmark.getNickname());
                 bookmarks.put(bookmark.getNickname(), bookmark);
             }
 
             public void collectionItemRemoved(Object item) {
                 Host bookmark = (Host) item;
-                CDConnectionController.this.bookmarksPopup.removeItemWithTitle(bookmark.getNickname());
+                bookmarksPopup.removeItemWithTitle(bookmark.getNickname());
                 bookmarks.remove(bookmark.getNickname());
             }
 
@@ -78,7 +78,8 @@ public class CDConnectionController extends CDSheetController {
             }
         });
         this.bookmarksPopup.setTarget(this);
-        this.bookmarksPopup.setAction(new NSSelector("bookmarksPopupSelectionChanged", new Class[]{Object.class}));
+        final NSSelector action = new NSSelector("bookmarksPopupSelectionChanged", new Class[]{Object.class});
+        this.bookmarksPopup.setAction(action);
     }
 
     public void bookmarksPopupSelectionChanged(final NSPopUpButton sender) {
