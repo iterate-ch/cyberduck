@@ -57,6 +57,7 @@
                 feedbackMenuClicked = id; 
                 forumMenuClicked = id; 
                 helpMenuClicked = id; 
+                historyMenuClicked = id; 
                 licenseMenuClicked = id; 
                 newBrowserMenuClicked = id; 
                 newDownloadMenuClicked = id; 
@@ -67,7 +68,27 @@
             }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDMainController"; 
             LANGUAGE = Java; 
-            OUTLETS = {bookmarkMenu = NSMenu; dockMenu = NSMenu; encodingMenu = NSMenu; }; 
+            OUTLETS = {encodingMenu = NSMenu; }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            CLASS = "ch.cyberduck.ui.cocoa.delegate.BookmarkMenuDelegate"; 
+            LANGUAGE = Java; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            CLASS = "ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate"; 
+            LANGUAGE = Java; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            CLASS = "ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate"; 
+            LANGUAGE = Java; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            CLASS = "ch.cyberduck.ui.cocoa.delegate.RendezvousMenuDelegate"; 
+            LANGUAGE = Java; 
             SUPERCLASS = NSObject; 
         }
     ); 
