@@ -21,9 +21,9 @@ package ch.cyberduck.ui.cocoa.threading;
 import ch.cyberduck.core.ErrorListener;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.ui.cocoa.CDErrorCell;
+import ch.cyberduck.ui.cocoa.CDSheetCallback;
 import ch.cyberduck.ui.cocoa.CDSheetController;
 import ch.cyberduck.ui.cocoa.CDWindowController;
-import ch.cyberduck.ui.cocoa.CDSheetCallback;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;

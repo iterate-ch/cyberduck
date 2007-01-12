@@ -1,10 +1,5 @@
 package ch.cyberduck.ui.cocoa.threading;
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
-
-import com.apple.cocoa.foundation.NSBundle;
-
 /*
  *  Copyright (c) 2006 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -22,6 +17,11 @@ import com.apple.cocoa.foundation.NSBundle;
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
+
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
+
+import com.apple.cocoa.foundation.NSBundle;
 
 /**
  * @version $Id$
