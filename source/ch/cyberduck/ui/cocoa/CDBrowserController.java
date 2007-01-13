@@ -1636,6 +1636,12 @@ public class CDBrowserController extends CDWindowController
         this.bookmarkDrawer.toggle(this);
         if(this.bookmarkDrawer.state() == NSDrawer.OpenState || this.bookmarkDrawer.state() == NSDrawer.OpeningState) {
             this.window.makeFirstResponder(this.bookmarkTable);
+            if(this.isMounted()) {
+                int row = HostCollection.instance().indexOf(this.getSession().getHost());
+                if(row != -1) {
+                    this.bookmarkTable.selectRow(row, false);
+                }
+            }
         }
         else {
             if(this.isMounted()) {
