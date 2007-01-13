@@ -1173,13 +1173,6 @@ public class CDBrowserController extends CDWindowController
             }
         });
         this.bookmarkTable.setDelegate(this.bookmarkTableDelegate = new CDAbstractTableDelegate() {
-            public float tableViewHeightOfRow(NSTableView view, int row) {
-                if(Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems")) {
-                    return 18;
-                }
-                return 45;
-            }
-
             public void tableRowDoubleClicked(final Object sender) {
                 if(bookmarkTable.numberOfSelectedRows() == 1) {
                     final Host selected = (Host) HostCollection.instance().get(bookmarkTable.selectedRow());
@@ -1219,7 +1212,8 @@ public class CDBrowserController extends CDWindowController
                         "HostPBoardType" //moving bookmarks
                 }));
 
-        this.bookmarkTable.setRowHeight(45f);
+        this.bookmarkTable.setRowHeight(
+                Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems") ? 18f : 45f);
         NSSelector setResizableMaskSelector
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {
