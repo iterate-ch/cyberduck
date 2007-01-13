@@ -2066,6 +2066,7 @@ public class CDBrowserController extends CDWindowController
 
 
     public void downloadToPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
+        sheet.close();
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
             final Transfer q = new DownloadTransfer();
             final Session session = this.getTransferSession();
@@ -2101,6 +2102,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void downloadAsPanelDidEnd(NSSavePanel sheet, int returncode, Object contextInfo) {
+        sheet.close();
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
             String filename;
             if((filename = sheet.filename()) != null) {
@@ -2146,6 +2148,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void syncPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
+        sheet.close();
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
             final Path selection = (Path) contextInfo;
             if(sheet.filenames().count() > 0) {
@@ -2191,6 +2194,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void uploadPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
+        sheet.close();
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
             final Path workdir = this.workdir();
             // selected files on the local filesystem

@@ -97,16 +97,22 @@ public abstract class CDValidatorController
     }
 
     /**
-     * @see CDQueueController
+     * The lock used to determine if a sheet should be displayed
+     */
+    private static final Object lock = new Object();
+
+    /**
      * @param p
      */
     public void prompt(Path p) {
-        if(!this.hasPrompt()) {
-            // We should not call parent.hasSheet() because the parent
-            // is a singleton class that may have a sheet from another
-            // ongoing transfer
-            this.beginSheet(false);
-            this.hasPrompt = true;
+        synchronized(lock) {
+            if(!this.hasPrompt()) {
+                // We should not call parent.hasSheet() because the parent
+                // is a singleton class that may have a sheet from another
+                // ongoing transfer
+                this.beginSheet(false);
+                this.hasPrompt = true;
+            }
         }
         this.workList.add(p);
         this.fireDataChanged();

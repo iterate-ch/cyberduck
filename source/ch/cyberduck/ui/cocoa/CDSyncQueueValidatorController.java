@@ -96,12 +96,19 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
         super.awakeFromNib();
     }
 
+    /**
+     * The lock used to determine if a sheet should be displayed
+     */
+    private static final Object lock = new Object();
+
     public void prompt(Path p) {
         // Check if the timestamps are different or either the remote or local file doesn't exist
         if(p.compare() != 0) {
-            if(!this.parent.hasSheet()) {
-                this.beginSheet(false);
-                this.hasPrompt = true;
+            synchronized(lock) {
+                if(!this.hasPrompt()) {
+                    this.beginSheet(false);
+                    this.hasPrompt = true;
+                }
             }
             this.promptList.add(p);
             if(this.downloadRadioCell.state() == NSCell.OnState && this.uploadRadioCell.state() == NSCell.OnState) {
