@@ -99,23 +99,46 @@ public abstract class Session extends NSObject {
         this.fireActivityStartedEvent();
         try {
             if(!this.isConnected()) {
+                // if not connected anymore, reconnect the session
                 this.connect();
             }
             else {
-                this.noop();
-                if(!this.isConnected()) {
+                try {
+                    // Send a 'no operation command' to make sure the session is alive
+                    this.noop();
+                }
+                catch(IOException e) {
+                    // The session has timed out since from the server side
+                    // Close the underlying socket first
+                    this.interrupt();
+                    if(e instanceof SocketException) {
+                        if(e.getMessage().equals("Connection reset")) {
+                            this.connect();
+                            return;
+                        }
+                        // Do not try to reconnect, because this exception is
+                        // thrown when the socket is interrupted by the user asynchroneously
+                        throw e;
+                    }
+                    // Try to reconnect once more
                     this.connect();
                 }
             }
         }
         catch(SocketException e) {
             this.interrupt();
+            if(e.getMessage().equals("Connection reset")) {
+                this.connect();
+                return;
+            }
             // Do not try to reconnect, because this exception is
             // thrown when the socket is interrupted by the user asynchroneously
             throw e;
         }
         catch(SocketTimeoutException e) {
+            // Signals that a timeout has occurred on a socket read or accept
             this.interrupt();
+            // Try to reconnect once more
             this.connect();
         }
     }
@@ -444,6 +467,7 @@ public abstract class Session extends NSObject {
                 Session.this.noop();
             }
             catch(IOException e) {
+                Session.this.interrupt();
                 this.cancel();
             }
         }

@@ -252,13 +252,7 @@ public class FTPSession extends Session {
     protected void noop() throws IOException {
         synchronized(this) {
             if(this.isConnected()) {
-                try {
-                    this.FTP.noop();
-                }
-                catch(IOException e) {
-                    this.interrupt();
-                    throw e;
-                }
+                this.FTP.noop();
             }
         }
     }
