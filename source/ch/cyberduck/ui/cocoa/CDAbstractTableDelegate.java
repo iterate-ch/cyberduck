@@ -32,6 +32,8 @@ import com.apple.cocoa.foundation.NSObject;
 import org.apache.log4j.Logger;
 
 import java.util.Comparator;
+import java.util.Locale;
+import java.text.Collator;
 
 /**
  * @version $Id$
@@ -220,6 +222,7 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
     }
 
     private class FilenameComparator extends BrowserComparator {
+        private Collator impl = Collator.getInstance(Locale.getDefault());
 
         public FilenameComparator(boolean ascending) {
             super(ascending);
@@ -229,9 +232,11 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
             Path p1 = (Path) o1;
             Path p2 = (Path) o2;
             if (ascending) {
-                return p1.getName().compareToIgnoreCase(p2.getName());
+                return impl.compare(p1.getName(), p2.getName());
+//                return p1.getName().compareToIgnoreCase(p2.getName());
             }
-            return -p1.getName().compareToIgnoreCase(p2.getName());
+            return -impl.compare(p1.getName(), p2.getName());
+//            return -p1.getName().compareToIgnoreCase(p2.getName());
         }
 
         public String toString() {
