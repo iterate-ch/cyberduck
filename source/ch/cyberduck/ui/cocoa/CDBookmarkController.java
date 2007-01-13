@@ -69,8 +69,8 @@ public class CDBookmarkController extends CDWindowController {
             this.host.setProtocol(Session.FTP);
             this.host.setPort(Session.FTP_PORT);
         }
-        this.updateFields();
-        HostCollection.instance().collectionItemChanged(this.host);
+        this.portField.setStringValue("" + this.host.getPort());
+        this.itemChanged();
     }
 
     private NSPopUpButton encodingPopup; // IBOutlet
@@ -119,7 +119,7 @@ public class CDBookmarkController extends CDWindowController {
     public void setHostField(NSTextField hostField) {
         this.hostField = hostField;
         (NSNotificationCenter.defaultCenter()).addObserver(this,
-                new NSSelector("hostInputDidEndEditing", new Class[]{NSNotification.class}),
+                new NSSelector("hostFieldDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.hostField);
     }
@@ -152,7 +152,11 @@ public class CDBookmarkController extends CDWindowController {
     public void setPathField(NSTextField pathField) {
         this.pathField = pathField;
         (NSNotificationCenter.defaultCenter()).addObserver(this,
-                new NSSelector("pathInputDidEndEditing", new Class[]{NSNotification.class}),
+                new NSSelector("pathInputDidChange", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.pathField);
+        (NSNotificationCenter.defaultCenter()).addObserver(this,
+                new NSSelector("pathInputDidEnd", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidEndEditingNotification,
                 this.pathField);
     }
@@ -168,7 +172,7 @@ public class CDBookmarkController extends CDWindowController {
     public void setUsernameField(NSTextField usernameField) {
         this.usernameField = usernameField;
         (NSNotificationCenter.defaultCenter()).addObserver(this,
-                new NSSelector("usernameInputDidEndEditing", new Class[]{NSNotification.class}),
+                new NSSelector("usernameInputDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.usernameField);
     }
@@ -336,7 +340,7 @@ public class CDBookmarkController extends CDWindowController {
      *
      */
     public static class Factory {
-        private static Map open = new HashMap();
+        private static final Map open = new HashMap();
 
         public static CDBookmarkController create(final Host host) {
             if(open.containsKey(host)) {
@@ -392,6 +396,7 @@ public class CDBookmarkController extends CDWindowController {
     public void awakeFromNib() {
         this.cascade();
         this.window.setTitle(this.host.getNickname());
+        this.itemChanged();
         this.updateFields();
     }
 
@@ -450,16 +455,20 @@ public class CDBookmarkController extends CDWindowController {
         publicKeyPanel = null;
     }
 
-    public void hostInputDidEndEditing(final NSNotification sender) {
-        final String hostname = hostField.stringValue();
-        this.host.setHostname(hostname);
-        this.updateFields();
-        HostCollection.instance().collectionItemChanged(this.host);
+    public void hostFieldDidChange(final NSNotification sender) {
+        try {
+            this.host = Host.parse(hostField.stringValue());
+            this.updateFields();
+        }
+        catch(MalformedURLException e) {
+            this.host.setHostname(hostField.stringValue());
+        }
+        this.itemChanged();
         this.background(new BackgroundActionImpl(this) {
             boolean reachable = false;
 
             public void run() {
-                reachable = new Host(hostname).isReachable();
+                reachable = host.isReachable();
             }
 
             public void cleanup() {
@@ -470,37 +479,41 @@ public class CDBookmarkController extends CDWindowController {
 
     public void portInputDidEndEditing(final NSNotification sender) {
         this.host.setPort(Integer.parseInt(portField.stringValue()));
-        this.updateFields();
-        HostCollection.instance().collectionItemChanged(this.host);
+        this.itemChanged();
     }
 
-    public void pathInputDidEndEditing(final NSNotification sender) {
+    public void pathInputDidChange(final NSNotification sender) {
         this.host.setDefaultPath(pathField.stringValue());
-        this.updateFields();
-        HostCollection.instance().collectionItemChanged(this.host);
+        this.itemChanged();
+    }
+
+    public void pathInputDidEnd(final NSNotification sender) {
+        this.pathField.setStringValue(this.host.getDefaultPath());
     }
 
     public void nicknameInputDidEndEditing(final NSNotification sender) {
         this.host.setNickname(nicknameField.stringValue());
-        this.updateFields();
-        HostCollection.instance().collectionItemChanged(this.host);
+        this.itemChanged();
     }
 
-    public void usernameInputDidEndEditing(final NSNotification sender) {
+    public void usernameInputDidChange(final NSNotification sender) {
         this.host.getCredentials().setUsername(usernameField.stringValue());
-        this.updateFields();
+        this.itemChanged();
+    }
+
+    /**
+     * Updates the window title and url label with the properties of this bookmark
+     */
+    private void itemChanged() {
+        this.window.setTitle(this.host.getNickname());
+        this.urlField.setStringValue(this.host.getURL() + this.host.getDefaultPath());
         HostCollection.instance().collectionItemChanged(this.host);
     }
 
+    /**
+     * Propagates all fields with the properties of this bookmark
+     */
     private void updateFields() {
-        try {
-            this.host = Host.parse(hostField.stringValue());
-        }
-        catch(MalformedURLException e) {
-            // ignore; just a hostname has been entered
-        }
-        this.window.setTitle(this.host.getNickname());
-        this.urlField.setStringValue(this.host.getURL() + host.getDefaultPath());
         this.hostField.setStringValue(this.host.getHostname());
         this.portField.setStringValue("" + this.host.getPort());
         this.nicknameField.setStringValue(this.host.getNickname());
