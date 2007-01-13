@@ -223,9 +223,8 @@ public class CDConnectionController extends CDSheetController {
     }
 
     public void hostFieldTextDidChange(final NSNotification sender) {
-        final String hostname = hostField.stringValue();
         try {
-            final Host h = Host.parse(hostname);
+            final Host h = Host.parse(hostField.stringValue());
             this.hostField.setStringValue(h.getHostname());
             if(h.getProtocol().equals(Session.FTP))
                 this.protocolPopup.selectItemWithTitle(Session.FTP_STRING);
@@ -240,6 +239,7 @@ public class CDConnectionController extends CDSheetController {
         catch(java.net.MalformedURLException e) {
             // ignore; just a hostname has been entered
         }
+        final String hostname = hostField.stringValue();
         this.background(new BackgroundActionImpl(this) {
             boolean reachable = false;
 
