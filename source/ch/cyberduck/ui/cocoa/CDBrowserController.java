@@ -1846,7 +1846,7 @@ public class CDBrowserController extends CDWindowController
 
             public void cleanup() {
                 reloadData(false);
-                setSelectedPaths(new ArrayList(files.values()));
+                setSelectedPaths(files.values());
             }
         });
     }

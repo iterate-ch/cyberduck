@@ -109,6 +109,10 @@ public class CDMainController extends CDController {
         CDBrowserController.updateBrowserTableColumns();
     }
 
+    public void historyMenuClicked(NSMenuItem sender) {
+        NSWorkspace.sharedWorkspace().openFile(HistoryMenuDelegate.HISTORY_FOLDER.getAbsolutePath());
+    }
+
     public void bugreportMenuClicked(final Object sender) {
         try {
             NSWorkspace.sharedWorkspace().openURL(

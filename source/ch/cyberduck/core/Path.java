@@ -218,7 +218,8 @@ public abstract class Path extends NSObject {
      * Return a context-relative path, beginning with a "/", that represents
      * the canonical version of the specified path after ".." and "." elements
      * are resolved out.
-     *  *
+     * *
+     *
      * @return the normalized path.
      * @author Adapted from org.apache.webdav
      * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -247,7 +248,7 @@ public abstract class Path extends NSObject {
                 if(index < 0) {
                     break;
                 }
-                if (index == 0) {
+                if(index == 0) {
                     return DELIMITER;  // The only left path is the root.
                 }
                 normalized = normalized.substring(0, normalized.lastIndexOf('/', index - 1)) +
@@ -307,12 +308,12 @@ public abstract class Path extends NSObject {
     public abstract AttributedList list(Comparator comparator, PathFilter filter);
 
     /**
-     * @see #list
      * @return The cached children of this path or null if not cached
-     * or this path does not denote a directory
+     *         or this path does not denote a directory
+     * @see #list
      */
     public AttributedList cache() {
-        return (AttributedList)this.getSession().cache().get(this);    
+        return (AttributedList) this.getSession().cache().get(this);
     }
 
     public boolean isCached() {
@@ -355,14 +356,15 @@ public abstract class Path extends NSObject {
 
     /**
      * Calculates recursively the size of this path
+     *
      * @return The size of the file or the sum of all containing files if a directory
      * @warn Potentially lengthy operation
      */
     public double size() {
         if(this.attributes.isDirectory()) {
             double size = 0;
-            for(Iterator iter = this.list().iterator(); iter.hasNext(); ) {
-                size += ((Path)iter.next()).size();
+            for(Iterator iter = this.list().iterator(); iter.hasNext();) {
+                size += ((Path) iter.next()).size();
             }
             return size;
         }
@@ -452,10 +454,21 @@ public abstract class Path extends NSObject {
      * @return the file type for the extension of this file provided by launch services
      */
     public String kind() {
+        if(this.attributes.isSymbolicLink()) {
+            if(this.attributes.isFile()) {
+                return NSBundle.localizedString("Symbolic Link (File)", "");
+            }
+            if(this.attributes.isDirectory()) {
+                return NSBundle.localizedString("Symbolic Link (Folder)", "");
+            }
+        }
+        if(this.attributes.isFile()) {
+            return this.getLocal().kind();
+        }
         if(this.attributes.isDirectory()) {
             return NSBundle.localizedString("Folder", "");
         }
-        return this.getLocal().kind();
+        return NSBundle.localizedString("Unknown", "");
     }
 
     /**
@@ -592,7 +605,6 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     * 
      * @param destination
      */
     public void duplicate(Path destination) {
@@ -603,7 +615,7 @@ public abstract class Path extends NSObject {
         destination.setLocal(local);
         destination.upload();
     }
-    
+
     /**
      * @return true if the path exists (or is cached!)
      */

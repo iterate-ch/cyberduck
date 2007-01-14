@@ -251,23 +251,8 @@ public class CDInfoController extends CDWindowController {
                 this.kindField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
             }
             else {
-                if (file.attributes.isSymbolicLink()) {
-                    if (file.attributes.isFile()) {
-                        this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (File)", ""));
-                    }
-                    if (file.attributes.isDirectory()) {
-                        this.kindField.setStringValue(NSBundle.localizedString("Symbolic Link (Folder)", ""));
-                    }
-                }
-                else if (file.attributes.isFile()) {
-                    this.kindField.setStringValue(NSBundle.localizedString("File", ""));
-                }
-                else if (file.attributes.isDirectory()) {
-                    this.kindField.setStringValue(NSBundle.localizedString("Folder", ""));
-                }
-                else {
-                    this.kindField.setStringValue(NSBundle.localizedString("Unknown", ""));
-                }
+                this.kindField.setAttributedStringValue(new NSAttributedString(file.kind(),
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
             if (this.numberOfFiles() > 1) {
                 this.modifiedField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
