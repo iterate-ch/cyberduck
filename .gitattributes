@@ -580,6 +580,7 @@ en.lproj/Certificate.nib/keyedobjects.nib -text
 en.lproj/Certificate.strings -text
 en.lproj/Command.nib/keyedobjects.nib -text
 en.lproj/Command.strings -text
+en.lproj/Connection.nib/data.dependency -text
 en.lproj/Connection.nib/keyedobjects.nib -text
 en.lproj/Connection.strings -text
 en.lproj/Crash.strings -text
