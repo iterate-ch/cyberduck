@@ -166,6 +166,9 @@
 /* No comment provided by engineer. */
 "It moved since you downloaded it." = "A sua localização foi alterada desde a última vez que fez um download.";
 
+/* A column in the browser */
+"Kind" = "Tipo";
+
 /* Toolbar item */
 "List" = "Lista";
 

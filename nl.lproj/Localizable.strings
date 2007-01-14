@@ -166,6 +166,9 @@
 /* No comment provided by engineer. */
 "It moved since you downloaded it." = "Dit is verplaatst sinds u dit heeft gedownload.";
 
+/* A column in the browser */
+"Kind" = "Soort";
+
 /* Toolbar item */
 "List" = "List";
 

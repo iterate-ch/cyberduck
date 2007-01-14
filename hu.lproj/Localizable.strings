@@ -166,6 +166,9 @@
 /* No comment provided by engineer. */
 "It moved since you downloaded it." = "Letöltés miatt áthelyezve.";
 
+/* A column in the browser */
+"Kind" = "Típus";
+
 /* Toolbar item */
 "List" = "List";
 
