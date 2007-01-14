@@ -34,6 +34,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @version $Id$
@@ -70,10 +72,41 @@ public class CDMainController extends CDController {
         String[] charsets = ((CDMainController) NSApplication.sharedApplication().delegate()).availableCharsets();
         for(int i = 0; i < charsets.length; i++) {
             NSMenuItem item = new NSMenuItem(charsets[i],
-                    new NSSelector("encodingButtonClicked", new Class[]{Object.class}),
+                    new NSSelector("encodingMenuClicked", new Class[]{Object.class}),
                     "");
             this.encodingMenu.addItem(item);
         }
+    }
+
+    private NSMenu columnMenu;
+
+    public void setColumnMenu(NSMenu columnMenu) {
+        this.columnMenu = columnMenu;
+        Map columns = new HashMap();
+        columns.put("browser.columnKind", NSBundle.localizedString("Kind", ""));
+        columns.put("browser.columnSize", NSBundle.localizedString("Size", ""));
+        columns.put("browser.columnModification", NSBundle.localizedString("Modified", ""));
+        columns.put("browser.columnOwner", NSBundle.localizedString("Owner", ""));
+        columns.put("browser.columnPermissions", NSBundle.localizedString("Permissions", ""));
+        Iterator identifiers = columns.keySet().iterator();
+        int i = 0;
+        for(Iterator iter = columns.values().iterator(); iter.hasNext(); i++) {
+            NSMenuItem item = new NSMenuItem((String)iter.next(),
+                    new NSSelector("columnMenuClicked", new Class[]{Object.class}),
+                    "");
+            final String identifier = (String)identifiers.next();
+            item.setState(Preferences.instance().getBoolean(identifier) ? NSCell.OnState : NSCell.OffState);
+            item.setRepresentedObject(identifier);
+            this.columnMenu.insertItemAtIndex(item, i);
+        }
+    }
+
+    public void columnMenuClicked(final NSMenuItem sender) {
+        final String identifier = (String)sender.representedObject();
+        final boolean enabled = !Preferences.instance().getBoolean(identifier);
+        sender.setState(enabled ? NSCell.OnState : NSCell.OffState);
+        Preferences.instance().setProperty(identifier, enabled);
+        CDBrowserController.updateBrowserTableColumns();
     }
 
     public void bugreportMenuClicked(final Object sender) {
