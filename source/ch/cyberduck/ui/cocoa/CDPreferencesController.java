@@ -736,66 +736,6 @@ public class CDPreferencesController extends CDWindowController {
         Preferences.instance().setProperty("browser.info.isInspector", enabled);
     }
 
-    private NSButton columnModificationCheckbox; //IBOutlet
-
-    public void setColumnModificationCheckbox(NSButton columnModificationCheckbox) {
-        this.columnModificationCheckbox = columnModificationCheckbox;
-        this.columnModificationCheckbox.setTarget(this);
-        this.columnModificationCheckbox.setAction(new NSSelector("columnModificationCheckboxClicked", new Class[]{NSButton.class}));
-        this.columnModificationCheckbox.setState(Preferences.instance().getBoolean("browser.columnModification") ? NSCell.OnState : NSCell.OffState);
-    }
-
-    public void columnModificationCheckboxClicked(final NSButton sender) {
-        boolean enabled = sender.state() == NSCell.OnState;
-        Preferences.instance().setProperty("browser.columnModification", enabled);
-        CDBrowserController.updateBrowserTableColumns();
-    }
-
-    private NSButton columnOwnerCheckbox; //IBOutlet
-
-    public void setColumnOwnerCheckbox(NSButton columnOwnerCheckbox) {
-        this.columnOwnerCheckbox = columnOwnerCheckbox;
-        this.columnOwnerCheckbox.setTarget(this);
-        this.columnOwnerCheckbox.setAction(new NSSelector("columnOwnerCheckboxClicked", new Class[]{NSButton.class}));
-        this.columnOwnerCheckbox.setState(Preferences.instance().getBoolean("browser.columnOwner") ? NSCell.OnState : NSCell.OffState);
-    }
-
-    public void columnOwnerCheckboxClicked(final NSButton sender) {
-        boolean enabled = sender.state() == NSCell.OnState;
-        Preferences.instance().setProperty("browser.columnOwner", enabled);
-        CDBrowserController.updateBrowserTableColumns();
-    }
-
-    private NSButton columnPermissionsCheckbox; //IBOutlet
-
-    public void setColumnPermissionsCheckbox(NSButton columnPermissionsCheckbox) {
-        this.columnPermissionsCheckbox = columnPermissionsCheckbox;
-        this.columnPermissionsCheckbox.setTarget(this);
-        this.columnPermissionsCheckbox.setAction(new NSSelector("columnPermissionsCheckboxClicked", new Class[]{NSButton.class}));
-        this.columnPermissionsCheckbox.setState(Preferences.instance().getBoolean("browser.columnPermissions") ? NSCell.OnState : NSCell.OffState);
-    }
-
-    public void columnPermissionsCheckboxClicked(final NSButton sender) {
-        boolean enabled = sender.state() == NSCell.OnState;
-        Preferences.instance().setProperty("browser.columnPermissions", enabled);
-        CDBrowserController.updateBrowserTableColumns();
-    }
-
-    private NSButton columnSizeCheckbox; //IBOutlet
-
-    public void setColumnSizeCheckbox(NSButton columnSizeCheckbox) {
-        this.columnSizeCheckbox = columnSizeCheckbox;
-        this.columnSizeCheckbox.setTarget(this);
-        this.columnSizeCheckbox.setAction(new NSSelector("columnSizeCheckboxClicked", new Class[]{NSButton.class}));
-        this.columnSizeCheckbox.setState(Preferences.instance().getBoolean("browser.columnSize") ? NSCell.OnState : NSCell.OffState);
-    }
-
-    public void columnSizeCheckboxClicked(final NSButton sender) {
-        boolean enabled = sender.state() == NSCell.OnState;
-        Preferences.instance().setProperty("browser.columnSize", enabled);
-        CDBrowserController.updateBrowserTableColumns();
-    }
-
     // public-key algorithms
     private static final String SSH_DSS = "ssh-dss";
     private static final String SSH_RSA = "ssh-rsa";

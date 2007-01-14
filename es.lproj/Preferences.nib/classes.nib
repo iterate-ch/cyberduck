@@ -32,10 +32,6 @@
                 chmodUploadCheckbox = NSButton; 
                 chmodUploadCustomCheckbox = NSButton; 
                 chmodUploadDefaultCheckbox = NSButton; 
-                columnModificationCheckbox = NSButton; 
-                columnOwnerCheckbox = NSButton; 
-                columnPermissionsCheckbox = NSButton; 
-                columnSizeCheckbox = NSButton; 
                 confirmDisconnectCheckbox = NSButton; 
                 connectmodeCombobox = NSPopUpButton; 
                 csAuthenticationCombobox = NSPopUpButton; 
