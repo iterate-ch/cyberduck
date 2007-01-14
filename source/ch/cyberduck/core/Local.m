@@ -75,7 +75,6 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_removeCustomIcon(JNIEnv *env
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_kind(JNIEnv *env, jobject this, jstring extension)
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString *kind = nil;
 	LSCopyKindStringForTypeInfo(kLSUnknownType, kLSUnknownCreator, 
 		(CFStringRef)convertToNSString(env, extension), (CFStringRef *)&kind);
@@ -85,6 +84,5 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_kind(JNIEnv *env, jobject
 	else {
 		kind = NSLocalizedString(@"Unknown", @"");
 	}
-	[pool release];
 	return (*env)->NewStringUTF(env, [kind UTF8String]);
 }
