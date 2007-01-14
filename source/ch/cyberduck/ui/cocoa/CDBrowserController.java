@@ -1009,7 +1009,7 @@ public class CDBrowserController extends CDWindowController
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {
             NSTableColumn c = new NSTableColumn();
-            c.setIdentifier(CDBrowserTableDataSource.TYPE_COLUMN);
+            c.setIdentifier(CDBrowserTableDataSource.ICON_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
@@ -1141,6 +1141,23 @@ public class CDBrowserController extends CDWindowController
             c.setDataCell(new NSTextFieldCell());
             table.addTableColumn(c);
         }
+        table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.KIND_COLUMN));
+        if(Preferences.instance().getBoolean("browser.columnKind")) {
+            NSTableColumn c = new NSTableColumn();
+            c.headerCell().setStringValue(NSBundle.localizedString("Kind", "A column in the browser"));
+            c.setIdentifier(CDBrowserTableDataSource.KIND_COLUMN);
+            c.setMinWidth(50f);
+            c.setWidth(80f);
+            c.setMaxWidth(500f);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
+            c.setDataCell(new NSTextFieldCell());
+            table.addTableColumn(c);
+        }
         table.setIndicatorImage(((CDTableDelegate) table.delegate()).isSortedAscending() ?
                 NSImage.imageNamed("NSAscendingSortIndicator") :
                 NSImage.imageNamed("NSDescendingSortIndicator"),
@@ -1174,13 +1191,7 @@ public class CDBrowserController extends CDWindowController
         });
         this.bookmarkTable.setDelegate(this.bookmarkTableDelegate = new CDAbstractTableDelegate() {
             public void tableRowDoubleClicked(final Object sender) {
-                if(bookmarkTable.numberOfSelectedRows() == 1) {
-                    final Host selected = (Host) HostCollection.instance().get(bookmarkTable.selectedRow());
-                    CDBrowserController.this.mount(selected);
-                    if(Preferences.instance().getBoolean("browser.closeDrawer")) {
-                        bookmarkDrawer.close();
-                    }
-                }
+                CDBrowserController.this.connectBookmarkButtonClicked(sender);
             }
 
             public void enterKeyPressed(final Object sender) {
@@ -1356,6 +1367,16 @@ public class CDBrowserController extends CDWindowController
     // ----------------------------------------------------------
     // Manage Bookmarks
     // ----------------------------------------------------------
+
+    public void connectBookmarkButtonClicked(final Object sender) {
+        if(bookmarkTable.numberOfSelectedRows() == 1) {
+            final Host selected = (Host) HostCollection.instance().get(bookmarkTable.selectedRow());
+            CDBrowserController.this.mount(selected);
+            if(Preferences.instance().getBoolean("browser.closeDrawer")) {
+                bookmarkDrawer.close();
+            }
+        }
+    }
 
     private NSButton editBookmarkButton; // IBOutlet
 
@@ -1582,15 +1603,15 @@ public class CDBrowserController extends CDWindowController
          this.encodingPopup.selectItemWithTitle(Preferences.instance().getProperty("browser.charset.encoding"));
     }
 
-    public void encodingButtonClicked(final Object sender) {
-        String e = null;
-        if(sender instanceof NSMenuItem) {
-            e = ((NSMenuItem) sender).title();
-        }
-        if(sender instanceof NSPopUpButton) {
-            e = this.encodingPopup.titleOfSelectedItem();
-        }
-        final String encoding = e;
+    public void encodingButtonClicked(final NSPopUpButton sender) {
+        this.encodingChanged(sender.titleOfSelectedItem());
+    }
+
+    public void encodingMenuClicked(final NSMenuItem sender) {
+        this.encodingChanged(sender.title());
+    }
+
+    public void encodingChanged(final String encoding) {
         if(null == encoding) {
             return;
         }
@@ -1609,7 +1630,7 @@ public class CDBrowserController extends CDWindowController
 
                 public void cleanup() {
                     session.getHost().setEncoding(encoding);
-                    reloadButtonClicked(sender);
+                    reloadButtonClicked(null);
                 }
             });
         }
@@ -2326,20 +2347,17 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
-    public void showHiddenFilesClicked(final Object sender) {
-        if(sender instanceof NSMenuItem) {
-            NSMenuItem item = (NSMenuItem) sender;
-            if(item.state() == NSCell.OnState) {
-                this.setShowHiddenFiles(false);
-                item.setState(NSCell.OffState);
-            }
-            else if(item.state() == NSCell.OffState) {
-                this.setShowHiddenFiles(true);
-                item.setState(NSCell.OnState);
-            }
-            if(this.isMounted()) {
-                this.reloadData(true);
-            }
+    public void showHiddenFilesClicked(final NSMenuItem sender) {
+        if(sender.state() == NSCell.OnState) {
+            this.setShowHiddenFiles(false);
+            sender.setState(NSCell.OffState);
+        }
+        else if(sender.state() == NSCell.OffState) {
+            this.setShowHiddenFiles(true);
+            sender.setState(NSCell.OnState);
+        }
+        if(this.isMounted()) {
+            this.reloadData(true);
         }
     }
 
@@ -2992,12 +3010,14 @@ public class CDBrowserController extends CDWindowController
         if(identifier.equals("showHiddenFilesClicked:")) {
             item.setState((this.getFileFilter() instanceof NullPathFilter) ? NSCell.OnState : NSCell.OffState);
         }
-        if(identifier.equals("encodingButtonClicked:")) {
+        if(identifier.equals("encodingMenuClicked:")) {
             if(this.isMounted()) {
-                item.setState(this.session.getEncoding().equalsIgnoreCase(item.title()) ? NSCell.OnState : NSCell.OffState);
+                item.setState(this.session.getEncoding().equalsIgnoreCase(
+                        item.title()) ? NSCell.OnState : NSCell.OffState);
             }
             else {
-                item.setState(Preferences.instance().getProperty("browser.charset.encoding").equalsIgnoreCase(item.title()) ? NSCell.OnState : NSCell.OffState);
+                item.setState(Preferences.instance().getProperty("browser.charset.encoding").equalsIgnoreCase(
+                        item.title()) ? NSCell.OnState : NSCell.OffState);
             }
         }
         if(identifier.equals("browserSwitchClicked:")) {
@@ -3046,8 +3066,11 @@ public class CDBrowserController extends CDWindowController
             }
             return false;
         }
-        if(identifier.equals("encodingButtonClicked:")) {
+        if(identifier.equals("encodingMenuClicked:")) {
             return !isBusy();
+        }
+        if(identifier.equals("connectBookmarkButtonClicked:")) {
+            return bookmarkTable.numberOfSelectedRows() == 1;
         }
         if(identifier.equals("deleteBookmarkButtonClicked:")) {
             return bookmarkTable.selectedRow() != -1;
@@ -3060,20 +3083,26 @@ public class CDBrowserController extends CDWindowController
                 String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                         Preferences.instance().getProperty("editor.bundleIdentifier"));
                 if(editorPath != null) {
-                    Path selected = this.getSelectedPath();
-                    if(selected != null) {
-                        return this.isEditable(selected);
+                    for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
+                        final Path selected = (Path) i.next();
+                        if(!this.isEditable(selected)) {
+                            return false;
+                        }
                     }
+                    return true;
                 }
             }
             return false;
         }
         if(identifier.equals("editMenuClicked:")) {
             if(this.isMounted()) {
-                Path selected = this.getSelectedPath();
-                if(selected != null) {
-                    return this.isEditable(selected);
+                for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
+                    final Path selected = (Path) i.next();
+                    if(!this.isEditable(selected)) {
+                        return false;
+                    }
                 }
+                return true;
             }
             return false;
         }
@@ -3296,13 +3325,13 @@ public class CDBrowserController extends CDWindowController
             item.setView(this.encodingPopup);
             // Add a menu representation for text mode of toolbar
             NSMenuItem encodingMenu = new NSMenuItem(NSBundle.localizedString(TOOLBAR_ENCODING, "Toolbar item"),
-                    new NSSelector("encodingButtonClicked", new Class[]{Object.class}),
+                    new NSSelector("encodingMenuClicked", new Class[]{Object.class}),
                     "");
             String[] charsets = ((CDMainController)NSApplication.sharedApplication().delegate()).availableCharsets();
             NSMenu charsetMenu = new NSMenu();
             for(int i = 0; i < charsets.length; i++) {
                 charsetMenu.addItem(new NSMenuItem(charsets[i],
-                        new NSSelector("encodingButtonClicked", new Class[]{Object.class}),
+                        new NSSelector("encodingMenuClicked", new Class[]{Object.class}),
                         ""));
             }
             encodingMenu.setSubmenu(charsetMenu);
@@ -3370,7 +3399,7 @@ public class CDBrowserController extends CDWindowController
             item.setAction(new NSSelector("editButtonClicked", new Class[]{Object.class}));
             // Add a menu representation for text mode of toolbar
             NSMenuItem toolbarMenu = new NSMenuItem(NSBundle.localizedString(TOOLBAR_EDIT, "Toolbar item"),
-                    new NSSelector("editButtonClicked", new Class[]{Object.class}),
+                    new NSSelector("editMenuClicked", new Class[]{Object.class}),
                     "");
             NSMenu editMenu = new NSMenu();
             editMenu.setAutoenablesItems(true);

@@ -173,7 +173,8 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
     public Comparator getSortingComparator() {
         final boolean ascending = this.isSortedAscending();
         String identifier = this.selectedColumnIdentifier();
-        if (identifier.equals(CDBrowserTableDataSource.TYPE_COLUMN)) {
+        if (identifier.equals(CDBrowserTableDataSource.ICON_COLUMN)
+                || identifier.equals(CDBrowserTableDataSource.KIND_COLUMN)) {
             return new FileTypeComparator(ascending);
         }
         else if (identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
@@ -217,7 +218,7 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         }
 
         public String toString() {
-            return CDBrowserTableDataSource.TYPE_COLUMN;
+            return CDBrowserTableDataSource.ICON_COLUMN;
         }
     }
 
@@ -311,7 +312,7 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         }
 
         public String toString() {
-            return CDBrowserTableDataSource.TYPE_COLUMN;
+            return CDBrowserTableDataSource.OWNER_COLUMN;
         }
     }
 

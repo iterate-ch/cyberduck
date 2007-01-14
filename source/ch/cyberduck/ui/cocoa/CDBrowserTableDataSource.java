@@ -50,12 +50,13 @@ public abstract class CDBrowserTableDataSource extends NSObject {
         NOT_FOUND_ICON.setSize(new NSSize(16f, 16f));
     }
 
-    public static final String TYPE_COLUMN = "TYPE";
+    public static final String ICON_COLUMN = "ICON";
     public static final String FILENAME_COLUMN = "FILENAME";
     public static final String SIZE_COLUMN = "SIZE";
     public static final String MODIFIED_COLUMN = "MODIFIED";
     public static final String OWNER_COLUMN = "OWNER";
     public static final String PERMISSIONS_COLUMN = "PERMISSIONS";
+    public static final String KIND_COLUMN = "KIND";
     // virtual column to implement keyboard selection
     protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
 
@@ -175,7 +176,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
 
     public Object objectValueForItem(Path item, String identifier) {
         if (null != item) {
-            if (identifier.equals(TYPE_COLUMN)) {
+            if (identifier.equals(ICON_COLUMN)) {
                 return this.iconforPath(item);
             }
             if (identifier.equals(FILENAME_COLUMN)) {
@@ -204,6 +205,10 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             }
             if (identifier.equals(PERMISSIONS_COLUMN)) {
                 return new NSAttributedString(item.attributes.getPermission().toString(),
+                        CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
+            }
+            if (identifier.equals(KIND_COLUMN)) {
+                return new NSAttributedString(item.kind(),
                         CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
