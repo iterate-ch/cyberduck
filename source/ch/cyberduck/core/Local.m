@@ -20,6 +20,7 @@
 
 #import <Local.h>
 #import <Carbon/Carbon.h>
+#import <ApplicationServices/ApplicationServices.h>
 #import <CoreServices/CoreServices.h>
 #import <Cocoa/Cocoa.h>
 #import <IconFamily.h>
@@ -70,4 +71,20 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_removeCustomIcon(JNIEnv *env
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	[IconFamily removeCustomIconFromFile:convertToNSString(env, path)];
 	[pool release];
+}
+
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_kind(JNIEnv *env, jobject this, jstring extension)
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	NSString *kind = nil;
+	LSCopyKindStringForTypeInfo(kLSUnknownType, kLSUnknownCreator, 
+		(CFStringRef)convertToNSString(env, extension), (CFStringRef *)&kind);
+	if(kind) {
+		kind = [kind autorelease];
+	}
+	else {
+		kind = NSLocalizedString(@"Unknown", @"");
+	}
+	[pool release];
+	return (*env)->NewStringUTF(env, [kind UTF8String]);
 }

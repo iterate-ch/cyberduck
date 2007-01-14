@@ -449,6 +449,16 @@ public abstract class Path extends NSObject {
     }
 
     /**
+     * @return the file type for the extension of this file provided by launch services
+     */
+    public String kind() {
+        if(this.attributes.isDirectory()) {
+            return NSBundle.localizedString("Folder", "");
+        }
+        return this.getLocal().kind();
+    }
+
+    /**
      * @return The session this path uses to send commands
      */
     public abstract Session getSession();

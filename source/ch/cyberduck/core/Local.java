@@ -117,25 +117,47 @@ public class Local extends File implements IAttributes {
         return null;
     }
 
+    /**
+     * @return the file type for the extension of this file provided by launch services
+     */
+    public String kind() {
+        if(this.attributes.isDirectory()) {
+            return NSBundle.localizedString("Folder", "");
+        }
+        final String extension = this.getExtension();
+        if(null == extension) {
+            return NSBundle.localizedString("Unknown", "");
+        }
+        this.jni_load();
+        return this.kind(this.getExtension());
+    }
+
+    /**
+     *
+     * @param extension
+     * @return
+     */
+    private native String kind(String extension);
+
     public String getAbsolute() {
         return super.getAbsolutePath();
     }
 
-	private final static Object lock = new Object();
-		
+    private final static Object lock = new Object();
+        
     public void setProgress(int progress) {
         if (Preferences.instance().getBoolean("queue.download.updateIcon")) {
-			synchronized(lock) {
+            synchronized(lock) {
                 this.jni_load();
-	            if (-1 == progress) {
-	                this.removeResourceFork();
-	            }
-	            else {
+                if (-1 == progress) {
+                    this.removeResourceFork();
+                }
+                else {
                     this.setIconFromFile(this.getAbsolute(), "download" + progress + ".icns");
-	            }
-	        }
-		}
-		NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
+                }
+            }
+        }
+        NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
     }
 
     private void removeResourceFork() {
