@@ -110,36 +110,32 @@
 		Terminal.app window.)</p>
 
 		<ul>
+			<li>Use small bookmarks in the drawer displaying only the nickname of the bookmark and a 16 pixel sized icon<br />
+			<code>defaults write ch.sudo.cyberduck browser.bookmarkDrawer.smallItems true</code></li>
+			
 			<li>Close bookmark drawer when opening connection<br />
 			<code>defaults write ch.sudo.cyberduck
 			browser.closeDrawer true</code></li>
 
-			<li><br /></li>
+			<li>When hitting the enter or return key on a file or folder, do not attempt to rename but instead download the file or change the working directory respectively<br />
+			<code>defaults write ch.sudo.cyberduck browser.enterkey.rename false</code></li>
 
 			<li>Don't save bookmarks<br />
 			<code>defaults write ch.sudo.cyberduck favorites.save
 			false</code></li>
-
-			<li><br /></li>
 
 			<li>Don't change document icon to Cyberduck icon while
 			downloading<br />
 			<code>defaults write ch.sudo.cyberduck
 			queue.download.updateIcon false</code></li>
 
-			<li><br /></li>
-
 			<li>Disable Bonjour support<br />
 			<code>defaults write ch.sudo.cyberduck
 			rendezvous.enable false</code></li>
 
-			<li><br /></li>
-
 			<li>Disable Growl support<br />
 			<code>defaults write ch.sudo.cyberduck growl.enable
 			false</code></li>
-
-			<li><br /></li>
 
 			<li>Exclude some files and directories globally from
 			download, upload, e.g.<br />

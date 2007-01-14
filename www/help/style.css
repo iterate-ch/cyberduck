@@ -44,8 +44,7 @@ div#content {
 }
 
 div#content ul {
-	list-style:none;
-	padding-left:0;
+	list-style-type:square;
 }
 
 div#content img {
