@@ -12,6 +12,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] Duplicate files using option-drag [#150]
 - [Feature] Per bookmark setting for download folder [#158]
 - [Feature] Per bookmark setting to use single connection for browser and transfers [#--]
+- [Feature] Kind column in browser describing file type [#46]
 - [Feature] Advanced settings in connection and bookmark window in disclosable view 
 - [Feature] Added PageSpinner to the list of supported editors (http://www.optima-system.com/pagespinner) [#205]
 - [Bugfix] Disconnecting in the background not blocking the user interface [#--]
