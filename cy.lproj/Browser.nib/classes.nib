@@ -32,6 +32,12 @@
             SUPERCLASS = NSSegmentedControl; 
         }, 
         {
+            ACTIONS = {
+                addBookmarkButtonClicked = id; 
+                connectBookmarkButtonClicked = id; 
+                deleteBookmarkButtonClicked = id; 
+                editBookmarkButtonClicked = id; 
+            }; 
             CLASS = "ch.cyberduck.ui.cocoa.CDBrowserController"; 
             LANGUAGE = Java; 
             OUTLETS = {
