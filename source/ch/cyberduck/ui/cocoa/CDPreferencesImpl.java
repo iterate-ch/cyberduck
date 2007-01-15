@@ -31,10 +31,8 @@ import org.apache.log4j.Logger;
  * @see com.apple.cocoa.foundation.NSUserDefaults
  */
 public class CDPreferencesImpl extends Preferences {
-    private static Logger log = Logger.getLogger(CDPreferencesImpl.class);
 
     private NSUserDefaults props;
-
 
     public String getProperty(String property) {
         String value = (String) props.objectForKey(property);
@@ -45,9 +43,6 @@ public class CDPreferencesImpl extends Preferences {
     }
 
     public void setProperty(String property, String value) {
-        if (log.isDebugEnabled()) {
-            log.debug("setProperty(" + property + ", " + value + ")");
-        }
         // Sets the value of the default identified by defaultName in the standard application domain.
         // Setting a default has no effect on the value returned by the objectForKey method if
         // the same key exists in a domain that precedes the application domain in the search list.
@@ -72,7 +67,6 @@ public class CDPreferencesImpl extends Preferences {
     }
 
     public void save() {
-        log.debug("save");
         // Saves any modifications to the persistent domains and updates all
         // persistent domains that were not modified to  what is on disk.
         // Returns false if it could not save data to disk. Because synchronize
