@@ -797,7 +797,7 @@ public class CDBrowserController extends CDWindowController
 
         public void selectionDidChange(NSNotification notification) {
             if(Preferences.instance().getBoolean("browser.info.isInspector")) {
-                if(inspector != null && inspector.window().isVisible()) {
+                if(inspector != null && inspector.window() != null && inspector.window().isVisible()) {
                     List files = new ArrayList();
                     for(Iterator i = getSelectedPaths().iterator(); i.hasNext();) {
                         files.add(i.next());
@@ -2044,7 +2044,7 @@ public class CDBrowserController extends CDWindowController
         if(this.getSelectionCount() > 0) {
             List files = this.getSelectedPaths();
             if(Preferences.instance().getBoolean("browser.info.isInspector")) {
-                if(null == this.inspector) {
+                if(null == this.inspector || null == this.inspector.window()) {
                     this.inspector = CDInfoController.Factory.create(this, files);
                 }
                 else {
