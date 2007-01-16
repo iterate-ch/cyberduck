@@ -197,6 +197,7 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
     }
 
     private class FileTypeComparator extends BrowserComparator {
+        private Collator impl = Collator.getInstance(Locale.getDefault());
 
         public FileTypeComparator(boolean ascending) {
             super(ascending);
@@ -205,11 +206,12 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         public int compare(Object o1, Object o2) {
             Path p1 = (Path) o1;
             Path p2 = (Path) o2;
-            if (p1.attributes.isDirectory() && p2.attributes.isDirectory()) {
-                return 0;
-            }
-            if (p1.attributes.isFile() && p2.attributes.isFile()) {
-                return 0;
+            if ((p1.attributes.isDirectory() && p2.attributes.isDirectory())
+                    || p1.attributes.isFile() && p2.attributes.isFile()) {
+                if(ascending) {
+                    return impl.compare(p1.kind(), p2.kind());
+                }
+                return -impl.compare(p1.kind(), p2.kind());
             }
             if (p1.attributes.isFile()) {
                 return ascending ? 1 : -1;
@@ -234,10 +236,8 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
             Path p2 = (Path) o2;
             if (ascending) {
                 return impl.compare(p1.getName(), p2.getName());
-//                return p1.getName().compareToIgnoreCase(p2.getName());
             }
             return -impl.compare(p1.getName(), p2.getName());
-//            return -p1.getName().compareToIgnoreCase(p2.getName());
         }
 
         public String toString() {
