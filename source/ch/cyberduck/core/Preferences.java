@@ -379,7 +379,13 @@ public abstract class Preferences {
     }
 
     public boolean getBoolean(String property) {
-        return this.getProperty(property).equalsIgnoreCase("true");
+        String value = this.getProperty(property);
+        try {
+            return value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes") || Integer.parseInt(value) == 1;
+        }
+        catch(NumberFormatException e) {
+            return false;
+        }
     }
 
     /**

@@ -1600,45 +1600,4 @@ public class CDPreferencesController extends CDWindowController {
         boolean enabled = sender.state() == NSCell.OnState;
         Preferences.instance().setProperty("ftp.tls.datachannel.failOnError", !enabled);
     }
-
-    private NSButton springLoadedFoldersCheckbox; //IBOutlet
-
-    public void setSpringLoadedFoldersCheckbox(NSButton springLoadedFoldersCheckbox) {
-        this.springLoadedFoldersCheckbox = springLoadedFoldersCheckbox;
-        this.springLoadedFoldersCheckbox.setTarget(this);
-        this.springLoadedFoldersCheckbox.setAction(new NSSelector("setSpringLoadedFoldersCheckboxClicked", new Class[]{NSButton.class}));
-        this.springLoadedFoldersCheckbox.setState(
-                Preferences.instance().getBoolean("browser.view.autoexpand") ? NSCell.OnState : NSCell.OffState);
-    }
-
-    public void setSpringLoadedFoldersCheckboxClicked(final NSButton sender) {
-        boolean enabled = sender.state() == NSCell.OnState;
-        Preferences.instance().setProperty("browser.view.autoexpand", enabled);
-        this.springLoadedFoldersDelayCheckbox.setEnabled(enabled);
-        this.springLoadedFoldersDelaySlider.setEnabled(enabled
-                && springLoadedFoldersDelayCheckbox.state() == NSCell.OnState);
-    }
-
-    private NSButton springLoadedFoldersDelayCheckbox; //IBOutlet
-
-    public void setSpringLoadedFoldersDelayCheckbox(NSButton springLoadedFoldersDelayCheckbox) {
-        this.springLoadedFoldersDelayCheckbox = springLoadedFoldersDelayCheckbox;
-        this.springLoadedFoldersDelayCheckbox.setTarget(this);
-        this.springLoadedFoldersDelayCheckbox.setAction(new NSSelector("springLoadedFoldersDelayCheckboxClicked", new Class[]{NSButton.class}));
-        this.springLoadedFoldersDelayCheckbox.setState(
-                Preferences.instance().getBoolean("browser.view.autoexpand.useDelay") ? NSCell.OnState : NSCell.OffState);
-    }
-
-    public void springLoadedFoldersDelayCheckboxClicked(final NSButton sender) {
-        boolean enabled = sender.state() == NSCell.OnState;
-        Preferences.instance().setProperty("browser.view.autoexpand.useDelay", enabled);
-        this.springLoadedFoldersDelaySlider.setEnabled(enabled);
-    }
-
-    private NSSlider springLoadedFoldersDelaySlider; //IBOutlet
-
-    public void springLoadedFoldersDelaySlider(NSSlider springLoadedFoldersDelaySlider) {
-        this.springLoadedFoldersDelaySlider = springLoadedFoldersDelaySlider;
-        this.springLoadedFoldersDelaySlider.setEnabled(Preferences.instance().getBoolean("browser.view.autoexpand.useDelay"));
-    }
 }

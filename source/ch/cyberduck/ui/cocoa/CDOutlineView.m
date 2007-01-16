@@ -54,11 +54,11 @@
 
 - (void)_scheduleAutoExpandTimerForItem:(id)object 
 {
-	if([[[NSUserDefaults standardUserDefaults] stringForKey:@"browser.view.autoexpand"] isEqualToString:@"false"]) {
+	if(! [[NSUserDefaults standardUserDefaults] boolForKey:@"browser.view.autoexpand"]) {
 		return;
 	}
 	if(NSLeftMouseDragged == [[[NSApplication sharedApplication] currentEvent] type]) {
-		if([[[NSUserDefaults standardUserDefaults] stringForKey:@"browser.view.autoexpand.useDelay"] isEqualToString:@"true"]) {
+		if([[NSUserDefaults standardUserDefaults] boolForKey:@"browser.view.autoexpand.useDelay"]) {
 			if(nil == autoexpand_timer) {
 				autoexpand_timer = [NSTimer scheduledTimerWithTimeInterval:[[NSUserDefaults standardUserDefaults] floatForKey:@"browser.view.autoexpand.delay"]
 																target:self
