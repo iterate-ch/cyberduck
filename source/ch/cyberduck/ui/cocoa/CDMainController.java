@@ -301,10 +301,6 @@ public class CDMainController extends CDController {
      */
     public boolean applicationOpenUntitledFile(NSApplication app) {
         log.debug("applicationOpenUntitledFile");
-        if(!Preferences.instance().getBoolean("browser.serialize")) {
-            this.openDefaultBookmark(this.newDocument());
-            return true;
-        }
         return false;
     }
 
@@ -401,7 +397,17 @@ public class CDMainController extends CDController {
                 this.newDocument(true).mount(this.importBookmark(files[i]));
                 files[i].delete();
             }
+            if(files.length == 0) {
+                // Open empty browser if no saved sessions
+                if(Preferences.instance().getBoolean("browser.openUntitled")) {
+                    this.openDefaultBookmark(this.newDocument());
+                }
+            }
         }
+        else if(Preferences.instance().getBoolean("browser.openUntitled")) {
+            this.openDefaultBookmark(this.newDocument());
+        }
+
     }
 
     /**
