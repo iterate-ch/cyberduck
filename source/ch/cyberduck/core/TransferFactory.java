@@ -29,19 +29,29 @@ public abstract class TransferFactory {
     public static final int KIND_UPLOAD = 1;
     public static final int KIND_SYNC = 2;
 
-    public static Transfer create(NSDictionary dict) {
+    public static Transfer create(NSDictionary dict, Session s) {
         Object kindObj = dict.objectForKey("Kind");
         if (kindObj != null) {
             int kind = Integer.parseInt((String) kindObj);
             switch (kind) {
                 case KIND_DOWNLOAD:
-                    return new DownloadTransfer(dict);
+                    return new DownloadTransfer(dict, s);
                 case KIND_UPLOAD:
-                    return new UploadTransfer(dict);
+                    return new UploadTransfer(dict, s);
                 case KIND_SYNC:
-                    return new SyncTransfer(dict);
+                    return new SyncTransfer(dict, s);
             }
         }
-        throw new IllegalArgumentException("Unknown queue");
+        throw new IllegalArgumentException("Unknown transfer");
+    }
+
+    public static Transfer create(NSDictionary dict) {
+        Object hostObj = dict.objectForKey("Host");
+        if(hostObj != null) {
+            Host host = new Host((NSDictionary) hostObj);
+            Session s = SessionFactory.createSession(host);
+            return create(dict, s);
+        }
+        throw new IllegalArgumentException("Unknown transfer");
     }
 }

@@ -1792,10 +1792,27 @@ public class CDBrowserController extends CDWindowController
                 Iterator sourcesIter = files.keySet().iterator();
                 Iterator destinationsIter = files.values().iterator();
                 for(; sourcesIter.hasNext(); ) {
-                    final Path original = ((Path)sourcesIter.next());
-                    original.duplicate((Path)destinationsIter.next());
-                    if(!isConnected()) {
-                        break;
+                    final Path source = ((Path)sourcesIter.next());
+                    final Path destination = ((Path)destinationsIter.next());
+                    final Local local = new Local(NSPathUtilities.temporaryDirectory(),
+                            destination.getName());
+                    try {
+                        source.setLocal(local);
+                        DownloadTransfer d = new DownloadTransfer(source);
+                        d.run(ValidatorFactory.create(d, CDBrowserController.this));
+                        if(!isConnected()) {
+                            break;
+                        }
+                        source.setLocal(null);
+                        destination.setLocal(local);
+                        UploadTransfer u = new UploadTransfer(destination);
+                        u.run(ValidatorFactory.create(u, CDBrowserController.this));
+                        if(!isConnected()) {
+                            break;
+                        }
+                    }
+                    finally {
+                        local.delete(true);
                     }
                 }
             }

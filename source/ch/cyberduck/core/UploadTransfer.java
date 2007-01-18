@@ -39,8 +39,8 @@ public class UploadTransfer extends Transfer {
         super(root);
     }
 
-    public UploadTransfer(NSDictionary dict) {
-        super(dict);
+    public UploadTransfer(NSDictionary dict, Session s) {
+        super(dict, s);
     }
 
     public NSMutableDictionary getAsDictionary() {

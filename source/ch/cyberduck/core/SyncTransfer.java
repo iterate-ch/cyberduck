@@ -40,8 +40,8 @@ public class SyncTransfer extends Transfer {
         super(root);
     }
 
-    public SyncTransfer(NSDictionary dict) {
-        super(dict);
+    public SyncTransfer(NSDictionary dict, Session s) {
+        super(dict, s);
     }
 
     public NSMutableDictionary getAsDictionary() {

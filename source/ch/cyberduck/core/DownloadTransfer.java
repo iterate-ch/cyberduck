@@ -45,8 +45,8 @@ public class DownloadTransfer extends Transfer {
         return dict;
     }
 
-    public DownloadTransfer(NSDictionary dict) {
-        super(dict);
+    public DownloadTransfer(NSDictionary dict, Session s) {
+        super(dict, s);
     }
 
     public void fireQueueStoppedEvent() {

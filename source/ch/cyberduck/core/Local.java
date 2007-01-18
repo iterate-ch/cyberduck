@@ -105,6 +105,23 @@ public class Local extends File implements IAttributes {
         return false;
     }
 
+    public boolean delete(boolean recursively) {
+        if(!recursively) {
+            return this.delete();
+        }
+        return this.deleteImpl(this);
+    }
+
+    private boolean deleteImpl(Local f) {
+        if(f.attributes.isDirectory()) {
+            File[] files = f.listFiles();
+            for(int i = 0; i < files.length; i++) {
+                this.deleteImpl(new Local(files[i]));
+            }
+        }
+        return f.delete();
+    }
+
     /**
      * @return the extension if any or null
      */

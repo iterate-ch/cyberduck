@@ -130,17 +130,12 @@ public abstract class Transfer extends NSObject {
         }
     }
 
-    public Transfer(NSDictionary dict) {
-        Object hostObj = dict.objectForKey("Host");
-        if(hostObj != null) {
-            Host host = new Host((NSDictionary) hostObj);
-            Session s = SessionFactory.createSession(host);
-            Object rootsObj = dict.objectForKey("Roots");
-            if(rootsObj != null) {
-                NSArray r = (NSArray) rootsObj;
-                for(int i = 0; i < r.count(); i++) {
-                    this.addRoot(PathFactory.createPath(s, (NSDictionary) r.objectAtIndex(i)));
-                }
+    public Transfer(NSDictionary dict, Session s) {
+        Object rootsObj = dict.objectForKey("Roots");
+        if(rootsObj != null) {
+            NSArray r = (NSArray) rootsObj;
+            for(int i = 0; i < r.count(); i++) {
+                this.addRoot(PathFactory.createPath(s, (NSDictionary) r.objectAtIndex(i)));
             }
         }
         Object sizeObj = dict.objectForKey("Size");

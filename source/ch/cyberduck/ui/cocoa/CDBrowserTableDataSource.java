@@ -290,11 +290,12 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     final Map files = new HashMap();
                     for (int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                        Transfer q = TransferFactory.create(dict);
+                        Transfer q = TransferFactory.create(dict, controller.getSession());
                         for (Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                            Path p = ((Path) iter.next());
-                            files.put(p, PathFactory.createPath(controller.workdir().getSession(),
-                                    destination.getAbsolute(), p.getName()));
+                            final Path source = ((Path) iter.next());
+                            final Path copy = (Path)source.clone();
+                            copy.setPath(destination.getAbsolute(), source.getName());
+                            files.put(source, copy);
                         }
                     }
                     controller.duplicatePaths(files, false);
