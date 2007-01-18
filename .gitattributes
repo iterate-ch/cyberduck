@@ -1235,7 +1235,7 @@ nl.lproj/IDisk.strings -text
 nl.lproj/Info.nib/keyedobjects.nib -text
 nl.lproj/Info.strings -text
 nl.lproj/InfoPlist.strings -text svneol=unset#application/octet-stream
-nl.lproj/Localizable.strings -text svneol=unset#application/octet-stream
+nl.lproj/Localizable.strings -text
 nl.lproj/Login.nib/keyedobjects.nib -text
 nl.lproj/Login.strings -text
 nl.lproj/Main.nib/keyedobjects.nib -text
