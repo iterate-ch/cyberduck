@@ -91,6 +91,11 @@ public abstract class Session extends NSObject {
     }
 
     /**
+     *
+     */
+    private Resolver resolver;
+
+    /**
      * Assert that the connection to the remote host is still alive. Open connection if needed.
      *
      * @throws IOException The connection to the remote host failed.
@@ -100,6 +105,11 @@ public abstract class Session extends NSObject {
         try {
             if(!this.isConnected()) {
                 // if not connected anymore, reconnect the session
+                this.resolver = new Resolver(this.host.getHostname());
+                // this.message(NSBundle.localizedString("Resolving", "Status", "") + " " + host.getHostname() + "...");
+                // Try to resolve the hostname first
+                this.resolver.resolve();
+                // The IP address could successfully be determined
                 this.connect();
             }
             else {
@@ -273,7 +283,12 @@ public abstract class Session extends NSObject {
      * Close the underlying socket regardless of its state; will throw a socket exception
      * on the thread owning the socket
      */
-    public abstract void interrupt();
+    public void interrupt() {
+        if(null == this.resolver) {
+            return;
+        }
+        this.resolver.cancel();
+    }
 
     /**
      * 
