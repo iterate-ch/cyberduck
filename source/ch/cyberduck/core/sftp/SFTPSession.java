@@ -114,6 +114,7 @@ public class SFTPSession extends Session {
 
     public void interrupt() {
         try {
+            super.interrupt();
             if(null == this.SSH) {
                 return;
             }

@@ -132,14 +132,12 @@ public class FTPClient {
      *
      * @param remoteHost  the remote hostname
      * @param controlPort port for control stream (use -1 for the default port)
-     * @param timeout     the length of the timeout, in milliseconds
-     *                    (pass in 0 for no timeout)
      * @throws IOException
      * @throws FTPException
      */
-    public void connect(final String remoteHost, int controlPort, int timeout)
+    public void connect(final String remoteHost, int controlPort)
             throws IOException, FTPException {
-        this.control.connect(InetAddress.getByName(remoteHost), controlPort, timeout);
+        this.control.connect(InetAddress.getByName(remoteHost), controlPort);
     }
 
     /**
@@ -204,7 +202,7 @@ public class FTPClient {
      */
     public void setTimeout(int millis) throws IOException {
         this.timeout = millis;
-        control.setTimeout(millis);
+        this.control.setTimeout(millis);
     }
 
     /**

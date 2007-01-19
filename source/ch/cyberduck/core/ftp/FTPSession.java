@@ -108,6 +108,7 @@ public class FTPSession extends Session {
 
     public void interrupt() {
         try {
+            super.interrupt();
             if(null == this.FTP) {
                 return;
             }
@@ -155,8 +156,8 @@ public class FTPSession extends Session {
                 }
             });
             try {
-                this.FTP.connect(host.getHostname(), host.getPort(),
-                    Preferences.instance().getInteger("connection.timeout"));
+                this.FTP.setTimeout(Preferences.instance().getInteger("connection.timeout"));
+                this.FTP.connect(host.getHostname(), host.getPort());
                 if(!this.isConnected()) {
                     return;
                 }

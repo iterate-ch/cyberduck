@@ -99,8 +99,8 @@ public class FTPSSession extends FTPSession {
                 }
             }, this.trustManager);
             try {
-                this.FTP.connect(host.getHostname(), host.getPort(),
-                        Preferences.instance().getInteger("connection.timeout"));
+                this.FTP.setTimeout(Preferences.instance().getInteger("connection.timeout"));
+                this.FTP.connect(host.getHostname(), host.getPort());
                 if(!this.isConnected()) {
                     return;
                 }
