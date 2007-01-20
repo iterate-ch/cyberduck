@@ -527,19 +527,7 @@ public class SFTPPath extends Path {
                         // We might not be able to change the attributes if we are
                         // not the owner of the file; but then we still want to proceed as we
                         // might have group write privileges
-                    }
-                }
-                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    FileAttributes attrs = new FileAttributes();
-                    attrs.setTimes(f.getAttributes().getModifiedTime(),
-                            new UnsignedInteger32(this.getLocal().getTimestamp() / 1000));
-                    try {
-                        session.SFTP.setAttributes(this.getAbsolute(), attrs);
-                    }
-                    catch(SshException e) {
-                        // We might not be able to change the attributes if we are
-                        // not the owner of the file; but then we still want to proceed as we
-                        // might have group write privileges
+                        log.warn(e.getMessage());
                     }
                 }
                 if(this.attributes.isFile()) {
@@ -563,6 +551,29 @@ public class SFTPPath extends Path {
                     }
                     this.upload(out, in);
                 }
+                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                    FileAttributes attrs = new FileAttributes();
+                    if(this.attributes.isDirectory()) {
+                        f = session.SFTP.openFile(this.getAbsolute(),
+                                SftpSubsystemClient.OPEN_READ);
+                    }
+                    attrs.setTimes(f.getAttributes().getAccessedTime(),
+                            new UnsignedInteger32(this.getLocal().getTimestamp() / 1000));
+                    try {
+                        session.SFTP.setAttributes(this.getAbsolute(), attrs);
+                    }
+                    catch(SshException e) {
+                        // We might not be able to change the attributes if we are
+                        // not the owner of the file; but then we still want to proceed as we
+                        // might have group write privileges
+                        log.warn(e.getMessage());
+                    }
+                    finally {
+                        if(this.attributes.isDirectory()) {
+                            f.close();
+                        }
+                    }
+                }
                 this.getParent().invalidate();
             }
             catch(SshException e) {
@@ -585,7 +596,7 @@ public class SFTPPath extends Path {
                     }
                 }
                 catch(IOException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage());
                 }
             }
         }
