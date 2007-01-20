@@ -362,6 +362,7 @@ public class FTPControlSocket {
         int port = (parts[4] << 8) + parts[5];
 
         if(InetAddress.getByName(ip).isSiteLocalAddress()) {
+            // Do not trust a local address; may be a misconfigured router
             return new FTPPassiveDataSocket(new Socket(controlSock.getInetAddress(), port));
         }
 

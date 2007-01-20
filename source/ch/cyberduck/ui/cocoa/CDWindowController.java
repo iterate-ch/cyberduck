@@ -111,14 +111,12 @@ public abstract class CDWindowController extends CDController
                         runnable.run();
                     }
                     catch(NullPointerException e) {
-                        if(log.getLevel().equals(Level.WARN)) {
+                        if(log.getLevel().isGreaterOrEqual(Level.WARN)) {
                             e.printStackTrace();
                         }
                         // We might get a null pointer if the session has been interrupted
                         // during the action in progress and closing the underlying socket
                         // asynchronously. See Session#interrupt
-                        log.warn("Due to closing the underlying socket asynchronously, the " +
-                                "action was interrupted while still pending completion");
                     }
                     finally {
                         // Indicates that you are finished using the

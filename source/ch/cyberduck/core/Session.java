@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -105,11 +106,6 @@ public abstract class Session extends NSObject {
         try {
             if(!this.isConnected()) {
                 // if not connected anymore, reconnect the session
-                this.resolver = new Resolver(this.host.getHostname());
-                // this.message(NSBundle.localizedString("Resolving", "Status", "") + " " + host.getHostname() + "...");
-                // Try to resolve the hostname first
-                this.resolver.resolve();
-                // The IP address could successfully be determined
                 this.connect();
             }
             else {
@@ -313,13 +309,18 @@ public abstract class Session extends NSObject {
         listeners.remove(listener);
     }
 
-    protected void fireConnectionWillOpenEvent() throws IOException {
+    protected void fireConnectionWillOpenEvent() throws ResolveCanceledException, UnknownHostException {
         log.debug("connectionWillOpen");
         ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
                 new ConnectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].connectionWillOpen();
         }
+        this.resolver = new Resolver(this.host.getHostname());
+        this.message(NSBundle.localizedString("Resolving", "Status", "") + " " + host.getHostname() + "...");
+        // Try to resolve the hostname first
+        this.resolver.resolve();
+        // The IP address could successfully be determined
     }
 
     protected void fireConnectionDidOpenEvent() {
