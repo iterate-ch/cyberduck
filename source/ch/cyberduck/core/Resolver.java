@@ -32,52 +32,13 @@ public class Resolver implements Runnable {
     private final Object signal = new Object();
 
     /**
-     * @return
-     * @throws UnknownHostException
-     * @throws ResolveCanceledException
+     * The hostname to lookup
      */
-    public InetAddress resolve()
-            throws UnknownHostException, ResolveCanceledException {
-
-        if(this.isResolved()) {
-            return this.resolved;
-        }
-        this.resolved = null;
-        this.exception = null;
-
-        Thread t = new Thread(this, this.toString());
-        t.start();
-
-        synchronized(this.signal) {
-            try {
-                log.debug("Waiting for resolving of " + this.hostname);
-                this.signal.wait();
-            }
-            catch(InterruptedException e) {
-                log.error(e.getMessage());
-            }
-        }
-        if(null == this.resolved) {
-            if(null == this.exception) {
-                log.warn("Canceled resolving " + this.hostname);
-                throw new ResolveCanceledException();
-            }
-            throw this.exception;
-        }
-        return this.resolved;
-    }
-
-    /**
-     *
-     */
-    public void cancel() {
-        synchronized(this.signal) {
-            this.signal.notify();
-        }
-    }
-
     private String hostname;
 
+    /**
+     * The IP address resolved for this hostname
+     */
     private InetAddress resolved;
 
     /**
@@ -89,12 +50,81 @@ public class Resolver implements Runnable {
 
     private UnknownHostException exception;
 
-    public Resolver(String hostname) {
-        this.hostname = hostname;
+    /**
+     *
+     * @return True if the lookup has failed and the host is unkown
+     */
+    public boolean hasFailed() {
+        return this.exception != null;
     }
 
     /**
      *
+     * @param hostname The hostname to lookup
+     */
+    public Resolver(String hostname) {
+        this.hostname = hostname;
+    }
+
+
+    /**
+     * This method is blocking until the hostname has been resolved or the lookup
+     * has been canceled using #cancel
+     * @return The resolved IP address for this hostname
+     * @throws UnknownHostException If the hostname cannot be resolved
+     * @throws ResolveCanceledException If the lookup has been interrupted
+     * @see #cancel
+     */
+    public InetAddress resolve()
+            throws UnknownHostException, ResolveCanceledException {
+
+        if(this.isResolved()) {
+            // Return immediatly if successful before
+            return this.resolved;
+        }
+        this.resolved = null;
+        this.exception = null;
+
+        Thread t = new Thread(this, this.toString());
+        t.start();
+
+        synchronized(this.signal) {
+            if(!this.isResolved() && !this.hasFailed()) {
+                // The lookup has not finished yet
+                try {
+                    log.debug("Waiting for resolving of " + this.hostname);
+                    // Wait for #run to finish
+                    this.signal.wait();
+                }
+                catch(InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+            }
+        }
+        if(!this.isResolved()) {
+            if(this.hasFailed()) {
+                throw this.exception;
+            }
+            log.warn("Canceled resolving " + this.hostname);
+            throw new ResolveCanceledException();
+        }
+        return this.resolved;
+    }
+
+    /**
+     * Unblocks the #resolve method for the hostname lookup to finish. #resolve will
+     * throw a ResolveCanceledException
+     * @see #resolve
+     * @see ResolveCanceledException
+     */
+    public void cancel() {
+        synchronized(this.signal) {
+            this.signal.notify();
+        }
+    }
+
+    /**
+     * Runs the hostname resolution in the background
      */
     public void run() {
         try {
@@ -107,6 +137,7 @@ public class Resolver implements Runnable {
         }
         finally {
             synchronized(this.signal) {
+                // Notify #resolve to proceed
                 this.signal.notify();
             }
         }

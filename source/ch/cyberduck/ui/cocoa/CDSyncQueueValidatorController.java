@@ -134,41 +134,22 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
         this.syncButton.setEnabled(enabled);
     }
 
-    public void mirrorCellClicked(final Object sender) {
+    /**
+     *
+     */
+    private void updateSelection() {
+        boolean downloadMissing = downloadRadioCell.state() == NSCell.OnState;
+        boolean uploadMissing = uploadRadioCell.state() == NSCell.OnState;
         this.workList.clear();
         for(Iterator i = this.promptList.iterator(); i.hasNext();) {
             Path p = (Path) i.next();
+            if(!downloadMissing && !p.getLocal().exists()) {
+                continue;
+            }
+            if(!uploadMissing && !p.getRemote().exists()) {
+                continue;
+            }
             this.workList.add(p);
-        }
-        this.fireDataChanged();
-    }
-
-    public void downloadCellClicked(final Object sender) {
-        if(uploadRadioCell.state() == NSCell.OnState) {
-            this.mirrorCellClicked(sender);
-            return;
-        }
-        this.workList.clear();
-        for(Iterator i = this.promptList.iterator(); i.hasNext();) {
-            Path p = (Path) i.next();
-            if(p.getRemote().exists()) {
-                this.workList.add(p);
-            }
-        }
-        this.fireDataChanged();
-    }
-
-    public void uploadCellClicked(final Object sender) {
-        if(downloadRadioCell.state() == NSCell.OnState) {
-            this.mirrorCellClicked(sender);
-            return;
-        }
-        this.workList.clear();
-        for(Iterator i = this.promptList.iterator(); i.hasNext();) {
-            Path p = (Path) i.next();
-            if(p.getLocal().exists()) {
-                this.workList.add(p);
-            }
         }
         this.fireDataChanged();
     }
@@ -186,6 +167,10 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
         this.downloadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
     }
 
+    public void downloadCellClicked(final Object sender) {
+        this.updateSelection();
+    }
+    
     protected NSButton uploadRadioCell;
 
     public void setUploadRadioCell(NSButton uploadRadioCell) {
@@ -193,6 +178,10 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
         this.uploadRadioCell.setState(NSCell.OnState);
         this.uploadRadioCell.setTarget(this);
         this.uploadRadioCell.setAction(new NSSelector("uploadCellClicked", new Class[]{Object.class}));
+    }
+
+    public void uploadCellClicked(final Object sender) {
+        this.updateSelection();
     }
 
     protected NSButton syncButton;
