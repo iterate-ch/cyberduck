@@ -1910,7 +1910,7 @@ zh_TW.lproj/Growl.strings -text
 zh_TW.lproj/IDisk.strings -text
 zh_TW.lproj/Info.nib/keyedobjects.nib -text
 zh_TW.lproj/Info.strings -text
-zh_TW.lproj/InfoPlist.strings -text svneol=unset#application/octet-stream
+zh_TW.lproj/InfoPlist.strings -text
 zh_TW.lproj/Localizable.strings -text
 zh_TW.lproj/Login.nib/keyedobjects.nib -text
 zh_TW.lproj/Login.strings -text
