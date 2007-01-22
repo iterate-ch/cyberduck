@@ -28,6 +28,8 @@ import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
+import java.util.Collections;
+
 /**
  * @version $Id$
  */
@@ -87,8 +89,7 @@ public class CDCreateFileController extends CDFileController {
                     if(filename.charAt(0) == '.') {
                         c.setShowHiddenFiles(true);
                     }
-                    c.reloadData(false);
-                    c.setSelectedPath(file);
+                    c.reloadData(Collections.singletonList(file));
                 }
             }
         });

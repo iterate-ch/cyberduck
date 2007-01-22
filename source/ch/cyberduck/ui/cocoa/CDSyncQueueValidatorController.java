@@ -111,21 +111,7 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
                 }
             }
             this.promptList.add(p);
-            if(this.downloadRadioCell.state() == NSCell.OnState && this.uploadRadioCell.state() == NSCell.OnState) {
-                this.workList.add(p);
-            }
-            else {
-                if(this.downloadRadioCell.state() == NSCell.OnState) {
-                    if(p.getRemote().exists()) {
-                        this.workList.add(p);
-                    }
-                }
-                if(this.uploadRadioCell.state() == NSCell.OnState) {
-                    if(p.getLocal().exists()) {
-                        this.workList.add(p);
-                    }
-                }
-            }
+            this.updateSelection(p);
             this.fireDataChanged();
         }
     }
@@ -138,20 +124,25 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
      *
      */
     private void updateSelection() {
-        boolean downloadMissing = downloadRadioCell.state() == NSCell.OnState;
-        boolean uploadMissing = uploadRadioCell.state() == NSCell.OnState;
         this.workList.clear();
         for(Iterator i = this.promptList.iterator(); i.hasNext();) {
-            Path p = (Path) i.next();
-            if(!downloadMissing && !p.getLocal().exists()) {
-                continue;
-            }
-            if(!uploadMissing && !p.getRemote().exists()) {
-                continue;
-            }
-            this.workList.add(p);
+            this.updateSelection((Path) i.next());
         }
         this.fireDataChanged();
+    }
+
+    /**
+     *
+     * @param p
+     */
+    private void updateSelection(final Path p) {
+        if(!(downloadRadioCell.state() == NSCell.OnState) && !p.getLocal().exists()) {
+            return;
+        }
+        if(!(uploadRadioCell.state() == NSCell.OnState) && !p.getRemote().exists()) {
+            return;
+        }
+        this.workList.add(p);
     }
 
     // ----------------------------------------------------------

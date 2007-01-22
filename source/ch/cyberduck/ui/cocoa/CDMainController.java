@@ -257,7 +257,8 @@ public class CDMainController extends CDController {
                             final Path workdir = controller.workdir();
                             final Transfer q = new UploadTransfer();
                             final Session session = controller.getTransferSession();
-                            q.addRoot(PathFactory.createPath(session, workdir.getAbsolute(), new Local(f.getAbsolutePath())));
+                            q.addRoot(PathFactory.createPath(session, workdir.getAbsolute(),
+                                    new Local(f.getAbsolutePath())));
                             controller.transfer(q, workdir);
                             break;
                         }

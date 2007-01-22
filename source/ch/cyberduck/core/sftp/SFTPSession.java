@@ -247,7 +247,7 @@ public class SFTPSession extends Session {
         return SSH.authenticate(auth);
     }
 
-    private int loginUsingPublicKeyAuthentication(Login credentials) throws IOException, SshException {
+    private int loginUsingPublicKeyAuthentication(final Login credentials) throws IOException, SshException {
         log.info("Trying Public Key authentication...");
         PublicKeyAuthenticationClient pk = new PublicKeyAuthenticationClient();
         pk.setUsername(credentials.getUsername());

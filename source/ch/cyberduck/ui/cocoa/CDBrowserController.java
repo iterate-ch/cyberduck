@@ -477,27 +477,30 @@ public class CDBrowserController extends CDWindowController
      */
     protected void reloadData(final boolean preserveSelection) {
         log.debug("reloadData:" + preserveSelection);
+        if(preserveSelection) {
+            //Remember the previously selected paths
+            this.reloadData(this.getSelectedPaths());
+        }
+        else {
+            this.reloadData(Collections.EMPTY_LIST);
+        }
+    }
+
+    protected void reloadData(final Collection selected) {
         if(this.isMounted()) {
             if(!this.workdir().isCached() || this.workdir().cache().attributes().isDirty()) {
-                // Reloading a workdir that is not cached yet would cause the interface to freeze;
-                // Delay until path is cached in the
-
+                // Reloading a workdir that is not cached yet would cause the interface to freeze
                 this.background(new BackgroundAction() {
                     public void run() {
                         workdir().list();
                     }
 
                     public void cleanup() {
-                        reloadData(preserveSelection);
+                        reloadData(selected);
                     }
                 });
                 return;
             }
-        }
-        List selected = null;
-        if(preserveSelection) {
-            //Remember the previously selected paths
-            selected = this.getSelectedPaths();
         }
         this.deselectAll();
         // Tell the browser view to reload the data. This will request all paths from the browser model
@@ -510,9 +513,7 @@ public class CDBrowserController extends CDWindowController
                     TRUNCATE_MIDDLE_ATTRIBUTES));
             this.statusLabel.display();
         }
-        if(preserveSelection) {
-            this.setSelectedPaths(selected);
-        }
+        this.setSelectedPaths(selected);
     }
 
     /**
@@ -546,25 +547,27 @@ public class CDBrowserController extends CDWindowController
 
     protected void setSelectedPaths(Collection selected) {
         this.deselectAll();
-        switch(this.browserSwitchView.selectedSegment()) {
-            case LIST_VIEW: {
-                //selection handling
-                for(Iterator iter = selected.iterator(); iter.hasNext();) {
-                    this.selectRow((Path) iter.next(), true);
-                }
-                break;
-            }
-            case OUTLINE_VIEW: {
-                for(int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
-                    Path p = (Path) this.browserOutlineView.itemAtRow(i);
-                    if(null == p) {
-                        break;
+        if(!selected.isEmpty()) {
+            switch(this.browserSwitchView.selectedSegment()) {
+                case LIST_VIEW: {
+                    //selection handling
+                    for(Iterator iter = selected.iterator(); iter.hasNext();) {
+                        this.selectRow((Path) iter.next(), true);
                     }
-                    if(selected.contains(p)) {
-                        this.selectRow(p, true);
-                    }
+                    break;
                 }
-                break;
+                case OUTLINE_VIEW: {
+                    for(int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
+                        Path p = (Path) this.browserOutlineView.itemAtRow(i);
+                        if(null == p) {
+                            break;
+                        }
+                        if(selected.contains(p)) {
+                            this.selectRow(p, true);
+                        }
+                    }
+                    break;
+                }
             }
         }
     }
@@ -802,7 +805,9 @@ public class CDBrowserController extends CDWindowController
                     for(Iterator i = getSelectedPaths().iterator(); i.hasNext();) {
                         files.add(i.next());
                     }
-                    inspector.setFiles(files);
+                    if(files.size() > 0) {
+                        inspector.setFiles(files);
+                    }
                 }
             }
         }
@@ -1829,8 +1834,7 @@ public class CDBrowserController extends CDWindowController
                         setShowHiddenFiles(true);
                     }
                 }
-                reloadData(false);
-                setSelectedPaths(files.values());
+                reloadData(files.values());
             }
         });
     }
@@ -1862,8 +1866,7 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void cleanup() {
-                reloadData(false);
-                setSelectedPaths(files.values());
+                reloadData(files.values());
             }
         });
     }
@@ -2157,13 +2160,12 @@ public class CDBrowserController extends CDWindowController
 
     public void syncButtonClicked(final Object sender) {
         final Path selection;
-        final Session session = this.getTransferSession();
         if(this.getSelectionCount() == 1 &&
                 this.getSelectedPath().attributes.isDirectory()) {
-            selection = (Path) this.getSelectedPath().clone(session);
+            selection = this.getSelectedPath();
         }
         else {
-            selection = (Path) this.workdir().clone(session);
+            selection = this.workdir();
         }
         syncPanel = NSOpenPanel.openPanel();
         syncPanel.setCanChooseDirectories(selection.attributes.isDirectory());
@@ -2190,9 +2192,10 @@ public class CDBrowserController extends CDWindowController
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
             final Path selection = (Path) contextInfo;
             if(sheet.filenames().count() > 0) {
-                selection.setLocal(new Local((String) sheet.filenames().lastObject()));
+                Path root = (Path)selection.clone(this.getTransferSession());
+                root.setLocal(new Local((String) sheet.filenames().lastObject()));
                 final Transfer q = new SyncTransfer();
-                q.addRoot(selection);
+                q.addRoot(root);
                 this.transfer(q, selection);
             }
         }
