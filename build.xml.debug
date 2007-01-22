@@ -1,8 +1,8 @@
 <!--
  *	Simple Ant (http://jakarta.apache.org/ant) build script for Cyberduck
  *
- *	$Revision: 2258 $
- *	$Date: 2006-05-19 01:34:45 +0200 (Fri, 19 May 2006) $
+ *	$Revision: 2614 $
+ *	$Date: 2006-12-03 19:19:35 +0530 (Sun, 03 Dec 2006) $
  *
  *	Copyright (c) 2005 David Kocher. All rights reserved.
  *	http://icu.unizh.ch/~dkocher/
@@ -29,6 +29,7 @@
 	<property name="home" value="."/>
 	<property name="unittests" value="${home}/test"/>
 	<property name="build" value="${home}/build"/>
+	<property name="build.deploy" value="${build}/Deployment"/>
 	<property name="build.classes" value="${build}/classes"/>
 	<property name="build.unittests" value="${build}/unittests" />
 	<property name="build.unittests.reports" value="${build}/unittests/junit_reports" />
@@ -43,6 +44,9 @@
 	<property name="source" value="${home}/source"/>
 	<property name="resources" value="${home}/resources"/>
 	<property name="doc" value="${home}/doc"/>
+	<property name="www" value="${home}/www"/>
+	<property name="www.update" value="${www}/update"/>
+	<property name="www.help" value="${www}/help"/>
 
 	<path id="test.classpath">
 		<path refid="build.classpath"/>
@@ -76,7 +80,7 @@
 
 	<!-- mac os x properties-->
 	<property name="app.name" value="Cyberduck"/>
-	<property name="app.bundle" value="${build}/Deployment/${app.name}.app"/>
+	<property name="app.bundle" value="${build.deploy}/${app.name}.app"/>
 	<property name="app.contents" value="${app.bundle}/Contents"/>
 	<property name="app.library" value="${app.contents}/Library"/>
 	<property name="app.resources" value="${app.contents}/Resources"/>
@@ -101,48 +105,28 @@
 		<mkdir dir="${build.unittests.reports}"/>
 		<mkdir dir="${build.unittests.reports}/html"/>
 	</target>
-
-	<target name="revision">
+	
+	<target name="timestamp">
 		<tstamp>
 			<format property="touch.time"
 					pattern="dd/MM/yyyy hh:mm aa"
 					timezone="GMT+1"
 					locale="en"/>
 		</tstamp>
+	</target>
+
+	<target name="revision">
 		<echo message="Calculating revision..." />
-		<exec executable="svnversion" outputproperty="svn.revision">
+		<exec dir="${home}" executable="svnversion" outputproperty="svn.revision">
 			<arg value="."/>
 		</exec>
 		<property name="svn.revision" value="${svn.revision}"/>
-
-		<copy todir="${build}" overwrite="true">
-			<fileset dir="${home}/www/update/">
-				<include name="changelog.rss"/>
-				<include name="versionlist.xml"/>
-			</fileset>
-		</copy>
-		<echo message="_TIMESTAMP_=${touch.time}" />
-		<echo message="_VERSION_=${cyberduck.version.major}.${cyberduck.version.minor}" />
 		<echo message="_REVISION_=${svn.revision}" />
-		<replace dir="${build}" summary="true" encoding="UTF-8">
-			<include name="changelog.rss" />
-			<include name="versionlist.xml" />
-			<replacefilter token="_TIMESTAMP_" value="${touch.time}" />
-			<replacefilter token="_REVISION_" value="${svn.revision}" />
-			<replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
-		</replace>
-		<replace dir="${app.bundle}" summary="true" encoding="UTF-8">
-			<include name="**/InfoPlist.strings" />
-			<include name="**/Info.plist" />
-			<replacefilter token="_TIMESTAMP_" value="${touch.time}" />
-			<replacefilter token="_REVISION_" value="${svn.revision}" />
-			<replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
-		</replace>
-	 </target>
-
+	</target>
+	
 	<target name="release-localization" depends="build" if="localization">
-		<mkdir dir="${build}/Deployment/${localization}"/>
-		<property name="app.bundle.loc" value="${build}/Deployment/${localization}/${app.name}.app"/>
+		<mkdir dir="${java.io.tmpdir}/${localization}"/>
+		<property name="app.bundle.loc" value="${java.io.tmpdir}/${localization}/${app.name}.app"/>
 		<copy todir="${app.bundle.loc}">
 			<fileset dir="${app.bundle}">
 				<include name="**/*"/>
@@ -159,6 +143,7 @@
 				<include name="Queue.nib/**"/>
 				<include name="Progress.nib/**"/>
 				<include name="Security.nib/**"/>
+				<include name="Alert.nib/**"/>
 			</fileset>
 		</copy>
 		<chmod perm="a+x" type="file">
@@ -168,24 +153,53 @@
 				<include name="**/MacOS/*"/>
 			</fileset>
 		</chmod>
-		<exec executable="./buildDMG.pl" spawn="false">
-			<arg line="-dmgName '${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg' -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor} (${localization})' -buildDir ${build} -compressionLevel 9 ${app.bundle.loc} ${app.name}\ Website.url Donate.url ${localization}.lproj/License.txt Credits.rtf  AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
+		<exec dir="${home}" executable="./buildDMG.pl" spawn="false">
+			<arg line="-dmgName '${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg' -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor} (${localization})' -buildDir ${build}/localizations -compressionLevel 9 ${app.bundle.loc} ${app.name}\ Website.webloc Donate.webloc ${localization}.lproj/License.txt Credits.rtf  AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
 		</exec>
-		<exec executable="md5" spawn="false" output="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg.md5">
-			<arg line="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg"/>
-		</exec>
+		<checksum file="${build}/localizations/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg" algorithm="md5" />
+		<delete dir="${build}/${localization}"/>
 	</target>
 
-	<target name="release" depends="build, revision">
-		<exec executable="./buildDMG.pl" spawn="false">
-			<arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor}' -buildDir ${build} -compressionLevel 9 ${app.bundle} ${app.name}\ Website.url Donate.url en.lproj/License.txt Credits.rtf	 AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
+	<target name="release" depends="build, timestamp, revision">
+		<echo message="_TIMESTAMP_=${touch.time}" />
+		<echo message="_VERSION_=${cyberduck.version.major}.${cyberduck.version.minor}" />
+		<replace dir="${app.bundle}" summary="true" encoding="UTF-8">
+			<include name="**/InfoPlist.strings" />
+			<include name="**/Info.plist" />
+			<replacefilter token="_TIMESTAMP_" value="${touch.time}" />
+			<replacefilter token="_REVISION_" value="${svn.revision}" />
+			<replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
+		</replace>
+		<echo message="Creating tar.gz archive..." />
+		<exec dir="${build.deploy}" executable="tar" spawn="false">
+			<arg line="-czf ../${app.name}-${svn.revision}.tar.gz ${app.name}.app"/>
 		</exec>
-		<exec executable="md5" spawn="false" output="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.md5">
-			<arg line="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"/>
+		<exec dir="${home}" executable="./buildDMG.pl" spawn="false">
+			<arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor}' -buildDir ${build} -compressionLevel 9 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.rtf AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
 		</exec>
+		<checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg" algorithm="md5" />
+		<echo message="Calculating MD5 sum..." />
+		<checksum file="${build}/${app.name}-${svn.revision}.tar.gz" 
+			algorithm="md5" property="md5sum"/>
+		<checksum file="${build}/${app.name}-${svn.revision}.tar.gz" 
+			algorithm="md5"/>
+		<property name="md5sum" value="${md5sum}"/>
+		<echo message="_MD5SUM_=${md5sum}" />
+		<copy todir="${build}" overwrite="true">
+			<fileset dir="${home}/www/update/">
+				<include name="changelog.rss"/>
+			</fileset>
+		</copy>
+		<replace dir="${build}" summary="true" encoding="UTF-8">
+			<include name="changelog.rss" />
+			<replacefilter token="_TIMESTAMP_" value="${touch.time}" />
+			<replacefilter token="_REVISION_" value="${svn.revision}" />
+			<replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
+			<replacefilter token="_MD5SUM_" value="${md5sum}" />
+		</replace>
 	</target>
 
-	<target name="scp" depends="revision">
+	<target name="mirror" depends="revision">
 		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"
 			   todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
 			   keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
@@ -201,7 +215,17 @@
 			   keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
 			   passphrase="">
 		</scp>
+		<scp file="${build}/${app.name}-${svn.revision}.tar.gz.md5"
+			   todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
+			   keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
+			   passphrase="">
+		</scp>
 		<scp file="${build}/changelog.rss"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
+			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${www.update}/changelog.html"
 			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
 			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
 			   passphrase="">
@@ -220,7 +244,7 @@
 			</fileset>
 		</copy>
 		<copy todir="${app.java}">
-			<fileset dir="${build}/Deployment">
+			<fileset dir="${build.deploy}">
 				<include name="*.dylib"/>
 			</fileset>
 		</copy>
@@ -306,7 +330,7 @@
 			<fileset dir="${build}" includes="*.jar"/>
 		</delete>
 		<delete>
-			<fileset dir="${build}/Deployment" includes="*.dylib"/>
+			<fileset dir="${build.deploy}" includes="*.dylib"/>
 		</delete>
 		<delete dir="${app.bundle}"/>
 	</target>
