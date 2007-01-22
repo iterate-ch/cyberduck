@@ -51,6 +51,10 @@ public class CDInfoController extends CDWindowController {
 
     public void setFilenameField(NSTextField filenameField) {
         this.filenameField = filenameField;
+        (NSNotificationCenter.defaultCenter()).addObserver(this,
+                new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidEndEditingNotification,
+                filenameField);
     }
 
     private NSTextField groupField; //IBOutlet
@@ -149,7 +153,7 @@ public class CDInfoController extends CDWindowController {
     }
 
     public void windowWillClose(NSNotification notification) {
-        if (Preferences.instance().getBoolean("browser.info.isInspector")) {
+        if(Preferences.instance().getBoolean("browser.info.isInspector")) {
             //Do not mark this controller as invalid if it should be used again 
             return;
         }
@@ -165,7 +169,7 @@ public class CDInfoController extends CDWindowController {
 
         public static CDInfoController create(final CDBrowserController controller, final List files) {
             if(open.containsKey(files)) {
-                return (CDInfoController)open.get(files);
+                return (CDInfoController) open.get(files);
             }
             final CDInfoController c = new CDInfoController(controller, files) {
                 public void windowWillClose(NSNotification notification) {
@@ -183,7 +187,7 @@ public class CDInfoController extends CDWindowController {
     private CDInfoController(final CDBrowserController controller, List files) {
         this.controller = controller;
         synchronized(NSApplication.sharedApplication()) {
-            if (!NSApplication.loadNibNamed("Info", this)) {
+            if(!NSApplication.loadNibNamed("Info", this)) {
                 log.fatal("Couldn't load Info.nib");
             }
         }
@@ -198,7 +202,7 @@ public class CDInfoController extends CDWindowController {
     private static NSPoint cascadedWindowPoint;
 
     public void awakeFromNib() {
-        if (null == cascadedWindowPoint) {
+        if(null == cascadedWindowPoint) {
             cascadedWindowPoint = this.window.cascadeTopLeftFromPoint(this.window.frame().origin());
         }
         else {
@@ -227,17 +231,17 @@ public class CDInfoController extends CDWindowController {
     }
 
     private void init() {
-        if (this.numberOfFiles() > 0) {
+        if(this.numberOfFiles() > 0) {
             Path file = (Path) this.files.get(0);
             this.filenameField.setStringValue(this.numberOfFiles() > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.getName());
-            if (this.numberOfFiles() > 1) {
+            if(this.numberOfFiles() > 1) {
                 this.filenameField.setEnabled(false);
             }
             else {
                 this.filenameField.setEnabled(true);
             }
-            if (file.attributes.isSymbolicLink() && file.getSymbolicLinkPath() != null) {
+            if(file.attributes.isSymbolicLink() && file.getSymbolicLinkPath() != null) {
                 this.pathField.setAttributedStringValue(new NSAttributedString(file.getSymbolicLinkPath(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
@@ -247,14 +251,14 @@ public class CDInfoController extends CDWindowController {
             }
             this.groupField.setStringValue(this.numberOfFiles() > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.attributes.getGroup());
-            if (this.numberOfFiles() > 1) {
+            if(this.numberOfFiles() > 1) {
                 this.kindField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
             }
             else {
                 this.kindField.setAttributedStringValue(new NSAttributedString(file.kind(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
-            if (this.numberOfFiles() > 1) {
+            if(this.numberOfFiles() > 1) {
                 this.modifiedField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
             }
             else {
@@ -288,7 +292,7 @@ public class CDInfoController extends CDWindowController {
             }
 
             Permission permission = null;
-            for (Iterator i = files.iterator(); i.hasNext();) {
+            for(Iterator i = files.iterator(); i.hasNext();) {
                 permission = ((Path) i.next()).attributes.getPermission();
                 log.debug("Permission:" + permission);
 
@@ -306,32 +310,29 @@ public class CDInfoController extends CDWindowController {
             }
 
             //		octalField.setStringValue(""+file.getOctalCode());
-            if (this.numberOfFiles() > 1) {
-                this.permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + "(" + NSBundle.localizedString("Multiple files", "") + ")");
+            if(this.numberOfFiles() > 1) {
+                this.permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")
+                        + " | " + "(" + NSBundle.localizedString("Multiple files", "") + ")");
             }
             else {
-                this.permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
+                this.permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")
+                        + " | " + permission.toString());
             }
 
             NSImage fileIcon = null;
-            if (this.numberOfFiles() > 1) {
+            if(this.numberOfFiles() > 1) {
                 fileIcon = NSImage.imageNamed("multipleDocuments32.tiff");
             }
             else {
-                if (file.attributes.isFile()) {
+                if(file.attributes.isFile()) {
                     fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension());
                     fileIcon.setSize(new NSSize(32f, 32f));
                 }
-                if (file.attributes.isDirectory()) {
+                if(file.attributes.isDirectory()) {
                     fileIcon = NSImage.imageNamed("folder32.tiff");
                 }
             }
             this.iconImageView.setImage(fileIcon);
-            (NSNotificationCenter.defaultCenter()).addObserver(this,
-                    new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
-                    NSControl.ControlTextDidEndEditingNotification,
-                    filenameField);
-
         }
         this.applyButton.setEnabled(controller.isConnected());
     }
@@ -339,10 +340,10 @@ public class CDInfoController extends CDWindowController {
     private void update(NSButton checkbox, boolean condition) {
         // Sets the cell's state to value, which can be NSCell.OnState, NSCell.OffState, or NSCell.MixedState.
         // If necessary, this method also redraws the receiver.
-        if ((checkbox.state() == NSCell.OffState || !checkbox.isEnabled()) && !condition) {
+        if((checkbox.state() == NSCell.OffState || !checkbox.isEnabled()) && !condition) {
             checkbox.setState(NSCell.OffState);
         }
-        else if ((checkbox.state() == NSCell.OnState || !checkbox.isEnabled()) && condition) {
+        else if((checkbox.state() == NSCell.OnState || !checkbox.isEnabled()) && condition) {
             checkbox.setState(NSCell.OnState);
         }
         else {
@@ -356,15 +357,15 @@ public class CDInfoController extends CDWindowController {
     }
 
     public void filenameInputDidEndEditing(NSNotification sender) {
-        if (this.numberOfFiles() == 1) {
+        if(this.numberOfFiles() == 1) {
             final Path current = (Path) this.files.get(0);
-            if (!this.filenameField.stringValue().equals(current.getName())) {
-                if (this.filenameField.stringValue().indexOf('/') == -1) {
+            if(!this.filenameField.stringValue().equals(current.getName())) {
+                if(this.filenameField.stringValue().indexOf('/') == -1) {
                     final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
                             current.getParent().getAbsolute(), this.filenameField.stringValue());
                     controller.renamePath(current, renamed);
                 }
-                else if (filenameField.stringValue().length() == 0) {
+                else if(filenameField.stringValue().length() == 0) {
                     this.filenameField.setStringValue(current.getName());
                 }
                 else {
@@ -399,7 +400,7 @@ public class CDInfoController extends CDWindowController {
     }
 
     public void permissionSelectionChanged(final NSButton sender) {
-        if (sender.state() == NSCell.MixedState) {
+        if(sender.state() == NSCell.MixedState) {
             sender.setState(NSCell.OnState);
         }
         final Permission permission = this.getPermissionFromSelection();
@@ -412,7 +413,7 @@ public class CDInfoController extends CDWindowController {
         // send the changes to the remote host
         controller.background(new BackgroundAction() {
             public void run() {
-                for (Iterator i = files.iterator(); i.hasNext();) {
+                for(Iterator i = files.iterator(); i.hasNext();) {
                     ((Path) i.next()).changePermissions(permission,
                             recursiveCheckbox.state() == NSCell.OnState);
                     if(!controller.isConnected()) {
@@ -434,7 +435,7 @@ public class CDInfoController extends CDWindowController {
         // send the changes to the remote host
         controller.background(new BackgroundAction() {
             public void run() {
-                for (Iterator i = files.iterator(); i.hasNext();) {
+                for(Iterator i = files.iterator(); i.hasNext();) {
                     Path p = (Path) i.next();
                     p.attributes.setSize(p.size());
                     if(!controller.isConnected()) {
@@ -458,11 +459,11 @@ public class CDInfoController extends CDWindowController {
      */
     private void updateSize() {
         int size = 0;
-        for (Iterator i = files.iterator(); i.hasNext();) {
+        for(Iterator i = files.iterator(); i.hasNext();) {
             size += ((Path) i.next()).attributes.getSize();
         }
         this.sizeField.setAttributedStringValue(
                 new NSAttributedString(Status.getSizeAsString(size) + " (" + size + " bytes)",
-                TRUNCATE_MIDDLE_ATTRIBUTES));
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 }
