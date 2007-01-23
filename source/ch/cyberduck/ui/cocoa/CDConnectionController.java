@@ -275,7 +275,7 @@ public class CDConnectionController extends CDSheetController {
 
     public void setPathField(NSTextField pathField) {
         this.pathField = pathField;
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
+        NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("pathInputDidEndEditing", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidEndEditingNotification,
                 this.pathField);

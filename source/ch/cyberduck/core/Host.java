@@ -446,7 +446,7 @@ public class Host extends NSObject {
     }
 
     /**
-     *
+     * The unique given name for this bookmark
      * @return The user-given name of this bookmark
      */
     public String getNickname() {
@@ -465,15 +465,7 @@ public class Host extends NSObject {
     }
 
     public void setNickname(String nickname) {
-        final HostCollection c = HostCollection.instance();
-        String proposal = nickname;
-        int no = 0;
-        do {
-            this.nickname = proposal;
-            no++;
-            proposal = nickname + " (" + no + ")";
-        }
-        while(c.contains(this) && !(c.get(c.indexOf(this)) == this));
+        this.nickname = nickname;
     }
 
     public String getHostname() {

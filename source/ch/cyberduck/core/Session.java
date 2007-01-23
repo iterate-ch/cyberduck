@@ -179,39 +179,26 @@ public abstract class Session extends NSObject {
         synchronized(this) {
             this.message(NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname() + "...");
             try {
-                try {
-                    this.check();
-                    if(!this.isConnected()) {
-                        return null;
-                    }
-                    Path home;
-                    if(host.hasReasonableDefaultPath()) {
-                        home = PathFactory.createPath(this, host.getDefaultPath());
-                        home.attributes.setType(Path.DIRECTORY_TYPE);
-                        if(!home.list().attributes().isReadable()) {
-                            // the default path does not exist or is not readable due to permission issues
-                            home = workdir();
-                        }
-                    }
-                    else {
+                this.check();
+                if(!this.isConnected()) {
+                    return null;
+                }
+                Path home;
+                if(host.hasReasonableDefaultPath()) {
+                    home = PathFactory.createPath(this, host.getDefaultPath());
+                    home.attributes.setType(Path.DIRECTORY_TYPE);
+                    if(!home.list().attributes().isReadable()) {
+                        // the default path does not exist or is not readable due to permission issues
                         home = workdir();
                     }
-                    Growl.instance().notify(
-                            NSBundle.localizedString("Connection opened", "Growl", "Growl Notification"),
-                            host.getHostname());
-                    return home;
                 }
-                catch(ConnectionCanceledException e) {
-                    this.close();
+                else {
+                    home = workdir();
                 }
-                catch(SocketException e) {
-                    if(!e.getMessage().equals("Software caused connection abort")) {//hack; socket opening interrupted
-                        throw e;
-                    }
-                    else {
-                        log.warn("Supressed socket exception:"+e.getMessage());
-                    }
-                }
+                Growl.instance().notify(
+                        NSBundle.localizedString("Connection opened", "Growl", "Growl Notification"),
+                        host.getHostname());
+                return home;
             }
             catch(IOException e) {
                 this.error(null, "Connection failed", e, host.getHostname());

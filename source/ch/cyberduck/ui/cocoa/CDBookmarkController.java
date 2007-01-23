@@ -108,7 +108,7 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setNicknameField(NSTextField nicknameField) {
         this.nicknameField = nicknameField;
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
+        NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("nicknameInputDidEndEditing", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.nicknameField);
@@ -118,7 +118,7 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setHostField(NSTextField hostField) {
         this.hostField = hostField;
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
+        NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("hostFieldDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.hostField);
@@ -141,7 +141,7 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setPortField(NSTextField portField) {
         this.portField = portField;
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
+        NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("portInputDidEndEditing", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.portField);
@@ -151,11 +151,11 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setPathField(NSTextField pathField) {
         this.pathField = pathField;
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
+        NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("pathInputDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.pathField);
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
+        NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("pathInputDidEnd", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidEndEditingNotification,
                 this.pathField);
@@ -171,7 +171,7 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setUsernameField(NSTextField usernameField) {
         this.usernameField = usernameField;
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
+        NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("usernameInputDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.usernameField);

@@ -34,6 +34,7 @@ import com.apple.cocoa.foundation.NSSelector;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -55,7 +56,7 @@ public class HistoryMenuDelegate extends NSObject {
     private List cache = new ArrayList();
 
     private File[] listFiles() {
-        return HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
+        return HISTORY_FOLDER.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.endsWith(".duck");
             }
@@ -98,6 +99,8 @@ public class HistoryMenuDelegate extends NSObject {
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
         if(cache.size() == 0) {
             sender.setTitle(NSBundle.localizedString("No recently connected servers available", ""));
+            sender.setTarget(null);
+            sender.setAction(null);
             sender.setImage(null);
             sender.setEnabled(false);
             return false;

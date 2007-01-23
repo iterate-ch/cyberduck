@@ -50,13 +50,31 @@ public class HostCollection extends Collection {
         return super.get(row);
     }
 
-    public boolean add(Object host) {
-        super.add(host);
-        this.save();
+    /**
+     * @see Host
+     * @param o
+     * @return
+     */
+    public boolean add(Object o) {
+        this.add(this.size(), o);
         return true;
     }
 
-    public void add(int row, Object host) {
+    /**
+     * @see Host
+     * @param row
+     * @param o
+     */
+    public void add(int row, Object o) {
+        final Host host = (Host)o;
+        String proposal = host.getNickname();
+        int no = 0;
+        do {
+            host.setNickname(proposal);
+            no++;
+            proposal = host.getNickname() + " (" + no + ")";
+        }
+        while(this.contains(o) && !(this.get(this.indexOf(o)) == o));
         super.add(row, host);
         this.save();
     }

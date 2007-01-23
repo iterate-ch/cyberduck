@@ -27,6 +27,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.util.Vector;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -154,7 +155,7 @@ public abstract class CDWindowController extends CDController
         super.post(timer);
     }
 
-    private Vector listeners = new Vector();
+    private List listeners = new Vector();
 
     /**
      * @param listener
@@ -172,7 +173,7 @@ public abstract class CDWindowController extends CDController
 
     public void setWindow(NSWindow window) {
         this.window = window;
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
+        NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("windowWillClose", new Class[]{NSNotification.class}),
                 NSWindow.WindowWillCloseNotification,
                 this.window);

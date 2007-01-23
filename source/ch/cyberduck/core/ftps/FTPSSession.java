@@ -100,18 +100,18 @@ public class FTPSSession extends FTPSession {
             }, this.trustManager);
             try {
                 this.FTP.setTimeout(Preferences.instance().getInteger("connection.timeout"));
-                this.FTP.connect(host.getHostname(), host.getPort());
-                if(!this.isConnected()) {
-                    return;
-                }
-                this.FTP.setStrictReturnCodes(true);
-                if (Proxy.isSOCKSProxyEnabled()) {
+                if(Proxy.isSOCKSProxyEnabled()) {
                     log.info("Using SOCKS Proxy");
                     FTPClient.initSOCKS(Proxy.getSOCKSProxyPort(), Proxy.getSOCKSProxyHost());
                 }
                 else {
                     FTPClient.clearSOCKS();
                 }
+                this.FTP.connect(host.getHostname(), host.getPort());
+                if(!this.isConnected()) {
+                    return;
+                }
+                this.FTP.setStrictReturnCodes(true);
                 this.FTP.setConnectMode(this.getConnectMode());
                 this.message(NSBundle.localizedString("FTP connection opened", "Status", ""));
                 ((FTPSClient) this.FTP).auth();

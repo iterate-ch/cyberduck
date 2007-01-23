@@ -50,19 +50,20 @@ public class CDErrorCell extends CDTableCell {
 
     private String getTitle(BackgroundException e) {
         String title = NSBundle.localizedString("Error", "");
-        if(e.getCause() instanceof FTPException) {
+        final Throwable cause = e.getCause();
+        if(cause instanceof FTPException) {
             title = "FTP " + NSBundle.localizedString("Error", "");
         }
-        else if(e.getCause() instanceof SshException) {
+        else if(cause instanceof SshException) {
             title = "SSH " + NSBundle.localizedString("Error", "");
         }
-        else if(e.getCause() instanceof SocketException) {
+        else if(cause instanceof SocketException) {
             title = "Network " + NSBundle.localizedString("Error", "");
         }
-        else if(e.getCause() instanceof UnknownHostException) {
+        else if(cause instanceof UnknownHostException) {
             title = "DNS " + NSBundle.localizedString("Error", "");
         }
-        else if(e.getCause() instanceof IOException) {
+        else if(cause instanceof IOException) {
             title = "I/O " + NSBundle.localizedString("Error", "");
         }
         return title;

@@ -2756,11 +2756,22 @@ public class CDBrowserController extends CDWindowController
     private Session session;
 
     /**
-     * @param host
+     * @param h
      * @return The session to be used for any further operations
      */
-    public Session mount(final Host host) {
-            log.debug("mount:" + host);
+    public Session mount(Host h) {
+        final HostCollection c = HostCollection.instance();
+        if(c.contains(h)) {
+            // Use the bookmarked reference if any. Otherwise if a clone thereof is used
+            // it confuses the user, that settings to the bookmark will not affect the
+            // currently mounted browser
+            Host bookmark = (Host)c.get(c.indexOf(h));
+            if(h.getURL().equals(bookmark.getURL())) {
+                h = bookmark;
+            }
+        }
+        final Host host = h;
+        log.debug("mount:" + host);
         if(this.isMounted()) {
             if(this.session.getHost().getURL().equals(host.getURL())) {
                 // The host is already mounted

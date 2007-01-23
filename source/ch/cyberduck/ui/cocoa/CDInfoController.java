@@ -51,7 +51,7 @@ public class CDInfoController extends CDWindowController {
 
     public void setFilenameField(NSTextField filenameField) {
         this.filenameField = filenameField;
-        (NSNotificationCenter.defaultCenter()).addObserver(this,
+        NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("filenameInputDidEndEditing", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidEndEditingNotification,
                 filenameField);

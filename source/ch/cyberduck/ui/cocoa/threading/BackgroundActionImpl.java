@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.threading;
 
 import ch.cyberduck.core.ErrorListener;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.ui.cocoa.CDErrorCell;
 import ch.cyberduck.ui.cocoa.CDSheetCallback;
 import ch.cyberduck.ui.cocoa.CDSheetController;
@@ -57,6 +58,24 @@ public abstract class BackgroundActionImpl
      * @param exception
      */
     public void error(final BackgroundException exception) {
+        // Do not report an error when the action was canceled intentionally
+        Throwable cause = exception.getCause();
+        if(cause instanceof ConnectionCanceledException) {
+            // Do not report as failed if instanceof ConnectionCanceledException
+            return;
+        }
+        if(cause instanceof SocketException) {
+            if(cause.getMessage().equals("Software caused connection abort")) {
+                // Do not report as failed if socket opening interrupted
+                log.warn("Supressed socket exception:"+cause.getMessage());
+                return;
+            }
+            if(cause.getMessage().equals("Socket closed")) {
+                // Do not report as failed if socket opening interrupted
+                log.warn("Supressed socket exception:"+cause.getMessage());
+                return;
+            }
+        }
         exceptions.add(exception);
     }
 
