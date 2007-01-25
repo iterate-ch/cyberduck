@@ -88,7 +88,8 @@ public class HistoryMenuDelegate extends NSObject {
             }
         }
         if(cache.size() > 0) {
-            return cache.size();
+            // The number of files plus a delimiter and the 'Clear' menu
+            return cache.size() + 2;
         }
         return 1;
     }
@@ -105,26 +106,41 @@ public class HistoryMenuDelegate extends NSObject {
             sender.setEnabled(false);
             return false;
         }
-        if(index >= cache.size()) {
-            log.warn("Invalid index in menuUpdateItemAtIndex:" + index);
-            return false;
+        if(index < cache.size()) {
+            Host h = (Host) cache.get(index);
+            sender.setTitle(h.getNickname());
+            sender.setRepresentedObject(h);
+            sender.setTarget(this);
+            sender.setEnabled(true);
+            sender.setImage(NSImage.imageNamed("bookmark16.tiff"));
+            sender.setAction(new NSSelector("historyMenuItemClicked", new Class[]{NSMenuItem.class}));
+            return !shouldCancel;
         }
-        Host h = (Host) cache.get(index);
-        sender.setTitle(h.getNickname());
-        sender.setRepresentedObject(h);
-        sender.setTarget(this);
-        sender.setEnabled(true);
-        sender.setImage(NSImage.imageNamed("bookmark16.tiff"));
-        sender.setAction(new NSSelector("historyMenuItemClicked", new Class[]{NSMenuItem.class}));
-        return !shouldCancel;
+        if(index == cache.size()) {
+            menu.removeItemAtIndex(index);
+            menu.insertItemAtIndex(new NSMenuItem().separatorItem(), index);
+            return !shouldCancel;
+        }
+        if(index == cache.size()+1) {
+            sender.setTitle(NSBundle.localizedString("Clear Menu", ""));
+            sender.setTarget(this);
+            sender.setEnabled(true);
+            sender.setAction(new NSSelector("clearMenuItemClicked", new Class[]{NSMenuItem.class}));
+            return !shouldCancel;
+        }
+        return true;
     }
 
-    /**
-     * @see com.apple.cocoa.application.NSMenu.Delegate
-     */
     public void historyMenuItemClicked(NSMenuItem sender) {
         CDBrowserController controller
                 = ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
         controller.mount((Host) sender.representedObject());
+    }
+
+    public void clearMenuItemClicked(NSMenuItem sender) {
+        File[] files = this.listFiles();
+        for(int i = 0; i < files.length; i++) {
+            files[i].delete();
+        }
     }
 }
