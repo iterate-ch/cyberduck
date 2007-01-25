@@ -18,9 +18,6 @@ package org.apache.commons.net.ftp.parser;
 import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
 import org.apache.oro.text.regex.*;
 
-import java.util.Calendar;
-import java.text.ParseException;
-
 /**
  * This abstract class implements both the older FTPFileListParser and
  * newer FTPFileEntryParser interfaces with default functionality.

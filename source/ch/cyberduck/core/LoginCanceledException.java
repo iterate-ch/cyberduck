@@ -23,6 +23,7 @@ import java.io.IOException;
  */
 
 /**
+ * To be used if a login attempt is canceled by the user
  * @version $Id$
  */
 public class LoginCanceledException extends ConnectionCanceledException {

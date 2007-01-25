@@ -41,7 +41,6 @@ import java.util.Vector;
  * @version $Id$
  */
 public abstract class Session extends NSObject {
-
     private static Logger log = Logger.getLogger(Session.class);
 
     public static final String SFTP = "sftp";
@@ -52,15 +51,13 @@ public abstract class Session extends NSObject {
     public static final String FTP_TLS_STRING = NSBundle.localizedString("FTP-SSL (FTP over TLS/SSL)", "");
     public static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
 
-    private String identification;
-
     /**
-     * Default port for ftp
+     * Default port for FTP
      */
     public static final int FTP_PORT = 21;
 
     /**
-     * Default port for ssh
+     * Default port for SSH
      */
     public static final int SSH_PORT = 22;
 
@@ -77,6 +74,8 @@ public abstract class Session extends NSObject {
         this.host = h;
     }
 
+    private String identification;
+
     /**
      * @return The remote host identification such as the response to the SYST command in FTP
      */
@@ -92,7 +91,7 @@ public abstract class Session extends NSObject {
     }
 
     /**
-     *
+     * Used for the hostname resolution in the background
      */
     private Resolver resolver;
 
@@ -160,20 +159,36 @@ public abstract class Session extends NSObject {
      */
     public abstract String getSecurityInformation();
 
+    /**
+     * Opens the TCP connection to the server
+     * @throws IOException
+     * @throws LoginCanceledException
+     */
     protected abstract void connect() throws IOException, LoginCanceledException;
 
     protected LoginController loginController;
 
+    /**
+     * Sets the callback to ask for login credentials
+     * @param loginController
+     * @see #login
+     */
     public void setLoginController(LoginController loginController) {
         this.loginController = loginController;
     }
 
+    /**
+     * Send the authentication credentials to the server. The connection must be opened first.
+     * @see #connect
+     * @throws IOException
+     * @throws LoginCanceledException
+     */
     protected abstract void login() throws IOException, LoginCanceledException;
 
     /**
      * Connect to the remote host and mount the home directory
      *
-     * @return null if we fail, the mounted directory if we succeed
+     * @return null if we fail, the mounted working directory if we succeed
      */
     public Path mount() {
         synchronized(this) {
@@ -255,8 +270,7 @@ public abstract class Session extends NSObject {
     protected abstract Path workdir() throws ConnectionCanceledException;
 
     /**
-     * Send a no operation command
-     *
+     * Send a 'no operation' command
      * @throws IOException
      */
     protected abstract void noop() throws IOException;
@@ -274,7 +288,7 @@ public abstract class Session extends NSObject {
     }
 
     /**
-     * 
+     * Sends an arbitrary command to the server
      * @param command
      */
     public abstract void sendCommand(String command) throws IOException;
@@ -284,6 +298,9 @@ public abstract class Session extends NSObject {
      */
     public abstract boolean isConnected();
 
+    /**
+     * A background task to keep a idling connection alive with the server
+     */
     private Timer keepAliveTimer = null;
 
     private Vector listeners = new Vector();
@@ -296,6 +313,12 @@ public abstract class Session extends NSObject {
         listeners.remove(listener);
     }
 
+    /**
+     * Notifies all connection listeners that an attempt is made to open this session
+     * @see ConnectionListener
+     * @throws ResolveCanceledException If the name resolution has been canceled by the user
+     * @throws UnknownHostException If the name resolution failed
+     */
     protected void fireConnectionWillOpenEvent() throws ResolveCanceledException, UnknownHostException {
         log.debug("connectionWillOpen");
         ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
@@ -310,6 +333,11 @@ public abstract class Session extends NSObject {
         // The IP address could successfully be determined
     }
 
+    /**
+     * Starts the <code>KeepAliveTask</code> if <code>connection.keepalive</code> is true
+     * Notifies all connection listeners that the connection has been opened successfully
+     * @see ConnectionListener
+     */
     protected void fireConnectionDidOpenEvent() {
         log.debug("connectionDidOpen");
         if(Preferences.instance().getBoolean("connection.keepalive")) {
@@ -326,6 +354,10 @@ public abstract class Session extends NSObject {
         }
     }
 
+    /**
+     * Notifes all connection listeners that a connection is about to be closed
+     * @see ConnectionListener
+     */
     protected void fireConnectionWillCloseEvent() {
         log.debug("connectionWillClose");
         this.message(NSBundle.localizedString("Disconnecting...", "Status", ""));
@@ -336,6 +368,10 @@ public abstract class Session extends NSObject {
         }
     }
 
+    /**
+     * Notifes all connection listeners that a connection has been closed
+     * @see ConnectionListener
+     */
     protected void fireConnectionDidCloseEvent() {
         log.debug("connectionDidClose");
         if(this.keepAliveTimer != null) {
@@ -350,7 +386,8 @@ public abstract class Session extends NSObject {
     }
 
     /**
-     * Must always be used in pair with #activityStopped
+     * The caller must call #fireActivityStoppedEvent before
+     * @see ConnectionListener#activityStarted
      */
     public void fireActivityStartedEvent() {
         log.debug("activityStarted");
@@ -362,7 +399,8 @@ public abstract class Session extends NSObject {
     }
 
     /**
-     * Must always be used in pair with #activityStarted
+     * The caller must call #fireActivityStartedEvent before
+     * @see ConnectionListener#activityStopped
      */
     public void fireActivityStoppedEvent() {
         log.debug("activityStopped");
@@ -408,8 +446,10 @@ public abstract class Session extends NSObject {
     }
 
     /**
-     * @param message
+     * Notifies all progress listeners and notifying Growl using the <code>title</code>
+     * @param message The message to be displayed in a status field
      * @param title If not null, then send the message to Growl
+     * @see ProgressListener
      */
     public void message(final String message, String title) {
         log.info(message);
@@ -423,6 +463,11 @@ public abstract class Session extends NSObject {
         }
     }
 
+    /**
+     * Notifies all progress listeners
+     * @param message The message to be displayed in a status field
+     * @see ProgressListener
+     */
     public void message(final String message) {
         this.message(message, null);
     }
@@ -437,16 +482,25 @@ public abstract class Session extends NSObject {
         errorListeners.remove(listener);
     }
 
+    /**
+     * Notifies all error listeners of this error without sending this error to Growl
+     * @param path The path related to this error
+     * @param message The error message to be displayed in the alert sheet
+     * @param e The cause of the error
+     */
     public void error(Path path, String message, Exception e) {
         this.error(path, message, e, null);
     }
 
     /**
-     *
-     * @param path
-     * @param message
-     * @param e
+     * Notifies all error listeners of this error and sends the message to Growl
+     * if a <code>title</code> is not null.
+     * @param path The path related to this error
+     * @param message The error message to be displayed in the alert sheet
+     * @param e The cause of the error
      * @param title If not null, send the error to Growl
+     * @see Growl
+     * @see ErrorListener
      */
     public void error(Path path, String message, Exception e, String title) {
         log.info(e.getMessage());
@@ -462,7 +516,7 @@ public abstract class Session extends NSObject {
     }
 
     /**
-     * A task to send no operation commands
+     * A task to send NOOP commands
      */
     private class KeepAliveTask extends TimerTask {
         public void run() {
@@ -476,8 +530,14 @@ public abstract class Session extends NSObject {
         }
     }
 
+    /**
+     * Keeps a ordered backward history of previously visited paths
+     */
     private List backHistory = new ArrayList();
 
+    /**
+     * Keeps a ordered forward history of previously visited paths
+     */
     private List forwardHistory = new ArrayList();
 
     /**
@@ -493,8 +553,7 @@ public abstract class Session extends NSObject {
     }
 
     /**
-     * Moves the returned path to the forward cache
-     *
+     * Returns the prevously browsed path and moves it to the forward history
      * @return The previously browsed path or null if there is none
      */
     public Path getPreviousPath() {
@@ -514,6 +573,11 @@ public abstract class Session extends NSObject {
         return null;
     }
 
+    /**
+     * 
+     * @return The last path browsed before #getPrevoiusPath was called
+     * @see #getPreviousPath()
+     */
     public Path getForwardPath() {
         int size = this.forwardHistory.size();
         if(size > 0) {
@@ -524,17 +588,24 @@ public abstract class Session extends NSObject {
         return null;
     }
 
-
+    /**
+     *
+     * @return The ordered array of prevoiusly visited directories
+     */
     public Path[] getBackHistory() {
         return (Path[]) this.backHistory.toArray(new Path[this.backHistory.size()]);
     }
 
+    /**
+     *
+     * @return The ordered array of prevoiusly visited directories
+     */
     public Path[] getForwardHistory() {
         return (Path[]) this.forwardHistory.toArray(new Path[this.forwardHistory.size()]);
     }
 
     /**
-     *
+     * Caching files listings of previously visited directories
      */
     private Cache cache = new Cache();
 
@@ -549,7 +620,7 @@ public abstract class Session extends NSObject {
     /**
      *
      * @param other
-     * @return
+     * @return true if the other session denotes the same hostname and protocol
      */
     public boolean equals(Object other) {
         if (null == other) {

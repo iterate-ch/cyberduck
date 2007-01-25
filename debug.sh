@@ -18,7 +18,7 @@
 
 usage() {
 	echo ""
-	echo "	  Usage: debug.sh [--enable] [--disable]"
+	echo "	  Usage: debug.sh [--enable | -e] [--disable | -d]"
 	echo ""
 }
 
@@ -52,7 +52,8 @@ while [ "$1" != "" ] # When there are arguments...
 			exit 0;
 		;; 
 		*)	
-			echo "Option [$1] not one of  [--enable, --diable]"; # Error (!)
+			echo "Option [$1] not one of  [--enable, --disable]"; # Error (!)
+			usage;
 			exit 1
 		;; # Abort Script Now
 	esac;

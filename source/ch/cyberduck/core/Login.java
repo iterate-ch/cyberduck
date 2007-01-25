@@ -31,6 +31,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
+ * Stores the login credentials
  * @version $Id$
  */
 public class Login {
@@ -43,17 +44,29 @@ public class Login {
         return l;
     }
 
+    /**
+     * Used as an identifier to store the credentials in the Keychain
+     */
     private String hostname;
     /**
-     * See #Session
+     * Used as an identifier to store the credentials in the Keychain
      */
     private String protocol;
+    /**
+     * The login name
+     */
     private String user;
+    /**
+     * The login password
+     */
     private transient String pass;
     /**
      * If not null, use public key authentication if SSH is the protocol
      */
     private String privateKeyFile;
+    /**
+     * If the credentials should be stored in the Keychain upon successful login
+     */
     private boolean shouldBeAddedToKeychain;
 
     /**
@@ -253,10 +266,18 @@ public class Login {
         return this.privateKeyFile != null && this.protocol.equals(Session.SFTP);
     }
 
+    /**
+     * The path for the private key file to use for public key authentication; e.g. ~/.ssh/id_rsa
+     * @param file
+     */
     public void setPrivateKeyFile(String file) {
         this.privateKeyFile = file;
     }
 
+    /**
+     *
+     * @return The path to the private key file to use for public key authentication
+     */
     public String getPrivateKeyFile() {
         return this.privateKeyFile;
     }
@@ -285,7 +306,7 @@ public class Login {
     }
 
     /**
-     *
+     * Try to the password from the user or the Keychain
      * @param controller
      * @return true if reasonable values have been found localy or in the keychain or the user
      * was prompted to for the credentials and new values got entered.

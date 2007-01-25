@@ -1,13 +1,5 @@
 package ch.cyberduck.core;
 
-import com.enterprisedt.net.ftp.FTPException;
-import com.sshtools.j2ssh.SshException;
-
-import com.apple.cocoa.foundation.NSBundle;
-
-import java.net.SocketException;
-import java.io.IOException;
-
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -25,6 +17,14 @@ import java.io.IOException;
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
+
+import com.enterprisedt.net.ftp.FTPException;
+import com.sshtools.j2ssh.SshException;
+
+import com.apple.cocoa.foundation.NSBundle;
+
+import java.io.IOException;
+import java.net.SocketException;
 
 /**
  * @version $Id$

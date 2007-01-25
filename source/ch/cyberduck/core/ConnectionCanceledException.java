@@ -23,6 +23,7 @@ import java.io.IOException;
  */
 
 /**
+ * To be used if a connection attempt is interrupted by the user
  * @version $Id$
  */
 public class ConnectionCanceledException extends IOException {

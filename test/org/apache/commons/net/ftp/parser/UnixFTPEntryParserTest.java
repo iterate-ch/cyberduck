@@ -85,6 +85,14 @@ public class UnixFTPEntryParserTest extends TestCase
         assertEquals(parsed.getName(), "Downloads");
     }
 
+    public void testUpperLowerCase() throws Exception {
+        Path parsed = null;
+        
+        parsed = parser.parseFTPEntry(parent,
+                "drwxrwxrwx    41 spinkb  spinkb      1394 jan 21 20:57 Desktop");
+        assertNotNull(parsed);
+    }
+
     public static Test suite()
     {
         return new TestSuite(UnixFTPEntryParserTest.class);

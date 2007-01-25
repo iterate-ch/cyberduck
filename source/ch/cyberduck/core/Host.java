@@ -441,12 +441,18 @@ public class Host extends NSObject {
         this.login.setProtocol(this.protocol);
     }
 
+    /**
+     * @see Session#FTP
+     * @see Session#FTP_TLS
+     * @see Session#SFTP
+     * @return
+     */
     public String getProtocol() {
         return this.protocol;
     }
 
     /**
-     * The unique given name for this bookmark
+     * The given name for this bookmark
      * @return The user-given name of this bookmark
      */
     public String getNickname() {
@@ -464,6 +470,10 @@ public class Host extends NSObject {
         return this.getHostname() + " (" + this.getProtocol().toUpperCase() + ")";
     }
 
+    /**
+     * Sets a user-given name for this bookmark
+     * @param nickname
+     */
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
@@ -472,6 +482,11 @@ public class Host extends NSObject {
         return this.hostname;
     }
 
+    /**
+     * Sets the name for this host
+     * Also reverts the nickname if no custom nickname is set
+     * @param hostname
+     */
     public void setHostname(String hostname) {
         if(null != this.hostname) {
             if(this.getNickname().equals(this.getDefaultNickname())) {
@@ -495,10 +510,17 @@ public class Host extends NSObject {
         }
     }
 
+    /**
+     * @return The port number a socket should be opened to
+     */
     public int getPort() {
         return this.port;
     }
 
+    /**
+     * The character encoding to be used with this host
+     * @param encoding
+     */
     public void setEncoding(String encoding) {
         log.debug("setEncoding:"+encoding);
         this.encoding = encoding;
@@ -637,6 +659,10 @@ public class Host extends NSObject {
 
     /**
      *
+     * @return True if the host is reachable. Returns false if there is a
+     * network configuration error, no such host is known or the server does
+     * not listing at any such port
+     * @see #getURL
      */
     public boolean isReachable() {
         if(!this.jni_load()) {
@@ -648,14 +674,11 @@ public class Host extends NSObject {
         return this.isReachable(this.getURL());
     }
 
-    /**
-     * @param url
-     * @return true if the host is reachable
-     */
     private native boolean isReachable(String url);
 
     /**
-     *
+     * Opens the network configuration assistant for the URL denoting this host
+     * @see #getURL
      */
     public void diagnose() {
         if(!this.jni_load()) {
@@ -664,8 +687,5 @@ public class Host extends NSObject {
         this.diagnose(this.getURL());
     }
 
-    /**
-     * @param url
-     */
     private native void diagnose(String url);
 }

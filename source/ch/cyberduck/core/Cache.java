@@ -18,9 +18,14 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
+ * A cache for remote directory listings
  * @version $Id$
  */
 public class Cache extends HashMap {
@@ -32,10 +37,20 @@ public class Cache extends HashMap {
         ;
     }
 
+    /**
+     *
+     * @param path
+     * @return True if the directory listing for this path is cached
+     */
     public boolean containsKey(Path path) {
         return super.containsKey(path.getAbsolute());
     }
 
+    /**
+     * Remotes the cached directory listing for this path
+     * @param path
+     * @return
+     */
     public Object remove(Path path) {
         return super.remove(path.getAbsolute());
     }
