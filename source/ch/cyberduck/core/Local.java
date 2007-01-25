@@ -22,9 +22,6 @@ import glguerin.io.FileForker;
 import glguerin.io.Pathname;
 import glguerin.io.imp.mac.macosx.MacOSXForker;
 
-import ch.cyberduck.core.io.FileWatcher;
-import ch.cyberduck.core.io.FileWatcherListener;
-
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -132,6 +129,25 @@ public class Local extends File implements IAttributes {
             return name.substring(index + 1, name.length());
         }
         return null;
+    }
+
+    /**
+     * Checks whether a given file is a symbolic link.
+     *
+     * <p>It doesn't really test for symbolic links but whether the
+     * canonical and absolute paths of the file are identical - this
+     * may lead to false positives on some platforms.</p>
+
+     * @return true if the file is a symbolic link.
+     */
+    public boolean isSymbolicLink() throws IOException {
+        if(!this.exists()) {
+            return false;
+        }
+        // For a link that actually points to something (either a file or a directory),
+        // the absolute path is the path through the link, whereas the canonical path
+        // is the path the link references.
+        return !this.getAbsolutePath().equals(this.getCanonicalPath());
     }
 
     /**

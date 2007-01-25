@@ -128,8 +128,8 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     * @param parent
-     * @param file
+     * @param parent The parent directory
+     * @param file The local file corresponding with this remote path
      */
     public void setPath(String parent, Local file) {
         this.setPath(parent, file.getName());
@@ -154,10 +154,11 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     * @param p
+     * Normalizes the name before updatings this path. Resets its parent directory
+     * @param name Must be an absolute pathname
      */
-    public void setPath(String p) {
-        this.path = Path.normalize(p);
+    public void setPath(String name) {
+        this.path = Path.normalize(name);
         this.parent = null;
     }
 
@@ -174,6 +175,10 @@ public abstract class Path extends NSObject {
         this.symbolic = p;
     }
 
+    /**
+     * @see Attributes#isSymbolicLink
+     * @return The target of the symbolic link if this path denotes a symbolic link
+     */
     public String getSymbolicLinkPath() {
         if(this.attributes.isSymbolicLink()) {
             return this.symbolic;
@@ -182,7 +187,9 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     *
+     * Read the timestamp and size of this path from the remote server
+     * @see Attributes#setSize(double)
+     * @see Attributes#setTimestamp(long)
      */
     public abstract void readAttributes();
 
@@ -291,7 +298,8 @@ public abstract class Path extends NSObject {
 
     /**
      * Request a unsorted and unfiltered file listing from the server.
-     *
+     * @see NullComparator
+     * @see NullPathFilter
      * @return The children of this path or an empty list if it is not accessible for some reason
      */
     public AttributedList list() {
@@ -316,6 +324,10 @@ public abstract class Path extends NSObject {
         return (AttributedList) this.getSession().cache().get(this);
     }
 
+    /**
+     * @see Cache
+     * @return True if this path denotes a directory and its file listing is cached for this session
+     */
     public boolean isCached() {
         return this.getSession().cache().containsKey(this);
     }
@@ -411,11 +423,28 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     * Set the local equivalent of this path (used if downloaded or synced)
-     *
+     * Set the local equivalent of this path
      * @param file
      */
     public void setLocal(Local file) {
+        try {
+            if(file.isSymbolicLink()) {
+                /**
+                 * A canonical pathname is both absolute and unique.  The precise
+                 * definition of canonical form is system-dependent.  This method first
+                 * converts this pathname to absolute form if necessary, as if by invoking the
+                 * {@link #getAbsolutePath} method, and then maps it to its unique form in a
+                 * system-dependent way.  This typically involves removing redundant names
+                 * such as <tt>"."</tt> and <tt>".."</tt> from the pathname, resolving
+                 * symbolic links
+                 */
+                this.local = new Local(file.getCanonicalPath());
+                return;
+            }
+        }
+        catch(IOException e) {
+            log.error(e.getMessage());
+        }
         this.local = file;
     }
 
@@ -439,7 +468,7 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     * @return the extension if any
+     * @return the extension if any or null otherwise
      */
     public String getExtension() {
         String name = this.getName();
@@ -614,6 +643,10 @@ public abstract class Path extends NSObject {
         return this.getParent().list().contains(this);
     }
 
+    /**
+     * Returns the hashcode of #getAbsolute()
+     * @return
+     */
     public int hashCode() {
         return this.getAbsolute().hashCode();
     }
@@ -722,10 +755,16 @@ public abstract class Path extends NSObject {
         super.finalize();
     }
 
+    /**
+     * @see Session#error(Path, String, Exception)
+     */
     protected void error(String message, IOException e) {
-        this.error(message, e, null);
+        this.getSession().error(this, message, e);
     }
 
+    /**
+     * @see Session#error(Path, String, Exception, String)
+     */
     protected void error(String message, IOException e, String title) {
         this.getSession().error(this, message, e, title);
     }
