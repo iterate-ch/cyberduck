@@ -43,6 +43,9 @@
 /* No comment provided by engineer. */
 "Clean Up" = "Bersihkan";
 
+/* Remove all bookmarks from history. */
+"Clear Menu" = "Clear Menu";
+
 /* Toolbar item */
 "Column" = "Kolom";
 
