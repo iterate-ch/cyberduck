@@ -424,26 +424,28 @@ public abstract class Path extends NSObject {
 
     /**
      * Set the local equivalent of this path
-     * @param file
+     * @param file Send <code>null</code> to reset the local path to the default value
      */
     public void setLocal(Local file) {
-        try {
-            if(file.isSymbolicLink()) {
-                /**
-                 * A canonical pathname is both absolute and unique.  The precise
-                 * definition of canonical form is system-dependent.  This method first
-                 * converts this pathname to absolute form if necessary, as if by invoking the
-                 * {@link #getAbsolutePath} method, and then maps it to its unique form in a
-                 * system-dependent way.  This typically involves removing redundant names
-                 * such as <tt>"."</tt> and <tt>".."</tt> from the pathname, resolving
-                 * symbolic links
-                 */
-                this.local = new Local(file.getCanonicalPath());
-                return;
+        if(null != file) {
+            try {
+                if(file.isSymbolicLink()) {
+                    /**
+                     * A canonical pathname is both absolute and unique.  The precise
+                     * definition of canonical form is system-dependent.  This method first
+                     * converts this pathname to absolute form if necessary, as if by invoking the
+                     * {@link #getAbsolutePath} method, and then maps it to its unique form in a
+                     * system-dependent way.  This typically involves removing redundant names
+                     * such as <tt>"."</tt> and <tt>".."</tt> from the pathname, resolving
+                     * symbolic links
+                     */
+                    this.local = new Local(file.getCanonicalPath());
+                    return;
+                }
             }
-        }
-        catch(IOException e) {
-            log.error(e.getMessage());
+            catch(IOException e) {
+                log.error(e.getMessage());
+            }
         }
         this.local = file;
     }
