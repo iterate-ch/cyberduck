@@ -4,7 +4,12 @@
         {
             CLASS = "ch.cyberduck.ui.cocoa.CDWindowController"; 
             LANGUAGE = Java; 
-            OUTLETS = {textView = NSTextView; window = NSWindow; }; 
+            OUTLETS = {
+                alertIcon = NSButton; 
+                alertLabel = NSTextField; 
+                textView = NSTextView; 
+                window = NSWindow; 
+            }; 
             SUPERCLASS = NSObject; 
         }
     ); 
