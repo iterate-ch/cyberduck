@@ -201,12 +201,12 @@ public class CDConnectionController extends CDSheetController {
         this.hostField.setAction(new NSSelector("updateURLLabel", new Class[]{Object.class}));
         this.hostField.setUsesDataSource(true);
         this.hostField.setDataSource(this.hostPopupDataSource = new Object() {
-            public int numberOfItemsInComboBox(NSComboBox combo) {
+            public int numberOfItemsInComboBox(final NSComboBox sender) {
                 return HostCollection.instance().size();
             }
 
-            public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
-                if(row < this.numberOfItemsInComboBox(combo)) {
+            public Object comboBoxObjectValueForItemAtIndex(final NSComboBox sender, final int row) {
+                if(row < this.numberOfItemsInComboBox(sender)) {
                     return ((Host) HostCollection.instance().get(row)).getHostname();
                 }
                 return null;

@@ -21,12 +21,19 @@ package ch.cyberduck.core;
 import java.util.Comparator;
 
 /**
+ * The base class for comparators used to sort by column type in the browser
  * @version $Id$
  */
 public abstract class BrowserComparator implements Comparator {
 
     protected boolean ascending;
 
+    /**
+     *
+     * @param ascending The items should be sorted in a ascending manner.
+     * Usually this means lower numbers first or natural language sorting
+     * for alphabetic comparators
+     */
     public BrowserComparator(boolean ascending) {
         this.ascending = ascending;
     }
@@ -35,6 +42,13 @@ public abstract class BrowserComparator implements Comparator {
         return this.ascending;
     }
 
+    /**
+     *
+     * @param object
+     * @see #toString()
+     * @see #isAscending()
+     * @return True if the same identifier and ascending boolean value
+     */
     public boolean equals(Object object) {
         if (object instanceof BrowserComparator) {
             BrowserComparator other = (BrowserComparator) object;
@@ -44,4 +58,11 @@ public abstract class BrowserComparator implements Comparator {
         }
         return false;
     }
+
+    public abstract int compare(Object o1, Object o2);
+
+    /**
+     * @return An unique identifer for this comparator
+     */
+    public abstract String toString();
 }

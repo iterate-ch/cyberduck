@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.NullComparator;
+import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.NSApplication;
@@ -27,44 +29,48 @@ import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Comparator;
 
 /**
  * @version $Id$
  */
-public class CDGotoController extends CDSheetController
-{
+public class CDGotoController extends CDSheetController{
     private static Logger log = Logger.getLogger(CDGotoController.class);
 
     private NSComboBox folderCombobox; // IBOutlet
-    private NSObject folderComboDataSource;
+    private NSObject folderComboboxModel;
 
     public void setFolderCombobox(NSComboBox folderCombobox) {
         this.folderCombobox = folderCombobox;
         this.folderCombobox.setCompletes(true);
         this.folderCombobox.setUsesDataSource(true);
-        this.folderCombobox.setDataSource(this.folderComboDataSource = new NSObject() {
-            private List directories = new ArrayList();
-
-            {
-                List files =  ((CDBrowserController)parent).workdir().list();
-                for (Iterator iter = files.iterator(); iter.hasNext();) {
-                    Path p = (Path) iter.next();
-                    if (p.attributes.isDirectory()) {
-                        directories.add(p.getName());
-                    }
+        this.folderCombobox.setDataSource(this.folderComboboxModel = new NSObject()/*NSComboBox.DataSource*/ {
+            final CDBrowserController c = (CDBrowserController)parent;
+            private final Comparator comparator = new NullComparator();
+            private final PathFilter filter = new PathFilter() {
+                public boolean accept(Path p) {
+                    return p.attributes.isDirectory();
                 }
-            }
+            };
 
+            /**
+             * @see NSComboBox.DataSource
+             */
             public int numberOfItemsInComboBox(NSComboBox combo) {
-                return directories.size();
+                if(!c.isMounted()) {
+                    return 0;
+                }
+                return c.workdir().list(comparator, filter).size();
             }
 
-            public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
-                if (row < this.numberOfItemsInComboBox(combo)) {
-                    return directories.get(row);
+            /**
+             * @see NSComboBox.DataSource
+             */
+            public Object comboBoxObjectValueForItemAtIndex(final NSComboBox sender, final int row) {
+                final List childs = c.workdir().list(comparator, filter);
+                if(row < childs.size()) {
+                    return ((Path)childs.get(row)).getAbsolute();
                 }
                 return null;
             }

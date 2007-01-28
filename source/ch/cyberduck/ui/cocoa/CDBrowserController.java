@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.ftps.FTPSSession;
 import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate;
 import ch.cyberduck.ui.cocoa.odb.Editor;
@@ -36,6 +37,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.Collection;
+import java.security.cert.X509Certificate;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.CertificateExpiredException;
 
 /**
  * @version $Id$
@@ -1298,12 +1302,12 @@ public class CDBrowserController extends CDWindowController
         this.quickConnectPopup.setAction(new NSSelector("quickConnectSelectionChanged", new Class[]{Object.class}));
         this.quickConnectPopup.setUsesDataSource(true);
         this.quickConnectPopup.setDataSource(this.quickConnectPopupModel = new NSObject/*NSComboBox.DataSource*/() {
-            public int numberOfItemsInComboBox(NSComboBox combo) {
+            public int numberOfItemsInComboBox(final NSComboBox combo) {
                 return HostCollection.instance().size();
             }
 
-            public Object comboBoxObjectValueForItemAtIndex(NSComboBox combo, int row) {
-                if(row < numberOfItemsInComboBox(combo)) {
+            public Object comboBoxObjectValueForItemAtIndex(final NSComboBox sender, final int row) {
+                if(row < numberOfItemsInComboBox(sender)) {
                     return ((Host)HostCollection.instance().get(row)).getNickname();
                 }
                 return null;
@@ -1344,6 +1348,72 @@ public class CDBrowserController extends CDWindowController
         catch(java.net.MalformedURLException e) {
             // No URL; assume a hostname has been entered
             this.mount(new Host(input));
+        }
+    }
+
+    private NSComboBox navigationPopup; // IBOutlet
+
+    private NSObject navigationPopupModel;
+
+    public void setNavigationPopup(NSComboBox navigationPopup) {
+        this.navigationPopup = navigationPopup;
+        this.navigationPopup.setCompletes(true);
+        this.navigationPopup.setUsesDataSource(true);
+        this.navigationPopup.setDataSource(this.navigationPopupModel = new NSObject()/*NSComboBox.DataSource*/ {
+            private final Comparator comparator = new NullComparator();
+            private final PathFilter filter = new PathFilter() {
+                public boolean accept(Path p) {
+                    return p.attributes.isDirectory();
+                }
+            };
+
+            /**
+             * @see NSComboBox.DataSource
+             */
+            public int numberOfItemsInComboBox(NSComboBox combo) {
+                if(!isMounted()) {
+                    return 0;
+                }
+                return workdir().list(comparator, filter).size();
+            }
+
+            /**
+             * @see NSComboBox.DataSource
+             */
+            public Object comboBoxObjectValueForItemAtIndex(final NSComboBox sender, final int row) {
+                final List childs = workdir().list(comparator, filter);
+                if(row < childs.size()) {
+                    return ((Path)childs.get(row)).getAbsolute();
+                }
+                return null;
+            }
+        });
+        this.navigationPopup.setTarget(this);
+        this.navigationPopup.setAction(new NSSelector("navigationPopupSelectionChanged", new Class[]{Object.class}));
+    }
+
+    public void navigationPopupSelectionChanged(NSComboBox sender) {
+        if(this.navigationPopup.stringValue().length() != 0) {
+            this.background(new BackgroundAction() {
+                final Path dir = (Path)workdir.clone();
+                final String filename = navigationPopup.stringValue();
+
+                public void run() {
+                    if (filename.charAt(0) != '/') {
+                        dir.setPath(workdir.getAbsolute(), filename);
+                    }
+                    else {
+                        dir.setPath(filename);
+                    }
+                    setWorkdir(dir);
+                }
+
+                public void cleanup() {
+                    if(workdir.getParent().equals(dir)) {
+                        setSelectedPath(workdir);
+                    }
+                }
+            });
         }
     }
 
@@ -1712,12 +1782,45 @@ public class CDBrowserController extends CDWindowController
                 this.window().makeKeyAndOrderFront(null);
             }
 
-            private NSTextView textView;
+            private NSTextView textView; // IBOutlet
 
             public void setTextView(NSTextView textView) {
                 this.textView = textView;
                 this.textView.textStorage().appendAttributedString(
                         new NSAttributedString(session.getSecurityInformation(), FIXED_WITH_FONT_ATTRIBUTES));
+            }
+
+            private NSButton alertIcon; // IBOutlet
+
+            public void setAlertIcon(NSButton alertIcon) {
+                this.alertIcon = alertIcon;
+                this.alertIcon.setHidden(true);
+            }
+
+            private NSTextField alertLabel; // IBOutlet
+
+            public void setAlertLabel(NSTextField alertLabel) {
+                this.alertLabel = alertLabel;
+                if(session instanceof FTPSSession) {
+                    X509Certificate[] certificates = ((FTPSSession)session).getTrustManager().getAcceptedIssuers();
+                    for(int i = 0; i < certificates.length; i++) {
+                        try {
+                            certificates[i].checkValidity();
+                        }
+                        catch(CertificateNotYetValidException e) {
+                            log.warn(e.getMessage());
+                            this.alertIcon.setHidden(false);
+                            this.alertLabel.setStringValue(NSBundle.localizedString("Certificate not yet valid", "")
+                                    +": "+e.getMessage());
+                        }
+                        catch(CertificateExpiredException e) {
+                            log.warn(e.getMessage());
+                            this.alertIcon.setHidden(false);
+                            this.alertLabel.setStringValue(NSBundle.localizedString("Certificate expired", "")
+                                    +": "+e.getMessage());
+                        }
+                    }
+                }
             }
         };
         synchronized(NSApplication.sharedApplication()) {
@@ -2352,6 +2455,7 @@ public class CDBrowserController extends CDWindowController
 
     public void disconnectButtonClicked(final Object sender) {
         if(this.isBusy()) {
+            // Interrupt any pending operation by forcefully closing the socket
             this.interrupt();
         }
         else {
@@ -2388,6 +2492,9 @@ public class CDBrowserController extends CDWindowController
         return this.session != null;
     }
 
+    /**
+     * @return This browser's session or null if not mounted
+     */
     public Session getSession() {
         return this.session;
     }
@@ -2522,8 +2629,14 @@ public class CDBrowserController extends CDWindowController
     protected final Object backgroundLock = new Object();
 
     /**
-     * @param runnable
+     * Will queue up the <code>BackgroundAction</code> to be run in a background thread. Will be executed
+     * as soon as no other previous <code>BackgroundAction</code> is pending.
+     * Before the <code>BackgroundAction</code> is run, the progress indicator of this browser
+     * is animated. While the <code>BackgroundAction</code> is executed, #isBusy will return true
+     * @param runnable The action to execute
      * @pre must always be invoked form the main interface thread
+     * @see ch.cyberduck.ui.cocoa.CDWindowController#background(ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl, Object)
+     * @see #isBusy()
      */
     public void background(final BackgroundAction runnable) {
         super.background(new BackgroundActionImpl(this) {
@@ -2554,6 +2667,10 @@ public class CDBrowserController extends CDWindowController
         }, backgroundLock);
     }
 
+    /**
+     * Accessor to the working directory
+     * @return The current working directory or null if no file system is mounted
+     */
     protected Path workdir() {
         return this.workdir;
     }
@@ -2573,6 +2690,7 @@ public class CDBrowserController extends CDWindowController
             this.workdir = null;
             this.invoke(new Runnable() {
                 public void run() {
+                    navigationPopup.setStringValue("");
                     pathPopupItems.clear();
                     pathPopupButton.removeAllItems();
                 }
@@ -2613,6 +2731,7 @@ public class CDBrowserController extends CDWindowController
         this.session.addPathToHistory(this.workdir);
         this.invoke(new Runnable() {
             public void run() {
+                navigationPopup.setStringValue(workdir().getAbsolute());
                 pathPopupItems.clear();
                 pathPopupButton.removeAllItems();
                 // Update the path selection menu above the browser
@@ -2745,7 +2864,7 @@ public class CDBrowserController extends CDWindowController
      */
     private File getRepresentedFile() {
         if(this.hasSession()) {
-            return new File(HistoryMenuDelegate.HISTORY_FOLDER, this.session.getHost().getNickname() + ".duck");
+            return new Local(HistoryMenuDelegate.HISTORY_FOLDER, this.session.getHost().getNickname() + ".duck");
         }
         return null;
     }
@@ -3249,6 +3368,7 @@ public class CDBrowserController extends CDWindowController
     private static final String TOOLBAR_BOOKMARKS = "Bookmarks";
     private static final String TOOLBAR_TRANSFERS = "Transfers";
     private static final String TOOLBAR_QUICK_CONNECT = "Quick Connect";
+    private static final String TOOLBAR_NAVIGATION = "Location";
     private static final String TOOLBAR_TOOLS = "Tools";
     private static final String TOOLBAR_REFRESH = "Refresh";
     private static final String TOOLBAR_ENCODING = "Encoding";
@@ -3347,6 +3467,14 @@ public class CDBrowserController extends CDWindowController
             item.setView(this.quickConnectPopup);
             item.setMinSize(this.quickConnectPopup.frame().size());
             item.setMaxSize(this.quickConnectPopup.frame().size());
+            return item;
+        }
+        if(itemIdentifier.equals(TOOLBAR_NAVIGATION)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_NAVIGATION, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_NAVIGATION, "Toolbar item"));
+            item.setView(this.navigationPopup);
+            item.setMinSize(this.navigationPopup.frame().size());
+            item.setMaxSize(this.navigationPopup.frame().size());
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_ENCODING)) {
@@ -3501,6 +3629,7 @@ public class CDBrowserController extends CDWindowController
                 TOOLBAR_BOOKMARKS,
                 TOOLBAR_TRANSFERS,
                 TOOLBAR_QUICK_CONNECT,
+//                TOOLBAR_NAVIGATION,
                 TOOLBAR_TOOLS,
                 TOOLBAR_REFRESH,
                 TOOLBAR_ENCODING,
@@ -3569,6 +3698,11 @@ public class CDBrowserController extends CDWindowController
         this.quickConnectPopupModel = null;
         this.quickConnectPopup.setTarget(null);
         this.quickConnectPopup = null;
+
+        this.navigationPopup.setDataSource(null);
+        this.navigationPopupModel = null;
+        this.navigationPopup.setTarget(null);
+        this.navigationPopup = null;
 
         super.invalidate();
     }

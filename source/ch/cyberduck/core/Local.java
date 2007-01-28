@@ -62,11 +62,15 @@ public class Local extends File implements IAttributes {
     }
 
     public Local(File parent, String name) {
-        super(NSPathUtilities.stringByExpandingTildeInPath(parent.getAbsolutePath()), name);
+        // See trac #933
+        super(NSPathUtilities.stringByExpandingTildeInPath(parent.getAbsolutePath()),
+                name.replace('/', ':'));
     }
 
     public Local(String parent, String name) {
-        super(NSPathUtilities.stringByExpandingTildeInPath(parent), name);
+        // See trac #933
+        super(NSPathUtilities.stringByExpandingTildeInPath(parent),
+                name.replace('/', ':'));
     }
 
     public Local(String path) {

@@ -30,9 +30,13 @@ import com.apple.cocoa.foundation.NSBundle;
 import org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory;
 import org.apache.log4j.Logger;
 
+import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.CertificateExpiredException;
 
 /**
  * @version $Id$
@@ -56,11 +60,9 @@ public class FTPSSession extends FTPSession {
 
     public boolean isSecure() {
         return this.isConnected();
-//        return trustManager.isServerCertificateTrusted();
     }
 
     /**
-     *
      * @return
      */
     public String getSecurityInformation() {
@@ -83,7 +85,7 @@ public class FTPSSession extends FTPSession {
     private X509TrustManager trustManager = new IgnoreX509TrustManager();
 
     protected void connect() throws IOException, FTPException, ConnectionCanceledException, LoginCanceledException {
-        synchronized (this) {
+        synchronized(this) {
             if(this.isConnected()) {
                 return;
             }
@@ -116,11 +118,14 @@ public class FTPSSession extends FTPSession {
                 this.message(NSBundle.localizedString("FTP connection opened", "Status", ""));
                 ((FTPSClient) this.FTP).auth();
                 this.login();
-                if (Preferences.instance().getBoolean("ftp.sendSystemCommand")) {
+                if(Preferences.instance().getBoolean("ftp.sendSystemCommand")) {
                     this.setIdentification(this.FTP.system());
                 }
                 this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.getIdentification());
                 this.fireConnectionDidOpenEvent();
+            }
+            catch(SSLHandshakeException e) {
+                this.close();
             }
             catch(NullPointerException e) {
                 // Because the connection could have been closed using #interrupt and set this.FTP to null; we

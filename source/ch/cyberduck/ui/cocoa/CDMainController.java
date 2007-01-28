@@ -305,6 +305,7 @@ public class CDMainController extends CDController {
     }
 
     /**
+     * Mounts the default bookmark if any
      * @param controller
      */
     private void openDefaultBookmark(CDBrowserController controller) {
@@ -351,6 +352,18 @@ public class CDMainController extends CDController {
     private static final File SESSIONS_FOLDER
             = new File(Preferences.instance().getProperty("application.support.path"), "Sessions");
 
+    /**
+     *
+     * @return The bookmark files of the last saved workspace
+     */
+    private File[] getSavedSessions() {
+        return SESSIONS_FOLDER.listFiles(new java.io.FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".duck");
+            }
+        });
+    }
+
     static {
         SESSIONS_FOLDER.mkdir();
     }
@@ -388,11 +401,7 @@ public class CDMainController extends CDController {
             Rendezvous.instance().init();
         }
         if(Preferences.instance().getBoolean("browser.serialize")) {
-            File[] files = SESSIONS_FOLDER.listFiles(new java.io.FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    return name.endsWith(".duck");
-                }
-            });
+            File[] files = this.getSavedSessions();
             for(int i = 0; i < files.length; i++) {
                 this.newDocument(true).mount(this.importBookmark(files[i]));
                 files[i].delete();
@@ -457,6 +466,8 @@ public class CDMainController extends CDController {
     public int applicationShouldTerminate(NSApplication app) {
         log.debug("applicationShouldTerminate");
         if(!donationBoxDisplayed && Preferences.instance().getBoolean("donate.reminder")) {
+            // The donation dialog has not been displayed yet and the users has never choosen
+            // not to show it again in the future
             final int uses = Preferences.instance().getInteger("uses");
             CDWindowController c = new CDWindowController() {
                 private NSButton neverShowDonationCheckbox;
@@ -494,6 +505,7 @@ public class CDMainController extends CDController {
                 }
             }
             donationBoxDisplayed = true;
+            // Cancel application termination. Dismissing the donation dialog will attempt to quit again.
             return NSApplication.TerminateCancel;
         }
         NSArray windows = app.windows();
@@ -503,12 +515,13 @@ public class CDMainController extends CDController {
             NSWindow window = (NSWindow) windows.objectAtIndex(count);
             CDBrowserController controller = CDBrowserController.controllerForWindow(window);
             if(null != controller) {
-                if(controller.isMounted()) {
-                    if(Preferences.instance().getBoolean("browser.serialize")) {
-                        Host bookmark = (Host) controller.getSession().getHost().clone();
+                if(Preferences.instance().getBoolean("browser.serialize")) {
+                    if(controller.isMounted()) {
+                        // The workspace should be saved. Serialize all open browser sessions
+                        final Host bookmark = (Host) controller.getSession().getHost().clone();
                         bookmark.setDefaultPath(controller.workdir().getAbsolute());
                         this.exportBookmark(bookmark,
-                                new File(SESSIONS_FOLDER, bookmark.getNickname() + ".duck"));
+                                new Local(SESSIONS_FOLDER, bookmark.getNickname() + ".duck"));
                     }
                 }
                 if(controller.isConnected()) {
@@ -523,7 +536,11 @@ public class CDMainController extends CDController {
                             return CDBrowserController.applicationShouldTerminate(app);
                         }
                         if(choice == CDSheetCallback.CANCEL_OPTION) {
-                            // Cancel
+                            // Cancel. Quit has been interrupted. Delete any saved sessions so far.
+                            File[] files = this.getSavedSessions();
+                            for(int i = 0; i < files.length; i++) {
+                                files[i].delete();
+                            }
                             return NSApplication.TerminateCancel;
                         }
                         if(choice == CDSheetCallback.DEFAULT_OPTION) {
@@ -533,6 +550,7 @@ public class CDMainController extends CDController {
                     }
                     else {
                         if(controller.isBusy()) {
+                            // Close the socket to interrupt the current operation in progress
                             controller.interrupt();
                         }
                         controller.unmount(true);
@@ -543,6 +561,10 @@ public class CDMainController extends CDController {
         return CDQueueController.applicationShouldTerminate(app);
     }
 
+    /**
+     * Quits the Rendezvous daemon and saves all preferences
+     * @param notification
+     */
     public void applicationWillTerminate(NSNotification notification) {
         log.debug("applicationWillTerminate");
         NSNotificationCenter.defaultCenter().removeObserver(this);
@@ -553,10 +575,19 @@ public class CDMainController extends CDController {
         Preferences.instance().save();
     }
 
+    /**
+     * Makes a unmounted browser window the key window and brings it to the front
+     * @return A reference to a browser window
+     */
     public CDBrowserController newDocument() {
         return this.newDocument(false);
     }
 
+    /**
+     * Makes a unmounted browser window the key window and brings it to the front
+     * @param force If true, open a new browser regardeless of any unused browser window
+     * @return A reference to a browser window
+     */
     public CDBrowserController newDocument(boolean force) {
         log.debug("newDocument");
         NSArray browsers = this.orderedBrowsers();
@@ -583,7 +614,7 @@ public class CDMainController extends CDController {
     // ----------------------------------------------------------
 
     public boolean applicationDelegateHandlesKey(NSApplication application, String key) {
-        return key.equals("orderedBrowsers");
+        return key.equals("orderedBrowsers") || key.equals("orderedTransfers");
     }
 
     public NSArray orderedTransfers() {
@@ -620,11 +651,19 @@ public class CDMainController extends CDController {
         return orderedDocs;
     }
 
+    /**
+     * We are not a Windows application. Long live the application wide menu bar.
+     * @param app
+     * @return
+     */
     public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
         return false;
     }
 
-
+    /**
+     *
+     * @return The available character sets available on this platform
+     */
     protected String[] availableCharsets() {
         List charsets = new ArrayList();
         for(Iterator iter = java.nio.charset.Charset.availableCharsets().values().iterator(); iter.hasNext();) {
@@ -649,7 +688,7 @@ public class CDMainController extends CDController {
                         new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
                         errorString);
         if(errorString[0] != null) {
-            log.error("Problem reading bookmark file: " + errorString[0]);
+            log.error("Problem reading bookmark file:" + errorString[0]);
             return null;
         }
         if(propertyListFromXMLData instanceof NSDictionary) {
@@ -665,7 +704,6 @@ public class CDMainController extends CDController {
      */
     public void exportBookmark(final Host bookmark, File file) {
         try {
-            file = new File(file.getParentFile(), file.getName().replace('/', ':'));
             log.info("Exporting bookmark " + bookmark + " to " + file);
             NSMutableData collection = new NSMutableData();
             String[] errorString = new String[]{null};
@@ -673,14 +711,14 @@ public class CDMainController extends CDController {
                     NSPropertyListSerialization.PropertyListXMLFormat,
                     errorString));
             if(errorString[0] != null) {
-                log.error("Problem writing bookmark file: " + errorString[0]);
+                log.error("Problem writing bookmark file:" + errorString[0]);
             }
             if(collection.writeToURL(file.toURL(), true)) {
                 log.info("Bookmarks sucessfully saved in :" + file.toString());
                 NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(file.getAbsolutePath());
             }
             else {
-                log.error("Error saving Bookmarks in :" + file.toString());
+                log.error("Error saving bookmark to:" + file.toString());
             }
         }
         catch(java.net.MalformedURLException e) {

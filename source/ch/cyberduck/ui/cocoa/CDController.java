@@ -46,16 +46,17 @@ public abstract class CDController extends NSObject {
     protected static NSMutableArray instances;
 
     /**
-     * Run the argument on the main thread
-     * @param thread
+     * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
+     * @param thread The <code>Runnable</code> to run
      */
     public void invoke(Runnable thread) {
         this.invoke(thread, 0f);
     }
 
     /**
-     *
-     * @param thread
+     * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
+     * @param thread The <code>Runnable</code> to run
+     * @param delay Number of seconds to delay the execution
      */
     protected void invoke(Runnable thread, float delay) {
         mainRunLoop.addTimerForMode(new NSTimer(delay, this,

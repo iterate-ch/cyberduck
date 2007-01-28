@@ -36,6 +36,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.CertificateExpiredException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +49,9 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 
     private CDWindowController parent;
 
+    /**
+     * All X509 certificates accepted by the user or found in the Keychain
+     */
     protected List acceptedCertificates;
 
     public CDX509TrustManagerController(CDWindowController windowController) {
@@ -81,30 +86,62 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
             final X509Certificate cert = x509Certificates[i];
             try {
                 if (!this.acceptedCertificates.contains(cert)) {
+                    // The certificate has not been verified before
                     super.checkServerTrusted(x509Certificates, authType);
                 }
             }
             catch (final CertificateException e) {
                 if (this.keychainKnowsAbout(x509Certificates[i])) {
+                    // We still accept the certificate if we find it in the Keychain
+                    // regardless of its trust settings. There is currently no way I am
+                    // aware of to read the trust settings for a certificate in the Keychain
                     acceptedCertificates.add(cert);
                     return;
                 }
                 CDSheetController c = new CDSheetController(parent) {
-                    private NSTextField alertField;
+                    private NSButton alertIcon; // IBOutlet
+
+                    public void setAlertIcon(NSButton alertIcon) {
+                        this.alertIcon = alertIcon;
+                        this.alertIcon.setHidden(true);
+                    }
+
+                    private NSTextField validityField; // IBOutlet
+                    
+                    public void setValidityField(NSTextField validityField) {
+                        this.validityField = validityField;
+                        try {
+                            cert.checkValidity();
+                        }
+                        catch(CertificateNotYetValidException e) {
+                            log.warn(e.getMessage());
+                            this.alertIcon.setHidden(false);
+                            this.validityField.setStringValue(NSBundle.localizedString("Certificate not yet valid", "")
+                                    +": "+e.getMessage());
+                        }
+                        catch(CertificateExpiredException e) {
+                            log.warn(e.getMessage());
+                            this.alertIcon.setHidden(false);
+                            this.validityField.setStringValue(NSBundle.localizedString("Certificate expired", "")
+                                    +": "+e.getMessage());
+                        }
+                    }
+
+                    private NSTextField alertField; // IBOutlet
 
                     public void setAlertField(NSTextField alertField) {
                         this.alertField = alertField;
                         this.alertField.setStringValue(e.getMessage());
                     }
 
-                    private NSTextView certificateField;
+                    private NSTextView certificateField; // IBOutlet
 
                     public void setCertificateField(NSTextView certificateField) {
                         this.certificateField = certificateField;
                         this.certificateField.setString(cert.toString());
                     }
 
-                    private NSButton alwaysButton;
+                    private NSButton alwaysButton; // IBOutlet
 
                     public void setAlwaysButton(NSButton alwaysButton) {
                         this.alwaysButton = alwaysButton;
@@ -120,7 +157,15 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
                         }
                     }
 
-
+                    private void saveToKeychain(X509Certificate cert) {
+                        try {
+                            Keychain.instance().addCertificateToKeychain(cert.getEncoded());
+                            log.info("Certificate added to Keychain");
+                        }
+                        catch (CertificateEncodingException e) {
+                            log.error(e.getMessage());
+                        }
+                    }
                 };
                 synchronized(NSApplication.sharedApplication()) {
                     if (!NSApplication.loadNibNamed("Certificate", c)) {
@@ -129,12 +174,16 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
                 }
                 c.beginSheet(true);
                 if (!acceptedCertificates.contains(cert)) {
+                    // The certificate has not been trusted
                     throw new CertificateException(NSBundle.localizedString("No trusted certificate found", "Status", ""));
                 }
             }
         }
     }
 
+    /**
+     * @return All accepted certificates
+     */
     public X509Certificate[] getAcceptedIssuers() {
         return (X509Certificate[])this.acceptedCertificates.toArray(
                 new X509Certificate[this.acceptedCertificates.size()]);
@@ -152,15 +201,5 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
         }
         log.info("Certificate not found in Keychain");
         return false;
-    }
-
-    private void saveToKeychain(X509Certificate cert) {
-        try {
-            Keychain.instance().addCertificateToKeychain(cert.getEncoded());
-            log.info("Certificate added to Keychain");
-        }
-        catch (CertificateEncodingException e) {
-            log.error(e.getMessage());
-        }
     }
 }

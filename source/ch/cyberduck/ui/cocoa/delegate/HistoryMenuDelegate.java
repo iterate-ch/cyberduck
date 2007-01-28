@@ -35,10 +35,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -55,21 +52,21 @@ public class HistoryMenuDelegate extends NSObject {
 
     private List cache = new ArrayList();
 
-    private File[] listFiles() {
-        return HISTORY_FOLDER.listFiles(new FilenameFilter() {
+    private List history() {
+        return Arrays.asList(HISTORY_FOLDER.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.endsWith(".duck");
             }
-        });
+        }));
     }
 
     /**
      * @see com.apple.cocoa.application.NSMenu.Delegate
      */
     public int numberOfItemsInMenu(NSMenu menu) {
-        File[] files = this.listFiles();
-        if(cache.size() != files.length) {
-            Arrays.sort(files, new Comparator() {
+        List history = this.history();
+        if(!(cache.size() == history.size())) {
+            Collections.sort(history, new Comparator() {
                 public int compare(Object o1, Object o2) {
                     File f1 = (File) o1;
                     File f2 = (File) o2;
@@ -83,12 +80,14 @@ public class HistoryMenuDelegate extends NSObject {
                 }
             });
             cache.clear();
-            for(int i = 0; i < files.length; i++) {
-                cache.add(((CDMainController) NSApplication.sharedApplication().delegate()).importBookmark(files[i]));
+            CDMainController m = (CDMainController) NSApplication.sharedApplication().delegate();
+            for(Iterator iter = history.iterator(); iter.hasNext(); ) {
+                // Add the imported bookmark to the cache
+                cache.add(m.importBookmark((File)iter.next()));
             }
         }
         if(cache.size() > 0) {
-            // The number of files plus a delimiter and the 'Clear' menu
+            // The number of history plus a delimiter and the 'Clear' menu
             return cache.size() + 2;
         }
         return 1;
@@ -108,24 +107,35 @@ public class HistoryMenuDelegate extends NSObject {
         }
         if(index < cache.size()) {
             Host h = (Host) cache.get(index);
-            sender.setTitle(h.getNickname());
-            sender.setRepresentedObject(h);
-            sender.setTarget(this);
-            sender.setEnabled(true);
-            sender.setImage(NSImage.imageNamed("bookmark16.tiff"));
-            sender.setAction(new NSSelector("historyMenuItemClicked", new Class[]{NSMenuItem.class}));
+            // This is a hack. We insert a new NSMenuItem as NSMenu has
+            // a bug caching old entries since we introduced the separator item below
+            menu.removeItemAtIndex(index);
+            NSMenuItem bookmark = new NSMenuItem();
+            bookmark.setTitle(h.getNickname());
+            bookmark.setRepresentedObject(h);
+            bookmark.setTarget(this);
+            bookmark.setEnabled(true);
+            bookmark.setImage(NSImage.imageNamed("bookmark16.tiff"));
+            bookmark.setAction(new NSSelector("historyMenuItemClicked", new Class[]{NSMenuItem.class}));
+            menu.insertItemAtIndex(bookmark, index);
             return !shouldCancel;
         }
         if(index == cache.size()) {
             menu.removeItemAtIndex(index);
-            menu.insertItemAtIndex(new NSMenuItem().separatorItem(), index);
+            // There is no way in this wonderful API to add a separator item
+            // without creating a new NSMenuItem first
+            NSMenuItem separator = new NSMenuItem().separatorItem();
+            menu.insertItemAtIndex(separator, index);
             return !shouldCancel;
         }
         if(index == cache.size()+1) {
-            sender.setTitle(NSBundle.localizedString("Clear Menu", ""));
-            sender.setTarget(this);
-            sender.setEnabled(true);
-            sender.setAction(new NSSelector("clearMenuItemClicked", new Class[]{NSMenuItem.class}));
+            menu.removeItemAtIndex(index);
+            NSMenuItem clear = new NSMenuItem();
+            clear.setTitle(NSBundle.localizedString("Clear Menu", ""));
+            clear.setTarget(this);
+            clear.setEnabled(true);
+            clear.setAction(new NSSelector("clearMenuItemClicked", new Class[]{NSMenuItem.class}));
+            menu.insertItemAtIndex(clear, index);
             return !shouldCancel;
         }
         return true;
@@ -138,9 +148,9 @@ public class HistoryMenuDelegate extends NSObject {
     }
 
     public void clearMenuItemClicked(NSMenuItem sender) {
-        File[] files = this.listFiles();
-        for(int i = 0; i < files.length; i++) {
-            files[i].delete();
+        // Delete all bookmark files
+        for(Iterator iter = this.history().iterator(); iter.hasNext(); ) {
+            ((File)iter.next()).delete();
         }
     }
 }

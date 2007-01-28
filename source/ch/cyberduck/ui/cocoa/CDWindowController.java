@@ -26,8 +26,8 @@ import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import java.util.Vector;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * @version $Id$
@@ -90,7 +90,9 @@ public abstract class CDWindowController extends CDController
 
     /**
      * Run the runnable in the background using a new thread. Will return
-     * immediatly but not run the runnable before the lock is acquired
+     * immediatly but not run the runnable before the lock is acquired.
+     * If the <code>BackgroundAction</code> has failed, <code>BackgroundAction#alert</code>
+     * is called. 
      * @param runnable The runnable to execute in a secondary Thread
      * @param lock The synchronisation object to use
      * @see java.lang.Thread
@@ -184,6 +186,9 @@ public abstract class CDWindowController extends CDController
         return this.window;
     }
 
+    /**
+     * @see com.apple.cocoa.application.NSWindow.Delegate
+     */
     public boolean windowShouldClose(NSWindow sender) {
         return true;
     }
@@ -207,6 +212,9 @@ public abstract class CDWindowController extends CDController
         super.invalidate();
     }
 
+    /**
+     * Position this controller's window relative to other open windows
+     */
     public void cascade() {
         NSArray windows = NSApplication.sharedApplication().windows();
         int count = windows.count();
@@ -218,6 +226,10 @@ public abstract class CDWindowController extends CDController
         }
     }
 
+    /**
+     *
+     * @return True if this window has a sheet attached
+     */
     public boolean hasSheet() {
         if(null == this.window) {
             return false;
@@ -226,8 +238,9 @@ public abstract class CDWindowController extends CDController
     }
 
     /**
-     *
-     * @param sheet
+     * Attach a sheet to this window
+     * @param sheet The sheet to be attached to this window
+     * @see ch.cyberduck.ui.cocoa.CDSheetController#beginSheet(boolean)
      */
     protected void alert(final NSWindow sheet) {
         this.alert(sheet, new CDSheetCallback() {
@@ -237,10 +250,23 @@ public abstract class CDWindowController extends CDController
         });
     }
 
+    /**
+     * Attach a sheet to this window
+     * @param sheet The sheet to be attached to this window
+     * @param callback
+     * @see ch.cyberduck.ui.cocoa.CDSheetController#beginSheet(boolean)
+     */
     protected void alert(final NSWindow sheet, final CDSheetCallback callback) {
         this.alert(sheet, callback, false);
     }
 
+    /**
+     * Attach a sheet to this window
+     * @param sheet The sheet to be attached to this window
+     * @param callback The callback to call after the sheet is dismissed
+     * @param blocking If true, do not return from this method until the sheet is dismissed
+     * @see ch.cyberduck.ui.cocoa.CDSheetController#beginSheet(boolean)
+     */
     protected void alert(final NSWindow sheet, final CDSheetCallback callback, final boolean blocking) {
         CDSheetController c = new CDSheetController(this, sheet) {
             public void callback(final int returncode) {

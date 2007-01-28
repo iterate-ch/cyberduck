@@ -327,14 +327,14 @@ public class CDBookmarkTableDataSource extends NSObject {
         NSMutableArray promisedDragNames = new NSMutableArray();
         for(int i = 0; i < promisedDragBookmarks.length; i++) {
             try {
-                // See trac #933
-                final String filename = promisedDragBookmarks[i].getNickname().replace('/', ':') + ".duck";
+                // utf-8 is just a wild guess
+                Local file = new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"),
+                        promisedDragBookmarks[i].getNickname() + ".duck");
                 ((CDMainController)NSApplication.sharedApplication().delegate()).exportBookmark(
                         promisedDragBookmarks[i],
-                        // utf-8 is just a wild guess
-                        new File(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"), filename));
+                        file);
                 // Adding the filename that is promised to be created at the dropDestination
-                promisedDragNames.addObject(filename);
+                promisedDragNames.addObject(file.getName());
             }
             catch(java.io.UnsupportedEncodingException e) {
                 log.error(e.getMessage());
