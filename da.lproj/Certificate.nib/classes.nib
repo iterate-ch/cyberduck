@@ -7,8 +7,10 @@
             LANGUAGE = Java; 
             OUTLETS = {
                 alertField = NSTextField; 
+                alertIcon = NSButton; 
                 alwaysButton = NSButton; 
                 certificateField = NSTextView; 
+                validityField = NSTextField; 
                 window = NSWindow; 
             }; 
             SUPERCLASS = NSObject; 
