@@ -34,6 +34,12 @@
 /* No comment provided by engineer. */
 "Cannot continue without a valid host key." = "Tidak dapat melanjutkan tanpa kunci host yang benar.";
 
+/* Certificate date mismatch  */
+"Certificate not yet valid" = "Certificate not yet valid";
+
+/* Certificate date mismatch  */
+"Certificate expired" = "Certificate expired";
+
 /* Toolbar item tooltip */
 "Character Encoding" = "Tipe Encoding Karakter";
 
