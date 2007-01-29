@@ -16,6 +16,7 @@
                 pkLabel = NSTextField; 
                 portField = NSTextField; 
                 protocolPopup = NSPopUpButton; 
+                timezonePopup = NSPopUpButton; 
                 transferPopup = NSPopUpButton; 
                 urlField = NSTextField; 
                 usernameField = NSTextField; 
