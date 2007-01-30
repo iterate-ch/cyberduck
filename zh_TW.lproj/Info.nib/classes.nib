@@ -22,6 +22,7 @@
                 ownerw = NSButton; 
                 ownerx = NSButton; 
                 pathField = NSTextField; 
+                permissionProgress = NSProgressIndicator; 
                 permissionsBox = NSBox; 
                 recursiveCheckbox = NSButton; 
                 sizeButton = NSButton; 
