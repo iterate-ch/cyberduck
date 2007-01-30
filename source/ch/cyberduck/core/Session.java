@@ -44,12 +44,14 @@ public abstract class Session extends NSObject {
     private static Logger log = Logger.getLogger(Session.class);
 
     public static final String SFTP = "sftp";
+    public static final String SCP = "scp";
     public static final String FTP = "ftp";
     public static final String FTP_TLS = "ftps";
 
     public static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer Protocol)", "");
     public static final String FTP_TLS_STRING = NSBundle.localizedString("FTP-SSL (FTP over TLS/SSL)", "");
     public static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
+    public static final String SCP_STRING = NSBundle.localizedString("SCP (Secure Copy)", "");
 
     /**
      * Default port for FTP

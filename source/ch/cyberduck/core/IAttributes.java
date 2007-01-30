@@ -23,13 +23,34 @@ package ch.cyberduck.core;
  */
 public interface IAttributes {
 
+    /**
+     * @return The length of the file
+     */
     public abstract double getSize();
 
+    /**
+     * @return The modification date of the file using UTC
+     */
     public abstract long getTimestamp();
 
+    /**
+     * @return The file permission mask
+     */
     public abstract Permission getPermission();
 
+    /**
+     * @return True if this path denotes a directory or is a symbolic link pointing to a directory
+     */
     public abstract boolean isDirectory();
 
+    /**
+     * @return True if this path denotes a regular file or is a symbolic link pointing to a regular file
+     */
     public abstract boolean isFile();
+
+    /**
+     * @return True if this path denotes a symbolic link.
+     * @warn Returns false for Mac OS Classic Alias
+     */
+    public abstract boolean isSymbolicLink();
 }

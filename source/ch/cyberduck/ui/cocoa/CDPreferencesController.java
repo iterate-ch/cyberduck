@@ -1600,4 +1600,17 @@ public class CDPreferencesController extends CDWindowController {
         boolean enabled = sender.state() == NSCell.OnState;
         Preferences.instance().setProperty("ftp.tls.datachannel.failOnError", !enabled);
     }
+
+    private NSPopUpButton sshTransfersCombobox; //IBOutlet
+
+    public void setSshTransfersCombobox(NSPopUpButton sshTransfersCombobox) {
+        this.sshTransfersCombobox = sshTransfersCombobox;
+        this.sshTransfersCombobox.setTarget(this);
+        this.sshTransfersCombobox.setAction(new NSSelector("sshTransfersComboboxClicked", new Class[]{NSPopUpButton.class}));
+        this.sshTransfersCombobox.selectItemWithTitle(Preferences.instance().getProperty("ssh.transfers").toUpperCase());
+    }
+
+    public void sshTransfersComboboxClicked(NSPopUpButton sender) {
+        Preferences.instance().setProperty("ssh.transfers", sender.titleOfSelectedItem().toLowerCase());
+    }
 }

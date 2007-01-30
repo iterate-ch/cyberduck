@@ -31,9 +31,9 @@ import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
+import java.text.Collator;
 import java.util.Comparator;
 import java.util.Locale;
-import java.text.Collator;
 
 /**
  * @version $Id$
@@ -45,12 +45,15 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
 
     protected void setSelectedColumn(NSTableColumn selectedColumn) {
         this.selectedColumn = selectedColumn;
-        //set default value
+        // Update the default value
         Preferences.instance().setProperty("browser.sort.column", this.selectedColumnIdentifier());
     }
 
+    /**
+     * @return The identifier of the column selected or the default sorting column if no selection
+     */
     protected String selectedColumnIdentifier() {
-        if (null == this.selectedColumn) {
+        if(null == this.selectedColumn) {
             //return default value
             return Preferences.instance().getProperty("browser.sort.column");
         }
@@ -58,13 +61,18 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         return (String) this.selectedColumn.identifier();
     }
 
-
+    /**
+     * @return A tooltip string containing the size and modification date of the path
+     */
     protected String tooltipForPath(Path p) {
         return p.getAbsolute() + "\n"
                 + Status.getSizeAsString(p.attributes.getSize()) + "\n"
-                + CDDateFormatter.getLongFormat(p.attributes.getTimestamp());
+                + CDDateFormatter.getLongFormat(p.attributes.getTimestamp(), p.getHost().getTimezone());
     }
 
+    /**
+     * @return By default no column is editable. To be overriden in subclasses
+     */
     public boolean isColumnEditable(NSTableColumn column) {
         return false;
     }
@@ -163,7 +171,7 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
     }
 
     public boolean isSortedAscending() {
-        if (null == this.sortAscending) {
+        if(null == this.sortAscending) {
             //return default value
             return Preferences.instance().getBoolean("browser.sort.ascending");
         }
@@ -173,23 +181,23 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
     public Comparator getSortingComparator() {
         final boolean ascending = this.isSortedAscending();
         String identifier = this.selectedColumnIdentifier();
-        if (identifier.equals(CDBrowserTableDataSource.ICON_COLUMN)
+        if(identifier.equals(CDBrowserTableDataSource.ICON_COLUMN)
                 || identifier.equals(CDBrowserTableDataSource.KIND_COLUMN)) {
             return new FileTypeComparator(ascending);
         }
-        else if (identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
+        else if(identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
             return new FilenameComparator(ascending);
         }
-        else if (identifier.equals(CDBrowserTableDataSource.SIZE_COLUMN)) {
+        else if(identifier.equals(CDBrowserTableDataSource.SIZE_COLUMN)) {
             return new SizeComparator(ascending);
         }
-        else if (identifier.equals(CDBrowserTableDataSource.MODIFIED_COLUMN)) {
+        else if(identifier.equals(CDBrowserTableDataSource.MODIFIED_COLUMN)) {
             return new TimestampComparator(ascending);
         }
-        else if (identifier.equals(CDBrowserTableDataSource.OWNER_COLUMN)) {
+        else if(identifier.equals(CDBrowserTableDataSource.OWNER_COLUMN)) {
             return new OwnerComparator(ascending);
         }
-        else if (identifier.equals(CDBrowserTableDataSource.PERMISSIONS_COLUMN)) {
+        else if(identifier.equals(CDBrowserTableDataSource.PERMISSIONS_COLUMN)) {
             return new PermissionsComparator(ascending);
         }
         log.error("Unknown column identifier:" + identifier);
@@ -206,14 +214,14 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         public int compare(Object o1, Object o2) {
             Path p1 = (Path) o1;
             Path p2 = (Path) o2;
-            if ((p1.attributes.isDirectory() && p2.attributes.isDirectory())
+            if((p1.attributes.isDirectory() && p2.attributes.isDirectory())
                     || p1.attributes.isFile() && p2.attributes.isFile()) {
                 if(ascending) {
                     return impl.compare(p1.kind(), p2.kind());
                 }
                 return -impl.compare(p1.kind(), p2.kind());
             }
-            if (p1.attributes.isFile()) {
+            if(p1.attributes.isFile()) {
                 return ascending ? 1 : -1;
             }
             return ascending ? -1 : 1;
@@ -234,7 +242,7 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         public int compare(Object o1, Object o2) {
             Path p1 = (Path) o1;
             Path p2 = (Path) o2;
-            if (ascending) {
+            if(ascending) {
                 return impl.compare(p1.getName(), p2.getName());
             }
             return -impl.compare(p1.getName(), p2.getName());
@@ -254,10 +262,10 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         public int compare(Object o1, Object o2) {
             double p1 = ((Path) o1).attributes.getSize();
             double p2 = ((Path) o2).attributes.getSize();
-            if (p1 > p2) {
+            if(p1 > p2) {
                 return ascending ? 1 : -1;
             }
-            else if (p1 < p2) {
+            else if(p1 < p2) {
                 return ascending ? -1 : 1;
             }
             return 0;
@@ -285,7 +293,7 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
             if(-1 == d2) {
                 return 0;
             }
-            if (ascending) {
+            if(ascending) {
                 return d1 > d2 ? 1 : -1;
             }
             return d1 > d2 ? -1 : 1;
@@ -305,7 +313,7 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         public int compare(Object o1, Object o2) {
             Path p1 = (Path) o1;
             Path p2 = (Path) o2;
-            if (ascending) {
+            if(ascending) {
                 return p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
             }
             return -p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
@@ -325,10 +333,10 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         public int compare(Object o1, Object o2) {
             int p1 = Integer.parseInt(((Path) o1).attributes.getPermission().getOctalCode());
             int p2 = Integer.parseInt(((Path) o2).attributes.getPermission().getOctalCode());
-            if (p1 > p2) {
+            if(p1 > p2) {
                 return ascending ? 1 : -1;
             }
-            else if (p1 < p2) {
+            else if(p1 < p2) {
                 return ascending ? -1 : 1;
             }
             return 0;

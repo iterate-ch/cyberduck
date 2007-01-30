@@ -346,8 +346,9 @@ public abstract class Preferences {
          */
         defaults.put("path.normalize", "true");
 
+        defaults.put("ssh.transfers", Session.SFTP); // Session.SCP
         /**
-         * Locatoin of the openssh known_hosts file
+         * Location of the openssh known_hosts file
          */
         defaults.put("ssh.knownhosts",  "~/.ssh/known_hosts");
 

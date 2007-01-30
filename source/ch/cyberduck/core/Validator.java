@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.*;
 import java.util.Collection;
 
 /**
@@ -26,26 +25,40 @@ import java.util.Collection;
  */
 public interface Validator {
 
+    /**
+     * Overwrite any prior existing file
+     */
     public static final String OVERWRITE = "overwrite";
+    /**
+     * Append to any exsisting file when writing
+     */
     public static final String RESUME = "resume";
+    /**
+     * Create a new file with a similar name
+     *
+     * @see ch.cyberduck.core.DownloadTransfer#adjustFilename(Path)
+     * @see ch.cyberduck.core.UploadTransfer#adjustFilename(Path)
+     */
     public static final String SIMILAR = "similar";
+    /**
+     * Prompt the user about existing files
+     */
     public static final String ASK = "ask";
 
     /**
+     * Adds the path for possible inclusion in the result set
      *
      * @param p
      */
-    public abstract  void prompt(Path p);
+    public abstract void prompt(Path p);
 
     /**
-     *
-     * @return
+     * @return The result set selected by the user
      */
-    public abstract  Collection result();
+    public abstract Collection result();
 
     /**
-     * 
-     * @return
+     * @return True if the validation has been canceled by the user
      */
-    public abstract  boolean isCanceled();
+    public abstract boolean isCanceled();
 }

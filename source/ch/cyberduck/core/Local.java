@@ -53,7 +53,7 @@ public class Local extends File implements IAttributes {
                     JNI_LOADED = true;
                     log.info("libLocal.dylib loaded");
                 }
-                catch (UnsatisfiedLinkError e) {
+                catch(UnsatisfiedLinkError e) {
                     log.error("Could not load the libLocal.dylib library:" + e.getMessage());
                 }
             }
@@ -96,11 +96,11 @@ public class Local extends File implements IAttributes {
 
     public boolean createNewFile() {
         try {
-            if (super.createNewFile()) {
+            if(super.createNewFile()) {
                 this.setProgress(0);
             }
         }
-        catch (IOException e) {
+        catch(IOException e) {
             log.error(e.getMessage());
         }
         return false;
@@ -129,7 +129,7 @@ public class Local extends File implements IAttributes {
     public String getExtension() {
         String name = this.getName();
         int index = name.lastIndexOf(".");
-        if (index != -1) {
+        if(index != -1) {
             return name.substring(index + 1, name.length());
         }
         return null;
@@ -137,21 +137,26 @@ public class Local extends File implements IAttributes {
 
     /**
      * Checks whether a given file is a symbolic link.
-     *
+     * <p/>
      * <p>It doesn't really test for symbolic links but whether the
      * canonical and absolute paths of the file are identical - this
      * may lead to false positives on some platforms.</p>
-
+     *
      * @return true if the file is a symbolic link.
      */
-    public boolean isSymbolicLink() throws IOException {
+    public boolean isSymbolicLink() {
         if(!this.exists()) {
             return false;
         }
         // For a link that actually points to something (either a file or a directory),
         // the absolute path is the path through the link, whereas the canonical path
         // is the path the link references.
-        return !this.getAbsolutePath().equals(this.getCanonicalPath());
+        try {
+            return !this.getAbsolutePath().equals(this.getCanonicalPath());
+        }
+        catch(IOException e) {
+            return false;
+        }
     }
 
     /**
@@ -170,7 +175,6 @@ public class Local extends File implements IAttributes {
     }
 
     /**
-     *
      * @param extension
      * @return
      */
@@ -181,12 +185,12 @@ public class Local extends File implements IAttributes {
     }
 
     private final static Object lock = new Object();
-        
+
     public void setProgress(int progress) {
-        if (Preferences.instance().getBoolean("queue.download.updateIcon")) {
+        if(Preferences.instance().getBoolean("queue.download.updateIcon")) {
             synchronized(lock) {
                 this.jni_load();
-                if (-1 == progress) {
+                if(-1 == progress) {
                     this.removeResourceFork();
                 }
                 else {
@@ -204,7 +208,7 @@ public class Local extends File implements IAttributes {
             forker.usePathname(new Pathname(this.getAbsoluteFile()));
             forker.makeForkOutputStream(true, false).close();
         }
-        catch (IOException e) {
+        catch(IOException e) {
             log.error("Failed to remove resource fork from file:" + e.getMessage());
         }
     }
@@ -229,10 +233,10 @@ public class Local extends File implements IAttributes {
                 //The file may have desappeared since
                 throw new IllegalArgumentException("No such file.");
             }
-            return new Permission(((Integer) posix).intValue());
+            return new Permission(((Number) posix).intValue());
         }
         catch(IllegalArgumentException e) {
-            log.error(this.getAbsolute()+":"+e.getMessage());
+            log.error(this.getAbsolute() + ":" + e.getMessage());
             return new Permission();
         }
     }
@@ -249,7 +253,7 @@ public class Local extends File implements IAttributes {
     }
 
     public double getSize() {
-        if (this.isDirectory()) {
+        if(this.isDirectory()) {
             return 0;
         }
         return super.length();
@@ -260,7 +264,7 @@ public class Local extends File implements IAttributes {
     }
 
     public boolean equals(Object other) {
-        if (other instanceof Local) {
+        if(other instanceof Local) {
             return this.getAbsolutePath().equalsIgnoreCase(((Local) other).getAbsolutePath());
         }
         return false;

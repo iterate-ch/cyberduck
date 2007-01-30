@@ -59,7 +59,7 @@ public class SFTPSession extends Session {
     }
 
     protected SftpSubsystemClient SFTP;
-    private SshClient SSH;
+    protected SshClient SSH;
 
     private SFTPSession(Host h) {
         super(h);
@@ -192,15 +192,7 @@ public class SFTPSession extends Session {
                 this.setIdentification(id);
                 this.login();
                 this.message(NSBundle.localizedString("Starting SFTP subsystem...", "Status", ""));
-                this.SFTP = SSH.openSftpChannel(new ChannelEventAdapter() {
-                    public void onDataReceived(Channel channel, byte[] data) {
-                        log(new String(data));
-                    }
-
-                    public void onDataSent(Channel channel, byte[] data) {
-                        log(new String(data));
-                    }
-                }, this.getEncoding());
+                this.SFTP = SSH.openSftpChannel(this.getEncoding());
                 if(!this.isConnected()) {
                     return;
                 }

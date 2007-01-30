@@ -24,6 +24,9 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import org.apache.log4j.Logger;
 
+import java.util.Calendar;
+import java.util.TimeZone;
+
 /**
  * Attributes of a remote directory or file.
  *
@@ -37,7 +40,7 @@ public class Attributes implements IAttributes {
      */
     private double size = -1;
     /**
-     *
+     * The file modification date
      */
     private long modified = -1;
     private String owner = null;
@@ -61,7 +64,10 @@ public class Attributes implements IAttributes {
         return copy;
     }
 
-    public boolean isUndefined() {
+    /**
+     * @return True if the modification date or size is unknown
+     */
+    public boolean isMissing() {
         return -1 == this.modified || -1 == this.size;
     }
 
@@ -93,14 +99,14 @@ public class Attributes implements IAttributes {
     }
 
     /**
-     * Set the modfication date iN UTC milliseconds
+     * @param c The file modification date in milliseconds
      */
-    public void setTimestamp(long m) {
-        this.modified = m;
+    public void setTimestamp(long c) {
+        this.modified = c;
     }
 
     /**
-     * @return in milliseconds
+     * @return The file modification date in milliseconds
      */
     public long getTimestamp() {
         return this.modified;
@@ -117,8 +123,9 @@ public class Attributes implements IAttributes {
      * @return
      */
     public Permission getPermission() {
-        if(null == this.permission)
+        if(null == this.permission) {
             return new Permission();
+        }
         return this.permission;
     }
 
@@ -173,15 +180,15 @@ public class Attributes implements IAttributes {
     }
 
     public boolean isDirectory() {
-        return (this.type & Path.DIRECTORY_TYPE) == (Path.DIRECTORY_TYPE);
+        return (this.type & Path.DIRECTORY_TYPE) == Path.DIRECTORY_TYPE;
     }
 
     public boolean isFile() {
-        return (this.type & Path.FILE_TYPE) == (Path.FILE_TYPE);
+        return (this.type & Path.FILE_TYPE) == Path.FILE_TYPE;
     }
 
     public boolean isSymbolicLink() {
-        return (this.type & Path.SYMBOLIC_LINK_TYPE) == (Path.SYMBOLIC_LINK_TYPE);
+        return (this.type & Path.SYMBOLIC_LINK_TYPE) == Path.SYMBOLIC_LINK_TYPE;
     }
 
     public void setOwner(String o) {

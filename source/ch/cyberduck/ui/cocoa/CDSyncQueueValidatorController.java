@@ -195,23 +195,6 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
         }
     }
 
-//    private NSPopUpButton timezonePopupButton;
-//
-//    public void setTimezonePopupButton(NSPopUpButton timezonePopupButton) {
-//        this.timezonePopupButton = timezonePopupButton;
-//        this.timezonePopupButton.setTarget(this);
-//        this.timezonePopupButton.setAction(new NSSelector("timezonePopupButtonClicked", new Class[]{NSPopUpButton.class}));
-//        this.timezonePopupButton.removeAllItems();
-//        this.timezonePopupButton.addItemsWithTitles(NSTimeZone.knownTimeZoneNames());
-//        this.timezonePopupButton.setTitle(NSTimeZone.defaultTimeZone().name());
-//    }
-//
-//    public void timezonePopupButtonClicked(NSPopUpButton sender) {
-//        ((SyncQueue)this.queue).setRemoteTimezone(TimeZone.getTimeZone(
-//                sender.titleOfSelectedItem()));
-//        this.fireDataChanged();
-//    }
-
     protected static final String TYPE_COLUMN = "TYPE";
     protected static final String NEW_COLUMN = "NEW";
 
