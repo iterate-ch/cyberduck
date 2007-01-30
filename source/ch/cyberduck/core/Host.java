@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
+import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -69,6 +70,11 @@ public class Host extends NSObject {
      */
     private String downloadFolder;
 
+    /**
+     * The timezone the server is living in
+     */
+    private TimeZone timezone;
+
     public static final String HOSTNAME = "Hostname";
     public static final String NICKNAME = "Nickname";
     public static final String PORT = "Port";
@@ -80,9 +86,9 @@ public class Host extends NSObject {
     public static final String FTPCONNECTMODE = "FTP Connect Mode";
     public static final String MAXCONNECTIONS = "Maximum Connections";
     public static final String DOWNLOADFOLDER = "Download Folder";
+    public static final String TIMEZONE = "Timezone";
 
     /**
-     *
      * @param dict
      */
     public Host(NSDictionary dict) {
@@ -132,10 +138,13 @@ public class Host extends NSObject {
         if(downloadObj != null) {
             this.setDownloadFolder((String) downloadObj);
         }
+        Object timezoneObj = dict.objectForKey(Host.TIMEZONE);
+        if(timezoneObj != null) {
+            this.setTimezone(TimeZone.getTimeZone((String) timezoneObj));
+        }
     }
 
     /**
-     *
      * @return
      */
     public NSDictionary getAsDictionary() {
@@ -168,12 +177,15 @@ public class Host extends NSObject {
         if(null != this.downloadFolder) {
             dict.setObjectForKey(this.downloadFolder, Host.DOWNLOADFOLDER);
         }
+        if(null != this.timezone) {
+            dict.setObjectForKey(this.timezone.getID(), Host.TIMEZONE);
+        }
         return dict;
     }
 
     public Object clone() {
         Host h = new Host(this.getAsDictionary());
-        h.setCredentials((Login)this.getCredentials().clone());
+        h.setCredentials((Login) this.getCredentials().clone());
         return h;
     }
 
@@ -442,10 +454,10 @@ public class Host extends NSObject {
     }
 
     /**
+     * @return
      * @see Session#FTP
      * @see Session#FTP_TLS
      * @see Session#SFTP
-     * @return
      */
     public String getProtocol() {
         return this.protocol;
@@ -453,6 +465,7 @@ public class Host extends NSObject {
 
     /**
      * The given name for this bookmark
+     *
      * @return The user-given name of this bookmark
      */
     public String getNickname() {
@@ -463,7 +476,6 @@ public class Host extends NSObject {
     }
 
     /**
-     *
      * @return The default given name of this bookmark
      */
     private String getDefaultNickname() {
@@ -472,6 +484,7 @@ public class Host extends NSObject {
 
     /**
      * Sets a user-given name for this bookmark
+     *
      * @param nickname
      */
     public void setNickname(String nickname) {
@@ -485,6 +498,7 @@ public class Host extends NSObject {
     /**
      * Sets the name for this host
      * Also reverts the nickname if no custom nickname is set
+     *
      * @param hostname
      */
     public void setHostname(String hostname) {
@@ -519,31 +533,30 @@ public class Host extends NSObject {
 
     /**
      * The character encoding to be used with this host
+     *
      * @param encoding
      */
     public void setEncoding(String encoding) {
-        log.debug("setEncoding:"+encoding);
+        log.debug("setEncoding:" + encoding);
         this.encoding = encoding;
     }
 
     /**
-     *
      * @return The character encoding to be used when connecting
-     * to this server or null if the default encoding should be used
+     *         to this server or null if the default encoding should be used
      */
     public String getEncoding() {
         return this.encoding;
     }
 
     public void setFTPConnectMode(FTPConnectMode connectMode) {
-        log.debug("setFTPConnectMode:"+connectMode);
+        log.debug("setFTPConnectMode:" + connectMode);
         this.connectMode = connectMode;
     }
 
     /**
-     *
-     * @return The connect mode to be used when connecting 
-     * to this server or null if the default connect mode should be used
+     * @return The connect mode to be used when connecting
+     *         to this server or null if the default connect mode should be used
      */
     public FTPConnectMode getFTPConnectMode() {
         return this.connectMode;
@@ -552,17 +565,17 @@ public class Host extends NSObject {
     /**
      * Set a custom number of concurrent sessions allowed for this host
      * If not set, connection.pool.max is used.
+     *
      * @param n null to use the default value or -1 if no limit
      */
     public void setMaxConnections(Integer n) {
-        log.debug("setMaxConnections:"+n);
+        log.debug("setMaxConnections:" + n);
         this.maxConnections = n;
     }
 
     /**
-     *
      * @return The number of concurrent sessions allowed. -1 if unlimited or null
-     * if the default should be used
+     *         if the default should be used
      */
     public Integer getMaxConnections() {
         return this.maxConnections;
@@ -570,15 +583,17 @@ public class Host extends NSObject {
 
     /**
      * Set a custom download folder instead of queue.download.folder
+     *
      * @param folder
      */
     public void setDownloadFolder(String folder) {
-        log.debug("setDownloadFolder:"+folder);
+        log.debug("setDownloadFolder:" + folder);
         this.downloadFolder = folder;
     }
 
     /**
      * The custom folder if any or the default download location
+     *
      * @return
      */
     public String getDownloadFolder() {
@@ -586,6 +601,37 @@ public class Host extends NSObject {
             return Preferences.instance().getProperty("queue.download.folder");
         }
         return this.downloadFolder;
+    }
+
+    /**
+     * Set a timezone for the remote server different from the local default timezone
+     * May be useful to display modification dates of remote files correctly using the local timezone
+     *
+     * @param timezone
+     */
+    public void setTimezone(TimeZone timezone) {
+        this.timezone = timezone;
+    }
+
+    /**
+     * @return The custom timezone or the default local timezone if not set
+     */
+    public TimeZone getTimezone() {
+        if(null == this.timezone) {
+            return TimeZone.getDefault();
+        }
+        return this.timezone;
+    }
+
+    /**
+     * @return Returns the offset of this time zone from UTC at the specified date. If Daylight
+     * Saving Time is in effect at the specified date, the offset value is adjusted
+     * with the amount of daylight saving. The amount of time in milliseconds
+     * to add to UTC to get local time.
+     * @param time
+     */
+    public int getTimezoneOffset(long time) {
+        return this.getTimezone().getOffset(time);
     }
 
     /**
@@ -658,10 +704,9 @@ public class Host extends NSObject {
     }
 
     /**
-     *
      * @return True if the host is reachable. Returns false if there is a
-     * network configuration error, no such host is known or the server does
-     * not listing at any such port
+     *         network configuration error, no such host is known or the server does
+     *         not listing at any such port
      * @see #getURL
      */
     public boolean isReachable() {
@@ -678,6 +723,7 @@ public class Host extends NSObject {
 
     /**
      * Opens the network configuration assistant for the URL denoting this host
+     *
      * @see #getURL
      */
     public void diagnose() {

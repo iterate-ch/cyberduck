@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -96,11 +97,11 @@ public class CDBookmarkController extends CDWindowController {
 
     public void encodingSelectionChanged(final NSPopUpButton sender) {
         log.debug("encodingSelectionChanged:" + sender);
-        if(sender.titleOfSelectedItem().equals(DEFAULT)) {
+        if(sender.selectedItem().title().equals(DEFAULT)) {
             this.host.setEncoding(null);
         }
         else {
-            this.host.setEncoding(sender.titleOfSelectedItem());
+            this.host.setEncoding(sender.selectedItem().title());
         }
     }
 
@@ -175,6 +176,45 @@ public class CDBookmarkController extends CDWindowController {
                 new NSSelector("usernameInputDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.usernameField);
+    }
+
+    private NSPopUpButton timezonePopup; //IBOutlet
+
+    public void setTimezonePopup(NSPopUpButton timezonePopup) {
+        this.timezonePopup = timezonePopup;
+        this.timezonePopup.setTarget(this);
+        final NSSelector action = new NSSelector("timezonePopupClicked", new Class[]{NSPopUpButton.class});
+        this.timezonePopup.setAction(action);
+        this.timezonePopup.removeAllItems();
+        this.timezonePopup.addItem(DEFAULT);
+        this.timezonePopup.menu().addItem(new NSMenuItem().separatorItem());
+        String[] ids = TimeZone.getAvailableIDs();
+        for(int i = 0; i < ids.length; i++) {
+            this.timezonePopup.addItem(TimeZone.getTimeZone(ids[i]).getDisplayName());
+        }
+        if(this.host.getTimezone().equals(TimeZone.getDefault())) {
+            this.timezonePopup.setTitle(DEFAULT);
+        }
+        else {
+            this.timezonePopup.setTitle(this.host.getTimezone().getDisplayName());
+        }
+    }
+
+    public void timezonePopupClicked(NSPopUpButton sender) {
+        String selected = sender.selectedItem().title();
+        if(selected.equals(DEFAULT)) {
+            this.host.setTimezone(null);
+        }
+        else {
+            String[] ids = TimeZone.getAvailableIDs();
+            TimeZone tz = null;
+            for(int i = 0; i < ids.length; i++) {
+                if((tz = TimeZone.getTimeZone(ids[i])).getDisplayName().equals(selected)) {
+                    this.host.setTimezone(tz);
+                    break;
+                }
+            }
+        }
     }
 
     private NSPopUpButton connectmodePopup; //IBOutlet
