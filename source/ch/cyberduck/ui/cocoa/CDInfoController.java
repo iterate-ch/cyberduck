@@ -272,7 +272,7 @@ public class CDInfoController extends CDWindowController {
             }
             else {
                 this.modifiedField.setAttributedStringValue(new NSAttributedString(
-                        CDDateFormatter.getLongFormat(file.attributes.getTimestamp()),
+                        CDDateFormatter.getLongFormat(file.attributes.getTimestamp(), file.getHost().getTimezone()),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
             this.ownerField.setStringValue(this.numberOfFiles() > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :

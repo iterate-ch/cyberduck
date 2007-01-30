@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 
 import com.apple.cocoa.application.NSApplication;
@@ -26,10 +25,10 @@ import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSImageView;
 import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSPathUtilities;
 import com.apple.cocoa.foundation.NSSize;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -64,8 +63,8 @@ public class CDDuplicateFileController extends CDFileController {
         else {
             proposal.append(selected.getName().substring(0, selected.getName().lastIndexOf(".")));
         }
-        proposal.append(" (" + CDDateFormatter.getShortFormat(
-                Calendar.getInstance().getTime().getTime()).replace('/', ':') + ")");
+        proposal.append(" (" + CDDateFormatter.getShortFormat(System.currentTimeMillis(),
+                selected.getHost().getTimezone()).replace('/', ':') + ")");
         if(null != selected.getExtension()) {
             proposal.append("."+selected.getExtension());
         }

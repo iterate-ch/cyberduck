@@ -22,6 +22,8 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
+import java.util.TimeZone;
+
 /**
  * @version $Id$
  */
@@ -43,32 +45,122 @@ public class CDDateFormatter {
             NSUserDefaults.ShortTimeDateFormatString), false);
 
     /**
-     * Modification date represented as NSUserDefaults.ShortTimeDateFormatString
-     * @return The cal as a short string or "Unknown" if there is a problem converting the time to a string
+     * Will be a negative value
      */
-    public static String getShortFormat(final long time) {
-        try {
-            return shortDateFormatter.stringForObjectValue(
-                    new NSGregorianDate((double) time / 1000, NSDate.DateFor1970));
-//                            (NSTimeZone)NSTimeZone.timeZoneWithName(timezone.getID(), false)));
+    private static double SECONDS_1970_TO_2001
+            = NSDate.DateFor1970.timeIntervalSinceReferenceDate();
+
+    /**
+     * @param milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT
+     * @return Seconds since the first instant of 1 January 2001, GMT
+     */
+    private static double convertReferenceFrom1970To2001(long milliseconds) {
+        // first convert to seconds instead of milliseconds
+        double secondsFrom1970 = NSDate.millisecondsToTimeInterval(milliseconds);
+        return secondsFrom1970 + SECONDS_1970_TO_2001;
+    }
+
+    /**
+     * Converts a java.util.TimeZone to a instance of NSTimeZone
+     *
+     * @param timezone
+     * @return The equivalant NSTimeZone
+     */
+    private static NSTimeZone convertTimeZone(TimeZone timezone) {
+        // Returns null if there is no match for the name.
+        // @warn Purpose of boolean attribute is not known.
+        // @warn No idea why this is returning java.lang.Object instead of NSTimeZone
+        Object o = NSTimeZone.timeZoneWithName(timezone.getID(), false);
+        if(null == o) {
+            log.error("Cannot map timezone " + timezone.getID() + " to NSTimeZone");
+            return NSTimeZone.defaultTimeZone();
         }
-        catch (NSFormatter.FormattingException e) {
+        return (NSTimeZone) o;
+    }
+
+    /**
+     * Modification date represented as NSUserDefaults.ShortTimeDateFormatString
+     *
+     * @param milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT
+     * @param timezone
+     * @return A short format string or "Unknown" if there is a problem converting the time to a string
+     */
+    public static String getShortFormat(final long milliseconds, final TimeZone timezone) {
+        return getShortFormat(convertReferenceFrom1970To2001(milliseconds), convertTimeZone(timezone));
+    }
+
+    /**
+     * Modification date represented as NSUserDefaults.ShortTimeDateFormatString
+     *
+     * @param milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT
+     * @param timezone
+     * @return A short format string or "Unknown" if there is a problem converting the time to a string
+     */
+    public static String getShortFormat(final long milliseconds, final NSTimeZone timezone) {
+        return getShortFormat(convertReferenceFrom1970To2001(milliseconds), timezone);
+    }
+
+    /**
+     * Modification date represented as NSUserDefaults.ShortTimeDateFormatString
+     *
+     * @param seconds Seconds since the first instant of 1 January 2001, GMT
+     * @return A short format string or "Unknown" if there is a problem converting the time to a string
+     * @see com.apple.cocoa.foundation.NSFormatter.FormattingException
+     */
+    public static String getShortFormat(final double seconds, final NSTimeZone timezone) {
+        try {
+            // If you do not specify a time zone for an object at initialization time,
+            // NSGregorianDate uses the default time zone for the locale.
+            return shortDateFormatter.stringForObjectValue(
+                    // Creates a new Gregorian date initialized to the absolute
+                    // reference date (the first instant of 1 January 2001, GMT) plus seconds,
+                    new NSGregorianDate(seconds, timezone));
+        }
+        catch(NSFormatter.FormattingException e) {
+            // If an NSAttributedString cannot be created for anObject,
+            // an NSFormatter.FormattingException is thrown.
             log.error(e.getMessage());
         }
         return NSBundle.localizedString("Unknown", "");
     }
 
     /**
-     * Modification date represented as NSUserDefaults.TimeDateFormatString
-     * @return the modification date of this file or null if there is a problem converting the time to a string
+     * Date represented as NSUserDefaults.TimeDateFormatString
+     *
+     * @param milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT
+     * @param timezone
+     * @return A long format string or "Unknown" if there is a problem converting the time to a string
      */
-    public static String getLongFormat(final long time) {
+    public static String getLongFormat(final long milliseconds, final TimeZone timezone) {
+        return getLongFormat(milliseconds, convertTimeZone(timezone));
+    }
+
+    /**
+     * Date represented as NSUserDefaults.TimeDateFormatString
+     *
+     * @param milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT
+     * @return A long format string or "Unknown" if there is a problem converting the time to a string
+     */
+    public static String getLongFormat(final long milliseconds, final NSTimeZone timezone) {
+        return getLongFormat(convertReferenceFrom1970To2001(milliseconds), timezone);
+    }
+
+    /**
+     * Date represented as NSUserDefaults.TimeDateFormatString
+     *
+     * @param seconds  Seconds since the first instant of 1 January 2001, GMT
+     * @param timezone
+     * @return A long format string or "Unknown" if there is a problem converting the time to a string
+     * @see com.apple.cocoa.foundation.NSFormatter.FormattingException
+     */
+    public static String getLongFormat(final double seconds, final NSTimeZone timezone) {
         try {
             return longDateFormatter.stringForObjectValue(
-                    new NSGregorianDate((double) time / 1000, NSDate.DateFor1970));
-//                            (NSTimeZone)NSTimeZone.timeZoneWithName(timezone.getID(), false)));
+                    // Creates a new Gregorian date initialized to the absolute
+                    // reference date (the first instant of 1 January 2001, GMT) plus seconds,
+                    new NSGregorianDate(seconds, timezone));
         }
-        catch (NSFormatter.FormattingException e) {
+        catch(NSFormatter.FormattingException e) {
             log.error(e.getMessage());
         }
         return NSBundle.localizedString("Unknown", "");

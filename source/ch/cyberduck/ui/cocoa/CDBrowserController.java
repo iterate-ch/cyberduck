@@ -1109,11 +1109,6 @@ public class CDBrowserController extends CDWindowController
                 c.setResizable(true);
             }
             c.setDataCell(new NSTextFieldCell());
-            c.dataCell().setFormatter(
-                    new NSGregorianDateFormatter(
-                            (String) NSUserDefaults.standardUserDefaults().objectForKey(NSUserDefaults.ShortTimeDateFormatString),
-                            true)
-            );
             table.addTableColumn(c);
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.OWNER_COLUMN));

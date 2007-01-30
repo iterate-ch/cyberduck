@@ -212,17 +212,18 @@ public abstract class CDValidatorController
                     Path p = (Path) workList.get(fileTableView.selectedRow());
                     if(p != null) {
                         if(p.getLocal().exists()) {
-                            localURLField.setAttributedStringValue(
-                                    new NSAttributedString(p.getLocal().getAbsolute(),
-                                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                            localURLField.setAttributedStringValue(new NSAttributedString(
+                                    p.getLocal().getAbsolute(),
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
                             localURLField.setHidden(false);
-                            localSizeField.setAttributedStringValue(
-                                    new NSAttributedString(Status.getSizeAsString(p.getLocal().attributes.getSize()),
-                                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                            localSizeField.setAttributedStringValue(new NSAttributedString(
+                                    Status.getSizeAsString(p.getLocal().attributes.getSize()),
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
                             localSizeField.setHidden(false);
-                            localModificationField.setAttributedStringValue(
-                                    new NSAttributedString(CDDateFormatter.getLongFormat(p.getLocal().attributes.getTimestamp()),
-                                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                            localModificationField.setAttributedStringValue(new NSAttributedString(
+                                    CDDateFormatter.getLongFormat(p.getLocal().attributes.getTimestamp(),
+                                            p.getHost().getTimezone()),
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
                             localModificationField.setHidden(false);
                         }
                         else {
@@ -231,17 +232,18 @@ public abstract class CDValidatorController
                             localModificationField.setHidden(true);
                         }
                         if(p.getRemote().exists()) {
-                            remoteURLField.setAttributedStringValue(
-                                    new NSAttributedString(p.getRemote().getHost().getURL() + p.getRemote().getAbsolute(),
-                                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                            remoteURLField.setAttributedStringValue(new NSAttributedString(
+                                    p.getRemote().getHost().getURL() + p.getRemote().getAbsolute(),
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
                             remoteURLField.setHidden(false);
-                            remoteSizeField.setAttributedStringValue(
-                                    new NSAttributedString(Status.getSizeAsString(p.getRemote().attributes.getSize()),
-                                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                            remoteSizeField.setAttributedStringValue(new NSAttributedString(
+                                    Status.getSizeAsString(p.getRemote().attributes.getSize()),
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
                             remoteSizeField.setHidden(false);
-                            remoteModificationField.setAttributedStringValue(
-                                    new NSAttributedString(CDDateFormatter.getLongFormat(p.getRemote().attributes.getTimestamp()),
-                                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                            remoteModificationField.setAttributedStringValue(new NSAttributedString(
+                                    CDDateFormatter.getLongFormat(p.getRemote().attributes.getTimestamp(),
+                                            p.getHost().getTimezone()),
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
                             remoteModificationField.setHidden(false);
                         }
                         else {
@@ -269,8 +271,7 @@ public abstract class CDValidatorController
         this.fileTableView.setAllowsColumnSelection(false);
         this.fileTableView.setAllowsColumnReordering(true);
         this.fileTableView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
-        if(Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines"))
-        {
+        if(Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
             this.fileTableView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
         }
         else if(Preferences.instance().getBoolean("browser.verticalLines")) {
