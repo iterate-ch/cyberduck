@@ -754,16 +754,14 @@ public class ConnectionProtocol extends AsyncService {
     }
 
     private Channel getChannel(long channelId) throws IOException {
-        synchronized (activeChannels) {
-            Long l = new Long(channelId);
+        Long l = new Long(channelId);
 
-            if (!activeChannels.containsKey(l)) {
-                throw new IOException("Non existent channel " + l.toString()
-                        + " requested");
-            }
-
-            return (Channel) activeChannels.get(l);
+        if (!activeChannels.containsKey(l)) {
+            throw new IOException("Non existent channel " + l.toString()
+                    + " requested");
         }
+
+        return (Channel) activeChannels.get(l);
     }
 
     private void onMsgChannelClose(SshMsgChannelClose msg) throws IOException {
@@ -884,6 +882,7 @@ public class ConnectionProtocol extends AsyncService {
         if (channel == null) {
             log.warn("Remote computer tried to make a request for "
                     + "a non existence channel!");
+            return;
         }
 
         channel.onChannelRequest(msg.getRequestType(), msg.getWantReply(),
