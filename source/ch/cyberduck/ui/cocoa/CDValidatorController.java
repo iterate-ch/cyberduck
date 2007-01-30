@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Status;
@@ -28,7 +29,6 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -43,7 +43,7 @@ public abstract class CDValidatorController
     /**
      * The list of files displayed in the table to be included or excluded by the user
      */
-    protected List workList = new ArrayList();
+    protected List workList = new AttributedList();
 
     public Collection result() {
         if(this.hasPrompt()) {
