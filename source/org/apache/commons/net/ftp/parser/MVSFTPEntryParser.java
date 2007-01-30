@@ -16,10 +16,10 @@ package org.apache.commons.net.ftp.parser;
 * limitations under the License.
 */
 
-import java.util.Calendar;
-
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+
+import java.util.Calendar;
 
 /**
  * Example MVS directory listing
@@ -42,15 +42,15 @@ public class MVSFTPEntryParser extends RegexFTPFileEntryParserImpl {
 
     private static final String REGEX =
             "([A-Z0-9]{6})\\s+"                 // Volume
-            + "([0-9]{4})\\s+"                   // Unit
-            + "([0-9]{4})/([0-9]{2})/([0-9]{2})\\s+"   // year/month/day
-            + "([0-9]{1,3})\\s+"                 // Extends
-            + "([0-9]{1,3})\\s+"                 // Used
-            + RECFM + "\\s+"                       // Record Format
-            + "([0-9]{1,4})\\s+"                 // Logical Record Length
-            + "([0-9]{1,5})\\s+"                 // Block Size
-            + DSORG + "\\s+"                       // Dataset Organisation
-            + "((([A-Z0-9#.]{1,8})[.]?){2,6})+"; // Dataset Name
+                    + "([0-9]{4})\\s+"                   // Unit
+                    + "([0-9]{4})/([0-9]{2})/([0-9]{2})\\s+"   // year/month/day
+                    + "([0-9]{1,3})\\s+"                 // Extends
+                    + "([0-9]{1,3})\\s+"                 // Used
+                    + RECFM + "\\s+"                       // Record Format
+                    + "([0-9]{1,4})\\s+"                 // Logical Record Length
+                    + "([0-9]{1,5})\\s+"                 // Block Size
+                    + DSORG + "\\s+"                       // Dataset Organisation
+                    + "((([A-Z0-9#.]{1,8})[.]?){2,6})+"; // Dataset Name
 
     public MVSFTPEntryParser() {
         super(REGEX);
@@ -59,7 +59,7 @@ public class MVSFTPEntryParser extends RegexFTPFileEntryParserImpl {
     public Path parseFTPEntry(Path parent, String entry) {
         Path f = PathFactory.createPath(parent.getSession());
 
-        if (matches(entry)) {
+        if(matches(entry)) {
             //String volume  = group(1);
             //String unit    = group(2);
             String year = group(3);
@@ -73,13 +73,14 @@ public class MVSFTPEntryParser extends RegexFTPFileEntryParserImpl {
             String dsorg = group(11);
             String dsname = group(12);
 
-            if (dsname == null || dsname.equals("")) {
+            if(dsname == null || dsname.equals("")) {
                 return null;
             }
 
             f.attributes.setSize(0);
 
             Calendar cal = Calendar.getInstance();
+            cal.clear();
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -91,7 +92,7 @@ public class MVSFTPEntryParser extends RegexFTPFileEntryParserImpl {
 
                 f.attributes.setTimestamp(cal.getTime().getTime());
             }
-            catch (NumberFormatException e) {
+            catch(NumberFormatException e) {
                 // do nothing, date will be uninitialized
             }
 

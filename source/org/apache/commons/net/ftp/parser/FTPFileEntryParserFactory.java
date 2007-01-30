@@ -16,22 +16,22 @@ package org.apache.commons.net.ftp.parser;
  * limitations under the License.
  */
 
-import java.io.IOException;
-
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+
+import java.io.IOException;
 
 /**
  * The interface describes a factory for creating FTPFileEntryParsers
  */
 public interface FTPFileEntryParserFactory {
-	/**
-	 * Implementation should be a method that decodes the
-	 * supplied key and creates an object implementing the
-	 * interface FTPFileEntryParser.
-	 *
-	 * @param key A string that somehow identifies an
-	 *            FTPFileEntryParser to be created.
-	 * @return the FTPFileEntryParser created.
-	 */
-	public FTPFileEntryParser createFileEntryParser(String key) throws IOException;
+    /**
+     * Implementation should be a method that decodes the
+     * supplied key and creates an object implementing the
+     * interface FTPFileEntryParser.
+     *
+     * @param key A string that somehow identifies an
+     *            FTPFileEntryParser to be created.
+     * @return the FTPFileEntryParser created.
+     */
+    public FTPFileEntryParser createFileEntryParser(String key) throws IOException;
 }

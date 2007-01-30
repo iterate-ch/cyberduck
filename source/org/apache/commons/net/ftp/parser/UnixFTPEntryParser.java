@@ -16,12 +16,12 @@ package org.apache.commons.net.ftp.parser;
  * limitations under the License.
  */
 
-import java.util.Calendar;
-import java.io.IOException;
-
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
+
+import java.io.IOException;
+import java.util.Calendar;
 
 /**
  * Implementation FTPFileEntryParser and FTPFileListParser for standard
@@ -63,22 +63,22 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
      */
     private static final String REGEX =
             "([bcdlfmpSs-])"
-                    +"(((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-])))\\s+"
-                    +"(\\d+)?\\s*"
-                    +"(\\S+)\\s+"
-                    +"(?:(\\S+)\\s+)?"
-                    +"(\\d+)?\\s+"
-                    +MONTHS+"\\s+"
-                    +"((?:[0-9])|(?:[0-2][0-9])|(?:3[0-1]))\\s+"
-                    +"((\\d{4})|((?:[01]?\\d)|(?:2[0123])):([012345]\\d))\\s"
-                    +"(\\s*\\S+)(\\s*.*)";
+                    + "(((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-])))\\s+"
+                    + "(\\d+)?\\s*"
+                    + "(\\S+)\\s+"
+                    + "(?:(\\S+)\\s+)?"
+                    + "(\\d+)?\\s+"
+                    + MONTHS + "\\s+"
+                    + "((?:[0-9])|(?:[0-2][0-9])|(?:3[0-1]))\\s+"
+                    + "((\\d{4})|((?:[01]?\\d)|(?:2[0123])):([012345]\\d))\\s"
+                    + "(\\s*\\S+)(\\s*.*)";
 
     /**
      * The sole constructor for a UnixFTPEntryParser object.
      *
      * @throws IllegalArgumentException Thrown if the regular expression is unparseable.  Should
-     * not be seen under normal conditions.  It it is seen, this is a sign that
-     * <code>REGEX</code> is  not a valid regular expression.
+     *                                  not be seen under normal conditions.  It it is seen, this is a sign that
+     *                                  <code>REGEX</code> is  not a valid regular expression.
      */
     public UnixFTPEntryParser() {
         super(REGEX);
@@ -123,14 +123,14 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
             String endtoken = group(26);
 
             switch(typeStr.charAt(0)) {
-                case 'd':
+                case'd':
                     type = Path.DIRECTORY_TYPE;
                     break;
-                case 'l':
+                case'l':
                     type = Path.SYMBOLIC_LINK_TYPE;
                     break;
-                case 'b':
-                case 'c':
+                case'b':
+                case'c':
                     isDevice = true;
                     // break; - fall through
                 default:
@@ -156,7 +156,7 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
 
             try {
                 int pos = MONTHS.indexOf(mo);
-                int month = pos/4;
+                int month = pos / 4;
 
                 if(null != yr) {
                     // it's a year
@@ -177,7 +177,7 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
                 cal.set(Calendar.MONTH, month);
 
                 cal.set(Calendar.DATE, Integer.parseInt(da));
-                f.attributes.setTimestamp(cal.getTime().getTime());
+                f.attributes.setTimestamp(cal.getTimeInMillis());
             }
             catch(NumberFormatException e) {
                 // do nothing, date will be uninitialized
@@ -197,7 +197,7 @@ public class UnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
                     }
                     else {
                         f.setPath(parent.getAbsolute(), name.substring(0, end));
-                        f.setSymbolicLinkPath(parent.getAbsolute(), name.substring(end+4));
+                        f.setSymbolicLinkPath(parent.getAbsolute(), name.substring(end + 4));
                     }
                 }
                 else {

@@ -64,7 +64,7 @@ public abstract class RegexFTPFileEntryParserImpl extends FTPFileEntryParserImpl
             pattern = new Perl5Compiler().compile(regex);
         }
         catch(MalformedPatternException e) {
-            throw new IllegalArgumentException("Unparseable regex supplied:  "+regex);
+            throw new IllegalArgumentException("Unparseable regex supplied:  " + regex);
         }
     }
 
@@ -123,7 +123,7 @@ public abstract class RegexFTPFileEntryParserImpl extends FTPFileEntryParserImpl
         StringBuffer b = new StringBuffer();
         for(int i = 1; i <= this.result.groups(); i++) {
             b.append(i).append(") ").append(this.result.group(i))
-                .append(System.getProperty("line.separator"));
+                    .append(System.getProperty("line.separator"));
         }
         return b.toString();
 
