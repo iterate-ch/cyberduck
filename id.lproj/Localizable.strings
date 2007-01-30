@@ -294,6 +294,9 @@
 "SFTP (SSH Secure File Transfer)" = "SFTP (SSH Secure File Transfer)";
 
 /* No comment provided by engineer. */
+"SCP (Secure Copy)" = "SCP (Secure Copy)";
+
+/* No comment provided by engineer. */
 "Show" = "Tampilkan";
 
 /* Toolbar item tooltip */
