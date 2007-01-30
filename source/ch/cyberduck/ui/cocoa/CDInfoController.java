@@ -131,6 +131,15 @@ public class CDInfoController extends CDWindowController {
         this.sizeProgress.setUsesThreadedAnimation(true);
     }
 
+    private NSProgressIndicator permissionProgress; // IBOutlet
+
+    public void setPermissionProgress(final NSProgressIndicator permissionProgress) {
+        this.permissionProgress = permissionProgress;
+        this.permissionProgress.setDisplayedWhenStopped(false);
+        this.permissionProgress.setStyle(NSProgressIndicator.ProgressIndicatorSpinningStyle);
+        this.permissionProgress.setUsesThreadedAnimation(true);
+    }
+
     public NSButton ownerr; //IBOutlet
     public NSButton ownerw; //IBOutlet
     public NSButton ownerx; //IBOutlet
@@ -409,6 +418,8 @@ public class CDInfoController extends CDWindowController {
 
     public void applyButtonClicked(final Object sender) {
         log.debug("applyButtonClicked");
+        this.applyButton.setEnabled(false);
+        this.permissionProgress.startAnimation(null);
         final Permission permission = this.getPermissionFromSelection();
         // send the changes to the remote host
         controller.background(new BackgroundAction() {
@@ -424,6 +435,8 @@ public class CDInfoController extends CDWindowController {
 
             public void cleanup() {
                 controller.reloadData(true);
+                applyButton.setEnabled(true);
+                permissionProgress.stopAnimation(null);
             }
         });
     }
