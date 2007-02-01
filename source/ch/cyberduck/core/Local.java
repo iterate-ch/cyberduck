@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -94,6 +95,10 @@ public class Local extends File implements IAttributes {
 //        uk.watch(listener);
 //    }
 
+    /**
+     * Creates a new file and sets its resource fork to feature a custom progress icon
+     * @return
+     */
     public boolean createNewFile() {
         try {
             if(super.createNewFile()) {
@@ -106,6 +111,24 @@ public class Local extends File implements IAttributes {
         return false;
     }
 
+//    /**
+//     * @param time     Modification date measured in milliseconds since 00:00:00 <code>timezone</code>, January 1, 1970
+//     * @param timezone
+//     * @return <code>true</code> if and only if the operation succeeded;
+//     *         <code>false</code> otherwise
+//     */
+//    public boolean setLastModified(final long time, final TimeZone timezone) {
+//        super.setLastModified(time);
+//        int offset = TimeZone.getDefault().getRawOffset() /*amount of raw offset time in milliseconds to add to UTC*/
+//                - timezone.getOffset(time); /*amount of time in milliseconds to add to UTC to get local time*/
+//        return super.setLastModified(time + offset);
+//    }
+
+    /**
+     * @param recursively If true, descend into directories and delete recursively
+     * @return  <code>true</code> if and only if the file or directory is
+     *          successfully deleted; <code>false</code> otherwise
+     */
     public boolean delete(boolean recursively) {
         if(!recursively) {
             return this.delete();
@@ -113,6 +136,11 @@ public class Local extends File implements IAttributes {
         return this.deleteImpl(this);
     }
 
+    /**
+     * Recursively deletes this file
+     * @return  <code>true</code> if and only if the file or directory is
+     *          successfully deleted; <code>false</code> otherwise
+     */
     private boolean deleteImpl(Local f) {
         if(f.attributes.isDirectory()) {
             File[] files = f.listFiles();

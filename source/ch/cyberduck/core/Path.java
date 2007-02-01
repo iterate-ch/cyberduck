@@ -30,6 +30,9 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.TimeZone;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * @version $Id$
@@ -58,6 +61,46 @@ public abstract class Path extends NSObject {
     public static final int SYMBOLIC_LINK_TYPE = 4;
 
     public static final String DELIMITER = "/";
+
+    /**
+     * A compiled representation of a regular expression.
+     */
+    private Pattern TEXT_FILETYPE_PATTERN = null;
+
+    public Pattern getTextFiletypePattern() {
+        final String regex = Preferences.instance().getProperty("filetype.text.regex");
+        if(null == TEXT_FILETYPE_PATTERN ||
+                !TEXT_FILETYPE_PATTERN.pattern().equals(regex))
+        {
+            try {
+                TEXT_FILETYPE_PATTERN = Pattern.compile(regex);
+            }
+            catch(PatternSyntaxException e) {
+                log.warn(e.getMessage());
+            }
+        }
+        return TEXT_FILETYPE_PATTERN;
+    }
+
+    /**
+     * A compiled representation of a regular expression.
+     */
+    private Pattern BINARY_FILETYPE_PATTERN;
+
+    public Pattern getBinaryFiletypePattern() {
+        final String regex = Preferences.instance().getProperty("filetype.binary.regex");
+        if(null == BINARY_FILETYPE_PATTERN ||
+                !BINARY_FILETYPE_PATTERN.pattern().equals(regex))
+        {
+            try {
+                BINARY_FILETYPE_PATTERN = Pattern.compile(regex);
+            }
+            catch(PatternSyntaxException e) {
+                log.warn(e.getMessage());
+            }
+        }
+        return BINARY_FILETYPE_PATTERN;
+    }
 
     public Path(NSDictionary dict) {
         Object pathObj = dict.objectForKey("Remote");
@@ -93,7 +136,7 @@ public abstract class Path extends NSObject {
     }
 
     protected Path() {
-        super();
+        ;
     }
 
     /**
@@ -129,7 +172,7 @@ public abstract class Path extends NSObject {
 
     /**
      * @param parent The parent directory
-     * @param file The local file corresponding with this remote path
+     * @param file   The local file corresponding with this remote path
      */
     public void setPath(String parent, Local file) {
         this.setPath(parent, file.getName());
@@ -155,6 +198,7 @@ public abstract class Path extends NSObject {
 
     /**
      * Normalizes the name before updatings this path. Resets its parent directory
+     *
      * @param name Must be an absolute pathname
      */
     public void setPath(String name) {
@@ -176,8 +220,8 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     * @see Attributes#isSymbolicLink
      * @return The target of the symbolic link if this path denotes a symbolic link
+     * @see Attributes#isSymbolicLink
      */
     public String getSymbolicLinkPath() {
         if(this.attributes.isSymbolicLink()) {
@@ -188,8 +232,9 @@ public abstract class Path extends NSObject {
 
     /**
      * Read the timestamp and size of this path from the remote server
-     * @see Attributes#setSize(double)
-     * @see Attributes#setTimestamp(long)
+     *
+     * @see ch.cyberduck.core.Attributes#setSize(double)
+     * @see ch.cyberduck.core.Attributes#setTimestamp(long)
      */
     public abstract void readAttributes();
 
@@ -238,7 +283,7 @@ public abstract class Path extends NSObject {
                 normalized = DELIMITER + normalized;
             }
             while(!normalized.endsWith(DELIMITER)) {
-                normalized = normalized + DELIMITER;
+                normalized += DELIMITER;
             }
             // Resolve occurrences of "/./" in the normalized path
             while(true) {
@@ -270,8 +315,7 @@ public abstract class Path extends NSObject {
                 normalized = normalized.substring(0, index) +
                         normalized.substring(index + 1);
             }
-            while((normalized.endsWith(DELIMITER) && (normalized.length()
-                    > 1))) {
+            while(normalized.endsWith(DELIMITER) && normalized.length() > 1) {
                 //Strip any redundant delimiter at the end of the path
                 normalized = normalized.substring(0, normalized.length() - 1);
             }
@@ -298,9 +342,10 @@ public abstract class Path extends NSObject {
 
     /**
      * Request a unsorted and unfiltered file listing from the server.
+     *
+     * @return The children of this path or an empty list if it is not accessible for some reason
      * @see NullComparator
      * @see NullPathFilter
-     * @return The children of this path or an empty list if it is not accessible for some reason
      */
     public AttributedList list() {
         return this.list(new NullComparator(), new NullPathFilter());
@@ -325,8 +370,8 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     * @see Cache
      * @return True if this path denotes a directory and its file listing is cached for this session
+     * @see Cache
      */
     public boolean isCached() {
         return this.getSession().cache().containsKey(this);
@@ -424,6 +469,7 @@ public abstract class Path extends NSObject {
 
     /**
      * Set the local equivalent of this path
+     *
      * @param file Send <code>null</code> to reset the local path to the default value
      */
     public void setLocal(Local file) {
@@ -605,13 +651,13 @@ public abstract class Path extends NSObject {
         this.getSession().message(NSBundle.localizedString("Downloading", "Status", "") + " " + this.getName());
         int chunksize = Preferences.instance().getInteger("connection.buffer");
         byte[] chunk = new byte[chunksize];
-        int amount = 0;
         long current = this.status.getCurrent();
-        boolean complete = false;
         final boolean updateProgress = this.attributes.getSize() > Status.MEGA * 5;
         int step = 0;
         this.getLocal().setProgress(step);
         // read from socket (bytes) & write to file in chunks
+        int amount = 0;
+        boolean complete = false;
         while(!complete && !status.isCanceled()) {
             amount = in.read(chunk, 0, chunksize);
             if(-1 == amount) {
@@ -622,7 +668,7 @@ public abstract class Path extends NSObject {
                 this.status.setCurrent(current += amount);
                 if(updateProgress) {
                     int fraction = (int) (status.getCurrent() / this.attributes.getSize() * 10);
-                    if((fraction > step)) {
+                    if(fraction > step) {
                         this.getLocal().setProgress(++step);
                     }
                 }
@@ -646,8 +692,8 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     * Returns the hashcode of #getAbsolute()
-     * @return
+     * @return The hashcode of #getAbsolute()
+     * @see #getAbsolute()
      */
     public int hashCode() {
         return this.getAbsolute().hashCode();
@@ -668,9 +714,77 @@ public abstract class Path extends NSObject {
         return false;
     }
 
-    private Calendar getCalendar(final long timestamp, final int precision) {
-        Calendar c = Calendar.getInstance(); //default timezone
-        c.setTimeInMillis(timestamp); //UTC milliseconds!
+    /**
+     * @return > 0 if the remote path exists and is newer than
+     *         the local file; < 0 if the local path exists and is newer than
+     *         the remote file; 0 if both files don't exist or have an equal timestamp
+     */
+    public int compare() {
+        if(this.getRemote().exists() && this.getLocal().exists()) {
+            int size = this.compareSize(); //fist make sure both files are larger than 0 bytes
+            if(0 == size) {
+                //both files have a valid size; compare using timestamp
+                return this.compareTimestamp();
+            }
+            return size;
+        }
+        if(this.getRemote().exists()) {
+            // only the remote file exists
+            return 1;
+        }
+        if(this.getLocal().exists()) {
+            // only the local file exists
+            return -1;
+        }
+        // both files don't exist yet
+        return 0;
+    }
+
+    /**
+     * @return
+     */
+    private int compareSize() {
+        if(this.getRemote().attributes.getSize() == 0 && this.getLocal().attributes.getSize() == 0) {
+            return 0;
+        }
+        if(this.getRemote().attributes.getSize() == 0) {
+            return -1;
+        }
+        if(this.getLocal().attributes.getSize() == 0) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     *
+     * @return
+     */
+    private int compareTimestamp() {
+        Calendar remote = this.asCalendar(
+                this.getRemote().attributes.getTimestamp()
+//                        -this.getHost().getTimezone().getRawOffset()
+                ,
+                this.getHost().getTimezone(),
+                Calendar.MINUTE);
+        Calendar local = this.asCalendar(this.getLocal().attributes.getTimestamp(),
+                TimeZone.getDefault(),
+                Calendar.MINUTE);
+        if(local.before(remote)) {
+            //remote file is newer
+            return 1;
+        }
+        if(local.after(remote)) {
+            //local file is newer
+            return -1;
+        }
+        //same timestamp
+        return 0;
+    }
+
+    private Calendar asCalendar(final long timestamp, final TimeZone timezone, final int precision) {
+        Calendar c = Calendar.getInstance(timezone);
+        c.setTimeInMillis(timestamp);
         if(precision == Calendar.MILLISECOND) {
             return c;
         }
@@ -691,61 +805,6 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     * @return > 0 if the remote path exists and is newer than
-     *         the local file; < 0 if the local path exists and is newer than
-     *         the remote file; 0 if both files don't exist or have an equal timestamp
-     */
-    public int compare() {
-        if(this.getRemote().exists() && this.getLocal().exists()) {
-            int size = this.compareSize(); //fist make sure both files are larger than 0 bytes
-            if(0 == size) {
-                Calendar remote = this.getCalendar(
-                        this.getRemote().attributes.getTimestamp(),
-                        Calendar.MINUTE);
-                Calendar local = this.getCalendar(
-                        this.getLocal().getTimestamp(),
-                        Calendar.MINUTE);
-                //both files have a valid size; compare using timestamp
-                if(local.before(remote)) {
-                    //remote file is newser
-                    return 1;
-                }
-                if(local.after(remote)) {
-                    return -1;
-                }
-                //same timestamp
-                return 0;
-            }
-            return size;
-        }
-        if(this.getRemote().exists()) {
-            // only the remote file exists
-            return 1;
-        }
-        if(this.getLocal().exists()) {
-            // only the local file exists
-            return -1;
-        }
-        return 0; //both files don't exist yet
-    }
-
-    /**
-     * @return
-     */
-    private int compareSize() {
-        if(this.getRemote().attributes.getSize() == 0 && this.getLocal().attributes.getSize() == 0) {
-            return 0;
-        }
-        if(this.getRemote().attributes.getSize() == 0) {
-            return -1;
-        }
-        if(this.getLocal().attributes.getSize() == 0) {
-            return 1;
-        }
-        return 0;
-    }
-
-    /**
      * @return The absolute path name
      */
     public String toString() {
@@ -758,14 +817,14 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     * @see Session#error(Path, String, Exception)
+     * @see Session#error(Path,String,Exception)
      */
     protected void error(String message, IOException e) {
         this.getSession().error(this, message, e);
     }
 
     /**
-     * @see Session#error(Path, String, Exception, String)
+     * @see Session#error(Path,String,Exception,String)
      */
     protected void error(String message, IOException e, String title) {
         this.getSession().error(this, message, e, title);

@@ -2079,19 +2079,7 @@ public class CDBrowserController extends CDWindowController
      */
     private boolean isEditable(final Path selected) {
         if(selected.attributes.isFile()) {
-            if(null == selected.getExtension()) {
-                return true;
-            }
-            if(selected.getExtension() != null) {
-                StringTokenizer binaryTypes = new StringTokenizer(
-                        Preferences.instance().getProperty("editor.disabledFiles"), " ");
-                while(binaryTypes.hasMoreTokens()) {
-                    if(binaryTypes.nextToken().equalsIgnoreCase(selected.getExtension())) {
-                        return false;
-                    }
-                }
-            }
-            return true;
+            return !selected.getBinaryFiletypePattern().matcher(selected.getName()).matches();
         }
         return false;
     }

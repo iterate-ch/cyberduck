@@ -40,7 +40,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.StringTokenizer;
 
 /**
  * @version $Id$
@@ -57,16 +56,16 @@ public class FTPPath extends Path {
     }
 
     private static class Factory extends PathFactory {
-        protected Path create(Session session, String parent, String name) {
-            return new FTPPath((FTPSession) session, parent, name);
-        }
-
         protected Path create(Session session) {
             return new FTPPath((FTPSession) session);
         }
 
         protected Path create(Session session, String path) {
             return new FTPPath((FTPSession) session, path);
+        }
+
+        protected Path create(Session session, String parent, String name) {
+            return new FTPPath((FTPSession) session, parent, name);
         }
 
         protected Path create(Session session, String path, Local file) {
@@ -80,11 +79,10 @@ public class FTPPath extends Path {
 
     private final FTPSession session;
 
-    /**
-     * @param s      The connection to work with for regular file operations
-     * @param parent The parent directory relative to this file
-     * @param name   The filename of this path
-     */
+    protected FTPPath(FTPSession s) {
+        this.session = s;
+    }
+
     protected FTPPath(FTPSession s, String parent, String name) {
         super(parent, name);
         this.session = s;
@@ -95,16 +93,6 @@ public class FTPPath extends Path {
         this.session = s;
     }
 
-    protected FTPPath(FTPSession s) {
-        super();
-        this.session = s;
-    }
-
-    /**
-     * @param s      The connection to work with for regular file operations
-     * @param parent The parent directory relative to this file
-     * @param file   The corresponding local file to the remote path
-     */
     protected FTPPath(FTPSession s, String parent, Local file) {
         super(parent, file);
         this.session = s;
@@ -221,28 +209,31 @@ public class FTPPath extends Path {
 
     public void readAttributes() {
         synchronized(session) {
-            if(this.attributes.isFile() && this.attributes.isUndefined()) {
+            if(this.attributes.isFile() && this.attributes.isMissing()) {
                 try {
                     session.check();
                     session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
                     try {
-                        this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute()).getTime());
+                        this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute(),
+                                this.getHost().getTimezone()));
                     }
                     catch(FTPException e) {
-                        log.warn("Cannot read timestamp:"+e.getMessage());
+                        log.warn("Cannot read timestamp:" + e.getMessage());
                     }
                     if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
-                        if(this.isASCIIType()) {
+                        if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
                             session.FTP.setTransferType(FTPTransferType.ASCII);
                         }
                         else {
                             session.FTP.setTransferType(FTPTransferType.BINARY);
                         }
                     }
-                    else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.BINARY.toString())) {
+                    else if(Preferences.instance().getProperty("ftp.transfermode").equals(
+                            FTPTransferType.BINARY.toString())) {
                         session.FTP.setTransferType(FTPTransferType.BINARY);
                     }
-                    else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.ASCII.toString())) {
+                    else if(Preferences.instance().getProperty("ftp.transfermode").equals(
+                            FTPTransferType.ASCII.toString())) {
                         session.FTP.setTransferType(FTPTransferType.ASCII);
                     }
                     else {
@@ -253,7 +244,7 @@ public class FTPPath extends Path {
                         this.attributes.setSize(session.FTP.size(this.getAbsolute()));
                     }
                     catch(FTPException e) {
-                        log.warn("Cannot read size:"+e.getMessage());
+                        log.warn("Cannot read size:" + e.getMessage());
                     }
                 }
                 catch(FTPException e) {
@@ -434,17 +425,19 @@ public class FTPPath extends Path {
                     session.check();
                     this.getParent().cwdir();
                     if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
-                        if(this.isASCIIType()) {
+                        if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
                             this.downloadASCII();
                         }
                         else {
                             this.downloadBinary();
                         }
                     }
-                    else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.BINARY.toString())) {
+                    else
+                    if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.BINARY.toString())) {
                         this.downloadBinary();
                     }
-                    else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.ASCII.toString())) {
+                    else
+                    if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.ASCII.toString())) {
                         this.downloadASCII();
                     }
                     else {
@@ -473,9 +466,13 @@ public class FTPPath extends Path {
                     }
                 }
                 if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
+                    log.info("Updating timestamp");
+                    if(-1 == this.attributes.getTimestamp()) {
+                        this.readAttributes();
+                    }
                     if(this.attributes.getTimestamp() != -1) {
-                        log.info("Updating timestamp");
-                        this.getLocal().setLastModified(this.attributes.getTimestamp());
+                        long timestamp = this.attributes.getTimestamp();
+                        this.getLocal().setLastModified(timestamp/*, this.getHost().getTimezone()*/);
                     }
                 }
             }
@@ -490,18 +487,6 @@ public class FTPPath extends Path {
                 session.fireActivityStoppedEvent();
             }
         }
-    }
-
-    private boolean isASCIIType() {
-        if(this.getExtension() != null) {
-            StringTokenizer asciiTypes = new StringTokenizer(Preferences.instance().getProperty("ftp.transfermode.ascii.extensions"), " ");
-            while(asciiTypes.hasMoreTokens()) {
-                if(asciiTypes.nextToken().equalsIgnoreCase(this.getExtension())) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     private void downloadBinary() throws IOException {
@@ -633,17 +618,19 @@ public class FTPPath extends Path {
                     this.getParent().cwdir();
                     this.attributes.setSize(this.getLocal().getSize());
                     if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
-                        if(this.isASCIIType()) {
+                        if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
                             this.uploadASCII();
                         }
                         else {
                             this.uploadBinary();
                         }
                     }
-                    else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.BINARY.toString())) {
+                    else if(Preferences.instance().getProperty("ftp.transfermode").equals(
+                            FTPTransferType.BINARY.toString())) {
                         this.uploadBinary();
                     }
-                    else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.ASCII.toString())) {
+                    else if(Preferences.instance().getProperty("ftp.transfermode").equals(
+                            FTPTransferType.ASCII.toString())) {
                         this.uploadASCII();
                     }
                     else {
@@ -655,6 +642,7 @@ public class FTPPath extends Path {
                 }
                 if(session.isConnected()) {
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                        log.info("Updating permissions");
                         if(this.attributes.getPermission().isUndefined()) {
                             if(this.attributes.isFile()
                                     && Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
@@ -675,20 +663,31 @@ public class FTPPath extends Path {
                         }
                     }
                     if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                        log.info("Updating timestamp");
                         try {
-                            session.FTP.setmodtime(this.getLocal().getTimestamp(), this.getName());
+                            long timestamp = this.getLocal().getTimestamp();
+                            session.FTP.utime(timestamp, this.getName(), this.getHost().getTimezone());
+//                            if(session.isUTIMESupported()) {
+//                                session.FTP.utime(timestamp, this.getName(), this.getHost().getTimezone());
+//                            }
+//                            else if(session.isMDTMSetSupported()) {
+//                                session.FTP.setmodtime(timestamp, this.getName(), this.getHost().getTimezone());
+//                            }
+//                            else {
+//                                this.setTimestampFallback();
+//                            }
                         }
                         catch(FTPException e) {
-                            try {
-                                if(Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
-                                    if(!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
-                                        this.getLocal().setLastModified(session.FTP.modtime(this.getName()).getTime());
+                            if(Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
+                                if(!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
+                                    if(-1 == this.attributes.getTimestamp()) {
+                                        this.readAttributes();
+                                    }
+                                    if(this.attributes.getTimestamp() != -1) {
+                                        this.getLocal().setLastModified(this.attributes.getTimestamp()/*,
+                                                this.getHost().getTimezone()*/);
                                     }
                                 }
-                            }
-                            catch(FTPException ignore) {
-                                //MDTM not supported; ignore
-                                log.warn(ignore.getMessage());
                             }
                         }
                     }

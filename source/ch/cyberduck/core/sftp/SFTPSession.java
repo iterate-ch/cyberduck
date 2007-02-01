@@ -23,8 +23,6 @@ import com.sshtools.j2ssh.SshEventAdapter;
 import com.sshtools.j2ssh.SshException;
 import com.sshtools.j2ssh.authentication.*;
 import com.sshtools.j2ssh.configuration.SshConnectionProperties;
-import com.sshtools.j2ssh.connection.Channel;
-import com.sshtools.j2ssh.connection.ChannelEventAdapter;
 import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
 import com.sshtools.j2ssh.transport.HostKeyVerification;
 import com.sshtools.j2ssh.transport.IgnoreHostKeyVerification;

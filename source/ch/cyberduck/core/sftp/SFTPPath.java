@@ -54,16 +54,16 @@ public class SFTPPath extends Path {
     }
 
     private static class Factory extends PathFactory {
-        protected Path create(Session session, String parent, String name) {
-            return new SFTPPath((SFTPSession) session, parent, name);
+        protected Path create(Session session) {
+            return new SFTPPath((SFTPSession) session);
         }
 
         protected Path create(Session session, String path) {
             return new SFTPPath((SFTPSession) session, path);
         }
 
-        protected Path create(Session session) {
-            return new SFTPPath((SFTPSession) session);
+        protected Path create(Session session, String parent, String name) {
+            return new SFTPPath((SFTPSession) session, parent, name);
         }
 
         protected Path create(Session session, String path, Local file) {
@@ -78,10 +78,14 @@ public class SFTPPath extends Path {
     private final SFTPSession session;
 
     private SFTPPath(SFTPSession s) {
-        super();
         this.session = s;
     }
 
+    /**
+     * @param s      The connection to work with for regular file operations
+     * @param parent The parent directory relative to this file
+     * @param name   The filename of this path
+     */
     private SFTPPath(SFTPSession s, String parent, String name) {
         super(parent, name);
         this.session = s;
@@ -234,7 +238,7 @@ public class SFTPPath extends Path {
 
     public void readAttributes() {
         synchronized(session) {
-            if(this.attributes.isFile() && this.attributes.isUndefined()) {
+            if(this.attributes.isFile() && this.attributes.isMissing()) {
                 try {
                     session.check();
                     session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
@@ -437,6 +441,7 @@ public class SFTPPath extends Path {
                             && this.attributes.isFile()) {
                         perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
                     }
+                    
                     else {
                         perm = this.attributes.getPermission();
                     }
@@ -449,9 +454,13 @@ public class SFTPPath extends Path {
                     }
                 }
                 if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
+                    log.info("Updating timestamp");
+                    if(-1 == this.attributes.getTimestamp()) {
+                        this.readAttributes();
+                    }
                     if(this.attributes.getTimestamp() != -1) {
-                        log.info("Updating timestamp");
-                        this.getLocal().setLastModified(this.attributes.getTimestamp());
+                        long timestamp = this.attributes.getTimestamp();
+                        this.getLocal().setLastModified(timestamp/*, this.getHost().getTimezone()*/);
                     }
                 }
             }
@@ -488,10 +497,10 @@ public class SFTPPath extends Path {
             SftpFileOutputStream out = null;
             try {
                 this.status.reset();
-                SftpFile f = null;
                 if(this.attributes.isDirectory()) {
                     this.mkdir();
                 }
+                SftpFile f = null;
                 if(this.attributes.isFile()) {
                     session.check();
                     if(this.status.isResume()) {
@@ -506,9 +515,10 @@ public class SFTPPath extends Path {
                                         SftpSubsystemClient.OPEN_TRUNCATE); //File open flag, forces an existing file with the same name to be truncated to zero length when creating a file by specifying OPEN_CREATE.
                     }
                 }
-                // We do set the permissions here as otehrwise we might have an empty mask for
+                // We do set the permissions here as otherwise we might have an empty mask for
                 // interrupted file transfers
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                    log.info("Updating permissions");
                     if(this.attributes.getPermission().isUndefined()) {
                         if(this.attributes.isFile()
                                 && Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
@@ -552,13 +562,15 @@ public class SFTPPath extends Path {
                     this.upload(out, in);
                 }
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                    log.info("Updating timestamp");
                     FileAttributes attrs = new FileAttributes();
-                    if(this.attributes.isDirectory()) {
+                    if(null == f) {
                         f = session.SFTP.openFile(this.getAbsolute(),
                                 SftpSubsystemClient.OPEN_READ);
                     }
+                    long timestamp = this.getLocal().getTimestamp();
                     attrs.setTimes(f.getAttributes().getAccessedTime(),
-                            new UnsignedInteger32(this.getLocal().getTimestamp() / 1000));
+                            new UnsignedInteger32(timestamp / 1000L));
                     try {
                         session.SFTP.setAttributes(this.getAbsolute(), attrs);
                     }

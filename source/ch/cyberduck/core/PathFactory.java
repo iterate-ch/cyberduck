@@ -41,26 +41,45 @@ public abstract class PathFactory {
         factories.put(protocol, f);
     }
 
+    /**
+     * Creates a path with no properties
+     * @see ch.cyberduck.core.Path#setPath(String)
+     */
     public static Path createPath(Session session) {
         loadClass(session.getHost().getProtocol());
         return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session);
     }
 
+    /**
+     * @param parent The parent directory
+     * @param name The pathname relative the the parent directory
+     */
     public static Path createPath(Session session, String parent, String name) {
         loadClass(session.getHost().getProtocol());
         return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, parent, name);
     }
 
+    /**
+     * @param path The absolute pathname
+     */
     public static Path createPath(Session session, String path) {
         loadClass(session.getHost().getProtocol());
         return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, path);
     }
 
-    public static Path createPath(Session session, String path, Local file) {
+    /**
+     * @param parent The parent directory
+     * @param file The local counterpart of this path
+     */
+    public static Path createPath(Session session, String parent, Local file) {
         loadClass(session.getHost().getProtocol());
-        return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, path, file);
+        return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, parent, file);
     }
 
+    /**
+     * @param dict Creates a path reading its properties from the dictionary
+     * @see ch.cyberduck.core.Path#getAsDictionary()
+     */
     public static Path createPath(Session session, NSDictionary dict) {
         loadClass(session.getHost().getProtocol());
         return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, dict);

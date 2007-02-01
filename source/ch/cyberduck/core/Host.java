@@ -38,8 +38,22 @@ import java.util.TimeZone;
 public class Host extends NSObject {
     private static Logger log = Logger.getLogger(Host.class);
 
+    /**
+     * The protocol identifier. Must be one of <code>sftp</code>, <code>ftp</code> or <code>ftps</code>
+     * @see ch.cyberduck.core.Session#FTP
+     * @see ch.cyberduck.core.Session#FTP_TLS
+     * @see ch.cyberduck.core.Session#SFTP
+     */
     private String protocol;
+    /**
+     * The port number to connect to
+     * @see ch.cyberduck.core.Session#FTP_PORT
+     * @see ch.cyberduck.core.Session#SSH_PORT
+     */
     private int port;
+    /**
+     * The fully qualified hostname
+     */
     private String hostname;
     /**
      * The given name by the user for the bookmark
@@ -621,17 +635,6 @@ public class Host extends NSObject {
             return TimeZone.getDefault();
         }
         return this.timezone;
-    }
-
-    /**
-     * @return Returns the offset of this time zone from UTC at the specified date. If Daylight
-     * Saving Time is in effect at the specified date, the offset value is adjusted
-     * with the amount of daylight saving. The amount of time in milliseconds
-     * to add to UTC to get local time.
-     * @param time
-     */
-    public int getTimezoneOffset(long time) {
-        return this.getTimezone().getOffset(time);
     }
 
     /**
