@@ -68,9 +68,8 @@ public class DownloadTransfer extends Transfer {
                         break;
                     }
                     Path child = (Path) i.next();
-                    child.setLocal(new Local(p.getLocal(), child.getName()));
-                    if(!this.isSkipped(new StringTokenizer(
-                            Preferences.instance().getProperty("queue.download.skip")), child.getName())) {
+                    if(!DOWNLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
+                        child.setLocal(new Local(p.getLocal(), child.getName()));
                         this.getChilds(childs, child);
                     }
                 }
@@ -81,7 +80,7 @@ public class DownloadTransfer extends Transfer {
 
     protected void reset() {
         this.size = 0;
-        for(Iterator iter = this.jobs.iterator(); iter.hasNext();) {
+        for(Iterator iter = this.queue.iterator(); iter.hasNext();) {
             this.size += ((Path) iter.next()).attributes.getSize();
         }
     }

@@ -79,8 +79,7 @@ public class SyncTransfer extends Transfer {
                     for(int i = 0; i < files.length; i++) {
                         Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(),
                                 new Local(files[i].getAbsolutePath()));
-                        if(!this.isSkipped(new StringTokenizer(
-                                Preferences.instance().getProperty("queue.download.skip")), child.getName())) {
+                        if(!UPLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
                             this.addLocalChilds(childs, child);
                         }
                     }
@@ -103,8 +102,7 @@ public class SyncTransfer extends Transfer {
                         }
                         Path child = (Path) i.next();
                         child.setLocal(new Local(p.getLocal(), child.getName()));
-                        if(!this.isSkipped(new StringTokenizer(
-                                Preferences.instance().getProperty("queue.upload.skip")), child.getName())) {
+                        if(!DOWNLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
                             this.addRemoteChilds(childs, child);
                         }
                     }
@@ -121,8 +119,8 @@ public class SyncTransfer extends Transfer {
 
     protected void reset() {
         this.size = 0;
-        for(Iterator iter = this.jobs.iterator(); iter.hasNext();) {
-            Path p = ((Path) iter.next());
+        for(Iterator iter = this.queue.iterator(); iter.hasNext();) {
+            Path p = (Path) iter.next();
             if(p.compare() > 0) {
                 this.size += p.getRemote().attributes.getSize();
             }

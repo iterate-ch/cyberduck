@@ -85,8 +85,7 @@ public class UploadTransfer extends Transfer {
                         if(files[i].canRead()) {
                             Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(),
                                     new Local(files[i].getAbsolutePath()));
-                            if(!this.isSkipped(new StringTokenizer(
-                                    Preferences.instance().getProperty("queue.upload.skip")), child.getName())) {
+                            if(!UPLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
                                 this.getChilds(childs, child);
                             }
                         }
@@ -99,7 +98,7 @@ public class UploadTransfer extends Transfer {
 
     protected void reset() {
         this.size = 0;
-        for(java.util.Iterator iter = this.jobs.iterator(); iter.hasNext();) {
+        for(java.util.Iterator iter = this.queue.iterator(); iter.hasNext();) {
             this.size += ((Path) iter.next()).getLocal().getSize();
         }
     }

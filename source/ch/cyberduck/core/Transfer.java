@@ -32,6 +32,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * @version $Id$
@@ -40,29 +42,46 @@ public abstract class Transfer extends NSObject {
     protected static Logger log = Logger.getLogger(Transfer.class);
 
     /**
-     *
+     * Files and folders initially selected to be part of this transfer
      */
     private List roots = new ArrayList();
 
     /**
-     * Contains all references to #Path
+     * All validated files to be transferred
      */
-    protected List jobs;
+    protected List queue;
 
     /**
-     *
+     * The sum of the file length of all files in the <code>queue</code>
      */
     protected double size = -1;
 
     /**
-     *
+     * The number bytes already transferred of the ifles in the <code>queue</code>
      */
     private double current = 0;
 
     /**
-     * The transfer has been canceled and not continue any forther processing
+     * The transfer has been canceled and should
+     * not continue any forther processing
      */
     private boolean canceled;
+
+    /**
+     * @return True if in <code>canceled</code> state
+     */
+    public boolean isCanceled() {
+        return this.canceled;
+    }
+
+    private boolean running;
+
+    /**
+     * @return True if in <code>running</code> state
+     */
+    public boolean isRunning() {
+        return running;
+    }
 
     /**
      * Creating an empty queue containing no items. Items have to be added later
@@ -73,14 +92,15 @@ public abstract class Transfer extends NSObject {
     }
 
     /**
-     *
-     * @param root
+     * Create a transfer with a single root which can
+     * be a plain file or a directory
+     * @param root File or directory
      */
     public Transfer(Path root) {
         this.roots.add(root);
     }
 
-    private Vector listeners = new Vector();
+    private List listeners = new Vector();
 
     /**
      * @param listener
@@ -162,18 +182,23 @@ public abstract class Transfer extends NSObject {
     }
 
     /**
-     * Add an item to the queue
-     *
-     * @param item The path to be added in the queue
+     * Add a file or folder to the initial selection
+     * @param item File or folder to be added
      */
     public void addRoot(Path item) {
         this.roots.add(item);
     }
 
+    /**
+     * @return The first <code>root</code> added to this transfer
+     */
     public Path getRoot() {
         return (Path) roots.get(0);
     }
 
+    /**
+     * @return All <code>root</code>s added to this transfer
+     */
     public List getRoots() {
         return this.roots;
     }
@@ -182,10 +207,17 @@ public abstract class Transfer extends NSObject {
         return this.getRoot().getSession();
     }
 
+    /**
+     * @see Session#getHost()
+     */
     public Host getHost() {
         return this.getSession().getHost();
     }
 
+    /**
+     * @return The concatenation of the local filenames of all roots
+     * @see #getRoots()
+     */
     public String getName() {
         String name = "";
         for(Iterator iter = this.roots.iterator(); iter.hasNext();) {
@@ -194,35 +226,61 @@ public abstract class Transfer extends NSObject {
         return name;
     }
 
+    /**
+     * Iterates over all <code>root</code>s
+     * @return Return a list of all <code>roots</code>s and its
+     * child items (recursively)
+     */
     public List getChilds() {
         List childs = new ArrayList();
-        for(Iterator rootIter = this.getRoots().iterator(); rootIter.hasNext() && !this.isCanceled();) {
+        for(Iterator rootIter = this.getRoots().iterator(); rootIter.hasNext()
+                && !this.isCanceled(); ) {
             this.getChilds(childs, (Path) rootIter.next());
         }
         return childs;
     }
 
     /**
-     * @param childs
-     * @param root
+     * Should implement to add all childs of <code>root</code> and the <code>root</code>
+     * itself to the <code>childs</code>
+     * @param childs The list to fill with all eventual childs
+     * @param root The parent file
      */
     protected abstract List getChilds(List childs, Path root);
 
     /**
-     * @param tokenizer
-     * @param filename
+     * A compiled representation of a regular expression.
      */
-    protected boolean isSkipped(StringTokenizer tokenizer, String filename) {
-        while(tokenizer.hasMoreTokens()) {
-            if(tokenizer.nextToken().equals(filename)) {
-                return true;
-            }
+    protected Pattern DOWNLOAD_SKIP_PATTERN = null;
+
+    {
+        try {
+            DOWNLOAD_SKIP_PATTERN = Pattern.compile(
+                    Preferences.instance().getProperty("queue.download.skip.regex"));
         }
-        return false;
+        catch(PatternSyntaxException e) {
+            log.warn(e.getMessage());
+        }
     }
 
     /**
-     * @param p
+     * A compiled representation of a regular expression.
+     */
+    protected Pattern UPLOAD_SKIP_PATTERN = null;
+
+    {
+        try {
+            UPLOAD_SKIP_PATTERN = Pattern.compile(
+                    Preferences.instance().getProperty("queue.download.skip.regex"));
+        }
+        catch(PatternSyntaxException e) {
+            log.warn(e.getMessage());
+        }
+    }
+
+    /**
+     *
+     * @param p The file to transfer
      */
     protected abstract void transfer(Path p);
 
@@ -245,7 +303,8 @@ public abstract class Transfer extends NSObject {
     }
 
     /**
-     * Process the queue. All files will be downloaded/uploaded/synced rerspectively.
+     * Process all items in the <code>queue</code>. Does <strong>not</strong> run
+     * in a background thread.
      * @param v
      */
     public void run(final Validator v) {
@@ -269,13 +328,21 @@ public abstract class Transfer extends NSObject {
             if(this.isCanceled()) {
                 return;
             }
-            this.jobs = validated;
+            if(validated.size() == 0) {
+                return;
+            }
+            // As the transfer has not been canceled, all validated items
+            // should be added to the queue.
+            this.queue = validated;
+            // Recalculate the size of the <code>queue</code>
             this.reset();
-            for(Iterator iter = jobs.iterator(); iter.hasNext();) {
+            for(Iterator iter = queue.iterator(); iter.hasNext();) {
                 if(!this.getSession().isConnected()) {
+                    // Bail out if no more connected
                     this.cancel();
                 }
                 if(this.isCanceled()) {
+                    // Bail out if canceled by the user
                     return;
                 }
                 final Path path = (Path)iter.next();
@@ -291,14 +358,16 @@ public abstract class Transfer extends NSObject {
 
     /**
      *
-     * @param v
-     * @return
+     * @param v The validator to check each file against
+     * @return The list of validated items that the user allowed
+     * to be added to the <code>queue</code>
      */
     private List validate(final Validator v) {
         final List childs = this.getChilds();
         final List validated = new ArrayList();
         for (Iterator iter = childs.iterator(); iter.hasNext();) {
             if(this.isCanceled()) {
+                // Bail out if canceled by the user
                 break;
             }
             Path child = (Path) iter.next();
@@ -329,28 +398,31 @@ public abstract class Transfer extends NSObject {
     }
 
     /**
-     *
-     * @param path
-     * @return true if the directory should be added to the queue
+     * @return true if the directory should be added to the <code>queue</code>
      */
     protected boolean validateDirectory(Path path) {
         return true;
     }
 
     /**
-     *
-     * @param p
-     * @param resumeRequested
-     * @return true if the file should be added to the queue
+     * @return true if the file should be added to the <code>queue</code>
      */
     protected boolean validateFile(final Path p, final boolean resumeRequested, final boolean reloadRequested) {
         return true;
     }
 
+    /**
+     * @see Session#interrupt()
+     */
     public void interrupt() {
         this.getSession().interrupt();
     }
 
+    /**
+     * Marks all items in the queue as canceled. Canceled items will be
+     * skipped when processed. If the transfer is already in a <code>canceled</code>
+     * state, the underlying session's socket is interrupted to force exit.
+     */
     public void cancel() {
         if(this.isCanceled()) {
             // Called prevously; now force
@@ -358,7 +430,7 @@ public abstract class Transfer extends NSObject {
         }
         else {
             if(this.isInitialized()) {
-                for(Iterator iter = this.jobs.iterator(); iter.hasNext();) {
+                for(Iterator iter = this.queue.iterator(); iter.hasNext();) {
                     ((Path) iter.next()).status.setCanceled();
                 }
             }
@@ -366,44 +438,51 @@ public abstract class Transfer extends NSObject {
         }
     }
 
-    public boolean isCanceled() {
-        return this.canceled;
-    }
-
     /**
-     *
-     */
-    private boolean running;
-
-    public boolean isRunning() {
-        return running;
-    }
-
-    /**
-     * Reset this queue; e.g. recalculating its size
+     * Recalculate the size of the <code>queue</code>
      */
     protected abstract void reset();
 
+    /**
+     *
+     * @return True if the transfer has been validated and all files
+     * to be transferred written to the internal <code>queue</code>
+     */
     public boolean isInitialized() {
-        return this.jobs != null;
+        return this.queue != null;
     }
 
+    /**
+     * @return The number of roots
+     */
     public int numberOfRoots() {
         return this.roots.size();
     }
 
+    /**
+     * @return True if the bytes transferred equal the size of the queue and
+     * the bytes transfered is > 0
+     */
     public boolean isComplete() {
         return this.getSize() == this.getCurrent() && !(this.getCurrent() == 0);
     }
 
+    /**
+     * @return The sum of all file lengths in this queue.
+     * Returns -1 if the transfer has
+     */
     public double getSize() {
         return this.size; //cached value
     }
 
+    /**
+     * Should not be called too frequently as it iterates over all items
+     * @return The number of bytes transfered of all items in the <code>queue</code>
+     */
     public double getCurrent() {
         if(this.isInitialized()) {
             double size = 0;
-            for(Iterator iter = this.jobs.iterator(); iter.hasNext();) {
+            for(Iterator iter = this.queue.iterator(); iter.hasNext();) {
                 size += ((Path) iter.next()).status.getCurrent();
             }
             this.current = size;
