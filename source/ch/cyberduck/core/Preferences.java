@@ -32,6 +32,8 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Holding all application preferences. Default values get overwritten when loading
@@ -65,15 +67,24 @@ public abstract class Preferences {
             }
             current.setDefaults();
             current.load();
+            current.legacy();
         }
         return current;
+    }
+
+    /**
+     * Updates any legacy custom set preferences which are not longer
+     * valid as of this version
+     */
+    protected void legacy() {
+        ;
     }
 
     /**
      * @param property The name of the property to overwrite
      * @param value    The new vlaue
      */
-    public abstract void setProperty(String property, String value);
+    public abstract void setProperty(String property, Object value);
 
     public abstract void deleteProperty(String property);
 
@@ -82,14 +93,7 @@ public abstract class Preferences {
      * @param v        The new vlaue
      */
     public void setProperty(String property, boolean v) {
-        if (log.isDebugEnabled()) {
-            log.debug("setProperty(" + property + ", " + v + ")");
-        }
-        String value = "false";
-        if (v) {
-            value = "true";
-        }
-        this.setProperty(property, value);
+        this.setProperty(property, v ? "true" : "false");
     }
 
     /**
@@ -97,11 +101,7 @@ public abstract class Preferences {
      * @param v        The new vlaue
      */
     public void setProperty(String property, int v) {
-        if (log.isDebugEnabled()) {
-            log.debug("setProperty(" + property + ", " + v + ")");
-        }
-        String value = String.valueOf(v);
-        this.setProperty(property, value);
+        this.setProperty(property, String.valueOf(v));
     }
 
     /**
@@ -223,9 +223,18 @@ public abstract class Preferences {
          */
         defaults.put("editor.name", "TextMate");
         defaults.put("editor.bundleIdentifier", "com.macromates.textmate");
-        defaults.put("editor.disabledFiles", "pdf ps exe bin jpeg jpg jp2 gif tif ico icns tiff bmp pict sgi tga png psd " +
-                "hqx sea dmg zip sit tar gz tgz bz2 avi qtl bom pax pgp" +
-                "mpg mpeg mp3 m4p m4a mov avi qt ram aiff aif wav wma doc xls ppt");
+
+        defaults.put("filetype.text.regex",
+                ".*\\.txt|.*\\.cgi|.*\\.htm|.*\\.html|.*\\.shtml|.*\\.xml|.*\\.xsl|.*\\.php|.*\\.php3|" +
+                        ".*\\.js|.*\\.css|.*\\.asp|.*\\.java|.*\\.c|.*\\.cp|.*\\.cpp|.*\\.m|.*\\.h|.*\\.pl|.*\\.py|" +
+                        ".*\\.rb|.*\\.sh");
+        defaults.put("filetype.binary.regex",
+                ".*\\.pdf|.*\\.ps|.*\\.exe|.*\\.bin|.*\\.jpeg|.*\\.jpg|.*\\.jp2|.*\\.gif|.*\\.tif|.*\\.ico|" +
+                        ".*\\.icns|.*\\.tiff|.*\\.bmp|.*\\.pict|.*\\.sgi|.*\\.tga|.*\\.png|.*\\.psd|" +
+                        ".*\\.hqx|.*\\.sea|.*\\.dmg|.*\\.zip|.*\\.sit|.*\\.tar|.*\\.gz|.*\\.tgz|.*\\.bz2|" +
+                        ".*\\.avi|.*\\.qtl|.*\\.bom|.*\\.pax|.*\\.pgp|.*\\.mpg|.*\\.mpeg|.*\\.mp3|.*\\.m4p|" +
+                        ".*\\.m4a|.*\\.mov|.*\\.avi|.*\\.qt|.*\\.ram|.*\\.aiff|.*\\.aif|.*\\.wav|.*\\.wma|" +
+                        ".*\\.doc|.*\\.xls|.*\\.ppt");
 
         /**
          * Save bookmarks in ~/Library
@@ -264,17 +273,21 @@ public abstract class Preferences {
         defaults.put("queue.upload.permissions.default", "rw-r--r--");
         defaults.put("queue.upload.preserveDate", "true");
         defaults.put("queue.upload.preserveDate.fallback", "false");
-        defaults.put("queue.upload.skip", ".DS_Store");
+        defaults.put("queue.upload.skip.enable", "true");
+        defaults.put("queue.upload.skip.regex",
+                ".*~\\..*|\\.DS_Store|.*\\.svn|CVS");
 
         defaults.put("queue.download.changePermissions", "true");
-        /**
-         * If false, apply the permissions of the remote file
-         */
         defaults.put("queue.download.permissions.useDefault", "false");
         defaults.put("queue.download.permissions.default", "rw-r--r--");
         defaults.put("queue.download.preserveDate", "true");
+        defaults.put("queue.download.skip.enable", "true");
+        defaults.put("queue.download.skip.regex",
+                ".*~\\..*|\\.DS_Store|.*\\.svn|CVS");
+        /**
+         * While downloading, update the icon of the downloaded file as a progress indicator
+         */
         defaults.put("queue.download.updateIcon", "true");
-        defaults.put("queue.download.skip", ".DS_Store");
 
         //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");
@@ -282,7 +295,7 @@ public abstract class Preferences {
 
         defaults.put("ftp.connectmode", FTPConnectMode.PASV.toString());
         defaults.put("ftp.transfermode", FTPTransferType.BINARY.toString());
-        defaults.put("ftp.transfermode.ascii.extensions", "txt cgi htm html shtml xml xsl php php3 js css asp java c cp cpp m h pl py rb sh");
+
         /**
          * Line seperator to use for ASCII transfers
          */
@@ -345,7 +358,9 @@ public abstract class Preferences {
          * Normalize path names
          */
         defaults.put("path.normalize", "true");
-
+        /**
+         * Use the SFTP subsystem or a SCP channel for file transfers over SSH
+         */
         defaults.put("ssh.transfers", Session.SFTP); // Session.SCP
         /**
          * Location of the openssh known_hosts file
@@ -367,7 +382,7 @@ public abstract class Preferences {
      * @param property The property to query.
      * @return The value of the property
      */
-    public String getProperty(String property) {
+    public Object getObject(String property) {
         String value = (String) defaults.get(property);
         if (null == value) {
             log.warn("No property with key '" + property + "'");
@@ -375,12 +390,16 @@ public abstract class Preferences {
         return value;
     }
 
+    public String getProperty(String property) {
+        return this.getObject(property).toString();
+    }
+
     public int getInteger(String property) {
-        return Integer.parseInt(this.getProperty(property));
+        return Integer.parseInt(this.getObject(property).toString());
     }
 
     public boolean getBoolean(String property) {
-        String value = this.getProperty(property);
+        String value = this.getObject(property).toString();
         try {
             return value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes") || Integer.parseInt(value) == 1;
         }

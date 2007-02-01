@@ -34,15 +34,15 @@ public class CDPortablePreferencesImpl extends Preferences {
 
     private NSMutableDictionary props;
 
-    public String getProperty(String property) {
-        String value = (String) this.props.objectForKey(property);
+    public Object getObject(String property) {
+        Object value = this.props.objectForKey(property);
         if (null == value) {
-            return super.getProperty(property);
+            return super.getObject(property);
         }
         return value;
     }
 
-    public void setProperty(String property, String value) {
+    public void setProperty(String property, Object value) {
         if (log.isDebugEnabled()) {
             log.debug("setProperty(" + property + ", " + value + ")");
         }

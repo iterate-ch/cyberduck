@@ -31,18 +31,20 @@ import org.apache.log4j.Logger;
  * @see com.apple.cocoa.foundation.NSUserDefaults
  */
 public class CDPreferencesImpl extends Preferences {
+    private static Logger log = Logger.getLogger(Preferences.class);
 
     private NSUserDefaults props;
 
-    public String getProperty(String property) {
+    public Object getObject(String property) {
         Object value = props.objectForKey(property);
         if (null == value) {
-            return super.getProperty(property);
+            return super.getObject(property);
         }
-        return value.toString();
+        return value;
     }
 
-    public void setProperty(String property, String value) {
+    public void setProperty(String property, Object value) {
+        log.debug("setProperty:"+property+","+value);
         // Sets the value of the default identified by defaultName in the standard application domain.
         // Setting a default has no effect on the value returned by the objectForKey method if
         // the same key exists in a domain that precedes the application domain in the search list.
