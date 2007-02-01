@@ -49,13 +49,14 @@
                 downerw = NSButton; 
                 downerx = NSButton; 
                 downloadPathPopup = NSPopUpButton; 
+                downloadSkipButton = NSButton; 
+                downloadSkipRegexField = NSTextView; 
                 duplicateDownloadCombobox = NSPopUpButton; 
                 duplicateDownloadOverwriteButton = NSButton; 
                 duplicateUploadCombobox = NSPopUpButton; 
                 duplicateUploadOverwriteButton = NSButton; 
                 editorCombobox = NSPopUpButton; 
                 encodingCombobox = NSPopUpButton; 
-                extensionsField = NSTextField; 
                 failInsecureDataChannelCheckbox = NSButton; 
                 horizontalLinesCheckbox = NSButton; 
                 infoWindowAsInspectorCheckbox = NSButton; 
@@ -85,6 +86,7 @@
                 showHiddenCheckbox = NSButton; 
                 systCheckbox = NSButton; 
                 tabView = NSTabView; 
+                textFileTypeRegexField = NSTextField; 
                 timeoutField = NSTextField; 
                 transferPopup = NSPopUpButton; 
                 transfermodeCombobox = NSPopUpButton; 
@@ -97,6 +99,8 @@
                 uownerr = NSButton; 
                 uownerw = NSButton; 
                 uownerx = NSButton; 
+                uploadSkipButton = NSButton; 
+                uploadSkipRegexField = NSTextView; 
                 verticalLinesCheckbox = NSButton; 
                 window = NSWindow; 
             }; 

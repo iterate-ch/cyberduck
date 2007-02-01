@@ -32,6 +32,8 @@ import org.apache.log4j.Logger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * @version $Id$
@@ -1136,19 +1138,152 @@ public class CDPreferencesController extends CDWindowController {
         Preferences.instance().setProperty("ftp.anonymous.pass", this.anonymousField.stringValue());
     }
 
-    private NSTextField extensionsField; //IBOutlet
+    private NSTextField textFileTypeRegexField; //IBOutlet
 
-    public void setExtensionsField(NSTextField extensionsField) {
-        this.extensionsField = extensionsField;
-        this.extensionsField.setStringValue(Preferences.instance().getProperty("ftp.transfermode.ascii.extensions"));
+    public void setTextFileTypeRegexField(NSTextField textFileTypeRegexField) {
+        this.textFileTypeRegexField = textFileTypeRegexField;
+        this.textFileTypeRegexField.setStringValue(Preferences.instance().getProperty("filetype.text.regex"));
         NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("extensionsFieldDidChange", new Class[]{NSNotification.class}),
+                new NSSelector("textFileTypeRegexFieldDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
-                this.extensionsField);
+                this.textFileTypeRegexField);
     }
 
-    public void extensionsFieldDidChange(NSNotification sender) {
-        Preferences.instance().setProperty("ftp.transfermode.ascii.extensions", this.extensionsField.stringValue());
+    public void textFileTypeRegexFieldDidChange(NSNotification sender) {
+        String value = this.textFileTypeRegexField.stringValue().trim();
+        try {
+            Pattern compiled = Pattern.compile(value);
+            Preferences.instance().setProperty("filetype.text.regex",
+                    compiled.pattern());
+        }
+        catch(PatternSyntaxException e) {
+            log.warn("Invalid regex:"+e.getMessage());
+        }
+    }
+
+    private NSTextField binaryFileTypeRegexField; //IBOutlet
+
+    public void setBinaryFileTypeRegexField(NSTextField binaryFileTypeRegexField) {
+        this.binaryFileTypeRegexField = binaryFileTypeRegexField;
+        this.binaryFileTypeRegexField.setStringValue(Preferences.instance().getProperty("filetype.binary.regex"));
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("binaryFileTypeRegexFieldDidChange", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.binaryFileTypeRegexField);
+    }
+
+    public void binaryFileTypeRegexFieldDidChange(NSNotification sender) {
+        String value = this.binaryFileTypeRegexField.stringValue().trim();
+        try {
+            Pattern compiled = Pattern.compile(value);
+            Preferences.instance().setProperty("filetype.binary.regex",
+                    compiled.pattern());
+        }
+        catch(PatternSyntaxException e) {
+            log.warn("Invalid regex:"+e.getMessage());
+        }
+    }
+
+    private NSButton downloadSkipButton; //IBOutlet
+
+    public void setDownloadSkipButton(NSButton downloadSkipButton) {
+        this.downloadSkipButton = downloadSkipButton;
+        this.downloadSkipButton.setTarget(this);
+        this.downloadSkipButton.setAction(new NSSelector("downloadSkipButtonClicked", new Class[]{NSButton.class}));
+        this.downloadSkipButton.setState(Preferences.instance().getBoolean("queue.download.skip.enable") ? NSCell.OnState : NSCell.OffState);
+    }
+
+    public void downloadSkipButtonClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.OnState;
+        Preferences.instance().setProperty("queue.download.skip.enable", enabled);
+    }
+
+    private NSTextView downloadSkipRegexField; //IBOutlet
+
+    public void setDownloadSkipRegexField(NSTextView downloadSkipRegexField) {
+        this.downloadSkipRegexField = downloadSkipRegexField;
+        this.downloadSkipRegexField.textStorage().appendAttributedString(
+                new NSAttributedString(Preferences.instance().getProperty("queue.download.skip.regex"), FIXED_WITH_FONT_ATTRIBUTES));
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("downloadSkipRegexFieldDidChange", new Class[]{NSNotification.class}),
+                NSText.TextDidChangeNotification,
+                this.downloadSkipRegexField);
+    }
+
+    public void downloadSkipRegexFieldDidChange(NSNotification sender) {
+        String value = this.downloadSkipRegexField.textStorage().stringReference().string().trim();
+        try {
+            Pattern compiled = Pattern.compile(value);
+            Preferences.instance().setProperty("queue.download.skip.regex",
+                    compiled.pattern());
+            this.mark(this.downloadSkipRegexField, null);
+        }
+        catch(PatternSyntaxException e) {
+            this.mark(this.downloadSkipRegexField, e);
+        }
+    }
+
+    private NSButton uploadSkipButton; //IBOutlet
+
+    public void setUploadSkipButton(NSButton uploadSkipButton) {
+        this.uploadSkipButton = uploadSkipButton;
+        this.uploadSkipButton.setTarget(this);
+        this.uploadSkipButton.setAction(new NSSelector("uploadSkipButtonClicked", new Class[]{NSButton.class}));
+        this.uploadSkipButton.setState(Preferences.instance().getBoolean("queue.upload.skip.enable") ? NSCell.OnState : NSCell.OffState);
+    }
+
+    public void uploadSkipButtonClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.OnState;
+        Preferences.instance().setProperty("queue.upload.skip.enable", enabled);
+    }
+
+    private NSTextView uploadSkipRegexField; //IBOutlet
+
+    public void setUploadSkipRegexField(NSTextView uploadSkipRegexField) {
+        this.uploadSkipRegexField = uploadSkipRegexField;
+        this.uploadSkipRegexField.textStorage().appendAttributedString(
+                new NSAttributedString(Preferences.instance().getProperty("queue.upload.skip.regex"), FIXED_WITH_FONT_ATTRIBUTES));
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("uploadSkipRegexFieldDidChange", new Class[]{NSNotification.class}),
+                NSText.TextDidChangeNotification,
+                this.uploadSkipRegexField);
+    }
+
+    public void uploadSkipRegexFieldDidChange(NSNotification sender) {
+        String value = this.uploadSkipRegexField.textStorage().stringReference().string().trim();
+        try {
+            Pattern compiled = Pattern.compile(value);
+            Preferences.instance().setProperty("queue.upload.skip.regex",
+                    compiled.pattern());
+            this.mark(this.uploadSkipRegexField, null);
+        }
+        catch(PatternSyntaxException e) {
+            this.mark(this.uploadSkipRegexField, e);
+        }
+    }
+
+    protected static NSDictionary RED_FONT = new NSDictionary(
+            new Object[]{NSColor.redColor()},
+            new Object[]{NSAttributedString.ForegroundColorAttributeName}
+    );
+
+    private void mark(NSTextView view, PatternSyntaxException e) {
+        if(null == e) {
+            view.textStorage().removeAttributeInRange(
+                    NSAttributedString.ForegroundColorAttributeName,
+                    new NSRange(0, view.textStorage().length()));
+            return;
+        }
+        int index = e.getIndex(); //The approximate index in the pattern of the error
+        NSRange range = null;
+        if(-1 == index) {
+            range = new NSRange(0, view.textStorage().length());
+        }
+        if(index < view.textStorage().length()) {
+            //Initializes the NSRange with the range elements of location and length;
+            range = new NSRange(index, 1);
+        }
+        view.textStorage().addAttributesInRange(RED_FONT, range);
     }
 
     private NSTextField loginField; //IBOutlet
@@ -1463,17 +1598,17 @@ public class CDPreferencesController extends CDWindowController {
         if (sender.selectedItem().title().equals(TRANSFERMODE_BINARY)) {
             Preferences.instance().setProperty("ftp.transfermode", FTPTransferType.BINARY.toString());
             this.lineEndingCombobox.setEnabled(false);
-            this.extensionsField.setEnabled(false);
+            this.textFileTypeRegexField.setEnabled(false);
         }
         else if (sender.selectedItem().title().equals(TRANSFERMODE_ASCII)) {
             Preferences.instance().setProperty("ftp.transfermode", FTPTransferType.ASCII.toString());
             this.lineEndingCombobox.setEnabled(true);
-            this.extensionsField.setEnabled(false);
+            this.textFileTypeRegexField.setEnabled(false);
         }
         else if (sender.selectedItem().title().equals(TRANSFERMODE_AUTO)) {
             Preferences.instance().setProperty("ftp.transfermode", FTPTransferType.AUTO.toString());
             this.lineEndingCombobox.setEnabled(true);
-            this.extensionsField.setEnabled(true);
+            this.textFileTypeRegexField.setEnabled(true);
         }
     }
 

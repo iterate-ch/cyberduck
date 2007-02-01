@@ -7,21 +7,21 @@
 	<key>IBEditorPositions</key>
 	<dict>
 		<key>1032</key>
-		<string>232 275 527 443 0 0 1024 746 </string>
+		<string>231 275 527 443 0 0 1024 746 </string>
 		<key>1033</key>
-		<string>232 393 527 212 0 0 1024 746 </string>
+		<string>231 388 527 217 0 0 1024 746 </string>
 		<key>1034</key>
-		<string>232 295 527 403 0 0 1024 746 </string>
+		<string>231 296 527 401 0 0 1024 746 </string>
 		<key>1035</key>
-		<string>232 294 527 408 0 0 1024 746 </string>
+		<string>231 292 527 410 0 0 1024 746 </string>
 		<key>1374</key>
 		<string>232 393 527 207 0 0 1024 746 </string>
 		<key>848</key>
-		<string>232 310 527 373 0 0 1024 746 </string>
+		<string>231 305 527 383 0 0 1024 746 </string>
 		<key>874</key>
-		<string>231 324 527 345 0 0 1024 746 </string>
+		<string>231 325 527 344 0 0 1024 746 </string>
 		<key>906</key>
-		<string>232 287 527 420 0 0 1024 746 </string>
+		<string>231 291 527 412 0 0 1024 746 </string>
 	</dict>
 	<key>IBFramework Version</key>
 	<string>446.1</string>
@@ -34,8 +34,8 @@
 		</array>
 		<key>11</key>
 		<array>
-			<string>1303</string>
 			<string>1305</string>
+			<string>1303</string>
 		</array>
 		<key>12</key>
 		<array>
@@ -61,9 +61,6 @@
 		</array>
 		<key>5</key>
 		<array>
-			<string>1246</string>
-			<string>1267</string>
-			<string>1263</string>
 			<string>1253</string>
 			<string>1242</string>
 			<string>1244</string>
@@ -73,18 +70,17 @@
 			<string>1262</string>
 			<string>1245</string>
 			<string>1260</string>
+			<string>1246</string>
+			<string>1267</string>
+			<string>1263</string>
 		</array>
 		<key>6</key>
 		<array>
-			<string>1265</string>
 			<string>1254</string>
+			<string>1265</string>
 		</array>
 		<key>7</key>
 		<array>
-			<string>1261</string>
-			<string>1268</string>
-			<string>1241</string>
-			<string>1257</string>
 			<string>1258</string>
 			<string>1248</string>
 			<string>1249</string>
@@ -93,16 +89,20 @@
 			<string>1251</string>
 			<string>1269</string>
 			<string>1243</string>
+			<string>1261</string>
+			<string>1268</string>
+			<string>1241</string>
+			<string>1257</string>
 		</array>
 		<key>8</key>
 		<array>
-			<string>1280</string>
 			<string>1277</string>
+			<string>1280</string>
 		</array>
 		<key>9</key>
 		<array>
-			<string>1283</string>
 			<string>1281</string>
+			<string>1283</string>
 		</array>
 	</dict>
 	<key>IBLastGroupID</key>
