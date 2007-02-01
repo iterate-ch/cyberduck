@@ -34,6 +34,8 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * Opens a connection to the remote server via ftp protocol
@@ -62,6 +64,65 @@ public class FTPSession extends Session {
 
     public boolean isSecure() {
         return false;
+    }
+
+    private String[] features = null;
+
+    public boolean isMDTMSupported() {
+        try {
+            if(null == features) {
+                synchronized(this) {
+                    features = this.FTP.features();
+                }
+            }
+            for(Iterator iter = Arrays.asList(features).iterator(); iter.hasNext(); ) {
+                if("MDTM".equals(((String)iter.next()).trim())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch(IOException e) {
+            return false;
+        }
+    }
+
+    public boolean isMDTMSetSupported() {
+        try {
+            if(null == features) {
+                synchronized(this) {
+                    features = this.FTP.features();
+                }
+            }
+            for(Iterator iter = Arrays.asList(features).iterator(); iter.hasNext(); ) {
+                if("MDTM yyyyMMddHHmmss".equals(((String)iter.next()).trim())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch(IOException e) {
+            return false;
+        }
+    }
+
+    public boolean isUTIMESupported() {
+        try {
+            if(null == features) {
+                synchronized(this) {
+                    features = this.FTP.features();
+                }
+            }
+            for(Iterator iter = Arrays.asList(features).iterator(); iter.hasNext(); ) {
+                if("SITE UTIME".equals(((String)iter.next()).trim())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch(IOException e) {
+            return false;
+        }
     }
 
     public String getSecurityInformation() {

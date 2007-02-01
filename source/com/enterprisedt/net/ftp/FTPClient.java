@@ -62,12 +62,6 @@ public class FTPClient {
     final private static String SOCKS_HOST = "socksProxyHost";
 
     /**
-     * Format to interpret MTDM timestamp
-     */
-    private SimpleDateFormat tsFormat =
-        new SimpleDateFormat("yyyyMMddHHmmss");
-
-    /**
      * Socket responsible for controlling
      * the connection
      */
@@ -110,14 +104,6 @@ public class FTPClient {
      * Holds the last valid reply from the server on the control socket
      */
     protected FTPReply lastValidReply;
-
-
-    /**
-     *  Instance initializer. Sets formatter to GMT.
-     */
-    {
-        tsFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-    }
 
     /**
      *
@@ -711,23 +697,30 @@ public class FTPClient {
         lastValidReply = control.validateReply(reply, new String[]{"200", "250", "257"});
     }
 
+    /**
+     * Format to interpret MTDM timestamp
+     */
+    private SimpleDateFormat tsFormat =
+        new SimpleDateFormat("yyyyMMddHHmmss");
+
     private boolean getModtimeSupported = true;
 
     /**
      * Get modification time for a remote file
      *
      * @param remoteFile name of remote file
-     * @return modification time of file as a date
+     * @return modification time of file in milliseconds 
      */
-    public Date modtime(String remoteFile) throws IOException, FTPException {
+    public long modtime(String remoteFile, TimeZone timezone) throws IOException, FTPException {
         if(getModtimeSupported) {
             try {
                 FTPReply reply = control.sendCommand("MDTM "+remoteFile);
                 lastValidReply = control.validateReply(reply, "213");
 
+                tsFormat.setTimeZone(timezone);
                 // parse the reply string ...
                 return tsFormat.parse(lastValidReply.getReplyText(),
-                        new ParsePosition(0));
+                        new ParsePosition(0)).getTime();
             }
             catch(FTPException e) {
                 this.getModtimeSupported = false;
@@ -735,6 +728,55 @@ public class FTPClient {
             }
         }
         throw new FTPException("MDTM not supported");
+    }
+
+    private boolean setUtimeSupported = true;
+
+    /**
+     * Change modification time for a remote file
+     * @param modtime Milliseconds since (00:00:00 GMT, January 1, 1970)
+     * @param remoteFile name of remote file
+     */
+    public void utime(long modtime, String remoteFile, TimeZone timezone) throws IOException, FTPException {
+        tsFormat.setTimeZone(timezone);
+        String date = tsFormat.format(new Date(modtime));
+        if(this.setUtimeSupported) {
+            try {
+                // The utime() function sets the access and modification times of the named
+                // file from the structures in the argument array timep.
+                // The access time is set to the value of the first element,
+                // and the modification time is set to the value of the second element
+                // Accessed date, modified date, created date
+                this.site("UTIME "+remoteFile+" "+date+" "+date+" "+date+" UTC");
+            }
+            catch(FTPException e) {
+                this.setUtimeSupported = false;
+                throw e;
+            }
+        }
+        if(!this.setUtimeSupported) {
+            throw new FTPException("UTIME not supported");
+        }
+    }
+
+    private boolean setModtimeSupported = true;
+
+    public void setmodtime(long modtime, String remoteFile, TimeZone timezone) throws IOException, FTPException {
+        tsFormat.setTimeZone(timezone);
+        String date = tsFormat.format(new Date(modtime));
+        if(this.setModtimeSupported) {
+            try {
+                FTPReply reply = control.sendCommand("MDTM "+date+" "+remoteFile);
+                lastValidReply = control.validateReply(reply, "213");
+            }
+            catch(FTPException e) {
+                this.setModtimeSupported = false;
+                throw e;
+            }
+        }
+        if(!this.setModtimeSupported) {
+            throw new FTPException("MDTM not supported");
+        }
     }
 
     private boolean setChmodSupported = true;
@@ -756,28 +798,6 @@ public class FTPClient {
         }
         if(!this.setChmodSupported) {
             throw new FTPException("CHMOD not supported");
-        }
-    }
-
-    private boolean setModtimeSupported = true;
-
-    /**
-     * Change modification time for a remote file
-     *
-     * @param remoteFile name of remote file
-     */
-    public void setmodtime(long modtime, String remoteFile) throws IOException, FTPException {
-        if(this.setModtimeSupported) {
-            try {
-                this.site("UTIME "+tsFormat.format(new Date(modtime))+" "+remoteFile);
-            }
-            catch(FTPException e) {
-                this.setModtimeSupported = false;
-                throw e;
-            }
-        }
-        if(!this.setModtimeSupported) {
-            throw new FTPException("UTIME not supported");
         }
     }
 
