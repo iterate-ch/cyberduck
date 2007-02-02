@@ -26,33 +26,25 @@
 
 		<p><b>The folder size isn't displayed correctly.</b><br />
 		This is not the size of its content but the size of the
-		folder itself.</p>
+		folder itself. Use 'File' → 'Info' to calculate the size
+		recursively of all contained files.</p>
 
 		<p><b>When listing a directory on a FTP server I get the
-		error message in response to the 'LIST -a' command: 550
-		Directory not found.</b><br />
+		error message in response to the 'LIST -a' command: <tt>550
+		Directory not found</tt>.</b><br />
 		Uncheck the option 'FTP → Send LIST -a command' in the
 		Preferences.</p>
 
 		<p><b>It is not possible to change permissions. The error
-		message 'FTP Error: SITE not understood' or similar is
+		message <tt>FTP Error: SITE not understood</tt> or similar is
 		displayed.</b><br />
 		The server does not support this feature (which is an
 		optional extension to the FTP protocol) and can not be
 		used.</p>
 
-		<p><b>The server does only allow one single connection; I
-		can't transfer any files!</b><br />
-		Limit the maximum number of simultaneous to a server to one
-		in the 'Advanced' tab in the Preferences. The transfer of a
-		file will then wait until you close the browsing
-		connection. If the browsing connection should be closed
-		automatically, then also check 'Force other connections to
-		close when maximum is reached'.</p>
-
 		<p><b>The connection to the server frequently times out; I
 		want it to stay it alive if at all possible!</b><br />
-		You can force Cyberduck to send a no operation command at a
+		You can force Cyberduck to send a 'no operation' command at a
 		given time interval. See the 'Advanced' tab in the
 		Preferences.</p>
 
@@ -77,7 +69,7 @@
 
 		<p><b>My preferred editor isn't supported.</b><br />
 		An editor must support the external editor protocol
-		(ODB).</p>
+		(ODB). It is currently not possible to use an arbitrary editor.</p>
 	</div>
 
 	<div id="footer">
