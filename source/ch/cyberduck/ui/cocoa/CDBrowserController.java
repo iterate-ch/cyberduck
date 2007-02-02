@@ -218,7 +218,7 @@ public class CDBrowserController extends CDWindowController
             Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"));
-            Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"), this);
+            Editor editor = new Editor(this);
             editor.open(path);
         }
         return null;
@@ -1924,8 +1924,7 @@ public class CDBrowserController extends CDWindowController
                 for(Iterator iter = files.values().iterator(); iter.hasNext(); ) {
                     Path duplicate = (Path)iter.next();
                     if(edit) {
-                        Editor editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"),
-                                CDBrowserController.this);
+                        Editor editor = new Editor(CDBrowserController.this);
                         editor.open(duplicate);
                     }
                     if(duplicate.getName().charAt(0) == '.') {
@@ -2121,24 +2120,24 @@ public class CDBrowserController extends CDWindowController
         controller.beginSheet(false);
     }
 
-    public void editMenuClicked(final Object sender) {
-        this.editButtonClicked(sender);
+    public void editMenuClicked(final NSMenuItem sender) {
+        for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
+            final Path selected = (Path) i.next();
+            if(this.isEditable(selected)) {
+                Object identifier = Editor.SUPPORTED_EDITORS.get(((NSMenuItem) sender).title());
+                if(identifier != null) {
+                    Editor editor = new Editor(this);
+                    editor.open(selected, (String)identifier);
+                }
+            }
+        }
     }
 
     public void editButtonClicked(final Object sender) {
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
             final Path selected = (Path) i.next();
             if(this.isEditable(selected)) {
-                Editor editor = null;
-                if(sender instanceof NSMenuItem) {
-                    Object identifier = Editor.SUPPORTED_EDITORS.get(((NSMenuItem) sender).title());
-                    if(identifier != null) {
-                        editor = new Editor((String) identifier, this);
-                    }
-                }
-                if(null == editor) {
-                    editor = new Editor(Preferences.instance().getProperty("editor.bundleIdentifier"), this);
-                }
+                Editor editor = new Editor(this);
                 editor.open(selected);
             }
         }

@@ -264,8 +264,7 @@ public class SFTPSession extends Session {
                     }
                 }
                 else {
-                    throw new SshException(
-                            NSBundle.localizedString("Login canceled", "Credentials", ""));
+		            throw new LoginCanceledException();
                 }
             }
         }

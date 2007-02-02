@@ -20,9 +20,11 @@ package ch.cyberduck.ui.cocoa.odb;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.io.FileWatcherListener;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDController;
-import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.CDIconCache;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.NSWorkspace;
@@ -63,10 +65,10 @@ public class Editor extends CDController {
 
         Iterator editorNames = SUPPORTED_EDITORS.keySet().iterator();
         Iterator editorIdentifiers = SUPPORTED_EDITORS.values().iterator();
-        while (editorNames.hasNext()) {
+        while(editorNames.hasNext()) {
             String editor = (String) editorNames.next();
             String identifier = (String) editorIdentifiers.next();
-            if (NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier) != null) {
+            if(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier) != null) {
                 INSTALLED_EDITORS.put(editor, identifier);
             }
         }
@@ -74,20 +76,25 @@ public class Editor extends CDController {
 
     private CDBrowserController controller;
 
-    private String bundleIdentifier;
-
     /**
-     * @param bundleIdentifier The bundle identifier of the external editor to use
+     * @param controller
      */
-    public Editor(String bundleIdentifier, CDBrowserController controller) {
-        this.bundleIdentifier = bundleIdentifier;
+    public Editor(CDBrowserController controller) {
         this.controller = controller;
     }
 
     private Path path;
 
     public void open(Path f) {
-        this.path = (Path)f.clone();
+        this.open(f, Preferences.instance().getProperty("editor.bundleIdentifier"));
+    }
+
+    /**
+     * @param bundleIdentifier The bundle identifier of the external editor to use
+     *                         or null if the default application for this file type should be opened
+     */
+    public void open(Path f, final String bundleIdentifier) {
+        this.path = (Path) f.clone();
         String parent = NSPathUtilities.temporaryDirectory();
         String filename = this.path.getName();
         String proposal = filename;
@@ -96,14 +103,14 @@ public class Editor extends CDController {
         do {
             this.path.setLocal(new Local(parent, proposal));
             no++;
-            if (index != -1 && index != 0) {
+            if(index != -1 && index != 0) {
                 proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
             }
             else {
                 proposal = filename + "-" + no;
             }
         }
-        while (this.path.getLocal().exists());
+        while(this.path.getLocal().exists());
 
         controller.background(new BackgroundAction() {
             public void run() {
@@ -111,11 +118,10 @@ public class Editor extends CDController {
             }
 
             public void cleanup() {
-                if (path.status.isComplete()) {
+                if(path.status.isComplete()) {
                     path.getSession().message(NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
-                    Editor.this.jni_load();
                     // Important, should always be run on the main thread; otherwise applescript crashes
-                    Editor.this.edit(path.getLocal().getAbsolute(), bundleIdentifier);
+                    edit(bundleIdentifier);
                 }
             }
         });
@@ -137,28 +143,70 @@ public class Editor extends CDController {
                     log.info("libODBEdit.dylib loaded");
                 }
             }
-            catch (UnsatisfiedLinkError e) {
+            catch(UnsatisfiedLinkError e) {
                 log.error("Could not load the libODBEdit.dylib library:" + e.getMessage());
             }
         }
         return JNI_LOADED;
     }
 
+    private void edit(final String bundleIdentifier) {
+        jni_load();
+        this.edit(path.getLocal().getAbsolute(), bundleIdentifier);
+    }
+
+    /**
+     * Open the file using the ODB external editor protocol
+     */
     private native void edit(String path, String bundleIdentifier);
 
+//    private void edit() {
+//        final String defaultAppPath
+//                = NSWorkspace.sharedWorkspace().applicationForFile(path.getLocal().getAbsolute());
+//        //Returns null if the file cannot be found or if the file is of an unknown type.
+//        if(null == defaultAppPath) {
+//            log.warn("No application found to edit "+path.getName());
+//            return;
+//        }
+////        for(Iterator iter = INSTALLED_EDITORS.values().iterator(); iter.hasNext();) {
+////            String bundleIdentifier = (String) iter.next();
+////            if(defaultAppPath.equals(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+////                    bundleIdentifier))) {
+////                // Open with ODB as the default app for this file happens to support the ODB protocol
+////                this.edit(path.getLocal().getAbsolute(), bundleIdentifier);
+////            }
+////        }
+//        final Local l = path.getLocal();
+//        l.watch(new FileWatcherListener() {
+//            public void fileWritten(Local file) {
+//                didModifyFile();
+//            }
+//
+//            public void fileRenamed(Local file) {
+//                //path.rename();
+//            }
+//
+//            public void fileDeleted(Local file) {
+//                invalidate();
+//            }
+//        });
+//        log.info("Opening " + l.getName() + " with " + defaultAppPath);
+//        NSWorkspace.sharedWorkspace().openFile(l.getAbsolute(), defaultAppPath, true);
+//    }
+
     public void didCloseFile() {
-		if(!uploadInProgress) {
-	        this.path.getLocal().delete();
-	        this.invalidate();
-		}
-		else {
-			shouldCloseFile = true;
-		}
+        if(!uploadInProgress) {
+            this.path.getLocal().delete();
+            this.invalidate();
+        }
+        else {
+            shouldCloseFile = true;
+        }
     }
 
     private boolean uploadInProgress;
 
-	private boolean shouldCloseFile;
+    private boolean shouldCloseFile;
 
     public void didModifyFile() {
         controller.background(new BackgroundAction() {
@@ -173,9 +221,9 @@ public class Editor extends CDController {
             }
 
             public void cleanup() {
-				if(shouldCloseFile) {
-					didCloseFile();
-				}
+                if(shouldCloseFile) {
+                    didCloseFile();
+                }
                 if(path.status.isComplete()) {
                     path.getSession().message(
                             NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"),

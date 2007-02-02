@@ -79,7 +79,8 @@ public class SyncTransfer extends Transfer {
                     for(int i = 0; i < files.length; i++) {
                         Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(),
                                 new Local(files[i].getAbsolutePath()));
-                        if(!UPLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
+                        if(!Preferences.instance().getBoolean("queue.upload.skip.enable")
+                                || !UPLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
                             this.addLocalChilds(childs, child);
                         }
                     }
@@ -102,7 +103,8 @@ public class SyncTransfer extends Transfer {
                         }
                         Path child = (Path) i.next();
                         child.setLocal(new Local(p.getLocal(), child.getName()));
-                        if(!DOWNLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
+                        if(!Preferences.instance().getBoolean("queue.download.skip.enable")
+                                || !DOWNLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
                             this.addRemoteChilds(childs, child);
                         }
                     }

@@ -68,7 +68,8 @@ public class DownloadTransfer extends Transfer {
                         break;
                     }
                     Path child = (Path) i.next();
-                    if(!DOWNLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
+                    if(!Preferences.instance().getBoolean("queue.download.skip.enable")
+                            || !DOWNLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
                         child.setLocal(new Local(p.getLocal(), child.getName()));
                         this.getChilds(childs, child);
                     }

@@ -73,7 +73,7 @@ public abstract class Path extends NSObject {
                 !TEXT_FILETYPE_PATTERN.pattern().equals(regex))
         {
             try {
-                TEXT_FILETYPE_PATTERN = Pattern.compile(regex);
+                TEXT_FILETYPE_PATTERN = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
             }
             catch(PatternSyntaxException e) {
                 log.warn(e.getMessage());
@@ -93,7 +93,7 @@ public abstract class Path extends NSObject {
                 !BINARY_FILETYPE_PATTERN.pattern().equals(regex))
         {
             try {
-                BINARY_FILETYPE_PATTERN = Pattern.compile(regex);
+                BINARY_FILETYPE_PATTERN = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
             }
             catch(PatternSyntaxException e) {
                 log.warn(e.getMessage());
@@ -423,7 +423,7 @@ public abstract class Path extends NSObject {
             for(Iterator iter = this.list().iterator(); iter.hasNext();) {
                 size += ((Path) iter.next()).size();
             }
-            return size;
+            this.attributes.setSize(size);
         }
         return this.attributes.getSize();
     }

@@ -224,7 +224,7 @@ public class CDConnectionController extends CDSheetController {
 
     public void hostFieldTextDidChange(final NSNotification sender) {
         try {
-            final Host h = Host.parse(hostField.stringValue());
+            final Host h = Host.parse(hostField.stringValue().trim());
             this.hostField.setStringValue(h.getHostname());
             if(h.getProtocol().equals(Session.FTP))
                 this.protocolPopup.selectItemWithTitle(Session.FTP_STRING);

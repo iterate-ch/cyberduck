@@ -85,7 +85,8 @@ public class UploadTransfer extends Transfer {
                         if(files[i].canRead()) {
                             Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(),
                                     new Local(files[i].getAbsolutePath()));
-                            if(!UPLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
+                            if(!Preferences.instance().getBoolean("queue.upload.skip.enable")
+                                    || !UPLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
                                 this.getChilds(childs, child);
                             }
                         }

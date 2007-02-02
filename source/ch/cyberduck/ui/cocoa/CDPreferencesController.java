@@ -335,8 +335,6 @@ public class CDPreferencesController extends CDWindowController {
 
     private NSPopUpButton defaultBookmarkCombobox; //IBOutlet
 
-    private Map bookmarks = new HashMap();
-
     public void setDefaultBookmarkCombobox(NSPopUpButton defaultBookmarkCombobox) {
         this.defaultBookmarkCombobox = defaultBookmarkCombobox;
         this.defaultBookmarkCombobox.setToolTip(NSBundle.localizedString("Bookmarks", ""));
@@ -348,14 +346,14 @@ public class CDPreferencesController extends CDWindowController {
             Host bookmark = (Host) iter.next();
             this.defaultBookmarkCombobox.addItem(bookmark.getNickname());
             this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(NSImage.imageNamed("bookmark16.tiff"));
-            this.bookmarks.put(bookmark.getNickname(), bookmark);
+            this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark);
         }
         HostCollection.instance().addListener(new CollectionListener() {
             public void collectionItemAdded(Object item) {
                 Host bookmark = (Host) item;
                 CDPreferencesController.this.defaultBookmarkCombobox.addItem(bookmark.getNickname());
                 CDPreferencesController.this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(NSImage.imageNamed("bookmark16.tiff"));
-                bookmarks.put(bookmark.getNickname(), bookmark);
+                CDPreferencesController.this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark);
             }
 
             public void collectionItemRemoved(Object item) {
@@ -363,8 +361,10 @@ public class CDPreferencesController extends CDWindowController {
                 if(CDPreferencesController.this.defaultBookmarkCombobox.titleOfSelectedItem().equals(bookmark.getNickname())) {
                     Preferences.instance().deleteProperty("browser.defaultBookmark");
                 }
-                CDPreferencesController.this.defaultBookmarkCombobox.removeItemWithTitle(bookmark.getNickname());
-                bookmarks.remove(bookmark.getNickname());
+                int i = CDPreferencesController.this.defaultBookmarkCombobox.menu().indexOfItemWithRepresentedObject(bookmark);
+                if(i > -1) {
+                    CDPreferencesController.this.defaultBookmarkCombobox.removeItemAtIndex(i);
+                }
             }
 
             public void collectionItemChanged(Object item) {
@@ -374,17 +374,18 @@ public class CDPreferencesController extends CDWindowController {
         this.defaultBookmarkCombobox.setTarget(this);
         final NSSelector action = new NSSelector("defaultBookmarkComboboxClicked", new Class[]{NSPopUpButton.class});
         this.defaultBookmarkCombobox.setAction(action);
-        String defaultBookmark = Preferences.instance().getProperty("browser.defaultBookmark");
-        if(null == defaultBookmark) {
+        String defaultBookmarkNickname = Preferences.instance().getProperty("browser.defaultBookmark");
+        if(null == defaultBookmarkNickname) {
             this.defaultBookmarkCombobox.selectItemWithTitle(NSBundle.localizedString("None", ""));
 
         }
         else {
-            if(null == this.bookmarks.get(defaultBookmark)) {
-                this.defaultBookmarkCombobox.selectItemWithTitle(NSBundle.localizedString("None", ""));
+            int i = this.defaultBookmarkCombobox.indexOfItemWithTitle(defaultBookmarkNickname);
+            if(i > -1) {
+                this.defaultBookmarkCombobox.selectItemAtIndex(i);
             }
             else {
-                this.defaultBookmarkCombobox.selectItemWithTitle(defaultBookmark);
+                this.defaultBookmarkCombobox.selectItemWithTitle(NSBundle.localizedString("None", ""));
             }
         }
     }
@@ -1153,36 +1154,37 @@ public class CDPreferencesController extends CDWindowController {
         String value = this.textFileTypeRegexField.stringValue().trim();
         try {
             Pattern compiled = Pattern.compile(value);
+            this.textFileTypeRegexField.setTextColor(NSColor.controlTextColor());
             Preferences.instance().setProperty("filetype.text.regex",
                     compiled.pattern());
         }
         catch(PatternSyntaxException e) {
-            log.warn("Invalid regex:"+e.getMessage());
+            this.textFileTypeRegexField.setTextColor(NSColor.redColor());
         }
     }
 
-    private NSTextField binaryFileTypeRegexField; //IBOutlet
-
-    public void setBinaryFileTypeRegexField(NSTextField binaryFileTypeRegexField) {
-        this.binaryFileTypeRegexField = binaryFileTypeRegexField;
-        this.binaryFileTypeRegexField.setStringValue(Preferences.instance().getProperty("filetype.binary.regex"));
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("binaryFileTypeRegexFieldDidChange", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidChangeNotification,
-                this.binaryFileTypeRegexField);
-    }
-
-    public void binaryFileTypeRegexFieldDidChange(NSNotification sender) {
-        String value = this.binaryFileTypeRegexField.stringValue().trim();
-        try {
-            Pattern compiled = Pattern.compile(value);
-            Preferences.instance().setProperty("filetype.binary.regex",
-                    compiled.pattern());
-        }
-        catch(PatternSyntaxException e) {
-            log.warn("Invalid regex:"+e.getMessage());
-        }
-    }
+//    private NSTextField binaryFileTypeRegexField; //IBOutlet
+//
+//    public void setBinaryFileTypeRegexField(NSTextField binaryFileTypeRegexField) {
+//        this.binaryFileTypeRegexField = binaryFileTypeRegexField;
+//        this.binaryFileTypeRegexField.setStringValue(Preferences.instance().getProperty("filetype.binary.regex"));
+//        NSNotificationCenter.defaultCenter().addObserver(this,
+//                new NSSelector("binaryFileTypeRegexFieldDidChange", new Class[]{NSNotification.class}),
+//                NSControl.ControlTextDidChangeNotification,
+//                this.binaryFileTypeRegexField);
+//    }
+//
+//    public void binaryFileTypeRegexFieldDidChange(NSNotification sender) {
+//        String value = this.binaryFileTypeRegexField.stringValue().trim();
+//        try {
+//            Pattern compiled = Pattern.compile(value);
+//            Preferences.instance().setProperty("filetype.binary.regex",
+//                    compiled.pattern());
+//        }
+//        catch(PatternSyntaxException e) {
+//            log.warn("Invalid regex:"+e.getMessage());
+//        }
+//    }
 
     private NSButton downloadSkipButton; //IBOutlet
 
@@ -1202,8 +1204,8 @@ public class CDPreferencesController extends CDWindowController {
 
     public void setDownloadSkipRegexField(NSTextView downloadSkipRegexField) {
         this.downloadSkipRegexField = downloadSkipRegexField;
-        this.downloadSkipRegexField.textStorage().appendAttributedString(
-                new NSAttributedString(Preferences.instance().getProperty("queue.download.skip.regex"), FIXED_WITH_FONT_ATTRIBUTES));
+        this.downloadSkipRegexField.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
+        this.downloadSkipRegexField.setString(Preferences.instance().getProperty("queue.download.skip.regex"));
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("downloadSkipRegexFieldDidChange", new Class[]{NSNotification.class}),
                 NSText.TextDidChangeNotification,
@@ -1211,15 +1213,20 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     public void downloadSkipRegexFieldDidChange(NSNotification sender) {
-        String value = this.downloadSkipRegexField.textStorage().stringReference().string().trim();
+        String value = this.downloadSkipRegexField.string().trim();
+        if("".equals(value)) {
+            Preferences.instance().setProperty("queue.download.skip.enable", false);
+            Preferences.instance().setProperty("queue.download.skip.regex", value);
+            this.downloadSkipButton.setState(NSCell.OffState);
+        }
         try {
             Pattern compiled = Pattern.compile(value);
             Preferences.instance().setProperty("queue.download.skip.regex",
                     compiled.pattern());
-            this.mark(this.downloadSkipRegexField, null);
+            this.mark(this.downloadSkipRegexField.textStorage(), null);
         }
         catch(PatternSyntaxException e) {
-            this.mark(this.downloadSkipRegexField, e);
+            this.mark(this.downloadSkipRegexField.textStorage(), e);
         }
     }
 
@@ -1241,8 +1248,8 @@ public class CDPreferencesController extends CDWindowController {
 
     public void setUploadSkipRegexField(NSTextView uploadSkipRegexField) {
         this.uploadSkipRegexField = uploadSkipRegexField;
-        this.uploadSkipRegexField.textStorage().appendAttributedString(
-                new NSAttributedString(Preferences.instance().getProperty("queue.upload.skip.regex"), FIXED_WITH_FONT_ATTRIBUTES));
+        this.uploadSkipRegexField.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
+        this.uploadSkipRegexField.setString(Preferences.instance().getProperty("queue.upload.skip.regex"));
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("uploadSkipRegexFieldDidChange", new Class[]{NSNotification.class}),
                 NSText.TextDidChangeNotification,
@@ -1250,15 +1257,20 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     public void uploadSkipRegexFieldDidChange(NSNotification sender) {
-        String value = this.uploadSkipRegexField.textStorage().stringReference().string().trim();
+        String value = this.uploadSkipRegexField.string().trim();
+        if("".equals(value)) {
+            Preferences.instance().setProperty("queue.upload.skip.enable", false);
+            Preferences.instance().setProperty("queue.upload.skip.regex", value);
+            this.uploadSkipButton.setState(NSCell.OffState);
+        }
         try {
             Pattern compiled = Pattern.compile(value);
             Preferences.instance().setProperty("queue.upload.skip.regex",
                     compiled.pattern());
-            this.mark(this.uploadSkipRegexField, null);
+            this.mark(this.uploadSkipRegexField.textStorage(), null);
         }
         catch(PatternSyntaxException e) {
-            this.mark(this.uploadSkipRegexField, e);
+            this.mark(this.uploadSkipRegexField.textStorage(), e);
         }
     }
 
@@ -1267,23 +1279,23 @@ public class CDPreferencesController extends CDWindowController {
             new Object[]{NSAttributedString.ForegroundColorAttributeName}
     );
 
-    private void mark(NSTextView view, PatternSyntaxException e) {
+    private void mark(NSMutableAttributedString text, PatternSyntaxException e) {
         if(null == e) {
-            view.textStorage().removeAttributeInRange(
+            text.removeAttributeInRange(
                     NSAttributedString.ForegroundColorAttributeName,
-                    new NSRange(0, view.textStorage().length()));
+                    new NSRange(0, text.length()));
             return;
         }
         int index = e.getIndex(); //The approximate index in the pattern of the error
         NSRange range = null;
         if(-1 == index) {
-            range = new NSRange(0, view.textStorage().length());
+            range = new NSRange(0, text.length());
         }
-        if(index < view.textStorage().length()) {
+        if(index < text.length()) {
             //Initializes the NSRange with the range elements of location and length;
             range = new NSRange(index, 1);
         }
-        view.textStorage().addAttributesInRange(RED_FONT, range);
+        text.addAttributesInRange(RED_FONT, range);
     }
 
     private NSTextField loginField; //IBOutlet

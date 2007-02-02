@@ -106,6 +106,14 @@ public class Host extends NSObject {
      * @param dict
      */
     public Host(NSDictionary dict) {
+        this.init(dict);
+    }
+
+    /**
+     * 
+     * @param dict
+     */
+    public void init(NSDictionary dict) {
         Object protocolObj = dict.objectForKey(Host.PROTOCOL);
         if(protocolObj != null) {
             this.setProtocol((String) protocolObj);

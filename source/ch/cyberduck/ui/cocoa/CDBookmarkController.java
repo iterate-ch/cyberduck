@@ -497,7 +497,8 @@ public class CDBookmarkController extends CDWindowController {
 
     public void hostFieldDidChange(final NSNotification sender) {
         try {
-            this.host = Host.parse(hostField.stringValue());
+            NSDictionary parsed = Host.parse(hostField.stringValue().trim()).getAsDictionary();
+            this.host.init(parsed);
             this.updateFields();
         }
         catch(MalformedURLException e) {
