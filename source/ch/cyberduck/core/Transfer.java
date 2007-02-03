@@ -460,6 +460,14 @@ public abstract class Transfer extends NSObject {
     }
 
     /**
+     * @return True if the transfer progress is zero and has presumably never
+     * been started yet
+     */
+    public boolean isVirgin() {
+        return this.getCurrent() == 0;
+    }
+
+    /**
      * @return True if the bytes transferred equal the size of the queue and
      * the bytes transfered is > 0
      */

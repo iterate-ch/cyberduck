@@ -26,6 +26,8 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
+import java.util.Iterator;
+
 /**
  * @version $Id$
  */
@@ -353,7 +355,6 @@ public class CDQueueController extends CDWindowController
     }
 
     /**
-     *
      * @param transfer
      */
     public void startItem(final Transfer transfer) {
@@ -361,7 +362,6 @@ public class CDQueueController extends CDWindowController
     }
 
     /**
-     *
      * @param transfer
      * @param resumeRequested
      * @param reloadRequested
@@ -378,6 +378,7 @@ public class CDQueueController extends CDWindowController
         this.background(new BackgroundActionImpl(this) {
             boolean resume = resumeRequested;
             boolean reload = reloadRequested;
+
             public void run() {
                 try {
                     transfer.getSession().addErrorListener(this);
@@ -483,6 +484,7 @@ public class CDQueueController extends CDWindowController
     private static final String TOOLBAR_CLEAN_UP = "Clean Up";
     private static final String TOOLBAR_OPEN = "Open";
     private static final String TOOLBAR_SHOW = "Show";
+    private static final String TOOLBAR_TRASH = "Trash";
 
     /**
      * NSToolbar.Delegate
@@ -556,6 +558,15 @@ public class CDQueueController extends CDWindowController
             item.setAction(new NSSelector("clearButtonClicked", new Class[]{Object.class}));
             return item;
         }
+        if(itemIdentifier.equals(TOOLBAR_TRASH)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_TRASH, ""));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_TRASH, ""));
+            item.setToolTip(NSBundle.localizedString("Move to Trash", ""));
+            item.setImage(NSImage.imageNamed("trash.tiff"));
+            item.setTarget(this);
+            item.setAction(new NSSelector("trashButtonClicked", new Class[]{Object.class}));
+            return item;
+        }
         // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
         // Returning null will inform the toolbar this kind of item is not supported.
         return null;
@@ -581,7 +592,8 @@ public class CDQueueController extends CDWindowController
     public void stopButtonClicked(final Object sender) {
         NSEnumerator iterator = queueTable.selectedRowEnumerator();
         while(iterator.hasMoreElements()) {
-            Transfer transfer = (Transfer) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
+            int i = ((Number) iterator.nextElement()).intValue();
+            Transfer transfer = (Transfer) QueueCollection.instance().get(i);
             if(transfer.isRunning()) {
                 transfer.cancel();
             }
@@ -600,10 +612,10 @@ public class CDQueueController extends CDWindowController
     public void resumeButtonClicked(final Object sender) {
         NSEnumerator iterator = queueTable.selectedRowEnumerator();
         while(iterator.hasMoreElements()) {
-            int i = ((Integer) iterator.nextElement()).intValue();
+            int i = ((Number) iterator.nextElement()).intValue();
             Transfer transfer = (Transfer) QueueCollection.instance().get(i);
             if(!transfer.isRunning()) {
-                this.startItem(transfer, true, false);
+                this.startItem(transfer, !transfer.isVirgin(), false);
             }
         }
     }
@@ -611,7 +623,7 @@ public class CDQueueController extends CDWindowController
     public void reloadButtonClicked(final Object sender) {
         NSEnumerator iterator = queueTable.selectedRowEnumerator();
         while(iterator.hasMoreElements()) {
-            int i = ((Integer) iterator.nextElement()).intValue();
+            int i = ((Number) iterator.nextElement()).intValue();
             Transfer transfer = (Transfer) QueueCollection.instance().get(i);
             if(!transfer.isRunning()) {
                 this.startItem(transfer, false, true);
@@ -620,59 +632,66 @@ public class CDQueueController extends CDWindowController
     }
 
     public void openButtonClicked(final Object sender) {
-        if(this.queueTable.selectedRow() != -1) {
+        if(this.queueTable.numberOfSelectedRows() == 1) {
             Transfer q = (Transfer) QueueCollection.instance().get(this.queueTable.selectedRow());
-            String file = q.getRoot().getLocal().toString();
-            if(!NSWorkspace.sharedWorkspace().openFile(file)) {
-                if(q.isComplete()) {
-                    this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not open the file", ""), //title
-                            NSBundle.localizedString("Could not open the file", "") + " \""
-                                    + file
-                                    + "\". " + NSBundle.localizedString("It moved since you downloaded it.", ""), // message
-                            NSBundle.localizedString("OK", ""), // defaultbutton
-                            null, //alternative button
-                            null //other button
-                    ));
-                }
-                else {
-                    this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not open the file", ""), //title
-                            NSBundle.localizedString("Could not open the file", "") + " \""
-                                    + file
-                                    + "\". " + NSBundle.localizedString("The file has not yet been downloaded.", ""), // message
-                            NSBundle.localizedString("OK", ""), // defaultbutton
-                            null, //alternative button
-                            null //other button
-                    ));
+            for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
+                Local l = ((Path) iter.next()).getLocal();
+                if(!NSWorkspace.sharedWorkspace().openFile(l.getAbsolute())) {
+                    if(q.isComplete()) {
+                        this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not open the file", ""), //title
+                                NSBundle.localizedString("Could not open the file", "") + " \""
+                                        + l.getName()
+                                        + "\". " + NSBundle.localizedString("It moved since you downloaded it.", ""), // message
+                                NSBundle.localizedString("OK", ""), // defaultbutton
+                                null, //alternative button
+                                null //other button
+                        ));
+                    }
+                    else {
+                        this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not open the file", ""), //title
+                                NSBundle.localizedString("Could not open the file", "") + " \""
+                                        + l.getName()
+                                        + "\". " + NSBundle.localizedString("The file has not yet been downloaded.", ""), // message
+                                NSBundle.localizedString("OK", ""), // defaultbutton
+                                null, //alternative button
+                                null //other button
+                        ));
+                    }
                 }
             }
         }
     }
 
     public void revealButtonClicked(final Object sender) {
-        if(this.queueTable.selectedRow() != -1) {
+        if(this.queueTable.numberOfSelectedRows() == 1) {
             Transfer q = (Transfer) QueueCollection.instance().get(this.queueTable.selectedRow());
-            String file = q.getRoot().getLocal().toString();
-            if(!NSWorkspace.sharedWorkspace().selectFile(file, "")) {
-                if(q.isComplete()) {
-                    this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not show the file in the Finder", ""), //title
-                            NSBundle.localizedString("Could not show the file", "") + " \""
-                                    + file
-                                    + "\". " + NSBundle.localizedString("It moved since you downloaded it.", ""), // message
-                            NSBundle.localizedString("OK", ""), // defaultbutton
-                            null, //alternative button
-                            null //other button
-                    ));
+            for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
+                Local l = ((Path) iter.next()).getLocal();
+                // If a second path argument is specified, a new file viewer is opened. If you specify an
+                // empty string (@"") for this parameter, the file is selected in the main viewer.
+                if(!NSWorkspace.sharedWorkspace().selectFile(l.getAbsolute(), l.getParentFile().getAbsolutePath())) {
+                    if(q.isComplete()) {
+                        this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not show the file in the Finder", ""), //title
+                                NSBundle.localizedString("Could not show the file", "") + " \""
+                                        + l.getName()
+                                        + "\". " + NSBundle.localizedString("It moved since you downloaded it.", ""), // message
+                                NSBundle.localizedString("OK", ""), // defaultbutton
+                                null, //alternative button
+                                null //other button
+                        ));
+                    }
+                    else {
+                        this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not show the file in the Finder", ""), //title
+                                NSBundle.localizedString("Could not show the file", "") + " \""
+                                        + l.getName()
+                                        + "\". " + NSBundle.localizedString("The file has not yet been downloaded.", ""), // message
+                                NSBundle.localizedString("OK", ""), // defaultbutton
+                                null, //alternative button
+                                null //other button
+                        ));
+                    }
                 }
-                else {
-                    this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not show the file in the Finder", ""), //title
-                            NSBundle.localizedString("Could not show the file", "") + " \""
-                                    + file
-                                    + "\". " + NSBundle.localizedString("The file has not yet been downloaded.", ""), // message
-                            NSBundle.localizedString("OK", ""), // defaultbutton
-                            null, //alternative button
-                            null //other button
-                    ));
-                }
+                else break;
             }
         }
     }
@@ -681,7 +700,7 @@ public class CDQueueController extends CDWindowController
         NSEnumerator iterator = queueTable.selectedRowEnumerator();
         int j = 0;
         while(iterator.hasMoreElements()) {
-            int i = ((Integer) iterator.nextElement()).intValue();
+            int i = ((Number) iterator.nextElement()).intValue();
             Transfer q = (Transfer) QueueCollection.instance().get(i - j);
             if(!q.isRunning()) {
                 QueueCollection.instance().remove(i - j);
@@ -697,6 +716,26 @@ public class CDQueueController extends CDWindowController
             if(!c.getQueue().isRunning() && c.getQueue().isComplete()) {
                 QueueCollection.instance().remove(i);
                 i--;
+            }
+        }
+        this.reloadQueueTable();
+    }
+
+    public void trashButtonClicked(final Object sender) {
+        NSEnumerator iterator = queueTable.selectedRowEnumerator();
+        while(iterator.hasMoreElements()) {
+            int i = ((Number) iterator.nextElement()).intValue();
+            Transfer q = (Transfer) QueueCollection.instance().get(i);
+            if(!q.isRunning()) {
+                for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
+                    Local l = ((Path) iter.next()).getLocal();
+                    if(l.exists()) {
+                        if(0 > NSWorkspace.sharedWorkspace().performFileOperation(NSWorkspace.RecycleOperation,
+                                l.getParent(), "", new NSArray(l.getName()))) {
+                            log.warn("Failed to move "+l.getAbsolute()+" to Trash");
+                        }
+                    }
+                }
             }
         }
         this.reloadQueueTable();
@@ -734,6 +773,7 @@ public class CDQueueController extends CDWindowController
                 TOOLBAR_CLEAN_UP,
                 TOOLBAR_SHOW,
                 TOOLBAR_OPEN,
+                TOOLBAR_TRASH,
                 NSToolbarItem.CustomizeToolbarItemIdentifier,
                 NSToolbarItem.SpaceItemIdentifier,
                 NSToolbarItem.SeparatorItemIdentifier,
@@ -797,81 +837,67 @@ public class CDQueueController extends CDWindowController
             return false;
         }
         if(identifier.equals("stopButtonClicked:")) {
-            if(this.queueTable.numberOfSelectedRows() < 1) {
-                return false;
-            }
-            NSEnumerator iterator = queueTable.selectedRowEnumerator();
-            synchronized(QueueCollection.instance()) {
-                while(iterator.hasMoreElements()) {
-                    Transfer transfer = (Transfer) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
-                    if(null == transfer) {
-                        return false;
-                    }
-                    if(transfer.isRunning()) {
-                        return true;
-                    }
+            return this.validate(new TransferToolbarValidator() {
+                public boolean validate(Transfer transfer) {
+                    return transfer.isRunning();
                 }
-            }
-            return false;
+            });
         }
-        if(identifier.equals("resumeButtonClicked:")) {
-            if(this.queueTable.numberOfSelectedRows() > 0) {
-                synchronized(QueueCollection.instance()) {
-                    Transfer transfer = (Transfer) QueueCollection.instance().get(this.queueTable.selectedRow());
-                    if(null == transfer) {
-                        return false;
-                    }
-                    return !transfer.isRunning() && !transfer.isComplete();
-                }
-            }
-            return false;
-        }
-        if(identifier.equals("reloadButtonClicked:")) {
-            if(this.queueTable.numberOfSelectedRows() > 0) {
-                synchronized(QueueCollection.instance()) {
-                    Transfer transfer = (Transfer) QueueCollection.instance().get(this.queueTable.selectedRow());
-                    if(null == transfer) {
-                        return false;
-                    }
+        if(identifier.equals("reloadButtonClicked:")
+                || identifier.equals("deleteButtonClicked:")) {
+            return this.validate(new TransferToolbarValidator() {
+                public boolean validate(Transfer transfer) {
                     return !transfer.isRunning();
                 }
-            }
-            return false;
+            });
+        }
+        if(identifier.equals("resumeButtonClicked:")) {
+            return this.validate(new TransferToolbarValidator() {
+                public boolean validate(Transfer transfer) {
+                    return !transfer.isRunning() && !transfer.isComplete() && !transfer.isVirgin();
+                }
+            });
         }
         if(identifier.equals("openButtonClicked:")
-                || identifier.equals(TOOLBAR_SHOW) || identifier.equals("revealButtonClicked:")) {
-            if(this.queueTable.numberOfSelectedRows() == 1) {
-                synchronized(QueueCollection.instance()) {
-                    Transfer transfer = (Transfer) QueueCollection.instance().get(this.queueTable.selectedRow());
-                    if(null == transfer) {
-                        return false;
+                || identifier.equals("revealButtonClicked:")
+                || identifier.equals("trashButtonClicked:")) {
+            return this.validate(new TransferToolbarValidator() {
+                public boolean validate(Transfer transfer) {
+                    if(!transfer.isRunning()) {
+                        for(Iterator iter = transfer.getRoots().iterator(); iter.hasNext(); ) {
+                            if(((Path)iter.next()).getLocal().exists()) {
+                                return true;
+                            }
+                        }
                     }
-                    return transfer.getRoot().getLocal().exists();
+                    return false;
                 }
-            }
-            return false;
+            });
         }
         if(identifier.equals("clearButtonClicked:")) {
             return this.queueTable.numberOfRows() > 0;
         }
-        if(identifier.equals("deleteButtonClicked:")) {
-            if(this.queueTable.numberOfSelectedRows() < 1) {
-                return false;
-            }
-            NSEnumerator iterator = queueTable.selectedRowEnumerator();
-            while(iterator.hasMoreElements()) {
-                synchronized(QueueCollection.instance()) {
-                    Transfer transfer = (Transfer) QueueCollection.instance().get(((Integer) iterator.nextElement()).intValue());
-                    if(null == transfer) {
-                        return false;
-                    }
-                    if(transfer.isRunning()) {
-                        return false;
-                    }
+        return true;
+    }
+
+    private boolean validate(TransferToolbarValidator v) {
+        NSEnumerator iterator = queueTable.selectedRowEnumerator();
+        while(iterator.hasMoreElements()) {
+            synchronized(QueueCollection.instance()) {
+                int i = ((Number) iterator.nextElement()).intValue();
+                Transfer transfer = (Transfer) QueueCollection.instance().get(i);
+                if(null == transfer) {
+                    return false;
+                }
+                if(v.validate(transfer)) {
+                    return true;
                 }
             }
-            return true;
         }
-        return true;
+        return false;
+    }
+
+    private interface TransferToolbarValidator {
+        public boolean validate(Transfer transfer);
     }
 }
