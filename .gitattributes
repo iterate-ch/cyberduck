@@ -1044,6 +1044,7 @@ img/stop16.tiff -text
 img/symlink.tiff -text
 img/sync32.tiff -text
 img/transparent.tiff -text
+img/trash.tiff -text svneol=unset#image/tiff
 img/unlocked.tiff -text
 img/update.tiff -text svneol=unset#image/tiff
 img/uploadFile.tiff -text
