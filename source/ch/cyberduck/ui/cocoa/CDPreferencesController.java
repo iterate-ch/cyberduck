@@ -1197,6 +1197,9 @@ public class CDPreferencesController extends CDWindowController {
 
     public void downloadSkipButtonClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.OnState;
+        downloadSkipRegexField.setSelectable(enabled);
+        downloadSkipRegexField.setEditable(enabled);
+        downloadSkipRegexField.setTextColor(enabled ? NSColor.controlTextColor() : NSColor.disabledControlTextColor());
         Preferences.instance().setProperty("queue.download.skip.enable", enabled);
     }
 
@@ -1241,6 +1244,9 @@ public class CDPreferencesController extends CDWindowController {
 
     public void uploadSkipButtonClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.OnState;
+        uploadSkipRegexField.setSelectable(enabled);
+        uploadSkipRegexField.setEditable(enabled);
+        uploadSkipRegexField.setTextColor(enabled ? NSColor.controlTextColor() : NSColor.disabledControlTextColor());
         Preferences.instance().setProperty("queue.upload.skip.enable", enabled);
     }
 
