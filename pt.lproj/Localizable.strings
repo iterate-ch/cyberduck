@@ -193,6 +193,9 @@
 /* A column in the browser */
 "Modified" = "Modificado";
 
+/* Move a downloaded file to the trash */
+"Move to Trash" = "Move to Trash";
+
 /* No comment provided by engineer. */
 "Multiple files" = "Múltiplos Ficheiros";
 
@@ -336,8 +339,10 @@
 "Transfer in progress" = "Transferências em progresso";
 
 /* Toolbar item */
-"Transfers" = "Transferências
-";
+"Transfers" = "Transferências";
+
+/* Toolbar item */
+"Trash" = "Trash";
 
 /* No comment provided by engineer. */
 "Unknown size" = "Dimensão desconhecida";

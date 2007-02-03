@@ -193,6 +193,9 @@
 /* A column in the browser */
 "Modified" = "Változtatva";
 
+/* Move a downloaded file to the trash */
+"Move to Trash" = "Move to Trash";
+
 /* No comment provided by engineer. */
 "Multiple files" = "Több file";
 
@@ -358,6 +361,9 @@
 
 /* Toolbar item */
 "Transfers" = "Transfers";
+
+/* Toolbar item */
+"Trash" = "Trash";
 
 /* No comment provided by engineer. */
 "Try to resume transfer" = "Visszalépés később";

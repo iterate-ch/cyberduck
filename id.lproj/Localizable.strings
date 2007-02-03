@@ -193,6 +193,9 @@
 /* A column in the browser */
 "Modified" = "TelahDirubah";
 
+/* Move a downloaded file to the trash */
+"Move to Trash" = "Move to Trash";
+
 /* No comment provided by engineer. */
 "Multiple files" = "Kumpulan file";
 
@@ -358,6 +361,9 @@
 
 /* Toolbar item */
 "Transfers" = "Transfer";
+
+/* Toolbar item */
+"Trash" = "Trash";
 
 /* No comment provided by engineer. */
 "Try to resume transfer" = "Mencoba untuk melanjutkan transfer";
