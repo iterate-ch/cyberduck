@@ -85,7 +85,7 @@
 	<key>SUCheckAtStartup</key>
 	<integer>1</integer>
 	<key>SUFeedURL</key>
-	<string>http://update.cyberduck.ch/changelog.rss</string>
+	<string>_SPARKLEFEED_</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>

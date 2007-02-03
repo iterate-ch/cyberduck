@@ -159,16 +159,30 @@
 		<checksum file="${build}/localizations/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg" algorithm="md5" />
 		<delete dir="${build}/${localization}"/>
 	</target>
+	
+	<target name="nightly">
+		<antcall target="package">
+			<param name="sparkle.feed" value="http://update.cyberduck.ch/nightly/changelog.rss"/>
+		</antcall>
+	</target>
 
-	<target name="release" depends="build, timestamp, revision">
+	<target name="release">
+		<antcall target="package">
+			<param name="sparkle.feed" value="http://update.cyberduck.ch/changelog.rss"/>
+		</antcall>
+	</target>
+	
+	<target name="package" depends="build, timestamp, revision">
 		<echo message="_TIMESTAMP_=${touch.time}" />
 		<echo message="_VERSION_=${cyberduck.version.major}.${cyberduck.version.minor}" />
+		<echo message="_SPARKLEFEED_=${sparkle.feed}" />
 		<replace dir="${app.bundle}" summary="true" encoding="UTF-8">
 			<include name="**/InfoPlist.strings" />
 			<include name="**/Info.plist" />
 			<replacefilter token="_TIMESTAMP_" value="${touch.time}" />
 			<replacefilter token="_REVISION_" value="${svn.revision}" />
 			<replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
+			<replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}" />
 		</replace>
 		<echo message="Creating tar.gz archive..." />
 		<exec dir="${build.deploy}" executable="tar" spawn="false">
@@ -199,7 +213,30 @@
 		</replace>
 	</target>
 
-	<target name="mirror" depends="revision">
+	<target name="mirror.nightly" depends="revision">
+		<scp file="${build}/${app.name}-${svn.revision}.tar.gz"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
+			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${build}/${app.name}-${svn.revision}.tar.gz.md5"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
+			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${build}/changelog.rss"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
+			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${www.update}/changelog.html"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
+			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   passphrase="">
+		</scp>
+	</target>
+
+	<target name="mirror.release" depends="revision">
 		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"
 			   todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
 			   keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
