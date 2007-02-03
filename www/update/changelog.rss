@@ -12,9 +12,9 @@
 			<title>Cyberduck _VERSION_ (Revision _REVISION_)</title>
 			<pubDate>_TIMESTAMP_</pubDate>
 			<enclosure sparkle:version="_REVISION_" sparkle:md5Hash="_MD5SUM_" 
-				url="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz" 
+				url="_ARCHIVE_" 
 				type="application/octet-stream"/>
-			<sparkle:releaseNotesLink>http://update.cyberduck.ch/changelog.html</sparkle:releaseNotesLink>
+			<sparkle:releaseNotesLink>_CHANGELOG_</sparkle:releaseNotesLink>
 		</item>
 	</channel>
 </rss>

@@ -162,12 +162,16 @@
 	
 	<target name="nightly">
 		<antcall target="package">
+			<param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
+			<param name="url.changelog" value="http://update.cyberduck.ch/nightly/changelog.html"/>
 			<param name="sparkle.feed" value="http://update.cyberduck.ch/nightly/changelog.rss"/>
 		</antcall>
 	</target>
 
 	<target name="release">
 		<antcall target="package">
+			<param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
+			<param name="url.changelog" value="http://update.cyberduck.ch/changelog.html"/>
 			<param name="sparkle.feed" value="http://update.cyberduck.ch/changelog.rss"/>
 		</antcall>
 	</target>
@@ -179,10 +183,10 @@
 		<replace dir="${app.bundle}" summary="true" encoding="UTF-8">
 			<include name="**/InfoPlist.strings" />
 			<include name="**/Info.plist" />
+			<replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}" />
 			<replacefilter token="_TIMESTAMP_" value="${touch.time}" />
 			<replacefilter token="_REVISION_" value="${svn.revision}" />
 			<replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
-			<replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}" />
 		</replace>
 		<echo message="Creating tar.gz archive..." />
 		<exec dir="${build.deploy}" executable="tar" spawn="false">
@@ -204,9 +208,13 @@
 				<include name="changelog.rss"/>
 			</fileset>
 		</copy>
+		<echo message="_ARCHIVE_=${url.archive}" />
+		<echo message="_CHANGELOG_=${url.changelog}" />
 		<replace dir="${build}" summary="true" encoding="UTF-8">
 			<include name="changelog.rss" />
 			<replacefilter token="_TIMESTAMP_" value="${touch.time}" />
+			<replacefilter token="_ARCHIVE_" value="${url.archive}" />
+			<replacefilter token="_CHANGELOG_" value="${url.changelog}" />
 			<replacefilter token="_REVISION_" value="${svn.revision}" />
 			<replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
 			<replacefilter token="_MD5SUM_" value="${md5sum}" />
@@ -264,6 +272,16 @@
 		</scp>
 		<scp file="${www.update}/changelog.html"
 			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
+			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${build}/changelog.rss"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
+			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${www.update}/changelog.html"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
 			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
 			   passphrase="">
 		</scp>
