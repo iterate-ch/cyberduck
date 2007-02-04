@@ -45,7 +45,7 @@ public class AttributesTest extends TestCase {
 
         assertNotSame(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getPermission(), attributes.getPermission());
-        assertEquals(clone.getTimestamp(), attributes.getTimestamp());
+        assertEquals(clone.getModificationDate(), attributes.getModificationDate());
     }
 
     public void testGetAsDictionary() throws Exception {

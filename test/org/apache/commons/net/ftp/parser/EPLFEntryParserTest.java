@@ -4,10 +4,8 @@
 package org.apache.commons.net.ftp.parser;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
-import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.*;
 
-import java.util.Date;
+import ch.cyberduck.core.*;
 
 public class EPLFEntryParserTest extends junit.framework.TestCase {
 
@@ -71,7 +69,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         
         long millis = 825718503;
         millis = millis * 1000;
-        assertEquals("timestamp", millis, parsed.attributes.getTimestamp());
+        assertEquals("timestamp", millis, parsed.attributes.getModificationDate());
         assertEquals("type", Path.FILE_TYPE, parsed.attributes.getType());
         assertFalse("attr is dir", parsed.attributes.isDirectory());
         assertTrue("attr is file", parsed.attributes.isFile());
@@ -94,7 +92,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         
         long millis = 825718503;
         millis = millis * 1000;
-        assertEquals("timestamp", millis, parsed.attributes.getTimestamp());
+        assertEquals("timestamp", millis, parsed.attributes.getModificationDate());
         assertEquals("type", Path.DIRECTORY_TYPE, parsed.attributes.getType());
         assertTrue("attr is dir", parsed.attributes.isDirectory());
         assertFalse("attr is file", parsed.attributes.isFile());
@@ -144,21 +142,21 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         assertEquals("name", "djb.html", parsed.getName());
         assertFalse("is dir", parsed.attributes.isDirectory());
         assertEquals("size", 280, parsed.attributes.getSize(), 0);
-        assertEquals("timestamp", millis, parsed.attributes.getTimestamp());
+        assertEquals("timestamp", millis, parsed.attributes.getModificationDate());
         assertEquals("permissions", "--------- (000)", parsed.attributes.getPermission().toString());
         
         parsed = parser.parseFTPEntry(parent, "+m825718503,,r,s280,\tdjb.html\r\n");
         assertEquals("X name", "djb.html", parsed.getName());
         assertFalse("X is dir", parsed.attributes.isDirectory());
         assertEquals("X size", 280, parsed.attributes.getSize(), 0);
-        assertEquals("timestamp", millis, parsed.attributes.getTimestamp());
+        assertEquals("timestamp", millis, parsed.attributes.getModificationDate());
         assertEquals("permissions", "--------- (000)", parsed.attributes.getPermission().toString());
         
         parsed = parser.parseFTPEntry(parent, "+m825718503,r,s280,,\tdjb.html\r\n");
         assertEquals("XX name", "djb.html", parsed.getName());
         assertFalse("XX is dir", parsed.attributes.isDirectory());
         assertEquals("XX size", 280, parsed.attributes.getSize(), 0);
-        assertEquals("timestamp", millis, parsed.attributes.getTimestamp());
+        assertEquals("timestamp", millis, parsed.attributes.getModificationDate());
         assertEquals("permissions", "--------- (000)", parsed.attributes.getPermission().toString());
     }
 
