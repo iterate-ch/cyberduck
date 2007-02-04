@@ -234,7 +234,7 @@ public abstract class Path extends NSObject {
      * Read the timestamp and size of this path from the remote server
      *
      * @see ch.cyberduck.core.Attributes#setSize(double)
-     * @see ch.cyberduck.core.Attributes#setTimestamp(long)
+     * @see ch.cyberduck.core.Attributes#setModificationDate(long)
      */
     public abstract void readAttributes();
 
@@ -762,12 +762,12 @@ public abstract class Path extends NSObject {
      */
     private int compareTimestamp() {
         Calendar remote = this.asCalendar(
-                this.getRemote().attributes.getTimestamp()
+                this.getRemote().attributes.getModificationDate()
 //                        -this.getHost().getTimezone().getRawOffset()
                 ,
                 this.getHost().getTimezone(),
                 Calendar.MINUTE);
-        Calendar local = this.asCalendar(this.getLocal().attributes.getTimestamp(),
+        Calendar local = this.asCalendar(this.getLocal().attributes.getModificationDate(),
                 TimeZone.getDefault(),
                 Calendar.MINUTE);
         if(local.before(remote)) {

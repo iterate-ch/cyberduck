@@ -214,7 +214,7 @@ public class FTPPath extends Path {
                     session.check();
                     session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
                     try {
-                        this.attributes.setTimestamp(session.FTP.modtime(this.getAbsolute(),
+                        this.attributes.setModificationDate(session.FTP.modtime(this.getAbsolute(),
                                 this.getHost().getTimezone()));
                     }
                     catch(FTPException e) {
@@ -467,11 +467,11 @@ public class FTPPath extends Path {
                 }
                 if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
                     log.info("Updating timestamp");
-                    if(-1 == this.attributes.getTimestamp()) {
+                    if(-1 == this.attributes.getModificationDate()) {
                         this.readAttributes();
                     }
-                    if(this.attributes.getTimestamp() != -1) {
-                        long timestamp = this.attributes.getTimestamp();
+                    if(this.attributes.getModificationDate() != -1) {
+                        long timestamp = this.attributes.getModificationDate();
                         this.getLocal().setLastModified(timestamp/*, this.getHost().getTimezone()*/);
                     }
                 }
@@ -665,8 +665,8 @@ public class FTPPath extends Path {
                     if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                         log.info("Updating timestamp");
                         try {
-                            long timestamp = this.getLocal().getTimestamp();
-                            session.FTP.utime(timestamp, this.getName(), this.getHost().getTimezone());
+                            session.FTP.utime(this.getLocal().getModificationDate(),
+                                    this.getLocal().getCreationDate(), this.getName(), this.getHost().getTimezone());
 //                            if(session.isUTIMESupported()) {
 //                                session.FTP.utime(timestamp, this.getName(), this.getHost().getTimezone());
 //                            }
@@ -680,11 +680,11 @@ public class FTPPath extends Path {
                         catch(FTPException e) {
                             if(Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
                                 if(!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
-                                    if(-1 == this.attributes.getTimestamp()) {
+                                    if(-1 == this.attributes.getModificationDate()) {
                                         this.readAttributes();
                                     }
-                                    if(this.attributes.getTimestamp() != -1) {
-                                        this.getLocal().setLastModified(this.attributes.getTimestamp()/*,
+                                    if(this.attributes.getModificationDate() != -1) {
+                                        this.getLocal().setLastModified(this.attributes.getModificationDate()/*,
                                                 this.getHost().getTimezone()*/);
                                     }
                                 }

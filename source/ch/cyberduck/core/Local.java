@@ -26,12 +26,12 @@ import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSPathUtilities;
+import com.apple.cocoa.foundation.NSDate;
 
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -253,31 +253,65 @@ public class Local extends File implements IAttributes {
 
     private native void removeCustomIcon(String path);
 
-    public Permission getPermission() {
+    public Permission getPermission() throws IOException {
         try {
             NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
             Object posix = fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions);
             if(null == posix) {
-                //The file may have desappeared since
-                throw new IllegalArgumentException("No such file.");
+                //The file may have disappeared since
+                throw new IOException("No such file");
             }
             return new Permission(((Number) posix).intValue());
         }
         catch(IllegalArgumentException e) {
-            log.error(this.getAbsolute() + ":" + e.getMessage());
-            return new Permission();
+            throw new IOException(e.getMessage());
         }
     }
 
-    public void setPermission(Permission p) {
+    public void setPermission(Permission p) throws IOException {
         boolean success = NSPathUtilities.setFileAttributes(this.getAbsolutePath(),
                 new NSDictionary(new Integer(p.getDecimalCode()),
                         NSPathUtilities.FilePosixPermissions));
-        log.debug("Setting permissions on local file suceeded:" + success);
+        if(!success) {
+            throw new IOException("File attribute changed failed");
+        }
     }
 
-    public long getTimestamp() {
+    public long getModificationDate() {
         return super.lastModified();
+    }
+
+    public void setModificationDate(long millis) throws IOException  {
+        boolean success = NSPathUtilities.setFileAttributes(this.getAbsolutePath(),
+                new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis)),
+                        NSPathUtilities.FileModificationDate));
+        if(!success) {
+            throw new IOException("File attribute changed failed");
+        }
+    }
+
+    public long getCreationDate() throws IOException {
+        try {
+            NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
+            Object date = fileAttributes.objectForKey(NSPathUtilities.FileCreationDate);
+            if(null == date) {
+                //The file may have disappeared since
+                throw new IOException("No such file");
+            }
+            return NSDate.timeIntervalToMilliseconds(((NSDate)date).timeIntervalSinceDate(NSDate.DateFor1970));
+        }
+        catch(IllegalArgumentException e) {
+            throw new IOException(e.getMessage());
+        }
+    }
+
+    public void setCreationDate(long millis) throws IOException {
+        boolean success = NSPathUtilities.setFileAttributes(this.getAbsolutePath(),
+                new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis)),
+                        NSPathUtilities.FileCreationDate));
+        if(!success) {
+            throw new IOException("File attribute changed failed");
+        }
     }
 
     public double getSize() {

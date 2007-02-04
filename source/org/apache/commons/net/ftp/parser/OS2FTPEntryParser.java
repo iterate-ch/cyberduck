@@ -116,7 +116,7 @@ public class OS2FTPEntryParser extends RegexFTPFileEntryParserImpl {
             cal.set(Calendar.YEAR, year);
             cal.set(Calendar.DATE, day);
             cal.set(Calendar.MONTH, month);
-            f.attributes.setTimestamp(cal.getTimeInMillis());
+            f.attributes.setModificationDate(cal.getTimeInMillis());
 
             //set the name
             f.setPath(parent.getAbsolute(), name.trim());

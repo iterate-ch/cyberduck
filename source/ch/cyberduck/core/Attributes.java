@@ -24,9 +24,6 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import org.apache.log4j.Logger;
 
-import java.util.Calendar;
-import java.util.TimeZone;
-
 /**
  * Attributes of a remote directory or file.
  *
@@ -60,7 +57,7 @@ public class Attributes implements IAttributes {
         Attributes copy = new Attributes(this.getAsDictionary());
         copy.size = this.getSize();
         copy.permission = (Permission) this.getPermission().clone();
-        copy.modified = this.getTimestamp();
+        copy.modified = this.getModificationDate();
         return copy;
     }
 
@@ -101,14 +98,14 @@ public class Attributes implements IAttributes {
     /**
      * @param c The file modification date in milliseconds
      */
-    public void setTimestamp(long c) {
+    public void setModificationDate(long c) {
         this.modified = c;
     }
 
     /**
      * @return The file modification date in milliseconds
      */
-    public long getTimestamp() {
+    public long getModificationDate() {
         return this.modified;
     }
 

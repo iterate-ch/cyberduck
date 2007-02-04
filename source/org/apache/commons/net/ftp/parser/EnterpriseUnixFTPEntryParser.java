@@ -141,7 +141,7 @@ public class EnterpriseUnixFTPEntryParser extends RegexFTPFileEntryParserImpl {
                         month);
                 cal.set(Calendar.DATE,
                         Integer.parseInt(da));
-                f.attributes.setTimestamp(cal.getTime().getTime());
+                f.attributes.setModificationDate(cal.getTime().getTime());
             }
             catch(NumberFormatException e) {
                 // do nothing, date will be uninitialized

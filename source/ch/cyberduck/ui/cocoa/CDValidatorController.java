@@ -221,7 +221,7 @@ public abstract class CDValidatorController
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                             localSizeField.setHidden(false);
                             localModificationField.setAttributedStringValue(new NSAttributedString(
-                                    CDDateFormatter.getLongFormat(p.getLocal().attributes.getTimestamp(),
+                                    CDDateFormatter.getLongFormat(p.getLocal().attributes.getModificationDate(),
                                             p.getHost().getTimezone()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                             localModificationField.setHidden(false);
@@ -241,7 +241,7 @@ public abstract class CDValidatorController
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                             remoteSizeField.setHidden(false);
                             remoteModificationField.setAttributedStringValue(new NSAttributedString(
-                                    CDDateFormatter.getLongFormat(p.getRemote().attributes.getTimestamp(),
+                                    CDDateFormatter.getLongFormat(p.getRemote().attributes.getModificationDate(),
                                             p.getHost().getTimezone()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                             remoteModificationField.setHidden(false);

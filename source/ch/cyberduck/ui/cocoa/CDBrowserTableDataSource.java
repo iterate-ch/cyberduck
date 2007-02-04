@@ -187,8 +187,8 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                         CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
             }
             if(identifier.equals(MODIFIED_COLUMN)) {
-                if(item.attributes.getTimestamp() != -1) {
-                    return new NSAttributedString(CDDateFormatter.getShortFormat(item.attributes.getTimestamp(),
+                if(item.attributes.getModificationDate() != -1) {
+                    return new NSAttributedString(CDDateFormatter.getShortFormat(item.attributes.getModificationDate(),
                             item.getHost().getTimezone()),
                             CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
                 }

@@ -67,7 +67,7 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
     protected String tooltipForPath(Path p) {
         return p.getAbsolute() + "\n"
                 + Status.getSizeAsString(p.attributes.getSize()) + "\n"
-                + CDDateFormatter.getLongFormat(p.attributes.getTimestamp(), p.getHost().getTimezone());
+                + CDDateFormatter.getLongFormat(p.attributes.getModificationDate(), p.getHost().getTimezone());
     }
 
     /**
@@ -285,11 +285,11 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         public int compare(Object o1, Object o2) {
             Path p1 = (Path) o1;
             Path p2 = (Path) o2;
-            long d1 = p1.attributes.getTimestamp();
+            long d1 = p1.attributes.getModificationDate();
             if(-1 == d1) {
                 return 0;
             }
-            long d2 = p2.attributes.getTimestamp();
+            long d2 = p2.attributes.getModificationDate();
             if(-1 == d2) {
                 return 0;
             }

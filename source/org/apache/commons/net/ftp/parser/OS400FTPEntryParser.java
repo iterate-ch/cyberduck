@@ -94,7 +94,7 @@ public class OS400FTPEntryParser extends RegexFTPFileEntryParserImpl {
                 cal.set(Calendar.MINUTE, Integer.parseInt(min, 10));
                 cal.set(Calendar.SECOND, Integer.parseInt(sec, 10));
 
-                f.attributes.setTimestamp(cal.getTimeInMillis());
+                f.attributes.setModificationDate(cal.getTimeInMillis());
             }
             catch(NumberFormatException e) {
                 // do nothing, date will be uninitialized

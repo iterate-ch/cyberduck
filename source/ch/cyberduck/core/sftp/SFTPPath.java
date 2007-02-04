@@ -132,7 +132,7 @@ public class SFTPPath extends Path {
                             p.attributes.setOwner(f.getAttributes().getUID().toString());
                             p.attributes.setGroup(f.getAttributes().getGID().toString());
                             p.attributes.setSize(f.getAttributes().getSize().doubleValue());
-                            p.attributes.setTimestamp(
+                            p.attributes.setModificationDate(
                                     Long.parseLong(f.getAttributes().getModifiedTime().toString()) * 1000L);
                             if(f.isLink()) {
                                 try {
@@ -243,7 +243,7 @@ public class SFTPPath extends Path {
                     session.check();
                     session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
                     SftpFile f = session.SFTP.openFile(this.getAbsolute(), SftpSubsystemClient.OPEN_READ);
-                    this.attributes.setTimestamp(Long.parseLong(f.getAttributes().getModifiedTime().toString()) * 1000L);
+                    this.attributes.setModificationDate(Long.parseLong(f.getAttributes().getModifiedTime().toString()) * 1000L);
                     session.message(NSBundle.localizedString("Getting size of", "Status", "") + " " + this.getName());
                     this.attributes.setSize(f.getAttributes().getSize().doubleValue());
                     f.close();
@@ -455,11 +455,11 @@ public class SFTPPath extends Path {
                 }
                 if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
                     log.info("Updating timestamp");
-                    if(-1 == this.attributes.getTimestamp()) {
+                    if(-1 == this.attributes.getModificationDate()) {
                         this.readAttributes();
                     }
-                    if(this.attributes.getTimestamp() != -1) {
-                        long timestamp = this.attributes.getTimestamp();
+                    if(this.attributes.getModificationDate() != -1) {
+                        long timestamp = this.attributes.getModificationDate();
                         this.getLocal().setLastModified(timestamp/*, this.getHost().getTimezone()*/);
                     }
                 }
@@ -568,7 +568,7 @@ public class SFTPPath extends Path {
                         f = session.SFTP.openFile(this.getAbsolute(),
                                 SftpSubsystemClient.OPEN_READ);
                     }
-                    long timestamp = this.getLocal().getTimestamp();
+                    long timestamp = this.getLocal().getModificationDate();
                     attrs.setTimes(f.getAttributes().getAccessedTime(),
                             new UnsignedInteger32(timestamp / 1000L));
                     try {

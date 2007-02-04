@@ -1,5 +1,7 @@
 package ch.cyberduck.core;
 
+import java.io.IOException;
+
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -29,14 +31,18 @@ public interface IAttributes {
     public abstract double getSize();
 
     /**
-     * @return The modification date of the file using UTC
+     * @return The modification date of the file in UTC
      */
-    public abstract long getTimestamp();
+    public abstract long getModificationDate();
+
+    public abstract void setModificationDate(long millis) throws IOException;
 
     /**
      * @return The file permission mask
      */
-    public abstract Permission getPermission();
+    public abstract Permission getPermission() throws IOException;
+
+    public abstract void setPermission(Permission permission) throws IOException;
 
     /**
      * @return True if this path denotes a directory or is a symbolic link pointing to a directory

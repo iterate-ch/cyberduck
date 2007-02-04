@@ -737,7 +737,8 @@ public class FTPClient {
      * @param modtime Milliseconds since (00:00:00 GMT, January 1, 1970)
      * @param remoteFile name of remote file
      */
-    public void utime(long modtime, String remoteFile, TimeZone timezone) throws IOException, FTPException {
+    public void utime(long modtime, long createdtime, String remoteFile, TimeZone timezone)
+            throws IOException, FTPException {
         tsFormat.setTimeZone(timezone);
         String date = tsFormat.format(new Date(modtime));
         if(this.setUtimeSupported) {
@@ -747,7 +748,9 @@ public class FTPClient {
                 // The access time is set to the value of the first element,
                 // and the modification time is set to the value of the second element
                 // Accessed date, modified date, created date
-                this.site("UTIME "+remoteFile+" "+date+" "+date+" "+date+" UTC");
+                this.site("UTIME "+remoteFile+" "+tsFormat.format(new Date(modtime))
+                        +" "+tsFormat.format(new Date(modtime))
+                        +" "+tsFormat.format(new Date(createdtime))+" UTC");
             }
             catch(FTPException e) {
                 this.setUtimeSupported = false;

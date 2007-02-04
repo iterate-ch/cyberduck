@@ -143,7 +143,7 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
                 try {
                     Long stamp = Long.valueOf(timeString);
                     secsSince1970 = stamp.longValue();
-                    path.attributes.setTimestamp((long) (secsSince1970 * 1000));
+                    path.attributes.setModificationDate((long) (secsSince1970 * 1000));
                 }
                 catch(NumberFormatException ignored) {
                 }
