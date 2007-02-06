@@ -57,7 +57,7 @@ public class CDBrowserController extends CDWindowController
         log.debug("objectSpecifier");
         NSArray orderedDocs = (NSArray) NSKeyValue.valueForKey(NSApplication.sharedApplication(), "orderedBrowsers");
         int index = orderedDocs.indexOfObject(this);
-        if((index >= 0) && (index < orderedDocs.count())) {
+        if(index >= 0 && index < orderedDocs.count()) {
             NSScriptClassDescription desc
                     = (NSScriptClassDescription) NSScriptClassDescription.classDescriptionForClass(NSApplication.class);
             return new NSIndexSpecifier(desc, null, "orderedBrowsers", index);
@@ -1615,9 +1615,6 @@ public class CDBrowserController extends CDWindowController
         });
     }
 
-    private static final NSImage DISK_ICON = NSImage.imageNamed("disk.tiff");
-
-    private List pathPopupItems = new ArrayList();
     private Path workdir;
 
     private NSPopUpButton pathPopupButton; // IBOutlet
@@ -1629,7 +1626,8 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void pathPopupSelectionChanged(final Object sender) {
-        final Path selected = (Path) pathPopupItems.get(pathPopupButton.indexOfSelectedItem());
+        final Path selected = (Path) pathPopupButton.itemAtIndex(
+                pathPopupButton.indexOfSelectedItem()).representedObject();
         final Path previous = this.workdir();
         if(selected != null) {
             this.background(new BackgroundAction() {
@@ -1643,21 +1641,6 @@ public class CDBrowserController extends CDWindowController
                     }
                 }
             });
-        }
-    }
-
-    private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
-
-    private void addPathToPopup(Path p) {
-        this.pathPopupItems.add(p);
-        this.pathPopupButton.addItem(p.getAbsolute());
-        if(p.isRoot()) {
-            this.pathPopupButton.itemAtIndex(
-                    this.pathPopupButton.numberOfItems() - 1).setImage(DISK_ICON);
-        }
-        else {
-            this.pathPopupButton.itemAtIndex(
-                    this.pathPopupButton.numberOfItems() - 1).setImage(FOLDER_ICON);
         }
     }
 
@@ -1895,8 +1878,8 @@ public class CDBrowserController extends CDWindowController
                 Iterator sourcesIter = files.keySet().iterator();
                 Iterator destinationsIter = files.values().iterator();
                 for(; sourcesIter.hasNext(); ) {
-                    final Path source = ((Path)sourcesIter.next());
-                    final Path destination = ((Path)destinationsIter.next());
+                    final Path source = (Path) sourcesIter.next();
+                    final Path destination = (Path) destinationsIter.next();
                     final Local local = new Local(NSPathUtilities.temporaryDirectory(),
                             destination.getName());
                     try {
@@ -2124,7 +2107,7 @@ public class CDBrowserController extends CDWindowController
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
             final Path selected = (Path) i.next();
             if(this.isEditable(selected)) {
-                Object identifier = Editor.SUPPORTED_EDITORS.get(((NSMenuItem) sender).title());
+                Object identifier = Editor.SUPPORTED_EDITORS.get(sender.title());
                 if(identifier != null) {
                     Editor editor = new Editor(this);
                     editor.open(selected, (String)identifier);
@@ -2427,7 +2410,12 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void connectButtonClicked(final Object sender) {
-        CDSheetController controller = new CDConnectionController(this);
+        final CDSheetController controller = CDConnectionController.instance(this);
+        this.addListener(new CDWindowListener() {
+            public void windowWillClose() {
+                controller.invalidate();
+            }
+        });
         controller.beginSheet(false);
     }
 
@@ -2649,6 +2637,9 @@ public class CDBrowserController extends CDWindowController
         }, backgroundLock);
     }
 
+    private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
+    private static final NSImage DISK_ICON = NSImage.imageNamed("disk.tiff");
+
     /**
      * Accessor to the working directory
      * @return The current working directory or null if no file system is mounted
@@ -2673,7 +2664,6 @@ public class CDBrowserController extends CDWindowController
             this.invoke(new Runnable() {
                 public void run() {
                     navigationPopup.setStringValue("");
-                    pathPopupItems.clear();
                     pathPopupButton.removeAllItems();
                 }
             });
@@ -2714,15 +2704,22 @@ public class CDBrowserController extends CDWindowController
         this.invoke(new Runnable() {
             public void run() {
                 navigationPopup.setStringValue(workdir().getAbsolute());
-                pathPopupItems.clear();
                 pathPopupButton.removeAllItems();
                 // Update the path selection menu above the browser
                 if(isMounted()) {
-                    addPathToPopup(workdir);
-                    for(Path p = workdir; !p.isRoot();) {
+                    Path p = workdir;
+                    do {
+                        pathPopupButton.addItem(p.getAbsolute());
+                        if(p.isRoot()) {
+                            pathPopupButton.lastItem().setImage(DISK_ICON);
+                        }
+                        else {
+                            pathPopupButton.lastItem().setImage(FOLDER_ICON);
+                        }
+                        pathPopupButton.lastItem().setRepresentedObject(p);
                         p = p.getParent();
-                        addPathToPopup(p);
                     }
+                    while(!p.isRoot());
                 }
             }
         });
@@ -3140,7 +3137,7 @@ public class CDBrowserController extends CDWindowController
                 item.setTitle(NSBundle.localizedString("Cut", "Menu item"));
         }
         if(identifier.equals("showHiddenFilesClicked:")) {
-            item.setState((this.getFileFilter() instanceof NullPathFilter) ? NSCell.OnState : NSCell.OffState);
+            item.setState(this.getFileFilter() instanceof NullPathFilter ? NSCell.OnState : NSCell.OffState);
         }
         if(identifier.equals("encodingMenuClicked:")) {
             if(this.isMounted()) {
@@ -3239,7 +3236,7 @@ public class CDBrowserController extends CDWindowController
             return false;
         }
         if(identifier.equals("sendCustomCommandClicked:")) {
-            return (this.session instanceof ch.cyberduck.core.ftp.FTPSession) && this.isConnected();
+            return this.session instanceof ch.cyberduck.core.ftp.FTPSession && this.isConnected();
         }
         if(identifier.equals("gotoButtonClicked:")) {
             return this.isMounted();

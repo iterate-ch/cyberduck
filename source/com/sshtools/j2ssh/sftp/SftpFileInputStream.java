@@ -85,9 +85,12 @@ public class SftpFileInputStream extends InputStream {
 		byte[] buffer = new byte[1];
 		int read = file.getSFTPSubsystem().readFile(file.getHandle(), position,
 		    buffer, 0, 1);
-		position = UnsignedInteger64.add(position, read);
 
-		return buffer[0] & 0xFF;
+        if(read > 0) {
+		    position = UnsignedInteger64.add(position, read);
+        }
+
+        return buffer[0] & 0xFF;
 	}
 
 	/*
@@ -96,7 +99,7 @@ public class SftpFileInputStream extends InputStream {
 	 * Subclasses are  encouraged to provide a more efficient implementation of this method.
 	 */
 	public long skip(long n) {
-		position = position.add(position, (int)n);
+		position = UnsignedInteger64.add(position, (int)n);
 		return n;
 	}
 

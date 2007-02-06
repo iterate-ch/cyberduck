@@ -338,8 +338,8 @@ public abstract class Preferences {
          */
         defaults.put("connection.login.useKeychain", "true");
 
-        defaults.put("connection.buffer", "16384"); //in bytes, is 128kbit
-        defaults.put("connection.buffer.default", "16384");
+        defaults.put("connection.buffer", "32768"); //in bytes, is 256kbit
+        defaults.put("connection.buffer.default", "32768");
 
         defaults.put("connection.port.default", "21");
         defaults.put("connection.protocol.default", "ftp");

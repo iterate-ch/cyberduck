@@ -48,25 +48,25 @@ public class CDBookmarkController extends CDWindowController {
         this.protocolPopup = protocolPopup;
         this.protocolPopup.setEnabled(true);
         this.protocolPopup.removeAllItems();
-        this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{
-                Session.FTP_STRING,
-                Session.FTP_TLS_STRING,
-                Session.SFTP_STRING}));
+        this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{Session.FTP_STRING, Session.FTP_TLS_STRING, Session.SFTP_STRING}));
+        this.protocolPopup.itemWithTitle(Session.FTP_STRING).setRepresentedObject(Session.FTP);
+        this.protocolPopup.itemWithTitle(Session.FTP_TLS_STRING).setRepresentedObject(Session.FTP_TLS);
+        this.protocolPopup.itemWithTitle(Session.SFTP_STRING).setRepresentedObject(Session.SFTP);
         this.protocolPopup.setTarget(this);
         this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[]{Object.class}));
     }
 
     public void protocolSelectionChanged(final NSPopUpButton sender) {
         log.debug("protocolSelectionChanged:" + sender);
-        if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
+        if(protocolPopup.selectedItem().representedObject().equals(Session.SFTP)) {
             this.host.setProtocol(Session.SFTP);
             this.host.setPort(Session.SSH_PORT);
         }
-        if(protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
+        if(protocolPopup.selectedItem().representedObject().equals(Session.FTP_TLS)) {
             this.host.setProtocol(Session.FTP_TLS);
             this.host.setPort(Session.FTP_PORT);
         }
-        if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
+        if(protocolPopup.selectedItem().representedObject().equals(Session.FTP)) {
             this.host.setProtocol(Session.FTP);
             this.host.setPort(Session.FTP_PORT);
         }

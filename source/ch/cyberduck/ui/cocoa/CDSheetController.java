@@ -168,9 +168,20 @@ public abstract class CDSheetController extends CDWindowController implements CD
         log.debug("sheetDidClose:" + sheet);
         sheet.orderOut(null);
         this.callback(returncode);
-        this.invalidate();
+        if(!this.isSingleton()) {
+            this.invalidate();
+        }
         synchronized(lock) {
             lock.notifyAll();
         }
+    }
+
+    /**
+     * @return True if the class is a singleton and the object should
+     * not be invlidated upon the sheet is closed
+     * @see #sheetDidClose(com.apple.cocoa.application.NSPanel, int, Object)
+     */
+    public boolean isSingleton() {
+        return false;
     }
 }
