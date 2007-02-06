@@ -125,10 +125,6 @@ public class CDConnectionController extends CDSheetController {
         this.rendezvousPopup.addItem(item);
     }
 
-    private void removeItemFromRendezvousPopup(String item) {
-        this.rendezvousPopup.removeItemWithTitle(item);
-    }
-
     private RendezvousListener rendezvousListener;
 
     public void setRendezvousPopup(NSPopUpButton rendezvousPopup) {
@@ -152,7 +148,9 @@ public class CDConnectionController extends CDSheetController {
             public void serviceLost(final String servicename) {
                 CDConnectionController.this.invoke(new Runnable() {
                     public void run() {
-                        removeItemFromRendezvousPopup(Rendezvous.instance().getDisplayedName(servicename));
+                        CDConnectionController.this.rendezvousPopup.removeItemWithTitle(
+                                Rendezvous.instance().getDisplayedName(servicename)
+                        );
                     }
                 });
             }
@@ -160,7 +158,7 @@ public class CDConnectionController extends CDSheetController {
     }
 
     public void rendezvousSelectionDidChange(final NSPopUpButton sender) {
-        this.bookmarkSelectionDidChange((Host) Rendezvous.instance().getServiceWithDisplayedName(
+        this.bookmarkSelectionDidChange(Rendezvous.instance().getServiceWithDisplayedName(
                 rendezvousPopup.titleOfSelectedItem()));
     }
 
@@ -171,24 +169,27 @@ public class CDConnectionController extends CDSheetController {
         this.protocolPopup.setEnabled(true);
         this.protocolPopup.removeAllItems();
         this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{Session.FTP_STRING, Session.FTP_TLS_STRING, Session.SFTP_STRING}));
+        this.protocolPopup.itemWithTitle(Session.FTP_STRING).setRepresentedObject(Session.FTP);
+        this.protocolPopup.itemWithTitle(Session.FTP_TLS_STRING).setRepresentedObject(Session.FTP_TLS);
+        this.protocolPopup.itemWithTitle(Session.SFTP_STRING).setRepresentedObject(Session.SFTP);
         this.protocolPopup.setTarget(this);
         this.protocolPopup.setAction(new NSSelector("protocolSelectionDidChange", new Class[]{Object.class}));
     }
 
     public void protocolSelectionDidChange(final NSNotification sender) {
         log.debug("protocolSelectionDidChange:" + sender);
-        if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
+        if(protocolPopup.selectedItem().representedObject().equals(Session.FTP)) {
             this.portField.setIntValue(Session.FTP_PORT);
         }
-        if(protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
+        if(protocolPopup.selectedItem().representedObject().equals(Session.FTP_TLS)) {
             this.portField.setIntValue(Session.FTP_PORT);
         }
-        if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
+        if(protocolPopup.selectedItem().representedObject().equals(Session.SFTP)) {
             this.portField.setIntValue(Session.SSH_PORT);
         }
-        this.connectmodePopup.setEnabled(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)
-                || protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING));
-        this.pkCheckbox.setEnabled(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING));
+        this.connectmodePopup.setEnabled(protocolPopup.selectedItem().representedObject().equals(Session.FTP)
+                || protocolPopup.selectedItem().representedObject().equals(Session.FTP_TLS));
+        this.pkCheckbox.setEnabled(protocolPopup.selectedItem().representedObject().equals(Session.SFTP));
         this.updateURLLabel(null);
     }
 
@@ -301,13 +302,13 @@ public class CDConnectionController extends CDSheetController {
 
     public void portFieldTextDidChange(final NSNotification sender) {
         if(null == this.portField.stringValue() || this.portField.stringValue().equals("")) {
-            if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
+            if(protocolPopup.selectedItem().representedObject().equals(Session.SFTP)) {
                 this.portField.setStringValue("" + Session.SSH_PORT);
             }
-            if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
+            if(protocolPopup.selectedItem().representedObject().equals(Session.FTP)) {
                 this.portField.setStringValue("" + Session.FTP_PORT);
             }
-            if(protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
+            if(protocolPopup.selectedItem().representedObject().equals(Session.FTP_TLS)) {
                 this.portField.setStringValue("" + Session.FTP_PORT);
             }
         }
@@ -454,11 +455,29 @@ public class CDConnectionController extends CDSheetController {
                 Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP));
     }
 
+    private final static Map controllers = new HashMap();
+
+    public static CDConnectionController instance(final CDWindowController parent) {
+        if(!controllers.containsKey(parent)) {
+            controllers.put(parent, new CDConnectionController(parent) {
+                protected void invalidate() {
+                    controllers.remove(parent);
+                    super.invalidate();
+                }
+            });
+        }
+        return (CDConnectionController) controllers.get(parent);
+    }
+
+    public boolean isSingleton() {
+        return true;
+    }
+
     /**
      *
      * @param parent
      */
-    public CDConnectionController(final CDWindowController parent) {
+    private CDConnectionController(final CDWindowController parent) {
         super(parent);
         synchronized(NSApplication.sharedApplication()) {
             if(!NSApplication.loadNibNamed("Connection", this)) {
@@ -512,10 +531,10 @@ public class CDConnectionController extends CDSheetController {
                 if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
                     protocol = Session.SFTP;
                 }
-                else if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
+                else if(protocolPopup.selectedItem().representedObject().equals(Session.FTP)) {
                     protocol = Session.FTP;
                 }
-                else if(protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
+                else if(protocolPopup.selectedItem().representedObject().equals(Session.FTP_TLS)) {
                     protocol = Session.FTP_TLS;
                 }
                 Login l = new Login(hostField.stringValue(), protocol, usernameField.stringValue(), null);
@@ -580,13 +599,13 @@ public class CDConnectionController extends CDSheetController {
         }
         else {
         String protocol = null;
-        if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
+        if(protocolPopup.selectedItem().representedObject().equals(Session.SFTP)) {
             protocol = Session.SFTP + "://";
         }
-        if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
+        if(protocolPopup.selectedItem().representedObject().equals(Session.FTP)) {
             protocol = Session.FTP + "://";
         }
-        if(protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
+        if(protocolPopup.selectedItem().representedObject().equals(Session.FTP_TLS)) {
             protocol = Session.FTP_TLS + "://";
         }
         urlLabel.setStringValue(protocol + usernameField.stringValue()
@@ -598,24 +617,21 @@ public class CDConnectionController extends CDSheetController {
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             Host host = null;
-            if(protocolPopup.selectedItem().title().equals(Session.SFTP_STRING)) {
+            if(protocolPopup.selectedItem().representedObject().equals(Session.SFTP)) {
                 // SFTP has been selected as the protocol to connect with
                 host = new Host(Session.SFTP,
                         hostField.stringValue(),
                         Integer.parseInt(portField.stringValue()),
                         pathField.stringValue());
-                if(pkCheckbox.state() == NSCell.OnState) {
-                    host.getCredentials().setPrivateKeyFile(pkLabel.stringValue());
-                }
             }
-            else if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING)) {
+            else if(protocolPopup.selectedItem().representedObject().equals(Session.FTP)) {
                 // FTP has been selected as the protocol to connect with
                 host = new Host(Session.FTP,
                         hostField.stringValue(),
                         Integer.parseInt(portField.stringValue()),
                         pathField.stringValue());
             }
-            else if(protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
+            else if(protocolPopup.selectedItem().representedObject().equals(Session.FTP_TLS)) {
                 // FTP has been selected as the protocol to connect with
                 host = new Host(Session.FTP_TLS,
                         hostField.stringValue(),
@@ -625,8 +641,8 @@ public class CDConnectionController extends CDSheetController {
             else {
                 throw new IllegalArgumentException("No protocol selected.");
             }
-            if(protocolPopup.selectedItem().title().equals(Session.FTP_STRING) ||
-                    protocolPopup.selectedItem().title().equals(Session.FTP_TLS_STRING)) 
+            if(protocolPopup.selectedItem().representedObject().equals(Session.FTP) ||
+                    protocolPopup.selectedItem().representedObject().equals(Session.FTP))
             {
                 if(connectmodePopup.titleOfSelectedItem().equals(DEFAULT)) {
                     host.setFTPConnectMode(null);
@@ -638,7 +654,13 @@ public class CDConnectionController extends CDSheetController {
                     host.setFTPConnectMode(FTPConnectMode.PASV);
                 }
             }
-            host.setCredentials(usernameField.stringValue(), passField.stringValue(), keychainCheckbox.state() == NSCell.OnState);
+            host.setCredentials(usernameField.stringValue(), passField.stringValue(),
+                    keychainCheckbox.state() == NSCell.OnState);
+            if(protocolPopup.selectedItem().representedObject().equals(Session.SFTP)) {
+                if(pkCheckbox.state() == NSCell.OnState) {
+                    host.getCredentials().setPrivateKeyFile(pkLabel.stringValue());
+                }
+            }
             if(encodingPopup.titleOfSelectedItem().equals(DEFAULT)) {
                 host.setEncoding(null);
             }
