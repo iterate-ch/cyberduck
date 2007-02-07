@@ -134,6 +134,8 @@ public class SFTPPath extends Path {
                             p.attributes.setSize(f.getAttributes().getSize().doubleValue());
                             p.attributes.setModificationDate(
                                     Long.parseLong(f.getAttributes().getModifiedTime().toString()) * 1000L);
+                            p.attributes.setAccessedDate(
+                                    Long.parseLong(f.getAttributes().getAccessedTime().toString()) * 1000L);
                             if(f.isLink()) {
                                 try {
                                     p.cwdir();
@@ -445,11 +447,11 @@ public class SFTPPath extends Path {
                     else {
                         perm = this.attributes.getPermission();
                     }
-                    if(this.attributes.isDirectory()) {
-                        perm.getOwnerPermissions()[Permission.WRITE] = true;
-                        perm.getOwnerPermissions()[Permission.EXECUTE] = true;
-                    }
-                    if(!perm.isUndefined()) {
+                    if(null != perm) {
+                        if(this.attributes.isDirectory()) {
+                            perm.getOwnerPermissions()[Permission.WRITE] = true;
+                            perm.getOwnerPermissions()[Permission.EXECUTE] = true;
+                        }
                         this.getLocal().setPermission(perm);
                     }
                 }
@@ -519,7 +521,7 @@ public class SFTPPath extends Path {
                 // interrupted file transfers
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     log.info("Updating permissions");
-                    if(this.attributes.getPermission().isUndefined()) {
+                    if(null == this.attributes.getPermission()) {
                         if(this.attributes.isFile()
                                 && Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
                             this.attributes.setPermission(new Permission(
@@ -531,7 +533,10 @@ public class SFTPPath extends Path {
                         }
                     }
                     try {
-                        session.SFTP.changePermissions(this.getAbsolute(), this.attributes.getPermission().getMask());
+                        if(null != this.attributes.getPermission()) {
+                            session.SFTP.changePermissions(this.getAbsolute(),
+                                    this.attributes.getPermission().getMask());
+                        }
                     }
                     catch(SshException e) {
                         // We might not be able to change the attributes if we are

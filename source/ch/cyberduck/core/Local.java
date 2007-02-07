@@ -253,27 +253,26 @@ public class Local extends File implements IAttributes {
 
     private native void removeCustomIcon(String path);
 
-    public Permission getPermission() throws IOException {
-        try {
-            NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
-            Object posix = fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions);
-            if(null == posix) {
-                //The file may have disappeared since
-                throw new IOException("No such file");
-            }
-            return new Permission(((Number) posix).intValue());
+    public Permission getPermission() {
+        NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
+        if(null == fileAttributes) {
+            log.error("No such file:"+this.getAbsolute());
+            return null;
         }
-        catch(IllegalArgumentException e) {
-            throw new IOException(e.getMessage());
+        Object posix = fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions);
+        if(null == posix) {
+            log.error("No such file:"+this.getAbsolute());
+            return null;
         }
+        return new Permission(((Number) posix).intValue());
     }
 
-    public void setPermission(Permission p) throws IOException {
+    public void setPermission(Permission p) {
         boolean success = NSPathUtilities.setFileAttributes(this.getAbsolutePath(),
                 new NSDictionary(new Integer(p.getDecimalCode()),
                         NSPathUtilities.FilePosixPermissions));
         if(!success) {
-            throw new IOException("File attribute changed failed");
+            log.error("File attribute changed failed:"+this.getAbsolute());
         }
     }
 
@@ -281,37 +280,48 @@ public class Local extends File implements IAttributes {
         return super.lastModified();
     }
 
-    public void setModificationDate(long millis) throws IOException  {
+    public void setModificationDate(long millis) {
         boolean success = NSPathUtilities.setFileAttributes(this.getAbsolutePath(),
                 new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis)),
                         NSPathUtilities.FileModificationDate));
         if(!success) {
-            throw new IOException("File attribute changed failed");
+            log.error("File attribute changed failed:"+this.getAbsolute());
         }
     }
 
-    public long getCreationDate() throws IOException {
-        try {
-            NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
-            Object date = fileAttributes.objectForKey(NSPathUtilities.FileCreationDate);
-            if(null == date) {
-                //The file may have disappeared since
-                throw new IOException("No such file");
-            }
-            return NSDate.timeIntervalToMilliseconds(((NSDate)date).timeIntervalSinceDate(NSDate.DateFor1970));
+    public long getCreationDate() {
+        NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
+        // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
+        // if the link points to a nonexistent file, this method returns null. If flag is false,
+        // the attributes of the symbolic link are returned.
+        if(null == fileAttributes) {
+            log.error("No such file:"+this.getAbsolute());
+            return -1;
         }
-        catch(IllegalArgumentException e) {
-            throw new IOException(e.getMessage());
+        Object date = fileAttributes.objectForKey(NSPathUtilities.FileCreationDate);
+        if(null == date) {
+            // Returns an entry’s value given its key, or null if no value is associated with key.
+            log.error("No such file:"+this.getAbsolute());
+            return -1;
         }
+        return NSDate.timeIntervalToMilliseconds(((NSDate)date).timeIntervalSinceDate(NSDate.DateFor1970));
     }
 
-    public void setCreationDate(long millis) throws IOException {
+    public void setCreationDate(long millis) {
         boolean success = NSPathUtilities.setFileAttributes(this.getAbsolutePath(),
                 new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis)),
                         NSPathUtilities.FileCreationDate));
         if(!success) {
-            throw new IOException("File attribute changed failed");
+            log.error("File attribute changed failed:"+this.getAbsolute());
         }
+    }
+
+    public long getAccessedDate() {
+        return this.getModificationDate();
+    }
+
+    public void setAccessedDate(long millis) {
+        ;
     }
 
     public double getSize() {
@@ -327,7 +337,7 @@ public class Local extends File implements IAttributes {
 
     public boolean equals(Object other) {
         if(other instanceof Local) {
-            return this.getAbsolutePath().equalsIgnoreCase(((Local) other).getAbsolutePath());
+            return this.getAbsolute().equalsIgnoreCase(((Local) other).getAbsolute());
         }
         return false;
     }

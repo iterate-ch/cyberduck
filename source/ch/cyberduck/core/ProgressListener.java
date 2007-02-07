@@ -31,24 +31,6 @@ import java.net.SocketException;
  */
 public abstract class ProgressListener {
 
-    protected String getErrorText(Exception failure) {
-        String alert = failure.getMessage();
-        String title = NSBundle.localizedString("Error", "");
-        if(failure instanceof FTPException) {
-            title = "FTP " + NSBundle.localizedString("Error", "");
-        }
-        else if(failure instanceof SshException) {
-            title = "SSH " + NSBundle.localizedString("Error", "");
-        }
-        else if(failure instanceof SocketException) {
-            title = "Network " + NSBundle.localizedString("Error", "");
-        }
-        else if(failure instanceof IOException) {
-            title = "I/O " + NSBundle.localizedString("Error", "");
-        }
-        return title + ": " + alert;
-    }
-
     /**
      *
      * @param message

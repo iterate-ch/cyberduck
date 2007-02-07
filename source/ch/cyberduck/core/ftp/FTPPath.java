@@ -457,11 +457,11 @@ public class FTPPath extends Path {
                     else {
                         perm = this.attributes.getPermission();
                     }
-                    if(this.attributes.isDirectory()) {
-                        perm.getOwnerPermissions()[Permission.WRITE] = true;
-                        perm.getOwnerPermissions()[Permission.EXECUTE] = true;
-                    }
-                    if(!perm.isUndefined()) {
+                    if(null != perm) {
+                        if(this.attributes.isDirectory()) {
+                            perm.getOwnerPermissions()[Permission.WRITE] = true;
+                            perm.getOwnerPermissions()[Permission.EXECUTE] = true;
+                        }
                         this.getLocal().setPermission(perm);
                     }
                 }
@@ -643,7 +643,7 @@ public class FTPPath extends Path {
                 if(session.isConnected()) {
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                         log.info("Updating permissions");
-                        if(this.attributes.getPermission().isUndefined()) {
+                        if(null == this.attributes.getPermission()) {
                             if(this.attributes.isFile()
                                     && Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
                                 this.attributes.setPermission(new Permission(
@@ -655,7 +655,10 @@ public class FTPPath extends Path {
                             }
                         }
                         try {
-                            session.FTP.setPermissions(this.attributes.getPermission().getOctalCode(), this.getName());
+                            if(null != this.attributes.getPermission()) {
+                                session.FTP.setPermissions(this.attributes.getPermission().getOctalCode(),
+                                        this.getName());
+                            }
                         }
                         catch(FTPException ignore) {
                             //CHMOD not supported; ignore

@@ -219,24 +219,33 @@ public class CDInfoController extends CDWindowController {
         }
         this.ownerr.setTarget(this);
         this.ownerr.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
+        this.ownerr.setAllowsMixedState(true);
         this.ownerw.setTarget(this);
         this.ownerw.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
+        this.ownerw.setAllowsMixedState(true);
         this.ownerx.setTarget(this);
         this.ownerx.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
+        this.ownerx.setAllowsMixedState(true);
 
         this.groupr.setTarget(this);
         this.groupr.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
+        this.groupr.setAllowsMixedState(true);
         this.groupw.setTarget(this);
         this.groupw.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
+        this.groupw.setAllowsMixedState(true);
         this.groupx.setTarget(this);
         this.groupx.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
+        this.groupx.setAllowsMixedState(true);
 
         this.otherr.setTarget(this);
         this.otherr.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
+        this.otherr.setAllowsMixedState(true);
         this.otherw.setTarget(this);
         this.otherw.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
+        this.otherw.setAllowsMixedState(true);
         this.otherx.setTarget(this);
         this.otherx.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
+        this.otherx.setAllowsMixedState(true);
     }
 
     private void init() {
@@ -279,43 +288,28 @@ public class CDInfoController extends CDWindowController {
                     file.attributes.getOwner());
             this.sizeButton.setEnabled(file.attributes.isDirectory());
             this.updateSize();
-            {
-                ownerr.setAllowsMixedState(true);
-                ownerr.setEnabled(false);
-                ownerw.setAllowsMixedState(true);
-                ownerw.setEnabled(false);
-                ownerx.setAllowsMixedState(true);
-                ownerx.setEnabled(false);
-                groupr.setAllowsMixedState(true);
-                groupr.setEnabled(false);
-                groupw.setAllowsMixedState(true);
-                groupw.setEnabled(false);
-                groupx.setAllowsMixedState(true);
-                groupx.setEnabled(false);
-                otherr.setAllowsMixedState(true);
-                otherr.setEnabled(false);
-                otherw.setAllowsMixedState(true);
-                otherw.setEnabled(false);
-                otherx.setAllowsMixedState(true);
-                otherx.setEnabled(false);
-            }
-
-            Permission permission = null;
+            this.initPermissionsCheckbox(false);
+            Permission permission = Permission.DEFAULT;
             for(Iterator i = files.iterator(); i.hasNext();) {
                 permission = ((Path) i.next()).attributes.getPermission();
                 log.debug("Permission:" + permission);
+                if(null == permission) {
+                    this.initPermissionsCheckbox(false);
+                    break;
+                }
+                else {
+                    this.updatePermisssionsCheckbox(ownerr, permission.getOwnerPermissions()[Permission.READ]);
+                    this.updatePermisssionsCheckbox(ownerw, permission.getOwnerPermissions()[Permission.WRITE]);
+                    this.updatePermisssionsCheckbox(ownerx, permission.getOwnerPermissions()[Permission.EXECUTE]);
 
-                this.update(ownerr, permission.getOwnerPermissions()[Permission.READ]);
-                this.update(ownerw, permission.getOwnerPermissions()[Permission.WRITE]);
-                this.update(ownerx, permission.getOwnerPermissions()[Permission.EXECUTE]);
+                    this.updatePermisssionsCheckbox(groupr, permission.getGroupPermissions()[Permission.READ]);
+                    this.updatePermisssionsCheckbox(groupw, permission.getGroupPermissions()[Permission.WRITE]);
+                    this.updatePermisssionsCheckbox(groupx, permission.getGroupPermissions()[Permission.EXECUTE]);
 
-                this.update(groupr, permission.getGroupPermissions()[Permission.READ]);
-                this.update(groupw, permission.getGroupPermissions()[Permission.WRITE]);
-                this.update(groupx, permission.getGroupPermissions()[Permission.EXECUTE]);
-
-                this.update(otherr, permission.getOtherPermissions()[Permission.READ]);
-                this.update(otherw, permission.getOtherPermissions()[Permission.WRITE]);
-                this.update(otherx, permission.getOtherPermissions()[Permission.EXECUTE]);
+                    this.updatePermisssionsCheckbox(otherr, permission.getOtherPermissions()[Permission.READ]);
+                    this.updatePermisssionsCheckbox(otherw, permission.getOtherPermissions()[Permission.WRITE]);
+                    this.updatePermisssionsCheckbox(otherx, permission.getOtherPermissions()[Permission.EXECUTE]);
+                }
             }
 
             //		octalField.setStringValue(""+file.getOctalCode());
@@ -346,7 +340,28 @@ public class CDInfoController extends CDWindowController {
         this.applyButton.setEnabled(controller.isConnected());
     }
 
-    private void update(NSButton checkbox, boolean condition) {
+    private void initPermissionsCheckbox(boolean enabled) {
+        ownerr.setEnabled(enabled);
+        ownerr.setState(NSCell.OffState);
+        ownerw.setEnabled(enabled);
+        ownerw.setState(NSCell.OffState);
+        ownerx.setEnabled(enabled);
+        ownerx.setState(NSCell.OffState);
+        groupr.setEnabled(enabled);
+        groupr.setState(NSCell.OffState);
+        groupw.setEnabled(enabled);
+        groupw.setState(NSCell.OffState);
+        groupx.setEnabled(enabled);
+        groupx.setState(NSCell.OffState);
+        otherr.setEnabled(enabled);
+        otherr.setState(NSCell.OffState);
+        otherw.setEnabled(enabled);
+        otherw.setState(NSCell.OffState);
+        otherx.setEnabled(enabled);
+        otherx.setState(NSCell.OffState);
+    }
+
+    private void updatePermisssionsCheckbox(NSButton checkbox, boolean condition) {
         // Sets the cell's state to value, which can be NSCell.OnState, NSCell.OffState, or NSCell.MixedState.
         // If necessary, this method also redraws the receiver.
         if((checkbox.state() == NSCell.OffState || !checkbox.isEnabled()) && !condition) {
@@ -362,7 +377,7 @@ public class CDInfoController extends CDWindowController {
     }
 
     private int numberOfFiles() {
-        return (null == files) ? 0 : files.size();
+        return null == files ? 0 : files.size();
     }
 
     public void filenameInputDidEndEditing(NSNotification sender) {

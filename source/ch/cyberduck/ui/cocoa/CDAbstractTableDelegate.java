@@ -22,6 +22,7 @@ import ch.cyberduck.core.BrowserComparator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Status;
+import ch.cyberduck.core.Permission;
 
 import com.apple.cocoa.application.NSOutlineView;
 import com.apple.cocoa.application.NSTableColumn;
@@ -331,8 +332,16 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         }
 
         public int compare(Object o1, Object o2) {
-            int p1 = Integer.parseInt(((Path) o1).attributes.getPermission().getOctalCode());
-            int p2 = Integer.parseInt(((Path) o2).attributes.getPermission().getOctalCode());
+            Permission perm1 = ((Path) o1).attributes.getPermission();
+            if(null == perm1) {
+                perm1 = Permission.DEFAULT;
+            }
+            Permission perm2 = ((Path) o2).attributes.getPermission();
+            if(null == perm2) {
+                perm1 = Permission.DEFAULT;
+            }
+            int p1 = Integer.parseInt(perm1.getOctalCode());
+            int p2 = Integer.parseInt(perm2.getOctalCode());
             if(p1 > p2) {
                 return ascending ? 1 : -1;
             }

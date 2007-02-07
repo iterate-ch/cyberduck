@@ -24,6 +24,8 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+
 /**
  * Attributes of a remote directory or file.
  *
@@ -40,6 +42,8 @@ public class Attributes implements IAttributes {
      * The file modification date
      */
     private long modified = -1;
+    private long accessed = -1;
+    private long created = -1;
     private String owner = null;
     private String group = null;
     /**
@@ -95,18 +99,28 @@ public class Attributes implements IAttributes {
         return this.size;
     }
 
-    /**
-     * @param c The file modification date in milliseconds
-     */
-    public void setModificationDate(long c) {
-        this.modified = c;
-    }
-
-    /**
-     * @return The file modification date in milliseconds
-     */
     public long getModificationDate() {
         return this.modified;
+    }
+
+    public void setModificationDate(long millis) {
+        this.modified = millis;
+    }
+
+    public long getCreationDate() {
+        return this.created;
+    }
+
+    public void setCreationDate(long millis) {
+        this.created = millis;
+    }
+
+    public long getAccessedDate() {
+        return this.accessed;
+    }
+
+    public void setAccessedDate(long millis) {
+        this.accessed = millis;
     }
 
     /**
@@ -120,9 +134,6 @@ public class Attributes implements IAttributes {
      * @return
      */
     public Permission getPermission() {
-        if(null == this.permission) {
-            return new Permission();
-        }
         return this.permission;
     }
 

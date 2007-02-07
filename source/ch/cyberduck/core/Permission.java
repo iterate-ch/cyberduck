@@ -31,6 +31,10 @@ import java.util.Arrays;
 public class Permission {
 
     private static final String DEFAULT_MASK = "---------";
+
+    public static final Permission DEFAULT 
+            = new Permission(DEFAULT_MASK);
+
     private String mask;
 
     public Permission(NSDictionary dict) {
@@ -201,10 +205,6 @@ public class Permission {
         }
         this.mask = this.getString();
 //		log.debug("Permission:"+this.toString());
-    }
-
-    public boolean isUndefined() {
-        return this.getMask().equals(DEFAULT_MASK);
     }
 
     /**

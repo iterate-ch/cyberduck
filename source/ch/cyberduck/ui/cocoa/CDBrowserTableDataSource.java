@@ -200,7 +200,11 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                         CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
             }
             if(identifier.equals(PERMISSIONS_COLUMN)) {
-                return new NSAttributedString(item.attributes.getPermission().toString(),
+                Permission permission = item.attributes.getPermission();
+                if(null == permission) {
+                    permission = Permission.DEFAULT;
+                }
+                return new NSAttributedString(permission.toString(),
                         CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
             }
             if(identifier.equals(KIND_COLUMN)) {
