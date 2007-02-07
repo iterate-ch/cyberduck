@@ -60,7 +60,9 @@ public class Attributes implements IAttributes {
     public Object clone() {
         Attributes copy = new Attributes(this.getAsDictionary());
         copy.size = this.getSize();
-        copy.permission = (Permission) this.getPermission().clone();
+        if(null != this.getPermission()) {
+            copy.permission = (Permission) this.getPermission().clone();
+        }
         copy.modified = this.getModificationDate();
         return copy;
     }

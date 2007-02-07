@@ -292,7 +292,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                         Transfer q = TransferFactory.create(dict, controller.getSession());
                         for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                            final Path source = ((Path) iter.next());
+                            final Path source = (Path) iter.next();
                             final Path copy = (Path) source.clone();
                             copy.setPath(destination.getAbsolute(), source.getName());
                             files.put(source, copy);
