@@ -13,7 +13,8 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Bugfix] Preference for auto-open delay for spring-loaded folders not saved [#633]
 - [Bugfix] Preference to open new browser window on launch not used [#997]
 - [Bugfix] Symbolic links on local filesystem not handled properly [#995]
-- [Feature] Preference to exclude files from transfers [#511]
+- [Bugfix] Send creation time of file with UTIME [#--]
+- [Feature] Preference to exclude files from transfers using regular expression [#511]
 - [Feature] Clear command in History menu [#648]
 
 2.7.2 [http://trac.cyberduck.ch/query?status=closed&milestone=2.7.2]
