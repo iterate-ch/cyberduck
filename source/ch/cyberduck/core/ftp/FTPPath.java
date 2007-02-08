@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -468,7 +469,15 @@ public class FTPPath extends Path {
                 if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
                     log.info("Updating timestamp");
                     if(-1 == this.attributes.getModificationDate()) {
+                        // First try to read the timestamp using MDTM
                         this.readAttributes();
+                    }
+                    if(-1 == this.attributes.getModificationDate()) {
+                        if(this.exists()) {
+                            // Read the timestamp from the directory listing
+                            List l = this.getParent().list();
+                            this.attributes.setModificationDate(((Path)l.get(l.indexOf(this))).attributes.getModificationDate());
+                        }
                     }
                     if(this.attributes.getModificationDate() != -1) {
                         long timestamp = this.attributes.getModificationDate();
