@@ -122,16 +122,24 @@ public class CDMainController extends CDController {
         }
     }
 
+    /**
+     * @return The preferred locale of all available in this application bundle
+     * for the currently logged in user
+     */
+    private String locale() {
+        String locale = "en";
+        NSArray preferredLocalizations = NSBundle.preferredLocalizations(
+                NSBundle.mainBundle().localizations());
+        if(preferredLocalizations.count() > 0) {
+            locale = (String) preferredLocalizations.objectAtIndex(0);
+        }
+        return locale;
+    }
+
     public void helpMenuClicked(final Object sender) {
         try {
-            String locale = "en";
-            NSArray preferredLocalizations = NSBundle.preferredLocalizations(
-                    NSBundle.mainBundle().localizations());
-            if(preferredLocalizations.count() > 0) {
-                locale = (String) preferredLocalizations.objectAtIndex(0);
-            }
             NSWorkspace.sharedWorkspace().openURL(
-                    new java.net.URL(Preferences.instance().getProperty("website.help") + locale + "/"));
+                    new java.net.URL(Preferences.instance().getProperty("website.help") + this.locale() + "/"));
         }
         catch(java.net.MalformedURLException e) {
             log.error(e.getMessage());
@@ -271,7 +279,7 @@ public class CDMainController extends CDController {
     /**
      * Sent directly by theApplication to the delegate. The method should attempt to open the file filename,
      * returning true if the file is successfully opened, and false otherwise. By design, a
-     * file opened through this method is assumed to be temporary—it’s the application’s
+     * file opened through this method is assumed to be temporary its the application's
      * responsibility to remove the file at the appropriate time.
      *
      * @param app
@@ -720,6 +728,18 @@ public class CDMainController extends CDController {
             else {
                 log.error("Error saving bookmark to:" + file.toString());
             }
+        }
+        catch(java.net.MalformedURLException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    public void help(NSControl sender) {
+        log.info("Opening help for ID "+sender.tag());
+        try {
+            NSWorkspace.sharedWorkspace().openURL(
+                    new java.net.URL(Preferences.instance().getProperty("website.help")
+                            + this.locale() + "/find/"+sender.tag()));
         }
         catch(java.net.MalformedURLException e) {
             log.error(e.getMessage());
