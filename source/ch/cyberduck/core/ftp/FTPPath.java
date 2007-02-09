@@ -277,7 +277,7 @@ public class FTPPath extends Path {
                         }
                         Path file = (Path) iter.next();
                         if(file.attributes.isFile()) {
-                            session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
+                            session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + file.getName());
                             session.FTP.delete(file.getName());
                         }
                         else if(file.attributes.isDirectory()) {
@@ -679,15 +679,6 @@ public class FTPPath extends Path {
                         try {
                             session.FTP.utime(this.getLocal().getModificationDate(),
                                     this.getLocal().getCreationDate(), this.getName(), this.getHost().getTimezone());
-//                            if(session.isUTIMESupported()) {
-//                                session.FTP.utime(timestamp, this.getName(), this.getHost().getTimezone());
-//                            }
-//                            else if(session.isMDTMSetSupported()) {
-//                                session.FTP.setmodtime(timestamp, this.getName(), this.getHost().getTimezone());
-//                            }
-//                            else {
-//                                this.setTimestampFallback();
-//                            }
                         }
                         catch(FTPException e) {
                             if(Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {

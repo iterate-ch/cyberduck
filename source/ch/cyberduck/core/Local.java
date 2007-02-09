@@ -102,7 +102,7 @@ public class Local extends File implements IAttributes {
     public boolean createNewFile() {
         try {
             if(super.createNewFile()) {
-                this.setProgress(0);
+                this.setIcon(0);
             }
         }
         catch(IOException e) {
@@ -214,7 +214,16 @@ public class Local extends File implements IAttributes {
 
     private final static Object lock = new Object();
 
-    public void setProgress(int progress) {
+    /**
+     * Update the custom icon for the file in the Finder
+     * @param progress An integer from -1 and 9. If -1 is passed,
+     * the resource fork with the custom icon is removed from the file.
+     */
+    public void setIcon(int progress) {
+        if(progress > 9 || progress < -1) {
+            log.warn("Local#setIcon:"+progress);
+            return;
+        }
         if(Preferences.instance().getBoolean("queue.download.updateIcon")) {
             synchronized(lock) {
                 this.jni_load();
@@ -229,6 +238,9 @@ public class Local extends File implements IAttributes {
         NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
     }
 
+    /**
+     * Removes the resource fork from the file alltogether
+     */
     private void removeResourceFork() {
         try {
             this.removeCustomIcon();

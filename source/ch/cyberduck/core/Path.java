@@ -27,6 +27,8 @@ import com.apple.cocoa.foundation.NSPathUtilities;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -306,15 +308,15 @@ public abstract class Path extends NSObject {
                 normalized = normalized.substring(0, normalized.lastIndexOf('/', index - 1)) +
                         normalized.substring(index + 3);
             }
-            // Resolve occurrences of "//" in the normalized path
-            while(true) {
-                int index = normalized.indexOf("//");
-                if(index < 0) {
-                    break;
-                }
-                normalized = normalized.substring(0, index) +
-                        normalized.substring(index + 1);
-            }
+//            // Resolve occurrences of "//" in the normalized path
+//            while(true) {
+//                int index = normalized.indexOf("//");
+//                if(index < 0) {
+//                    break;
+//                }
+//                normalized = normalized.substring(0, index) +
+//                        normalized.substring(index + 1);
+//            }
             while(normalized.endsWith(DELIMITER) && normalized.length() > 1) {
                 //Strip any redundant delimiter at the end of the path
                 normalized = normalized.substring(0, normalized.length() - 1);
@@ -602,83 +604,86 @@ public abstract class Path extends NSObject {
     }
 
     /**
+     * Will copy from in to out. Will attempt to skip Status#getCurrent
+     * from the inputstream but not from the outputstream. The outputstream
+     * is asssumed to append to a already existing file if
+     * Status#getCurrent > 0
      * @param in  The stream to read from
      * @param out The stream to write to
+     * @throws IOResumeException If the input stream fails to skip the appropriate
+     * number of bytes
      */
-    public void upload(java.io.OutputStream out, java.io.InputStream in) throws IOException {
+    public void upload(OutputStream out, InputStream in) throws IOException {
         if(log.isDebugEnabled()) {
             log.debug("upload(" + out.toString() + ", " + in.toString());
         }
         this.getSession().message(NSBundle.localizedString("Uploading", "Status", "") + " " + this.getName());
-        if(this.status.isResume()) {
-            long skipped = in.skip(this.status.getCurrent());
+        if(status.isResume()) {
+            long skipped = in.skip(status.getCurrent());
             log.info("Skipping " + skipped + " bytes");
-            if(skipped < this.status.getCurrent()) {
-                throw new IOException("Resume failed: Skipped " + skipped + " bytes instead of " + this.status.getCurrent());
+            if(skipped < status.getCurrent()) {
+                throw new IOResumeException("Skipped " + skipped + " bytes instead of " + status.getCurrent());
             }
         }
-        if(log.isDebugEnabled()) {
-            log.debug("upload(" + in.toString() + ", " + out.toString());
-        }
-        int chunksize = Preferences.instance().getInteger("connection.buffer");
-        byte[] chunk = new byte[chunksize];
-        int amount = 0;
-        long current = this.status.getCurrent();
-        boolean complete = false;
-        // read from socket (bytes) & write to file in chunks
-        while(!complete && !status.isCanceled()) {
-            amount = in.read(chunk, 0, chunksize);
-            if(-1 == amount) {
-                complete = true;
-            }
-            else {
-                out.write(chunk, 0, amount);
-                this.status.setCurrent(current += amount);
-                out.flush();
-            }
-        }
-        this.status.setComplete(complete);
+        this.transfer(in, out, new AbstractStreamListener());
     }
 
     /**
+     * Will copy from in to out. Does not attempt to skip any bytes from the streams.
      * @param in  The stream to read from
      * @param out The stream to write to
      */
-    public void download(java.io.InputStream in, java.io.OutputStream out) throws IOException {
+    public void download(InputStream in, OutputStream out) throws IOException {
         if(log.isDebugEnabled()) {
             log.debug("download(" + in.toString() + ", " + out.toString());
         }
         this.getSession().message(NSBundle.localizedString("Downloading", "Status", "") + " " + this.getName());
-        int chunksize = Preferences.instance().getInteger("connection.buffer");
-        byte[] chunk = new byte[chunksize];
-        long current = this.status.getCurrent();
-        final boolean updateProgress = this.attributes.getSize() > Status.MEGA * 5;
-        int step = 0;
-        this.getLocal().setProgress(step);
-        // read from socket (bytes) & write to file in chunks
-        int amount = 0;
-        boolean complete = false;
-        while(!complete && !status.isCanceled()) {
-            amount = in.read(chunk, 0, chunksize);
-            if(-1 == amount) {
-                complete = true;
-            }
-            else {
-                out.write(chunk, 0, amount);
-                this.status.setCurrent(current += amount);
-                if(updateProgress) {
-                    int fraction = (int) (status.getCurrent() / this.attributes.getSize() * 10);
+        // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
+        // overhead when transferring a large amount of files
+        final boolean updateIcon = attributes.getSize() > Status.MEGA * 5;
+        // Set the first progress icon
+        this.getLocal().setIcon(0);
+        this.transfer(in, out, new AbstractStreamListener() {
+            int step = 0;
+
+            public void bytesReceived(int bytes) {
+                if(-1 == bytes) {
+                    // Remove custom icon if complete. The Finder will display the default
+                    // icon for this filetype
+                    getLocal().setIcon(-1);
+                }
+                if(updateIcon) {
+                    int fraction = (int) (status.getCurrent() / attributes.getSize() * 10);
+                    // An integer between 0 and 9
                     if(fraction > step) {
-                        this.getLocal().setProgress(++step);
+                        // Another 10 percent of the file has been transferred
+                        getLocal().setIcon(++step);
                     }
                 }
-                out.flush();
             }
+        });
+    }
+
+    private void transfer(InputStream in, OutputStream out, StreamListener listener)
+            throws IOException
+    {
+        final int chunksize = Preferences.instance().getInteger("connection.buffer");
+        byte[] chunk = new byte[chunksize];
+        long bytesTransferred = status.getCurrent();
+        while(!status.isCanceled()) {
+            int read = in.read(chunk, 0, chunksize);
+            listener.bytesReceived(read);
+            if(-1 == read) {
+                // End of file
+                status.setComplete(true);
+                break;
+            }
+            out.write(chunk, 0, read);
+            listener.bytesSent(read);
+            bytesTransferred += read;
+            status.setCurrent(bytesTransferred);
         }
-        if(complete) {
-            this.getLocal().setProgress(-1);
-        }
-        this.status.setComplete(complete);
+        out.flush();
     }
 
     /**

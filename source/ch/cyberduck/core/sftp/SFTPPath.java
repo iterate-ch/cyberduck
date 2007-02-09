@@ -428,7 +428,7 @@ public class SFTPPath extends Path {
                         long skipped = in.skip(this.status.getCurrent());
                         log.info("Skipping " + skipped + " bytes");
                         if(skipped < this.status.getCurrent()) {
-                            throw new IOException("Resume failed: Skipped " + skipped + " bytes instead of " + this.status.getCurrent());
+                            throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.status.getCurrent());
                         }
                     }
                     this.download(in, out);
@@ -561,7 +561,7 @@ public class SFTPPath extends Path {
                         long skipped = out.skip(this.status.getCurrent());
                         log.info("Skipping " + skipped + " bytes");
                         if(skipped < this.status.getCurrent()) {
-                            throw new IOException("Resume failed: Skipped " + skipped + " bytes instead of " + this.status.getCurrent());
+                            throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.status.getCurrent());
                         }
                     }
                     this.upload(out, in);
