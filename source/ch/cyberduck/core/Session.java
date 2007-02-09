@@ -523,9 +523,11 @@ public abstract class Session extends NSObject {
     private class KeepAliveTask extends TimerTask {
         public void run() {
             try {
+                log.info("Sending NOOP to keep connection alive");
                 Session.this.noop();
             }
             catch(IOException e) {
+                log.warn("Keep alive task failed. Connection closed.");
                 Session.this.interrupt();
                 this.cancel();
             }

@@ -274,6 +274,8 @@ public abstract class Preferences {
         defaults.put("queue.upload.preserveDate", "true");
         defaults.put("queue.upload.preserveDate.fallback", "false");
         defaults.put("queue.upload.skip.enable", "true");
+        defaults.put("queue.upload.skip.regex.default",
+                ".*~\\..*|\\.DS_Store|.*\\.svn|CVS");
         defaults.put("queue.upload.skip.regex",
                 ".*~\\..*|\\.DS_Store|.*\\.svn|CVS");
 
@@ -282,6 +284,8 @@ public abstract class Preferences {
         defaults.put("queue.download.permissions.default", "rw-r--r--");
         defaults.put("queue.download.preserveDate", "true");
         defaults.put("queue.download.skip.enable", "true");
+        defaults.put("queue.download.skip.regex.default",
+                ".*~\\..*|\\.DS_Store|.*\\.svn|CVS");
         defaults.put("queue.download.skip.regex",
                 ".*~\\..*|\\.DS_Store|.*\\.svn|CVS");
         /**
@@ -300,10 +304,6 @@ public abstract class Preferences {
          * Line seperator to use for ASCII transfers
          */
         defaults.put("ftp.line.separator", "unix");
-        /**
-         * Send SYST
-         */
-        defaults.put("ftp.sendSystemCommand", "true");
         /**
          * Send LIST -a
          */

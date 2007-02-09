@@ -500,6 +500,19 @@ public class FTPClient {
         return reply.getReplyCode().equals("200");
     }
 
+    public String[] dir(String encoding) throws IOException, FTPException {
+        if(Preferences.instance().getBoolean("ftp.sendExtendedListCommand")) {
+            try {
+                return this.dir(encoding, "LIST -a");
+            }
+            catch(FTPException e) {
+                log.error(e.getMessage());
+                // Option -a may not be recognized. Try standard list command instead
+            }
+        }
+        return this.dir(encoding, "LIST");
+    }
+
     /**
      * List a directory's contents as an array of strings. A detailed
      * listing is available, otherwise just filenames are provided.
@@ -507,23 +520,14 @@ public class FTPClient {
      * FTP server. Note that a full listing can be used on a file
      * name to obtain information about a file
      *
+     * @param command the list command to use. E.g. LIST, LIST -a or NLST
      * @return an array of directory listing strings
      */
-    public String[] dir(String encoding) throws IOException, FTPException {
+    public String[] dir(String encoding, String command) throws IOException, FTPException {
         // set up data channel
         data = control.createDataSocket(connectMode);
         data.setTimeout(timeout);
 
-        // send the retrieve command
-        String command;
-        if(Preferences.instance().getBoolean("ftp.sendExtendedListCommand")) {
-            command = "LIST -a ";
-        }
-        else {
-            command = "LIST ";
-        }
-        // some FTP servers bomb out if NLST has whitespace appended
-        command = command.trim();
         FTPReply reply = control.sendCommand(command);
 
         // check the control response. wu-ftp returns 550 if the
