@@ -29,9 +29,7 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -412,34 +410,6 @@ public class CDPreferencesController extends CDWindowController {
 
     public void encodingComboboxClicked(NSPopUpButton sender) {
         Preferences.instance().setProperty("browser.charset.encoding", sender.titleOfSelectedItem());
-    }
-
-    private NSButton listCheckbox; //IBOutlet
-
-    public void setListCheckbox(NSButton listCheckbox) {
-        this.listCheckbox = listCheckbox;
-        this.listCheckbox.setTarget(this);
-        this.listCheckbox.setAction(new NSSelector("listCheckboxClicked", new Class[]{NSButton.class}));
-        this.listCheckbox.setState(Preferences.instance().getBoolean("ftp.sendExtendedListCommand") ? NSCell.OnState : NSCell.OffState);
-    }
-
-    public void listCheckboxClicked(final NSButton sender) {
-        boolean enabled = sender.state() == NSCell.OnState;
-        Preferences.instance().setProperty("ftp.sendExtendedListCommand", enabled);
-    }
-
-    private NSButton systCheckbox; //IBOutlet
-
-    public void setSystCheckbox(NSButton systCheckbox) {
-        this.systCheckbox = systCheckbox;
-        this.systCheckbox.setTarget(this);
-        this.systCheckbox.setAction(new NSSelector("systCheckboxClicked", new Class[]{NSButton.class}));
-        this.systCheckbox.setState(Preferences.instance().getBoolean("ftp.sendSystemCommand") ? NSCell.OnState : NSCell.OffState);
-    }
-
-    public void systCheckboxClicked(final NSButton sender) {
-        boolean enabled = sender.state() == NSCell.OnState;
-        Preferences.instance().setProperty("ftp.sendSystemCommand", enabled);
     }
 
     private NSButton chmodUploadCheckbox; //IBOutlet
@@ -984,26 +954,6 @@ public class CDPreferencesController extends CDWindowController {
         this.downloadPathPanel = null;
     }
 
-    private NSButton defaultBufferButton; //IBOutlet
-
-    public void setDefaultBufferButton(NSButton defaultBufferButton) {
-        this.defaultBufferButton = defaultBufferButton;
-        this.defaultBufferButton.setTarget(this);
-        this.defaultBufferButton.setAction(new NSSelector("defaultBufferButtonClicked", new Class[]{NSButton.class}));
-    }
-
-    public void defaultBufferButtonClicked(final NSButton sender) {
-        Preferences.instance().setProperty("connection.buffer", Preferences.instance().getProperty("connection.buffer.default"));
-        try {
-            int bytes = Preferences.instance().getInteger("connection.buffer");
-            int kbit = bytes / 1024 * 8;
-            this.bufferField.setStringValue("" + kbit);
-        }
-        catch (NumberFormatException e) {
-            log.error(e.getMessage());
-        }
-    }
-
     private NSPopUpButton transferPopup; //IBOutlet
 
     public void setTransferPopup(NSPopUpButton transferPopup) {
@@ -1023,38 +973,6 @@ public class CDPreferencesController extends CDWindowController {
         }
         else if(sender.indexOfSelectedItem() == USE_QUEUE_SESSION_INDEX) {
             Preferences.instance().setProperty("connection.host.max", -1);
-        }
-    }
-
-    private NSTextField bufferField; //IBOutlet
-
-    public void setBufferField(NSTextField bufferField) {
-        this.bufferField = bufferField;
-        try {
-            int bytes = Preferences.instance().getInteger("connection.buffer");
-            int kbit = bytes / 1024 * 8;
-            this.bufferField.setStringValue("" + kbit);
-        }
-        catch (NumberFormatException e) {
-            log.error(e.getMessage());
-        }
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("bufferFieldDidChange", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidChangeNotification,
-                this.bufferField);
-    }
-
-    public void bufferFieldDidChange(NSNotification sender) {
-        try {
-            int kbit = Integer.parseInt(this.bufferField.stringValue());
-            int MIN_VALUE = 32;
-            if(kbit < MIN_VALUE) {
-                this.bufferField.setStringValue(String.valueOf(MIN_VALUE));
-            }
-            Preferences.instance().setProperty("connection.buffer", kbit / 8 * 1024); //Bytes
-        }
-        catch (NumberFormatException e) {
-            log.error(e.getMessage());
         }
     }
 
@@ -1203,6 +1121,20 @@ public class CDPreferencesController extends CDWindowController {
         Preferences.instance().setProperty("queue.download.skip.enable", enabled);
     }
 
+    private NSButton downloadSkipRegexDefaultButton; //IBOutlet
+
+    public void setDownloadSkipRegexDefaultButton(NSButton downloadSkipRegexDefaultButton) {
+        this.downloadSkipRegexDefaultButton = downloadSkipRegexDefaultButton;
+        this.downloadSkipRegexDefaultButton.setTarget(this);
+        this.downloadSkipRegexDefaultButton.setAction(new NSSelector("downloadSkipRegexDefaultButtonClicked", new Class[]{NSButton.class}));
+    }
+
+    public void downloadSkipRegexDefaultButtonClicked(final NSButton sender) {
+        final String regex = Preferences.instance().getProperty("queue.download.skip.regex.default");
+        this.downloadSkipRegexField.setString(regex);
+        Preferences.instance().setProperty("queue.download.skip.regex", regex);
+    }
+    
     private NSTextView downloadSkipRegexField; //IBOutlet
 
     public void setDownloadSkipRegexField(NSTextView downloadSkipRegexField) {
@@ -1248,6 +1180,20 @@ public class CDPreferencesController extends CDWindowController {
         uploadSkipRegexField.setEditable(enabled);
         uploadSkipRegexField.setTextColor(enabled ? NSColor.controlTextColor() : NSColor.disabledControlTextColor());
         Preferences.instance().setProperty("queue.upload.skip.enable", enabled);
+    }
+
+    private NSButton uploadSkipRegexDefaultButton; //IBOutlet
+
+    public void setUploadSkipRegexDefaultButton(NSButton uploadSkipRegexDefaultButton) {
+        this.uploadSkipRegexDefaultButton = uploadSkipRegexDefaultButton;
+        this.uploadSkipRegexDefaultButton.setTarget(this);
+        this.uploadSkipRegexDefaultButton.setAction(new NSSelector("uploadSkipRegexDefaultButtonClicked", new Class[]{NSButton.class}));
+    }
+
+    public void uploadSkipRegexDefaultButtonClicked(final NSButton sender) {
+        final String regex = Preferences.instance().getProperty("queue.upload.skip.regex.default");
+        this.uploadSkipRegexField.setString(regex);
+        Preferences.instance().setProperty("queue.upload.skip.regex", regex);
     }
 
     private NSTextView uploadSkipRegexField; //IBOutlet
@@ -1754,16 +1700,26 @@ public class CDPreferencesController extends CDWindowController {
         Preferences.instance().setProperty("ftp.tls.datachannel.failOnError", !enabled);
     }
 
-    private NSPopUpButton sshTransfersCombobox; //IBOutlet
-
-    public void setSshTransfersCombobox(NSPopUpButton sshTransfersCombobox) {
-        this.sshTransfersCombobox = sshTransfersCombobox;
-        this.sshTransfersCombobox.setTarget(this);
-        this.sshTransfersCombobox.setAction(new NSSelector("sshTransfersComboboxClicked", new Class[]{NSPopUpButton.class}));
-        this.sshTransfersCombobox.selectItemWithTitle(Preferences.instance().getProperty("ssh.transfers").toUpperCase());
-    }
-
-    public void sshTransfersComboboxClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("ssh.transfers", sender.titleOfSelectedItem().toLowerCase());
-    }
+//    private NSPopUpButton sshTransfersCombobox; //IBOutlet
+//
+//    public void setSshTransfersCombobox(NSPopUpButton sshTransfersCombobox) {
+//        this.sshTransfersCombobox = sshTransfersCombobox;
+//        this.sshTransfersCombobox.setTarget(this);
+//        this.sshTransfersCombobox.setAction(new NSSelector("sshTransfersComboboxClicked", new Class[]{NSPopUpButton.class}));
+//        this.sshTransfersCombobox.removeAllItems();
+//        this.sshTransfersCombobox.addItemsWithTitles(new NSArray(new String[]{Session.SFTP_STRING, Session.SCP_STRING}));
+//        this.sshTransfersCombobox.itemWithTitle(Session.SFTP_STRING).setRepresentedObject(Session.SFTP);
+//        this.sshTransfersCombobox.itemWithTitle(Session.SCP_STRING).setRepresentedObject(Session.SCP);
+//        String selected = Preferences.instance().getProperty("ssh.transfer");
+//        if(selected.equals(Session.SCP)) {
+//            this.sshTransfersCombobox.selectItemWithTitle(Session.SCP_STRING);
+//        }
+//        if(selected.equals(Session.SFTP)) {
+//            this.sshTransfersCombobox.selectItemWithTitle(Session.SFTP_STRING);
+//        }
+//    }
+//
+//    public void sshTransfersComboboxClicked(NSPopUpButton sender) {
+//        Preferences.instance().setProperty("ssh.transfer", sender.selectedItem().representedObject().toString());
+//    }
 }
