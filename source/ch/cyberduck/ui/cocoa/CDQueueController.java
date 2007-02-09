@@ -859,7 +859,6 @@ public class CDQueueController extends CDWindowController
             });
         }
         if(identifier.equals("openButtonClicked:")
-                || identifier.equals("revealButtonClicked:")
                 || identifier.equals("trashButtonClicked:")) {
             return this.validate(new TransferToolbarValidator() {
                 public boolean validate(Transfer transfer) {
@@ -868,6 +867,18 @@ public class CDQueueController extends CDWindowController
                             if(((Path)iter.next()).getLocal().exists()) {
                                 return true;
                             }
+                        }
+                    }
+                    return false;
+                }
+            });
+        }
+        if(identifier.equals("revealButtonClicked:")) {
+            return this.validate(new TransferToolbarValidator() {
+                public boolean validate(Transfer transfer) {
+                    for(Iterator iter = transfer.getRoots().iterator(); iter.hasNext(); ) {
+                        if(((Path)iter.next()).getLocal().exists()) {
+                            return true;
                         }
                     }
                     return false;

@@ -1100,7 +1100,7 @@ public class CDBrowserController extends CDWindowController
             c.headerCell().setStringValue(NSBundle.localizedString("Modified", "A column in the browser"));
             c.setIdentifier(CDBrowserTableDataSource.MODIFIED_COLUMN);
             c.setMinWidth(100f);
-            c.setWidth(180f);
+            c.setWidth(150f);
             c.setMaxWidth(500f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
@@ -1858,25 +1858,26 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
-     * 
-     * @param source
-     * @param destination
-     * @param edit
+     * @param source The original file to duplicate
+     * @param destination The destination of the duplicated file
+     * @param edit Open the duplicated file in the external editor
      */
     protected void duplicatePath(final Path source, final Path destination, boolean edit) {
         this.duplicatePaths(Collections.singletonMap(source, destination), edit);
     }
 
     /**
-     *
-     * @param files
-     * @param edit
+     * 
+     * @param selected A map with the original files as the key and the destination
+     * files as the value
+     * @param edit Open the duplicated files in the external editor
      */
-    protected void duplicatePaths(final Map files, final boolean edit) {
-        this.checkOverwrite(files.values(), new BackgroundAction() {
+    protected void duplicatePaths(final Map selected, final boolean edit) {
+        final Map normalized = this.checkHierarchy(selected);
+        this.checkOverwrite(normalized.values(), new BackgroundAction() {
             public void run() {
-                Iterator sourcesIter = files.keySet().iterator();
-                Iterator destinationsIter = files.values().iterator();
+                Iterator sourcesIter = normalized.keySet().iterator();
+                Iterator destinationsIter = normalized.values().iterator();
                 for(; sourcesIter.hasNext(); ) {
                     final Path source = (Path) sourcesIter.next();
                     final Path destination = (Path) destinationsIter.next();
@@ -1904,7 +1905,7 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void cleanup() {
-                for(Iterator iter = files.values().iterator(); iter.hasNext(); ) {
+                for(Iterator iter = normalized.values().iterator(); iter.hasNext(); ) {
                     Path duplicate = (Path)iter.next();
                     if(edit) {
                         Editor editor = new Editor(CDBrowserController.this);
@@ -1914,29 +1915,29 @@ public class CDBrowserController extends CDWindowController
                         setShowHiddenFiles(true);
                     }
                 }
-                reloadData(files.values());
+                reloadData(normalized.values());
             }
         });
     }
 
     /**
-     *
-     * @param path
-     * @param renamed
+     * @param path The existing file
+     * @param renamed The renamed file
      */
     protected void renamePath(final Path path, final Path renamed) {
         this.renamePaths(Collections.singletonMap(path, renamed));
     }
 
     /**
-     *
-     * @param files
+     * @param selected A map with the original files as the key and the destination
+     * files as the value
      */
-    protected void renamePaths(final Map files) {
-        this.checkOverwrite(files.values(), new BackgroundAction() {
+    protected void renamePaths(final Map selected) {
+        final Map normalized = this.checkHierarchy(selected);
+        this.checkOverwrite(normalized.values(), new BackgroundAction() {
             public void run() {
-                Iterator originalIterator = files.keySet().iterator();
-                Iterator renamedIterator = files.values().iterator();
+                Iterator originalIterator = normalized.keySet().iterator();
+                Iterator renamedIterator = normalized.values().iterator();
                 while(originalIterator.hasNext()) {
                     ((Path)originalIterator.next()).rename(((Path)renamedIterator.next()).getAbsolute());
                     if(!isConnected()) {
@@ -1946,23 +1947,23 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void cleanup() {
-                reloadData(files.values());
+                reloadData(normalized.values());
             }
         });
     }
 
     /**
-     *
-     * @param files
+     * Displays a warning dialog about about already existing files
+     * @param selected The files to check for existance
      */
-    private void checkOverwrite(final Collection files, final BackgroundAction action) {
-        if(files.size() > 0) {
+    private void checkOverwrite(final Collection selected, final BackgroundAction action) {
+        if(selected.size() > 0) {
             StringBuffer alertText = new StringBuffer(
                     NSBundle.localizedString("A file with the same name already exists. Do you want to replace the existing file?", ""));
             int i = 0;
             Iterator iter = null;
             boolean alert = false;
-            for(iter = files.iterator(); i < 10 && iter.hasNext();) {
+            for(iter = selected.iterator(); i < 10 && iter.hasNext();) {
                 Path item = (Path) iter.next();
                 if(item.exists()) {
                     alertText.append("\n"+Character.toString('\u2022')+" "+item.getName());
@@ -1997,7 +1998,65 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
-     *
+     * Prunes the map of selected files. Files which are a child of an already included directory
+     * are removed from the returned map.
+     */
+    private Map checkHierarchy(final Map selected) {
+        final Map normalized = new HashMap();
+        Iterator sourcesIter = selected.keySet().iterator();
+        Iterator destinationsIter = selected.values().iterator();
+        while(sourcesIter.hasNext()) {
+            Path f = (Path)sourcesIter.next();
+            Path r = (Path)destinationsIter.next();
+            boolean duplicate = false;
+            for(Iterator normalizedIter = normalized.keySet().iterator(); normalizedIter.hasNext(); ) {
+                Path n = (Path)normalizedIter.next();
+                if(f.isChild(n)) {
+                    // The selected file is a child of a directory
+                    // already included for deletion
+                    duplicate = true;
+                    break;
+                }
+                if(n.isChild(f)) {
+                    // Remove the previously added file as it is a child 
+                    // of the currently evaluated file
+                    normalizedIter.remove();
+                }
+            }
+            if(!duplicate) {
+                normalized.put(f, r);
+            }
+        }
+        return normalized;
+    }
+
+    /**
+     * Prunes the list of selected files. Files which are a child of an already included directory
+     * are removed from the returned list.
+     */
+    private List checkHierarchy(final List selected) {
+        final List normalized = new ArrayList();
+        for(Iterator iter = selected.iterator(); iter.hasNext(); ) {
+            Path f = (Path)iter.next();
+            boolean duplicate = false;
+            for(Iterator normalizedIter = normalized.iterator(); normalizedIter.hasNext(); ) {
+                Path n = (Path)normalizedIter.next();
+                if(f.isChild(n)) {
+                    // The selected file is a child of a directory
+                    // already included for deletion
+                    duplicate = true;
+                    break;
+                }
+            }
+            if(!duplicate) {
+                normalized.add(f);
+            }
+        }
+        return normalized;
+    }
+
+    /**
+     * Recursively deletes the file
      * @param file
      */
     public void deletePath(final Path file) {
@@ -2005,16 +2064,17 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
-     *
-     * @param files
+     * Recursively deletes the files
+     * @param selected The files selected in the browser to delete
      */
-    public void deletePaths(final List files) {
-        if(files.size() > 0) {
+    public void deletePaths(final List selected) {
+        final List normalized = this.checkHierarchy(selected);
+        if(normalized.size() > 0) {
             StringBuffer alertText =
                     new StringBuffer(NSBundle.localizedString("Really delete the following files? This cannot be undone.", "Confirm deleting files."));
             int i = 0;
             Iterator iter = null;
-            for(iter = files.iterator(); i < 10 && iter.hasNext();) {
+            for(iter = normalized.iterator(); i < 10 && iter.hasNext();) {
                 alertText.append("\n"+Character.toString('\u2022')+" "+((Path) iter.next()).getName());
                 i++;
             }
@@ -2030,7 +2090,7 @@ public class CDBrowserController extends CDWindowController
             CDSheetController c = new CDSheetController(this, sheet) {
                 public void callback(final int returncode) {
                     if(returncode == DEFAULT_OPTION) {
-                        CDBrowserController.this.deletePathsImpl(files);
+                        CDBrowserController.this.deletePathsImpl(normalized);
                     }
                 }
             };
@@ -2042,7 +2102,8 @@ public class CDBrowserController extends CDWindowController
         this.background(new BackgroundAction() {
             public void run() {
                 for(Iterator iter = files.iterator(); iter.hasNext();) {
-                    ((Path) iter.next()).delete();
+                    Path f = (Path) iter.next();
+                    f.delete();
                     if(!isConnected()) {
                         break;
                     }
