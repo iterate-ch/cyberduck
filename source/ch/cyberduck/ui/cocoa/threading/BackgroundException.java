@@ -34,7 +34,7 @@ public class BackgroundException extends Exception {
 
     private Session session;
 
-    public BackgroundException(Session session, Path path, String message, Exception cause) {
+    public BackgroundException(Session session, Path path, String message, Throwable cause) {
         super(cause);
         this.session = session;
         this.path = path;

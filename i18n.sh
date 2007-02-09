@@ -24,6 +24,7 @@ usage() {
 	echo "	  Usage: i18n.sh [-l <language>] --status"
 	echo "	  Usage: i18n.sh [-l <language>] --init"
 	echo "	  Usage: i18n.sh [-l <language>] [-n <nib>] [--force] --update"
+	echo "	  Usage: i18n.sh [-l <language>] --run"
 	echo ""
 	echo "<language> must be Japanese.lproj, French.lproj, Spanish.lproj, ..."
 	echo "<nib> must be Preferences.nib, Main.nib, ..."
@@ -70,6 +71,11 @@ open() {
 		/usr/bin/open $language/$nib.strings
 	}
 	fi;
+}
+
+run() {
+	echo "Running app using `basename $language .lproj`...";
+	./build/Deployment/Cyberduck.app/Contents/MacOS/Cyberduck -AppleLanguages "(`basename $language .lproj`)"
 }
 
 extractstrings() {
@@ -240,6 +246,11 @@ while [ "$1" != "" ] # When there are arguments...
 			-o | --open)
 				echo "Opening localization .strings files...";
 				open;
+				echo "*** DONE. ***";
+				exit 0;
+			;; 
+			-r | --run)
+				run;
 				echo "*** DONE. ***";
 				exit 0;
 			;; 
