@@ -34,20 +34,4 @@ public class PermissionTest extends TestCase {
         Permission p = new Permission("rwxrwxrwx");
         assertEquals(p, p.clone());
     }
-
-    public void testEmptyPermissions() {
-        Permission p = new Permission();
-        assertEquals(p.getMask(), "---------");
-        assertTrue(p.getDecimalCode() == 0);
-        assertFalse(p.getGroupPermissions()[0]);
-        assertFalse(p.getGroupPermissions()[1]);
-        assertFalse(p.getGroupPermissions()[2]);
-        assertFalse(p.getOwnerPermissions()[0]);
-        assertFalse(p.getOwnerPermissions()[1]);
-        assertFalse(p.getOwnerPermissions()[2]);
-        assertFalse(p.getOtherPermissions()[0]);
-        assertFalse(p.getOtherPermissions()[1]);
-        assertFalse(p.getOtherPermissions()[2]);
-        assertEquals(p.getOctalCode(), "000");
-    }
 }
