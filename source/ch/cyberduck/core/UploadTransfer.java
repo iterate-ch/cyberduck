@@ -68,9 +68,6 @@ public class UploadTransfer extends Transfer {
                     p.attributes.setPermission(
                             ((Path)list.get(list.indexOf(p))).attributes.getPermission());
                 }
-                else {
-                    p.attributes.setPermission(new Permission());
-                }
                 if(p.attributes.isDirectory()) {
                     if(!p.getRemote().exists()) {
                         //hack

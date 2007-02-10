@@ -30,10 +30,10 @@ import java.util.Arrays;
  */
 public class Permission {
 
-    private static final String DEFAULT_MASK = "---------";
+    private static final int EMPTY_MASK = 0;
 
-    public static final Permission DEFAULT 
-            = new Permission(DEFAULT_MASK);
+    public static final Permission EMPTY
+            = new Permission(EMPTY_MASK);
 
     private String mask;
 
@@ -82,10 +82,6 @@ public class Permission {
     private boolean[] group = new boolean[3];
     private boolean[] other = new boolean[3];
 
-    public Permission() {
-        this(DEFAULT_MASK);
-    }
-
     /**
      * @param mask the access string to parse the permissions from.
      *             Must be something between --------- and rwxrwxrwx
@@ -118,9 +114,16 @@ public class Permission {
         this.mask = this.getString();
     }
 
+    /**
+     *
+     * @param decimal The permissions as a decimal number
+     */
     public Permission(int decimal) {
 //		log.debug("Permission(decimal):"+decimal);
         String octal = Integer.toOctalString(decimal);
+        if(0 == decimal) {
+            octal = "000";
+        }
 //		log.debug("Permission(octal):"+octal);
         if (octal.length() != 3) {
             throw new IllegalArgumentException("Permission must be a three digit number");
@@ -246,27 +249,24 @@ public class Permission {
     }
 
     private boolean[] getOwnerPermissions(String s) {
-        boolean[] b = {
+        return new boolean[]{
                 s.charAt(0) == 'r',
                 s.charAt(1) == 'w',
                 s.charAt(2) == 'x' || s.charAt(2) == 's' || s.charAt(2) == 'S' || s.charAt(2) == 't' || s.charAt(2) == 'T' || s.charAt(2) == 'L'};
-        return b;
     }
 
     private boolean[] getGroupPermissions(String s) {
-        boolean[] b = {
+        return new boolean[]{
                 s.charAt(3) == 'r',
                 s.charAt(4) == 'w',
                 s.charAt(5) == 'x' || s.charAt(5) == 's' || s.charAt(5) == 'S' || s.charAt(5) == 't' || s.charAt(5) == 'T' || s.charAt(5) == 'L'};
-        return b;
     }
 
     private boolean[] getOtherPermissions(String s) {
-        boolean[] b = {
+        return new boolean[]{
                 s.charAt(6) == 'r',
                 s.charAt(7) == 'w',
                 s.charAt(8) == 'x' || s.charAt(8) == 's' || s.charAt(8) == 'S' || s.charAt(8) == 't' || s.charAt(8) == 'T' || s.charAt(8) == 'L'};
-        return b;
     }
 
     /**

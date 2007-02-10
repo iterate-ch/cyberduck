@@ -20,6 +20,8 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.NSApplication;
@@ -55,6 +57,11 @@ public class CDFolderController extends CDFileController {
 
             public void run() {
                 folder.mkdir(false);
+                Permission d = new Permission(
+                        Integer.parseInt(Preferences.instance().getProperty("permission.directory.default"), 8));
+                if(!Permission.EMPTY.equals(d)) {
+                    folder.changePermissions(d, false);
+                }
             }
 
             public void cleanup() {

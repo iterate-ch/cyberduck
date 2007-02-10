@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
@@ -60,11 +61,11 @@ public class CDCreateFileController extends CDFileController {
                     new Local(NSPathUtilities.temporaryDirectory(), filename));
 
             public void run() {
-                String proposal;
                 int no = 0;
                 int index = filename.lastIndexOf(".");
                 while(file.getLocal().exists()) {
                     no++;
+                    String proposal;
                     if(index != -1) {
                         proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
                     }
@@ -74,6 +75,11 @@ public class CDCreateFileController extends CDFileController {
                     file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
                 }
                 file.getLocal().createNewFile();
+                Permission d = new Permission(
+                        Integer.parseInt(Preferences.instance().getProperty("permission.file.default"), 8));
+                if(!Permission.EMPTY.equals(d)) {
+                    file.getLocal().setPermission(d);
+                }
                 file.upload();
                 file.getLocal().delete();
                 if(file.exists()) {
