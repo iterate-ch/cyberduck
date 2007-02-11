@@ -8,10 +8,8 @@
             OUTLETS = {
                 alertIcon = NSButton; 
                 anonymousCheckbox = NSButton; 
-                bookmarksPopup = NSPopUpButton; 
                 connectmodePopup = NSPopUpButton; 
                 encodingPopup = NSPopUpButton; 
-                historyPopup = NSPopUpButton; 
                 hostPopup = NSComboBox; 
                 keychainCheckbox = NSButton; 
                 passField = NSSecureTextField; 
@@ -20,7 +18,6 @@
                 pkLabel = NSTextField; 
                 portField = NSTextField; 
                 protocolPopup = NSPopUpButton; 
-                rendezvousPopup = NSPopUpButton; 
                 urlLabel = NSTextField; 
                 usernameField = NSTextField; 
                 window = NSWindow; 

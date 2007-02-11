@@ -28,10 +28,8 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -39,128 +37,6 @@ import java.util.Map;
  */
 public class CDConnectionController extends CDSheetController {
     private static Logger log = Logger.getLogger(CDConnectionController.class);
-
-    // ----------------------------------------------------------
-    // Outlets
-    // ----------------------------------------------------------
-
-    private NSPopUpButton bookmarksPopup;
-
-    private CollectionListener bookmarkCollectionListener;
-
-    private Map bookmarks = new HashMap();
-
-    public void setBookmarksPopup(NSPopUpButton button) {
-        this.bookmarksPopup = button;
-        this.bookmarksPopup.setImage(NSImage.imageNamed("bookmarks.tiff"));
-        this.bookmarksPopup.setToolTip(NSBundle.localizedString("Bookmarks", ""));
-        Iterator iter = HostCollection.instance().iterator();
-        while(iter.hasNext()) {
-            Host bookmark = (Host) iter.next();
-            bookmarksPopup.addItem(bookmark.getNickname());
-            bookmarks.put(bookmark.getNickname(), bookmark);
-        }
-        HostCollection.instance().addListener(this.bookmarkCollectionListener = new CollectionListener() {
-            public void collectionItemAdded(Object item) {
-                Host bookmark = (Host) item;
-                bookmarksPopup.addItem(bookmark.getNickname());
-                bookmarks.put(bookmark.getNickname(), bookmark);
-            }
-
-            public void collectionItemRemoved(Object item) {
-                Host bookmark = (Host) item;
-                bookmarksPopup.removeItemWithTitle(bookmark.getNickname());
-                bookmarks.remove(bookmark.getNickname());
-            }
-
-            public void collectionItemChanged(Object item) {
-                ;
-            }
-        });
-        this.bookmarksPopup.setTarget(this);
-        final NSSelector action = new NSSelector("bookmarksPopupSelectionChanged", new Class[]{Object.class});
-        this.bookmarksPopup.setAction(action);
-    }
-
-    public void bookmarksPopupSelectionChanged(final NSPopUpButton sender) {
-        this.bookmarkSelectionDidChange((Host) bookmarks.get(sender.titleOfSelectedItem()));
-    }
-
-    private NSPopUpButton historyPopup;
-
-    private Map history = new HashMap();
-
-    protected static final File HISTORY_FOLDER
-            = new File(Preferences.instance().getProperty("application.support.path"), "History");
-
-    static {
-        HISTORY_FOLDER.mkdirs();
-    }
-
-    public void setHistoryPopup(NSPopUpButton historyPopup) {
-        this.historyPopup = historyPopup;
-        this.historyPopup.setImage(NSImage.imageNamed("history.tiff"));
-        this.historyPopup.setToolTip(NSBundle.localizedString("History", ""));
-        File[] files = HISTORY_FOLDER.listFiles(new java.io.FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".duck");
-            }
-        });
-        for(int i = 0; i < files.length; i++) {
-            Host h = ((CDMainController)NSApplication.sharedApplication().delegate()).importBookmark(files[i]);
-            historyPopup.addItem(h.getNickname());
-            history.put(h.getNickname(), h);
-        }
-        this.historyPopup.setTarget(this);
-        this.historyPopup.setAction(new NSSelector("historyPopupSelectionChanged", new Class[]{Object.class}));
-    }
-
-    public void historyPopupSelectionChanged(final NSPopUpButton sender) {
-        this.bookmarkSelectionDidChange((Host) history.get(sender.titleOfSelectedItem()));
-    }
-
-    private NSPopUpButton rendezvousPopup;
-
-    private void addItemToRendezvousPopup(String item) {
-        this.rendezvousPopup.addItem(item);
-    }
-
-    private RendezvousListener rendezvousListener;
-
-    public void setRendezvousPopup(NSPopUpButton rendezvousPopup) {
-        this.rendezvousPopup = rendezvousPopup;
-        this.rendezvousPopup.setImage(NSImage.imageNamed("rendezvous16.tiff"));
-        this.rendezvousPopup.setToolTip("Bonjour");
-        this.rendezvousPopup.setTarget(this);
-        this.rendezvousPopup.setAction(new NSSelector("rendezvousSelectionDidChange", new Class[]{Object.class}));
-        for(Iterator iter = Rendezvous.instance().getServices().iterator(); iter.hasNext();) {
-            this.addItemToRendezvousPopup(Rendezvous.instance().getDisplayedName((String) iter.next()));
-        }
-        Rendezvous.instance().addListener(rendezvousListener = new RendezvousListener() {
-            public void serviceResolved(final String servicename) {
-                CDConnectionController.this.invoke(new Runnable() {
-                    public void run() {
-                        addItemToRendezvousPopup(Rendezvous.instance().getDisplayedName(servicename));
-                    }
-                });
-            }
-
-            public void serviceLost(final String servicename) {
-                CDConnectionController.this.invoke(new Runnable() {
-                    public void run() {
-                        CDConnectionController.this.rendezvousPopup.removeItemWithTitle(
-                                Rendezvous.instance().getDisplayedName(servicename)
-                        );
-                    }
-                });
-            }
-        });
-    }
-
-    public void rendezvousSelectionDidChange(final NSPopUpButton sender) {
-        this.bookmarkSelectionDidChange(Rendezvous.instance().getServiceWithDisplayedName(
-                rendezvousPopup.titleOfSelectedItem()));
-    }
 
     private NSPopUpButton protocolPopup;
 
@@ -194,14 +70,14 @@ public class CDConnectionController extends CDSheetController {
     }
 
     private NSComboBox hostField;
-    private Object hostPopupDataSource;
+    private NSObject hostPopupDataSource;
 
     public void setHostPopup(NSComboBox hostPopup) {
         this.hostField = hostPopup;
         this.hostField.setTarget(this);
         this.hostField.setAction(new NSSelector("updateURLLabel", new Class[]{Object.class}));
         this.hostField.setUsesDataSource(true);
-        this.hostField.setDataSource(this.hostPopupDataSource = new Object() {
+        this.hostField.setDataSource(this.hostPopupDataSource = new NSObject() {
             public int numberOfItemsInComboBox(final NSComboBox sender) {
                 return HostCollection.instance().size();
             }
@@ -550,49 +426,6 @@ public class CDConnectionController extends CDSheetController {
         }
     }
 
-    private void bookmarkSelectionDidChange(final Host selected) {
-        if(selected.getProtocol().equals(Session.FTP)) {
-            this.protocolPopup.selectItemWithTitle(Session.FTP_STRING);
-        }
-        if(selected.getProtocol().equals(Session.FTP_TLS)) {
-            this.protocolPopup.selectItemWithTitle(Session.FTP_TLS_STRING);
-        }
-        if(selected.getProtocol().equals(Session.SFTP)) {
-            this.protocolPopup.selectItemWithTitle(Session.SFTP_STRING);
-        }
-        this.hostField.setStringValue(selected.getHostname());
-        this.portField.setIntValue(selected.getPort());
-        this.pathField.setStringValue(selected.getDefaultPath());
-        this.usernameField.setStringValue(selected.getCredentials().getUsername());
-        this.connectmodePopup.setEnabled(selected.getProtocol().equals(Session.FTP)
-                || selected.getProtocol().equals(Session.FTP_TLS));
-        if(null == selected.getFTPConnectMode()) {
-            this.connectmodePopup.selectItemWithTitle(DEFAULT);
-        }
-        else if(selected.getFTPConnectMode().equals(FTPConnectMode.PASV)) {
-            this.connectmodePopup.selectItemWithTitle(CONNECTMODE_PASSIVE);
-        }
-        else if(selected.getFTPConnectMode().equals(FTPConnectMode.ACTIVE)) {
-            this.connectmodePopup.selectItemWithTitle(CONNECTMODE_ACTIVE);
-        }
-        this.pkCheckbox.setEnabled(selected.getProtocol().equals(Session.SFTP));
-        if(selected.getCredentials().getPrivateKeyFile() != null) {
-            this.pkCheckbox.setState(NSCell.OnState);
-            this.pkLabel.setStringValue(
-                    selected.getCredentials().getPrivateKeyFile());
-        }
-        else {
-            this.pkCheckbox.setState(NSCell.OffState);
-        }
-        if(null == selected.getEncoding()) {
-            this.encodingPopup.selectItemWithTitle(DEFAULT);
-        }
-        else {
-            this.encodingPopup.selectItemWithTitle(selected.getEncoding());
-        }
-        this.updateURLLabel(null);
-    }
-
     private void updateURLLabel(final NSNotification sender) {
         if("".equals(hostField.stringValue())) {
             urlLabel.setStringValue(hostField.stringValue());
@@ -669,11 +502,5 @@ public class CDConnectionController extends CDSheetController {
             }
             ((CDBrowserController) parent).mount(host);
         }
-    }
-
-    protected void invalidate() {
-        HostCollection.instance().removeListener(this.bookmarkCollectionListener);
-        Rendezvous.instance().removeListener(this.rendezvousListener);
-        super.invalidate();
     }
 }
