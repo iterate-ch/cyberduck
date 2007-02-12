@@ -38,8 +38,6 @@
                 chmodUploadDefaultCheckbox = NSButton; 
                 confirmDisconnectCheckbox = NSButton; 
                 connectmodeCombobox = NSPopUpButton; 
-                csAuthenticationCombobox = NSPopUpButton; 
-                csEncryptionCombobox = NSPopUpButton; 
                 defaultBookmarkCombobox = NSPopUpButton; 
                 dgroupr = NSButton; 
                 dgroupw = NSButton; 
@@ -81,10 +79,7 @@
                 preserveModificationDownloadCheckbox = NSButton; 
                 preserveModificationUploadCheckbox = NSButton; 
                 protocolCombobox = NSPopUpButton; 
-                publickeyCombobox = NSPopUpButton; 
                 removeFromQueueCheckbox = NSButton; 
-                scAuthenticationCombobox = NSPopUpButton; 
-                scEncryptionCombobox = NSPopUpButton; 
                 secureDataChannelCheckbox = NSButton; 
                 showHiddenCheckbox = NSButton; 
                 tabView = NSTabView; 
