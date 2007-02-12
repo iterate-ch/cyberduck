@@ -178,7 +178,7 @@ public class CDProgressController extends CDController {
         //the time to start counting bytes transfered
         private long timestamp = System.currentTimeMillis();
         //initial data already transfered
-        private final double initialBytesTransfered = transfer.getCurrent();
+        private double initialBytesTransfered = transfer.getCurrent();
         private double bytesTransferred = 0;
 
         /**
@@ -190,6 +190,10 @@ public class CDProgressController extends CDController {
         public float getSpeed() {
             bytesTransferred = transfer.getCurrent();
             if(bytesTransferred > initialBytesTransfered) {
+                if(0 == initialBytesTransfered) {
+                    initialBytesTransfered = bytesTransferred;
+                    return -1;
+                }
                 // number of seconds data was actually transferred
                 double elapsedSeconds = (System.currentTimeMillis() - timestamp) / 1000;
                 if(elapsedSeconds > 1) {
