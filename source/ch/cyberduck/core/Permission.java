@@ -115,20 +115,18 @@ public class Permission {
     }
 
     /**
-     *
-     * @param decimal The permissions as a decimal number
+     * @param octal The permissions as a 3 digit octal number
      */
-    public Permission(int decimal) {
-//		log.debug("Permission(decimal):"+decimal);
-        String octal = Integer.toOctalString(decimal);
-        if(0 == decimal) {
-            octal = "000";
+    public Permission(int octal) {
+        String octalString = "000";
+        if(0 != octal) {
+            octalString = String.valueOf(octal);
         }
-//		log.debug("Permission(octal):"+octal);
-        if (octal.length() != 3) {
+//		log.debug("Permission(octalString):"+octalString);
+        if (octalString.length() != 3) {
             throw new IllegalArgumentException("Permission must be a three digit number");
         }
-        switch (Integer.parseInt(octal.substring(0, 1))) {
+        switch (Integer.parseInt(octalString.substring(0, 1))) {
             case (0):
                 this.owner = new boolean[]{false, false, false};
                 break;
@@ -154,7 +152,7 @@ public class Permission {
                 this.owner = new boolean[]{true, true, true};
                 break;
         }
-        switch (Integer.parseInt(octal.substring(1, 2))) {
+        switch (Integer.parseInt(octalString.substring(1, 2))) {
             case (0):
                 this.group = new boolean[]{false, false, false};
                 break;
@@ -180,7 +178,7 @@ public class Permission {
                 this.group = new boolean[]{true, true, true};
                 break;
         }
-        switch (Integer.parseInt(octal.substring(2, 3))) {
+        switch (Integer.parseInt(octalString.substring(2, 3))) {
             case (0):
                 this.other = new boolean[]{false, false, false};
                 break;

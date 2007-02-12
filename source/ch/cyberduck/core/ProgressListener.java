@@ -18,14 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPException;
-import com.sshtools.j2ssh.SshException;
-
-import com.apple.cocoa.foundation.NSBundle;
-
-import java.io.IOException;
-import java.net.SocketException;
-
 /**
  * @version $Id$
  */

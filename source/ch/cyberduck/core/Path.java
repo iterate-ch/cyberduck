@@ -822,16 +822,16 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     * @see Session#error(Path,String,Exception)
+     * @see Session#error(Path,String,Throwable)
      */
-    protected void error(String message, IOException e) {
+    protected void error(String message, Throwable e) {
         this.getSession().error(this, message, e);
     }
 
     /**
-     * @see Session#error(Path,String,Exception,String)
+     * @see Session#error(Path,String,Throwable,String)
      */
-    protected void error(String message, IOException e, String title) {
+    protected void error(String message, Throwable e, String title) {
         this.getSession().error(this, message, e, title);
     }
 }

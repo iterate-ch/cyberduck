@@ -1,7 +1,7 @@
 package ch.cyberduck.core.sftp;
 
 /*
- *  Copyright (c) 2005 David Kocher. All rights reserved.
+ *  Copyright (c) 2007 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,29 +18,20 @@ package ch.cyberduck.core.sftp;
  *  dkocher@cyberduck.ch
  */
 
-import com.sshtools.j2ssh.SshClient;
-import com.sshtools.j2ssh.SshEventAdapter;
-import com.sshtools.j2ssh.SshException;
-import com.sshtools.j2ssh.authentication.*;
-import com.sshtools.j2ssh.configuration.SshConnectionProperties;
-import com.sshtools.j2ssh.sftp.SftpSubsystemClient;
-import com.sshtools.j2ssh.transport.HostKeyVerification;
-import com.sshtools.j2ssh.transport.IgnoreHostKeyVerification;
-import com.sshtools.j2ssh.transport.TransportProtocol;
-import com.sshtools.j2ssh.transport.publickey.SshPrivateKeyFile;
+import ch.ethz.ssh2.*;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.Session;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
- * Opens a connection to the remote server via sftp protocol
- *
  * @version $Id$
  */
 public class SFTPSession extends Session {
@@ -56,145 +47,70 @@ public class SFTPSession extends Session {
         }
     }
 
-    protected SftpSubsystemClient SFTP;
-    protected SshClient SSH;
+    protected Connection SSH;
+
+    protected SFTPv3Client SFTP;
 
     private SFTPSession(Host h) {
         super(h);
     }
 
     public boolean isSecure() {
-        return this.isConnected();
+        if(null == SSH) {
+            return false;
+        }
+        return SSH.isAuthenticationComplete();
     }
 
     public String getSecurityInformation() {
         StringBuffer info = new StringBuffer();
-        info.append(SSH.getServerId()+"\n");
-        info.append(SSH.getServerHostKey().getFingerprint());
-        return info.toString();
-    }
-
-    public boolean isConnected() {
-        if(SSH != null) {
-            if(SSH.isConnected()) {
-                if(SFTP != null) {
-                    return SFTP.isOpen();
-                }
-            }
-        }
-        return false;
-    }
-
-    public void close() {
-        synchronized(this) {
-            this.fireActivityStartedEvent();
-            try {
-                this.fireConnectionWillCloseEvent();
-                if(SFTP != null) {
-                    SFTP.close();
-                }
-                if(SSH != null) {
-                    SSH.disconnect();
-                }
-            }
-            catch(SshException e) {
-                log.error("SSH Error: " + e.getMessage());
-            }
-            catch(IOException e) {
-                log.error("IO Error: " + e.getMessage());
-            }
-            finally {
-                this.fireConnectionDidCloseEvent();
-                this.fireActivityStoppedEvent();
-            }
-        }
-    }
-
-    public void interrupt() {
+        info.append("Protocol version: " + SFTP.getProtocolVersion()+"\n");
         try {
-            super.interrupt();
-            if(null == this.SSH) {
-                return;
-            }
-            this.fireConnectionWillCloseEvent();
-            this.SSH.interrupt();
+            final ConnectionInfo i = SSH.getConnectionInfo();
+            info.append("Key Exchange (KEX) Algorithm: "+i.keyExchangeAlgorithm+"\n");
+            info.append("Number of key exchanges performed on this connection so far: "+i.keyExchangeCounter+"\n");
+            info.append("Host Key Algorithm: "+i.serverHostKeyAlgorithm+"\n");
+            info.append("Server to Client Crypto Algorithm: "+i.serverToClientCryptoAlgorithm+"\n");
+            info.append("Client to Server Crypto Algorithm: "+i.clientToServerCryptoAlgorithm+"\n");
+            info.append("Server to Client MAC Algorithm: "+i.serverToClientMACAlgorithm+"\n");
+            info.append("Client to Server MAC Algorithm: "+i.clientToServerMACAlgorithm+"\n");
         }
         catch(IOException e) {
             log.error(e.getMessage());
         }
-        finally {
-            SFTP = null;
-            SSH = null;
-            this.fireActivityStoppedEvent();
-            this.fireConnectionDidCloseEvent();
-        }
+        return info.toString();
     }
 
-    private HostKeyVerification hostKeyVerification = new IgnoreHostKeyVerification();
+    private ServerHostKeyVerifier verifier = null;
 
-    public void setHostKeyVerificationController(HostKeyVerification h) {
-        this.hostKeyVerification = h;
+    public void setHostKeyVerificationController(ServerHostKeyVerifier v) {
+        this.verifier = v;
     }
 
-    public HostKeyVerification getHostKeyVerificationController() {
-        return this.hostKeyVerification;
-    }
-
-    protected void connect() throws IOException, SshException, ConnectionCanceledException, LoginCanceledException {
+    protected void connect() throws IOException, LoginCanceledException {
         synchronized(this) {
             if(this.isConnected()) {
                 return;
             }
             this.fireConnectionWillOpenEvent();
             this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getHostname() + "...");
-            SSH = new SshClient();
+            SSH = new Connection(this.host.getHostname(), this.host.getPort());
             try {
-                SSH.setSocketTimeout(Preferences.instance().getInteger("connection.timeout"));
-                SSH.addEventHandler(new SshEventAdapter() {
-                    public void onSocketTimeout(TransportProtocol transport) {
-                        log.debug("onSocketTimeout");
-                    }
-
-                    public void onDisconnect(TransportProtocol transport) {
-                        log.debug(transport.getState().getDisconnectReason());
+                SSH.addConnectionMonitor(new ConnectionMonitor() {
+                    public void connectionLost(Throwable reason) {
+                        interrupt();
                     }
                 });
-                SshConnectionProperties properties = new SshConnectionProperties();
-                properties.setHost(host.getHostname());
-                properties.setPort(host.getPort());
-                // Sets the prefered client->server encryption cipher
-                properties.setPrefCSEncryption(Preferences.instance().getProperty("ssh.CSEncryption"));
-                // Sets the prefered server->client encryption cipher
-                properties.setPrefSCEncryption(Preferences.instance().getProperty("ssh.SCEncryption"));
-                // Sets the prefered client->server message authentication
-                properties.setPrefCSMac(Preferences.instance().getProperty("ssh.CSAuthentication"));
-                // Sets the prefered server->client message authentication
-                properties.setPrefSCMac(Preferences.instance().getProperty("ssh.SCAuthentication"));
-                // Sets the prefered server host key for server authentication
-                properties.setPrefPublicKey(Preferences.instance().getProperty("ssh.publickey"));
-                // Set the zlib compression
-                properties.setPrefSCComp(Preferences.instance().getProperty("ssh.compression"));
-                properties.setPrefCSComp(Preferences.instance().getProperty("ssh.compression"));
-                if(Proxy.isSOCKSProxyEnabled()) {
-                    log.info("Using SOCKS Proxy");
-                    properties.setTransportProvider(SshConnectionProperties.USE_SOCKS4_PROXY);
-                    properties.setProxyHost(Proxy.getSOCKSProxyHost());
-                    properties.setProxyPort(Proxy.getSOCKSProxyPort());
-                }
-                SSH.connect(properties, this.getHostKeyVerificationController());
-                if(!SSH.isConnected()) {
-                    return;
-                }
-                this.message(NSBundle.localizedString("SSH connection opened", "Status", ""));
-                String id = SSH.getServerId();
-                this.setIdentification(id);
-                this.login();
-                this.message(NSBundle.localizedString("Starting SFTP subsystem...", "Status", ""));
-                this.SFTP = SSH.openSftpChannel(this.getEncoding());
+                final int timeout = Preferences.instance().getInteger("connection.timeout");
+                SSH.connect(verifier, timeout, timeout);
                 if(!this.isConnected()) {
                     return;
                 }
+                this.message(NSBundle.localizedString("SSH connection opened", "Status", ""));
+                this.login();
+                SFTP = new SFTPv3Client(SSH);
                 this.message(NSBundle.localizedString("SFTP subsystem ready", "Status", ""));
+                SFTP.setCharset(this.getEncoding());
                 this.fireConnectionDidOpenEvent();
             }
             catch(NullPointerException e) {
@@ -205,77 +121,8 @@ public class SFTPSession extends Session {
         }
     }
 
-    private int loginUsingKBIAuthentication(final Login credentials) throws IOException, SshException {
-        log.info("Trying Keyboard Interactive (PAM) authentication...");
-        KBIAuthenticationClient kbi = new KBIAuthenticationClient();
-        kbi.setUsername(credentials.getUsername());
-        kbi.setKBIRequestHandler(new KBIRequestHandler() {
-            public void showPrompts(String name,
-                                    String instructions,
-                                    KBIPrompt[] prompts) {
-                log.info(name);
-                log.info(instructions);
-                if(prompts != null) {
-                    for(int i = 0; i < prompts.length; i++) {
-                        log.info(prompts[i].getPrompt());
-                        prompts[i].setResponse(credentials.getPassword());
-                    }
-                }
-            }
-        });
-        // Try the authentication
-        return SSH.authenticate(kbi);
-    }
-
-
-    private int loginUsingPasswordAuthentication(final Login credentials) throws IOException, SshException {
-        log.info("Trying Password authentication...");
-        PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
-        auth.setUsername(credentials.getUsername());
-        auth.setPassword(credentials.getPassword());
-        // Try the authentication
-        return SSH.authenticate(auth);
-    }
-
-    private int loginUsingPublicKeyAuthentication(final Login credentials) throws IOException, SshException {
-        log.info("Trying Public Key authentication...");
-        PublicKeyAuthenticationClient pk = new PublicKeyAuthenticationClient();
-        pk.setUsername(credentials.getUsername());
-        // Get the private key file
-        SshPrivateKeyFile keyFile = SshPrivateKeyFile.parse(
-                new java.io.File(NSPathUtilities.stringByExpandingTildeInPath(credentials.getPrivateKeyFile()))
-        );
-        // If the private key is passphrase protected then ask for the passphrase
-        String passphrase = null;
-        if(keyFile.isPassphraseProtected()) {
-            passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
-            if(null == passphrase || passphrase.equals("")) {
-                loginController.promptUser(host.getCredentials(),
-                        NSBundle.localizedString("Private key password protected", "Credentials", ""),
-                        NSBundle.localizedString("Enter the passphrase for the private key file", "Credentials", "")
-                                + " (" + credentials.getPrivateKeyFile() + ")");
-                if(host.getCredentials().tryAgain()) {
-                    passphrase = credentials.getPassword();
-                    if(keyFile.isPassphraseProtected()) {
-                        if(credentials.usesKeychain()) {
-                            Keychain.instance().addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(),
-                                    passphrase);
-                        }
-                    }
-                }
-                else {
-		            throw new LoginCanceledException();
-                }
-            }
-        }
-        // Get the key
-        pk.setKey(keyFile.toPrivateKey(passphrase));
-        // Try the authentication
-        return SSH.authenticate(pk);
-    }
-
-    protected void login() throws IOException, SshException, ConnectionCanceledException, LoginCanceledException {
-        if(null == SSH) {
+    protected void login() throws IOException, LoginCanceledException {
+        if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
         if(!host.getCredentials().check(this.loginController)) {
@@ -284,16 +131,14 @@ public class SFTPSession extends Session {
         this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " '"
                 + host.getCredentials().getUsername() + "'");
         if(host.getCredentials().usesPublicKeyAuthentication()) {
-            if(AuthenticationProtocolState.COMPLETE == this.loginUsingPublicKeyAuthentication(host.getCredentials()))
-            {
+            if(this.loginUsingPublicKeyAuthentication(host.getCredentials())) {
                 this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
                 return;
             }
         }
         else {
-            if(AuthenticationProtocolState.COMPLETE == this.loginUsingPasswordAuthentication(host.getCredentials()) ||
-                    AuthenticationProtocolState.COMPLETE == this.loginUsingKBIAuthentication(host.getCredentials()))
-            {
+            if(this.loginUsingPasswordAuthentication(host.getCredentials()) ||
+                    this.loginUsingKBIAuthentication(host.getCredentials())) {
                 this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
                 host.getCredentials().addInternetPasswordToKeychain();
                 return;
@@ -309,6 +154,126 @@ public class SFTPSession extends Session {
         this.login();
     }
 
+    private boolean loginUsingPublicKeyAuthentication(final Login credentials) throws IOException {
+        if(SSH.isAuthMethodAvailable(host.getCredentials().getUsername(), "publickey")) {
+            File key = new File(NSPathUtilities.stringByExpandingTildeInPath(credentials.getPrivateKeyFile()));
+            if(key.exists()) {
+                // If the private key is passphrase protected then ask for the passphrase
+//                if(key.isPassphraseProtected()) {
+                String passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
+                if(null == passphrase || passphrase.equals("")) {
+                    loginController.promptUser(host.getCredentials(),
+                            NSBundle.localizedString("Private key password protected", "Credentials", ""),
+                            NSBundle.localizedString("Enter the passphrase for the private key file", "Credentials", "")
+                                    + " (" + credentials.getPrivateKeyFile() + ")");
+                    if(host.getCredentials().tryAgain()) {
+                        passphrase = credentials.getPassword();
+//                            if(key.isPassphraseProtected()) {
+//                                if(credentials.usesKeychain()) {
+//                                    Keychain.instance().addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(),
+//                                            passphrase);
+//                                }
+//                            }
+                    }
+                    else {
+                        throw new LoginCanceledException();
+                    }
+                }
+                return SSH.authenticateWithPublicKey(host.getCredentials().getUsername(), key,
+                        passphrase);
+            }
+            log.error("Key file " + key.getAbsolutePath() + " does not exist.");
+        }
+        return false;
+    }
+
+    private boolean loginUsingPasswordAuthentication(final Login credentials) throws IOException {
+        if(SSH.isAuthMethodAvailable(host.getCredentials().getUsername(), "password")) {
+            return SSH.authenticateWithPassword(credentials.getUsername(), credentials.getPassword());
+        }
+        return false;
+    }
+
+    private boolean loginUsingKBIAuthentication(final Login credentials) throws IOException {
+        if(SSH.isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
+            InteractiveLogic il = new InteractiveLogic(credentials);
+            return SSH.authenticateWithKeyboardInteractive(credentials.getUsername(), il);
+        }
+        return false;
+    }
+
+    /**
+     * The logic that one has to implement if "keyboard-interactive" autentication shall be
+     * supported.
+     */
+    private class InteractiveLogic implements InteractiveCallback {
+        int promptCount = 0;
+        Login credentials;
+
+        public InteractiveLogic(final Login credentials) {
+            this.credentials = credentials;
+        }
+
+        /**
+         * The callback may be invoked several times, depending on how
+         * many questions-sets the server sends
+         */
+        public String[] replyToChallenge(String name, String instruction, int numPrompts, String[] prompt,
+                                         boolean[] echo) throws IOException {
+            String[] result = new String[numPrompts];
+            for(int i = 0; i < numPrompts; i++) {
+                result[i] = credentials.getPassword();
+                promptCount++;
+            }
+
+            return result;
+        }
+
+        /**
+         * We maintain a prompt counter - this enables the detection of situations where the ssh
+         * server is signaling "authentication failed" even though it did not send a single prompt.
+         */
+        public int getPromptCount() {
+            return promptCount;
+        }
+    }
+
+    public void close() {
+        synchronized(this) {
+            this.fireActivityStartedEvent();
+            try {
+                this.fireConnectionWillCloseEvent();
+                if(SFTP != null) {
+                    SFTP.close();
+                }
+                if(SSH != null) {
+                    SSH.close();
+                }
+            }
+            finally {
+                this.fireConnectionDidCloseEvent();
+                this.fireActivityStoppedEvent();
+            }
+        }
+    }
+
+    public void interrupt() {
+        try {
+            super.interrupt();
+            if(null == SSH) {
+                return;
+            }
+            this.fireConnectionWillCloseEvent();
+            SSH.close();
+        }
+        finally {
+            SFTP = null;
+            SSH = null;
+            this.fireActivityStoppedEvent();
+            this.fireConnectionDidCloseEvent();
+        }
+    }
+
     protected Path workdir() throws ConnectionCanceledException {
         synchronized(this) {
             if(!this.isConnected()) {
@@ -316,11 +281,9 @@ public class SFTPSession extends Session {
             }
             Path workdir = null;
             try {
-                workdir = PathFactory.createPath(this, SFTP.getDefaultDirectory());
+                // "." as referring to the current directory
+                workdir = PathFactory.createPath(this, SFTP.canonicalPath("."));
                 workdir.attributes.setType(Path.DIRECTORY_TYPE);
-            }
-            catch(SshException e) {
-                log.error("SSH Error: " + e.getMessage());
             }
             catch(IOException e) {
                 this.error(null, "Connection failed", e);
@@ -333,14 +296,19 @@ public class SFTPSession extends Session {
     protected void noop() throws IOException {
         synchronized(this) {
             if(this.isConnected()) {
-                this.SSH.noop();
+                SSH.sendIgnorePacket();
             }
         }
     }
 
     public void sendCommand(String command) throws IOException {
-        synchronized(this) {
-            log.fatal("Not implemented");
+        ;
+    }
+
+    public boolean isConnected() {
+        if(null == SSH) {
+            return false;
         }
+        return true;
     }
 }

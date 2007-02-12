@@ -71,6 +71,7 @@ public class CDBookmarkController extends CDWindowController {
             this.host.setPort(Session.FTP_PORT);
         }
         this.portField.setStringValue("" + this.host.getPort());
+        this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Session.SFTP));
         this.itemChanged();
     }
 

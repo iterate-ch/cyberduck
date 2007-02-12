@@ -490,7 +490,7 @@ public abstract class Session extends NSObject {
      * @param message The error message to be displayed in the alert sheet
      * @param e The cause of the error
      */
-    public void error(Path path, String message, Exception e) {
+    public void error(Path path, String message, Throwable e) {
         this.error(path, message, e, null);
     }
 
@@ -504,7 +504,7 @@ public abstract class Session extends NSObject {
      * @see Growl
      * @see ErrorListener
      */
-    public void error(Path path, String message, Exception e, String title) {
+    public void error(Path path, String message, Throwable e, String title) {
         log.info(e.getMessage());
         BackgroundException failure = new BackgroundException(this, path, message, e);
         ErrorListener[] l = (ErrorListener[]) errorListeners.toArray(

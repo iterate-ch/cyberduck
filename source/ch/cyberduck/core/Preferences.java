@@ -361,17 +361,15 @@ public abstract class Preferences {
         /**
          * The permission to apply when creating a new folder
          */
-        defaults.put("permission.directory.default", "000");
-//        defaults.put("permission.directory.default", "755");
+        defaults.put("permission.directory.default", "755");
         /**
          * The permission to apply when creating a new plain file
          */
-        defaults.put("permission.file.default", "000");
-//        defaults.put("permission.file.default", "644");
+        defaults.put("permission.file.default", "644");
         /**
          * Use the SFTP subsystem or a SCP channel for file transfers over SSH
          */
-        defaults.put("ssh.transfers", Session.SFTP); // Session.SCP
+        defaults.put("ssh.transfer", Session.SFTP); // Session.SCP
         /**
          * Location of the openssh known_hosts file
          */

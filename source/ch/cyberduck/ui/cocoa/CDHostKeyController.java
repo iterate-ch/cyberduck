@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2005 David Kocher. All rights reserved.
+ *  Copyright (c) 2007 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,98 +18,137 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.sshtools.j2ssh.transport.AbstractKnownHostsKeyVerification;
-import com.sshtools.j2ssh.transport.InvalidHostFileException;
-import com.sshtools.j2ssh.transport.publickey.SshPublicKey;
+import ch.ethz.ssh2.KnownHosts;
+import ch.ethz.ssh2.ServerHostKeyVerifier;
 
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Local;
 
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
- * Concrete Coccoa implementation of a SSH HostKeyVerification
- *
  * @version $Id$
  */
-public class CDHostKeyController extends AbstractKnownHostsKeyVerification
-{
+public class CDHostKeyController implements ServerHostKeyVerifier {
     protected static Logger log = Logger.getLogger(CDHostKeyController.class);
 
     private CDWindowController parent;
 
+    /**
+     * It is a thread safe implementation, therefore, you need only to instantiate one
+     * <code>KnownHosts</code> for your whole application.
+     */
+    private KnownHosts database;
+
     public CDHostKeyController(final CDWindowController windowController) {
         this.parent = windowController;
+        File f = new Local(Preferences.instance().getProperty("ssh.knownhosts"));
+        if(f.canRead()) {
+            try {
+                this.database = new KnownHosts(f);
+            }
+            catch(IOException e) {
+                log.error("Cannot read "+f.getAbsolutePath());
+            }
+        }
+        if(null == this.database) {
+            this.database = new KnownHosts();
+        }
+    }
+
+    public boolean verifyServerHostKey(final String hostname, final int port, final String serverHostKeyAlgorithm,
+                                       final byte[] serverHostKey) throws Exception {
+        int result = database.verifyHostkey(hostname, serverHostKeyAlgorithm, serverHostKey);
+        if(KnownHosts.HOSTKEY_IS_OK == result) {
+            return true; // We are happy
+        }
+        if(KnownHosts.HOSTKEY_IS_NEW == result) {
+            NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Unknown host key for", "") + " "
+                    + hostname, //title
+                    NSBundle.localizedString("The host is currently unknown to the system. The host key fingerprint is", "")
+                            + ": " + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey) + ".",
+                    NSBundle.localizedString("Allow", ""), // default button
+                    NSBundle.localizedString("Deny", ""), // alternate button
+                    new Local(Preferences.instance().getProperty("ssh.knownhosts")).canWrite() ?
+                            NSBundle.localizedString("Always", "") : null //other button
+            );
+            CDSheetController c = new CDSheetController(parent, sheet) {
+                public void callback(final int returncode) {
+                    if(returncode == DEFAULT_OPTION) {// allow host (once)
+                        allow(hostname, serverHostKeyAlgorithm, serverHostKey, false);
+                    }
+                    if(returncode == ALTERNATE_OPTION) {// allow host (always)
+                        allow(hostname, serverHostKeyAlgorithm, serverHostKey, true);
+                    }
+                    if(returncode == CANCEL_OPTION) {
+                        log.warn("Cannot continue without a valid host key");
+                    }
+                }
+            };
+            c.beginSheet(true);
+            return c.returnCode() == CDSheetCallback.DEFAULT_OPTION
+                    || c.returnCode() == CDSheetCallback.ALTERNATE_OPTION;
+        }
+        if(KnownHosts.HOSTKEY_HAS_CHANGED == result) {
+            NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Host key mismatch:", "") + " " + hostname, //title
+                    NSBundle.localizedString("The host key supplied is", "") + ": "
+                            + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)
+//                            + "\n" + NSBundle.localizedString("The current allowed key for this host is", "") + " : "
+//                            + allowedHostKey.getFingerprint() + "\n"
+                            + NSBundle.localizedString("Do you want to allow the host access?", ""),
+                    NSBundle.localizedString("Allow", ""), // defaultbutton
+                    NSBundle.localizedString("Deny", ""), //alternative button
+                    new Local(Preferences.instance().getProperty("ssh.knownhosts")).canWrite() ? NSBundle.localizedString("Always", "") : null //other button
+            );
+            CDSheetController c = new CDSheetController(parent, sheet) {
+                public void callback(final int returncode) {
+                    if(returncode == DEFAULT_OPTION) {
+                        allow(hostname, serverHostKeyAlgorithm, serverHostKey, false);
+                    }
+                    if(returncode == ALTERNATE_OPTION) {
+                        allow(hostname, serverHostKeyAlgorithm, serverHostKey, true);
+                    }
+                    if(returncode == CANCEL_OPTION) {
+                        log.warn("Cannot continue without a valid host key");
+                    }
+                }
+            };
+            c.beginSheet(true);
+            return c.returnCode() == CDSheetCallback.DEFAULT_OPTION
+                    || c.returnCode() == CDSheetCallback.ALTERNATE_OPTION;
+        }
+        return false;
+    }
+
+    private void allow(final String hostname, final String serverHostKeyAlgorithm,
+                                       final byte[] serverHostKey, boolean always) {
+        // The following call will ONLY put the key into the memory cache!
+        // To save it in a known hosts file, also call "KnownHosts.addHostkeyToFile(...)"
+        String hashedHostname = KnownHosts.createHashedHostname(hostname);
+        // Add the hostkey to the in-memory database
         try {
-            this.setKnownHostFile(NSPathUtilities.stringByExpandingTildeInPath(
-                    Preferences.instance().getProperty("ssh.knownhosts")));
+            database.addHostkey(new String[]{hashedHostname}, serverHostKeyAlgorithm, serverHostKey);
         }
-        catch (Exception e) {
-            log.error("Could not open or read the host file");
+        catch(IOException e) {
+            log.error(e.getMessage());
         }
-    }
-
-    public void onHostKeyMismatch(final String host, final SshPublicKey allowedHostKey, final SshPublicKey actualHostKey) {
-        NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Host key mismatch:", "") + " " + host, //title
-                NSBundle.localizedString("The host key supplied is", "") + ": "
-                        + actualHostKey.getFingerprint() +
-                        "\n" + NSBundle.localizedString("The current allowed key for this host is", "") + " : "
-                        + allowedHostKey.getFingerprint() + "\n" + NSBundle.localizedString("Do you want to allow the host access?", ""),
-                NSBundle.localizedString("Allow", ""), // defaultbutton
-                NSBundle.localizedString("Deny", ""), //alternative button
-                this.isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null //other button
-        );
-        CDSheetController c = new CDSheetController(parent, sheet) {
-            public void callback(final int returncode) {
-                try {
-                    if (returncode == DEFAULT_OPTION) {
-                        allowHost(host, actualHostKey, false);
-                    }
-                    if (returncode == ALTERNATE_OPTION) {
-                        allowHost(host, actualHostKey, true); // always allow host
-                    }
-                    if (returncode == CANCEL_OPTION) {
-                        log.info("Cannot continue without a valid host key");
-                    }
-                }
-                catch (InvalidHostFileException e) {
-                    log.error(e.getMessage());
-                }
+        if(always) {
+            // Also try to add the key to a known_host file
+            try {
+                KnownHosts.addHostkeyToFile(new File(Preferences.instance().getProperty("ssh.knownhosts")),
+                        new String[]{KnownHosts.createHashedHostname(hostname)},
+                        serverHostKeyAlgorithm, serverHostKey);
             }
-        };
-        c.beginSheet(true);
-    }
-
-    public void onUnknownHost(final String host,
-                              final SshPublicKey actualHostKey) {
-        NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Unknown host key for", "") + " " + host, //title
-                NSBundle.localizedString("The host is currently unknown to the system. The host key fingerprint is", "") + ": " + actualHostKey.getFingerprint() + ".",
-                NSBundle.localizedString("Allow", ""), // default button
-                NSBundle.localizedString("Deny", ""), // alternate button
-                this.isHostFileWriteable() ? NSBundle.localizedString("Always", "") : null //other button
-        );
-        CDSheetController c = new CDSheetController(parent, sheet) {
-            public void callback(final int returncode) {
-                try {
-                    if (returncode == DEFAULT_OPTION) {
-                        allowHost(host, actualHostKey, false); // allow host (once)
-                    }
-                    if (returncode == ALTERNATE_OPTION) {
-                        allowHost(host, actualHostKey, true); // allow host (always)
-                    }
-                    if (returncode == CANCEL_OPTION) {
-                        log.info("Cannot continue without a valid host key");
-                    }
-                }
-                catch (InvalidHostFileException e) {
-                    log.error(e.getMessage());
-                }
+            catch(IOException ignore) {
+                log.error(ignore.getMessage());
             }
-        };
-        c.beginSheet(true);
+        }
     }
 }

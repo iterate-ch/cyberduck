@@ -276,7 +276,7 @@ public class Local extends File implements IAttributes {
             log.error("No such file:"+this.getAbsolute());
             return null;
         }
-        return new Permission(((Number) posix).intValue());
+        return new Permission(Integer.parseInt(Integer.toOctalString(((Number) posix).intValue())));
     }
 
     public void setPermission(Permission p) {

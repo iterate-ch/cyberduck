@@ -82,6 +82,15 @@ public abstract class CDSheetController extends CDWindowController implements CD
         NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
     }
 
+    private int returncode;
+
+    /**
+     * @return The tag of the button this sheet was dismissed with
+     */
+    public int returnCode() {
+        return this.returncode;
+    }
+
     /**
      * Check input fields for any errors
      *
@@ -167,6 +176,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
     public void sheetDidClose(NSPanel sheet, final int returncode, Object context) {
         log.debug("sheetDidClose:" + sheet);
         sheet.orderOut(null);
+        this.returncode = returncode;
         this.callback(returncode);
         if(!this.isSingleton()) {
             this.invalidate();

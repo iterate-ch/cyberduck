@@ -18,8 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.ethz.ssh2.SFTPException;
 import com.enterprisedt.net.ftp.FTPException;
-import com.sshtools.j2ssh.SshException;
 
 import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
@@ -54,7 +54,7 @@ public class CDErrorCell extends CDTableCell {
         if(cause instanceof FTPException) {
             title = "FTP " + NSBundle.localizedString("Error", "");
         }
-        else if(cause instanceof SshException) {
+        else if(cause instanceof SFTPException) {
             title = "SSH " + NSBundle.localizedString("Error", "");
         }
         else if(cause instanceof SocketException) {
