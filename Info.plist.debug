@@ -71,9 +71,9 @@
 	<string>YES</string>
 	<key>NSJavaPath</key>
 	<array>
-		<string>j2ssh.jar</string>
 		<string>core.jar</string>
 		<string>cocoa.jar</string>
+		<string>ganymed.jar</string>
 		<string>ftp.jar</string>
 		<string>log4j-1.2.13.jar</string>
 		<string>jakarta-oro-2.0.8.jar</string>

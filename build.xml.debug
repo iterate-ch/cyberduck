@@ -1,8 +1,8 @@
 <!--
  *	Simple Ant (http://jakarta.apache.org/ant) build script for Cyberduck
  *
- *	$Revision: 2614 $
- *	$Date: 2006-12-03 19:19:35 +0530 (Sun, 03 Dec 2006) $
+ *	$Revision: 2837 $
+ *	$Date: 2007-02-12 12:53:35 +0530 (Mon, 12 Feb 2007) $
  *
  *	Copyright (c) 2005 David Kocher. All rights reserved.
  *	http://icu.unizh.ch/~dkocher/
@@ -123,6 +123,169 @@
 		<property name="svn.revision" value="${svn.revision}"/>
 		<echo message="_REVISION_=${svn.revision}" />
 	</target>
+	
+	<target name="release-localization" depends="build" if="localization">
+		<mkdir dir="${java.io.tmpdir}/${localization}"/>
+		<property name="app.bundle.loc" value="${java.io.tmpdir}/${localization}/${app.name}.app"/>
+		<copy todir="${app.bundle.loc}">
+			<fileset dir="${app.bundle}">
+				<include name="**/*"/>
+				<exclude name="**/*.lproj/**"/>
+			</fileset>
+		</copy>
+		<copy todir="${app.bundle.loc}">
+			<fileset dir="${app.bundle}">
+				<include name="**/${localization}.lproj/**"/>
+			</fileset>
+		</copy>
+		<copy todir="${app.bundle.loc}/Contents/Resources/${localization}.lproj">
+			<fileset dir="${app.resources}/en.lproj">
+				<include name="Queue.nib/**"/>
+				<include name="Progress.nib/**"/>
+				<include name="Security.nib/**"/>
+				<include name="Alert.nib/**"/>
+			</fileset>
+		</copy>
+		<chmod perm="a+x" type="file">
+			<fileset dir="${app.bundle.loc}">
+				<include name="**/*.framework/*"/>
+				<include name="**/*.framework/Versions/*/*"/>
+				<include name="**/MacOS/*"/>
+			</fileset>
+		</chmod>
+		<exec dir="${home}" executable="./buildDMG.pl" spawn="false">
+			<arg line="-dmgName '${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg' -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor} (${localization})' -buildDir ${build}/localizations -compressionLevel 9 ${app.bundle.loc} ${app.name}\ Website.webloc Donate.webloc ${localization}.lproj/License.txt Credits.rtf  AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
+		</exec>
+		<checksum file="${build}/localizations/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg" algorithm="md5" />
+		<delete dir="${build}/${localization}"/>
+	</target>
+	
+	<target name="nightly">
+		<antcall target="package">
+			<param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
+			<param name="url.changelog" value="http://update.cyberduck.ch/nightly/changelog.html"/>
+			<param name="sparkle.feed" value="http://update.cyberduck.ch/nightly/changelog.rss"/>
+		</antcall>
+	</target>
+
+	<target name="release">
+		<antcall target="package">
+			<param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
+			<param name="url.changelog" value="http://update.cyberduck.ch/changelog.html"/>
+			<param name="sparkle.feed" value="http://update.cyberduck.ch/changelog.rss"/>
+		</antcall>
+	</target>
+	
+	<target name="package" depends="build, timestamp, revision">
+		<echo message="_TIMESTAMP_=${touch.time}" />
+		<echo message="_VERSION_=${cyberduck.version.major}.${cyberduck.version.minor}" />
+		<echo message="_SPARKLEFEED_=${sparkle.feed}" />
+		<replace dir="${app.bundle}" summary="true" encoding="UTF-8">
+			<include name="**/InfoPlist.strings" />
+			<include name="**/Info.plist" />
+			<replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}" />
+			<replacefilter token="_TIMESTAMP_" value="${touch.time}" />
+			<replacefilter token="_REVISION_" value="${svn.revision}" />
+			<replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
+		</replace>
+		<echo message="Creating tar.gz archive..." />
+		<exec dir="${build.deploy}" executable="tar" spawn="false">
+			<arg line="-czf ../${app.name}-${svn.revision}.tar.gz ${app.name}.app"/>
+		</exec>
+		<exec dir="${home}" executable="./buildDMG.pl" spawn="false">
+			<arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor}' -buildDir ${build} -compressionLevel 9 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.rtf AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
+		</exec>
+		<checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg" algorithm="md5" />
+		<echo message="Calculating MD5 sum..." />
+		<checksum file="${build}/${app.name}-${svn.revision}.tar.gz" 
+			algorithm="md5" property="md5sum"/>
+		<checksum file="${build}/${app.name}-${svn.revision}.tar.gz" 
+			algorithm="md5"/>
+		<property name="md5sum" value="${md5sum}"/>
+		<echo message="_MD5SUM_=${md5sum}" />
+		<copy todir="${build}" overwrite="true">
+			<fileset dir="${home}/www/update/">
+				<include name="changelog.rss"/>
+			</fileset>
+		</copy>
+		<echo message="_ARCHIVE_=${url.archive}" />
+		<echo message="_CHANGELOG_=${url.changelog}" />
+		<replace dir="${build}" summary="true" encoding="UTF-8">
+			<include name="changelog.rss" />
+			<replacefilter token="_TIMESTAMP_" value="${touch.time}" />
+			<replacefilter token="_ARCHIVE_" value="${url.archive}" />
+			<replacefilter token="_CHANGELOG_" value="${url.changelog}" />
+			<replacefilter token="_REVISION_" value="${svn.revision}" />
+			<replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
+			<replacefilter token="_MD5SUM_" value="${md5sum}" />
+		</replace>
+	</target>
+
+	<target name="mirror.nightly" depends="revision">
+		<scp file="${build}/${app.name}-${svn.revision}.tar.gz"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
+			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${build}/${app.name}-${svn.revision}.tar.gz.md5"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
+			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${build}/changelog.rss"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
+			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${www.update}/changelog.html"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
+			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   passphrase="">
+		</scp>
+	</target>
+
+	<target name="mirror.release" depends="revision">
+		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"
+			   todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
+			   keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.md5"
+			   todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
+			   keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${build}/${app.name}-${svn.revision}.tar.gz"
+			   todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
+			   keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${build}/${app.name}-${svn.revision}.tar.gz.md5"
+			   todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
+			   keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${build}/changelog.rss"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
+			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${www.update}/changelog.html"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
+			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${build}/changelog.rss"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
+			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${www.update}/changelog.html"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
+			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   passphrase="">
+		</scp>
+	</target>
 
 	<target name="build" depends="archive" description="Compile, jar and copy to application bundle">
 		<copy todir="${app.java}">
@@ -183,11 +346,11 @@
 				<include name="glguerin/**/*.class"/>
 			</fileset>
 		</jar>
-		<jar jarfile="${build}/j2ssh.jar"
+		<jar jarfile="${build}/ganymed.jar"
 			update="yes"
 			manifest="${build}/MANIFEST.MF">
 			<fileset dir="${build.classes}">
-				<include name="com/sshtools/**/*.class"/>
+				<include name="ch/ethz/ssh2/**/*.class"/>
 			</fileset>
 		</jar>
 		<jar jarfile="${build}/ftp.jar"
@@ -227,7 +390,7 @@
 		<delete dir="${app.bundle}"/>
 	</target>
 
-	<target name="manifest" description="Create a manifest used in the jar files">
+	<target name="manifest" depends="revision" description="Create a manifest used in the jar files">
 		<manifest file="${build}/MANIFEST.MF">
 			<attribute name="Built-By" value="${user.name}"/>
 			<attribute name="Specification-Title" value="${app.name}"/>

@@ -346,11 +346,11 @@
 				<include name="glguerin/**/*.class"/>
 			</fileset>
 		</jar>
-		<jar jarfile="${build}/j2ssh.jar"
+		<jar jarfile="${build}/ganymed.jar"
 			update="yes"
 			manifest="${build}/MANIFEST.MF">
 			<fileset dir="${build.classes}">
-				<include name="com/sshtools/**/*.class"/>
+				<include name="ch/ethz/ssh2/**/*.class"/>
 			</fileset>
 		</jar>
 		<jar jarfile="${build}/ftp.jar"

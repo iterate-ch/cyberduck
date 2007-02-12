@@ -338,53 +338,6 @@
 		470E56D208BE3E1E00BDF3CD /* TinFSFork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinFSFork.h; sourceTree = "<group>"; };
 		470E56D308BE3E1E00BDF3CD /* TinFSRefItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinFSRefItem.h; sourceTree = "<group>"; };
 		470E56D408BE3E1E00BDF3CD /* TinWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinWatcher.h; sourceTree = "<group>"; };
-		470E570708BE4A6000BDF3CD /* AccentComposer.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AccentComposer.java; sourceTree = "<group>"; };
-		470E570808BE4A6000BDF3CD /* BasicFileInfo.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = BasicFileInfo.java; sourceTree = "<group>"; };
-		470E570908BE4A6000BDF3CD /* FileAccess.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FileAccess.java; sourceTree = "<group>"; };
-		470E570A08BE4A6000BDF3CD /* FileForker.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FileForker.java; sourceTree = "<group>"; };
-		470E570B08BE4A6000BDF3CD /* FileHelper.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FileHelper.java; sourceTree = "<group>"; };
-		470E570C08BE4A6000BDF3CD /* FileInfo.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FileInfo.java; sourceTree = "<group>"; };
-		470E570F08BE4A6000BDF3CD /* Errors.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Errors.java; sourceTree = "<group>"; };
-		470E571008BE4A6100BDF3CD /* ForkRW.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ForkRW.java; sourceTree = "<group>"; };
-		470E571108BE4A6100BDF3CD /* FSCatInfo.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FSCatInfo.java; sourceTree = "<group>"; };
-		470E571208BE4A6100BDF3CD /* FSForker.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FSForker.java; sourceTree = "<group>"; };
-		470E571308BE4A6100BDF3CD /* FSItem.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FSItem.java; sourceTree = "<group>"; };
-		470E571408BE4A6100BDF3CD /* FSRefItem.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FSRefItem.java; sourceTree = "<group>"; };
-		470E571508BE4A6100BDF3CD /* FSRefItemX.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FSRefItemX.java; sourceTree = "<group>"; };
-		470E571608BE4A6100BDF3CD /* FSSpec.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FSSpec.java; sourceTree = "<group>"; };
-		470E571808BE4A6100BDF3CD /* MacOSXForker.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MacOSXForker.java; sourceTree = "<group>"; };
-		470E571908BE4A6100BDF3CD /* SignalCounter.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SignalCounter.java; sourceTree = "<group>"; };
-		470E571A08BE4A6100BDF3CD /* TinAlias.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TinAlias.java; sourceTree = "<group>"; };
-		470E571B08BE4A6100BDF3CD /* TinFSFork.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TinFSFork.java; sourceTree = "<group>"; };
-		470E571C08BE4A6100BDF3CD /* TinFSRefItem.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TinFSRefItem.java; sourceTree = "<group>"; };
-		470E571D08BE4A6100BDF3CD /* TinWatcher.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TinWatcher.java; sourceTree = "<group>"; };
-		470E571E08BE4A6100BDF3CD /* MemoryException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MemoryException.java; sourceTree = "<group>"; };
-		470E571F08BE4A6100BDF3CD /* NameString.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NameString.java; sourceTree = "<group>"; };
-		470E572008BE4A6100BDF3CD /* MacRoman.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MacRoman.java; sourceTree = "<group>"; };
-		470E572108BE4A6100BDF3CD /* NamingStrategy.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NamingStrategy.java; sourceTree = "<group>"; };
-		470E572208BE4A6100BDF3CD /* NamingStrategyKeep.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NamingStrategyKeep.java; sourceTree = "<group>"; };
-		470E572308BE4A6100BDF3CD /* NamingStrategyUnique.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NamingStrategyUnique.java; sourceTree = "<group>"; };
-		470E572408BE4A6100BDF3CD /* Pathname.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Pathname.java; sourceTree = "<group>"; };
-		470E572508BE4A6100BDF3CD /* PathnameFormat.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PathnameFormat.java; sourceTree = "<group>"; };
-		470E572608BE4A6100BDF3CD /* PF_MacOS.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PF_MacOS.java; sourceTree = "<group>"; };
-		470E572708BE4A6100BDF3CD /* PF_MacOSX.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PF_MacOSX.java; sourceTree = "<group>"; };
-		470E572808BE4A6100BDF3CD /* PF_Simple.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PF_Simple.java; sourceTree = "<group>"; };
-		470E572908BE4A6100BDF3CD /* RandomRW.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RandomRW.java; sourceTree = "<group>"; };
-		470E572A08BE4A6100BDF3CD /* RandomRWArray.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RandomRWArray.java; sourceTree = "<group>"; };
-		470E572B08BE4A6100BDF3CD /* RandomRWFile.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RandomRWFile.java; sourceTree = "<group>"; };
-		470E572C08BE4A6100BDF3CD /* RandomRWInputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RandomRWInputStream.java; sourceTree = "<group>"; };
-		470E572D08BE4A6100BDF3CD /* RandomRWOutputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RandomRWOutputStream.java; sourceTree = "<group>"; };
-		470E572E08BE4A6100BDF3CD /* RandomRWRange.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RandomRWRange.java; sourceTree = "<group>"; };
-		470E572F08BE4A6100BDF3CD /* RandomRWSink.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RandomRWSink.java; sourceTree = "<group>"; };
-		470E573008BE4A6100BDF3CD /* RandomRWWrapper.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RandomRWWrapper.java; sourceTree = "<group>"; };
-		470E573108BE4A6100BDF3CD /* UnsupportedIOException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = UnsupportedIOException.java; sourceTree = "<group>"; };
-		470E573308BE4A6100BDF3CD /* Arrayer.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Arrayer.java; sourceTree = "<group>"; };
-		470E573408BE4A6100BDF3CD /* Byter.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Byter.java; sourceTree = "<group>"; };
-		470E573508BE4A6100BDF3CD /* Implicator.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Implicator.java; sourceTree = "<group>"; };
-		470E573608BE4A6100BDF3CD /* LibLoader.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = LibLoader.java; sourceTree = "<group>"; };
-		470E573708BE4A6100BDF3CD /* MacPlatform.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MacPlatform.java; sourceTree = "<group>"; };
-		470E573808BE4A6100BDF3CD /* MacTime.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MacTime.java; sourceTree = "<group>"; };
-		470E573908BE4A6100BDF3CD /* SmallPoint.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SmallPoint.java; sourceTree = "<group>"; };
 		470FDC67099E4A9B008DE09C /* he */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = he; path = he.lproj/Info.nib; sourceTree = "<group>"; };
 		470FDC68099E4A9B008DE09C /* he */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = he; path = he.lproj/Download.nib; sourceTree = "<group>"; };
 		470FDC69099E4A9B008DE09C /* he */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = he; path = he.lproj/Certificate.nib; sourceTree = "<group>"; };
@@ -493,18 +446,6 @@
 		4739EFC10856991300405FD3 /* libLocal.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLocal.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EFFB08569A8100405FD3 /* Keychain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Keychain.framework; path = build/Keychain.framework; sourceTree = "<group>"; };
 		4739F03D08569B5E00405FD3 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Growl.framework; path = build/Growl.framework; sourceTree = "<group>"; };
-		47412ED107CA832400BD37AB /* AES128Cbc.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AES128Cbc.java; sourceTree = "<group>"; };
-		47412ED207CA832400BD37AB /* AES192Cbc.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AES192Cbc.java; sourceTree = "<group>"; };
-		47412ED307CA832400BD37AB /* AES256Cbc.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AES256Cbc.java; sourceTree = "<group>"; };
-		47412ED407CA832400BD37AB /* AESEngine.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AESEngine.java; sourceTree = "<group>"; };
-		47412ED507CA832400BD37AB /* CAST128Cbc.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CAST128Cbc.java; sourceTree = "<group>"; };
-		47412ED607CA832400BD37AB /* CAST5Engine.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CAST5Engine.java; sourceTree = "<group>"; };
-		47412ED707CA832400BD37AB /* CbcBlockCipher.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CbcBlockCipher.java; sourceTree = "<group>"; };
-		47412ED807CA832400BD37AB /* CipherEngine.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CipherEngine.java; sourceTree = "<group>"; };
-		47412ED907CA832400BD37AB /* Twofish128Cbc.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Twofish128Cbc.java; sourceTree = "<group>"; };
-		47412EDA07CA832400BD37AB /* Twofish192Cbc.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Twofish192Cbc.java; sourceTree = "<group>"; };
-		47412EDB07CA832400BD37AB /* Twofish256Cbc.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Twofish256Cbc.java; sourceTree = "<group>"; };
-		47412EDC07CA832400BD37AB /* TwofishEngine.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TwofishEngine.java; sourceTree = "<group>"; };
 		474152DB06C4F08A00AC0BD2 /* Attributes.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Attributes.java; sourceTree = "<group>"; };
 		474152DD06C4F08A00AC0BD2 /* Cache.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Cache.java; sourceTree = "<group>"; };
 		474152DE06C4F08A00AC0BD2 /* Codec.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Codec.java; sourceTree = "<group>"; };
@@ -553,244 +494,6 @@
 		4741532606C4F08A00AC0BD2 /* ODBEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ODBEditor.m; sourceTree = "<group>"; };
 		4741532706C4F08A00AC0BD2 /* ODBEditorSuite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ODBEditorSuite.h; sourceTree = "<group>"; };
 		4741532906C4F08A00AC0BD2 /* LoginController.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = LoginController.java; sourceTree = "<group>"; };
-		4741532F06C4F08A00AC0BD2 /* FTPActiveDataSocket.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPActiveDataSocket.java; sourceTree = "<group>"; };
-		4741533006C4F08A00AC0BD2 /* FTPClient.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPClient.java; sourceTree = "<group>"; };
-		4741533106C4F08A00AC0BD2 /* FTPConnectMode.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPConnectMode.java; sourceTree = "<group>"; };
-		4741533206C4F08A00AC0BD2 /* FTPControlSocket.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPControlSocket.java; sourceTree = "<group>"; };
-		4741533306C4F08A00AC0BD2 /* FTPDataSocket.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPDataSocket.java; sourceTree = "<group>"; };
-		4741533406C4F08A00AC0BD2 /* FTPException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPException.java; sourceTree = "<group>"; };
-		4741533506C4F08A00AC0BD2 /* FTPPassiveDataSocket.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPPassiveDataSocket.java; sourceTree = "<group>"; };
-		4741533606C4F08A00AC0BD2 /* FTPReply.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPReply.java; sourceTree = "<group>"; };
-		4741533706C4F08A00AC0BD2 /* FTPTransferType.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPTransferType.java; sourceTree = "<group>"; };
-		4741535A06C4F08A00AC0BD2 /* AuthenticationProtocolClient.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AuthenticationProtocolClient.java; sourceTree = "<group>"; };
-		4741535B06C4F08A00AC0BD2 /* AuthenticationProtocolException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AuthenticationProtocolException.java; sourceTree = "<group>"; };
-		4741535C06C4F08A00AC0BD2 /* AuthenticationProtocolListener.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AuthenticationProtocolListener.java; sourceTree = "<group>"; };
-		4741535D06C4F08A00AC0BD2 /* AuthenticationProtocolState.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AuthenticationProtocolState.java; sourceTree = "<group>"; };
-		4741535F06C4F08A00AC0BD2 /* KBIAuthenticationClient.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = KBIAuthenticationClient.java; sourceTree = "<group>"; };
-		4741536006C4F08A00AC0BD2 /* KBIPrompt.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = KBIPrompt.java; sourceTree = "<group>"; };
-		4741536106C4F08A00AC0BD2 /* KBIRequestHandler.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = KBIRequestHandler.java; sourceTree = "<group>"; };
-		4741536406C4F08A00AC0BD2 /* PublicKeyAuthenticationClient.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PublicKeyAuthenticationClient.java; sourceTree = "<group>"; };
-		4741536506C4F08A00AC0BD2 /* SshAuthenticationClient.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshAuthenticationClient.java; sourceTree = "<group>"; };
-		4741536706C4F08A00AC0BD2 /* SshAuthenticationPrompt.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshAuthenticationPrompt.java; sourceTree = "<group>"; };
-		4741536806C4F08A00AC0BD2 /* SshMsgUserAuthBanner.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgUserAuthBanner.java; sourceTree = "<group>"; };
-		4741536906C4F08A00AC0BD2 /* SshMsgUserAuthFailure.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgUserAuthFailure.java; sourceTree = "<group>"; };
-		4741536A06C4F08A00AC0BD2 /* SshMsgUserAuthInfoRequest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgUserAuthInfoRequest.java; sourceTree = "<group>"; };
-		4741536B06C4F08A00AC0BD2 /* SshMsgUserAuthInfoResponse.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgUserAuthInfoResponse.java; sourceTree = "<group>"; };
-		4741536C06C4F08A00AC0BD2 /* SshMsgUserAuthPKOK.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgUserAuthPKOK.java; sourceTree = "<group>"; };
-		4741536D06C4F08A00AC0BD2 /* SshMsgUserAuthPwdChangeReq.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgUserAuthPwdChangeReq.java; sourceTree = "<group>"; };
-		4741536E06C4F08A00AC0BD2 /* SshMsgUserAuthRequest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgUserAuthRequest.java; sourceTree = "<group>"; };
-		4741536F06C4F08A00AC0BD2 /* SshMsgUserAuthSuccess.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgUserAuthSuccess.java; sourceTree = "<group>"; };
-		4741537006C4F08A00AC0BD2 /* TerminatedStateException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TerminatedStateException.java; sourceTree = "<group>"; };
-		4741537706C4F08A00AC0BD2 /* SshConnectionProperties.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshConnectionProperties.java; sourceTree = "<group>"; };
-		4741537906C4F08A00AC0BD2 /* BindingChannel.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = BindingChannel.java; sourceTree = "<group>"; };
-		4741537A06C4F08A00AC0BD2 /* Channel.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Channel.java; sourceTree = "<group>"; };
-		4741537B06C4F08A00AC0BD2 /* ChannelDataWindow.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ChannelDataWindow.java; sourceTree = "<group>"; };
-		4741537C06C4F08A00AC0BD2 /* ChannelEventAdapter.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ChannelEventAdapter.java; sourceTree = "<group>"; };
-		4741537D06C4F08A00AC0BD2 /* ChannelEventListener.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ChannelEventListener.java; sourceTree = "<group>"; };
-		4741537E06C4F08A00AC0BD2 /* ChannelFactory.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ChannelFactory.java; sourceTree = "<group>"; };
-		4741537F06C4F08A00AC0BD2 /* ChannelInputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ChannelInputStream.java; sourceTree = "<group>"; };
-		4741538006C4F08A00AC0BD2 /* ChannelOutputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ChannelOutputStream.java; sourceTree = "<group>"; };
-		4741538106C4F08A00AC0BD2 /* ChannelState.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ChannelState.java; sourceTree = "<group>"; };
-		4741538206C4F08A00AC0BD2 /* ConnectionProtocol.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ConnectionProtocol.java; sourceTree = "<group>"; };
-		4741538306C4F08A00AC0BD2 /* GlobalRequestHandler.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = GlobalRequestHandler.java; sourceTree = "<group>"; };
-		4741538406C4F08A00AC0BD2 /* GlobalRequestResponse.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = GlobalRequestResponse.java; sourceTree = "<group>"; };
-		4741538506C4F08A00AC0BD2 /* InvalidChannelException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = InvalidChannelException.java; sourceTree = "<group>"; };
-		4741538606C4F08A00AC0BD2 /* IOChannel.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = IOChannel.java; sourceTree = "<group>"; };
-		4741538706C4F08A00AC0BD2 /* SocketChannel.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SocketChannel.java; sourceTree = "<group>"; };
-		4741538806C4F08A00AC0BD2 /* SshMsgChannelClose.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgChannelClose.java; sourceTree = "<group>"; };
-		4741538906C4F08A00AC0BD2 /* SshMsgChannelData.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgChannelData.java; sourceTree = "<group>"; };
-		4741538A06C4F08A00AC0BD2 /* SshMsgChannelEOF.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgChannelEOF.java; sourceTree = "<group>"; };
-		4741538B06C4F08A00AC0BD2 /* SshMsgChannelExtendedData.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgChannelExtendedData.java; sourceTree = "<group>"; };
-		4741538C06C4F08A00AC0BD2 /* SshMsgChannelFailure.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgChannelFailure.java; sourceTree = "<group>"; };
-		4741538D06C4F08A00AC0BD2 /* SshMsgChannelOpen.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgChannelOpen.java; sourceTree = "<group>"; };
-		4741538E06C4F08A00AC0BD2 /* SshMsgChannelOpenConfirmation.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgChannelOpenConfirmation.java; sourceTree = "<group>"; };
-		4741538F06C4F08A00AC0BD2 /* SshMsgChannelOpenFailure.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgChannelOpenFailure.java; sourceTree = "<group>"; };
-		4741539006C4F08A00AC0BD2 /* SshMsgChannelRequest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgChannelRequest.java; sourceTree = "<group>"; };
-		4741539106C4F08A00AC0BD2 /* SshMsgChannelSuccess.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgChannelSuccess.java; sourceTree = "<group>"; };
-		4741539206C4F08A00AC0BD2 /* SshMsgChannelWindowAdjust.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgChannelWindowAdjust.java; sourceTree = "<group>"; };
-		4741539306C4F08A00AC0BD2 /* SshMsgGlobalRequest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgGlobalRequest.java; sourceTree = "<group>"; };
-		4741539406C4F08A00AC0BD2 /* SshMsgRequestFailure.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgRequestFailure.java; sourceTree = "<group>"; };
-		4741539506C4F08A00AC0BD2 /* SshMsgRequestSuccess.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgRequestSuccess.java; sourceTree = "<group>"; };
-		474153A506C4F08A00AC0BD2 /* ByteArrayReader.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ByteArrayReader.java; sourceTree = "<group>"; };
-		474153A606C4F08A00AC0BD2 /* ByteArrayWriter.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ByteArrayWriter.java; sourceTree = "<group>"; };
-		474153A706C4F08A00AC0BD2 /* DynamicBuffer.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = DynamicBuffer.java; sourceTree = "<group>"; };
-		474153A806C4F08A00AC0BD2 /* IOStreamConnector.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = IOStreamConnector.java; sourceTree = "<group>"; };
-		474153A906C4F08A00AC0BD2 /* IOStreamConnectorListener.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = IOStreamConnectorListener.java; sourceTree = "<group>"; };
-		474153AA06C4F08A00AC0BD2 /* IOStreamConnectorState.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = IOStreamConnectorState.java; sourceTree = "<group>"; };
-		474153AB06C4F08A00AC0BD2 /* IOUtil.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = IOUtil.java; sourceTree = "<group>"; };
-		474153AC06C4F08A00AC0BD2 /* UnsignedInteger32.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = UnsignedInteger32.java; sourceTree = "<group>"; };
-		474153AD06C4F08A00AC0BD2 /* UnsignedInteger64.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = UnsignedInteger64.java; sourceTree = "<group>"; };
-		474153AF06C4F08A00AC0BD2 /* ConnectedSocketTransportProvider.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ConnectedSocketTransportProvider.java; sourceTree = "<group>"; };
-		474153B006C4F08A00AC0BD2 /* HttpHeader.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = HttpHeader.java; sourceTree = "<group>"; };
-		474153B106C4F08A00AC0BD2 /* HttpProxySocketProvider.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = HttpProxySocketProvider.java; sourceTree = "<group>"; };
-		474153B206C4F08A00AC0BD2 /* HttpRequest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = HttpRequest.java; sourceTree = "<group>"; };
-		474153B306C4F08A00AC0BD2 /* HttpResponse.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = HttpResponse.java; sourceTree = "<group>"; };
-		474153B406C4F08A00AC0BD2 /* SocketTransportProvider.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SocketTransportProvider.java; sourceTree = "<group>"; };
-		474153B506C4F08A00AC0BD2 /* SocksProxySocket.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SocksProxySocket.java; sourceTree = "<group>"; };
-		474153B606C4F08A00AC0BD2 /* TransportProvider.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TransportProvider.java; sourceTree = "<group>"; };
-		474153B706C4F08A00AC0BD2 /* TransportProviderFactory.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TransportProviderFactory.java; sourceTree = "<group>"; };
-		474153B906C4F08A00AC0BD2 /* DSAKeyInfo.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = DSAKeyInfo.java; sourceTree = "<group>"; };
-		474153BA06C4F08A00AC0BD2 /* KeyInfo.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = KeyInfo.java; sourceTree = "<group>"; };
-		474153BB06C4F08A00AC0BD2 /* OpenSSHPrivateKeyFormat.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = OpenSSHPrivateKeyFormat.java; sourceTree = "<group>"; };
-		474153BC06C4F08A00AC0BD2 /* PEM.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PEM.java; sourceTree = "<group>"; };
-		474153BD06C4F08A00AC0BD2 /* PEMReader.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PEMReader.java; sourceTree = "<group>"; };
-		474153BE06C4F08A00AC0BD2 /* PEMWriter.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PEMWriter.java; sourceTree = "<group>"; };
-		474153BF06C4F08A00AC0BD2 /* RSAKeyInfo.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RSAKeyInfo.java; sourceTree = "<group>"; };
-		474153C006C4F08A00AC0BD2 /* ScpClient.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ScpClient.java; sourceTree = "<group>"; };
-		474153C206C4F08A00AC0BD2 /* PseudoTerminal.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PseudoTerminal.java; sourceTree = "<group>"; };
-		474153C306C4F08A00AC0BD2 /* SessionChannelClient.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SessionChannelClient.java; sourceTree = "<group>"; };
-		474153C406C4F08A00AC0BD2 /* SessionOutputEcho.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SessionOutputEcho.java; sourceTree = "<group>"; };
-		474153C506C4F08A00AC0BD2 /* SessionOutputReader.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SessionOutputReader.java; sourceTree = "<group>"; };
-		474153C606C4F08A00AC0BD2 /* SignalListener.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SignalListener.java; sourceTree = "<group>"; };
-		474153C806C4F08A00AC0BD2 /* FileAttributes.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FileAttributes.java; sourceTree = "<group>"; };
-		474153C906C4F08A00AC0BD2 /* MessageRequestId.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MessageRequestId.java; sourceTree = "<group>"; };
-		474153CA06C4F08A00AC0BD2 /* SftpFile.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SftpFile.java; sourceTree = "<group>"; };
-		474153CB06C4F08A00AC0BD2 /* SftpFileInputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SftpFileInputStream.java; sourceTree = "<group>"; };
-		474153CC06C4F08A00AC0BD2 /* SftpFileOutputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SftpFileOutputStream.java; sourceTree = "<group>"; };
-		474153CD06C4F08A00AC0BD2 /* SftpMessageStore.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SftpMessageStore.java; sourceTree = "<group>"; };
-		474153CE06C4F08A00AC0BD2 /* SftpSubsystemClient.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SftpSubsystemClient.java; sourceTree = "<group>"; };
-		474153CF06C4F08A00AC0BD2 /* SshFxpAttrs.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpAttrs.java; sourceTree = "<group>"; };
-		474153D006C4F08A00AC0BD2 /* SshFxpClose.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpClose.java; sourceTree = "<group>"; };
-		474153D106C4F08A00AC0BD2 /* SshFxpData.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpData.java; sourceTree = "<group>"; };
-		474153D206C4F08A00AC0BD2 /* SshFxpFSetStat.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpFSetStat.java; sourceTree = "<group>"; };
-		474153D306C4F08A00AC0BD2 /* SshFxpFStat.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpFStat.java; sourceTree = "<group>"; };
-		474153D406C4F08A00AC0BD2 /* SshFxpHandle.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpHandle.java; sourceTree = "<group>"; };
-		474153D506C4F08A00AC0BD2 /* SshFxpInit.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpInit.java; sourceTree = "<group>"; };
-		474153D606C4F08A00AC0BD2 /* SshFxpLStat.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpLStat.java; sourceTree = "<group>"; };
-		474153D706C4F08A00AC0BD2 /* SshFxpMkdir.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpMkdir.java; sourceTree = "<group>"; };
-		474153D806C4F08A00AC0BD2 /* SshFxpName.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpName.java; sourceTree = "<group>"; };
-		474153D906C4F08A00AC0BD2 /* SshFxpOpen.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpOpen.java; sourceTree = "<group>"; };
-		474153DA06C4F08A00AC0BD2 /* SshFxpOpenDir.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpOpenDir.java; sourceTree = "<group>"; };
-		474153DB06C4F08A00AC0BD2 /* SshFxpRead.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpRead.java; sourceTree = "<group>"; };
-		474153DC06C4F08A00AC0BD2 /* SshFxpReadDir.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpReadDir.java; sourceTree = "<group>"; };
-		474153DD06C4F08A00AC0BD2 /* SshFxpReadlink.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpReadlink.java; sourceTree = "<group>"; };
-		474153DE06C4F08A00AC0BD2 /* SshFxpRealPath.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpRealPath.java; sourceTree = "<group>"; };
-		474153DF06C4F08A00AC0BD2 /* SshFxpRemove.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpRemove.java; sourceTree = "<group>"; };
-		474153E006C4F08A00AC0BD2 /* SshFxpRename.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpRename.java; sourceTree = "<group>"; };
-		474153E106C4F08A00AC0BD2 /* SshFxpRmdir.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpRmdir.java; sourceTree = "<group>"; };
-		474153E206C4F08A00AC0BD2 /* SshFxpSetStat.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpSetStat.java; sourceTree = "<group>"; };
-		474153E306C4F08A00AC0BD2 /* SshFxpStat.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpStat.java; sourceTree = "<group>"; };
-		474153E406C4F08A00AC0BD2 /* SshFxpStatus.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpStatus.java; sourceTree = "<group>"; };
-		474153E506C4F08A00AC0BD2 /* SshFxpSymlink.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpSymlink.java; sourceTree = "<group>"; };
-		474153E606C4F08A00AC0BD2 /* SshFxpVersion.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpVersion.java; sourceTree = "<group>"; };
-		474153E706C4F08A00AC0BD2 /* SshFxpWrite.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshFxpWrite.java; sourceTree = "<group>"; };
-		474153E806C4F08A00AC0BD2 /* SshClient.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshClient.java; sourceTree = "<group>"; };
-		474153E906C4F08A00AC0BD2 /* SshEventAdapter.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshEventAdapter.java; sourceTree = "<group>"; };
-		474153EA06C4F08A00AC0BD2 /* SshException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshException.java; sourceTree = "<group>"; };
-		474153EB06C4F08A00AC0BD2 /* SshRuntimeException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshRuntimeException.java; sourceTree = "<group>"; };
-		474153EC06C4F08A00AC0BD2 /* SshThread.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshThread.java; sourceTree = "<group>"; };
-		474153EE06C4F08A00AC0BD2 /* SubsystemChannel.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SubsystemChannel.java; sourceTree = "<group>"; };
-		474153EF06C4F08A00AC0BD2 /* SubsystemClient.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SubsystemClient.java; sourceTree = "<group>"; };
-		474153F106C4F08A00AC0BD2 /* SubsystemMessage.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SubsystemMessage.java; sourceTree = "<group>"; };
-		474153F206C4F08A00AC0BD2 /* SubsystemMessageStore.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SubsystemMessageStore.java; sourceTree = "<group>"; };
-		474153F606C4F08A00AC0BD2 /* AbstractKnownHostsKeyVerification.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AbstractKnownHostsKeyVerification.java; sourceTree = "<group>"; };
-		474153F706C4F08A00AC0BD2 /* AlgorithmInitializationException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AlgorithmInitializationException.java; sourceTree = "<group>"; };
-		474153F806C4F08A00AC0BD2 /* AlgorithmNotAgreedException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AlgorithmNotAgreedException.java; sourceTree = "<group>"; };
-		474153F906C4F08A00AC0BD2 /* AlgorithmNotSupportedException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AlgorithmNotSupportedException.java; sourceTree = "<group>"; };
-		474153FA06C4F08A00AC0BD2 /* AlgorithmOperationException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AlgorithmOperationException.java; sourceTree = "<group>"; };
-		474153FB06C4F08A00AC0BD2 /* AsyncService.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AsyncService.java; sourceTree = "<group>"; };
-		474153FD06C4F08A00AC0BD2 /* BlowfishCbc.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = BlowfishCbc.java; sourceTree = "<group>"; };
-		474153FE06C4F08A00AC0BD2 /* SshCipher.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshCipher.java; sourceTree = "<group>"; };
-		474153FF06C4F08A00AC0BD2 /* SshCipherFactory.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshCipherFactory.java; sourceTree = "<group>"; };
-		4741540006C4F08A00AC0BD2 /* TripleDesCbc.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TripleDesCbc.java; sourceTree = "<group>"; };
-		4741540206C4F08A00AC0BD2 /* SshCompression.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshCompression.java; sourceTree = "<group>"; };
-		4741540306C4F08A00AC0BD2 /* SshCompressionFactory.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshCompressionFactory.java; sourceTree = "<group>"; };
-		4741540606C4F08A00AC0BD2 /* HmacMd5.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = HmacMd5.java; sourceTree = "<group>"; };
-		4741540706C4F08A00AC0BD2 /* HmacMd596.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = HmacMd596.java; sourceTree = "<group>"; };
-		4741540806C4F08A00AC0BD2 /* HmacSha.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = HmacSha.java; sourceTree = "<group>"; };
-		4741540906C4F08A00AC0BD2 /* HmacSha96.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = HmacSha96.java; sourceTree = "<group>"; };
-		4741540A06C4F08A00AC0BD2 /* SshHmac.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshHmac.java; sourceTree = "<group>"; };
-		4741540B06C4F08A00AC0BD2 /* SshHmacFactory.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshHmacFactory.java; sourceTree = "<group>"; };
-		4741540C06C4F08A00AC0BD2 /* HostKeyVerification.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = HostKeyVerification.java; sourceTree = "<group>"; };
-		4741540D06C4F08A00AC0BD2 /* IgnoreHostKeyVerification.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = IgnoreHostKeyVerification.java; sourceTree = "<group>"; };
-		4741540E06C4F08A00AC0BD2 /* InvalidHostFileException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = InvalidHostFileException.java; sourceTree = "<group>"; };
-		4741540F06C4F08A00AC0BD2 /* InvalidMessageException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = InvalidMessageException.java; sourceTree = "<group>"; };
-		4741541106C4F08A00AC0BD2 /* DhGroup1Sha1.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = DhGroup1Sha1.java; sourceTree = "<group>"; };
-		4741541206C4F08A00AC0BD2 /* KeyExchangeException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = KeyExchangeException.java; sourceTree = "<group>"; };
-		4741541306C4F08A00AC0BD2 /* KeyExchangeState.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = KeyExchangeState.java; sourceTree = "<group>"; };
-		4741541406C4F08A00AC0BD2 /* SshKeyExchange.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshKeyExchange.java; sourceTree = "<group>"; };
-		4741541506C4F08A00AC0BD2 /* SshKeyExchangeFactory.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshKeyExchangeFactory.java; sourceTree = "<group>"; };
-		4741541606C4F08A00AC0BD2 /* SshMsgKexDhInit.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgKexDhInit.java; sourceTree = "<group>"; };
-		4741541706C4F08A00AC0BD2 /* SshMsgKexDhReply.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgKexDhReply.java; sourceTree = "<group>"; };
-		4741541806C4F08A00AC0BD2 /* MessageAlreadyRegisteredException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MessageAlreadyRegisteredException.java; sourceTree = "<group>"; };
-		4741541906C4F08A00AC0BD2 /* MessageNotAvailableException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MessageNotAvailableException.java; sourceTree = "<group>"; };
-		4741541A06C4F08A00AC0BD2 /* MessageNotRegisteredException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MessageNotRegisteredException.java; sourceTree = "<group>"; };
-		4741541B06C4F08A00AC0BD2 /* MessageStoreEOFException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MessageStoreEOFException.java; sourceTree = "<group>"; };
-		4741541D06C4F08A00AC0BD2 /* Base64EncodedFileFormat.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Base64EncodedFileFormat.java; sourceTree = "<group>"; };
-		4741541F06C4F08B00AC0BD2 /* SshDssKeyPair.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshDssKeyPair.java; sourceTree = "<group>"; };
-		4741542006C4F08B00AC0BD2 /* SshDssPrivateKey.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshDssPrivateKey.java; sourceTree = "<group>"; };
-		4741542106C4F08B00AC0BD2 /* SshDssPublicKey.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshDssPublicKey.java; sourceTree = "<group>"; };
-		4741542206C4F08B00AC0BD2 /* InvalidSshKeyException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = InvalidSshKeyException.java; sourceTree = "<group>"; };
-		4741542306C4F08B00AC0BD2 /* InvalidSshKeySignatureException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = InvalidSshKeySignatureException.java; sourceTree = "<group>"; };
-		4741542406C4F08B00AC0BD2 /* OpenSSHPublicKeyFormat.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = OpenSSHPublicKeyFormat.java; sourceTree = "<group>"; };
-		4741542606C4F08B00AC0BD2 /* SshRsaKeyPair.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshRsaKeyPair.java; sourceTree = "<group>"; };
-		4741542706C4F08B00AC0BD2 /* SshRsaPrivateKey.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshRsaPrivateKey.java; sourceTree = "<group>"; };
-		4741542806C4F08B00AC0BD2 /* SshRsaPublicKey.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshRsaPublicKey.java; sourceTree = "<group>"; };
-		4741542906C4F08B00AC0BD2 /* SECSHPublicKeyFormat.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SECSHPublicKeyFormat.java; sourceTree = "<group>"; };
-		4741542A06C4F08B00AC0BD2 /* SshKeyFormatConversion.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshKeyFormatConversion.java; sourceTree = "<group>"; };
-		4741542B06C4F08B00AC0BD2 /* SshKeyGenerator.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshKeyGenerator.java; sourceTree = "<group>"; };
-		4741542C06C4F08B00AC0BD2 /* SshKeyPair.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshKeyPair.java; sourceTree = "<group>"; };
-		4741542D06C4F08B00AC0BD2 /* SshKeyPairFactory.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshKeyPairFactory.java; sourceTree = "<group>"; };
-		4741542E06C4F08B00AC0BD2 /* SshPrivateKey.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshPrivateKey.java; sourceTree = "<group>"; };
-		4741542F06C4F08B00AC0BD2 /* SshPrivateKeyFile.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshPrivateKeyFile.java; sourceTree = "<group>"; };
-		4741543006C4F08B00AC0BD2 /* SshPrivateKeyFormat.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshPrivateKeyFormat.java; sourceTree = "<group>"; };
-		4741543106C4F08B00AC0BD2 /* SshPrivateKeyFormatFactory.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshPrivateKeyFormatFactory.java; sourceTree = "<group>"; };
-		4741543206C4F08B00AC0BD2 /* SshPublicKey.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshPublicKey.java; sourceTree = "<group>"; };
-		4741543306C4F08B00AC0BD2 /* SshPublicKeyFile.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshPublicKeyFile.java; sourceTree = "<group>"; };
-		4741543406C4F08B00AC0BD2 /* SshPublicKeyFormat.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshPublicKeyFormat.java; sourceTree = "<group>"; };
-		4741543506C4F08B00AC0BD2 /* SshPublicKeyFormatFactory.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshPublicKeyFormatFactory.java; sourceTree = "<group>"; };
-		4741543606C4F08B00AC0BD2 /* SshtoolsPrivateKeyFormat.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshtoolsPrivateKeyFormat.java; sourceTree = "<group>"; };
-		4741543706C4F08B00AC0BD2 /* Service.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Service.java; sourceTree = "<group>"; };
-		4741543806C4F08B00AC0BD2 /* ServiceState.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ServiceState.java; sourceTree = "<group>"; };
-		4741543906C4F08B00AC0BD2 /* SshMessage.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMessage.java; sourceTree = "<group>"; };
-		4741543A06C4F08B00AC0BD2 /* SshMessageListener.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMessageListener.java; sourceTree = "<group>"; };
-		4741543B06C4F08B00AC0BD2 /* SshMessageStore.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMessageStore.java; sourceTree = "<group>"; };
-		4741543C06C4F08B00AC0BD2 /* SshMsgDebug.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgDebug.java; sourceTree = "<group>"; };
-		4741543D06C4F08B00AC0BD2 /* SshMsgDisconnect.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgDisconnect.java; sourceTree = "<group>"; };
-		4741543E06C4F08B00AC0BD2 /* SshMsgIgnore.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgIgnore.java; sourceTree = "<group>"; };
-		4741543F06C4F08B00AC0BD2 /* SshMsgKexInit.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgKexInit.java; sourceTree = "<group>"; };
-		4741544006C4F08B00AC0BD2 /* SshMsgNewKeys.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgNewKeys.java; sourceTree = "<group>"; };
-		4741544106C4F08B00AC0BD2 /* SshMsgServiceAccept.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgServiceAccept.java; sourceTree = "<group>"; };
-		4741544206C4F08B00AC0BD2 /* SshMsgServiceRequest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgServiceRequest.java; sourceTree = "<group>"; };
-		4741544306C4F08B00AC0BD2 /* SshMsgUnimplemented.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SshMsgUnimplemented.java; sourceTree = "<group>"; };
-		4741544406C4F08B00AC0BD2 /* TransportProtocol.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TransportProtocol.java; sourceTree = "<group>"; };
-		4741544506C4F08B00AC0BD2 /* TransportProtocolAlgorithmSync.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TransportProtocolAlgorithmSync.java; sourceTree = "<group>"; };
-		4741544606C4F08B00AC0BD2 /* TransportProtocolClient.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TransportProtocolClient.java; sourceTree = "<group>"; };
-		4741544706C4F08B00AC0BD2 /* TransportProtocolCommon.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TransportProtocolCommon.java; sourceTree = "<group>"; };
-		4741544806C4F08B00AC0BD2 /* TransportProtocolEventAdapter.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TransportProtocolEventAdapter.java; sourceTree = "<group>"; };
-		4741544906C4F08B00AC0BD2 /* TransportProtocolEventHandler.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TransportProtocolEventHandler.java; sourceTree = "<group>"; };
-		4741544A06C4F08B00AC0BD2 /* TransportProtocolException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TransportProtocolException.java; sourceTree = "<group>"; };
-		4741544B06C4F08B00AC0BD2 /* TransportProtocolInputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TransportProtocolInputStream.java; sourceTree = "<group>"; };
-		4741544C06C4F08B00AC0BD2 /* TransportProtocolOutputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TransportProtocolOutputStream.java; sourceTree = "<group>"; };
-		4741544D06C4F08B00AC0BD2 /* TransportProtocolState.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TransportProtocolState.java; sourceTree = "<group>"; };
-		4741544F06C4F08B00AC0BD2 /* Base64.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Base64.java; sourceTree = "<group>"; };
-		4741545006C4F08B00AC0BD2 /* DynamicClassLoader.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = DynamicClassLoader.java; sourceTree = "<group>"; };
-		4741545106C4F08B00AC0BD2 /* ExtensionClassLoader.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ExtensionClassLoader.java; sourceTree = "<group>"; };
-		4741545206C4F08B00AC0BD2 /* Hash.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Hash.java; sourceTree = "<group>"; };
-		4741545306C4F08B00AC0BD2 /* InvalidStateException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = InvalidStateException.java; sourceTree = "<group>"; };
-		4741545406C4F08B00AC0BD2 /* OpenClosedState.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = OpenClosedState.java; sourceTree = "<group>"; };
-		4741545506C4F08B00AC0BD2 /* SimpleASNReader.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SimpleASNReader.java; sourceTree = "<group>"; };
-		4741545606C4F08B00AC0BD2 /* SimpleASNWriter.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SimpleASNWriter.java; sourceTree = "<group>"; };
-		4741545706C4F08B00AC0BD2 /* StartStopState.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = StartStopState.java; sourceTree = "<group>"; };
-		4741545806C4F08B00AC0BD2 /* State.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = State.java; sourceTree = "<group>"; };
-		4741547F06C4F08B00AC0BD2 /* FTPFileEntryParser.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPFileEntryParser.java; sourceTree = "<group>"; };
-		4741548006C4F08B00AC0BD2 /* FTPFileEntryParserImpl.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPFileEntryParserImpl.java; sourceTree = "<group>"; };
-		4741548206C4F08B00AC0BD2 /* CompositeFileEntryParser.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CompositeFileEntryParser.java; sourceTree = "<group>"; };
-		4741548306C4F08B00AC0BD2 /* DefaultFTPFileEntryParserFactory.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = DefaultFTPFileEntryParserFactory.java; sourceTree = "<group>"; };
-		4741548406C4F08B00AC0BD2 /* EnterpriseUnixFTPEntryParser.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = EnterpriseUnixFTPEntryParser.java; sourceTree = "<group>"; };
-		4741548506C4F08B00AC0BD2 /* EPLFFTPEntryParser.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = EPLFFTPEntryParser.java; sourceTree = "<group>"; };
-		4741548606C4F08B00AC0BD2 /* FTPFileEntryParserFactory.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPFileEntryParserFactory.java; sourceTree = "<group>"; };
-		4741548706C4F08B00AC0BD2 /* NTFTPEntryParser.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NTFTPEntryParser.java; sourceTree = "<group>"; };
-		4741548806C4F08B00AC0BD2 /* OS2FTPEntryParser.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = OS2FTPEntryParser.java; sourceTree = "<group>"; };
-		4741548906C4F08B00AC0BD2 /* OS400FTPEntryParser.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = OS400FTPEntryParser.java; sourceTree = "<group>"; };
-		4741548A06C4F08B00AC0BD2 /* RegexFTPFileEntryParserImpl.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RegexFTPFileEntryParserImpl.java; sourceTree = "<group>"; };
-		4741548B06C4F08B00AC0BD2 /* UnixFTPEntryParser.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = UnixFTPEntryParser.java; sourceTree = "<group>"; };
-		4741548C06C4F08B00AC0BD2 /* VMSFTPEntryParser.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = VMSFTPEntryParser.java; sourceTree = "<group>"; };
-		4741548D06C4F08B00AC0BD2 /* VMSVersioningFTPEntryParser.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = VMSVersioningFTPEntryParser.java; sourceTree = "<group>"; };
-		4741548F06C4F08B00AC0BD2 /* FromNetASCIIInputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FromNetASCIIInputStream.java; sourceTree = "<group>"; };
-		4741549006C4F08B00AC0BD2 /* FromNetASCIIOutputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FromNetASCIIOutputStream.java; sourceTree = "<group>"; };
-		4741549106C4F08B00AC0BD2 /* ToNetASCIIInputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ToNetASCIIInputStream.java; sourceTree = "<group>"; };
-		4741549206C4F08B00AC0BD2 /* ToNetASCIIOutputStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ToNetASCIIOutputStream.java; sourceTree = "<group>"; };
 		474163A406C4F64000AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Info.nib; sourceTree = "<group>"; };
 		474163A606C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Browser.nib; sourceTree = "<group>"; };
 		474163A806C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Main.nib; sourceTree = "<group>"; };
@@ -1018,18 +721,6 @@
 		4741688106C6BB1600AC0BD2 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4741688306C6BB2100AC0BD2 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = zh_CN.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4741688706C6BB3C00AC0BD2 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4741B63E07DD124F00FDC650 /* JZlib.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = JZlib.java; sourceTree = "<group>"; };
-		4741B63F07DD124F00FDC650 /* ZLibCompression.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ZLibCompression.java; sourceTree = "<group>"; };
-		4741B64007DD124F00FDC650 /* Adler32.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Adler32.java; sourceTree = "<group>"; };
-		4741B64107DD124F00FDC650 /* Deflate.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Deflate.java; sourceTree = "<group>"; };
-		4741B64207DD124F00FDC650 /* Inflate.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Inflate.java; sourceTree = "<group>"; };
-		4741B64307DD124F00FDC650 /* StaticTree.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = StaticTree.java; sourceTree = "<group>"; };
-		4741B64407DD124F00FDC650 /* InfCodes.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = InfCodes.java; sourceTree = "<group>"; };
-		4741B64507DD124F00FDC650 /* Tree.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Tree.java; sourceTree = "<group>"; };
-		4741B64607DD124F00FDC650 /* ZStreamException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ZStreamException.java; sourceTree = "<group>"; };
-		4741B64707DD124F00FDC650 /* ZStream.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ZStream.java; sourceTree = "<group>"; };
-		4741B64807DD124F00FDC650 /* InfBlocks.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = InfBlocks.java; sourceTree = "<group>"; };
-		4741B64907DD124F00FDC650 /* InfTree.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = InfTree.java; sourceTree = "<group>"; };
 		4743001809596BB600848A35 /* cy */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cy; path = cy.lproj/Connection.nib; sourceTree = "<group>"; };
 		4743001909596BB600848A35 /* cy */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cy; path = cy.lproj/Donate.nib; sourceTree = "<group>"; };
 		4743001B09596BB700848A35 /* cy */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cy; path = cy.lproj/Validator.nib; sourceTree = "<group>"; };
@@ -1055,7 +746,6 @@
 		4743003109596BD900848A35 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = cy.lproj/Status.strings; sourceTree = "<group>"; };
 		47442A6A0733C7DD00BA512B /* rendezvous.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = rendezvous.icns; sourceTree = "<group>"; };
 		47442A6B0733C7DD00BA512B /* rendezvous16.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = rendezvous16.tiff; sourceTree = "<group>"; };
-		4744355F0737A9AD00BA512B /* FTPMessageListener.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FTPMessageListener.java; sourceTree = "<group>"; };
 		474437240737C3C900BA512B /* Validator.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Validator.java; sourceTree = "<group>"; };
 		4744374D0737C48000BA512B /* CDSyncQueueValidatorController.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CDSyncQueueValidatorController.java; sourceTree = "<group>"; };
 		4744374E0737C48000BA512B /* CDUploadQueueValidatorController.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CDUploadQueueValidatorController.java; sourceTree = "<group>"; };
@@ -1104,19 +794,6 @@
 		4749576507EDED4E00B34D53 /* list.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = list.tiff; sourceTree = "<group>"; };
 		47497C1D073F9618009BF63D /* Changelog.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Changelog.txt; sourceTree = "<group>"; };
 		474B5BA30AEFB7F5009FD459 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Alert.nib; sourceTree = "<group>"; };
-		474DC8790B4319E100F0D79C /* AttributesTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AttributesTest.java; sourceTree = "<group>"; };
-		474DC87A0B4319E100F0D79C /* CodecTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CodecTest.java; sourceTree = "<group>"; };
-		474DC87B0B4319E100F0D79C /* HostTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = HostTest.java; sourceTree = "<group>"; };
-		474DC87C0B4319E100F0D79C /* LoginTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = LoginTest.java; sourceTree = "<group>"; };
-		474DC87D0B4319E100F0D79C /* PathTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PathTest.java; sourceTree = "<group>"; };
-		474DC87E0B4319E100F0D79C /* PermissionTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = PermissionTest.java; sourceTree = "<group>"; };
-		474DC87F0B4319E100F0D79C /* RendezvousTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RendezvousTest.java; sourceTree = "<group>"; };
-		474DC8800B4319E100F0D79C /* SessionTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SessionTest.java; sourceTree = "<group>"; };
-		474DC8810B4319E100F0D79C /* StatusTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = StatusTest.java; sourceTree = "<group>"; };
-		474DC8820B4319E100F0D79C /* TransferTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = TransferTest.java; sourceTree = "<group>"; };
-		474DC8830B431A0000F0D79C /* EPLFEntryParserTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = EPLFEntryParserTest.java; sourceTree = "<group>"; };
-		474DC8840B431A0000F0D79C /* NTFTPEntryParserTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NTFTPEntryParserTest.java; sourceTree = "<group>"; };
-		474DC8850B431A0000F0D79C /* UnixFTPEntryParserTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = UnixFTPEntryParserTest.java; sourceTree = "<group>"; };
 		4751799D097943FA008F671F /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Credentials.strings; sourceTree = "<group>"; };
 		475179A409794467008F671F /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Credentials.strings; sourceTree = "<group>"; };
 		475179A509794472008F671F /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Credentials.strings; sourceTree = "<group>"; };
@@ -1335,7 +1012,6 @@
 		479814FF07280BAB00FA3CDB /* no */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = no; path = no.lproj/Main.nib; sourceTree = "<group>"; };
 		4798150007280BAB00FA3CDB /* no */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = no; path = no.lproj/Info.nib; sourceTree = "<group>"; };
 		4798150107280BAB00FA3CDB /* no */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = no; path = no.lproj/Validator.nib; sourceTree = "<group>"; };
-		479815B60728D6DC00FA3CDB /* NetwareFTPEntryParser.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NetwareFTPEntryParser.java; sourceTree = "<group>"; };
 		4798163F0728DF9E00FA3CDB /* Growl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Growl.h; path = growl/Growl.h; sourceTree = "<group>"; };
 		479816400728DF9E00FA3CDB /* Growl.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; name = Growl.java; path = growl/Growl.java; sourceTree = "<group>"; };
 		479816410728DF9E00FA3CDB /* Growl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Growl.m; path = growl/Growl.m; sourceTree = "<group>"; };
@@ -1396,7 +1072,6 @@
 		47B19B5507AA60E90064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text; name = ru; path = ru.lproj/License.txt; sourceTree = "<group>"; };
 		47B19B5607AA60E90064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47B19B5707AA60E90064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		47B6A3C1074F8EAF00B9F16C /* SessionPool.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SessionPool.java; sourceTree = "<group>"; };
 		47BA61C50A2507320034AB18 /* CDNavigationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDNavigationView.h; sourceTree = "<group>"; };
 		47BA61C60A2507320034AB18 /* CDNavigationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDNavigationView.m; sourceTree = "<group>"; };
 		47BA622C0A25127B0034AB18 /* navigation.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = navigation.tiff; sourceTree = "<group>"; };
@@ -1440,7 +1115,6 @@
 		47C4E8210879EC5C007A1D39 /* ca */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ca; path = ca.lproj/Download.nib; sourceTree = "<group>"; };
 		47C4E8290879EC6C007A1D39 /* ca */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ca; path = ca.lproj/Folder.nib; sourceTree = "<group>"; };
 		47C59A560880165B00CC2FA5 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ja; path = ja.lproj/Command.nib; sourceTree = "<group>"; };
-		47C75B7B06A5A36900B464FF /* EPLFEntryParserTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = EPLFEntryParserTest.java; sourceTree = "<group>"; };
 		47C761EA06A88D7600B464FF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<absolute>"; };
 		47CD32A00751163400B82A2B /* plus.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = plus.tiff; sourceTree = "<group>"; };
 		47CD99760738DE8900E9379E /* SyncQueue.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = SyncQueue.java; sourceTree = "<group>"; };
@@ -1541,8 +1215,6 @@
 		47F0CB46087B237F00439978 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47F0CB8C087B23A900439978 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Status.strings; sourceTree = "<group>"; };
 		47F0CB91087B23B600439978 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Growl.strings; sourceTree = "<group>"; };
-		47F2E9BA05BD5356003D2875 /* LoginTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = LoginTest.java; sourceTree = "<group>"; };
-		47F2EAA405BD7F7E003D2875 /* CodecTest.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CodecTest.java; sourceTree = "<group>"; };
 		47FC190B099FB8AF0082431D /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FC191F099FC1290082431D /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FC1943099FDB310082431D /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Crash.strings; sourceTree = "<group>"; };
@@ -1706,7 +1378,6 @@
 				47CF9D400431CF6D00A801C6 /* build.properties */,
 				4774897F085825460030AED1 /* Cyberduck.scriptTerminology */,
 				47748980085825460030AED1 /* Cyberduck.scriptSuite */,
-				47F2E90605BD4244003D2875 /* test */,
 				474152D706C4F08A00AC0BD2 /* source */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -1749,100 +1420,6 @@
 			path = forker;
 			sourceTree = "<group>";
 		};
-		470E570508BE4A6000BDF3CD /* glguerin */ = {
-			isa = PBXGroup;
-			children = (
-				470E570608BE4A6000BDF3CD /* io */,
-				470E573208BE4A6100BDF3CD /* util */,
-			);
-			path = glguerin;
-			sourceTree = "<group>";
-		};
-		470E570608BE4A6000BDF3CD /* io */ = {
-			isa = PBXGroup;
-			children = (
-				470E570708BE4A6000BDF3CD /* AccentComposer.java */,
-				470E570808BE4A6000BDF3CD /* BasicFileInfo.java */,
-				470E570908BE4A6000BDF3CD /* FileAccess.java */,
-				470E570A08BE4A6000BDF3CD /* FileForker.java */,
-				470E570B08BE4A6000BDF3CD /* FileHelper.java */,
-				470E570C08BE4A6000BDF3CD /* FileInfo.java */,
-				470E570D08BE4A6000BDF3CD /* imp */,
-				470E572008BE4A6100BDF3CD /* MacRoman.java */,
-				470E572108BE4A6100BDF3CD /* NamingStrategy.java */,
-				470E572208BE4A6100BDF3CD /* NamingStrategyKeep.java */,
-				470E572308BE4A6100BDF3CD /* NamingStrategyUnique.java */,
-				470E572408BE4A6100BDF3CD /* Pathname.java */,
-				470E572508BE4A6100BDF3CD /* PathnameFormat.java */,
-				470E572608BE4A6100BDF3CD /* PF_MacOS.java */,
-				470E572708BE4A6100BDF3CD /* PF_MacOSX.java */,
-				470E572808BE4A6100BDF3CD /* PF_Simple.java */,
-				470E572908BE4A6100BDF3CD /* RandomRW.java */,
-				470E572A08BE4A6100BDF3CD /* RandomRWArray.java */,
-				470E572B08BE4A6100BDF3CD /* RandomRWFile.java */,
-				470E572C08BE4A6100BDF3CD /* RandomRWInputStream.java */,
-				470E572D08BE4A6100BDF3CD /* RandomRWOutputStream.java */,
-				470E572E08BE4A6100BDF3CD /* RandomRWRange.java */,
-				470E572F08BE4A6100BDF3CD /* RandomRWSink.java */,
-				470E573008BE4A6100BDF3CD /* RandomRWWrapper.java */,
-				470E573108BE4A6100BDF3CD /* UnsupportedIOException.java */,
-			);
-			path = io;
-			sourceTree = "<group>";
-		};
-		470E570D08BE4A6000BDF3CD /* imp */ = {
-			isa = PBXGroup;
-			children = (
-				470E570E08BE4A6000BDF3CD /* mac */,
-			);
-			path = imp;
-			sourceTree = "<group>";
-		};
-		470E570E08BE4A6000BDF3CD /* mac */ = {
-			isa = PBXGroup;
-			children = (
-				470E570F08BE4A6000BDF3CD /* Errors.java */,
-				470E571008BE4A6100BDF3CD /* ForkRW.java */,
-				470E571108BE4A6100BDF3CD /* FSCatInfo.java */,
-				470E571208BE4A6100BDF3CD /* FSForker.java */,
-				470E571308BE4A6100BDF3CD /* FSItem.java */,
-				470E571408BE4A6100BDF3CD /* FSRefItem.java */,
-				470E571508BE4A6100BDF3CD /* FSRefItemX.java */,
-				470E571608BE4A6100BDF3CD /* FSSpec.java */,
-				470E571708BE4A6100BDF3CD /* macosx */,
-				470E571E08BE4A6100BDF3CD /* MemoryException.java */,
-				470E571F08BE4A6100BDF3CD /* NameString.java */,
-			);
-			path = mac;
-			sourceTree = "<group>";
-		};
-		470E571708BE4A6100BDF3CD /* macosx */ = {
-			isa = PBXGroup;
-			children = (
-				470E571808BE4A6100BDF3CD /* MacOSXForker.java */,
-				470E571908BE4A6100BDF3CD /* SignalCounter.java */,
-				470E571A08BE4A6100BDF3CD /* TinAlias.java */,
-				470E571B08BE4A6100BDF3CD /* TinFSFork.java */,
-				470E571C08BE4A6100BDF3CD /* TinFSRefItem.java */,
-				470E571D08BE4A6100BDF3CD /* TinWatcher.java */,
-			);
-			path = macosx;
-			sourceTree = "<group>";
-		};
-		470E573208BE4A6100BDF3CD /* util */ = {
-			isa = PBXGroup;
-			children = (
-				470E573308BE4A6100BDF3CD /* Arrayer.java */,
-				470E573408BE4A6100BDF3CD /* Byter.java */,
-				470E573508BE4A6100BDF3CD /* Implicator.java */,
-				470E573608BE4A6100BDF3CD /* LibLoader.java */,
-				470E573708BE4A6100BDF3CD /* MacPlatform.java */,
-				470E573808BE4A6100BDF3CD /* MacTime.java */,
-				470E573908BE4A6100BDF3CD /* SmallPoint.java */,
-			);
-			path = util;
-			sourceTree = "<group>";
-		};
 		472155E107FA221D00451725 /* ftps */ = {
 			isa = PBXGroup;
 			children = (
@@ -1870,61 +1447,6 @@
 			path = io;
 			sourceTree = "<group>";
 		};
-		47412ECE07CA832400BD37AB /* ext */ = {
-			isa = PBXGroup;
-			children = (
-				47412ECF07CA832400BD37AB /* bouncycastle */,
-				47412EDD07CA832400BD37AB /* jzlib */,
-			);
-			path = ext;
-			sourceTree = "<group>";
-		};
-		47412ECF07CA832400BD37AB /* bouncycastle */ = {
-			isa = PBXGroup;
-			children = (
-				47412ED007CA832400BD37AB /* cipher */,
-			);
-			path = bouncycastle;
-			sourceTree = "<group>";
-		};
-		47412ED007CA832400BD37AB /* cipher */ = {
-			isa = PBXGroup;
-			children = (
-				47412ED107CA832400BD37AB /* AES128Cbc.java */,
-				47412ED207CA832400BD37AB /* AES192Cbc.java */,
-				47412ED307CA832400BD37AB /* AES256Cbc.java */,
-				47412ED407CA832400BD37AB /* AESEngine.java */,
-				47412ED507CA832400BD37AB /* CAST128Cbc.java */,
-				47412ED607CA832400BD37AB /* CAST5Engine.java */,
-				47412ED707CA832400BD37AB /* CbcBlockCipher.java */,
-				47412ED807CA832400BD37AB /* CipherEngine.java */,
-				47412ED907CA832400BD37AB /* Twofish128Cbc.java */,
-				47412EDA07CA832400BD37AB /* Twofish192Cbc.java */,
-				47412EDB07CA832400BD37AB /* Twofish256Cbc.java */,
-				47412EDC07CA832400BD37AB /* TwofishEngine.java */,
-			);
-			path = cipher;
-			sourceTree = "<group>";
-		};
-		47412EDD07CA832400BD37AB /* jzlib */ = {
-			isa = PBXGroup;
-			children = (
-				4741B63E07DD124F00FDC650 /* JZlib.java */,
-				4741B63F07DD124F00FDC650 /* ZLibCompression.java */,
-				4741B64007DD124F00FDC650 /* Adler32.java */,
-				4741B64107DD124F00FDC650 /* Deflate.java */,
-				4741B64207DD124F00FDC650 /* Inflate.java */,
-				4741B64307DD124F00FDC650 /* StaticTree.java */,
-				4741B64407DD124F00FDC650 /* InfCodes.java */,
-				4741B64507DD124F00FDC650 /* Tree.java */,
-				4741B64607DD124F00FDC650 /* ZStreamException.java */,
-				4741B64707DD124F00FDC650 /* ZStream.java */,
-				4741B64807DD124F00FDC650 /* InfBlocks.java */,
-				4741B64907DD124F00FDC650 /* InfTree.java */,
-			);
-			path = jzlib;
-			sourceTree = "<group>";
-		};
 		474152D706C4F08A00AC0BD2 /* source */ = {
 			isa = PBXGroup;
 			children = (
@@ -1932,8 +1454,6 @@
 				47457F8A09980270002C93C3 /* de */,
 				474152D806C4F08A00AC0BD2 /* ch */,
 				4741532B06C4F08A00AC0BD2 /* com */,
-				470E570508BE4A6000BDF3CD /* glguerin */,
-				4741545906C4F08B00AC0BD2 /* org */,
 			);
 			path = source;
 			sourceTree = "<group>";
@@ -1982,7 +1502,6 @@
 				474152EE06C4F08A00AC0BD2 /* PathFactory.java */,
 				474152EF06C4F08A00AC0BD2 /* Permission.java */,
 				474152F606C4F08A00AC0BD2 /* Rendezvous.java */,
-				47B6A3C1074F8EAF00B9F16C /* SessionPool.java */,
 				474152F706C4F08A00AC0BD2 /* Session.java */,
 				474152F806C4F08A00AC0BD2 /* SessionFactory.java */,
 				474152FD06C4F08A00AC0BD2 /* Status.java */,
@@ -2062,488 +1581,8 @@
 			children = (
 				477B1B7B0AF384350023BA7F /* snoize */,
 				478B362F0A07C395000F11F2 /* macfoh */,
-				4741532C06C4F08A00AC0BD2 /* enterprisedt */,
-				4741533806C4F08A00AC0BD2 /* sshtools */,
 			);
 			path = com;
-			sourceTree = "<group>";
-		};
-		4741532C06C4F08A00AC0BD2 /* enterprisedt */ = {
-			isa = PBXGroup;
-			children = (
-				4741532D06C4F08A00AC0BD2 /* net */,
-			);
-			path = enterprisedt;
-			sourceTree = "<group>";
-		};
-		4741532D06C4F08A00AC0BD2 /* net */ = {
-			isa = PBXGroup;
-			children = (
-				4741532E06C4F08A00AC0BD2 /* ftp */,
-			);
-			path = net;
-			sourceTree = "<group>";
-		};
-		4741532E06C4F08A00AC0BD2 /* ftp */ = {
-			isa = PBXGroup;
-			children = (
-				4741533006C4F08A00AC0BD2 /* FTPClient.java */,
-				4744355F0737A9AD00BA512B /* FTPMessageListener.java */,
-				4741533106C4F08A00AC0BD2 /* FTPConnectMode.java */,
-				4741533206C4F08A00AC0BD2 /* FTPControlSocket.java */,
-				4741533306C4F08A00AC0BD2 /* FTPDataSocket.java */,
-				4741533506C4F08A00AC0BD2 /* FTPPassiveDataSocket.java */,
-				4741532F06C4F08A00AC0BD2 /* FTPActiveDataSocket.java */,
-				4741533406C4F08A00AC0BD2 /* FTPException.java */,
-				4741533606C4F08A00AC0BD2 /* FTPReply.java */,
-				4741533706C4F08A00AC0BD2 /* FTPTransferType.java */,
-			);
-			path = ftp;
-			sourceTree = "<group>";
-		};
-		4741533806C4F08A00AC0BD2 /* sshtools */ = {
-			isa = PBXGroup;
-			children = (
-				47412ECE07CA832400BD37AB /* ext */,
-				4741533906C4F08A00AC0BD2 /* j2ssh */,
-			);
-			path = sshtools;
-			sourceTree = "<group>";
-		};
-		4741533906C4F08A00AC0BD2 /* j2ssh */ = {
-			isa = PBXGroup;
-			children = (
-				4741535906C4F08A00AC0BD2 /* authentication */,
-				4741537106C4F08A00AC0BD2 /* configuration */,
-				4741537806C4F08A00AC0BD2 /* connection */,
-				474153A406C4F08A00AC0BD2 /* io */,
-				474153AE06C4F08A00AC0BD2 /* net */,
-				474153B806C4F08A00AC0BD2 /* openssh */,
-				474153C006C4F08A00AC0BD2 /* ScpClient.java */,
-				474153C106C4F08A00AC0BD2 /* session */,
-				474153C706C4F08A00AC0BD2 /* sftp */,
-				474153E806C4F08A00AC0BD2 /* SshClient.java */,
-				474153E906C4F08A00AC0BD2 /* SshEventAdapter.java */,
-				474153EA06C4F08A00AC0BD2 /* SshException.java */,
-				474153EB06C4F08A00AC0BD2 /* SshRuntimeException.java */,
-				474153EC06C4F08A00AC0BD2 /* SshThread.java */,
-				474153ED06C4F08A00AC0BD2 /* subsystem */,
-				474153F506C4F08A00AC0BD2 /* transport */,
-				4741544E06C4F08B00AC0BD2 /* util */,
-			);
-			path = j2ssh;
-			sourceTree = "<group>";
-		};
-		4741535906C4F08A00AC0BD2 /* authentication */ = {
-			isa = PBXGroup;
-			children = (
-				4741535A06C4F08A00AC0BD2 /* AuthenticationProtocolClient.java */,
-				4741535B06C4F08A00AC0BD2 /* AuthenticationProtocolException.java */,
-				4741535C06C4F08A00AC0BD2 /* AuthenticationProtocolListener.java */,
-				4741535D06C4F08A00AC0BD2 /* AuthenticationProtocolState.java */,
-				4741535F06C4F08A00AC0BD2 /* KBIAuthenticationClient.java */,
-				4741536006C4F08A00AC0BD2 /* KBIPrompt.java */,
-				4741536106C4F08A00AC0BD2 /* KBIRequestHandler.java */,
-				4741536406C4F08A00AC0BD2 /* PublicKeyAuthenticationClient.java */,
-				4741536506C4F08A00AC0BD2 /* SshAuthenticationClient.java */,
-				4741536706C4F08A00AC0BD2 /* SshAuthenticationPrompt.java */,
-				4741536806C4F08A00AC0BD2 /* SshMsgUserAuthBanner.java */,
-				4741536906C4F08A00AC0BD2 /* SshMsgUserAuthFailure.java */,
-				4741536A06C4F08A00AC0BD2 /* SshMsgUserAuthInfoRequest.java */,
-				4741536B06C4F08A00AC0BD2 /* SshMsgUserAuthInfoResponse.java */,
-				4741536C06C4F08A00AC0BD2 /* SshMsgUserAuthPKOK.java */,
-				4741536D06C4F08A00AC0BD2 /* SshMsgUserAuthPwdChangeReq.java */,
-				4741536E06C4F08A00AC0BD2 /* SshMsgUserAuthRequest.java */,
-				4741536F06C4F08A00AC0BD2 /* SshMsgUserAuthSuccess.java */,
-				4741537006C4F08A00AC0BD2 /* TerminatedStateException.java */,
-			);
-			path = authentication;
-			sourceTree = "<group>";
-		};
-		4741537106C4F08A00AC0BD2 /* configuration */ = {
-			isa = PBXGroup;
-			children = (
-				4741537706C4F08A00AC0BD2 /* SshConnectionProperties.java */,
-			);
-			path = configuration;
-			sourceTree = "<group>";
-		};
-		4741537806C4F08A00AC0BD2 /* connection */ = {
-			isa = PBXGroup;
-			children = (
-				4741537906C4F08A00AC0BD2 /* BindingChannel.java */,
-				4741537A06C4F08A00AC0BD2 /* Channel.java */,
-				4741537B06C4F08A00AC0BD2 /* ChannelDataWindow.java */,
-				4741537C06C4F08A00AC0BD2 /* ChannelEventAdapter.java */,
-				4741537D06C4F08A00AC0BD2 /* ChannelEventListener.java */,
-				4741537E06C4F08A00AC0BD2 /* ChannelFactory.java */,
-				4741537F06C4F08A00AC0BD2 /* ChannelInputStream.java */,
-				4741538006C4F08A00AC0BD2 /* ChannelOutputStream.java */,
-				4741538106C4F08A00AC0BD2 /* ChannelState.java */,
-				4741538206C4F08A00AC0BD2 /* ConnectionProtocol.java */,
-				4741538306C4F08A00AC0BD2 /* GlobalRequestHandler.java */,
-				4741538406C4F08A00AC0BD2 /* GlobalRequestResponse.java */,
-				4741538506C4F08A00AC0BD2 /* InvalidChannelException.java */,
-				4741538606C4F08A00AC0BD2 /* IOChannel.java */,
-				4741538706C4F08A00AC0BD2 /* SocketChannel.java */,
-				4741538806C4F08A00AC0BD2 /* SshMsgChannelClose.java */,
-				4741538906C4F08A00AC0BD2 /* SshMsgChannelData.java */,
-				4741538A06C4F08A00AC0BD2 /* SshMsgChannelEOF.java */,
-				4741538B06C4F08A00AC0BD2 /* SshMsgChannelExtendedData.java */,
-				4741538C06C4F08A00AC0BD2 /* SshMsgChannelFailure.java */,
-				4741538D06C4F08A00AC0BD2 /* SshMsgChannelOpen.java */,
-				4741538E06C4F08A00AC0BD2 /* SshMsgChannelOpenConfirmation.java */,
-				4741538F06C4F08A00AC0BD2 /* SshMsgChannelOpenFailure.java */,
-				4741539006C4F08A00AC0BD2 /* SshMsgChannelRequest.java */,
-				4741539106C4F08A00AC0BD2 /* SshMsgChannelSuccess.java */,
-				4741539206C4F08A00AC0BD2 /* SshMsgChannelWindowAdjust.java */,
-				4741539306C4F08A00AC0BD2 /* SshMsgGlobalRequest.java */,
-				4741539406C4F08A00AC0BD2 /* SshMsgRequestFailure.java */,
-				4741539506C4F08A00AC0BD2 /* SshMsgRequestSuccess.java */,
-			);
-			path = connection;
-			sourceTree = "<group>";
-		};
-		474153A406C4F08A00AC0BD2 /* io */ = {
-			isa = PBXGroup;
-			children = (
-				474153A506C4F08A00AC0BD2 /* ByteArrayReader.java */,
-				474153A606C4F08A00AC0BD2 /* ByteArrayWriter.java */,
-				474153A706C4F08A00AC0BD2 /* DynamicBuffer.java */,
-				474153A806C4F08A00AC0BD2 /* IOStreamConnector.java */,
-				474153A906C4F08A00AC0BD2 /* IOStreamConnectorListener.java */,
-				474153AA06C4F08A00AC0BD2 /* IOStreamConnectorState.java */,
-				474153AB06C4F08A00AC0BD2 /* IOUtil.java */,
-				474153AC06C4F08A00AC0BD2 /* UnsignedInteger32.java */,
-				474153AD06C4F08A00AC0BD2 /* UnsignedInteger64.java */,
-			);
-			path = io;
-			sourceTree = "<group>";
-		};
-		474153AE06C4F08A00AC0BD2 /* net */ = {
-			isa = PBXGroup;
-			children = (
-				474153AF06C4F08A00AC0BD2 /* ConnectedSocketTransportProvider.java */,
-				474153B006C4F08A00AC0BD2 /* HttpHeader.java */,
-				474153B106C4F08A00AC0BD2 /* HttpProxySocketProvider.java */,
-				474153B206C4F08A00AC0BD2 /* HttpRequest.java */,
-				474153B306C4F08A00AC0BD2 /* HttpResponse.java */,
-				474153B406C4F08A00AC0BD2 /* SocketTransportProvider.java */,
-				474153B506C4F08A00AC0BD2 /* SocksProxySocket.java */,
-				474153B606C4F08A00AC0BD2 /* TransportProvider.java */,
-				474153B706C4F08A00AC0BD2 /* TransportProviderFactory.java */,
-			);
-			path = net;
-			sourceTree = "<group>";
-		};
-		474153B806C4F08A00AC0BD2 /* openssh */ = {
-			isa = PBXGroup;
-			children = (
-				474153B906C4F08A00AC0BD2 /* DSAKeyInfo.java */,
-				474153BA06C4F08A00AC0BD2 /* KeyInfo.java */,
-				474153BB06C4F08A00AC0BD2 /* OpenSSHPrivateKeyFormat.java */,
-				474153BC06C4F08A00AC0BD2 /* PEM.java */,
-				474153BD06C4F08A00AC0BD2 /* PEMReader.java */,
-				474153BE06C4F08A00AC0BD2 /* PEMWriter.java */,
-				474153BF06C4F08A00AC0BD2 /* RSAKeyInfo.java */,
-			);
-			path = openssh;
-			sourceTree = "<group>";
-		};
-		474153C106C4F08A00AC0BD2 /* session */ = {
-			isa = PBXGroup;
-			children = (
-				474153C206C4F08A00AC0BD2 /* PseudoTerminal.java */,
-				474153C306C4F08A00AC0BD2 /* SessionChannelClient.java */,
-				474153C406C4F08A00AC0BD2 /* SessionOutputEcho.java */,
-				474153C506C4F08A00AC0BD2 /* SessionOutputReader.java */,
-				474153C606C4F08A00AC0BD2 /* SignalListener.java */,
-			);
-			path = session;
-			sourceTree = "<group>";
-		};
-		474153C706C4F08A00AC0BD2 /* sftp */ = {
-			isa = PBXGroup;
-			children = (
-				474153CE06C4F08A00AC0BD2 /* SftpSubsystemClient.java */,
-				474153CA06C4F08A00AC0BD2 /* SftpFile.java */,
-				474153C806C4F08A00AC0BD2 /* FileAttributes.java */,
-				474153C906C4F08A00AC0BD2 /* MessageRequestId.java */,
-				474153CB06C4F08A00AC0BD2 /* SftpFileInputStream.java */,
-				474153CC06C4F08A00AC0BD2 /* SftpFileOutputStream.java */,
-				474153CD06C4F08A00AC0BD2 /* SftpMessageStore.java */,
-				474153CF06C4F08A00AC0BD2 /* SshFxpAttrs.java */,
-				474153D006C4F08A00AC0BD2 /* SshFxpClose.java */,
-				474153D106C4F08A00AC0BD2 /* SshFxpData.java */,
-				474153D206C4F08A00AC0BD2 /* SshFxpFSetStat.java */,
-				474153D306C4F08A00AC0BD2 /* SshFxpFStat.java */,
-				474153D406C4F08A00AC0BD2 /* SshFxpHandle.java */,
-				474153D506C4F08A00AC0BD2 /* SshFxpInit.java */,
-				474153D606C4F08A00AC0BD2 /* SshFxpLStat.java */,
-				474153D706C4F08A00AC0BD2 /* SshFxpMkdir.java */,
-				474153D806C4F08A00AC0BD2 /* SshFxpName.java */,
-				474153D906C4F08A00AC0BD2 /* SshFxpOpen.java */,
-				474153DA06C4F08A00AC0BD2 /* SshFxpOpenDir.java */,
-				474153DB06C4F08A00AC0BD2 /* SshFxpRead.java */,
-				474153DC06C4F08A00AC0BD2 /* SshFxpReadDir.java */,
-				474153DD06C4F08A00AC0BD2 /* SshFxpReadlink.java */,
-				474153DE06C4F08A00AC0BD2 /* SshFxpRealPath.java */,
-				474153DF06C4F08A00AC0BD2 /* SshFxpRemove.java */,
-				474153E006C4F08A00AC0BD2 /* SshFxpRename.java */,
-				474153E106C4F08A00AC0BD2 /* SshFxpRmdir.java */,
-				474153E206C4F08A00AC0BD2 /* SshFxpSetStat.java */,
-				474153E306C4F08A00AC0BD2 /* SshFxpStat.java */,
-				474153E406C4F08A00AC0BD2 /* SshFxpStatus.java */,
-				474153E506C4F08A00AC0BD2 /* SshFxpSymlink.java */,
-				474153E606C4F08A00AC0BD2 /* SshFxpVersion.java */,
-				474153E706C4F08A00AC0BD2 /* SshFxpWrite.java */,
-			);
-			path = sftp;
-			sourceTree = "<group>";
-		};
-		474153ED06C4F08A00AC0BD2 /* subsystem */ = {
-			isa = PBXGroup;
-			children = (
-				474153EE06C4F08A00AC0BD2 /* SubsystemChannel.java */,
-				474153EF06C4F08A00AC0BD2 /* SubsystemClient.java */,
-				474153F106C4F08A00AC0BD2 /* SubsystemMessage.java */,
-				474153F206C4F08A00AC0BD2 /* SubsystemMessageStore.java */,
-			);
-			path = subsystem;
-			sourceTree = "<group>";
-		};
-		474153F506C4F08A00AC0BD2 /* transport */ = {
-			isa = PBXGroup;
-			children = (
-				474153F606C4F08A00AC0BD2 /* AbstractKnownHostsKeyVerification.java */,
-				474153F706C4F08A00AC0BD2 /* AlgorithmInitializationException.java */,
-				474153F806C4F08A00AC0BD2 /* AlgorithmNotAgreedException.java */,
-				474153F906C4F08A00AC0BD2 /* AlgorithmNotSupportedException.java */,
-				474153FA06C4F08A00AC0BD2 /* AlgorithmOperationException.java */,
-				474153FB06C4F08A00AC0BD2 /* AsyncService.java */,
-				474153FC06C4F08A00AC0BD2 /* cipher */,
-				4741540106C4F08A00AC0BD2 /* compression */,
-				4741540506C4F08A00AC0BD2 /* hmac */,
-				4741540C06C4F08A00AC0BD2 /* HostKeyVerification.java */,
-				4741540D06C4F08A00AC0BD2 /* IgnoreHostKeyVerification.java */,
-				4741540E06C4F08A00AC0BD2 /* InvalidHostFileException.java */,
-				4741540F06C4F08A00AC0BD2 /* InvalidMessageException.java */,
-				4741541006C4F08A00AC0BD2 /* kex */,
-				4741541806C4F08A00AC0BD2 /* MessageAlreadyRegisteredException.java */,
-				4741541906C4F08A00AC0BD2 /* MessageNotAvailableException.java */,
-				4741541A06C4F08A00AC0BD2 /* MessageNotRegisteredException.java */,
-				4741541B06C4F08A00AC0BD2 /* MessageStoreEOFException.java */,
-				4741541C06C4F08A00AC0BD2 /* publickey */,
-				4741543706C4F08B00AC0BD2 /* Service.java */,
-				4741543806C4F08B00AC0BD2 /* ServiceState.java */,
-				4741543906C4F08B00AC0BD2 /* SshMessage.java */,
-				4741543A06C4F08B00AC0BD2 /* SshMessageListener.java */,
-				4741543B06C4F08B00AC0BD2 /* SshMessageStore.java */,
-				4741543C06C4F08B00AC0BD2 /* SshMsgDebug.java */,
-				4741543D06C4F08B00AC0BD2 /* SshMsgDisconnect.java */,
-				4741543E06C4F08B00AC0BD2 /* SshMsgIgnore.java */,
-				4741543F06C4F08B00AC0BD2 /* SshMsgKexInit.java */,
-				4741544006C4F08B00AC0BD2 /* SshMsgNewKeys.java */,
-				4741544106C4F08B00AC0BD2 /* SshMsgServiceAccept.java */,
-				4741544206C4F08B00AC0BD2 /* SshMsgServiceRequest.java */,
-				4741544306C4F08B00AC0BD2 /* SshMsgUnimplemented.java */,
-				4741544406C4F08B00AC0BD2 /* TransportProtocol.java */,
-				4741544506C4F08B00AC0BD2 /* TransportProtocolAlgorithmSync.java */,
-				4741544606C4F08B00AC0BD2 /* TransportProtocolClient.java */,
-				4741544706C4F08B00AC0BD2 /* TransportProtocolCommon.java */,
-				4741544806C4F08B00AC0BD2 /* TransportProtocolEventAdapter.java */,
-				4741544906C4F08B00AC0BD2 /* TransportProtocolEventHandler.java */,
-				4741544A06C4F08B00AC0BD2 /* TransportProtocolException.java */,
-				4741544B06C4F08B00AC0BD2 /* TransportProtocolInputStream.java */,
-				4741544C06C4F08B00AC0BD2 /* TransportProtocolOutputStream.java */,
-				4741544D06C4F08B00AC0BD2 /* TransportProtocolState.java */,
-			);
-			path = transport;
-			sourceTree = "<group>";
-		};
-		474153FC06C4F08A00AC0BD2 /* cipher */ = {
-			isa = PBXGroup;
-			children = (
-				474153FD06C4F08A00AC0BD2 /* BlowfishCbc.java */,
-				474153FE06C4F08A00AC0BD2 /* SshCipher.java */,
-				474153FF06C4F08A00AC0BD2 /* SshCipherFactory.java */,
-				4741540006C4F08A00AC0BD2 /* TripleDesCbc.java */,
-			);
-			path = cipher;
-			sourceTree = "<group>";
-		};
-		4741540106C4F08A00AC0BD2 /* compression */ = {
-			isa = PBXGroup;
-			children = (
-				4741540206C4F08A00AC0BD2 /* SshCompression.java */,
-				4741540306C4F08A00AC0BD2 /* SshCompressionFactory.java */,
-			);
-			path = compression;
-			sourceTree = "<group>";
-		};
-		4741540506C4F08A00AC0BD2 /* hmac */ = {
-			isa = PBXGroup;
-			children = (
-				4741540606C4F08A00AC0BD2 /* HmacMd5.java */,
-				4741540706C4F08A00AC0BD2 /* HmacMd596.java */,
-				4741540806C4F08A00AC0BD2 /* HmacSha.java */,
-				4741540906C4F08A00AC0BD2 /* HmacSha96.java */,
-				4741540A06C4F08A00AC0BD2 /* SshHmac.java */,
-				4741540B06C4F08A00AC0BD2 /* SshHmacFactory.java */,
-			);
-			path = hmac;
-			sourceTree = "<group>";
-		};
-		4741541006C4F08A00AC0BD2 /* kex */ = {
-			isa = PBXGroup;
-			children = (
-				4741541106C4F08A00AC0BD2 /* DhGroup1Sha1.java */,
-				4741541206C4F08A00AC0BD2 /* KeyExchangeException.java */,
-				4741541306C4F08A00AC0BD2 /* KeyExchangeState.java */,
-				4741541406C4F08A00AC0BD2 /* SshKeyExchange.java */,
-				4741541506C4F08A00AC0BD2 /* SshKeyExchangeFactory.java */,
-				4741541606C4F08A00AC0BD2 /* SshMsgKexDhInit.java */,
-				4741541706C4F08A00AC0BD2 /* SshMsgKexDhReply.java */,
-			);
-			path = kex;
-			sourceTree = "<group>";
-		};
-		4741541C06C4F08A00AC0BD2 /* publickey */ = {
-			isa = PBXGroup;
-			children = (
-				4741541D06C4F08A00AC0BD2 /* Base64EncodedFileFormat.java */,
-				4741542506C4F08B00AC0BD2 /* rsa */,
-				4741541E06C4F08A00AC0BD2 /* dsa */,
-				4741542206C4F08B00AC0BD2 /* InvalidSshKeyException.java */,
-				4741542306C4F08B00AC0BD2 /* InvalidSshKeySignatureException.java */,
-				4741542406C4F08B00AC0BD2 /* OpenSSHPublicKeyFormat.java */,
-				4741542906C4F08B00AC0BD2 /* SECSHPublicKeyFormat.java */,
-				4741542A06C4F08B00AC0BD2 /* SshKeyFormatConversion.java */,
-				4741542B06C4F08B00AC0BD2 /* SshKeyGenerator.java */,
-				4741542C06C4F08B00AC0BD2 /* SshKeyPair.java */,
-				4741542D06C4F08B00AC0BD2 /* SshKeyPairFactory.java */,
-				4741542E06C4F08B00AC0BD2 /* SshPrivateKey.java */,
-				4741542F06C4F08B00AC0BD2 /* SshPrivateKeyFile.java */,
-				4741543006C4F08B00AC0BD2 /* SshPrivateKeyFormat.java */,
-				4741543106C4F08B00AC0BD2 /* SshPrivateKeyFormatFactory.java */,
-				4741543206C4F08B00AC0BD2 /* SshPublicKey.java */,
-				4741543306C4F08B00AC0BD2 /* SshPublicKeyFile.java */,
-				4741543406C4F08B00AC0BD2 /* SshPublicKeyFormat.java */,
-				4741543506C4F08B00AC0BD2 /* SshPublicKeyFormatFactory.java */,
-				4741543606C4F08B00AC0BD2 /* SshtoolsPrivateKeyFormat.java */,
-			);
-			path = publickey;
-			sourceTree = "<group>";
-		};
-		4741541E06C4F08A00AC0BD2 /* dsa */ = {
-			isa = PBXGroup;
-			children = (
-				4741541F06C4F08B00AC0BD2 /* SshDssKeyPair.java */,
-				4741542006C4F08B00AC0BD2 /* SshDssPrivateKey.java */,
-				4741542106C4F08B00AC0BD2 /* SshDssPublicKey.java */,
-			);
-			path = dsa;
-			sourceTree = "<group>";
-		};
-		4741542506C4F08B00AC0BD2 /* rsa */ = {
-			isa = PBXGroup;
-			children = (
-				4741542606C4F08B00AC0BD2 /* SshRsaKeyPair.java */,
-				4741542706C4F08B00AC0BD2 /* SshRsaPrivateKey.java */,
-				4741542806C4F08B00AC0BD2 /* SshRsaPublicKey.java */,
-			);
-			path = rsa;
-			sourceTree = "<group>";
-		};
-		4741544E06C4F08B00AC0BD2 /* util */ = {
-			isa = PBXGroup;
-			children = (
-				4741544F06C4F08B00AC0BD2 /* Base64.java */,
-				4741545006C4F08B00AC0BD2 /* DynamicClassLoader.java */,
-				4741545106C4F08B00AC0BD2 /* ExtensionClassLoader.java */,
-				4741545206C4F08B00AC0BD2 /* Hash.java */,
-				4741545306C4F08B00AC0BD2 /* InvalidStateException.java */,
-				4741545406C4F08B00AC0BD2 /* OpenClosedState.java */,
-				4741545506C4F08B00AC0BD2 /* SimpleASNReader.java */,
-				4741545606C4F08B00AC0BD2 /* SimpleASNWriter.java */,
-				4741545706C4F08B00AC0BD2 /* StartStopState.java */,
-				4741545806C4F08B00AC0BD2 /* State.java */,
-			);
-			path = util;
-			sourceTree = "<group>";
-		};
-		4741545906C4F08B00AC0BD2 /* org */ = {
-			isa = PBXGroup;
-			children = (
-				4741545A06C4F08B00AC0BD2 /* apache */,
-			);
-			path = org;
-			sourceTree = "<group>";
-		};
-		4741545A06C4F08B00AC0BD2 /* apache */ = {
-			isa = PBXGroup;
-			children = (
-				4741545B06C4F08B00AC0BD2 /* commons */,
-			);
-			path = apache;
-			sourceTree = "<group>";
-		};
-		4741545B06C4F08B00AC0BD2 /* commons */ = {
-			isa = PBXGroup;
-			children = (
-				4741547C06C4F08B00AC0BD2 /* net */,
-			);
-			path = commons;
-			sourceTree = "<group>";
-		};
-		4741547C06C4F08B00AC0BD2 /* net */ = {
-			isa = PBXGroup;
-			children = (
-				4741547D06C4F08B00AC0BD2 /* ftp */,
-				4741548E06C4F08B00AC0BD2 /* io */,
-			);
-			path = net;
-			sourceTree = "<group>";
-		};
-		4741547D06C4F08B00AC0BD2 /* ftp */ = {
-			isa = PBXGroup;
-			children = (
-				4741547F06C4F08B00AC0BD2 /* FTPFileEntryParser.java */,
-				4741548006C4F08B00AC0BD2 /* FTPFileEntryParserImpl.java */,
-				4741548106C4F08B00AC0BD2 /* parser */,
-			);
-			path = ftp;
-			sourceTree = "<group>";
-		};
-		4741548106C4F08B00AC0BD2 /* parser */ = {
-			isa = PBXGroup;
-			children = (
-				4741548206C4F08B00AC0BD2 /* CompositeFileEntryParser.java */,
-				4741548306C4F08B00AC0BD2 /* DefaultFTPFileEntryParserFactory.java */,
-				4741548406C4F08B00AC0BD2 /* EnterpriseUnixFTPEntryParser.java */,
-				4741548506C4F08B00AC0BD2 /* EPLFFTPEntryParser.java */,
-				4741548606C4F08B00AC0BD2 /* FTPFileEntryParserFactory.java */,
-				4741548706C4F08B00AC0BD2 /* NTFTPEntryParser.java */,
-				4741548806C4F08B00AC0BD2 /* OS2FTPEntryParser.java */,
-				4741548906C4F08B00AC0BD2 /* OS400FTPEntryParser.java */,
-				4741548A06C4F08B00AC0BD2 /* RegexFTPFileEntryParserImpl.java */,
-				4741548B06C4F08B00AC0BD2 /* UnixFTPEntryParser.java */,
-				4741548C06C4F08B00AC0BD2 /* VMSFTPEntryParser.java */,
-				4741548D06C4F08B00AC0BD2 /* VMSVersioningFTPEntryParser.java */,
-				479815B60728D6DC00FA3CDB /* NetwareFTPEntryParser.java */,
-			);
-			path = parser;
-			sourceTree = "<group>";
-		};
-		4741548E06C4F08B00AC0BD2 /* io */ = {
-			isa = PBXGroup;
-			children = (
-				4741548F06C4F08B00AC0BD2 /* FromNetASCIIInputStream.java */,
-				4741549006C4F08B00AC0BD2 /* FromNetASCIIOutputStream.java */,
-				4741549106C4F08B00AC0BD2 /* ToNetASCIIInputStream.java */,
-				4741549206C4F08B00AC0BD2 /* ToNetASCIIOutputStream.java */,
-			);
-			path = io;
 			sourceTree = "<group>";
 		};
 		4741639206C4F58D00AC0BD2 /* Resources */ = {
@@ -2775,57 +1814,6 @@
 			name = applescript;
 			sourceTree = "<group>";
 		};
-		47C75B7506A5A36900B464FF /* org */ = {
-			isa = PBXGroup;
-			children = (
-				47C75B7606A5A36900B464FF /* apache */,
-			);
-			path = org;
-			sourceTree = "<group>";
-		};
-		47C75B7606A5A36900B464FF /* apache */ = {
-			isa = PBXGroup;
-			children = (
-				47C75B7706A5A36900B464FF /* commons */,
-			);
-			path = apache;
-			sourceTree = "<group>";
-		};
-		47C75B7706A5A36900B464FF /* commons */ = {
-			isa = PBXGroup;
-			children = (
-				47C75B7806A5A36900B464FF /* net */,
-			);
-			path = commons;
-			sourceTree = "<group>";
-		};
-		47C75B7806A5A36900B464FF /* net */ = {
-			isa = PBXGroup;
-			children = (
-				47C75B7906A5A36900B464FF /* ftp */,
-			);
-			path = net;
-			sourceTree = "<group>";
-		};
-		47C75B7906A5A36900B464FF /* ftp */ = {
-			isa = PBXGroup;
-			children = (
-				47C75B7A06A5A36900B464FF /* parser */,
-			);
-			path = ftp;
-			sourceTree = "<group>";
-		};
-		47C75B7A06A5A36900B464FF /* parser */ = {
-			isa = PBXGroup;
-			children = (
-				474DC8830B431A0000F0D79C /* EPLFEntryParserTest.java */,
-				474DC8840B431A0000F0D79C /* NTFTPEntryParserTest.java */,
-				474DC8850B431A0000F0D79C /* UnixFTPEntryParserTest.java */,
-				47C75B7B06A5A36900B464FF /* EPLFEntryParserTest.java */,
-			);
-			path = parser;
-			sourceTree = "<group>";
-		};
 		47CD99790738DEB300E9379E /* queue */ = {
 			isa = PBXGroup;
 			children = (
@@ -2904,50 +1892,6 @@
 				47215A0907FC77DE00451725 /* CDX509TrustManagerController.java */,
 			);
 			name = browser;
-			sourceTree = "<group>";
-		};
-		47F2E90605BD4244003D2875 /* test */ = {
-			isa = PBXGroup;
-			children = (
-				47C75B7506A5A36900B464FF /* org */,
-				47F2E90705BD4244003D2875 /* ch */,
-			);
-			path = test;
-			sourceTree = SOURCE_ROOT;
-		};
-		47F2E90705BD4244003D2875 /* ch */ = {
-			isa = PBXGroup;
-			children = (
-				47F2E90805BD4244003D2875 /* cyberduck */,
-			);
-			path = ch;
-			sourceTree = "<group>";
-		};
-		47F2E90805BD4244003D2875 /* cyberduck */ = {
-			isa = PBXGroup;
-			children = (
-				47F2E90905BD4244003D2875 /* core */,
-			);
-			path = cyberduck;
-			sourceTree = "<group>";
-		};
-		47F2E90905BD4244003D2875 /* core */ = {
-			isa = PBXGroup;
-			children = (
-				474DC8790B4319E100F0D79C /* AttributesTest.java */,
-				474DC87A0B4319E100F0D79C /* CodecTest.java */,
-				474DC87B0B4319E100F0D79C /* HostTest.java */,
-				474DC87C0B4319E100F0D79C /* LoginTest.java */,
-				474DC87D0B4319E100F0D79C /* PathTest.java */,
-				474DC87E0B4319E100F0D79C /* PermissionTest.java */,
-				474DC87F0B4319E100F0D79C /* RendezvousTest.java */,
-				474DC8800B4319E100F0D79C /* SessionTest.java */,
-				474DC8810B4319E100F0D79C /* StatusTest.java */,
-				474DC8820B4319E100F0D79C /* TransferTest.java */,
-				47F2E9BA05BD5356003D2875 /* LoginTest.java */,
-				47F2EAA405BD7F7E003D2875 /* CodecTest.java */,
-			);
-			path = core;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
