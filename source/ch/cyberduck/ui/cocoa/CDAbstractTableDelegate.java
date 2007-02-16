@@ -338,7 +338,7 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
             }
             Permission perm2 = ((Path) o2).attributes.getPermission();
             if(null == perm2) {
-                perm1 = Permission.EMPTY;
+                perm2 = Permission.EMPTY;
             }
             int p1 = Integer.parseInt(perm1.getOctalCode());
             int p2 = Integer.parseInt(perm2.getOctalCode());
