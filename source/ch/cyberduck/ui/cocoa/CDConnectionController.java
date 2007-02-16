@@ -241,6 +241,7 @@ public class CDConnectionController extends CDSheetController {
             this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
             this.passField.setEnabled(true);
         }
+        this.updateURLLabel(null);
     }
 
     private NSButton pkCheckbox;
