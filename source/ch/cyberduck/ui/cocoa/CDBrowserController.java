@@ -2769,7 +2769,7 @@ public class CDBrowserController extends CDWindowController
                 // Update the path selection menu above the browser
                 if(isMounted()) {
                     Path p = workdir;
-                    do {
+                    while(pathPopupButton.indexOfItemWithRepresentedObject(p) < 0) {
                         pathPopupButton.addItem(p.getAbsolute());
                         if(p.isRoot()) {
                             pathPopupButton.lastItem().setImage(DISK_ICON);
@@ -2780,7 +2780,6 @@ public class CDBrowserController extends CDWindowController
                         pathPopupButton.lastItem().setRepresentedObject(p);
                         p = p.getParent();
                     }
-                    while(!p.isRoot());
                 }
             }
         });
