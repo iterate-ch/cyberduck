@@ -28,8 +28,8 @@ import com.apple.cocoa.foundation.NSObject;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,49 +104,38 @@ public abstract class Session extends NSObject {
      */
     public void check() throws IOException {
         this.fireActivityStartedEvent();
-        try {
-            if(!this.isConnected()) {
-                // if not connected anymore, reconnect the session
-                this.connect();
-            }
-            else {
-                try {
-                    // Send a 'no operation command' to make sure the session is alive
-                    this.noop();
-                }
-                catch(IOException e) {
-                    // The session has timed out since from the server side
-                    // Close the underlying socket first
-                    this.interrupt();
-                    if(e instanceof SocketException) {
-                        if(e.getMessage().equals("Connection reset")) {
-                            this.connect();
-                            return;
-                        }
-                        // Do not try to reconnect, because this exception is
-                        // thrown when the socket is interrupted by the user asynchroneously
-                        throw e;
-                    }
-                    // Try to reconnect once more
-                    this.connect();
-                }
-            }
-        }
-        catch(SocketException e) {
-            this.interrupt();
-            if(e.getMessage().equals("Connection reset")) {
-                this.connect();
-                return;
-            }
-            // Do not try to reconnect, because this exception is
-            // thrown when the socket is interrupted by the user asynchroneously
-            throw e;
-        }
-        catch(SocketTimeoutException e) {
-            // Signals that a timeout has occurred on a socket read or accept
-            this.interrupt();
-            // Try to reconnect once more
+        if(!this.isConnected()) {
+            // If not connected anymore, reconnect the session
             this.connect();
+        }
+        else {
+            // The session is still supposed to be connected
+            try {
+                // Send a 'no operation command' to make sure the session is alive
+                this.noop();
+            }
+            catch(IOException e) {
+                if(e instanceof SocketException) {
+                    // The session has timed out since
+                    if(e.getMessage().equals("Connection reset")) {
+                        // Close the underlying socket first
+                        this.interrupt();
+                        // Try to reconnect once more
+                        this.connect();
+                        // Do not throw exception as we succeeded on second attempt
+                        return;
+                    }
+                    if(e.getMessage().equals("Broken pipe")) {
+                        // Close the underlying socket first
+                        this.interrupt();
+                        // Try to reconnect once more
+                        this.connect();
+                        // Do not throw exception as we succeeded on second attempt
+                        return;
+                    }
+                }
+                throw e;
+            }
         }
     }
 
@@ -490,7 +479,7 @@ public abstract class Session extends NSObject {
      * @param message The error message to be displayed in the alert sheet
      * @param e The cause of the error
      */
-    public void error(Path path, String message, Exception e) {
+    public void error(Path path, String message, Throwable e) {
         this.error(path, message, e, null);
     }
 
@@ -504,7 +493,7 @@ public abstract class Session extends NSObject {
      * @see Growl
      * @see ErrorListener
      */
-    public void error(Path path, String message, Exception e, String title) {
+    public void error(Path path, String message, Throwable e, String title) {
         log.info(e.getMessage());
         BackgroundException failure = new BackgroundException(this, path, message, e);
         ErrorListener[] l = (ErrorListener[]) errorListeners.toArray(

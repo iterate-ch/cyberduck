@@ -18,9 +18,9 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.ErrorListener;
 import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.ui.cocoa.CDErrorCell;
 import ch.cyberduck.ui.cocoa.CDSheetCallback;
 import ch.cyberduck.ui.cocoa.CDSheetController;
@@ -32,6 +32,7 @@ import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -73,6 +74,13 @@ public abstract class BackgroundActionImpl
             if(cause.getMessage().equals("Socket closed")) {
                 // Do not report as failed if socket opening interrupted
                 log.warn("Supressed socket exception:"+cause.getMessage());
+                return;
+            }
+        }
+        if(cause instanceof IOException) {
+            if(cause.getMessage().equals("The connection did not complete")) {
+                // Do not report as failed if SSH connection initialization is interrupted
+                log.warn("Supressed I/O exception:"+cause.getMessage());
                 return;
             }
         }
