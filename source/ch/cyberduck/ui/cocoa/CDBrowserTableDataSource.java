@@ -440,40 +440,34 @@ public abstract class CDBrowserTableDataSource extends NSObject {
     public NSArray namesOfPromisedFilesDroppedAtDestination(final URL dropDestination) {
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
         NSMutableArray promisedDragNames = new NSMutableArray();
-        try {
-            if(null != dropDestination) {
-                final String d = java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8");
-                for(int i = 0; i < this.promisedDragPaths.length; i++) {
-                    this.promisedDragPaths[i].setLocal(new Local(d,
-                            this.promisedDragPaths[i].getName()));
-                    promisedDragNames.addObject(this.promisedDragPaths[i].getName());
-                }
-                if(d.indexOf(NSPathUtilities.stringByExpandingTildeInPath("~/.Trash")) != -1) {
-                    for(int i = 0; i < promisedDragPaths.length; i++) {
-                        controller.deletePaths(Arrays.asList(promisedDragPaths));
-                    }
-                    promisedDragNames.removeAllObjects();
-                    return promisedDragNames;
-                }
+        if(null != dropDestination) {
+            for(int i = 0; i < this.promisedDragPaths.length; i++) {
+                this.promisedDragPaths[i].setLocal(new Local(dropDestination.getPath(),
+                        this.promisedDragPaths[i].getName()));
+                promisedDragNames.addObject(this.promisedDragPaths[i].getName());
             }
-            if(this.promisedDragPaths.length == 1) {
-                if(this.promisedDragPaths[0].attributes.isFile()) {
-                    this.promisedDragPaths[0].getLocal().createNewFile();
+            if(dropDestination.getPath().indexOf(NSPathUtilities.stringByExpandingTildeInPath("~/.Trash")) != -1) {
+                for(int i = 0; i < promisedDragPaths.length; i++) {
+                    controller.deletePaths(Arrays.asList(promisedDragPaths));
                 }
-                if(this.promisedDragPaths[0].attributes.isDirectory()) {
-                    this.promisedDragPaths[0].getLocal().mkdir();
-                }
-            }
-            Transfer q = new DownloadTransfer();
-            for(int i = 0; i < promisedDragPaths.length; i++) {
-                q.addRoot(promisedDragPaths[i]);
-            }
-            if(q.numberOfRoots() > 0) {
-                controller.transfer(q);
+                promisedDragNames.removeAllObjects();
+                return promisedDragNames;
             }
         }
-        catch(UnsupportedEncodingException e) {
-            log.error(e.getMessage());
+        if(this.promisedDragPaths.length == 1) {
+            if(this.promisedDragPaths[0].attributes.isFile()) {
+                this.promisedDragPaths[0].getLocal().createNewFile();
+            }
+            if(this.promisedDragPaths[0].attributes.isDirectory()) {
+                this.promisedDragPaths[0].getLocal().mkdir();
+            }
+        }
+        Transfer q = new DownloadTransfer();
+        for(int i = 0; i < promisedDragPaths.length; i++) {
+            q.addRoot(promisedDragPaths[i]);
+        }
+        if(q.numberOfRoots() > 0) {
+            controller.transfer(q);
         }
         return promisedDragNames;
     }

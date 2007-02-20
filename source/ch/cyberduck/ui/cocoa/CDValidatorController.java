@@ -66,10 +66,10 @@ public abstract class CDValidatorController
 
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION || returncode == ALTERNATE_OPTION) { //overwrite || resume
-            for(Iterator i = workList.iterator(); i.hasNext();) {
-                final Path p = (Path) i.next();
+            for(Iterator iter = workList.iterator(); iter.hasNext();) {
+                final Path p = (Path) iter.next();
                 if(p.isSkipped()) {
-                    this.workList.remove(p);
+                    iter.remove();
                     continue;
                 }
                 p.status.setResume(returncode == ALTERNATE_OPTION);

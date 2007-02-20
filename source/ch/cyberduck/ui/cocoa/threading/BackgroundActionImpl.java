@@ -18,9 +18,10 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.ErrorListener;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.CDErrorCell;
 import ch.cyberduck.ui.cocoa.CDSheetCallback;
 import ch.cyberduck.ui.cocoa.CDSheetController;
@@ -32,7 +33,6 @@ import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -74,13 +74,6 @@ public abstract class BackgroundActionImpl
             if(cause.getMessage().equals("Socket closed")) {
                 // Do not report as failed if socket opening interrupted
                 log.warn("Supressed socket exception:"+cause.getMessage());
-                return;
-            }
-        }
-        if(cause instanceof IOException) {
-            if(cause.getMessage().equals("The connection did not complete")) {
-                // Do not report as failed if SSH connection initialization is interrupted
-                log.warn("Supressed I/O exception:"+cause.getMessage());
                 return;
             }
         }
@@ -155,7 +148,7 @@ public abstract class BackgroundActionImpl
                 this.diagnosticsButton.setAction(new NSSelector("diagnosticsButtonClicked", new Class[]{NSButton.class}));
                 boolean hidden = true;
                 for(Iterator iter = exceptions.iterator(); iter.hasNext(); ) {
-                    Throwable cause = ((BackgroundException)iter.next()).getCause();
+                    Throwable cause = ((Throwable)iter.next()).getCause();
                     if(cause instanceof SocketException || cause instanceof UnknownHostException) {
                         hidden = false;
                         break;
@@ -199,12 +192,20 @@ public abstract class BackgroundActionImpl
             }
 
             public void callback(final int returncode) {
-                exceptions.clear();
-                if(transcript.length() > 0) {
-                    transcript.delete(0, transcript.length()-1);
-                }
                 BackgroundActionImpl.this.callback(returncode);
                 if(returncode == DEFAULT_OPTION) { //Try Again
+                    if(transcript.length() > 0) {
+                        transcript.delete(0, transcript.length()-1);
+                    }
+                    for(Iterator iter = exceptions.iterator(); iter.hasNext(); ) {
+                        BackgroundException e = (BackgroundException)iter.next();
+                        Path workdir = e.getPath();
+                        if(null == workdir) {
+                            continue;
+                        }
+                        workdir.invalidate();
+                    }
+                    exceptions.clear();
                     // Re-run the action with the previous lock used
                     controller.background(BackgroundActionImpl.this, lock);
                 }

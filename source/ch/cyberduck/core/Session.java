@@ -115,26 +115,16 @@ public abstract class Session extends NSObject {
                 this.noop();
             }
             catch(IOException e) {
-                if(e instanceof SocketException) {
-                    // The session has timed out since
-                    if(e.getMessage().equals("Connection reset")) {
-                        // Close the underlying socket first
-                        this.interrupt();
-                        // Try to reconnect once more
-                        this.connect();
-                        // Do not throw exception as we succeeded on second attempt
-                        return;
-                    }
-                    if(e.getMessage().equals("Broken pipe")) {
-                        // Close the underlying socket first
-                        this.interrupt();
-                        // Try to reconnect once more
-                        this.connect();
-                        // Do not throw exception as we succeeded on second attempt
-                        return;
-                    }
+                try {
+                    // Close the underlying socket first
+                    this.interrupt();
+                    // Try to reconnect once more
+                    this.connect();
+                    // Do not throw exception as we succeeded on second attempt
                 }
-                throw e;
+                catch(IOException i) {
+                    throw i;
+                }
             }
         }
     }
