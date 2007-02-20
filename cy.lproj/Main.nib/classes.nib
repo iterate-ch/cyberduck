@@ -50,6 +50,7 @@
         {
             ACTIONS = {
                 aboutMenuClicked = id; 
+                acknowledgmentsMenuClicked = id; 
                 bugreportMenuClicked = id; 
                 donateMenuClicked = id; 
                 downloadBookmarksFromDotMacClicked = id; 

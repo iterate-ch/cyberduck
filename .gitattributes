@@ -1,4 +1,5 @@
 * text=auto !eol
+/Acknowledgments.rtf -text
 AppleScript[!!-~]Samples/Download[!!-~]Sample.scpt -text
 AppleScript[!!-~]Samples/Edit[!!-~]Sample.scpt -text
 AppleScript[!!-~]Samples/Open[!!-~]URL[!!-~]Sample.scpt -text
