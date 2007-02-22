@@ -181,6 +181,7 @@
 		47905BE30AE3D6FF00F9E193 /* unlocked.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47905BE10AE3D6FF00F9E193 /* unlocked.tiff */; };
 		47905BE40AE3D6FF00F9E193 /* locked.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47905BE20AE3D6FF00F9E193 /* locked.tiff */; };
 		47905BF80AE3E10000F9E193 /* Security.nib in Resources */ = {isa = PBXBuildFile; fileRef = 47905BF60AE3E10000F9E193 /* Security.nib */; };
+		47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
 		479734DB077B735A0027370F /* arrowLeftBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479734D9077B735A0027370F /* arrowLeftBlack16.tiff */; };
 		4799CE110A29EEF700AA4E59 /* bottom.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4799CE100A29EEF700AA4E59 /* bottom.tiff */; };
 		4799CE260A29EF5600AA4E59 /* CDBottomView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4799CE240A29EF5600AA4E59 /* CDBottomView.h */; };
@@ -996,6 +997,7 @@
 		47905BE20AE3D6FF00F9E193 /* locked.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = locked.tiff; sourceTree = "<group>"; };
 		47905BF70AE3E10000F9E193 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Security.nib; sourceTree = "<group>"; };
 		4790762A0764903900676C18 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
+		47911A170B84C4E8001A29AE /* Acknowledgments.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Acknowledgments.rtf; sourceTree = "<group>"; };
 		479734D9077B735A0027370F /* arrowLeftBlack16.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowLeftBlack16.tiff; sourceTree = "<group>"; };
 		479814C907280B2B00FA3CDB /* no */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = no; path = no.lproj/Localizable.strings; sourceTree = "<group>"; };
 		479814CA07280B2B00FA3CDB /* no */ = {isa = PBXFileReference; lastKnownFileType = text; name = no; path = no.lproj/License.txt; sourceTree = "<group>"; };
@@ -1588,6 +1590,7 @@
 		4741639206C4F58D00AC0BD2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				47911A170B84C4E8001A29AE /* Acknowledgments.rtf */,
 				47905BF60AE3E10000F9E193 /* Security.nib */,
 				4759C93B0A1476E500C5980A /* Progress.nib */,
 				474163B906C4F64100AC0BD2 /* Queue.nib */,
@@ -2401,6 +2404,7 @@
 				477B1B7A0AF383DC0023BA7F /* SNDisclosureArrowRight.tiff in Resources */,
 				472759650AF3BE6000EBE267 /* update.tiff in Resources */,
 				476774DE0B74CE750025093E /* trash.tiff in Resources */,
+				47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
