@@ -24,7 +24,6 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * @version $Id$
@@ -58,7 +57,7 @@ public class DownloadTransfer extends Transfer {
         super.fireQueueStoppedEvent();
     }
 
-    protected List getChilds(List childs, Path p) {
+    protected void getChilds(List childs, Path p) {
         if(!this.isCanceled()) {
             childs.add(p);
             if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
@@ -76,7 +75,6 @@ public class DownloadTransfer extends Transfer {
                 }
             }
         }
-        return childs;
     }
 
     protected void reset() {

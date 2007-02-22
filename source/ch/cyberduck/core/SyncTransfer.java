@@ -25,7 +25,6 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * @version $Id$
@@ -113,10 +112,9 @@ public class SyncTransfer extends Transfer {
         }
     }
 
-    protected List getChilds(List childs, Path root) {
+    protected void getChilds(List childs, Path root) {
         this.addRemoteChilds(childs, root);
         this.addLocalChilds(childs, root);
-        return childs;
     }
 
     protected void reset() {

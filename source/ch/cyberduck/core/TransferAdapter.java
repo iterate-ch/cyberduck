@@ -23,15 +23,15 @@ package ch.cyberduck.core;
  */
 public class TransferAdapter implements TransferListener {
 
-    public void queueStarted() {
+    public void queueWillStart() {
     }
 
-    public void queueStopped() {
+    public void queueDidEnd() {
     }
 
-    public void transferStarted(final Path path) {
+    public void transferWillStart(final Path path) {
     }
 
-    public void transferStopped(final Path path) {
+    public void transferDidEnd(final Path path) {
     }
 }

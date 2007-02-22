@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -121,7 +120,7 @@ public abstract class Transfer extends NSObject {
         TransferListener[] l = (TransferListener[]) listeners.toArray(
                 new TransferListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
-            l[i].queueStarted();
+            l[i].queueWillStart();
         }
     }
 
@@ -130,7 +129,7 @@ public abstract class Transfer extends NSObject {
         TransferListener[] l = (TransferListener[]) listeners.toArray(
                 new TransferListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
-            l[i].queueStopped();
+            l[i].queueDidEnd();
         }
     }
 
@@ -138,7 +137,7 @@ public abstract class Transfer extends NSObject {
         TransferListener[] l = (TransferListener[]) listeners.toArray(
                 new TransferListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
-            l[i].transferStarted(path);
+            l[i].transferWillStart(path);
         }
     }
 
@@ -146,7 +145,7 @@ public abstract class Transfer extends NSObject {
         TransferListener[] l = (TransferListener[]) listeners.toArray(
                 new TransferListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
-            l[i].transferStopped(path);
+            l[i].transferDidEnd(path);
         }
     }
 
@@ -246,7 +245,7 @@ public abstract class Transfer extends NSObject {
      * @param childs The list to fill with all eventual childs
      * @param root The parent file
      */
-    protected abstract List getChilds(List childs, Path root);
+    protected abstract void getChilds(List childs, Path root);
 
     /**
      * A compiled representation of a regular expression.

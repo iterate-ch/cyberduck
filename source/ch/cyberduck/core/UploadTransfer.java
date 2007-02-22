@@ -24,7 +24,6 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.io.File;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * @version $Id$
@@ -58,7 +57,7 @@ public class UploadTransfer extends Transfer {
         super.fireQueueStoppedEvent();
     }
 
-    protected List getChilds(List childs, Path p) {
+    protected void getChilds(List childs, Path p) {
         if(!this.isCanceled()) {
             if(p.getLocal().exists()) {// && p.getLocal().canRead()) {
                 childs.add(p);
@@ -91,7 +90,6 @@ public class UploadTransfer extends Transfer {
                 }
             }
         }
-        return childs;
     }
 
     protected void reset() {
