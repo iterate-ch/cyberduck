@@ -70,16 +70,16 @@ public class Status {
         if (size < MEGA) {
             return new BigDecimal(size).divide(new BigDecimal(KILO),
                     1,
-                    BigDecimal.ROUND_HALF_UP).toString() + " KB";
+                    BigDecimal.ROUND_DOWN).toString() + " KB";
         }
         if (size < GIGA) {
             return new BigDecimal(size).divide(new BigDecimal(MEGA),
                     1,
-                    BigDecimal.ROUND_HALF_UP).toString() + " MB";
+                    BigDecimal.ROUND_DOWN).toString() + " MB";
         }
         return new BigDecimal(size).divide(new BigDecimal(GIGA),
                 1,
-                BigDecimal.ROUND_HALF_UP).toString() + " GB";
+                BigDecimal.ROUND_DOWN).toString() + " GB";
     }
 
     public void setComplete(boolean complete) {

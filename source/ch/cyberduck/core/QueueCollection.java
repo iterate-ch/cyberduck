@@ -140,7 +140,7 @@ public class QueueCollection extends Collection {
     public boolean remove(Object item) {
         for(int i = 0; i < this.size(); i++) {
             CDProgressController c = this.getController(i);
-            if(c.getQueue().equals(item)) {
+            if(c.getTransfer().equals(item)) {
                 super.remove(i);
             }
         }
@@ -159,7 +159,7 @@ public class QueueCollection extends Collection {
      */
     public Object get(int row) {
         if(row < this.size()) {
-            return ((CDProgressController) super.get(row)).getQueue();
+            return ((CDProgressController) super.get(row)).getTransfer();
         }
         return null;
     }

@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.threading;
 import ch.cyberduck.core.ErrorListener;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.CDErrorCell;
 import ch.cyberduck.ui.cocoa.CDSheetCallback;
 import ch.cyberduck.ui.cocoa.CDSheetController;
@@ -147,7 +148,7 @@ public abstract class BackgroundActionImpl
                 this.diagnosticsButton.setAction(new NSSelector("diagnosticsButtonClicked", new Class[]{NSButton.class}));
                 boolean hidden = true;
                 for(Iterator iter = exceptions.iterator(); iter.hasNext(); ) {
-                    Throwable cause = ((BackgroundException)iter.next()).getCause();
+                    Throwable cause = ((Throwable)iter.next()).getCause();
                     if(cause instanceof SocketException || cause instanceof UnknownHostException) {
                         hidden = false;
                         break;
@@ -191,12 +192,20 @@ public abstract class BackgroundActionImpl
             }
 
             public void callback(final int returncode) {
-                exceptions.clear();
-                if(transcript.length() > 0) {
-                    transcript.delete(0, transcript.length()-1);
-                }
                 BackgroundActionImpl.this.callback(returncode);
                 if(returncode == DEFAULT_OPTION) { //Try Again
+                    if(transcript.length() > 0) {
+                        transcript.delete(0, transcript.length()-1);
+                    }
+                    for(Iterator iter = exceptions.iterator(); iter.hasNext(); ) {
+                        BackgroundException e = (BackgroundException)iter.next();
+                        Path workdir = e.getPath();
+                        if(null == workdir) {
+                            continue;
+                        }
+                        workdir.invalidate();
+                    }
+                    exceptions.clear();
                     // Re-run the action with the previous lock used
                     controller.background(BackgroundActionImpl.this, lock);
                 }

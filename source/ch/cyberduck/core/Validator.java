@@ -53,6 +53,7 @@ public interface Validator {
     public abstract void prompt(Path p);
 
     /**
+     * Blocks the caller until the user confirmed the selection
      * @return The result set selected by the user
      */
     public abstract Collection result();

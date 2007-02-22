@@ -665,7 +665,8 @@ public class FTPPath extends Path {
                         }
                         try {
                             if(null != this.attributes.getPermission()) {
-                                session.FTP.setPermissions(this.attributes.getPermission().getOctalCode(),
+                                session.FTP.setPermissions(
+                                        String.valueOf(this.attributes.getPermission().getOctalCode()),
                                         this.getName());
                             }
                         }

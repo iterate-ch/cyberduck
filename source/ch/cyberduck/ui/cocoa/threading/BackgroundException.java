@@ -45,14 +45,24 @@ public class BackgroundException extends Exception {
         return NSBundle.localizedString(this.message, "Error", "");
     }
 
+    /**
+     * @return The real cause of the exception thrown
+     */
     public Throwable getCause() {
         return super.getCause();
     }
 
+    /**
+     * @return The path accessed when the exception was thrown or null if
+     * the exception is not related to any path
+     */
     public Path getPath() {
         return this.path;
     }
 
+    /**
+     * @return The session this exception occured
+     */
     public Session getSession() {
         return this.session;
     }

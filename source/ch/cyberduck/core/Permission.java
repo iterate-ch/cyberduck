@@ -287,12 +287,11 @@ public class Permission {
     /**
      * @return The unix equivalent octal access code like 777
      */
-    public String getOctalCode() {
+    public int getOctalCode() {
         String owner = "" + this.getOctalAccessNumber(this.getOwnerPermissions());
         String group = "" + this.getOctalAccessNumber(this.getGroupPermissions());
         String other = "" + this.getOctalAccessNumber(this.getOtherPermissions());
-//		return Integer.parseInt(owner+group+other);
-        return owner + group + other;
+        return Integer.parseInt(owner + group + other);
     }
 
     public int getDecimalCode() {
@@ -351,13 +350,13 @@ public class Permission {
     }
 
     public int hashCode() {
-        return this.getOctalCode().hashCode();
+        return this.getOctalCode();
     }
 
     public boolean equals(Object o) {
         if ((o != null) && (o instanceof Permission)) {
             Permission other = (Permission) o;
-            return this.getOctalCode().equals(other.getOctalCode());
+            return this.getOctalCode() == other.getOctalCode();
         }
         return false;
     }

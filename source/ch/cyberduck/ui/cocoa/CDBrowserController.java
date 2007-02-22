@@ -1708,6 +1708,7 @@ public class CDBrowserController extends CDWindowController
                 int row = HostCollection.instance().indexOf(this.getSession().getHost());
                 if(row != -1) {
                     this.bookmarkTable.selectRow(row, false);
+                    this.bookmarkTable.scrollRowToVisible(row);
                 }
             }
         }
@@ -2404,7 +2405,7 @@ public class CDBrowserController extends CDWindowController
     protected void transfer(final Transfer q, final Path workdir) {
         final TransferListener l;
         q.addListener(l = new TransferAdapter() {
-            public void queueStopped() {
+            public void queueDidEnd() {
                 if (isMounted()) {
                     workdir.invalidate();
                     invoke(new Runnable() {
@@ -2769,7 +2770,7 @@ public class CDBrowserController extends CDWindowController
                 // Update the path selection menu above the browser
                 if(isMounted()) {
                     Path p = workdir;
-                    do {
+                    while(pathPopupButton.indexOfItemWithRepresentedObject(p) < 0) {
                         pathPopupButton.addItem(p.getAbsolute());
                         if(p.isRoot()) {
                             pathPopupButton.lastItem().setImage(DISK_ICON);
@@ -2780,7 +2781,6 @@ public class CDBrowserController extends CDWindowController
                         pathPopupButton.lastItem().setRepresentedObject(p);
                         p = p.getParent();
                     }
-                    while(!p.isRoot());
                 }
             }
         });

@@ -195,6 +195,14 @@ public class CDInfoController extends CDWindowController {
 
     private CDInfoController(final CDBrowserController controller, List files) {
         this.controller = controller;
+        this.controller.addListener(new CDWindowListener() {
+            public void windowWillClose() {
+                final NSWindow window = window();
+                if(null != window) {
+                    window.close();
+                }
+            }
+        });
         synchronized(NSApplication.sharedApplication()) {
             if(!NSApplication.loadNibNamed("Info", this)) {
                 log.fatal("Couldn't load Info.nib");

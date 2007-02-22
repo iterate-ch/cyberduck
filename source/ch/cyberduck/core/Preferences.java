@@ -32,8 +32,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import java.util.Map;
 
 /**
  * Holding all application preferences. Default values get overwritten when loading
@@ -47,7 +46,7 @@ public abstract class Preferences {
 
     private static Preferences current = null;
 
-    private HashMap defaults;
+    private Map defaults;
 
     static {
         System.setProperty("networkaddress.cache.ttl", "10");
@@ -93,7 +92,7 @@ public abstract class Preferences {
      * @param v        The new vlaue
      */
     public void setProperty(String property, boolean v) {
-        this.setProperty(property, v ? "true" : "false");
+        this.setProperty(property, v ? String.valueOf(true) : String.valueOf(false));
     }
 
     /**
@@ -136,7 +135,7 @@ public abstract class Preferences {
         /**
          * True if donation dialog will be displayed before quit
          */
-        defaults.put("donate.reminder", "true");
+        defaults.put("donate.reminder", String.valueOf(true));
 
         defaults.put("mail.feedback", "mailto:feedback@cyberduck.ch");
 
@@ -147,10 +146,10 @@ public abstract class Preferences {
         defaults.put("website.help", "http://cyberduck.ch/help/");
         defaults.put("website.bug", "http://trac.cyberduck.ch/newticket/");
 
-        defaults.put("rendezvous.enable", "true");
-        defaults.put("rendezvous.loopback.supress", "false");
+        defaults.put("rendezvous.enable", String.valueOf(true));
+        defaults.put("rendezvous.loopback.supress", String.valueOf(false));
 
-        defaults.put("growl.enable", "true");
+        defaults.put("growl.enable", String.valueOf(true));
 
         /**
          * Current default browser view is outline view (0-List view, 1-Outline view, 2-Column view)
@@ -159,64 +158,64 @@ public abstract class Preferences {
         /**
          * Save browser sessions when quitting and restore upon relaunch
          */
-        defaults.put("browser.serialize", "true");
+        defaults.put("browser.serialize", String.valueOf(true));
 
-        defaults.put("browser.view.autoexpand", "true");
-        defaults.put("browser.view.autoexpand.useDelay", "true");
+        defaults.put("browser.view.autoexpand", String.valueOf(true));
+        defaults.put("browser.view.autoexpand.useDelay", String.valueOf(true));
         defaults.put("browser.view.autoexpand.delay", "1.0"); // in seconds
 
-        defaults.put("browser.openUntitled", "true");
+        defaults.put("browser.openUntitled", String.valueOf(true));
         defaults.put("browser.defaultBookmark", NSBundle.localizedString("None", ""));
 
-        defaults.put("browser.markInaccessibleFolders", "true");
+        defaults.put("browser.markInaccessibleFolders", String.valueOf(true));
         /**
          * Confirm closing the browsing connection
          */
-        defaults.put("browser.confirmDisconnect", "true");
+        defaults.put("browser.confirmDisconnect", String.valueOf(true));
         /**
          * Display only one info panel and change information according to selection in browser
          */
-        defaults.put("browser.info.isInspector", "true");
+        defaults.put("browser.info.isInspector", String.valueOf(true));
 
-        defaults.put("browser.columnKind", "false");
-        defaults.put("browser.columnSize", "true");
-        defaults.put("browser.columnModification", "true");
-        defaults.put("browser.columnOwner", "false");
-        defaults.put("browser.columnPermissions", "false");
+        defaults.put("browser.columnKind", String.valueOf(false));
+        defaults.put("browser.columnSize", String.valueOf(true));
+        defaults.put("browser.columnModification", String.valueOf(true));
+        defaults.put("browser.columnOwner", String.valueOf(false));
+        defaults.put("browser.columnPermissions", String.valueOf(false));
 
         defaults.put("browser.sort.column", CDBrowserTableDataSource.FILENAME_COLUMN);
-        defaults.put("browser.sort.ascending", "true");
+        defaults.put("browser.sort.ascending", String.valueOf(true));
 
-        defaults.put("browser.alternatingRows", "false");
-        defaults.put("browser.verticalLines", "false");
-        defaults.put("browser.horizontalLines", "true");
+        defaults.put("browser.alternatingRows", String.valueOf(false));
+        defaults.put("browser.verticalLines", String.valueOf(false));
+        defaults.put("browser.horizontalLines", String.valueOf(true));
         /**
          * Show hidden files in browser by default
          */
-        defaults.put("browser.showHidden", "false");
+        defaults.put("browser.showHidden", String.valueOf(false));
         defaults.put("browser.charset.encoding", "UTF-8");
         /**
          * Edit double clicked files instead of downloading
          */
-        defaults.put("browser.doubleclick.edit", "false");
+        defaults.put("browser.doubleclick.edit", String.valueOf(false));
         /**
          * Rename files when return or enter key is pressed
          */
-        defaults.put("browser.enterkey.rename", "true");
+        defaults.put("browser.enterkey.rename", String.valueOf(true));
 
         /**
          * Enable inline editing in browser
          */
-        defaults.put("browser.editable", "true");
+        defaults.put("browser.editable", String.valueOf(true));
         /**
          * Bookmark drawer should be opened for new browser windows
          */
-        defaults.put("browser.bookmarkDrawer.isOpen", "false");
-        defaults.put("browser.bookmarkDrawer.smallItems", "false");
+        defaults.put("browser.bookmarkDrawer.isOpen", String.valueOf(false));
+        defaults.put("browser.bookmarkDrawer.smallItems", String.valueOf(false));
         /**
          * Close bookmark drawer upon opening a connection
          */
-        defaults.put("browser.closeDrawer", "false");
+        defaults.put("browser.closeDrawer", String.valueOf(false));
 
         /**
          * Default editor
@@ -239,18 +238,18 @@ public abstract class Preferences {
         /**
          * Save bookmarks in ~/Library
          */
-        defaults.put("favorites.save", "true");
+        defaults.put("favorites.save", String.valueOf(true));
 
-        defaults.put("queue.openByDefault", "false");
-        defaults.put("queue.save", "true");
-        defaults.put("queue.removeItemWhenComplete", "false");
+        defaults.put("queue.openByDefault", String.valueOf(false));
+        defaults.put("queue.save", String.valueOf(true));
+        defaults.put("queue.removeItemWhenComplete", String.valueOf(false));
 
         /**
          * Open completed downloads
          */
-        defaults.put("queue.postProcessItemWhenComplete", "false");
-        defaults.put("queue.orderFrontOnStart", "true");
-        defaults.put("queue.orderBackOnStop", "false");
+        defaults.put("queue.postProcessItemWhenComplete", String.valueOf(false));
+        defaults.put("queue.orderFrontOnStart", String.valueOf(true));
+        defaults.put("queue.orderBackOnStop", String.valueOf(false));
 
         defaults.put("queue.download.folder", "~/Desktop");
         /**
@@ -265,25 +264,25 @@ public abstract class Preferences {
         defaults.put("queue.download.reload.fileExists", Validator.ASK);
         defaults.put("queue.upload.reload.fileExists", Validator.ASK);
 
-        defaults.put("queue.upload.changePermissions", "true");
+        defaults.put("queue.upload.changePermissions", String.valueOf(true));
         /**
          * If false, apply the permissions of the local file
          */
-        defaults.put("queue.upload.permissions.useDefault", "false");
+        defaults.put("queue.upload.permissions.useDefault", String.valueOf(false));
         defaults.put("queue.upload.permissions.default", "rw-r--r--");
-        defaults.put("queue.upload.preserveDate", "true");
-        defaults.put("queue.upload.preserveDate.fallback", "false");
-        defaults.put("queue.upload.skip.enable", "true");
+        defaults.put("queue.upload.preserveDate", String.valueOf(true));
+        defaults.put("queue.upload.preserveDate.fallback", String.valueOf(false));
+        defaults.put("queue.upload.skip.enable", String.valueOf(true));
         defaults.put("queue.upload.skip.regex.default",
                 ".*~\\..*|\\.DS_Store|.*\\.svn|CVS");
         defaults.put("queue.upload.skip.regex",
                 ".*~\\..*|\\.DS_Store|.*\\.svn|CVS");
 
-        defaults.put("queue.download.changePermissions", "true");
-        defaults.put("queue.download.permissions.useDefault", "false");
+        defaults.put("queue.download.changePermissions", String.valueOf(true));
+        defaults.put("queue.download.permissions.useDefault", String.valueOf(false));
         defaults.put("queue.download.permissions.default", "rw-r--r--");
-        defaults.put("queue.download.preserveDate", "true");
-        defaults.put("queue.download.skip.enable", "true");
+        defaults.put("queue.download.preserveDate", String.valueOf(true));
+        defaults.put("queue.download.skip.enable", String.valueOf(true));
         defaults.put("queue.download.skip.regex.default",
                 ".*~\\..*|\\.DS_Store|.*\\.svn|CVS");
         defaults.put("queue.download.skip.regex",
@@ -291,7 +290,7 @@ public abstract class Preferences {
         /**
          * While downloading, update the icon of the downloaded file as a progress indicator
          */
-        defaults.put("queue.download.updateIcon", "true");
+        defaults.put("queue.download.updateIcon", String.valueOf(true));
 
         //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");
@@ -307,11 +306,11 @@ public abstract class Preferences {
         /**
          * Send LIST -a
          */
-        defaults.put("ftp.sendExtendedListCommand", "true");
+        defaults.put("ftp.sendExtendedListCommand", String.valueOf(true));
         /**
          * Fallback to active or passive mode respectively
          */
-        defaults.put("ftp.connectmode.fallback", "true");
+        defaults.put("ftp.connectmode.fallback", String.valueOf(true));
         /**
          * Protect the data channel by default
          */
@@ -319,16 +318,16 @@ public abstract class Preferences {
         /**
          * Still open connection if securing data channel fails
          */
-        defaults.put("ftp.tls.datachannel.failOnError", "false");
+        defaults.put("ftp.tls.datachannel.failOnError", String.valueOf(false));
         /**
          * Do not accept certificates that can't be found in the Keychain
          */
-        defaults.put("ftp.tls.acceptAnyCertificate", "false");
+        defaults.put("ftp.tls.acceptAnyCertificate", String.valueOf(false));
         /**
          * Maximum concurrent connections to the same host
          * Unlimited by default
          */
-        defaults.put("connection.host.max", "-1");
+        defaults.put("connection.host.max", String.valueOf(-1));
         /**
          * Default login name
          */
@@ -336,36 +335,36 @@ public abstract class Preferences {
         /**
          * Search for passphrases in Keychain
          */
-        defaults.put("connection.login.useKeychain", "true");
+        defaults.put("connection.login.useKeychain", String.valueOf(true));
 
-        defaults.put("connection.buffer", "32768"); //in bytes, is 256kbit
-        defaults.put("connection.buffer.default", "32768");
+        defaults.put("connection.buffer", String.valueOf(32768)); //in bytes
+        defaults.put("connection.buffer.default", String.valueOf(32768));
 
-        defaults.put("connection.port.default", "21");
+        defaults.put("connection.port.default", String.valueOf(21));
         defaults.put("connection.protocol.default", "ftp");
 
-        defaults.put("connection.timeout", "30000"); //in milliseconds
+        defaults.put("connection.timeout", String.valueOf(30000)); //in milliseconds
         /**
          * Send no operation commands to the server
          */
-        defaults.put("connection.keepalive", "false");
-        defaults.put("connection.keepalive.interval", "30000");
+        defaults.put("connection.keepalive", String.valueOf(false));
+        defaults.put("connection.keepalive.interval", String.valueOf(30000));
         /**
          * Try to resolve the hostname when entered in connection dialog
          */
-        defaults.put("connection.hostname.check", "true"); //Check hostname reachability using NSNetworkDiagnostics
+        defaults.put("connection.hostname.check", String.valueOf(true)); //Check hostname reachability using NSNetworkDiagnostics
         /**
          * Normalize path names
          */
-        defaults.put("path.normalize", "true");
+        defaults.put("path.normalize", String.valueOf(true));
         /**
          * The permission to apply when creating a new folder
          */
-        defaults.put("permission.directory.default", "755");
+        defaults.put("permission.directory.default", String.valueOf(755));
         /**
          * The permission to apply when creating a new plain file
          */
-        defaults.put("permission.file.default", "644");
+        defaults.put("permission.file.default", String.valueOf(644));
         /**
          * Use the SFTP subsystem or a SCP channel for file transfers over SSH
          */
@@ -409,7 +408,7 @@ public abstract class Preferences {
     public boolean getBoolean(String property) {
         String value = this.getObject(property).toString();
         try {
-            return value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes") || Integer.parseInt(value) == 1;
+            return value.equalsIgnoreCase(String.valueOf(true)) || value.equalsIgnoreCase("yes") || Integer.parseInt(value) == 1;
         }
         catch(NumberFormatException e) {
             return false;

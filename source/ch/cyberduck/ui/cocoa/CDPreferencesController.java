@@ -1540,26 +1540,26 @@ public class CDPreferencesController extends CDWindowController {
         Preferences.instance().setProperty("ftp.tls.datachannel.failOnError", !enabled);
     }
 
-//    private NSPopUpButton sshTransfersCombobox; //IBOutlet
-//
-//    public void setSshTransfersCombobox(NSPopUpButton sshTransfersCombobox) {
-//        this.sshTransfersCombobox = sshTransfersCombobox;
-//        this.sshTransfersCombobox.setTarget(this);
-//        this.sshTransfersCombobox.setAction(new NSSelector("sshTransfersComboboxClicked", new Class[]{NSPopUpButton.class}));
-//        this.sshTransfersCombobox.removeAllItems();
-//        this.sshTransfersCombobox.addItemsWithTitles(new NSArray(new String[]{Session.SFTP_STRING, Session.SCP_STRING}));
-//        this.sshTransfersCombobox.itemWithTitle(Session.SFTP_STRING).setRepresentedObject(Session.SFTP);
-//        this.sshTransfersCombobox.itemWithTitle(Session.SCP_STRING).setRepresentedObject(Session.SCP);
-//        String selected = Preferences.instance().getProperty("ssh.transfer");
-//        if(selected.equals(Session.SCP)) {
-//            this.sshTransfersCombobox.selectItemWithTitle(Session.SCP_STRING);
-//        }
-//        if(selected.equals(Session.SFTP)) {
-//            this.sshTransfersCombobox.selectItemWithTitle(Session.SFTP_STRING);
-//        }
-//    }
-//
-//    public void sshTransfersComboboxClicked(NSPopUpButton sender) {
-//        Preferences.instance().setProperty("ssh.transfer", sender.selectedItem().representedObject().toString());
-//    }
+    private NSPopUpButton sshTransfersCombobox; //IBOutlet
+
+    public void setSshTransfersCombobox(NSPopUpButton sshTransfersCombobox) {
+        this.sshTransfersCombobox = sshTransfersCombobox;
+        this.sshTransfersCombobox.setTarget(this);
+        this.sshTransfersCombobox.setAction(new NSSelector("sshTransfersComboboxClicked", new Class[]{NSPopUpButton.class}));
+        this.sshTransfersCombobox.removeAllItems();
+        this.sshTransfersCombobox.addItemsWithTitles(new NSArray(new String[]{Session.SFTP_STRING, Session.SCP_STRING}));
+        this.sshTransfersCombobox.itemWithTitle(Session.SFTP_STRING).setRepresentedObject(Session.SFTP);
+        this.sshTransfersCombobox.itemWithTitle(Session.SCP_STRING).setRepresentedObject(Session.SCP);
+        String selected = Preferences.instance().getProperty("ssh.transfer");
+        if(selected.equals(Session.SCP)) {
+            this.sshTransfersCombobox.selectItemWithTitle(Session.SCP_STRING);
+        }
+        if(selected.equals(Session.SFTP)) {
+            this.sshTransfersCombobox.selectItemWithTitle(Session.SFTP_STRING);
+        }
+    }
+
+    public void sshTransfersComboboxClicked(NSPopUpButton sender) {
+        Preferences.instance().setProperty("ssh.transfer", sender.selectedItem().representedObject().toString());
+    }
 }

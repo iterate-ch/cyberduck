@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.ethz.ssh2.SFTPException;
 import com.enterprisedt.net.ftp.FTPException;
 
 import ch.cyberduck.ui.cocoa.threading.BackgroundException;
@@ -32,6 +31,8 @@ import com.apple.cocoa.foundation.NSRect;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+
+import ch.ethz.ssh2.SFTPException;
 
 /**
  * @version $Id$
@@ -48,7 +49,7 @@ public class CDErrorCell extends CDTableCell {
         this.failure = (BackgroundException) exception;
     }
 
-    private String getTitle(BackgroundException e) {
+    private String getReadableTitle(BackgroundException e) {
         String title = NSBundle.localizedString("Error", "");
         final Throwable cause = e.getCause();
         if(cause instanceof FTPException) {
@@ -69,10 +70,19 @@ public class CDErrorCell extends CDTableCell {
         return title;
     }
 
+    private String getDetailedCauseMessage(BackgroundException e) {
+        final Throwable cause = e.getCause();
+        if(cause instanceof SFTPException) {
+            return ((SFTPException)cause).getServerErrorCodeVerbose();
+        }
+        return cause.getMessage();
+    }
+
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
         super.drawInteriorWithFrameInView(cellFrame, controlView);
         if (failure != null) {
-            NSGraphics.drawAttributedString(new NSAttributedString(this.getTitle(failure)+": "+failure.getMessage(),
+            NSGraphics.drawAttributedString(new NSAttributedString(this.getReadableTitle(failure)
+                    +": "+failure.getMessage(),
                     boldFont),
                     new NSRect(cellFrame.origin().x() + 5, cellFrame.origin().y() + 1,
                             cellFrame.size().width() - 5, cellFrame.size().height()));
@@ -88,7 +98,7 @@ public class CDErrorCell extends CDTableCell {
                         new NSRect(cellFrame.origin().x() + 5, cellFrame.origin().y() + 16,
                                 cellFrame.size().width() - 5, cellFrame.size().height()));
             }
-            NSGraphics.drawAttributedString(new NSAttributedString(failure.getCause().getMessage(),
+            NSGraphics.drawAttributedString(new NSAttributedString(this.getDetailedCauseMessage(failure),
                     alertFont),
                     new NSRect(cellFrame.origin().x() + 5, cellFrame.origin().y() + 33,
                             cellFrame.size().width() - 5, cellFrame.size().height()));

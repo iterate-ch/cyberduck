@@ -183,10 +183,10 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) { //sync
-            for(Iterator i = this.workList.iterator(); i.hasNext();) {
-                final Path p = (Path) i.next();
+            for(Iterator iter = this.workList.iterator(); iter.hasNext();) {
+                final Path p = (Path) iter.next();
                 if(p.isSkipped()) {
-                    this.workList.remove(p);
+                    iter.remove();
                 }
             }
         }

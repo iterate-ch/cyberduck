@@ -98,7 +98,7 @@ public class CDProgressController extends CDController {
             }
         };
         final TransferListener tl = new TransferListener() {
-            public void queueStarted() {
+            public void queueWillStart() {
                 CDProgressController.this.invoke(new Runnable() {
                     public void run() {
                         progressBar.setHidden(false);
@@ -110,7 +110,7 @@ public class CDProgressController extends CDController {
                 transfer.getSession().addConnectionListener(cl);
             }
 
-            public void queueStopped() {
+            public void queueDidEnd() {
                 CDProgressController.this.invoke(new Runnable() {
                     public void run() {
                         progressBar.setIndeterminate(true);
@@ -123,7 +123,7 @@ public class CDProgressController extends CDController {
                 }
             }
 
-            public void transferStarted(final Path path) {
+            public void transferWillStart(final Path path) {
                 meter = new Speedometer();
                 progressTimer = new NSTimer(0.1, //seconds
                         CDProgressController.this, //target
@@ -134,7 +134,7 @@ public class CDProgressController extends CDController {
                         NSRunLoop.DefaultRunLoopMode);
             }
 
-            public void transferStopped(final Path path) {
+            public void transferDidEnd(final Path path) {
                 progressTimer.invalidate();
                 meter = null;
             }
@@ -247,7 +247,7 @@ public class CDProgressController extends CDController {
         return b.toString();
     }
 
-    public Transfer getQueue() {
+    public Transfer getTransfer() {
         return this.transfer;
     }
 

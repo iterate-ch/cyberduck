@@ -18,11 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Status;
-import ch.cyberduck.core.Validator;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.sftp.SFTPSession;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -66,10 +63,10 @@ public abstract class CDValidatorController
 
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION || returncode == ALTERNATE_OPTION) { //overwrite || resume
-            for(Iterator i = workList.iterator(); i.hasNext();) {
-                final Path p = (Path) i.next();
+            for(Iterator iter = workList.iterator(); iter.hasNext();) {
+                final Path p = (Path) iter.next();
                 if(p.isSkipped()) {
-                    this.workList.remove(p);
+                    iter.remove();
                     continue;
                 }
                 p.status.setResume(returncode == ALTERNATE_OPTION);
@@ -402,6 +399,14 @@ public abstract class CDValidatorController
     protected void setEnabled(boolean enabled) {
         this.overwriteButton.setEnabled(enabled);
         this.resumeButton.setEnabled(enabled);
+        if(enabled) {
+            Session s = ((Path)this.workList.get(this.workList.size()-1)).getSession();
+            if(s instanceof SFTPSession) {
+                if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SCP)) {
+                    this.resumeButton.setEnabled(false);
+                }
+            }
+        }
         this.skipButton.setEnabled(enabled);
     }
 
@@ -428,7 +433,7 @@ public abstract class CDValidatorController
             String identifier = (String) tableColumn.identifier();
             if(identifier.equals(INCLUDE_COLUMN)) {
                 Path p = (Path) this.workList.get(row);
-                p.setSkipped(((Integer) object).intValue() == NSCell.OffState);
+                p.setSkipped(((Number) object).intValue() == NSCell.OffState);
             }
         }
     }

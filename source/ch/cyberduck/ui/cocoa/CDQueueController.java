@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 
 import com.apple.cocoa.application.*;
@@ -385,7 +386,7 @@ public class CDQueueController extends CDWindowController
                     transfer.getSession().addTranscriptListener(this);
                     transfer.addListener(new TransferListener() {
 
-                        public void transferStarted(final Path path) {
+                        public void transferWillStart(final Path path) {
                             if(path.attributes.isFile() && !path.getLocal().exists()) {
                                 invoke(new Runnable() {
                                     public void run() {
@@ -396,11 +397,11 @@ public class CDQueueController extends CDWindowController
                             queueTable.setNeedsDisplay(true);
                         }
 
-                        public void transferStopped(final Path path) {
+                        public void transferDidEnd(final Path path) {
                             queueTable.setNeedsDisplay(true);
                         }
 
-                        public void queueStarted() {
+                        public void queueWillStart() {
                             invoke(new Runnable() {
                                 public void run() {
                                     window.toolbar().validateVisibleItems();
@@ -417,7 +418,7 @@ public class CDQueueController extends CDWindowController
                             transfer.getSession().setLoginController(new CDLoginController(CDQueueController.instance()));
                         }
 
-                        public void queueStopped() {
+                        public void queueDidEnd() {
                             transfer.removeListener(this);
                             if(transfer.isComplete() && !transfer.isCanceled()) {
                                 if(transfer instanceof DownloadTransfer) {
@@ -713,7 +714,7 @@ public class CDQueueController extends CDWindowController
     public void clearButtonClicked(final Object sender) {
         for(int i = 0; i < QueueCollection.instance().size(); i++) {
             CDProgressController c = QueueCollection.instance().getController(i);
-            if(!c.getQueue().isRunning() && c.getQueue().isComplete()) {
+            if(!c.getTransfer().isRunning() && c.getTransfer().isComplete()) {
                 QueueCollection.instance().remove(i);
                 i--;
             }
@@ -854,7 +855,12 @@ public class CDQueueController extends CDWindowController
         if(identifier.equals("resumeButtonClicked:")) {
             return this.validate(new TransferToolbarValidator() {
                 public boolean validate(Transfer transfer) {
-                    return !transfer.isRunning() && !transfer.isComplete() && !transfer.isVirgin();
+                    if( !transfer.isRunning() && !transfer.isComplete() && !transfer.isVirgin() ) {
+                        if(transfer.getSession() instanceof SFTPSession) {
+                            return Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP);
+                        }
+                    }
+                    return false;
                 }
             });
         }

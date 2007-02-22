@@ -156,6 +156,11 @@ public class CDMainController extends CDController {
                 new File(NSBundle.mainBundle().pathForResource("License", "txt")).toString());
     }
 
+    public void acknowledgmentsMenuClicked(final Object sender) {
+        NSWorkspace.sharedWorkspace().openFile(
+                new File(NSBundle.mainBundle().pathForResource("Acknowledgments", "rtf")).toString());
+    }
+
     public void websiteMenuClicked(final Object sender) {
         try {
             NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.home")));
