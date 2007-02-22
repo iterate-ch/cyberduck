@@ -37,7 +37,7 @@ public class SFTPOutputStream extends OutputStream
      * byte written and <code>b[off+len-1]</code> is the last byte written
      * by this operation.
      *
-     * @see ch.ethz.ssh2.SFTPv3Client#write(ch.ethz.ssh2.SFTPv3FileHandle,long,byte[],int,int)
+     * @see ch.ethz.ssh2.SFTPv3Client#upload(SFTPv3FileHandle,long,byte[],int,int)
      */
     public void write(byte[] buffer, int offset, int len)
             throws IOException
@@ -45,7 +45,7 @@ public class SFTPOutputStream extends OutputStream
         // We can just blindly write the whole buffer at once.
         // if <code>len</code> &gt; 32768, then the write operation will
         // be split into multiple writes in SFTPv3Client#write.
-        handle.getClient().write(handle, writeOffset, buffer, offset, len);
+        handle.getClient().upload(handle, writeOffset, buffer, offset, len);
 
         writeOffset += len;
     }
@@ -55,7 +55,7 @@ public class SFTPOutputStream extends OutputStream
     {
         byte[] buffer = new byte[1];
         buffer[0] = (byte) b;
-        handle.getClient().write(handle, writeOffset, buffer, 0, 1);
+        handle.getClient().upload(handle, writeOffset, buffer, 0, 1);
 
         writeOffset += 1;
     }

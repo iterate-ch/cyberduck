@@ -34,12 +34,12 @@ public class SFTPInputStream extends InputStream
      * <code>len</code> bytes, but a smaller number may be read, possibly
      * zero. The number of bytes actually read is returned as an integer.
      *
-     * @see ch.ethz.ssh2.SFTPv3Client#read(ch.ethz.ssh2.SFTPv3FileHandle,long,byte[],int,int)
+     * @see ch.ethz.ssh2.SFTPv3Client#read(SFTPv3FileHandle,long,byte[],int,int)
      */
     public int read(byte[] buffer, int offset, int len)
             throws IOException
     {
-        int read = handle.getClient().read(handle,
+        int read = handle.getClient().download(handle,
                 readOffset, buffer, offset, len);
         if(read > 0)
         {
@@ -66,13 +66,13 @@ public class SFTPInputStream extends InputStream
             throws IOException
     {
         byte[] buffer = new byte[1];
-        int read = handle.getClient().read(handle,
+        int read = handle.getClient().download(handle,
                 readOffset, buffer, 0, 1);
         if(read > 0)
         {
             readOffset += read;
         }
-        return buffer[0] & 0xff;
+        return read;
     }
 
     /**
