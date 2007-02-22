@@ -11,7 +11,7 @@
 "Disconnected" = "Kapcsolat bontva";
 
 /* No comment provided by engineer. */
-"Disconnecting..." = "kapcsolat bontása...";
+"Disconnecting..." = "kapcsolat bontása…";
 
 /* No comment provided by engineer. */
 "Downloading" = "Letöltés";
@@ -35,7 +35,7 @@
 "Make directory" = "Új mappa létrehozása";
 
 /* No comment provided by engineer. */
-"Maximum allowed connections exceeded. Waiting..." = "A kapcsolatok száma elérte a maximális kapcsolatok számát . Várakozik...";
+"Maximum allowed connections exceeded. Waiting..." = "A kapcsolatok száma elérte a maximális kapcsolatok számát . Várakozik…";
 
 /* No comment provided by engineer. */
 "Mounting" = "Mount-olás";
@@ -56,10 +56,16 @@
 "SFTP subsystem ready" = "SFTP filerendszer kész";
 
 /* No comment provided by engineer. */
+"SCP subsystem ready" = "SCP subsystem ready";
+
+/* No comment provided by engineer. */
 "SSH connection opened" = "SSH kapcsolat létrehozva";
 
 /* No comment provided by engineer. */
-"Starting SFTP subsystem..." = "SFTP filerendszer indítása...";
+"Starting SFTP subsystem..." = "SFTP filerendszer indítása…";
+
+/* No comment provided by engineer. */
+"Starting SCP subsystem..." = "Starting SCP subsystem…";
 
 /* No comment provided by engineer. */
 "Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences." = "Túl sok egyidejü kapcsolat. Állítsa át a konkurens kapcsolatok számát.";
