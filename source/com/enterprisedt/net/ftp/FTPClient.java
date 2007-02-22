@@ -648,7 +648,7 @@ public class FTPClient {
         lastValidReply = control.validateReply(reply, "350");
 
         reply = control.sendCommand("RNTO "+to);
-        lastValidReply = control.validateReply(reply, "250");
+        lastValidReply = control.validateReply(reply, new String[]{"200", "250"});
     }
 
 
