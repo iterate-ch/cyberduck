@@ -13,12 +13,11 @@ package ch.ethz.ssh2.log;
 
 public class Logger
 {
-	private static final boolean enabled = false;
-	private static final int logLevel = 99;
+	private static final boolean enabled = true;
 
 	private String className;
 
-	public final static Logger getLogger(Class x)
+	public static Logger getLogger(Class x)
 	{
 		return new Logger(x);
 	}
@@ -35,15 +34,10 @@ public class Logger
 
 	public final void log(int level, String message)
 	{
-		if ((enabled) && (level <= logLevel))
+		if(enabled)
 		{
-			long now = System.currentTimeMillis();
+            org.apache.log4j.Logger.getLogger(className).debug(message);
 
-			synchronized (this)
-			{
-				System.err.println(now + " : " + className + ": " + message);
-				// or send it to log4j or whatever...
-			}
-		}
+        }
 	}
 }

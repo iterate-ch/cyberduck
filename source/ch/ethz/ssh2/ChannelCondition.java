@@ -58,4 +58,10 @@ public abstract interface ChannelCondition
 	 */
 	public static final int EXIT_SIGNAL = 64;
 
+	/**
+	 * The channel's remote window is non-zero, we are allowed to
+	 * send some data. See also {@link Session#getRemoteChannelWindow()}.
+	 */
+	public static final int REMOTE_WINDOW_NONZERO = 128;
+
 }

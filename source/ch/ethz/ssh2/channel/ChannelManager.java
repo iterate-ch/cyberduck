@@ -670,7 +670,15 @@ public class ChannelManager implements MessageHandler
 		}
 	}
 
-	public void requestExecCommand(Channel c, String cmd) throws IOException
+    public void requestExecCommand(Channel c, String cmd) throws IOException
+    {
+        this.requestExecCommand(c, cmd, null);
+    }
+
+    /**
+     * @param charsetName The charset used to convert between Java Unicode Strings and byte encodings
+     */
+    public void requestExecCommand(Channel c, String cmd, String charsetName) throws IOException
 	{
 		PacketSessionExecCommand sm;
 
@@ -688,7 +696,7 @@ public class ChannelManager implements MessageHandler
 		{
 			if (c.closeMessageSent)
 				throw new IOException("Cannot execute command on this channel (" + c.getReasonClosed() + ")");
-			tm.sendMessage(sm.getPayload());
+			tm.sendMessage(sm.getPayload(charsetName));
 		}
 
 		if (log.isEnabled())
@@ -788,7 +796,7 @@ public class ChannelManager implements MessageHandler
 	 * @param timeout
 	 *            in ms, 0 means no timeout.
 	 * @param condition_mask
-	 *            minimum event mask
+	 *            minimum event mask (at least one of the conditions must be fulfilled)
 	 * @return all current events
 	 * 
 	 */
@@ -820,6 +828,9 @@ public class ChannelManager implements MessageHandler
 
 				if (c.getExitSignal() != null)
 					current_cond = current_cond | ChannelCondition.EXIT_SIGNAL;
+				
+				if (c.remoteWindow > 0)
+					current_cond = current_cond | ChannelCondition.REMOTE_WINDOW_NONZERO;
 
 				if (c.state == Channel.STATE_CLOSED)
 					return current_cond | ChannelCondition.CLOSED | ChannelCondition.EOF;

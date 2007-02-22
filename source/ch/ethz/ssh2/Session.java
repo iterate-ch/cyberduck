@@ -32,7 +32,7 @@ public class Session
 	String x11FakeCookie = null;
 
 	final SecureRandom rnd;
-	
+
 	Session(ChannelManager cm, SecureRandom rnd) throws IOException
 	{
 		this.cm = cm;
@@ -221,14 +221,25 @@ public class Session
 		/* Now it is safe to start remote X11 programs */
 	}
 
-	/**
+    /**
 	 * Execute a command on the remote machine.
-	 * 
-	 * @param cmd
-	 *            The command to execute on the remote host.
+	 *
+	 * @param cmd The command to execute on the remote host.
 	 * @throws IOException
 	 */
-	public void execCommand(String cmd) throws IOException
+    public void execCommand(String cmd) throws IOException
+    {
+        this.execCommand(cmd, null);
+    }
+
+    /**
+	 * Execute a command on the remote machine.
+	 * 
+	 * @param cmd The command to execute on the remote host.
+     * @param charsetName The charset used to convert between Java Unicode Strings and byte encodings
+	 * @throws IOException
+	 */
+	public void execCommand(String cmd, String charsetName) throws IOException
 	{
 		if (cmd == null)
 			throw new IllegalArgumentException("cmd argument may not be null");
@@ -245,7 +256,7 @@ public class Session
 			flag_execution_started = true;
 		}
 
-		cm.requestExecCommand(cn, cmd);
+		cm.requestExecCommand(cn, cmd, charsetName);
 	}
 
 	/**
@@ -388,6 +399,28 @@ public class Session
 			throw new IllegalArgumentException("timeout must be non-negative!");
 
 		return cm.waitForCondition(cn, timeout, condition_set);
+	}
+
+	/**
+	 * Get the current remote window size. The window size specifies how many bytes
+	 * we may send on the underlying channel before we must wait for the window to
+	 * be adjusted by the server (i.e., before we must wait for a
+	 * SSH_MSG_CHANNEL_WINDOW_ADJUST message to arrive).
+	 * <p>
+	 * The remote window may change at any time:
+	 * <ul>
+	 * <li>It decreases when we send STDIN data.</li>
+	 * <li>It increases when we receive SSH_MSG_CHANNEL_WINDOW_ADJUST messages (and the delta in
+	 * the message is &gt; 0).</li>
+	 * </ul>
+	 * <p>
+	 * The following holds true for the returned window size: 0 &lt;= X &lt;= (2^32-1)
+	 * 
+	 * @return the current remote window size
+	 */
+	public long getRemoteChannelWindow()
+	{
+		return cn.getRemoteWindow();
 	}
 
 	/**

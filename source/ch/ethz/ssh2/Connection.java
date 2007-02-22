@@ -43,7 +43,7 @@ public class Connection
 	/**
 	 * The identifier presented to the SSH-2 server.
 	 */
-	public final static String identification = "Ganymed Build_211beta4";
+	public final static String identification = "Ganymed Build_211beta5";
 
 	/* Will be used to generate all random data needed for the current connection.
 	 * Note: SecureRandom.nextBytes() is thread safe.
@@ -128,6 +128,62 @@ public class Connection
 	{
 		this.hostname = hostname;
 		this.port = port;
+	}
+
+	/**
+	 * After a successful connect, one has to authenticate oneself. This method
+	 * is based on DSA (it uses DSA to sign a challenge sent by the server).
+	 * <p>
+	 * If the authentication phase is complete, <code>true</code> will be
+	 * returned. If the server does not accept the request (or if further
+	 * authentication steps are needed), <code>false</code> is returned and
+	 * one can retry either by using this or any other authentication method
+	 * (use the <code>getRemainingAuthMethods</code> method to get a list of
+	 * the remaining possible methods).
+	 * 
+	 * @param user
+	 *            A <code>String</code> holding the username.
+	 * @param pem
+	 *            A <code>String</code> containing the DSA private key of the
+	 *            user in OpenSSH key format (PEM, you can't miss the
+	 *            "-----BEGIN DSA PRIVATE KEY-----" tag). The string may contain
+	 *            linefeeds.
+	 * @param password
+	 *            If the PEM string is 3DES encrypted ("DES-EDE3-CBC"), then you
+	 *            must specify the password. Otherwise, this argument will be
+	 *            ignored and can be set to <code>null</code>.
+	 * 
+	 * @return whether the connection is now authenticated.
+	 * @throws IOException
+	 * 
+	 * @deprecated You should use one of the {@link #authenticateWithPublicKey(String, File, String) authenticateWithPublicKey()}
+	 * 		      methods, this method is just a wrapper for it and will
+	 *            disappear in future builds.
+	 * 
+	 */
+	public synchronized boolean authenticateWithDSA(String user, String pem, String password) throws IOException
+	{
+		if (tm == null)
+			throw new IllegalStateException("Connection is not established!");
+
+		if (authenticated)
+			throw new IllegalStateException("Connection is already authenticated!");
+
+		if (am == null)
+			am = new AuthenticationManager(tm);
+
+		if (cm == null)
+			cm = new ChannelManager(tm);
+
+		if (user == null)
+			throw new IllegalArgumentException("user argument is null");
+
+		if (pem == null)
+			throw new IllegalArgumentException("pem argument is null");
+
+		authenticated = am.authenticatePublicKey(user, pem.toCharArray(), password, getOrCreateSecureRND());
+
+		return authenticated;
 	}
 
 	/**
@@ -461,7 +517,7 @@ public class Connection
 		close(t, false);
 	}
 
-	private void close(Throwable t, boolean hard)
+    public void close(Throwable t, boolean hard)
 	{
 		if (cm != null)
 			cm.closeAllChannels();
@@ -598,6 +654,11 @@ public class Connection
 		 * may be already running, that is why we need a memory barrier here).
 		 * See also the comment in Channel.java if you
 		 * are interested in the details.
+		 * 
+		 * OKOK, this is paranoid since adding the runnable to the todo list
+		 * of the TimeoutService will ensure that all writes have been flushed
+		 * before the Runnable reads anything
+		 * (there is a synchronized block in TimeoutService.addTimeoutHandler).
 		 */
 
 		synchronized (tm)
@@ -769,31 +830,8 @@ public class Connection
 
 		return new LocalStreamForwarder(cm, host_to_connect, port_to_connect);
 	}
-
-	/**
-	 * Create a very basic {@link SCPClient} that can be used to copy
-	 * files from/to the SSH-2 server.
-	 * <p>
-	 * Works only after one has passed successfully the authentication step.
-	 * There is no limit on the number of concurrent SCP clients.
-	 * <p>
-	 * Note: This factory method will probably disappear in the future.
-	 * 
-	 * @return A {@link SCPClient} object.
-	 * @throws IOException
-	 */
-	public synchronized SCPClient createSCPClient() throws IOException
-	{
-		if (tm == null)
-			throw new IllegalStateException("Cannot create SCP client, you need to establish a connection first.");
-
-		if (!authenticated)
-			throw new IllegalStateException("Cannot create SCP client, connection is not authenticated.");
-
-		return new SCPClient(this);
-	}
-
-	/**
+    
+    /**
 	 * Force an asynchronous key re-exchange (the call does not block). The
 	 * latest values set for MAC, Cipher and DH group exchange parameters will
 	 * be used. If a key exchange is currently in progress, then this method has

@@ -95,7 +95,7 @@ public class OpenFlags
 	 */
 	public static final int SSH_FXF_OPEN_OR_CREATE = 0x00000003;
 
-    /**
+	/**
 	 * An existing file is opened and truncated. If the file does not
 	 * exist, the server MUST return the same error codes as defined
 	 * for SSH_FXF_OPEN_EXISTING.
