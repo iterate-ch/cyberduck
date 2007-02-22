@@ -307,6 +307,11 @@ public class PEMDecoder
 		return false;
 	}
 
+	public static final boolean isPEMEncrypted(char[] pem) throws IOException
+	{
+		return isPEMEncrypted(parsePEM(pem));	
+	}
+	
 	public static Object decode(char[] pem, String password) throws IOException
 	{
 		PEMStructure ps = parsePEM(pem);
