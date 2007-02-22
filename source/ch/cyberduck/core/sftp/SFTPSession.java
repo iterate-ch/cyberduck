@@ -19,6 +19,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.ethz.ssh2.*;
+import ch.ethz.ssh2.crypto.PEMDecoder;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Session;
@@ -30,6 +31,8 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.CharArrayWriter;
+import java.io.FileReader;
 
 /**
  * @version $Id$
@@ -49,8 +52,6 @@ public class SFTPSession extends Session {
 
     protected Connection SSH;
 
-    protected SFTPv3Client SFTP;
-
     private SFTPSession(Host h) {
         super(h);
     }
@@ -64,7 +65,9 @@ public class SFTPSession extends Session {
 
     public String getSecurityInformation() {
         StringBuffer info = new StringBuffer();
-        info.append("Protocol version: " + SFTP.getProtocolVersion()+"\n");
+        if(SFTP != null) {
+            info.append("SFTP Protocol version: " + SFTP.getProtocolVersion()+"\n");
+        }
         try {
             final ConnectionInfo i = SSH.getConnectionInfo();
             info.append("Key Exchange (KEX) Algorithm: "+i.keyExchangeAlgorithm+"\n");
@@ -85,6 +88,47 @@ public class SFTPSession extends Session {
 
     public void setHostKeyVerificationController(ServerHostKeyVerifier v) {
         this.verifier = v;
+    }
+
+    private SFTPv3Client SFTP;
+
+    /**
+     * If never called before opens a new SFTP subsystem. If called before, the cached
+     * SFTP subsystem is returned. May not be used concurrently.
+     * @throws IOException
+     */
+    protected SFTPv3Client sftp() throws IOException {
+        if(null == SFTP) {
+            if(!this.isConnected()) {
+                throw new ConnectionCanceledException();
+            }
+            if(!SSH.isAuthenticationComplete()) {
+                throw new LoginCanceledException();
+            }
+            this.message(NSBundle.localizedString("Starting SFTP subsystem...", "Status", ""));
+            SFTP = new SFTPv3Client(SSH);
+            this.message(NSBundle.localizedString("SFTP subsystem ready", "Status", ""));
+            SFTP.setCharset(this.getEncoding());
+        }
+        return SFTP;
+    }
+
+    /**
+     * Opens a new, dedicated SCP channel for this SSH session
+     * @throws IOException
+     */
+    protected SCPClient openScp() throws IOException {
+        if(!this.isConnected()) {
+            throw new ConnectionCanceledException();
+        }
+        if(!SSH.isAuthenticationComplete()) {
+            throw new LoginCanceledException();
+        }
+        this.message(NSBundle.localizedString("Starting SCP subsystem...", "Status", ""));
+        final SCPClient client = new SCPClient(SSH);
+        this.message(NSBundle.localizedString("SCP subsystem ready", "Status", ""));
+        client.setCharset(this.getEncoding());
+        return  client;
     }
 
     protected void connect() throws IOException, LoginCanceledException {
@@ -108,9 +152,9 @@ public class SFTPSession extends Session {
                 }
                 this.message(NSBundle.localizedString("SSH connection opened", "Status", ""));
                 this.login();
-                SFTP = new SFTPv3Client(SSH);
-                this.message(NSBundle.localizedString("SFTP subsystem ready", "Status", ""));
-                SFTP.setCharset(this.getEncoding());
+                if(!SSH.isAuthenticationComplete()) {
+                    throw new LoginCanceledException();
+                }
                 this.fireConnectionDidOpenEvent();
             }
             catch(NullPointerException e) {
@@ -159,24 +203,34 @@ public class SFTPSession extends Session {
             File key = new File(NSPathUtilities.stringByExpandingTildeInPath(credentials.getPrivateKeyFile()));
             if(key.exists()) {
                 // If the private key is passphrase protected then ask for the passphrase
-//                if(key.isPassphraseProtected()) {
-                String passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
-                if(null == passphrase || passphrase.equals("")) {
-                    loginController.promptUser(host.getCredentials(),
-                            NSBundle.localizedString("Private key password protected", "Credentials", ""),
-                            NSBundle.localizedString("Enter the passphrase for the private key file", "Credentials", "")
-                                    + " (" + credentials.getPrivateKeyFile() + ")");
-                    if(host.getCredentials().tryAgain()) {
-                        passphrase = credentials.getPassword();
-//                            if(key.isPassphraseProtected()) {
-//                                if(credentials.usesKeychain()) {
-//                                    Keychain.instance().addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(),
-//                                            passphrase);
-//                                }
-//                            }
-                    }
-                    else {
-                        throw new LoginCanceledException();
+                char[] buff = new char[256];
+                CharArrayWriter cw = new CharArrayWriter();
+                FileReader fr = new FileReader(key);
+                while (true) {
+                    int len = fr.read(buff);
+                    if (len < 0)
+                        break;
+                    cw.write(buff, 0, len);
+                }
+                fr.close();
+                String passphrase = null;
+                if(PEMDecoder.isPEMEncrypted(cw.toCharArray())) {
+                    passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
+                    if(null == passphrase || passphrase.equals("")) {
+                        loginController.promptUser(host.getCredentials(),
+                                NSBundle.localizedString("Private key password protected", "Credentials", ""),
+                                NSBundle.localizedString("Enter the passphrase for the private key file", "Credentials", "")
+                                        + " (" + credentials.getPrivateKeyFile() + ")");
+                        if(host.getCredentials().tryAgain()) {
+                            passphrase = credentials.getPassword();
+                            if(credentials.usesKeychain() && PEMDecoder.isPEMEncrypted(cw.toCharArray())) {
+                                Keychain.instance().addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(),
+                                        passphrase);
+                            }
+                        }
+                        else {
+                            throw new LoginCanceledException();
+                        }
                     }
                 }
                 return SSH.authenticateWithPublicKey(host.getCredentials().getUsername(), key,
@@ -264,7 +318,7 @@ public class SFTPSession extends Session {
                 return;
             }
             this.fireConnectionWillCloseEvent();
-            SSH.close();
+            SSH.close(null, true);
         }
         finally {
             SFTP = null;
@@ -282,11 +336,11 @@ public class SFTPSession extends Session {
             Path workdir = null;
             try {
                 // "." as referring to the current directory
-                workdir = PathFactory.createPath(this, SFTP.canonicalPath("."));
+                workdir = PathFactory.createPath(this, this.sftp().canonicalPath("."));
                 workdir.attributes.setType(Path.DIRECTORY_TYPE);
             }
             catch(IOException e) {
-                this.error(null, "Connection failed", e);
+                this.error(null, "Connection failed", e.getCause());
                 this.interrupt();
             }
             return workdir;
