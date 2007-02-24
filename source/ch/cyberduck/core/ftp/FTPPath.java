@@ -653,11 +653,17 @@ public class FTPPath extends Path {
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                         log.info("Updating permissions");
                         if(null == this.attributes.getPermission()) {
-                            if(this.attributes.isFile()
-                                    && Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                                this.attributes.setPermission(new Permission(
-                                        Preferences.instance().getInteger("queue.upload.permissions.file.default"))
-                                );
+                            if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                                if(this.attributes.isFile()) {
+                                    this.attributes.setPermission(new Permission(
+                                            Preferences.instance().getInteger("queue.upload.permissions.file.default"))
+                                    );
+                                }
+                                if(this.attributes.isDirectory()) {
+                                    this.attributes.setPermission(new Permission(
+                                            Preferences.instance().getInteger("queue.upload.permissions.folder.default"))
+                                    );
+                                }
                             }
                             else {
                                 this.attributes.setPermission(this.getLocal().getPermission());

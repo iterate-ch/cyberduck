@@ -133,42 +133,8 @@ public class CDPreferencesController extends CDWindowController {
         this.window.center();
 
         this.transfermodeComboboxClicked(this.transfermodeCombobox);
-        {
-            Permission p = new Permission(Preferences.instance().getProperty("queue.upload.permissions.default"));
-            boolean[] ownerPerm = p.getOwnerPermissions();
-            boolean[] groupPerm = p.getGroupPermissions();
-            boolean[] otherPerm = p.getOtherPermissions();
-
-            uownerr.setState(ownerPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
-            uownerw.setState(ownerPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
-            uownerx.setState(ownerPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-
-            ugroupr.setState(groupPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
-            ugroupw.setState(groupPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
-            ugroupx.setState(groupPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-
-            uotherr.setState(otherPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
-            uotherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
-            uotherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-        }
-        {
-            Permission p = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
-            boolean[] ownerPerm = p.getOwnerPermissions();
-            boolean[] groupPerm = p.getGroupPermissions();
-            boolean[] otherPerm = p.getOtherPermissions();
-
-            downerr.setState(ownerPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
-            downerw.setState(ownerPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
-            downerx.setState(ownerPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-
-            dgroupr.setState(groupPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
-            dgroupw.setState(groupPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
-            dgroupx.setState(groupPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-
-            dotherr.setState(otherPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
-            dotherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
-            dotherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
-        }
+        this.chmodDownloadTypePopupChanged(this.chmodDownloadTypePopup);
+        this.chmodUploadTypePopupChanged(this.chmodUploadTypePopup);
 
         boolean chmodDownloadDefaultEnabled = Preferences.instance().getBoolean("queue.download.changePermissions")
                 && Preferences.instance().getBoolean("queue.download.permissions.useDefault");
@@ -254,10 +220,6 @@ public class CDPreferencesController extends CDWindowController {
     private static final String UNIX_LINE_ENDINGS = NSBundle.localizedString("Unix Line Endings (LF)", "");
     private static final String MAC_LINE_ENDINGS = NSBundle.localizedString("Mac Line Endings (CR)", "");
     private static final String WINDOWS_LINE_ENDINGS = NSBundle.localizedString("Windows Line Endings (CRLF)", "");
-
-    private static final String PROTOCOL_FTP = "FTP";
-    private static final String PROTOCOL_FTP_TLS = "FTP-TLS";
-    private static final String PROTOCOL_SFTP = "SFTP";
 
     private static final String ASK_ME_WHAT_TO_DO = NSBundle.localizedString("Ask me what to do", "");
     private static final String OVERWRITE_EXISTING_FILE = NSBundle.localizedString("Overwrite existing file", "");
@@ -410,6 +372,76 @@ public class CDPreferencesController extends CDWindowController {
 
     public void encodingComboboxClicked(NSPopUpButton sender) {
         Preferences.instance().setProperty("browser.charset.encoding", sender.titleOfSelectedItem());
+    }
+
+    private NSPopUpButton chmodUploadTypePopup;
+
+    public void setChmodUploadTypePopup(NSPopUpButton chmodUploadTypePopup) {
+        this.chmodUploadTypePopup = chmodUploadTypePopup;
+        this.chmodUploadTypePopup.selectItemAtIndex(0);
+        this.chmodUploadTypePopup.setTarget(this);
+        final NSSelector action = new NSSelector("chmodUploadTypePopupChanged", new Class[]{NSPopUpButton.class});
+        this.chmodUploadTypePopup.setAction(action);
+    }
+
+    private void chmodUploadTypePopupChanged(NSPopUpButton sender) {
+        Permission p = null;
+        if(sender.selectedItem().tag() == 0) {
+            p = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+        }
+        if(sender.selectedItem().tag() == 1) {
+            p = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+        }
+        boolean[] ownerPerm = p.getOwnerPermissions();
+        boolean[] groupPerm = p.getGroupPermissions();
+        boolean[] otherPerm = p.getOtherPermissions();
+
+        uownerr.setState(ownerPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+        uownerw.setState(ownerPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+        uownerx.setState(ownerPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+
+        ugroupr.setState(groupPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+        ugroupw.setState(groupPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+        ugroupx.setState(groupPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+
+        uotherr.setState(otherPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+        uotherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+        uotherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+    }
+
+    private NSPopUpButton chmodDownloadTypePopup;
+
+    public void setChmodDownloadTypePopup(NSPopUpButton chmodDownloadTypePopup) {
+        this.chmodDownloadTypePopup = chmodDownloadTypePopup;
+        this.chmodDownloadTypePopup.selectItemAtIndex(0);
+        this.chmodDownloadTypePopup.setTarget(this);
+        final NSSelector action = new NSSelector("chmodDownloadTypePopupChanged", new Class[]{NSPopUpButton.class});
+        this.chmodDownloadTypePopup.setAction(action);
+    }
+
+    private void chmodDownloadTypePopupChanged(NSPopUpButton sender) {
+        Permission p = null;
+        if(sender.selectedItem().tag() == 0) {
+            p = new Permission(Preferences.instance().getInteger("queue.download.permissions.file.default"));
+        }
+        if(sender.selectedItem().tag() == 1) {
+            p = new Permission(Preferences.instance().getInteger("queue.download.permissions.folder.default"));
+        }
+        boolean[] ownerPerm = p.getOwnerPermissions();
+        boolean[] groupPerm = p.getGroupPermissions();
+        boolean[] otherPerm = p.getOtherPermissions();
+
+        downerr.setState(ownerPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+        downerw.setState(ownerPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+        downerx.setState(ownerPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+
+        dgroupr.setState(groupPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+        dgroupw.setState(groupPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+        dgroupx.setState(groupPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
+
+        dotherr.setState(otherPerm[Permission.READ] ? NSCell.OnState : NSCell.OffState);
+        dotherw.setState(otherPerm[Permission.WRITE] ? NSCell.OnState : NSCell.OffState);
+        dotherx.setState(otherPerm[Permission.EXECUTE] ? NSCell.OnState : NSCell.OffState);
     }
 
     private NSButton chmodUploadCheckbox; //IBOutlet
@@ -590,7 +622,12 @@ public class CDPreferencesController extends CDWindowController {
         p[Permission.OTHER][Permission.EXECUTE] = (dotherx.state() == NSCell.OnState);
 
         Permission permission = new Permission(p);
-        Preferences.instance().setProperty("queue.download.permissions.default", permission.getMask());
+        if(chmodDownloadTypePopup.selectedItem().tag() == 0) {
+            Preferences.instance().setProperty("queue.download.permissions.file.default", permission.getOctalString());
+        }
+        if(chmodDownloadTypePopup.selectedItem().tag() == 1) {
+            Preferences.instance().setProperty("queue.download.permissions.folder.default", permission.getOctalString());
+        }
     }
 
     public NSButton uownerr; //IBOutlet
@@ -619,7 +656,12 @@ public class CDPreferencesController extends CDWindowController {
         p[Permission.OTHER][Permission.EXECUTE] = (uotherx.state() == NSCell.OnState);
 
         Permission permission = new Permission(p);
-        Preferences.instance().setProperty("queue.upload.permissions.default", permission.getMask());
+        if(chmodUploadTypePopup.selectedItem().tag() == 0) {
+            Preferences.instance().setProperty("queue.download.permissions.file.default", permission.getOctalString());
+        }
+        if(chmodUploadTypePopup.selectedItem().tag() == 1) {
+            Preferences.instance().setProperty("queue.download.permissions.folder.default", permission.getOctalString());
+        }
     }
 
     private NSButton preserveModificationDownloadCheckbox; //IBOutlet
@@ -1448,30 +1490,28 @@ public class CDPreferencesController extends CDWindowController {
         this.protocolCombobox.setTarget(this);
         this.protocolCombobox.setAction(new NSSelector("protocolComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.protocolCombobox.removeAllItems();
-        this.protocolCombobox.addItemsWithTitles(new NSArray(new String[]{PROTOCOL_FTP,
-                PROTOCOL_FTP_TLS,
-                PROTOCOL_SFTP}));
+        this.protocolCombobox.addItemsWithTitles(new NSArray(new String[]{Session.FTP_STRING, Session.FTP_TLS_STRING, Session.SFTP_STRING}));
         if (Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP)) {
-            this.protocolCombobox.selectItemWithTitle(PROTOCOL_FTP);
+            this.protocolCombobox.selectItemWithTitle(Session.FTP_STRING);
         }
         if (Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP_TLS)) {
-            this.protocolCombobox.selectItemWithTitle(PROTOCOL_FTP_TLS);
+            this.protocolCombobox.selectItemWithTitle(Session.FTP_TLS_STRING);
         }
         if (Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP)) {
-            this.protocolCombobox.selectItemWithTitle(PROTOCOL_SFTP);
+            this.protocolCombobox.selectItemWithTitle(Session.SFTP_STRING);
         }
     }
 
     public void protocolComboboxClicked(NSPopUpButton sender) {
-        if (sender.selectedItem().title().equals(PROTOCOL_FTP)) {
+        if (sender.selectedItem().title().equals(Session.FTP_STRING)) {
             Preferences.instance().setProperty("connection.protocol.default", Session.FTP);
             Preferences.instance().setProperty("connection.port.default", Session.FTP_PORT);
         }
-        if (sender.selectedItem().title().equals(PROTOCOL_FTP_TLS)) {
+        if (sender.selectedItem().title().equals(Session.FTP_TLS_STRING)) {
             Preferences.instance().setProperty("connection.protocol.default", Session.FTP_TLS);
             Preferences.instance().setProperty("connection.port.default", Session.FTP_PORT);
         }
-        if (sender.selectedItem().title().equals(PROTOCOL_SFTP)) {
+        if (sender.selectedItem().title().equals(Session.SFTP_STRING)) {
             Preferences.instance().setProperty("connection.protocol.default", Session.SFTP);
             Preferences.instance().setProperty("connection.port.default", Session.SSH_PORT);
         }

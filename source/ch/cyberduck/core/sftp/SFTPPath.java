@@ -515,9 +515,16 @@ public class SFTPPath extends Path {
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                         if(null == attributes.getPermission()) {
                             if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                                attributes.setPermission(new Permission(
-                                        Preferences.instance().getInteger("queue.upload.permissions.file.default"))
-                                );
+                                if(this.attributes.isFile()) {
+                                    attributes.setPermission(new Permission(
+                                            Preferences.instance().getInteger("queue.upload.permissions.file.default"))
+                                    );
+                                }
+                                if(this.attributes.isDirectory()) {
+                                    attributes.setPermission(new Permission(
+                                            Preferences.instance().getInteger("queue.upload.permissions.folder.default"))
+                                    );
+                                }
                             }
                             else {
                                 attributes.setPermission(this.getLocal().getPermission());
