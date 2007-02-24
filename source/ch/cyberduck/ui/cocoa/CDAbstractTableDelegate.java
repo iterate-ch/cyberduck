@@ -340,8 +340,8 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
             if(null == perm2) {
                 perm2 = Permission.EMPTY;
             }
-            int p1 = perm1.getOctalCode();
-            int p2 = perm2.getOctalCode();
+            int p1 = perm1.getOctalNumber();
+            int p2 = perm2.getOctalNumber();
             if(p1 > p2) {
                 return ascending ? 1 : -1;
             }

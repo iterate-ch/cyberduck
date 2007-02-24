@@ -386,13 +386,13 @@ public class FTPPath extends Path {
             final String command = "CHMOD";
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Changing permission to", "Status", "") + " " + perm.getOctalCode() + " (" + this.getName() + ")");
+                session.message(NSBundle.localizedString("Changing permission to", "Status", "") + " " + perm.getOctalString() + " (" + this.getName() + ")");
                 this.getParent().cwdir();
                 if(this.attributes.isFile() && !this.attributes.isSymbolicLink()) {
-                    session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getName());
+                    session.FTP.site(command + " " + perm.getOctalString() + " " + this.getName());
                 }
                 else if(this.attributes.isDirectory()) {
-                    session.FTP.site(command + " " + perm.getOctalCode() + " " + this.getName());
+                    session.FTP.site(command + " " + perm.getOctalString() + " " + this.getName());
                     if(recursive) {
                         for(Iterator iter = this.list().iterator(); iter.hasNext();) {
                             if(!session.isConnected()) {
@@ -453,7 +453,7 @@ public class FTPPath extends Path {
                     Permission perm;
                     if(Preferences.instance().getBoolean("queue.download.permissions.useDefault")
                             && this.attributes.isFile()) {
-                        perm = new Permission(Preferences.instance().getProperty("queue.download.permissions.default"));
+                        perm = new Permission(Preferences.instance().getInteger("queue.download.permissions.file.default"));
                     }
                     else {
                         perm = this.attributes.getPermission();
@@ -656,7 +656,7 @@ public class FTPPath extends Path {
                             if(this.attributes.isFile()
                                     && Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
                                 this.attributes.setPermission(new Permission(
-                                        Preferences.instance().getProperty("queue.upload.permissions.default"))
+                                        Preferences.instance().getInteger("queue.upload.permissions.file.default"))
                                 );
                             }
                             else {
@@ -665,8 +665,7 @@ public class FTPPath extends Path {
                         }
                         try {
                             if(null != this.attributes.getPermission()) {
-                                session.FTP.setPermissions(
-                                        String.valueOf(this.attributes.getPermission().getOctalCode()),
+                                session.FTP.setPermissions(this.attributes.getPermission().getOctalString(),
                                         this.getName());
                             }
                         }

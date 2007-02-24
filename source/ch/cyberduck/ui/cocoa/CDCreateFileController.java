@@ -75,8 +75,7 @@ public class CDCreateFileController extends CDFileController {
                     file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
                 }
                 file.getLocal().createNewFile();
-                Permission d = new Permission(
-                        Integer.parseInt(Preferences.instance().getProperty("permission.file.default"), 8));
+                Permission d = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
                 if(!Permission.EMPTY.equals(d)) {
                     file.getLocal().setPermission(d);
                 }

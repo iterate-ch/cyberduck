@@ -21,6 +21,8 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
+import org.apache.log4j.Logger;
+
 import java.util.Arrays;
 
 /**
@@ -29,6 +31,7 @@ import java.util.Arrays;
  * @version $Id$
  */
 public class Permission {
+    private static Logger log = Logger.getLogger(Permission.class);
 
     private static final int EMPTY_MASK = 0;
 
@@ -78,6 +81,14 @@ public class Permission {
     public static final int EXECUTE = 2;
 
     // {read, write, execute}
+    // --- = 0; {false, false, false}
+    // --x = 1; {false, false, true}
+    // -w- = 2; {false, true, false}
+    // -wx = 3; {false, true, true}
+    // r-- = 4; {true, false, false}
+    // r-x = 5; {true, false, true}
+    // rw- = 6; {true, true, false}
+    // rwx = 7; {true, true, true}
     private boolean[] owner = new boolean[3];
     private boolean[] group = new boolean[3];
     private boolean[] other = new boolean[3];
@@ -87,6 +98,9 @@ public class Permission {
      *             Must be something between --------- and rwxrwxrwx
      */
     public Permission(String mask) {
+        if (mask.length() != 9) {
+            throw new IllegalArgumentException("Must be a nine digit string");
+        }
         this.mask = mask;
         this.owner = this.getOwnerPermissions(mask);
         this.group = this.getGroupPermissions(mask);
@@ -111,20 +125,27 @@ public class Permission {
         this.other[WRITE] = p[OTHER][WRITE];
         this.other[EXECUTE] = p[OTHER][EXECUTE];
 //		log.debug("Permission:"+this.toString());
-        this.mask = this.getString();
+        this.mask = this.getRwxString();
     }
 
     /**
      * @param octal The permissions as a 3 digit octal number
      */
     public Permission(int octal) {
-        String octalString = "000";
-        if(0 != octal) {
-            octalString = String.valueOf(octal);
+        String octalString = String.valueOf(octal);
+        StringBuffer sb = new StringBuffer();
+        int leadingZeros = 3 - octalString.length();
+        while (leadingZeros > 0) {
+            sb.append('0');
+            leadingZeros--;
         }
-//		log.debug("Permission(octalString):"+octalString);
+        sb.append(octalString);
+        octalString = sb.toString();
+
+		log.debug("Permission(octalString):"+octalString);
+
         if (octalString.length() != 3) {
-            throw new IllegalArgumentException("Permission must be a three digit number");
+            throw new IllegalArgumentException("Must be a three digit number");
         }
         switch (Integer.parseInt(octalString.substring(0, 1))) {
             case (0):
@@ -204,7 +225,7 @@ public class Permission {
                 this.other = new boolean[]{true, true, true};
                 break;
         }
-        this.mask = this.getString();
+        this.mask = this.getRwxString();
 //		log.debug("Permission:"+this.toString());
     }
 
@@ -271,13 +292,13 @@ public class Permission {
      * @return i.e. rwxrwxrwx (777)
      */
     public String toString() {
-        return this.getMask() + " (" + this.getOctalCode() + ")";
+        return this.getMask() + " (" + this.getOctalString() + ")";
     }
 
     /**
      * @return The unix equivalent access string like rwxrwxrwx
      */
-    private String getString() {
+    private String getRwxString() {
         String owner = this.getAccessString(this.getOwnerPermissions());
         String group = this.getAccessString(this.getGroupPermissions());
         String other = this.getAccessString(this.getOtherPermissions());
@@ -287,33 +308,31 @@ public class Permission {
     /**
      * @return The unix equivalent octal access code like 777
      */
-    public int getOctalCode() {
+    public String getOctalString() {
         String owner = "" + this.getOctalAccessNumber(this.getOwnerPermissions());
         String group = "" + this.getOctalAccessNumber(this.getGroupPermissions());
         String other = "" + this.getOctalAccessNumber(this.getOtherPermissions());
-        return Integer.parseInt(owner + group + other);
+        return owner + group + other;
     }
 
-    public int getDecimalCode() {
+    public int getOctalNumber() {
         String owner = "" + this.getOctalAccessNumber(this.getOwnerPermissions());
         String group = "" + this.getOctalAccessNumber(this.getGroupPermissions());
         String other = "" + this.getOctalAccessNumber(this.getOtherPermissions());
         return Integer.parseInt(owner + group + other, 8);
     }
 
-    /*
+    /**
+     * @return
      *	0 = no permissions whatsoever; this person cannot read, write, or execute the file
-      *	1 = execute only
-      *	2 = write only
-      *	3 = write and execute (1+2)
-      *	4 = read only
-      *	5 = read and execute (4+1)
-      *	6 = read and write (4+2)
-      *	7 = read and write and execute (4+2+1)
-      */
-
-    //-rwxrwxrwx
-
+     *	1 = execute only
+     *	2 = write only
+     *	3 = write and execute (1+2)
+     *	4 = read only
+     *	5 = read and execute (4+1)
+     *	6 = read and write (4+2)
+     *	7 = read and write and execute (4+2+1)
+     */
     private int getOctalAccessNumber(boolean[] permissions) {
         if (Arrays.equals(permissions, new boolean[]{false, false, false})) {
             return 0;
@@ -350,25 +369,14 @@ public class Permission {
     }
 
     public int hashCode() {
-        return this.getOctalCode();
+        return this.getOctalNumber();
     }
 
     public boolean equals(Object o) {
         if ((o != null) && (o instanceof Permission)) {
             Permission other = (Permission) o;
-            return this.getOctalCode() == other.getOctalCode();
+            return this.getOctalNumber() == other.getOctalNumber();
         }
         return false;
     }
-
-    /*
-         public static final int --- = 0; {false, false, false}
-         public static final int --x = 1; {false, false, true}
-         public static final int -w- = 2; {false, true, false}
-         public static final int -wx = 3; {false, true, true}
-         public static final int r-- = 4; {true, false, false}
-         public static final int r-x = 5; {true, false, true}
-         public static final int rw- = 6; {true, true, false}
-         public static final int rwx = 7; {true, true, true}
-         */
 }

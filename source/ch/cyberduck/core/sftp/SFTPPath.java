@@ -177,10 +177,8 @@ public class SFTPPath extends Path {
                 }
                 session.check();
                 session.message(NSBundle.localizedString("Make directory", "Status", "") + " " + this.getName());
-                String perm = Preferences.instance().getProperty("permission.directory.default");
-                session.sftp().mkdir(this.getAbsolute(),
-                        new Permission(Integer.parseInt(perm)).getDecimalCode()
-                );
+                Permission perm = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+                session.sftp().mkdir(this.getAbsolute(), new Integer(perm.getOctalNumber()).intValue());
                 session.cache().put(this, new AttributedList());
                 this.getParent().invalidate();
             }
@@ -373,9 +371,9 @@ public class SFTPPath extends Path {
             try {
                 session.check();
                 session.message(NSBundle.localizedString("Changing permission to", "Status", "")
-                        + " " + perm.getOctalCode() + " (" + this.getName() + ")");
+                        + " " + perm.getOctalString() + " (" + this.getName() + ")");
                 SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-                attr.permissions = new Integer(perm.getDecimalCode());
+                attr.permissions = new Integer(perm.getOctalNumber());
                 session.sftp().setstat(this.getAbsolute(), attr);
                 if(this.attributes.isDirectory()) {
                     if(recursive) {
@@ -440,7 +438,8 @@ public class SFTPPath extends Path {
                     if(Preferences.instance().getBoolean("queue.download.permissions.useDefault")
                             && this.attributes.isFile()) {
                         perm = new Permission(
-                                Preferences.instance().getProperty("queue.download.permissions.default"));
+                                Preferences.instance().getInteger("queue.download.permissions.file.default")
+                        );
                     }
                     else {
                         perm = this.attributes.getPermission();
@@ -517,7 +516,7 @@ public class SFTPPath extends Path {
                         if(null == attributes.getPermission()) {
                             if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
                                 attributes.setPermission(new Permission(
-                                        Preferences.instance().getProperty("queue.upload.permissions.default"))
+                                        Preferences.instance().getInteger("queue.upload.permissions.file.default"))
                                 );
                             }
                             else {
@@ -527,7 +526,7 @@ public class SFTPPath extends Path {
                         if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
                             try {
                                 SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-                                attr.permissions = new Integer(attributes.getPermission().getDecimalCode());
+                                attr.permissions = new Integer(attributes.getPermission().getOctalNumber());
                                 session.sftp().fsetstat(handle, attr);
                             }
                             catch(SFTPException e) {
@@ -560,7 +559,7 @@ public class SFTPPath extends Path {
                         scp.setCharset(session.getEncoding());
                         out = scp.put(this.getName(), (long)this.getLocal().getSize(),
                                 this.getParent().getAbsolute(),
-                                "0"+String.valueOf(attributes.getPermission().getOctalCode()));
+                                "0"+attributes.getPermission().getOctalString());
                     }
                     this.upload(out, in);
                 }

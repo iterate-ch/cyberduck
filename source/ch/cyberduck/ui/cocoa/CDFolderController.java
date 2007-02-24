@@ -57,8 +57,7 @@ public class CDFolderController extends CDFileController {
 
             public void run() {
                 folder.mkdir(false);
-                Permission d = new Permission(
-                        Integer.parseInt(Preferences.instance().getProperty("permission.directory.default"), 8));
+                Permission d = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
                 if(!Permission.EMPTY.equals(d)) {
                     folder.changePermissions(d, false);
                 }

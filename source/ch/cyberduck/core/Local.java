@@ -281,7 +281,7 @@ public class Local extends File implements IAttributes {
 
     public void setPermission(Permission p) {
         boolean success = NSPathUtilities.setFileAttributes(this.getAbsolutePath(),
-                new NSDictionary(new Integer(p.getDecimalCode()),
+                new NSDictionary(new Integer(p.getOctalNumber()),
                         NSPathUtilities.FilePosixPermissions));
         if(!success) {
             log.error("File attribute changed failed:"+this.getAbsolute());

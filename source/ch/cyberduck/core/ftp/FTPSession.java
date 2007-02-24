@@ -233,7 +233,12 @@ public class FTPSession extends Session {
                 this.FTP.setConnectMode(this.getConnectMode());
                 this.message(NSBundle.localizedString("FTP connection opened", "Status", ""));
                 this.login();
-                this.setIdentification(this.FTP.system());
+                try {
+                    this.setIdentification(this.FTP.system());
+                }
+                catch(FTPException e) {
+                    log.warn(this.host.getHostname()+" does not support the SYST command:"+e.getMessage());
+                }
                 this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.getIdentification());
                 this.fireConnectionDidOpenEvent();
             }

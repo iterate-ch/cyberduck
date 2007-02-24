@@ -265,13 +265,13 @@ public abstract class Preferences {
         defaults.put("queue.upload.reload.fileExists", Validator.ASK);
 
         defaults.put("queue.upload.changePermissions", String.valueOf(true));
-        /**
-         * If false, apply the permissions of the local file
-         */
         defaults.put("queue.upload.permissions.useDefault", String.valueOf(false));
-        defaults.put("queue.upload.permissions.default", "rw-r--r--");
+        defaults.put("queue.upload.permissions.file.default", String.valueOf(644));
+        defaults.put("queue.upload.permissions.folder.default", String.valueOf(755));
+
         defaults.put("queue.upload.preserveDate", String.valueOf(true));
         defaults.put("queue.upload.preserveDate.fallback", String.valueOf(false));
+
         defaults.put("queue.upload.skip.enable", String.valueOf(true));
         defaults.put("queue.upload.skip.regex.default",
                 ".*~\\..*|\\.DS_Store|.*\\.svn|CVS");
@@ -280,8 +280,11 @@ public abstract class Preferences {
 
         defaults.put("queue.download.changePermissions", String.valueOf(true));
         defaults.put("queue.download.permissions.useDefault", String.valueOf(false));
-        defaults.put("queue.download.permissions.default", "rw-r--r--");
+        defaults.put("queue.download.permissions.file.default", String.valueOf(644));
+        defaults.put("queue.download.permissions.folder.default", String.valueOf(755));
+
         defaults.put("queue.download.preserveDate", String.valueOf(true));
+
         defaults.put("queue.download.skip.enable", String.valueOf(true));
         defaults.put("queue.download.skip.regex.default",
                 ".*~\\..*|\\.DS_Store|.*\\.svn|CVS");
@@ -358,17 +361,9 @@ public abstract class Preferences {
          */
         defaults.put("path.normalize", String.valueOf(true));
         /**
-         * The permission to apply when creating a new folder
-         */
-        defaults.put("permission.directory.default", String.valueOf(755));
-        /**
-         * The permission to apply when creating a new plain file
-         */
-        defaults.put("permission.file.default", String.valueOf(644));
-        /**
          * Use the SFTP subsystem or a SCP channel for file transfers over SSH
          */
-        defaults.put("ssh.transfer", Session.SFTP); // Session.SCP
+        defaults.put("ssh.transfer", Session.SCP); // Session.SFTP
         /**
          * Location of the openssh known_hosts file
          */
