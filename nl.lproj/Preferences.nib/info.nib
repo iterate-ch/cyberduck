@@ -11,9 +11,9 @@
 		<key>1033</key>
 		<string>232 391 527 212 0 0 1024 746 </string>
 		<key>1034</key>
-		<string>232 295 527 403 0 0 1024 746 </string>
+		<string>232 378 527 188 0 0 1024 746 </string>
 		<key>1035</key>
-		<string>232 416 527 161 0 0 1024 746 </string>
+		<string>232 493 527 161 0 0 1024 746 </string>
 		<key>1374</key>
 		<string>232 393 527 207 0 0 1024 746 </string>
 		<key>848</key>
@@ -21,7 +21,7 @@
 		<key>874</key>
 		<string>232 259 527 410 0 0 1024 746 </string>
 		<key>906</key>
-		<string>232 287 527 420 0 0 1024 746 </string>
+		<string>232 291 527 412 0 0 1024 746 </string>
 	</dict>
 	<key>IBFramework Version</key>
 	<string>446.1</string>

@@ -33,9 +33,11 @@
                 chmodDownloadCheckbox = NSButton; 
                 chmodDownloadCustomCheckbox = NSButton; 
                 chmodDownloadDefaultCheckbox = NSButton; 
+                chmodDownloadTypePopup = NSPopUpButton; 
                 chmodUploadCheckbox = NSButton; 
                 chmodUploadCustomCheckbox = NSButton; 
                 chmodUploadDefaultCheckbox = NSButton; 
+                chmodUploadTypePopup = NSPopUpButton; 
                 confirmDisconnectCheckbox = NSButton; 
                 connectmodeCombobox = NSPopUpButton; 
                 defaultBookmarkCombobox = NSPopUpButton; 
@@ -82,6 +84,7 @@
                 removeFromQueueCheckbox = NSButton; 
                 secureDataChannelCheckbox = NSButton; 
                 showHiddenCheckbox = NSButton; 
+                sshTransfersCombobox = NSPopUpButton; 
                 tabView = NSTabView; 
                 textFileTypeRegexField = NSTextField; 
                 timeoutField = NSTextField; 
