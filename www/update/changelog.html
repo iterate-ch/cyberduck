@@ -17,7 +17,11 @@
 		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=2.8">
 		2.8b1</a></strong> <em></em> <br />
 		
-		<p>This build features <a href="http://www.ganymed.ethz.ch/ssh2/">Ganymed</a> instead of the previously used J2SSH implementing the SSH2 protocol stack. The file transfer performance should already be improved (especially for uploads reaching now 1MBit/s over the loopback interface) and the objective is to finally solve issue <a href="http://trac.cyberduck.ch/ticket/185">#185</a>.
+		<ul>
+			<li>[Feature] Using Ganymed SSH2 library [<a href="http://trac.cyberduck.ch/ticket/185">#185</a>]</li>
+			<li>[Feature] Support for SCP transfers [<a href="http://trac.cyberduck.ch/ticket/1043">#1043]</a></li>
+			<li>[Feature] Setting default permissions for folders [<a href="http://trac.cyberduck.ch/ticket/77">#77</a>]</li>
+		</ul>
 	</div>
 
 	<div>
@@ -26,13 +30,13 @@
 		2.7.3</a></strong> <em>Feb-12-2006</em> (Build 2838)<br />
 
 		<ul>
-			<li>[Bugfix] Problem parsing PASV response from some servers (FTP) <a href="http://trac.cyberduck.ch/ticket/779">#779</a>, <a href="http://trac.cyberduck.ch/ticket/86">#869</a>]</li> 
-			<li>[Bugfix] Stalls when connection is interrupted during DNS lookup <a href="http://trac.cyberduck.ch/ticket/960">#960</a>]</li>
-			<li>[Bugfix] Improved sorting in 'Kind' browser column <a href="http://trac.cyberduck.ch/ticket/993">#993</a>]</li>
-			<li>[Bugfix] Renaming files using Info panel causes repeated renaming <a href="http://trac.cyberduck.ch/ticket/1005">#1005</a>]</li>
-			<li>[Bugfix] Uploading folders interrupts file transfer (SFTP) <a href="http://trac.cyberduck.ch/ticket/1001">#1001</a>]</li>
-			<li>[Bugfix] Preference for auto-open delay for spring-loaded folders not saved <a href="http://trac.cyberduck.ch/ticket/633">#633</a>]</li>
-			<li>[Bugfix] Preference to open new browser window on launch not used <a href="http://trac.cyberduck.ch/ticket/997">#997</a>]</li>
+			<li>[Bugfix] Problem parsing PASV response from some servers (FTP) [<a href="http://trac.cyberduck.ch/ticket/779">#779</a>, [<a href="http://trac.cyberduck.ch/ticket/86">#869</a>]</li> 
+			<li>[Bugfix] Stalls when connection is interrupted during DNS lookup [<a href="http://trac.cyberduck.ch/ticket/960">#960</a>]</li>
+			<li>[Bugfix] Improved sorting in 'Kind' browser column [<a href="http://trac.cyberduck.ch/ticket/993">#993</a>]</li>
+			<li>[Bugfix] Renaming files using Info panel causes repeated renaming [<a href="http://trac.cyberduck.ch/ticket/1005">#1005</a>]</li>
+			<li>[Bugfix] Uploading folders interrupts file transfer (SFTP) [<a href="http://trac.cyberduck.ch/ticket/1001">#1001</a>]</li>
+			<li>[Bugfix] Preference for auto-open delay for spring-loaded folders not saved [<a href="http://trac.cyberduck.ch/ticket/633">#633</a>]</li>
+			<li>[Bugfix] Preference to open new browser window on launch not used [<a href="http://trac.cyberduck.ch/ticket/997">#997</a>]</li>
 			<li>[Bugfix] Symbolic links on local filesystem not handled properly [<a href="http://trac.cyberduck.ch/ticket/995">#995</a>]</li>
 			<li>[Bugfix] Send creation time of file with UTIME [#--]</li>
 			<li>[Feature] Clear command in History menu [<a href="http://trac.cyberduck.ch/ticket/648">#648</a>]</li>

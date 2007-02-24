@@ -4,6 +4,11 @@ http://cyberduck.ch/
 Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
+2.8b1 [http://trac.cyberduck.ch/query?status=closed&milestone=2.8]
+- [Feature] Using Ganymed SSH2 library [#185]
+- [Feature] Support for SCP transfers [#1043]
+- [Feature] Setting default permissions for folders [#77]
+
 2.7.3 [http://trac.cyberduck.ch/query?status=closed&milestone=2.7.3]
 - [Bugfix] Problem parsing PASV response from some servers (FTP) [#779, #869]
 - [Bugfix] Stalls when connection is interrupted during DNS lookup [#960]
