@@ -22,6 +22,7 @@ import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPTransferType;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 
 import com.apple.cocoa.application.*;
@@ -110,16 +111,6 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     public void setWindow(NSWindow window) {
-//        String file = null;
-//        if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")) {
-//            file = NSPathUtilities.stringByExpandingTildeInPath("~/Library/Preferences")
-//                    +"/"+NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier")+".plist";
-//        }
-//        else {
-//            file = NSPathUtilities.stringByExpandingTildeInPath(
-//                    (String)NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path"));
-//        }
-//        window.setRepresentedFilename(file);
         window.setExcludedFromWindowsMenu(true);
         super.setWindow(window);
     }
@@ -1601,5 +1592,57 @@ public class CDPreferencesController extends CDWindowController {
 
     public void sshTransfersComboboxClicked(NSPopUpButton sender) {
         Preferences.instance().setProperty("ssh.transfer", sender.selectedItem().representedObject().toString());
+    }
+
+    private void configureDefaultProtocolHandlerCombobox(NSPopUpButton defaultProtocolHandlerCombobox, String protocol) {
+        String defaultHandler = URLSchemeHandlerConfiguration.instance().getDefaultHandlerForURLScheme(protocol);
+        log.debug("Default Protocol Handler for "+protocol+":"+defaultHandler);
+        final String[] bundleIdentifiers = URLSchemeHandlerConfiguration.instance().getAllHandlersForURLScheme(protocol);
+        for(int i = 0; i < bundleIdentifiers.length; i++) {
+            String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifiers[i]);
+            NSBundle app = NSBundle.bundleWithPath(path);
+            if(path != null) {
+                defaultProtocolHandlerCombobox.addItem(app.infoDictionary().objectForKey("CFBundleName").toString());
+                final NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
+                icon.setSize(new NSSize(16f, 16f));
+                defaultProtocolHandlerCombobox.lastItem().setImage(icon);
+                defaultProtocolHandlerCombobox.lastItem().setRepresentedObject(bundleIdentifiers[i]);
+                if(bundleIdentifiers[i].equals(defaultHandler)) {
+                    defaultProtocolHandlerCombobox.selectItemAtIndex(i);
+                }
+            }
+        }
+    }
+
+    private NSPopUpButton defaultFTPHandlerCombobox; //IBOutlet
+
+    public void setDefaultFTPHandlerCombobox(NSPopUpButton defaultFTPHandlerCombobox) {
+        this.defaultFTPHandlerCombobox = defaultFTPHandlerCombobox;
+        this.defaultFTPHandlerCombobox.setTarget(this);
+        this.defaultFTPHandlerCombobox.setAction(new NSSelector("setDefaultFTPHandlerComboboxClicked", new Class[]{NSPopUpButton.class}));
+        this.defaultFTPHandlerCombobox.removeAllItems();
+        this.configureDefaultProtocolHandlerCombobox(this.defaultFTPHandlerCombobox, Session.FTP);
+    }
+
+    public void setDefaultFTPHandlerComboboxClicked(NSPopUpButton sender) {
+        URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
+                new String[]{Session.FTP, Session.FTP_TLS}, sender.selectedItem().representedObject().toString()
+        );
+    }
+
+    private NSPopUpButton defaultSFTPHandlerCombobox; //IBOutlet
+
+    public void setDefaultSFTPHandlerCombobox(NSPopUpButton defaultSFTPHandlerCombobox) {
+        this.defaultSFTPHandlerCombobox = defaultSFTPHandlerCombobox;
+        this.defaultSFTPHandlerCombobox.setTarget(this);
+        this.defaultSFTPHandlerCombobox.setAction(new NSSelector("setDefaultSFTPHandlerComboboxClicked", new Class[]{NSPopUpButton.class}));
+        this.defaultSFTPHandlerCombobox.removeAllItems();
+        this.configureDefaultProtocolHandlerCombobox(this.defaultSFTPHandlerCombobox, Session.SFTP);
+    }
+
+    public void setDefaultSFTPHandlerComboboxClicked(NSPopUpButton sender) {
+        URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
+                Session.SFTP, sender.selectedItem().representedObject().toString()
+        );
     }
 }

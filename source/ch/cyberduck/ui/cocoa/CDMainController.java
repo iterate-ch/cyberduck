@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
@@ -429,7 +430,27 @@ public class CDMainController extends CDController {
         else if(Preferences.instance().getBoolean("browser.openUntitled")) {
             this.openDefaultBookmark(this.newDocument());
         }
-
+        if(Preferences.instance().getBoolean("defaulthandler.reminder")) {
+            if(!URLSchemeHandlerConfiguration.instance().isDefaultHandlerForURLScheme(
+                    new String[]{Session.FTP, Session.FTP_TLS, Session.SFTP}))
+            {
+                int choice = NSAlertPanel.runInformationalAlert(
+                        NSBundle.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration", ""),
+                        NSBundle.localizedString("As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later.", "Configuration", ""),
+                        NSBundle.localizedString("Change", "Configuration", ""), //default
+                        NSBundle.localizedString("Don't Ask Again", "Configuration", ""), //other
+                        NSBundle.localizedString("Cancel", "Configuration", "")); //alternate
+                if (choice == CDSheetCallback.DEFAULT_OPTION) {
+                    URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
+                            new String[]{Session.FTP, Session.FTP_TLS, Session.SFTP},
+                            NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString()
+                    );
+                }
+                if (choice == CDSheetCallback.CANCEL_OPTION) {
+                    Preferences.instance().setProperty("defaulthandler.reminder", false);
+                }
+            }
+        }
     }
 
     /**
@@ -463,7 +484,7 @@ public class CDMainController extends CDController {
     }
 
     /**
-     *
+     * The donation reminder dialog has been displayed already
      */
     private boolean donationBoxDisplayed = false;
 

@@ -332,6 +332,7 @@ ca.lproj/Certificate.nib/keyedobjects.nib -text
 ca.lproj/Certificate.strings -text
 ca.lproj/Command.nib/keyedobjects.nib -text
 ca.lproj/Command.strings -text
+ca.lproj/Configuration.strings -text
 ca.lproj/Connection.nib/data.dependency -text
 ca.lproj/Connection.nib/keyedobjects.nib -text
 ca.lproj/Connection.strings -text
@@ -381,6 +382,7 @@ cs.lproj/Certificate.nib/keyedobjects.nib -text
 cs.lproj/Certificate.strings -text
 cs.lproj/Command.nib/keyedobjects.nib -text
 cs.lproj/Command.strings -text
+cs.lproj/Configuration.strings -text
 cs.lproj/Connection.nib/data.dependency -text
 cs.lproj/Connection.nib/keyedobjects.nib -text
 cs.lproj/Connection.strings -text
@@ -430,6 +432,7 @@ cy.lproj/Certificate.nib/keyedobjects.nib -text
 cy.lproj/Certificate.strings -text
 cy.lproj/Command.nib/keyedobjects.nib -text
 cy.lproj/Command.strings -text
+cy.lproj/Configuration.strings -text
 cy.lproj/Connection.nib/data.dependency -text
 cy.lproj/Connection.nib/keyedobjects.nib -text
 cy.lproj/Connection.strings -text
@@ -483,6 +486,7 @@ da.lproj/Certificate.nib/keyedobjects.nib -text
 da.lproj/Certificate.strings -text
 da.lproj/Command.nib/keyedobjects.nib -text
 da.lproj/Command.strings -text
+da.lproj/Configuration.strings -text
 da.lproj/Connection.nib/data.dependency -text
 da.lproj/Connection.nib/keyedobjects.nib -text
 da.lproj/Connection.strings -text
@@ -532,6 +536,7 @@ de.lproj/Certificate.nib/keyedobjects.nib -text
 de.lproj/Certificate.strings -text
 de.lproj/Command.nib/keyedobjects.nib -text
 de.lproj/Command.strings -text
+de.lproj/Configuration.strings -text
 de.lproj/Connection.nib/data.dependency -text
 de.lproj/Connection.nib/keyedobjects.nib -text
 de.lproj/Connection.strings -text
@@ -581,6 +586,7 @@ en.lproj/Certificate.nib/keyedobjects.nib -text
 en.lproj/Certificate.strings -text
 en.lproj/Command.nib/keyedobjects.nib -text
 en.lproj/Command.strings -text
+en.lproj/Configuration.strings -text
 en.lproj/Connection.nib/data.dependency -text
 en.lproj/Connection.nib/keyedobjects.nib -text
 en.lproj/Connection.strings -text
@@ -637,6 +643,7 @@ es.lproj/Certificate.nib/keyedobjects.nib -text
 es.lproj/Certificate.strings -text
 es.lproj/Command.nib/keyedobjects.nib -text
 es.lproj/Command.strings -text
+es.lproj/Configuration.strings -text
 es.lproj/Connection.nib/data.dependency -text
 es.lproj/Connection.nib/keyedobjects.nib -text
 es.lproj/Connection.strings -text
@@ -686,6 +693,7 @@ fi.lproj/Certificate.nib/keyedobjects.nib -text
 fi.lproj/Certificate.strings -text
 fi.lproj/Command.nib/keyedobjects.nib -text
 fi.lproj/Command.strings -text
+fi.lproj/Configuration.strings -text
 fi.lproj/Connection.nib/data.dependency -text
 fi.lproj/Connection.nib/keyedobjects.nib -text
 fi.lproj/Connection.strings -text
@@ -735,6 +743,7 @@ fr.lproj/Certificate.nib/keyedobjects.nib -text
 fr.lproj/Certificate.strings -text
 fr.lproj/Command.nib/keyedobjects.nib -text
 fr.lproj/Command.strings -text
+fr.lproj/Configuration.strings -text
 fr.lproj/Connection.nib/data.dependency -text
 fr.lproj/Connection.nib/keyedobjects.nib -text
 fr.lproj/Connection.strings -text
@@ -794,6 +803,7 @@ he.lproj/Command.nib/classes.nib -text
 he.lproj/Command.nib/info.nib -text
 he.lproj/Command.nib/keyedobjects.nib -text
 he.lproj/Command.strings -text
+he.lproj/Configuration.strings -text
 he.lproj/Connection.nib/classes.nib -text
 he.lproj/Connection.nib/data.dependency -text
 he.lproj/Connection.nib/info.nib -text
@@ -869,6 +879,7 @@ hu.lproj/Certificate.nib/keyedobjects.nib -text
 hu.lproj/Certificate.strings -text
 hu.lproj/Command.nib/keyedobjects.nib -text
 hu.lproj/Command.strings -text
+hu.lproj/Configuration.strings -text
 hu.lproj/Connection.nib/data.dependency -text
 hu.lproj/Connection.nib/keyedobjects.nib -text
 hu.lproj/Connection.strings -text
@@ -918,6 +929,7 @@ id.lproj/Certificate.nib/keyedobjects.nib -text
 id.lproj/Certificate.strings -text
 id.lproj/Command.nib/keyedobjects.nib -text
 id.lproj/Command.strings -text
+id.lproj/Configuration.strings -text
 id.lproj/Connection.nib/data.dependency -text
 id.lproj/Connection.nib/keyedobjects.nib -text
 id.lproj/Connection.strings -text
@@ -1063,6 +1075,7 @@ it.lproj/Certificate.nib/keyedobjects.nib -text
 it.lproj/Certificate.strings -text
 it.lproj/Command.nib/keyedobjects.nib -text
 it.lproj/Command.strings -text
+it.lproj/Configuration.strings -text
 it.lproj/Connection.nib/data.dependency -text
 it.lproj/Connection.nib/keyedobjects.nib -text
 it.lproj/Connection.strings -text
@@ -1112,6 +1125,7 @@ ja.lproj/Certificate.nib/keyedobjects.nib -text
 ja.lproj/Certificate.strings -text
 ja.lproj/Command.nib/keyedobjects.nib -text
 ja.lproj/Command.strings -text
+ja.lproj/Configuration.strings -text
 ja.lproj/Connection.nib/data.dependency -text
 ja.lproj/Connection.nib/keyedobjects.nib -text
 ja.lproj/Connection.strings -text
@@ -1162,6 +1176,7 @@ ko.lproj/Certificate.nib/keyedobjects.nib -text
 ko.lproj/Certificate.strings -text
 ko.lproj/Command.nib/keyedobjects.nib -text
 ko.lproj/Command.strings -text
+ko.lproj/Configuration.strings -text
 ko.lproj/Connection.nib/data.dependency -text
 ko.lproj/Connection.nib/keyedobjects.nib -text
 ko.lproj/Connection.strings -text
@@ -1214,6 +1229,7 @@ nl.lproj/Certificate.nib/keyedobjects.nib -text
 nl.lproj/Certificate.strings -text
 nl.lproj/Command.nib/keyedobjects.nib -text
 nl.lproj/Command.strings -text
+nl.lproj/Configuration.strings -text
 nl.lproj/Connection.nib/data.dependency -text
 nl.lproj/Connection.nib/keyedobjects.nib -text
 nl.lproj/Connection.strings -text
@@ -1263,6 +1279,7 @@ no.lproj/Certificate.nib/keyedobjects.nib -text
 no.lproj/Certificate.strings -text
 no.lproj/Command.nib/keyedobjects.nib -text
 no.lproj/Command.strings -text
+no.lproj/Configuration.strings -text
 no.lproj/Connection.nib/data.dependency -text
 no.lproj/Connection.nib/keyedobjects.nib -text
 no.lproj/Connection.strings -text
@@ -1312,6 +1329,7 @@ pl.lproj/Certificate.nib/keyedobjects.nib -text
 pl.lproj/Certificate.strings -text
 pl.lproj/Command.nib/keyedobjects.nib -text
 pl.lproj/Command.strings -text
+pl.lproj/Configuration.strings -text
 pl.lproj/Connection.nib/data.dependency -text
 pl.lproj/Connection.nib/keyedobjects.nib -text
 pl.lproj/Connection.strings -text
@@ -1362,6 +1380,7 @@ pt.lproj/Certificate.nib/keyedobjects.nib -text
 pt.lproj/Certificate.strings -text
 pt.lproj/Command.nib/keyedobjects.nib -text
 pt.lproj/Command.strings -text
+pt.lproj/Configuration.strings -text
 pt.lproj/Connection.nib/data.dependency -text
 pt.lproj/Connection.nib/keyedobjects.nib -text
 pt.lproj/Connection.strings -text
@@ -1411,6 +1430,7 @@ ru.lproj/Certificate.nib/keyedobjects.nib -text
 ru.lproj/Certificate.strings -text
 ru.lproj/Command.nib/keyedobjects.nib -text
 ru.lproj/Command.strings -text
+ru.lproj/Configuration.strings -text
 ru.lproj/Connection.nib/data.dependency -text
 ru.lproj/Connection.nib/keyedobjects.nib -text
 ru.lproj/Connection.strings -text
@@ -1460,6 +1480,7 @@ sk.lproj/Certificate.nib/keyedobjects.nib -text
 sk.lproj/Certificate.strings -text
 sk.lproj/Command.nib/keyedobjects.nib -text
 sk.lproj/Command.strings -text
+sk.lproj/Configuration.strings -text
 sk.lproj/Connection.nib/data.dependency -text
 sk.lproj/Connection.nib/keyedobjects.nib -text
 sk.lproj/Connection.strings -text
@@ -1501,6 +1522,7 @@ source/ch/cyberduck/core/forker/NSString+CarbonFSRefCreation.m -text
 source/ch/cyberduck/core/io/FileWatcher.m -text
 source/ch/cyberduck/core/io/UKKQueue.m -text
 source/ch/cyberduck/core/io/UKMainThreadProxy.m -text
+source/ch/cyberduck/core/util/URLSchemeHandlerConfiguration.m -text
 source/ch/cyberduck/ui/cocoa/CDBottomView.m -text
 source/ch/cyberduck/ui/cocoa/CDNavigationView.m -text
 source/ch/cyberduck/ui/cocoa/growl/GrowlNative.java -text
@@ -1522,6 +1544,7 @@ sv.lproj/Certificate.nib/keyedobjects.nib -text
 sv.lproj/Certificate.strings -text
 sv.lproj/Command.nib/keyedobjects.nib -text
 sv.lproj/Command.strings -text
+sv.lproj/Configuration.strings -text
 sv.lproj/Connection.nib/data.dependency -text
 sv.lproj/Connection.nib/keyedobjects.nib -text
 sv.lproj/Connection.strings -text
@@ -1579,6 +1602,7 @@ th.lproj/Command.nib/classes.nib -text
 th.lproj/Command.nib/info.nib -text
 th.lproj/Command.nib/keyedobjects.nib -text
 th.lproj/Command.strings -text
+th.lproj/Configuration.strings -text
 th.lproj/Connection.nib/classes.nib -text
 th.lproj/Connection.nib/data.dependency -text
 th.lproj/Connection.nib/info.nib -text
@@ -1662,6 +1686,7 @@ tr.lproj/Command.nib/classes.nib -text
 tr.lproj/Command.nib/info.nib -text
 tr.lproj/Command.nib/keyedobjects.nib -text
 tr.lproj/Command.strings -text
+tr.lproj/Configuration.strings -text
 tr.lproj/Connection.nib/classes.nib -text
 tr.lproj/Connection.nib/data.dependency -text
 tr.lproj/Connection.nib/info.nib -text
@@ -1842,6 +1867,7 @@ zh_CN.lproj/Certificate.nib/keyedobjects.nib -text
 zh_CN.lproj/Certificate.strings -text
 zh_CN.lproj/Command.nib/keyedobjects.nib -text
 zh_CN.lproj/Command.strings -text
+zh_CN.lproj/Configuration.strings -text
 zh_CN.lproj/Connection.nib/data.dependency -text
 zh_CN.lproj/Connection.nib/keyedobjects.nib -text
 zh_CN.lproj/Connection.strings -text
@@ -1891,6 +1917,7 @@ zh_TW.lproj/Certificate.nib/keyedobjects.nib -text
 zh_TW.lproj/Certificate.strings -text
 zh_TW.lproj/Command.nib/keyedobjects.nib -text
 zh_TW.lproj/Command.strings -text
+zh_TW.lproj/Configuration.strings -text
 zh_TW.lproj/Connection.nib/data.dependency -text
 zh_TW.lproj/Connection.nib/keyedobjects.nib -text
 zh_TW.lproj/Connection.strings -text
