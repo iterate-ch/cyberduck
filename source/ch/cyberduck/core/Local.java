@@ -56,6 +56,7 @@ public class Local extends File implements IAttributes {
                 }
                 catch(UnsatisfiedLinkError e) {
                     log.error("Could not load the libLocal.dylib library:" + e.getMessage());
+                    throw e;
                 }
             }
             return JNI_LOADED;

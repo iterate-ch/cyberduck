@@ -34,11 +34,15 @@ public class Keychain {
         //
     }
 
+    private static final Object lock = new Object();
+
     public static Keychain instance() {
-        if (null == instance) {
-            instance = new Keychain();
+        synchronized(lock) {
+            if (null == instance) {
+                instance = new Keychain();
+            }
+            return instance;
         }
-        return instance;
     }
 
     static {
@@ -52,6 +56,7 @@ public class Keychain {
         }
         catch (UnsatisfiedLinkError e) {
             log.error("Could not load the libKeychain.dylib library:" + e.getMessage());
+            throw e;
         }
     }
 

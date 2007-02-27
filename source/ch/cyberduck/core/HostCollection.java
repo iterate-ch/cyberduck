@@ -38,12 +38,16 @@ public class HostCollection extends Collection {
         ;
     }
 
+    private static final Object lock = new Object();
+
     public static HostCollection instance() {
-        if(null == instance) {
-            instance = new HostCollection();
-            instance.load();
+        synchronized(lock) {
+            if(null == instance) {
+                instance = new HostCollection();
+                instance.load();
+            }
+            return instance;
         }
-        return instance;
     }
 
     public Object get(int row) {
@@ -148,7 +152,7 @@ public class HostCollection extends Collection {
     /**
      * Deserialize all the bookmarks saved previously in the users's application support directory
      */
-    private synchronized void load(File f) {
+    private void load(File f) {
         if(f.exists()) {
             final int pool = NSAutoreleasePool.push();
             try {
@@ -167,9 +171,8 @@ public class HostCollection extends Collection {
                 if(propertyListFromXMLData instanceof NSArray) {
                     NSArray entries = (NSArray) propertyListFromXMLData;
                     java.util.Enumeration i = entries.objectEnumerator();
-                    Object element;
                     while(i.hasMoreElements()) {
-                        element = i.nextElement();
+                        Object element = i.nextElement();
                         if(element instanceof NSDictionary) {
                             super.add(new Host((NSDictionary) element));
                         }

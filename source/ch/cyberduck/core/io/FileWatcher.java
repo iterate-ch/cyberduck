@@ -54,7 +54,8 @@ public class FileWatcher extends NSObject {
             System.load(lib);
         }
         catch(UnsatisfiedLinkError e) {
-            log.error("Could not load the KQueue library:" + e.getMessage());
+            log.error("Could not load the libKQueue library:" + e.getMessage());
+            throw e;
         }
     }
 

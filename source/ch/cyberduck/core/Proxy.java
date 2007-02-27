@@ -38,6 +38,7 @@ public class Proxy {
         }
         catch (UnsatisfiedLinkError e) {
             log.error("Could not load the libProxy.dylib library:" + e.getMessage());
+            throw e;
         }
     }
 

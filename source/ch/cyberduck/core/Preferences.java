@@ -53,22 +53,26 @@ public abstract class Preferences {
         System.setProperty("networkaddress.cache.negative.ttl", "5");
     }
 
+    private static final Object lock = new Object();
+
     /**
      * @return The singleton instance of me.
      */
     public static Preferences instance() {
-        if (null == current) {
-            if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")) {
-                current = new CDPreferencesImpl();
+        synchronized(lock) {
+            if (null == current) {
+                if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")) {
+                    current = new CDPreferencesImpl();
+                }
+                else {
+                    current = new CDPortablePreferencesImpl();
+                }
+                current.setDefaults();
+                current.load();
+                current.legacy();
             }
-            else {
-                current = new CDPortablePreferencesImpl();
-            }
-            current.setDefaults();
-            current.load();
-            current.legacy();
+            return current;
         }
-        return current;
     }
 
     /**
@@ -136,6 +140,8 @@ public abstract class Preferences {
          * True if donation dialog will be displayed before quit
          */
         defaults.put("donate.reminder", String.valueOf(true));
+
+        defaults.put("defaulthandler.reminder", String.valueOf(true));
 
         defaults.put("mail.feedback", "mailto:feedback@cyberduck.ch");
 

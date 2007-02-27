@@ -708,6 +708,7 @@ public class Host extends NSObject {
                 }
                 catch(UnsatisfiedLinkError e) {
                     log.error("Could not load the libDiagnostics.dylib library:" + e.getMessage());
+                    throw e;
                 }
             }
             return JNI_LOADED;

@@ -39,12 +39,16 @@ public class QueueCollection extends Collection {
         ;
     }
 
+    private static final Object lock = new Object();
+
     public static QueueCollection instance() {
-        if(null == instance) {
-            instance = new QueueCollection();
-            instance.load();
+        synchronized(lock) {
+            if(null == instance) {
+                instance = new QueueCollection();
+                instance.load();
+            }
+            return instance;
         }
-        return instance;
     }
 
     private static final File QUEUE_FILE

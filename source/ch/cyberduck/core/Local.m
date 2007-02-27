@@ -30,7 +30,6 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
 {
     NSString *converted = nil;
     const jchar *unichars = NULL;
-	
     if (javaString == NULL) {
         return nil;	
     }                   
@@ -45,7 +44,6 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromExtension(JNIEnv *env, jobject this, jstring path, jstring icon)
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSImage *image = [[NSWorkspace sharedWorkspace] iconForFileType:convertToNSString(env, icon)];
 	[image setScalesWhenResized:YES];
 	[image setSize:NSMakeSize(128.0, 128.0)];
@@ -53,24 +51,19 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromExtension(JNIEnv 
 	if([workspace respondsToSelector:@selector(setIcon:forFile:options:)]) {
 		[workspace setIcon:image forFile:convertToNSString(env, path) options:NSExcludeQuickDrawElementsIconCreationOption];
 	}
-	[pool release];
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromFile(JNIEnv *env, jobject this, jstring path, jstring icon)
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
 	if([workspace respondsToSelector:@selector(setIcon:forFile:options:)]) {
 		[workspace setIcon:[NSImage imageNamed:convertToNSString(env, icon)] forFile:convertToNSString(env, path) options:NSExcludeQuickDrawElementsIconCreationOption];
 	}
-	[pool release];
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_removeCustomIcon(JNIEnv *env, jobject this, jstring path)
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	[IconFamily removeCustomIconFromFile:convertToNSString(env, path)];
-	[pool release];
 }
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_kind(JNIEnv *env, jobject this, jstring extension)
@@ -78,11 +71,12 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_kind(JNIEnv *env, jobject
 	NSString *kind = nil;
 	LSCopyKindStringForTypeInfo(kLSUnknownType, kLSUnknownCreator, 
 		(CFStringRef)convertToNSString(env, extension), (CFStringRef *)&kind);
-	if(kind) {
-		kind = [kind autorelease];
-	}
-	else {
+	if(!kind) {
 		kind = NSLocalizedString(@"Unknown", @"");
 	}
-	return (*env)->NewStringUTF(env, [kind UTF8String]);
+	jstring result = (*env)->NewStringUTF(env, [kind UTF8String]);
+	if(kind) {
+		[kind release];
+	}
+	return result;
 }
