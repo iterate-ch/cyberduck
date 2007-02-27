@@ -1,7 +1,7 @@
 {
     IBClasses = (
         {
-            ACTIONS = {help = id; }; 
+            ACTIONS = {"" = id; help = id; }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 
             SUPERCLASS = NSObject; 
@@ -41,6 +41,8 @@
                 confirmDisconnectCheckbox = NSButton; 
                 connectmodeCombobox = NSPopUpButton; 
                 defaultBookmarkCombobox = NSPopUpButton; 
+                defaultFTPHandlerCombobox = NSPopUpButton; 
+                defaultSFTPHandlerCombobox = NSPopUpButton; 
                 dgroupr = NSButton; 
                 dgroupw = NSButton; 
                 dgroupx = NSButton; 
