@@ -391,7 +391,7 @@ public class CDBrowserController extends CDWindowController
 
         // Configure window
         this.window.setTitle(
-                (String)NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
+                NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName").toString());
         if(Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen")) {
             this.bookmarkDrawer.open();
         }
@@ -402,7 +402,7 @@ public class CDBrowserController extends CDWindowController
         this.toolbar.setAutosavesConfiguration(true);
         this.window.setToolbar(toolbar);
 
-        this.browserSwitchClicked(this.browserSwitchView);
+        this.browserSwitchClicked(Preferences.instance().getInteger("browser.view"));
 
         this.window.setInitialFirstResponder(this.quickConnectPopup);
 
@@ -739,22 +739,24 @@ public class CDBrowserController extends CDWindowController
         this.browserSwitchView.setImage(NSImage.imageNamed("list.tiff"), LIST_VIEW);
         this.browserSwitchView.setImage(NSImage.imageNamed("outline.tiff"), OUTLINE_VIEW);
         this.browserSwitchView.setTarget(this);
-        this.browserSwitchView.setAction(new NSSelector("browserSwitchClicked", new Class[]{Object.class}));
+        this.browserSwitchView.setAction(new NSSelector("browserSwitchButtonClicked", new Class[]{Object.class}));
         ((NSSegmentedCell) this.browserSwitchView.cell()).setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectOne);
         this.browserSwitchView.cell().setControlSize(NSCell.RegularControlSize);
         this.browserSwitchView.setSelected(Preferences.instance().getInteger("browser.view"));
     }
 
-    public void browserSwitchClicked(final Object sender) {
-        if(sender instanceof NSMenuItem) {
-            this.browserSwitchView.setSelected(((NSMenuItem) sender).tag());
-            this.browserTabView.selectTabViewItemAtIndex(((NSMenuItem) sender).tag());
-            Preferences.instance().setProperty("browser.view", ((NSMenuItem) sender).tag());
-        }
-        if(sender instanceof NSSegmentedControl) {
-            this.browserTabView.selectTabViewItemAtIndex(((NSSegmentedControl) sender).selectedSegment());
-            Preferences.instance().setProperty("browser.view", ((NSSegmentedControl) sender).selectedSegment());
-        }
+    public void browserSwitchButtonClicked(final NSSegmentedControl sender) {
+        this.browserSwitchClicked(sender.selectedSegment());
+    }
+
+    public void browserSwitchMenuClicked(final NSMenuItem sender) {
+        this.browserSwitchClicked(sender.tag());
+    }
+
+    private void browserSwitchClicked(final int tag) {
+        Preferences.instance().setProperty("browser.view", tag);
+        this.browserSwitchView.setSelected(tag);
+        this.browserTabView.selectTabViewItemAtIndex(tag);
         this.reloadData(false);
         this.quickConnectPopup.setNextKeyView(this.getSelectedBrowserView());
         this.searchField.setNextKeyView(this.getSelectedBrowserView());
@@ -786,13 +788,14 @@ public class CDBrowserController extends CDWindowController
                 this.setSortedAscending(!this.isSortedAscending());
             }
             else {
-                view.setIndicatorImage(null, view.tableColumnWithIdentifier(this.selectedColumnIdentifier()));
+                this.setBrowserColumnSortingIndicator(null, this.selectedColumnIdentifier());
                 this.setSelectedColumn(tableColumn);
             }
-            view.setIndicatorImage(this.isSortedAscending() ?
-                    NSImage.imageNamed("NSAscendingSortIndicator") :
-                    NSImage.imageNamed("NSDescendingSortIndicator"),
-                    tableColumn);
+            this.setBrowserColumnSortingIndicator(
+                    this.isSortedAscending() ?
+                            NSImage.imageNamed("NSAscendingSortIndicator") :
+                            NSImage.imageNamed("NSDescendingSortIndicator"),
+                    tableColumn.identifier().toString());
             view.deselectAll(null);
             view.reloadData();
             for(Iterator i = selected.iterator(); i.hasNext();) {
@@ -814,6 +817,13 @@ public class CDBrowserController extends CDWindowController
                     }
                 }
             }
+        }
+
+        private void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier) {
+            if(browserListView.tableColumnWithIdentifier(columnIdentifier) != null)
+                browserListView.setIndicatorImage(image, browserListView.tableColumnWithIdentifier(columnIdentifier));
+            if(browserOutlineView.tableColumnWithIdentifier(columnIdentifier) != null)
+                browserOutlineView.setIndicatorImage(image, browserOutlineView.tableColumnWithIdentifier(columnIdentifier));
         }
     }
 
@@ -1508,7 +1518,7 @@ public class CDBrowserController extends CDWindowController
         int[] indexes = new int[this.bookmarkTable.numberOfSelectedRows()];
         int i = 0;
         while(iterator.hasMoreElements()) {
-            indexes[i] = ((Integer) iterator.nextElement()).intValue();
+            indexes[i] = ((Number)iterator.nextElement()).intValue();
             i++;
         }
         this.bookmarkTable.deselectAll(null);
@@ -3210,7 +3220,7 @@ public class CDBrowserController extends CDWindowController
                         item.title()) ? NSCell.OnState : NSCell.OffState);
             }
         }
-        if(identifier.equals("browserSwitchClicked:")) {
+        if(identifier.equals("browserSwitchMenuClicked:")) {
             if(item.tag() == Preferences.instance().getInteger("browser.view")) {
                 item.setState(NSCell.OnState);
             }
@@ -3440,11 +3450,11 @@ public class CDBrowserController extends CDWindowController
             viewMenu.setTitle(NSBundle.localizedString("View", "Toolbar item"));
             NSMenu viewSubmenu = new NSMenu();
             viewSubmenu.addItem(new NSMenuItem(NSBundle.localizedString("List", "Toolbar item"),
-                    new NSSelector("browserSwitchClicked", new Class[]{Object.class}),
+                    new NSSelector("browserSwitchMenuClicked", new Class[]{Object.class}),
                     ""));
             viewSubmenu.itemWithTitle(NSBundle.localizedString("List", "Toolbar item")).setTag(0);
             viewSubmenu.addItem(new NSMenuItem(NSBundle.localizedString("Outline", "Toolbar item"),
-                    new NSSelector("browserSwitchClicked", new Class[]{Object.class}),
+                    new NSSelector("browserSwitchMenuClicked", new Class[]{Object.class}),
                     ""));
             viewSubmenu.itemWithTitle(NSBundle.localizedString("Outline", "Toolbar item")).setTag(1);
             viewMenu.setSubmenu(viewSubmenu);

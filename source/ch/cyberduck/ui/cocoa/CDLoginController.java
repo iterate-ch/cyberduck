@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Login;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.LoginController;
 
 import com.apple.cocoa.application.NSApplication;
@@ -76,7 +77,12 @@ public class CDLoginController implements LoginController
 
             public void setKeychainCheckbox(NSButton keychainCheckbox) {
                 this.keychainCheckbox = keychainCheckbox;
-                this.keychainCheckbox.setState(NSCell.OffState);
+                if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
+                    this.keychainCheckbox.setState(NSCell.OnState);
+                }
+                else {
+                    this.keychainCheckbox.setState(NSCell.OffState);
+                }
             }
 
             public void callback(final int returncode) {

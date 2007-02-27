@@ -145,6 +145,7 @@ public class Editor extends CDController {
             }
             catch(UnsatisfiedLinkError e) {
                 log.error("Could not load the libODBEdit.dylib library:" + e.getMessage());
+                throw e;
             }
         }
         return JNI_LOADED;

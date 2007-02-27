@@ -168,7 +168,7 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         //cache custom sorting preference
         this.sortAscending = Boolean.valueOf(sortAscending);
         //set default value
-        Preferences.instance().setProperty("browser.sort.ascending", sortAscending);
+        Preferences.instance().setProperty("browser.sort.ascending", this.sortAscending.booleanValue());
     }
 
     public boolean isSortedAscending() {
