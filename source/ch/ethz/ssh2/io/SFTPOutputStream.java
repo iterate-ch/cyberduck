@@ -1,6 +1,6 @@
 package ch.ethz.ssh2.io;
 
-import ch.ethz.ssh2.SFTPv3FileHandle;
+import ch.ethz.ssh2.sftp.SFTPv3FileHandle;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -37,7 +37,7 @@ public class SFTPOutputStream extends OutputStream
      * byte written and <code>b[off+len-1]</code> is the last byte written
      * by this operation.
      *
-     * @see ch.ethz.ssh2.SFTPv3Client#upload(SFTPv3FileHandle,long,byte[],int,int)
+     * @see ch.ethz.ssh2.sftp.SFTPv3Client#upload(SFTPv3FileHandle,long,byte[],int,int)
      */
     public void write(byte[] buffer, int offset, int len)
             throws IOException

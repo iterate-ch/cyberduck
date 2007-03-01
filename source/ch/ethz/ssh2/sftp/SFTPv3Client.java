@@ -1,11 +1,10 @@
 
-package ch.ethz.ssh2;
+package ch.ethz.ssh2.sftp;
 
+import ch.ethz.ssh2.Connection;
+import ch.ethz.ssh2.Session;
 import ch.ethz.ssh2.packets.TypesReader;
 import ch.ethz.ssh2.packets.TypesWriter;
-import ch.ethz.ssh2.sftp.AttribFlags;
-import ch.ethz.ssh2.sftp.ErrorCodes;
-import ch.ethz.ssh2.sftp.Packet;
 
 import org.apache.log4j.Logger;
 

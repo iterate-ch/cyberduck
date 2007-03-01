@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.ethz.ssh2.sftp.SFTPException;
 import com.enterprisedt.net.ftp.FTPException;
 
 import ch.cyberduck.ui.cocoa.threading.BackgroundException;
@@ -31,8 +32,6 @@ import com.apple.cocoa.foundation.NSRect;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-
-import ch.ethz.ssh2.SFTPException;
 
 /**
  * @version $Id$

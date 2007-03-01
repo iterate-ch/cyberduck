@@ -18,13 +18,13 @@ package ch.cyberduck.core.sftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.ethz.ssh2.SFTPException;
-import ch.ethz.ssh2.SFTPv3DirectoryEntry;
-import ch.ethz.ssh2.SFTPv3FileAttributes;
-import ch.ethz.ssh2.SFTPv3FileHandle;
 import ch.ethz.ssh2.SCPClient;
 import ch.ethz.ssh2.io.SFTPInputStream;
 import ch.ethz.ssh2.io.SFTPOutputStream;
+import ch.ethz.ssh2.sftp.SFTPException;
+import ch.ethz.ssh2.sftp.SFTPv3DirectoryEntry;
+import ch.ethz.ssh2.sftp.SFTPv3FileAttributes;
+import ch.ethz.ssh2.sftp.SFTPv3FileHandle;
 
 import ch.cyberduck.core.*;
 

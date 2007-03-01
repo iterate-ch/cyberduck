@@ -46,6 +46,7 @@ public class CDDotMacController extends CDController {
         }
         catch (UnsatisfiedLinkError e) {
             log.error("Could not load the libDotMac.dylib library:" + e.getMessage());
+            throw e;
         }
     }
 

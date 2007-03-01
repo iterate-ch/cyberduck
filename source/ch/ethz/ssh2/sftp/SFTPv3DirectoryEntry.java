@@ -1,5 +1,5 @@
 
-package ch.ethz.ssh2;
+package ch.ethz.ssh2.sftp;
 
 /**
  * A <code>SFTPv3DirectoryEntry</code> as returned by {@link SFTPv3Client#ls(String)}.

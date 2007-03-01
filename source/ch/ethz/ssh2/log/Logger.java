@@ -13,7 +13,7 @@ package ch.ethz.ssh2.log;
 
 public class Logger
 {
-	private static final boolean enabled = true;
+	private static final boolean enabled = false;
 
 	private String className;
 
@@ -37,7 +37,6 @@ public class Logger
 		if(enabled)
 		{
             org.apache.log4j.Logger.getLogger(className).debug(message);
-
         }
 	}
 }

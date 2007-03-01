@@ -1,5 +1,5 @@
 
-package ch.ethz.ssh2;
+package ch.ethz.ssh2.sftp;
 
 import java.io.IOException;
 

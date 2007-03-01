@@ -20,6 +20,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.ethz.ssh2.*;
 import ch.ethz.ssh2.crypto.PEMDecoder;
+import ch.ethz.ssh2.sftp.SFTPv3Client;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Session;
@@ -29,10 +30,10 @@ import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.CharArrayWriter;
+import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * @version $Id$
@@ -141,8 +142,8 @@ public class SFTPSession extends Session {
             SSH = new Connection(this.host.getHostname(), this.host.getPort());
             try {
                 SSH.addConnectionMonitor(new ConnectionMonitor() {
-                    public void connectionLost(Throwable reason) {
-                        interrupt();
+                    public void connectionLost(final Throwable reason) {
+                        SFTPSession.this.interrupt();
                     }
                 });
                 final int timeout = Preferences.instance().getInteger("connection.timeout");

@@ -1,6 +1,6 @@
 package ch.ethz.ssh2.io;
 
-import ch.ethz.ssh2.SFTPv3FileHandle;
+import ch.ethz.ssh2.sftp.SFTPv3FileHandle;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +34,7 @@ public class SFTPInputStream extends InputStream
      * <code>len</code> bytes, but a smaller number may be read, possibly
      * zero. The number of bytes actually read is returned as an integer.
      *
-     * @see ch.ethz.ssh2.SFTPv3Client#read(SFTPv3FileHandle,long,byte[],int,int)
+     * @see ch.ethz.ssh2.sftp.SFTPv3Client#read(SFTPv3FileHandle,long,byte[],int,int)
      */
     public int read(byte[] buffer, int offset, int len)
             throws IOException
