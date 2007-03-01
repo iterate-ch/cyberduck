@@ -318,6 +318,7 @@
 	<target name="compile" depends="init" description="Compile the source tree">
 		<javac
 			debug="${debug}"
+			encoding="utf-8"
 			deprecation="on"
 			srcdir="${source}"
 			source="1.4"
@@ -403,6 +404,7 @@
 	<target name="junit" depends="compile" description="Runs all test cases and generate report">
 		<javac
 			debug="${debug}"
+			encoding="utf-8"
 			deprecation="on"
 			srcdir="${unittests}"
 			destdir="${build.unittests}"
