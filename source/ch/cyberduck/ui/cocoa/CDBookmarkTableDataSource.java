@@ -38,7 +38,9 @@ public class CDBookmarkTableDataSource extends NSObject {
 
     static {
         DOCUMENT_ICON = NSImage.imageNamed("bookmark40.tiff");
+        DOCUMENT_ICON.setSize(new NSSize(40, 40));
         DOCUMENT_ICON_SMALL = NSImage.imageNamed("bookmark16.tiff");
+        DOCUMENT_ICON_SMALL.setSize(new NSSize(16, 16));
     }
 
     public static final String ICON_COLUMN = "ICON";

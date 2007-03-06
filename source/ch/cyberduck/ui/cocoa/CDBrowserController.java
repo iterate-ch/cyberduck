@@ -357,6 +357,18 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
+    public static void updateBookmarkTableRowHeight() {
+        NSArray windows = NSApplication.sharedApplication().windows();
+        int count = windows.count();
+        while(0 != count--) {
+            NSWindow window = (NSWindow) windows.objectAtIndex(count);
+            CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+            if(null != controller) {
+                controller._updateBookmarkCellHeight();
+            }
+        }
+    }
+
     public static void updateBrowserTableAttributes() {
         NSArray windows = NSApplication.sharedApplication().windows();
         int count = windows.count();
@@ -1084,6 +1096,12 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
+    protected void _updateBookmarkCellHeight() {
+        this.bookmarkTable.setRowHeight(
+                Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems") ? 18f : 45f);
+        this.bookmarkTable.reloadData();
+    }
+
     protected void _updateBrowserColumns(NSTableView table) {
         NSSelector setResizableMaskSelector
                 = new NSSelector("setResizingMask", new Class[]{int.class});
@@ -1237,8 +1255,8 @@ public class CDBrowserController extends CDWindowController
                         "HostPBoardType" //moving bookmarks
                 }));
 
-        this.bookmarkTable.setRowHeight(
-                Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems") ? 18f : 45f);
+        this._updateBookmarkCellHeight();
+
         NSSelector setResizableMaskSelector
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {

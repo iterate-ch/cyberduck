@@ -30,6 +30,7 @@ import com.apple.cocoa.application.NSMenuItem;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSObject;
 import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSSize;
 
 import org.apache.log4j.Logger;
 
@@ -48,6 +49,14 @@ public class HistoryMenuDelegate extends NSObject {
 
     static {
         HISTORY_FOLDER.mkdirs();
+    }
+
+    private static final NSImage DOCUMENT_ICON_SMALL;
+
+    static {
+        DOCUMENT_ICON_SMALL = NSImage.imageNamed("bookmark16.tiff");
+        DOCUMENT_ICON_SMALL.setScalesWhenResized(true);
+        DOCUMENT_ICON_SMALL.setSize(new NSSize(16f, 16f));
     }
 
     private List cache = new ArrayList();
@@ -115,7 +124,7 @@ public class HistoryMenuDelegate extends NSObject {
             bookmark.setRepresentedObject(h);
             bookmark.setTarget(this);
             bookmark.setEnabled(true);
-            bookmark.setImage(NSImage.imageNamed("bookmark16.tiff"));
+            bookmark.setImage(DOCUMENT_ICON_SMALL);
             bookmark.setAction(new NSSelector("historyMenuItemClicked", new Class[]{NSMenuItem.class}));
             menu.insertItemAtIndex(bookmark, index);
             return !shouldCancel;

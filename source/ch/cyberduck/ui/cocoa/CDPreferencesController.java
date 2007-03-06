@@ -256,6 +256,27 @@ public class CDPreferencesController extends CDWindowController {
         CDBrowserController.validateToolbarItems();
     }
 
+    private NSPopUpButton bookmarkSizePopup; //IBOutlet
+
+    public void setBookmarkSizePopup(NSPopUpButton bookmarkSizePopup) {
+        this.bookmarkSizePopup = bookmarkSizePopup;
+        this.bookmarkSizePopup.setTarget(this);
+        this.bookmarkSizePopup.setAction(new NSSelector("bookmarkSizePopupClicked", new Class[]{NSPopUpButton.class}));
+//        NSImage iconSmall = NSImage.imageNamed("bookmark16.tiff");
+//        iconSmall.setScalesWhenResized(false);
+//        iconSmall.setSize(new NSSize(40f, 40f));
+//        this.bookmarkSizePopup.itemAtIndex(0).setImage(iconSmall);
+//        NSImage iconLarge = NSImage.imageNamed("bookmark40.tiff");
+//        iconLarge.setScalesWhenResized(false);
+//        iconLarge.setSize(new NSSize(40f, 40f));
+//        this.bookmarkSizePopup.itemAtIndex(1).setImage(iconLarge);
+    }
+
+    public void bookmarkSizePopupClicked(NSPopUpButton sender) {
+        Preferences.instance().setProperty("browser.bookmarkDrawer.smallItems", sender.indexOfSelectedItem() == 0);
+        CDBrowserController.updateBookmarkTableRowHeight();
+    }
+
     private NSButton openUntitledBrowserCheckbox; //IBOutlet
 
     public void setOpenUntitledBrowserCheckbox(NSButton openUntitledBrowserCheckbox) {
@@ -1619,12 +1640,12 @@ public class CDPreferencesController extends CDWindowController {
     public void setDefaultFTPHandlerCombobox(NSPopUpButton defaultFTPHandlerCombobox) {
         this.defaultFTPHandlerCombobox = defaultFTPHandlerCombobox;
         this.defaultFTPHandlerCombobox.setTarget(this);
-        this.defaultFTPHandlerCombobox.setAction(new NSSelector("setDefaultFTPHandlerComboboxClicked", new Class[]{NSPopUpButton.class}));
+        this.defaultFTPHandlerCombobox.setAction(new NSSelector("defaultFTPHandlerComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.defaultFTPHandlerCombobox.removeAllItems();
         this.configureDefaultProtocolHandlerCombobox(this.defaultFTPHandlerCombobox, Session.FTP);
     }
 
-    public void setDefaultFTPHandlerComboboxClicked(NSPopUpButton sender) {
+    public void defaultFTPHandlerComboboxClicked(NSPopUpButton sender) {
         URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
                 new String[]{Session.FTP, Session.FTP_TLS}, sender.selectedItem().representedObject().toString()
         );
@@ -1635,12 +1656,12 @@ public class CDPreferencesController extends CDWindowController {
     public void setDefaultSFTPHandlerCombobox(NSPopUpButton defaultSFTPHandlerCombobox) {
         this.defaultSFTPHandlerCombobox = defaultSFTPHandlerCombobox;
         this.defaultSFTPHandlerCombobox.setTarget(this);
-        this.defaultSFTPHandlerCombobox.setAction(new NSSelector("setDefaultSFTPHandlerComboboxClicked", new Class[]{NSPopUpButton.class}));
+        this.defaultSFTPHandlerCombobox.setAction(new NSSelector("defaultSFTPHandlerComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.defaultSFTPHandlerCombobox.removeAllItems();
         this.configureDefaultProtocolHandlerCombobox(this.defaultSFTPHandlerCombobox, Session.SFTP);
     }
 
-    public void setDefaultSFTPHandlerComboboxClicked(NSPopUpButton sender) {
+    public void defaultSFTPHandlerComboboxClicked(NSPopUpButton sender) {
         URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
                 Session.SFTP, sender.selectedItem().representedObject().toString()
         );

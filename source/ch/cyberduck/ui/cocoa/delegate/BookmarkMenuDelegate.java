@@ -39,6 +39,14 @@ import org.apache.log4j.Logger;
 public class BookmarkMenuDelegate extends NSObject {
     private static Logger log = Logger.getLogger(BookmarkMenuDelegate.class);
 
+    private static final NSImage DOCUMENT_ICON_SMALL;
+
+    static {
+        DOCUMENT_ICON_SMALL = NSImage.imageNamed("bookmark16.tiff");
+        DOCUMENT_ICON_SMALL.setScalesWhenResized(true);
+        DOCUMENT_ICON_SMALL.setSize(new NSSize(16f, 16f));
+    }
+
     /**
      * @see com.apple.cocoa.application.NSMenu.Delegate
      */
@@ -80,7 +88,7 @@ public class BookmarkMenuDelegate extends NSObject {
             Host h = (Host) HostCollection.instance().get(index - 8);
             item.setTitle(h.getNickname());
             item.setTarget(this);
-            item.setImage(NSImage.imageNamed("bookmark16.tiff"));
+            item.setImage(DOCUMENT_ICON_SMALL);
             item.setAction(new NSSelector("bookmarkMenuItemClicked", new Class[]{Object.class}));
             item.setRepresentedObject(h);
         }
