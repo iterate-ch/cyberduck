@@ -499,48 +499,57 @@ public class CDMainController extends CDController {
      */
     public int applicationShouldTerminate(NSApplication app) {
         log.debug("applicationShouldTerminate");
-        if(!donationBoxDisplayed && Preferences.instance().getBoolean("donate.reminder")) {
-            // The donation dialog has not been displayed yet and the users has never choosen
-            // not to show it again in the future
-            final int uses = Preferences.instance().getInteger("uses");
-            CDWindowController c = new CDWindowController() {
-                private NSButton neverShowDonationCheckbox;
+        if(!donationBoxDisplayed) {
+            Object lastreminder = Preferences.instance().getObject("donate.reminder");
+            if(null == lastreminder
+                    || !NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString().equals(lastreminder)) 
+            {
+                // The donation dialog has not been displayed yet and the users has never choosen
+                // not to show it again in the future
+                final int uses = Preferences.instance().getInteger("uses");
+                CDWindowController c = new CDWindowController() {
+                    private NSButton neverShowDonationCheckbox;
 
-                public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
-                    this.neverShowDonationCheckbox = neverShowDonationCheckbox;
-                    this.neverShowDonationCheckbox.setTarget(this);
-                    this.neverShowDonationCheckbox.setState(NSCell.OffState);
-                }
-
-                public void awakeFromNib() {
-                    this.window().setTitle(this.window().title() + " (" + uses + ")");
-                    this.window().center();
-                    this.window().makeKeyAndOrderFront(null);
-                }
-
-                public void closeDonationSheet(final NSButton sender) {
-                    this.window().close();
-                    Preferences.instance().setProperty("donate.reminder", neverShowDonationCheckbox.state() == NSCell.OffState);
-                    if(sender.tag() == CDSheetCallback.DEFAULT_OPTION) {
-                        try {
-                            NSWorkspace.sharedWorkspace().openURL(
-                                    new java.net.URL(Preferences.instance().getProperty("website.donate")));
-                        }
-                        catch(java.net.MalformedURLException e) {
-                            log.error(e.getMessage());
-                        }
+                    public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
+                        this.neverShowDonationCheckbox = neverShowDonationCheckbox;
+                        this.neverShowDonationCheckbox.setTarget(this);
+                        this.neverShowDonationCheckbox.setState(NSCell.OffState);
                     }
-                    NSApplication.sharedApplication().terminate(null);
+
+                    public void awakeFromNib() {
+                        this.window().setTitle(this.window().title() + " (" + uses + ")");
+                        this.window().center();
+                        this.window().makeKeyAndOrderFront(null);
+                    }
+
+                    public void closeDonationSheet(final NSButton sender) {
+                        this.window().close();
+                        boolean never = neverShowDonationCheckbox.state() == NSCell.OnState;
+                        if(never) {
+                            Preferences.instance().setProperty("donate.reminder",
+                                    NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString());
+                        }
+                        if(sender.tag() == CDSheetCallback.DEFAULT_OPTION) {
+                            try {
+                                NSWorkspace.sharedWorkspace().openURL(
+                                        new java.net.URL(Preferences.instance().getProperty("website.donate")));
+                            }
+                            catch(java.net.MalformedURLException e) {
+                                log.error(e.getMessage());
+                            }
+                        }
+                        NSApplication.sharedApplication().terminate(null);
+                    }
+                };
+                synchronized(NSApplication.sharedApplication()) {
+                    if(!NSApplication.loadNibNamed("Donate", c)) {
+                        log.fatal("Couldn't load Donate.nib");
+                    }
                 }
-            };
-            synchronized(NSApplication.sharedApplication()) {
-                if(!NSApplication.loadNibNamed("Donate", c)) {
-                    log.fatal("Couldn't load Donate.nib");
-                }
+                donationBoxDisplayed = true;
+                // Cancel application termination. Dismissing the donation dialog will attempt to quit again.
+                return NSApplication.TerminateCancel;
             }
-            donationBoxDisplayed = true;
-            // Cancel application termination. Dismissing the donation dialog will attempt to quit again.
-            return NSApplication.TerminateCancel;
         }
         NSArray windows = app.windows();
         int count = windows.count();

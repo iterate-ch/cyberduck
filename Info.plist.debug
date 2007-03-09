@@ -56,6 +56,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>Version</key>
+	<string>_VERSION_</string>
 	<key>CFBundleVersion</key>
 	<string>_REVISION_</string>
 	<key>Java</key>
