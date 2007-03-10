@@ -27,6 +27,7 @@
                 acceptAnyCertificateCheckbox = NSButton; 
                 alternatingRowBackgroundCheckbox = NSButton; 
                 anonymousField = NSTextField; 
+                bookmarkSizePopup = NSPopUpButton; 
                 bringQueueToBackCheckbox = NSButton; 
                 bringQueueToFrontCheckbox = NSButton; 
                 browserSerializeCheckbox = NSButton; 
