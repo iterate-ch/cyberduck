@@ -24,9 +24,11 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftps.FTPSSession;
 import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate;
+import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
+import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -35,11 +37,11 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.Collection;
-import java.security.cert.X509Certificate;
-import java.security.cert.CertificateNotYetValidException;
-import java.security.cert.CertificateExpiredException;
 
 /**
  * @version $Id$
@@ -2425,15 +2427,27 @@ public class CDBrowserController extends CDWindowController
 
     /**
      * 
-     * @param q
+     * @param transfer
      * @param workdir Will reload the data for this directory in the browser after the
      * transfer completes
      * @see #transfer(Transfer)
      */
-    protected void transfer(final Transfer q, final Path workdir) {
+    protected void transfer(final Transfer transfer, final Path workdir) {
         final TransferListener l;
-        q.addListener(l = new TransferAdapter() {
-            public void queueDidEnd() {
+        transfer.addListener(l = new TransferAdapter() {
+            public void transferDidEnd() {
+                if(transfer instanceof DownloadTransfer) {
+                    Growl.instance().notify("Download complete", transfer.getName());
+                    if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
+                        NSWorkspace.sharedWorkspace().openFile(transfer.getRoot().getLocal().toString());
+                    }
+                }
+                if(transfer instanceof UploadTransfer) {
+                    Growl.instance().notify("Upload complete", transfer.getName());
+                }
+                if(transfer instanceof SyncTransfer) {
+                    Growl.instance().notify("Synchronization complete", transfer.getName());
+                }
                 if (isMounted()) {
                     workdir.invalidate();
                     invoke(new Runnable() {
@@ -2446,10 +2460,10 @@ public class CDBrowserController extends CDWindowController
         });
         this.addListener(new CDWindowListener() {
             public void windowWillClose() {
-                q.removeListener(l);
+                transfer.removeListener(l);
             }
         });
-        this.transfer(q);
+        this.transfer(transfer);
     }
 
     /**
@@ -2724,6 +2738,13 @@ public class CDBrowserController extends CDWindowController
             public void cleanup() {
                 runnable.cleanup();
             }
+
+            public void error(final BackgroundException exception) {
+                Growl.instance().notify(exception.getMessage(),
+                        null == exception.getPath() ? exception.getSession().getHost().getHostname()
+                                : exception.getPath().getName());
+                super.error(exception);
+            }
         }, backgroundLock);
     }
 
@@ -2886,6 +2907,7 @@ public class CDBrowserController extends CDWindowController
                         securityLabel.setEnabled(true);
                     }
                 });
+                Growl.instance().notify("Connection opened", host.getHostname());
             }
 
             public void connectionWillClose() {

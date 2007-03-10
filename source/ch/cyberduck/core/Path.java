@@ -827,11 +827,4 @@ public abstract class Path extends NSObject {
     protected void error(String message, Throwable e) {
         this.getSession().error(this, message, e);
     }
-
-    /**
-     * @see Session#error(Path,String,Throwable,String)
-     */
-    protected void error(String message, Throwable e, String title) {
-        this.getSession().error(this, message, e, title);
-    }
 }

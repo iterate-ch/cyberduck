@@ -25,25 +25,34 @@ package ch.cyberduck.core;
 public interface TransferListener {
 
     /**
-     *
+     * The transfers are about to start transfering
      */
-    public abstract void queueWillStart();
+    public abstract void transferWillStart();
 
     /**
-     *
+     * The transfer is paused and waits for other transfers to finish first
      */
-    public abstract void queueDidEnd();
+    public abstract void transferPaused();
+
+    /**
+     * The transfer has a slot in the queue allocated
+     */
+    public abstract void transferResumed();
+
+    /**
+     * All transfers did end
+     */
+    public abstract void transferDidEnd();
 
     /**
      *
      * @param path
      */
-    public abstract void transferWillStart(Path path);
+    public abstract void willTransferPath(Path path);
 
     /**
      *
      * @param path
      */
-    public abstract void transferDidEnd(Path path);
-
+    public abstract void didTransferPath(Path path);
 }

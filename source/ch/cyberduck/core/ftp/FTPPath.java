@@ -486,10 +486,10 @@ public class FTPPath extends Path {
                 }
             }
             catch(FTPException e) {
-                this.error("Download failed", e, this.getName());
+                this.error("Download failed", e);
             }
             catch(IOException e) {
-                this.error("Connection failed", e, this.getName());
+                this.error("Connection failed", e);
                 session.interrupt();
             }
             finally {
@@ -704,10 +704,10 @@ public class FTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch(FTPException e) {
-                this.error("Upload failed", e, this.getName());
+                this.error("Upload failed", e);
             }
             catch(IOException e) {
-                this.error("Connection failed", e, this.getName());
+                this.error("Connection failed", e);
                 session.interrupt();
             }
             finally {

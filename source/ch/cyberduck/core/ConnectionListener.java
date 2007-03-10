@@ -24,32 +24,32 @@ package ch.cyberduck.core;
 public interface ConnectionListener {
 
     /**
-     *
+     * The remote connection will be opened next
      */
     public abstract void connectionWillOpen();
 
     /**
-     *
+     * The remote connection has been opened successfully
      */
     public abstract void connectionDidOpen();
 
     /**
-     *
+     * The remote connection is about to be closed
      */
     public abstract void connectionWillClose();
 
     /**
-     *
+     * The remote connection has been closed
      */
     public abstract void connectionDidClose();
 
     /**
-     *
+     * An action needing remote access to the server is about to be initiated
      */
     public abstract void activityStarted();
 
     /**
-     *
+     * The remote access has either succeeeded or failed
      */
     public abstract void activityStopped();
 }

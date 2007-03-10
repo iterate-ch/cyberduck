@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.ui.LoginController;
-import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import com.apple.cocoa.foundation.NSBundle;
@@ -189,13 +188,10 @@ public abstract class Session extends NSObject {
                 else {
                     home = workdir();
                 }
-                Growl.instance().notify(
-                        NSBundle.localizedString("Connection opened", "Growl", "Growl Notification"),
-                        host.getHostname());
                 return home;
             }
             catch(IOException e) {
-                this.error(null, "Connection failed", e, host.getHostname());
+                this.error(null, "Connection failed", e);
                 this.interrupt();
             }
             return null;
@@ -425,30 +421,17 @@ public abstract class Session extends NSObject {
     }
 
     /**
-     * Notifies all progress listeners and notifying Growl using the <code>title</code>
+     * Notifies all progress listeners
      * @param message The message to be displayed in a status field
-     * @param title If not null, then send the message to Growl
      * @see ProgressListener
      */
-    public void message(final String message, String title) {
+    public void message(final String message) {
         log.info(message);
         ProgressListener[] l = (ProgressListener[]) progressListeners.toArray(
                 new ProgressListener[progressListeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].message(message);
         }
-        if(title != null) {
-            Growl.instance().notify(NSBundle.localizedString(message, "Growl"), title);
-        }
-    }
-
-    /**
-     * Notifies all progress listeners
-     * @param message The message to be displayed in a status field
-     * @see ProgressListener
-     */
-    public void message(final String message) {
-        this.message(message, null);
     }
 
     private Vector errorListeners = new Vector();
@@ -468,29 +451,12 @@ public abstract class Session extends NSObject {
      * @param e The cause of the error
      */
     public void error(Path path, String message, Throwable e) {
-        this.error(path, message, e, null);
-    }
-
-    /**
-     * Notifies all error listeners of this error and sends the message to Growl
-     * if a <code>title</code> is not null.
-     * @param path The path related to this error
-     * @param message The error message to be displayed in the alert sheet
-     * @param e The cause of the error
-     * @param title If not null, send the error to Growl
-     * @see Growl
-     * @see ErrorListener
-     */
-    public void error(Path path, String message, Throwable e, String title) {
         log.info(e.getMessage());
         BackgroundException failure = new BackgroundException(this, path, message, e);
         ErrorListener[] l = (ErrorListener[]) errorListeners.toArray(
                 new ErrorListener[errorListeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].error(failure);
-        }
-        if(title != null) {
-            Growl.instance().notify(NSBundle.localizedString(message, "Growl"), title);
         }
     }
 

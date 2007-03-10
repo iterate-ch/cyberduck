@@ -54,15 +54,6 @@ public class SyncTransfer extends Transfer {
                 + NSBundle.localizedString("with", "") + " " + this.getRoot().getLocal().getName();
     }
 
-    public void fireQueueStoppedEvent() {
-        if(this.isComplete() && !this.isCanceled()) {
-            this.getSession().message(
-                    NSBundle.localizedString("Synchronization complete", "Growl", "Growl Notification"),
-                    this.getName());
-        }
-        super.fireQueueStoppedEvent();
-    }
-
     private void addLocalChilds(List childs, Path p) {
         if(!this.isCanceled()) {
             if(p.getLocal().exists()) {// && p.getLocal().canRead()) {

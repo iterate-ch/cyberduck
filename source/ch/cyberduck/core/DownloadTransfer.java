@@ -48,15 +48,6 @@ public class DownloadTransfer extends Transfer {
         super(dict, s);
     }
 
-    public void fireQueueStoppedEvent() {
-        if(this.isComplete() && !this.isCanceled()) {
-            this.getSession().message(
-                    NSBundle.localizedString("Download complete", "Growl", "Growl Notification"),
-                    this.getName());
-        }
-        super.fireQueueStoppedEvent();
-    }
-
     protected void getChilds(List childs, Path p) {
         if(!this.isCanceled()) {
             childs.add(p);

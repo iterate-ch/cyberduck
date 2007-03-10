@@ -25,6 +25,7 @@ import ch.cyberduck.core.io.FileWatcherListener;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDController;
 import ch.cyberduck.ui.cocoa.CDIconCache;
+import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.NSWorkspace;
@@ -227,8 +228,8 @@ public class Editor extends CDController {
                 }
                 if(path.status.isComplete()) {
                     path.getSession().message(
-                            NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"),
-                            path.getName());
+                            NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"));
+                    Growl.instance().notify("Upload complete", path.getName());
                 }
             }
         });

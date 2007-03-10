@@ -48,15 +48,6 @@ public class UploadTransfer extends Transfer {
         return dict;
     }
 
-    public void fireQueueStoppedEvent() {
-        if(this.isComplete() && !this.isCanceled()) {
-            this.getSession().message(
-                    NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"),
-                    this.getName());
-        }
-        super.fireQueueStoppedEvent();
-    }
-
     protected void getChilds(List childs, Path p) {
         if(!this.isCanceled()) {
             if(p.getLocal().exists()) {// && p.getLocal().canRead()) {

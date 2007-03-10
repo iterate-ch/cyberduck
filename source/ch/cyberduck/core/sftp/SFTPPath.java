@@ -464,10 +464,10 @@ public class SFTPPath extends Path {
                 }
             }
             catch(SFTPException e) {
-                this.error("Download failed", e, this.getName());
+                this.error("Download failed", e);
             }
             catch(IOException e) {
-                this.error("Connection failed", e, this.getName());
+                this.error("Connection failed", e);
                 session.interrupt();
             }
             finally {
@@ -594,10 +594,10 @@ public class SFTPPath extends Path {
                 this.getParent().invalidate();
             }
             catch(SFTPException e) {
-                this.error("Upload failed", e, this.getName());
+                this.error("Upload failed", e);
             }
             catch(IOException e) {
-                this.error("Connection failed", e, this.getName());
+                this.error("Connection failed", e);
                 session.interrupt();
             }
             finally {
