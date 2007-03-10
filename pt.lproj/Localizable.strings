@@ -46,7 +46,7 @@
 /* No comment provided by engineer. */
 "Choose" = "Escolher";
 
-/* No comment provided by engineer. */
+/* Toolbar item in Transfer Window. */
 "Clean Up" = "Apagar";
 
 /* Remove all bookmarks from history. */
@@ -190,6 +190,12 @@
 /* No comment provided by engineer. */
 "Mac Line Endings (CR)" = "Terminação de linhas de Mac (CR)";
 
+/* Tooltip in Transfer Window. */
+"Maximum number of simultaneous transfers" = "Maximum number of simultaneous transfers";
+
+/* Toolbar item in Transfer Window. */
+"Maximum Transfers" = "Maximum Transfers";
+
 /* A column in the browser */
 "Modified" = "Modificado";
 
@@ -278,13 +284,13 @@
 /* Toolbar item tooltip */
 "Refresh directory listing" = "Actualizar listagem da pasta";
 
-/* No comment provided by engineer. */
+/* Toolbar item in Transfer Window. */
 "Reload" = "Recarregar";
 
-/* No comment provided by engineer. */
+/* Toolbar item in Transfer Window. */
 "Remove" = "Remover";
 
-/* No comment provided by engineer. */
+/* Toolbar item in Transfer Window. */
 "Resume" = "Continuar";
 
 /* No comment provided by engineer. */
@@ -314,7 +320,7 @@
 /* A column in the browser */
 "Size" = "Tamanho";
 
-/* No comment provided by engineer. */
+/* Toolbar item in Transfer Window. */
 "Stop" = "Parar";
 
 /* Toolbar item tooltip */
@@ -369,7 +375,7 @@
 "There was a problem checking for an update. Please try again later." = "Ocorreu um problema ao verificar a existência de actualizações. Por favor tente mais tarde.";
 
 /* No comment provided by engineer. */
-"There are items in the queue currently being transferred. Quit anyway?" = "Existem items activos na fila de transferência. Deseja fechar??";
+"There are files currently being transferred. Quit anyway?" = "Existem items activos na fila de transferência. Deseja fechar??";
 
 /* No comment provided by engineer. */
 "Try to resume transfer" = "Tentar retomar a transferência";

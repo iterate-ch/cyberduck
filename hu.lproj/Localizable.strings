@@ -46,7 +46,7 @@
 /* No comment provided by engineer. */
 "Choose" = "Kiválasztás";
 
-/* No comment provided by engineer. */
+/* Toolbar item in Transfer Window. */
 "Clean Up" = "Törlés";
 
 /* Remove all bookmarks from history. */
@@ -190,6 +190,12 @@
 /* No comment provided by engineer. */
 "Mac Line Endings (CR)" = "Mac sorvég (CR)";
 
+/* Tooltip in Transfer Window. */
+"Maximum number of simultaneous transfers" = "Maximum number of simultaneous transfers";
+
+/* Toolbar item in Transfer Window. */
+"Maximum Transfers" = "Maximum Transfers";
+
 /* A column in the browser */
 "Modified" = "Változtatva";
 
@@ -278,13 +284,13 @@
 /* Toolbar item tooltip */
 "Refresh directory listing" = "Mappa lista frissítése";
 
-/* No comment provided by engineer. */
+/* Toolbar item in Transfer Window. */
 "Reload" = "Újra letölt";
 
-/* No comment provided by engineer. */
+/* Toolbar item in Transfer Window. */
 "Remove" = "Eltávolít";
 
-/* No comment provided by engineer. */
+/* Toolbar item in Transfer Window. */
 "Resume" = "Visszalép";
 
 /* No comment provided by engineer. */
@@ -314,7 +320,7 @@
 /* A column in the browser */
 "Size" = "Méret";
 
-/* No comment provided by engineer. */
+/* Toolbar item in Transfer Window. */
 "Stop" = "Stop";
 
 /* Toolbar item tooltip */
@@ -348,7 +354,7 @@
 "The host key supplied is" = "A szolgáltatott kiszolgáló kulcs a következő";
 
 /* No comment provided by engineer. */
-"There are items in the queue currently being transferred. Quit anyway?" = "Aktív elemek vannak feladatok között. Biztosan kilép?";
+"There are files currently being transferred. Quit anyway?" = "Aktív elemek vannak feladatok között. Biztosan kilép?";
 
 /* Alert sheet text */
 "There was a problem checking for an update. Please try again later." = "Hiba a frissítés ellenőrzése közben. Próbálja később.";

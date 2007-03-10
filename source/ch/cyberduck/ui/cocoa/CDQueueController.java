@@ -149,7 +149,7 @@ public class CDQueueController extends CDWindowController
             Preferences.instance().setProperty("queue.openByDefault", instance.window().isVisible());
             if(QueueCollection.instance().numberOfRunningTransfers() > 0) {
                 NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Transfer in progress", ""), //title
-                        NSBundle.localizedString("There are items in the queue currently being transferred. Quit anyway?", ""), // message
+                        NSBundle.localizedString("There are files currently being transferred. Quit anyway?", ""), // message
                         NSBundle.localizedString("Quit", ""), // defaultbutton
                         NSBundle.localizedString("Cancel", ""), //alternative button
                         null //other button

@@ -46,7 +46,7 @@
 /* No comment provided by engineer. */
 "Choose" = "Pilih";
 
-/* No comment provided by engineer. */
+/* Toolbar item in Transfer Window. */
 "Clean Up" = "Bersihkan";
 
 /* Remove all bookmarks from history. */
@@ -190,6 +190,12 @@
 /* No comment provided by engineer. */
 "Mac Line Endings (CR)" = "Akhiran Baris Mac (CR)";
 
+/* Tooltip in Transfer Window. */
+"Maximum number of simultaneous transfers" = "Maximum number of simultaneous transfers";
+
+/* Toolbar item in Transfer Window. */
+"Maximum Transfers" = "Maximum Transfers";
+
 /* A column in the browser */
 "Modified" = "TelahDirubah";
 
@@ -278,13 +284,13 @@
 /* Toolbar item tooltip */
 "Refresh directory listing" = "Refresh daftar direktori";
 
-/* No comment provided by engineer. */
+/* Toolbar item in Transfer Window. */
 "Reload" = "Panggil Kembali";
 
-/* No comment provided by engineer. */
+/* Toolbar item in Transfer Window. */
 "Remove" = "Hilangkan";
 
-/* No comment provided by engineer. */
+/* Toolbar item in Transfer Window. */
 "Resume" = "Melanjutkan";
 
 /* No comment provided by engineer. */
@@ -314,7 +320,7 @@
 /* A column in the browser */
 "Size" = "Ukuran";
 
-/* No comment provided by engineer. */
+/* Toolbar item in Transfer Window. */
 "Stop" = "Berhenti";
 
 /* Toolbar item tooltip */
@@ -348,7 +354,7 @@
 "The host key supplied is" = "Kunci host yang disertakan adalah";
 
 /* No comment provided by engineer. */
-"There are items in the queue currently being transferred. Quit anyway?" = "Ada beberapa file dalam antrian yang sedang ditransfer. Tetap keluar dari aplikasi?";
+"There are files currently being transferred. Quit anyway?" = "Ada beberapa file dalam antrian yang sedang ditransfer. Tetap keluar dari aplikasi?";
 
 /* Alert sheet text */
 "There was a problem checking for an update. Please try again later." = "Ada masalah ketika mengecek update software. Silahkan mencoba beberapa saat lagi.";
