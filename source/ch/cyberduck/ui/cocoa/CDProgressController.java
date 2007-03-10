@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -87,43 +88,53 @@ public class CDProgressController extends CDController {
                 });
             }
         };
-        final ConnectionListener cl = new ConnectionAdapter() {
-            public void connectionWillOpen() {
-                transfer.getSession().addProgressListener(pl);
-            }
-
-            public void connectionDidClose() {
-                transfer.getSession().removeProgressListener(pl);
-                transfer.getSession().removeConnectionListener(this);
-            }
-        };
         final TransferListener tl = new TransferListener() {
-            public void queueWillStart() {
+            public void transferWillStart() {
                 CDProgressController.this.invoke(new Runnable() {
                     public void run() {
                         progressBar.setHidden(false);
                         progressBar.setIndeterminate(true);
                         progressBar.startAnimation(null);
                         progressBar.setNeedsDisplay(true);
+                        statusIconView.setImage(RED_ICON);
                     }
                 });
-                transfer.getSession().addConnectionListener(cl);
+                transfer.getSession().addProgressListener(pl);
             }
 
-            public void queueDidEnd() {
+            public void transferPaused() {
                 CDProgressController.this.invoke(new Runnable() {
                     public void run() {
+                        statusIconView.setImage(YELLOW_ICON);
+                    }
+                });
+                Growl.instance().notify("Transfer queued", transfer.getHost().getHostname());
+            }
+
+            public void transferResumed() {
+                CDProgressController.this.invoke(new Runnable() {
+                    public void run() {
+                        statusIconView.setImage(RED_ICON);
+                    }
+                });
+            }
+
+            public void transferDidEnd() {
+                CDProgressController.this.invoke(new Runnable() {
+                    public void run() {
+                        statusText = null;
+                        progressField.setAttributedStringValue(new NSAttributedString(getProgressText(),
+                                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
                         progressBar.setIndeterminate(true);
                         progressBar.stopAnimation(null);
                         progressBar.setHidden(true);
+                        statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
                     }
                 });
-                if(transfer.isComplete() && !transfer.isCanceled()) {
-                    transfer.getSession().removeProgressListener(pl);
-                }
+                transfer.getSession().removeProgressListener(pl);
             }
 
-            public void transferWillStart(final Path path) {
+            public void willTransferPath(final Path path) {
                 meter = new Speedometer();
                 progressTimer = new NSTimer(0.1, //seconds
                         CDProgressController.this, //target
@@ -134,7 +145,7 @@ public class CDProgressController extends CDController {
                         NSRunLoop.DefaultRunLoopMode);
             }
 
-            public void transferDidEnd(final Path path) {
+            public void didTransferPath(final Path path) {
                 progressTimer.invalidate();
                 meter = null;
             }
@@ -300,6 +311,22 @@ public class CDProgressController extends CDController {
         this.progressBar.setControlSize(NSProgressIndicator.SmallControlSize);
         this.progressBar.setStyle(NSProgressIndicator.ProgressIndicatorBarStyle);
         this.progressBar.setUsesThreadedAnimation(true);
+    }
+
+    private NSImageView statusIconView; //IBOutlet
+
+    private static final NSImage RED_ICON = NSImage.imageNamed("statusRed.tiff");
+    private static final NSImage GREEN_ICON = NSImage.imageNamed("statusGreen.tiff");
+    private static final NSImage YELLOW_ICON = NSImage.imageNamed("statusYellow.tiff");
+
+    public void setStatusIconView(final NSImageView statusIconView) {
+        this.statusIconView = statusIconView;
+        if(transfer.isQueued()) {
+            this.statusIconView.setImage(YELLOW_ICON);
+        }
+        else {
+            this.statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
+        }
     }
 
     private NSImageView typeIconView; //IBOutlet

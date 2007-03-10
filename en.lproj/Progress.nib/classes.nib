@@ -20,6 +20,7 @@
                 progressBar = NSProgressIndicator; 
                 progressField = NSTextField; 
                 progressView = NSView; 
+                statusIconView = NSImageView; 
                 typeIconView = NSImageView; 
             }; 
             SUPERCLASS = NSObject; 
