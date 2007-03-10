@@ -7,6 +7,8 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 2.8b1 [http://trac.cyberduck.ch/query?status=closed&milestone=2.8]
 - [Feature] Using Ganymed SSH2 library [#185]
 - [Feature] Support for SCP transfers [#1043]
+- [Feature] Queuing file transfers [#986]
+- [Feature] Option to use small items in Bookmarks drawer [#--]
 - [Feature] Setting default permissions for folders [#77]
 
 2.7.3 [http://trac.cyberduck.ch/query?status=closed&milestone=2.7.3]
