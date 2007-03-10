@@ -25,6 +25,7 @@ import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.util.Iterator;
 
 
 /**
@@ -166,6 +167,38 @@ public class QueueCollection extends Collection {
             return ((CDProgressController) super.get(row)).getTransfer();
         }
         return null;
+    }
+
+    public int numberOfRunningTransfers() {
+        int running = 0;
+        // Count the number of running transfers
+        for(Iterator iter = this.iterator(); iter.hasNext(); ) {
+            Transfer t = (Transfer) iter.next();
+            if(null == t) {
+                continue;
+            }
+            if(t.isRunning()) {
+                running++;
+            }
+        }
+        log.debug("numberOfRunningTransfers:"+running);
+        return running;
+    }
+
+    public int numberOfQueuedTransfers() {
+        int queued = 0;
+        // Count the number of queued transfers
+        for(Iterator iter = this.iterator(); iter.hasNext(); ) {
+            Transfer t = (Transfer) iter.next();
+            if(null == t) {
+                continue;
+            }
+            if(t.isQueued()) {
+                queued++;
+            }
+        }
+        log.debug("numberOfQueuedTransfers:"+queued);
+        return queued;
     }
 
     /**

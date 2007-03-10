@@ -15,12 +15,15 @@
             LANGUAGE = ObjC; 
             SUPERCLASS = NSObject; 
         }, 
+        {CLASS = NSDatePicker; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
         {
+            ACTIONS = {queueSizeChanged = id; }; 
             CLASS = "ch.cyberduck.core.CDQueueController"; 
             LANGUAGE = Java; 
             OUTLETS = {
                 localField = NSTextField; 
                 localLabel = NSTextField; 
+                queueSizeView = NSView; 
                 queueTable = NSTableView; 
                 urlField = NSTextField; 
                 urlLabel = NSTextField; 

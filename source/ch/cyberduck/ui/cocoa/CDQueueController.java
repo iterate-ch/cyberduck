@@ -21,6 +21,8 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
+import ch.cyberduck.ui.cocoa.threading.BackgroundException;
+import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -81,7 +83,7 @@ public class CDQueueController extends CDWindowController
     // Outlets
     // ----------------------------------------------------------
 
-    private NSTextField urlLabel;
+    private NSTextField urlLabel; // IBOutlet
 
     public void setUrlLabel(NSTextField urlLabel) {
         this.urlLabel = urlLabel;
@@ -89,13 +91,13 @@ public class CDQueueController extends CDWindowController
         this.urlLabel.setStringValue("URL:");
     }
 
-    private NSTextField urlField;
+    private NSTextField urlField; // IBOutlet
 
     public void setUrlField(NSTextField urlField) {
         this.urlField = urlField;
     }
 
-    private NSTextField localLabel;
+    private NSTextField localLabel; // IBOutlet
 
     public void setLocalLabel(NSTextField localLabel) {
         this.localLabel = localLabel;
@@ -103,17 +105,27 @@ public class CDQueueController extends CDWindowController
         this.localLabel.setStringValue(NSBundle.localizedString("Local File", "") + ":");
     }
 
-    private NSTextField localField;
+    private NSTextField localField; // IBOutlet
 
     public void setLocalField(NSTextField localField) {
         this.localField = localField;
     }
 
+    private NSView queueSizeView; // IBOutlet
+
+    public void setQueueSizeView(final NSView queueSizeView) {
+        this.queueSizeView = queueSizeView;
+    }
+
+    public void queueSizeChanged(final Object sender) {
+        synchronized(QueueCollection.instance()) {
+            QueueCollection.instance().notifyAll();
+        }
+    }
+
     private CDQueueController() {
         ;
     }
-
-    private static final Object lock = new Object();
 
     public static CDQueueController instance() {
         synchronized(NSApplication.sharedApplication()) {
@@ -127,21 +139,6 @@ public class CDQueueController extends CDWindowController
         }
     }
 
-    /**
-     * @return true if any transfer is active
-     */
-    public boolean hasRunningTransfers() {
-        synchronized(QueueCollection.instance()) {
-            for(int i = 0; i < QueueCollection.instance().size(); i++) {
-                Transfer q = (Transfer) QueueCollection.instance().get(i);
-                if(q.isRunning()) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
     /*
       * @return NSApplication.TerminateLater or NSApplication.TerminateNow depending if there are
       * running transfers to be checked first
@@ -150,7 +147,7 @@ public class CDQueueController extends CDWindowController
         if(null != instance) {
             //Saving state of transfer window
             Preferences.instance().setProperty("queue.openByDefault", instance.window().isVisible());
-            if(instance.hasRunningTransfers()) {
+            if(QueueCollection.instance().numberOfRunningTransfers() > 0) {
                 NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Transfer in progress", ""), //title
                         NSBundle.localizedString("There are items in the queue currently being transferred. Quit anyway?", ""), // message
                         NSBundle.localizedString("Quit", ""), // defaultbutton
@@ -314,10 +311,6 @@ public class CDQueueController extends CDWindowController
         }
     }
 
-    // ----------------------------------------------------------
-    //
-    // ----------------------------------------------------------
-
     private void reloadQueueTable() {
         synchronized(CDQueueController.instance()) {
             while(this.queueTable.subviews().count() > 0) {
@@ -384,9 +377,8 @@ public class CDQueueController extends CDWindowController
                 try {
                     transfer.getSession().addErrorListener(this);
                     transfer.getSession().addTranscriptListener(this);
-                    transfer.addListener(new TransferListener() {
-
-                        public void transferWillStart(final Path path) {
+                    transfer.addListener(new TransferAdapter() {
+                        public void willTransferPath(final Path path) {
                             if(path.attributes.isFile() && !path.getLocal().exists()) {
                                 invoke(new Runnable() {
                                     public void run() {
@@ -397,11 +389,11 @@ public class CDQueueController extends CDWindowController
                             queueTable.setNeedsDisplay(true);
                         }
 
-                        public void transferDidEnd(final Path path) {
+                        public void didTransferPath(final Path path) {
                             queueTable.setNeedsDisplay(true);
                         }
 
-                        public void queueWillStart() {
+                        public void transferWillStart() {
                             invoke(new Runnable() {
                                 public void run() {
                                     window.toolbar().validateVisibleItems();
@@ -418,13 +410,20 @@ public class CDQueueController extends CDWindowController
                             transfer.getSession().setLoginController(new CDLoginController(CDQueueController.instance()));
                         }
 
-                        public void queueDidEnd() {
+                        public void transferDidEnd() {
                             transfer.removeListener(this);
                             if(transfer.isComplete() && !transfer.isCanceled()) {
                                 if(transfer instanceof DownloadTransfer) {
+                                    Growl.instance().notify("Download complete", transfer.getName());
                                     if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
                                         NSWorkspace.sharedWorkspace().openFile(transfer.getRoot().getLocal().toString());
                                     }
+                                }
+                                if(transfer instanceof UploadTransfer) {
+                                    Growl.instance().notify("Upload complete", transfer.getName());
+                                }
+                                if(transfer instanceof SyncTransfer) {
+                                    Growl.instance().notify("Synchronization complete", transfer.getName());
                                 }
                                 if(!hasFailed()) {
                                     if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
@@ -447,7 +446,7 @@ public class CDQueueController extends CDWindowController
                     });
                     transfer.setResumeReqested(resume);
                     transfer.setReloadRequested(reload);
-                    transfer.run(ValidatorFactory.create(transfer, CDQueueController.this));
+                    transfer.run(ValidatorFactory.create(transfer, CDQueueController.this), true);
                 }
                 finally {
                     transfer.getSession().close();
@@ -469,11 +468,16 @@ public class CDQueueController extends CDWindowController
                 window.toolbar().validateVisibleItems();
                 if(transfer.isComplete()) {
                     if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
-                        if(!hasRunningTransfers()) {
+                        if(!(QueueCollection.instance().numberOfRunningTransfers() > 0)) {
                             window().close();
                         }
                     }
                 }
+            }
+
+            public void error(final BackgroundException exception) {
+                Growl.instance().notify(exception.getMessage(), exception.getPath().getName());
+                super.error(exception);
             }
         }, new Object());
     }
@@ -486,6 +490,7 @@ public class CDQueueController extends CDWindowController
     private static final String TOOLBAR_OPEN = "Open";
     private static final String TOOLBAR_SHOW = "Show";
     private static final String TOOLBAR_TRASH = "Trash";
+    private static final String TOOLBAR_QUEUE = "Maximum Transfers";
 
     /**
      * NSToolbar.Delegate
@@ -566,6 +571,15 @@ public class CDQueueController extends CDWindowController
             item.setImage(NSImage.imageNamed("trash.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("trashButtonClicked", new Class[]{Object.class}));
+            return item;
+        }
+        if(itemIdentifier.equals(TOOLBAR_QUEUE)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_QUEUE, ""));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_QUEUE, ""));
+            item.setToolTip(NSBundle.localizedString("Maximum number of simultaneous transfers", ""));
+            item.setView(this.queueSizeView);
+            item.setMinSize(this.queueSizeView.frame().size());
+            item.setMaxSize(this.queueSizeView.frame().size());
             return item;
         }
         // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
@@ -752,6 +766,7 @@ public class CDQueueController extends CDWindowController
                 TOOLBAR_RESUME,
                 TOOLBAR_RELOAD,
                 TOOLBAR_STOP,
+                TOOLBAR_QUEUE,
                 TOOLBAR_REMOVE,
                 TOOLBAR_CLEAN_UP,
                 NSToolbarItem.FlexibleSpaceItemIdentifier,
@@ -775,6 +790,7 @@ public class CDQueueController extends CDWindowController
                 TOOLBAR_SHOW,
                 TOOLBAR_OPEN,
                 TOOLBAR_TRASH,
+                TOOLBAR_QUEUE,
                 NSToolbarItem.CustomizeToolbarItemIdentifier,
                 NSToolbarItem.SpaceItemIdentifier,
                 NSToolbarItem.SeparatorItemIdentifier,

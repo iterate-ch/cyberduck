@@ -250,6 +250,8 @@ public abstract class Preferences {
         defaults.put("queue.save", String.valueOf(true));
         defaults.put("queue.removeItemWhenComplete", String.valueOf(false));
 
+        defaults.put("queue.maxtransfers", String.valueOf(5));
+
         /**
          * Open completed downloads
          */
@@ -391,7 +393,7 @@ public abstract class Preferences {
      * @return The value of the property
      */
     public Object getObject(String property) {
-        String value = (String) defaults.get(property);
+        Object value = defaults.get(property);
         if (null == value) {
             log.warn("No property with key '" + property + "'");
         }
@@ -404,6 +406,10 @@ public abstract class Preferences {
 
     public int getInteger(String property) {
         return Integer.parseInt(this.getObject(property).toString());
+    }
+
+    public double getDouble(String property) {
+        return Double.parseDouble(this.getObject(property).toString());
     }
 
     public boolean getBoolean(String property) {

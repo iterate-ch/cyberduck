@@ -68,6 +68,8 @@ public class CDPreferencesImpl extends Preferences {
             this.setProperty("browser.view.autoexpand.useDelay", super.getProperty("browser.view.autoexpand.useDelay"));
         if(null == props.objectForKey("browser.view.autoexpand.delay"))
             this.setProperty("browser.view.autoexpand.delay", super.getProperty("browser.view.autoexpand.delay"));
+        if(null == props.objectForKey("queue.maxtransfers"))
+            this.setProperty("queue.maxtransfers", super.getProperty("queue.maxtransfers"));
     }
 
     public void save() {

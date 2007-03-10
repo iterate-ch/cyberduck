@@ -18,11 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSMutableDictionary;
-import com.apple.cocoa.foundation.NSObject;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -82,6 +78,15 @@ public abstract class Transfer extends NSObject {
         return running;
     }
 
+    private boolean waiting;
+
+    /**
+     * @return True if in <code>queued</code> state
+     */
+    public boolean isQueued() {
+        return waiting;
+    }
+
     /**
      * Creating an empty queue containing no items. Items have to be added later
      * using the <code>addRoot</code> method.
@@ -116,11 +121,30 @@ public abstract class Transfer extends NSObject {
     }
 
     protected void fireQueueStartedEvent() {
+        canceled = false;
         running = true;
         TransferListener[] l = (TransferListener[]) listeners.toArray(
                 new TransferListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
-            l[i].queueWillStart();
+            l[i].transferWillStart();
+        }
+    }
+
+    protected void fireQueuePausedEvent() {
+        this.waiting = true;
+        TransferListener[] l = (TransferListener[]) listeners.toArray(
+                new TransferListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].transferPaused();
+        }
+    }
+
+    protected void fireQueueResumedEvent() {
+        this.waiting = false;
+        TransferListener[] l = (TransferListener[]) listeners.toArray(
+                new TransferListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].transferResumed();
         }
     }
 
@@ -129,7 +153,10 @@ public abstract class Transfer extends NSObject {
         TransferListener[] l = (TransferListener[]) listeners.toArray(
                 new TransferListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
-            l[i].queueDidEnd();
+            l[i].transferDidEnd();
+        }
+        synchronized(lock) {
+            lock.notifyAll();
         }
     }
 
@@ -137,7 +164,7 @@ public abstract class Transfer extends NSObject {
         TransferListener[] l = (TransferListener[]) listeners.toArray(
                 new TransferListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
-            l[i].transferWillStart(path);
+            l[i].willTransferPath(path);
         }
     }
 
@@ -145,7 +172,7 @@ public abstract class Transfer extends NSObject {
         TransferListener[] l = (TransferListener[]) listeners.toArray(
                 new TransferListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
-            l[i].transferDidEnd(path);
+            l[i].didTransferPath(path);
         }
     }
 
@@ -302,21 +329,65 @@ public abstract class Transfer extends NSObject {
     }
 
     /**
+     * The lock used for queuing transfers
+     */
+    private static final Object lock = QueueCollection.instance();
+
+    public void run(final Validator v) {
+        this.run(v, false);
+    }
+
+    /**
      * Process all items in the <code>queue</code>. Does <strong>not</strong> run
      * in a background thread.
+     * The caller must close the connection itself
      * @param v
+     * @param queued Queue this transfer if needed
      */
-    public void run(final Validator v) {
+    public void run(final Validator v, final boolean queued) {
+        log.debug("run:"+queued);
         try {
-            this.canceled = false;
-            this.fireQueueStartedEvent();
+            synchronized(lock) {
+                this.fireQueueStartedEvent();
+                if(queued) {
+                    // This transfer should respect the settings for maximum number of transfers
+                    final QueueCollection q = QueueCollection.instance();
+                    while(!this.isCanceled() && q.numberOfRunningTransfers()
+                            - q.numberOfQueuedTransfers() - (this.waiting ? 0 : 1)
+                            >= (int)Preferences.instance().getDouble("queue.maxtransfers"))
+                    {
+                        log.info("Queuing "+this.toString());
+                        // The maximum number of transfers is already reached
+                        try {
+                            // Wait for transfer slot
+                            if(!this.waiting) {
+                                // Notify if not queued already before
+                                this.fireQueuePausedEvent();
+                                this.getSession().message(NSBundle.localizedString("Maximum allowed connections exceeded. Waiting...", "Status"));
+                            }
+                            lock.wait();
+                        }
+                        catch(InterruptedException e) {
+                            ;
+                        }
+                    }
+                    this.fireQueueResumedEvent();
+                    log.info("Number of running transfers:"+running);
+                    log.info("Number of queued transfers:"+waiting);
+                    log.info(this.toString()+" released from queue");
+                    if(this.isCanceled()) {
+                        // The transfer has been canceled while queued
+                        return;
+                    }
+                }
+            }
             try {
                 // We manually open the connection here first as otherwise
                 // every transfer will try again if it should fail
                 this.getSession().check();
             }
             catch(IOException e) {
-                this.getSession().error(null, "Connection failed", e);
+                this.getSession().error(null, NSBundle.localizedString("Connection failed", "Error"), e);
                 // Initial connection attempt failed; bail out
                 this.cancel();
             }
@@ -434,6 +505,9 @@ public abstract class Transfer extends NSObject {
                 }
             }
             this.canceled = true;
+        }
+        synchronized(lock) {
+            lock.notifyAll();
         }
     }
 
