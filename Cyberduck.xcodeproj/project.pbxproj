@@ -163,6 +163,9 @@
 		4773DCC90A73C0C600AB81E6 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 475599FD0A72AE6200B5DCDB /* Sparkle.framework */; };
 		47748981085825460030AED1 /* Cyberduck.scriptTerminology in Resources */ = {isa = PBXBuildFile; fileRef = 4774897F085825460030AED1 /* Cyberduck.scriptTerminology */; };
 		47748982085825460030AED1 /* Cyberduck.scriptSuite in Resources */ = {isa = PBXBuildFile; fileRef = 47748980085825460030AED1 /* Cyberduck.scriptSuite */; };
+		477839340BA1BE8E0037E145 /* statusGreen.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839310BA1BE8E0037E145 /* statusGreen.tiff */; };
+		477839350BA1BE8E0037E145 /* statusRed.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839320BA1BE8E0037E145 /* statusRed.tiff */; };
+		477839360BA1BE8E0037E145 /* statusYellow.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839330BA1BE8E0037E145 /* statusYellow.tiff */; };
 		477B1B790AF383DC0023BA7F /* SNDisclosureArrowDown.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477B1B770AF383DC0023BA7F /* SNDisclosureArrowDown.tiff */; };
 		477B1B7A0AF383DC0023BA7F /* SNDisclosureArrowRight.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477B1B780AF383DC0023BA7F /* SNDisclosureArrowRight.tiff */; };
 		477B1B800AF384350023BA7F /* SNDisclosableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 477B1B7C0AF384350023BA7F /* SNDisclosableView.h */; };
@@ -977,6 +980,9 @@
 		47729074080D5957007126E4 /* Keychain.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Keychain.java; sourceTree = "<group>"; };
 		4774897F085825460030AED1 /* Cyberduck.scriptTerminology */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Cyberduck.scriptTerminology; sourceTree = "<group>"; };
 		47748980085825460030AED1 /* Cyberduck.scriptSuite */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Cyberduck.scriptSuite; sourceTree = "<group>"; };
+		477839310BA1BE8E0037E145 /* statusGreen.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = statusGreen.tiff; sourceTree = "<group>"; };
+		477839320BA1BE8E0037E145 /* statusRed.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = statusRed.tiff; sourceTree = "<group>"; };
+		477839330BA1BE8E0037E145 /* statusYellow.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = statusYellow.tiff; sourceTree = "<group>"; };
 		477B1B770AF383DC0023BA7F /* SNDisclosureArrowDown.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = SNDisclosureArrowDown.tiff; sourceTree = "<group>"; };
 		477B1B780AF383DC0023BA7F /* SNDisclosureArrowRight.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = SNDisclosureArrowRight.tiff; sourceTree = "<group>"; };
 		477B1B7C0AF384350023BA7F /* SNDisclosableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SNDisclosableView.h; sourceTree = "<group>"; };
@@ -1776,6 +1782,9 @@
 				4721595707FC28F700451725 /* certificate.tiff */,
 				47215AA607FC9A3E00451725 /* login.tiff */,
 				4716C5F70872BAA900938886 /* command.tiff */,
+				477839310BA1BE8E0037E145 /* statusGreen.tiff */,
+				477839320BA1BE8E0037E145 /* statusRed.tiff */,
+				477839330BA1BE8E0037E145 /* statusYellow.tiff */,
 			);
 			path = img;
 			sourceTree = "<group>";
@@ -2487,6 +2496,9 @@
 				476774DE0B74CE750025093E /* trash.tiff in Resources */,
 				47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */,
 				47A88FBB0B931D9C00DB9D87 /* Configuration.strings in Resources */,
+				477839340BA1BE8E0037E145 /* statusGreen.tiff in Resources */,
+				477839350BA1BE8E0037E145 /* statusRed.tiff in Resources */,
+				477839360BA1BE8E0037E145 /* statusYellow.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
