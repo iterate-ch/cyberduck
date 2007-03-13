@@ -764,9 +764,9 @@ public class CDQueueController extends CDWindowController
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return new NSArray(new Object[]{
                 TOOLBAR_RESUME,
+                TOOLBAR_QUEUE,
                 TOOLBAR_RELOAD,
                 TOOLBAR_STOP,
-                TOOLBAR_QUEUE,
                 TOOLBAR_REMOVE,
                 TOOLBAR_CLEAN_UP,
                 NSToolbarItem.FlexibleSpaceItemIdentifier,

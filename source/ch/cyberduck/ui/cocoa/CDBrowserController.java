@@ -2436,19 +2436,7 @@ public class CDBrowserController extends CDWindowController
         final TransferListener l;
         transfer.addListener(l = new TransferAdapter() {
             public void transferDidEnd() {
-                if(transfer instanceof DownloadTransfer) {
-                    Growl.instance().notify("Download complete", transfer.getName());
-                    if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
-                        NSWorkspace.sharedWorkspace().openFile(transfer.getRoot().getLocal().toString());
-                    }
-                }
-                if(transfer instanceof UploadTransfer) {
-                    Growl.instance().notify("Upload complete", transfer.getName());
-                }
-                if(transfer instanceof SyncTransfer) {
-                    Growl.instance().notify("Synchronization complete", transfer.getName());
-                }
-                if (isMounted()) {
+                if(isMounted()) {
                     workdir.invalidate();
                     invoke(new Runnable() {
                         public void run() {
@@ -2469,14 +2457,38 @@ public class CDBrowserController extends CDWindowController
     /**
      * Trasnfers the files either using the queue or using
      * the browser session if #connection.pool.max is 1
-     * @param q
+     * @param transfer
      * @see CDQueueController
      */
-    protected void transfer(final Transfer q) {
-        if(q.getSession().getMaxConnections() == 1) {
+    protected void transfer(final Transfer transfer) {
+        if(transfer.getSession().getMaxConnections() == 1) {
+            final TransferListener l;
+            transfer.addListener(l = new TransferAdapter() {
+                public void transferDidEnd() {
+                    if(transfer.isComplete() && !transfer.isCanceled()) {
+                        if(transfer instanceof DownloadTransfer) {
+                            Growl.instance().notify("Download complete", transfer.getName());
+                            if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
+                                NSWorkspace.sharedWorkspace().openFile(transfer.getRoot().getLocal().toString());
+                            }
+                        }
+                        if(transfer instanceof UploadTransfer) {
+                            Growl.instance().notify("Upload complete", transfer.getName());
+                        }
+                        if(transfer instanceof SyncTransfer) {
+                            Growl.instance().notify("Synchronization complete", transfer.getName());
+                        }
+                    }
+                }
+            });
+            this.addListener(new CDWindowListener() {
+                public void windowWillClose() {
+                    transfer.removeListener(l);
+                }
+            });
             this.background(new BackgroundAction() {
                 public void run() {
-                    q.run(ValidatorFactory.create(q, CDBrowserController.this));
+                    transfer.run(ValidatorFactory.create(transfer, CDBrowserController.this));
                 }
 
                 public void cleanup() {
@@ -2485,7 +2497,7 @@ public class CDBrowserController extends CDWindowController
             });
         }
         else {
-            CDQueueController.instance().startItem(q);
+            CDQueueController.instance().startItem(transfer);
         }
     }
 

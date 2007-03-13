@@ -270,6 +270,7 @@ public class CDPreferencesController extends CDWindowController {
 //        iconLarge.setScalesWhenResized(false);
 //        iconLarge.setSize(new NSSize(40f, 40f));
 //        this.bookmarkSizePopup.itemAtIndex(1).setImage(iconLarge);
+        this.bookmarkSizePopup.selectItemAtIndex(Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems") ? 0 : 1);
     }
 
     public void bookmarkSizePopupClicked(NSPopUpButton sender) {

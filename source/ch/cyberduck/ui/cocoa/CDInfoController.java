@@ -327,7 +327,7 @@ public class CDInfoController extends CDWindowController {
             }
             else {
                 this.permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")
-                        + " | " + permission.toString());
+                        + " | " + (null == permission ? NSBundle.localizedString("Unknown", "") :permission.toString()));
             }
 
             NSImage fileIcon = null;

@@ -244,6 +244,14 @@ public class SFTPPath extends Path {
                 }
                 this.getParent().invalidate();
             }
+            catch(SFTPException e) {
+                if(this.attributes.isFile()) {
+                    this.error("Cannot delete file", e);
+                }
+                if(this.attributes.isDirectory()) {
+                    this.error("Cannot delete folder", e);
+                }
+            }
             catch(IOException e) {
                 this.error("Connection failed", e);
                 session.interrupt();
