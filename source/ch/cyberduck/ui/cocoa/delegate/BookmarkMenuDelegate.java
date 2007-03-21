@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class BookmarkMenuDelegate extends NSObject {
+public class BookmarkMenuDelegate extends MenuDelegate {
     private static Logger log = Logger.getLogger(BookmarkMenuDelegate.class);
 
     private static final NSImage DOCUMENT_ICON_SMALL;

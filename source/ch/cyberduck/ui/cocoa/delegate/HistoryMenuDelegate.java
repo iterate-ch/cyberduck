@@ -41,7 +41,7 @@ import java.util.*;
 /**
  * @version $Id$
  */
-public class HistoryMenuDelegate extends NSObject {
+public class HistoryMenuDelegate extends MenuDelegate {
     private static Logger log = Logger.getLogger(HistoryMenuDelegate.class);
 
     public static final File HISTORY_FOLDER

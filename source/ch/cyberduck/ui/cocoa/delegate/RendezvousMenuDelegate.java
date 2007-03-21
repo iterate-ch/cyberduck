@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class RendezvousMenuDelegate extends NSObject {
+public class RendezvousMenuDelegate extends MenuDelegate {
     private static Logger log = Logger.getLogger(RendezvousMenuDelegate.class);
 
     /**
