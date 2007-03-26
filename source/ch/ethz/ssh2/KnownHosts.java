@@ -47,7 +47,7 @@ public class KnownHosts
 	public static final int HOSTKEY_IS_NEW = 1;
 	public static final int HOSTKEY_HAS_CHANGED = 2;
 
-	private class KnownHostsEntry
+    private class KnownHostsEntry
 	{
 		String[] patterns;
 		Object key;
@@ -69,6 +69,10 @@ public class KnownHosts
 	{
 		initialize(knownHostsData);
 	}
+
+    public KnownHosts(String knownHosts) throws IOException {
+        initialize(new File(knownHosts));
+    }
 
 	public KnownHosts(File knownHosts) throws IOException
 	{
