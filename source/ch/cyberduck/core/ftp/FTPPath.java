@@ -38,7 +38,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -108,39 +107,36 @@ public class FTPPath extends Path {
         return this.session;
     }
 
-    public AttributedList list(Comparator comparator, PathFilter filter) {
-        if(!this.isCached() || this.cache().attributes().isDirty()) {
-            synchronized(session) {
-                AttributedList childs = new AttributedList();
-                try {
-                    session.check();
-                    session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
-                    session.FTP.setTransferType(FTPTransferType.ASCII);
-                    this.cwdir();
-                    String[] lines = session.FTP.dir(this.session.getEncoding());
-                    // Read line for line if the connection hasn't been interrupted since
-                    for(int i = 0; i < lines.length; i++) {
-                        Path p = session.parser.parseFTPEntry(this, lines[i]);
-                        if(p != null) {
-                            childs.add(p);
-                        }
+    public AttributedList list() {
+        synchronized(session) {
+            AttributedList childs = new AttributedList();
+            try {
+                session.check();
+                session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
+                session.FTP.setTransferType(FTPTransferType.ASCII);
+                this.cwdir();
+                String[] lines = session.FTP.dir(this.session.getEncoding());
+                // Read line for line if the connection hasn't been interrupted since
+                for(int i = 0; i < lines.length; i++) {
+                    Path p = session.parser.parseFTPEntry(this, lines[i]);
+                    if(p != null) {
+                        childs.add(p);
                     }
                 }
-                catch(FTPException e) {
-                    childs.attributes().setReadable(false);
-                    this.error("Listing directory failed", e);
-                }
-                catch(IOException e) {
-                    this.error("Connection failed", e);
-                    session.interrupt();
-                }
-                finally {
-                    session.cache().put(this, childs);
-                    session.fireActivityStoppedEvent();
-                }
             }
+            catch(FTPException e) {
+                childs.attributes().setReadable(false);
+                this.error("Listing directory failed", e);
+            }
+            catch(IOException e) {
+                this.error("Connection failed", e);
+                session.interrupt();
+            }
+            finally {
+                session.fireActivityStoppedEvent();
+            }
+            return childs;
         }
-        return session.cache().get(this, comparator, filter);
     }
 
     public void cwdir() throws IOException {
@@ -162,7 +158,7 @@ public class FTPPath extends Path {
                 session.message(NSBundle.localizedString("Make directory", "Status", "") + " " + this.getName());
                 this.getParent().cwdir();
                 session.FTP.mkdir(this.getName());
-                session.cache().put(this, new AttributedList());
+                this.cache().put(this, new AttributedList());
                 this.getParent().invalidate();
             }
             catch(FTPException e) {
@@ -210,7 +206,7 @@ public class FTPPath extends Path {
 
     public void readAttributes() {
         synchronized(session) {
-            if(this.attributes.isFile() && this.attributes.isMissing()) {
+            if(this.attributes.isFile()) {
                 try {
                     session.check();
                     session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
@@ -271,7 +267,7 @@ public class FTPPath extends Path {
                 }
                 else if(this.attributes.isDirectory()) {
                     this.cwdir();
-                    for(Iterator iter = this.list().iterator(); iter.hasNext();) {
+                    for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
                         if(!session.isConnected()) {
                             break;
                         }
@@ -321,7 +317,7 @@ public class FTPPath extends Path {
                 else if(this.attributes.isDirectory()) {
                     session.FTP.site(command + " " + owner + " " + this.getName());
                     if(recursive) {
-                        for(Iterator iter = this.list().iterator(); iter.hasNext();) {
+                        for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
                             if(!session.isConnected()) {
                                 break;
                             }
@@ -357,7 +353,7 @@ public class FTPPath extends Path {
                 else if(this.attributes.isDirectory()) {
                     session.FTP.site(command + " " + group + " " + this.getName());
                     if(recursive) {
-                        for(Iterator iter = this.list().iterator(); iter.hasNext();) {
+                        for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
                             if(!session.isConnected()) {
                                 break;
                             }
@@ -394,7 +390,7 @@ public class FTPPath extends Path {
                 else if(this.attributes.isDirectory()) {
                     session.FTP.site(command + " " + perm.getOctalString() + " " + this.getName());
                     if(recursive) {
-                        for(Iterator iter = this.list().iterator(); iter.hasNext();) {
+                        for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
                             if(!session.isConnected()) {
                                 break;
                             }
@@ -406,6 +402,25 @@ public class FTPPath extends Path {
             }
             catch(FTPException e) {
                 this.error("Cannot change permissions", e);
+            }
+            catch(IOException e) {
+                this.error("Connection failed", e);
+                session.interrupt();
+            }
+            finally {
+                session.fireActivityStoppedEvent();
+            }
+        }
+    }
+
+    public void changeModificationDate(long millis) {
+        synchronized(session) {
+            try {
+                session.FTP.utime(millis,
+                        this.getLocal().attributes.getCreationDate(), this.getName(), this.getHost().getTimezone());
+            }
+            catch(FTPException e) {
+                this.error("Cannot change modification date", e);
             }
             catch(IOException e) {
                 this.error("Connection failed", e);
@@ -446,7 +461,7 @@ public class FTPPath extends Path {
                     }
                 }
                 if(this.attributes.isDirectory()) {
-                    this.getLocal().mkdirs();
+                    this.getLocal().mkdir(true);
                 }
                 if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
                     log.info("Updating permissions");
@@ -463,7 +478,7 @@ public class FTPPath extends Path {
                             perm.getOwnerPermissions()[Permission.WRITE] = true;
                             perm.getOwnerPermissions()[Permission.EXECUTE] = true;
                         }
-                        this.getLocal().setPermission(perm);
+                        this.getLocal().changePermissions(perm, false);
                     }
                 }
                 if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
@@ -475,13 +490,13 @@ public class FTPPath extends Path {
                     if(-1 == this.attributes.getModificationDate()) {
                         if(this.exists()) {
                             // Read the timestamp from the directory listing
-                            List l = this.getParent().list();
+                            List l = this.getParent().childs();
                             this.attributes.setModificationDate(((Path)l.get(l.indexOf(this))).attributes.getModificationDate());
                         }
                     }
                     if(this.attributes.getModificationDate() != -1) {
                         long timestamp = this.attributes.getModificationDate();
-                        this.getLocal().setLastModified(timestamp/*, this.getHost().getTimezone()*/);
+                        this.getLocal().changeModificationDate(timestamp/*, this.getHost().getTimezone()*/);
                     }
                 }
             }
@@ -504,13 +519,13 @@ public class FTPPath extends Path {
         try {
             session.FTP.setTransferType(FTPTransferType.BINARY);
             if(this.status.isResume()) {
-                this.status.setCurrent((long) this.getLocal().getSize());
+                this.status.setCurrent((long) this.getLocal().attributes.getSize());
             }
-            out = new FileOutputStream(this.getLocal(), this.status.isResume());
+            out = new Local.OutputStream(this.getLocal(), this.status.isResume());
             if(null == out) {
                 throw new IOException("Unable to buffer data");
             }
-            in = session.FTP.get(this.getName(), this.status.isResume() ? (long) this.getLocal().getSize() : 0);
+            in = session.FTP.get(this.getName(), this.status.isResume() ? (long) this.getLocal().attributes.getSize() : 0);
             if(null == in) {
                 throw new IOException("Unable opening data stream");
             }
@@ -568,7 +583,7 @@ public class FTPPath extends Path {
                 lineSeparator = DOS_LINE_SEPARATOR;
             }
             session.FTP.setTransferType(FTPTransferType.ASCII);
-            out = new FromNetASCIIOutputStream(new FileOutputStream(this.getLocal(), false),
+            out = new FromNetASCIIOutputStream(new Local.OutputStream(this.getLocal(), false),
                     lineSeparator);
             if(null == out) {
                 throw new IOException("Unable to buffer data");
@@ -625,7 +640,7 @@ public class FTPPath extends Path {
                 if(this.attributes.isFile()) {
                     session.check();
                     this.getParent().cwdir();
-                    this.attributes.setSize(this.getLocal().getSize());
+                    this.attributes.setSize(this.getLocal().attributes.getSize());
                     if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                         if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
                             this.uploadASCII();
@@ -666,7 +681,7 @@ public class FTPPath extends Path {
                                 }
                             }
                             else {
-                                this.attributes.setPermission(this.getLocal().getPermission());
+                                this.attributes.setPermission(this.getLocal().attributes.getPermission());
                             }
                         }
                         try {
@@ -683,8 +698,8 @@ public class FTPPath extends Path {
                     if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                         log.info("Updating timestamp");
                         try {
-                            session.FTP.utime(this.getLocal().getModificationDate(),
-                                    this.getLocal().getCreationDate(), this.getName(), this.getHost().getTimezone());
+                            session.FTP.utime(this.getLocal().attributes.getModificationDate(),
+                                    this.getLocal().attributes.getCreationDate(), this.getName(), this.getHost().getTimezone());
                         }
                         catch(FTPException e) {
                             if(Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
@@ -693,7 +708,7 @@ public class FTPPath extends Path {
                                         this.readAttributes();
                                     }
                                     if(this.attributes.getModificationDate() != -1) {
-                                        this.getLocal().setLastModified(this.attributes.getModificationDate()/*,
+                                        this.getLocal().changeModificationDate(this.attributes.getModificationDate()/*,
                                                 this.getHost().getTimezone()*/);
                                     }
                                 }
@@ -731,7 +746,7 @@ public class FTPPath extends Path {
                     this.status.setCurrent(0);
                 }
             }
-            in = new FileInputStream(this.getLocal());
+            in = new Local.InputStream(this.getLocal());
             if(null == in) {
                 throw new IOException("Unable to buffer data");
             }
@@ -793,7 +808,7 @@ public class FTPPath extends Path {
                     this.status.setCurrent(0);
                 }
             }
-            in = new ToNetASCIIInputStream(new FileInputStream(this.getLocal()));
+            in = new ToNetASCIIInputStream(new Local.InputStream(this.getLocal()));
             if(null == in) {
                 throw new IOException("Unable to buffer data");
             }

@@ -38,7 +38,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -104,62 +103,59 @@ public class SFTPPath extends Path {
         return this.session;
     }
 
-    public AttributedList list(Comparator comparator, PathFilter filter) {
-        if(!this.isCached() || this.cache().attributes().isDirty()) {
-            synchronized(session) {
-                AttributedList childs = new AttributedList();
-                try {
-                    session.check();
-                    session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
-                    List children = session.sftp().ls(this.getAbsolute());
-                    java.util.Iterator i = children.iterator();
-                    while(i.hasNext()) {
-                        SFTPv3DirectoryEntry f = (SFTPv3DirectoryEntry) i.next();
-                        if(!f.filename.equals(".") && !f.filename.equals("..")) {
-                            Path p = PathFactory.createPath(session, this.getAbsolute(), f.filename);
-                            p.attributes.setOwner(f.attributes.uid.toString());
-                            p.attributes.setGroup(f.attributes.gid.toString());
-                            p.attributes.setSize(f.attributes.size.doubleValue());
-                            p.attributes.setModificationDate(Long.parseLong(f.attributes.mtime.toString()) * 1000L);
-                            p.attributes.setAccessedDate(Long.parseLong(f.attributes.atime.toString()) * 1000L);
-                            if(f.attributes.isSymlink()) {
-                                final String target = session.sftp().readLink(p.getAbsolute());
-                                p.setSymbolicLinkPath(target);
-                                SFTPv3FileAttributes attr = session.sftp().stat(target);
-                                if(attr.isDirectory()) {
-                                    p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
-                                }
-                                else if(attr.isRegularFile()) {
-                                    p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
-                                }
+    public AttributedList list() {
+        synchronized(session) {
+            AttributedList childs = new AttributedList();
+            try {
+                session.check();
+                session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
+                List children = session.sftp().ls(this.getAbsolute());
+                java.util.Iterator i = children.iterator();
+                while(i.hasNext()) {
+                    SFTPv3DirectoryEntry f = (SFTPv3DirectoryEntry) i.next();
+                    if(!f.filename.equals(".") && !f.filename.equals("..")) {
+                        Path p = PathFactory.createPath(session, this.getAbsolute(), f.filename);
+                        p.attributes.setOwner(f.attributes.uid.toString());
+                        p.attributes.setGroup(f.attributes.gid.toString());
+                        p.attributes.setSize(f.attributes.size.doubleValue());
+                        p.attributes.setModificationDate(Long.parseLong(f.attributes.mtime.toString()) * 1000L);
+                        p.attributes.setAccessedDate(Long.parseLong(f.attributes.atime.toString()) * 1000L);
+                        if(f.attributes.isSymlink()) {
+                            final String target = session.sftp().readLink(p.getAbsolute());
+                            p.setSymbolicLinkPath(target);
+                            SFTPv3FileAttributes attr = session.sftp().stat(target);
+                            if(attr.isDirectory()) {
+                                p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
                             }
-                            else if(f.attributes.isDirectory()) {
-                                p.attributes.setType(Path.DIRECTORY_TYPE);
+                            else if(attr.isRegularFile()) {
+                                p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                             }
-                            else if(f.attributes.isRegularFile()) {
-                                p.attributes.setType(Path.FILE_TYPE);
-                            }
-                            String perm = f.attributes.getOctalPermissions();
-                            p.attributes.setPermission(new Permission(Integer.parseInt(perm.substring(perm.length()-3))));
-                            childs.add(p);
                         }
+                        else if(f.attributes.isDirectory()) {
+                            p.attributes.setType(Path.DIRECTORY_TYPE);
+                        }
+                        else if(f.attributes.isRegularFile()) {
+                            p.attributes.setType(Path.FILE_TYPE);
+                        }
+                        String perm = f.attributes.getOctalPermissions();
+                        p.attributes.setPermission(new Permission(Integer.parseInt(perm.substring(perm.length()-3))));
+                        childs.add(p);
                     }
                 }
-                catch(SFTPException e) {
-                    childs.attributes().setReadable(false);
-                    this.error("Listing directory failed", e);
-                }
-                catch(IOException e) {
-                    this.error("Connection failed", e);
-                    session.interrupt();
-                }
-                finally {
-                    session.cache().put(this, childs);
-                    session.fireActivityStoppedEvent();
-                }
             }
+            catch(SFTPException e) {
+                childs.attributes().setReadable(false);
+                this.error("Listing directory failed", e);
+            }
+            catch(IOException e) {
+                this.error("Connection failed", e);
+                session.interrupt();
+            }
+            finally {
+                session.fireActivityStoppedEvent();
+            }
+            return childs;
         }
-        return session.cache().get(this, comparator, filter);
     }
 
     public void cwdir() throws IOException {
@@ -179,7 +175,7 @@ public class SFTPPath extends Path {
                 session.message(NSBundle.localizedString("Make directory", "Status", "") + " " + this.getName());
                 Permission perm = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
                 session.sftp().mkdir(this.getAbsolute(), new Integer(perm.getOctalNumber()).intValue());
-                session.cache().put(this, new AttributedList());
+                this.cache().put(this, new AttributedList());
                 this.getParent().invalidate();
             }
             catch(SFTPException e) {
@@ -233,7 +229,7 @@ public class SFTPPath extends Path {
                     session.sftp().rm(this.getAbsolute());
                 }
                 else if(this.attributes.isDirectory()) {
-                    for(Iterator iter = this.list().iterator(); iter.hasNext();) {
+                    for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
                         if(!session.isConnected()) {
                             break;
                         }
@@ -264,7 +260,7 @@ public class SFTPPath extends Path {
 
     public void readAttributes() {
         synchronized(session) {
-            if(this.attributes.isFile() && this.attributes.isMissing()) {
+            if(this.attributes.isFile()) {
                 SFTPv3FileHandle handle = null;
                 try {
                     session.check();
@@ -309,7 +305,7 @@ public class SFTPPath extends Path {
                 session.sftp().setstat(this.getAbsolute(), attr);
                 if(this.attributes.isDirectory()) {
                     if(recursive) {
-                        for(Iterator iter = this.list().iterator(); iter.hasNext();) {
+                        for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
                             if(!session.isConnected()) {
                                 break;
                             }
@@ -347,7 +343,7 @@ public class SFTPPath extends Path {
                 session.sftp().setstat(this.getAbsolute(), attr);
                 if(this.attributes.isDirectory()) {
                     if(recursive) {
-                        for(Iterator iter = this.list().iterator(); iter.hasNext();) {
+                        for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
                             if(!session.isConnected()) {
                                 break;
                             }
@@ -385,7 +381,7 @@ public class SFTPPath extends Path {
                 session.sftp().setstat(this.getAbsolute(), attr);
                 if(this.attributes.isDirectory()) {
                     if(recursive) {
-                        for(Iterator iter = this.list().iterator(); iter.hasNext();) {
+                        for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
                             if(!session.isConnected()) {
                                 break;
                             }
@@ -408,6 +404,10 @@ public class SFTPPath extends Path {
         }
     }
 
+    public void changeModificationDate(long millis) {
+        ;
+    }
+
     public void download() {
         synchronized(session) {
             log.debug("download:" + this.toString());
@@ -416,16 +416,16 @@ public class SFTPPath extends Path {
             try {
                 status.reset();
                 if(this.attributes.isDirectory()) {
-                    this.getLocal().mkdirs();
+                    this.getLocal().mkdir(true);
                 }
                 if(this.attributes.isFile()) {
                     session.check();
-                    out = new FileOutputStream(this.getLocal(), status.isResume());
+                    out = new Local.OutputStream(this.getLocal(), status.isResume());
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
                         SFTPv3FileHandle handle = session.sftp().openFileRO(this.getAbsolute());
                         in = new SFTPInputStream(handle);
                         if(status.isResume()) {
-                            status.setCurrent((long) this.getLocal().getSize());
+                            status.setCurrent((long) this.getLocal().attributes.getSize());
                             long skipped = in.skip(status.getCurrent());
                             log.info("Skipping " + skipped + " bytes");
                             if(skipped < this.status.getCurrent()) {
@@ -457,7 +457,7 @@ public class SFTPPath extends Path {
                             perm.getOwnerPermissions()[Permission.WRITE] = true;
                             perm.getOwnerPermissions()[Permission.EXECUTE] = true;
                         }
-                        this.getLocal().setPermission(perm);
+                        this.getLocal().changePermissions(perm, false);
                     }
                 }
                 if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
@@ -467,7 +467,7 @@ public class SFTPPath extends Path {
                     }
                     if(this.attributes.getModificationDate() != -1) {
                         long timestamp = this.attributes.getModificationDate();
-                        this.getLocal().setLastModified(timestamp/*, this.getHost().getTimezone()*/);
+                        this.getLocal().changeModificationDate(timestamp/*, this.getHost().getTimezone()*/);
                     }
                 }
             }
@@ -535,7 +535,7 @@ public class SFTPPath extends Path {
                                 }
                             }
                             else {
-                                attributes.setPermission(this.getLocal().getPermission());
+                                attributes.setPermission(this.getLocal().attributes.getPermission());
                             }
                         }
                         if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
@@ -558,7 +558,7 @@ public class SFTPPath extends Path {
                                     session.sftp().stat(this.getAbsolute()).size.intValue());
                         }
                     }
-                    in = new FileInputStream(this.getLocal());
+                    in = new Local.InputStream(this.getLocal());
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
                         out = new SFTPOutputStream(handle);
                         if(status.isResume()) {
@@ -572,7 +572,7 @@ public class SFTPPath extends Path {
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SCP)) {
                         SCPClient scp = session.openScp();
                         scp.setCharset(session.getEncoding());
-                        out = scp.put(this.getName(), (long)this.getLocal().getSize(),
+                        out = scp.put(this.getName(), (long)this.getLocal().attributes.getSize(),
                                 this.getParent().getAbsolute(),
                                 "0"+attributes.getPermission().getOctalString());
                     }
@@ -581,7 +581,7 @@ public class SFTPPath extends Path {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                     log.info("Updating timestamp");
                     SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
-                    int t = (int) (this.getLocal().getModificationDate() / 1000);
+                    int t = (int) (this.getLocal().attributes.getModificationDate() / 1000);
                     // We must both set the accessed and modified time
                     // See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
                     attrs.atime = new Integer(t);

@@ -82,7 +82,7 @@ public class CDDuplicateFileController extends CDFileController {
     }
 
     protected Path getWorkdir() {
-        return ((CDBrowserController)parent).getSelectedPath().getParent();
+        return (Path)((CDBrowserController)parent).getSelectedPath().getParent();
     }
 
     private void duplicateFile(final Path selected, final String filename, final boolean edit) {

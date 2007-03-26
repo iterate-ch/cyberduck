@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- *  Copyright (c) 2005 David Kocher. All rights reserved.
+ *  Copyright (c) 2007 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,126 +18,82 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableDictionary;
-
-import org.apache.log4j.Logger;
-
-import java.io.IOException;
-
 /**
- * Attributes of a remote directory or file.
- *
  * @version $Id$
  */
-public class Attributes implements IAttributes {
-    private static Logger log = Logger.getLogger(Attributes.class);
+public abstract class Attributes {
+
+    public abstract int getType();
 
     /**
-     * The file length
+     * @return The length of the file
      */
-    private double size = -1;
-    /**
-     * The file modification date
-     */
-    private long modified = -1;
-    private long accessed = -1;
-    private long created = -1;
-    private String owner = null;
-    private String group = null;
-    /**
-     * The file type
-     */
-    private int type = Path.FILE_TYPE;
-
-    protected Permission permission = null;
-
-    public Attributes() {
-        super();
-    }
-
-    public Object clone() {
-        Attributes copy = new Attributes(this.getAsDictionary());
-        copy.size = this.getSize();
-        if(null != this.getPermission()) {
-            copy.permission = (Permission) this.getPermission().clone();
-        }
-        copy.modified = this.getModificationDate();
-        return copy;
-    }
+    public abstract double getSize();
 
     /**
-     * @return True if the modification date or size is unknown
+     * @return The time the file was last modified in millis UTC or -1 if unknown
      */
-    public boolean isMissing() {
-        return -1 == this.modified || -1 == this.size;
-    }
+    public abstract long getModificationDate();
 
-    public Attributes(NSDictionary dict) {
-        Object typeObj = dict.objectForKey("Type");
-        if(typeObj != null) {
-            this.type = Integer.parseInt((String) typeObj);
-        }
-    }
-
-    public NSDictionary getAsDictionary() {
-        NSMutableDictionary dict = new NSMutableDictionary();
-        dict.setObjectForKey(String.valueOf(this.type), "Type");
-        return dict;
-    }
+    public abstract void setModificationDate(long millis);
 
     /**
-     * @param size the size of file in bytes.
+     * @return The time the file was created in millis UTC or -1 if unknown
      */
-    public void setSize(double size) {
-        this.size = size;
-    }
+    public abstract long getCreationDate();
+
+    public abstract void setCreationDate(long millis);
 
     /**
-     * @return length the size of file in bytes.
+     * @return The time the file was last accessed in millis UTC or -1 if unknown
      */
-    public double getSize() {
-        return this.size;
-    }
+    public abstract long getAccessedDate();
 
-    public long getModificationDate() {
-        return this.modified;
-    }
-
-    public void setModificationDate(long millis) {
-        this.modified = millis;
-    }
-
-    public long getCreationDate() {
-        return this.created;
-    }
-
-    public void setCreationDate(long millis) {
-        this.created = millis;
-    }
-
-    public long getAccessedDate() {
-        return this.accessed;
-    }
-
-    public void setAccessedDate(long millis) {
-        this.accessed = millis;
-    }
+    public abstract void setAccessedDate(long millis);
 
     /**
-     * @param p
+     * @return The file permission mask or null if unknown
      */
-    public void setPermission(Permission p) {
-        this.permission = p;
-    }
+    public abstract Permission getPermission();
+
+    public abstract void setPermission(Permission permission);
 
     /**
-     * @return
+     * @return True if this path denotes a directory or is a symbolic link pointing to a directory
      */
-    public Permission getPermission() {
-        return this.permission;
-    }
+    public abstract boolean isDirectory();
+
+    /**
+     * @return True if this path denotes a regular file or is a symbolic link pointing to a regular file
+     */
+    public abstract boolean isFile();
+
+    /**
+     * @return True if this path denotes a symbolic link.
+     * @warn Returns false for Mac OS Classic Alias
+     */
+    public abstract boolean isSymbolicLink();
+
+    /**
+     * @see Path.FILE_TYPE
+     * @see Path.DIRECTORY_TYPE
+     * @see Path.SYMBOLIC_LINK_TYPE
+     * @see #isDirectory()
+     * @see #isFile()
+     * @see #isSymbolicLink()
+     * @param i
+     */
+    public abstract void setType(int i);
+
+    public abstract void setSize(double size);
+
+    public abstract void setOwner(String owner);
+
+    public abstract void setGroup(String group);
+
+    public abstract String getOwner();
+
+    public abstract String getGroup();
 
     /**
      *
@@ -179,51 +135,5 @@ public class Attributes implements IAttributes {
         return perm.getOwnerPermissions()[Permission.WRITE]
                 || perm.getGroupPermissions()[Permission.WRITE]
                 || perm.getOtherPermissions()[Permission.WRITE];
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    public int getType() {
-        return this.type;
-    }
-
-    public boolean isDirectory() {
-        return (this.type & Path.DIRECTORY_TYPE) == Path.DIRECTORY_TYPE;
-    }
-
-    public boolean isFile() {
-        return (this.type & Path.FILE_TYPE) == Path.FILE_TYPE;
-    }
-
-    public boolean isSymbolicLink() {
-        return (this.type & Path.SYMBOLIC_LINK_TYPE) == Path.SYMBOLIC_LINK_TYPE;
-    }
-
-    public void setOwner(String o) {
-        this.owner = o;
-    }
-
-    /**
-     * @return The owner of the file or 'Unknown' if not set
-     */
-    public String getOwner() {
-        if(null == this.owner)
-            return NSBundle.localizedString("Unknown", "");
-        return this.owner;
-    }
-
-    public void setGroup(String g) {
-        this.group = g;
-    }
-
-    /**
-     * @return
-     */
-    public String getGroup() {
-        if(null == this.group)
-            return NSBundle.localizedString("Unknown", "");
-        return this.group;
     }
 }

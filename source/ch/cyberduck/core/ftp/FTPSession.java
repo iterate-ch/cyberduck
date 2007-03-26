@@ -217,7 +217,7 @@ public class FTPSession extends Session {
                 }
             });
             try {
-                this.FTP.setTimeout(Preferences.instance().getInteger("connection.timeout"));
+                this.FTP.setTimeout(this.timeout());
                 if(Proxy.isSOCKSProxyEnabled()) {
                     log.info("Using SOCKS Proxy");
                     FTPClient.initSOCKS(Proxy.getSOCKSProxyPort(), Proxy.getSOCKSProxyHost());

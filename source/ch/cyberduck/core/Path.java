@@ -21,7 +21,6 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
-import com.apple.cocoa.foundation.NSObject;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
@@ -30,16 +29,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * @version $Id$
  */
-public abstract class Path extends NSObject {
+public abstract class Path extends AbstractPath {
     private static Logger log = Logger.getLogger(Path.class);
 
     /**
@@ -50,19 +49,8 @@ public abstract class Path extends NSObject {
      * The local path to be used if file is copied
      */
     private Local local = null;
-    /**
-     * Where the symbolic link is pointing to
-     */
-    private String symbolic = null;
 
     public Status status = new Status();
-    public Attributes attributes = new Attributes();
-
-    public static final int FILE_TYPE = 1;
-    public static final int DIRECTORY_TYPE = 2;
-    public static final int SYMBOLIC_LINK_TYPE = 4;
-
-    public static final String DELIMITER = "/";
 
     /**
      * A compiled representation of a regular expression.
@@ -115,7 +103,7 @@ public abstract class Path extends NSObject {
         }
         Object attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
-            this.attributes = new Attributes((NSDictionary) attributesObj);
+            this.attributes = new PathAttributes((NSDictionary) attributesObj);
         }
     }
 
@@ -123,7 +111,7 @@ public abstract class Path extends NSObject {
         NSMutableDictionary dict = new NSMutableDictionary();
         dict.setObjectForKey(this.getAbsolute(), "Remote");
         dict.setObjectForKey(this.getLocal().toString(), "Local");
-        dict.setObjectForKey(this.attributes.getAsDictionary(), "Attributes");
+        dict.setObjectForKey(((PathAttributes)this.attributes).getAsDictionary(), "Attributes");
         return dict;
     }
 
@@ -133,8 +121,12 @@ public abstract class Path extends NSObject {
 
     public Object clone(Session session) {
         Path copy = PathFactory.createPath(session, this.getAsDictionary());
-        copy.attributes = (Attributes) this.attributes.clone();
+        copy.attributes = (Attributes)((PathAttributes) this.attributes).clone();
         return copy;
+    }
+
+    {
+        attributes = new PathAttributes();
     }
 
     protected Path() {
@@ -180,21 +172,7 @@ public abstract class Path extends NSObject {
         this.setPath(parent, file.getName());
         this.setLocal(file);
         if(this.getLocal().exists()) {
-            this.attributes.setType(this.getLocal().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-        }
-    }
-
-    /**
-     * @param parent The parent directory
-     * @param name   The relative filename
-     */
-    public void setPath(String parent, String name) {
-        //Determine if the parent path already ends with a delimiter
-        if(parent.endsWith(DELIMITER)) {
-            this.setPath(parent + name);
-        }
-        else {
-            this.setPath(parent + DELIMITER + name);
+            this.attributes.setType(this.getLocal().attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
         }
     }
 
@@ -208,38 +186,6 @@ public abstract class Path extends NSObject {
         this.parent = null;
     }
 
-    public void setSymbolicLinkPath(String parent, String name) {
-        if(parent.endsWith(DELIMITER)) {
-            this.setSymbolicLinkPath(parent + name);
-        }
-        else {
-            this.setSymbolicLinkPath(parent + DELIMITER + name);
-        }
-    }
-
-    public void setSymbolicLinkPath(String p) {
-        this.symbolic = p;
-    }
-
-    /**
-     * @return The target of the symbolic link if this path denotes a symbolic link
-     * @see Attributes#isSymbolicLink
-     */
-    public String getSymbolicLinkPath() {
-        if(this.attributes.isSymbolicLink()) {
-            return this.symbolic;
-        }
-        return null;
-    }
-
-    /**
-     * Read the timestamp and size of this path from the remote server
-     *
-     * @see ch.cyberduck.core.Attributes#setSize(double)
-     * @see ch.cyberduck.core.Attributes#setModificationDate(long)
-     */
-    public abstract void readAttributes();
-
     /**
      * Reference to the parent created lazily if needed
      */
@@ -248,7 +194,7 @@ public abstract class Path extends NSObject {
     /**
      * @return My parent directory
      */
-    public Path getParent() {
+    public AbstractPath getParent() {
         if(null == parent) {
             int index = this.getAbsolute().length() - 1;
             if(this.getAbsolute().charAt(index) == '/') {
@@ -257,73 +203,15 @@ public abstract class Path extends NSObject {
             }
             int cut = this.getAbsolute().lastIndexOf('/', index);
             if(cut > 0) {
-                this.parent = PathFactory.createPath(this.getSession(), this.getAbsolute().substring(0, cut));
-                this.parent.attributes.setType(Path.DIRECTORY_TYPE);
+                parent = PathFactory.createPath(this.getSession(), this.getAbsolute().substring(0, cut));
+                ((PathAttributes)parent.attributes).setType(Path.DIRECTORY_TYPE);
             }
             else {//if (index == 0) //parent is root
-                this.parent = PathFactory.createPath(this.getSession(), DELIMITER);
-                this.parent.attributes.setType(Path.DIRECTORY_TYPE);
+                parent = PathFactory.createPath(this.getSession(), DELIMITER);
+                ((PathAttributes)parent.attributes).setType(Path.DIRECTORY_TYPE);
             }
         }
         return this.parent;
-    }
-
-    /**
-     * Return a context-relative path, beginning with a "/", that represents
-     * the canonical version of the specified path after ".." and "." elements
-     * are resolved out.
-     * *
-     *
-     * @return the normalized path.
-     * @author Adapted from org.apache.webdav
-     * @license http://www.apache.org/licenses/LICENSE-2.0
-     */
-    public static String normalize(final String path) {
-        String normalized = path;
-        if(Preferences.instance().getBoolean("path.normalize")) {
-            while(!normalized.startsWith(DELIMITER)) {
-                normalized = DELIMITER + normalized;
-            }
-            while(!normalized.endsWith(DELIMITER)) {
-                normalized += DELIMITER;
-            }
-            // Resolve occurrences of "/./" in the normalized path
-            while(true) {
-                int index = normalized.indexOf("/./");
-                if(index < 0) {
-                    break;
-                }
-                normalized = normalized.substring(0, index) +
-                        normalized.substring(index + 2);
-            }
-            // Resolve occurrences of "/../" in the normalized path
-            while(true) {
-                int index = normalized.indexOf("/../");
-                if(index < 0) {
-                    break;
-                }
-                if(index == 0) {
-                    return DELIMITER;  // The only left path is the root.
-                }
-                normalized = normalized.substring(0, normalized.lastIndexOf('/', index - 1)) +
-                        normalized.substring(index + 3);
-            }
-//            // Resolve occurrences of "//" in the normalized path
-//            while(true) {
-//                int index = normalized.indexOf("//");
-//                if(index < 0) {
-//                    break;
-//                }
-//                normalized = normalized.substring(0, index) +
-//                        normalized.substring(index + 1);
-//            }
-            while(normalized.endsWith(DELIMITER) && normalized.length() > 1) {
-                //Strip any redundant delimiter at the end of the path
-                normalized = normalized.substring(0, normalized.length() - 1);
-            }
-        }
-        // Return the normalized path that we have completed
-        return normalized;
     }
 
     /**
@@ -333,116 +221,20 @@ public abstract class Path extends NSObject {
         return this.getSession().getHost();
     }
 
-    /**
-     * @throws NullPointerException if session is not initialized
-     */
-    public void invalidate() {
-        if(this.isCached()) {
-            this.cache().attributes().setDirty(true);
-        }
+    public Cache cache() {
+        return this.getSession().cache();
     }
-
-    /**
-     * Request a unsorted and unfiltered file listing from the server.
-     *
-     * @return The children of this path or an empty list if it is not accessible for some reason
-     * @see NullComparator
-     * @see NullPathFilter
-     */
-    public AttributedList list() {
-        return this.list(new NullComparator(), new NullPathFilter());
-    }
-
-    /**
-     * Request a sorted and filtered file listing from the server. Has to be a directory.
-     *
-     * @param comparator The comparator to sort the listing with
-     * @param filter     The filter to exlude certain files
-     * @return The children of this path or an empty list if it is not accessible for some reason
-     */
-    public abstract AttributedList list(Comparator comparator, PathFilter filter);
-
-    /**
-     * @return The cached children of this path or null if not cached
-     *         or this path does not denote a directory
-     * @see #list
-     */
-    public AttributedList cache() {
-        return (AttributedList) this.getSession().cache().get(this);
-    }
-
-    /**
-     * @return True if this path denotes a directory and its file listing is cached for this session
-     * @see Cache
-     */
-    public boolean isCached() {
-        return this.getSession().cache().containsKey(this);
-    }
-
-    /**
-     * Remove this file from the remote host. Does not affect any corresponding local file
-     */
-    public abstract void delete();
-
-    /**
-     * Changes the session's working directory to this path
-     */
-    public abstract void cwdir() throws IOException;
-
-    public void mkdir() {
-        this.mkdir(false);
-    }
-
-    /**
-     * @param recursive Create intermediate directories as required.  If this option is
-     *                  not specified, the full path prefix of each operand must already exist
-     */
-    public abstract void mkdir(boolean recursive);
-
-    /**
-     * @param name Must be an absolute path
-     */
-    public abstract void rename(String name);
 
     public abstract void changeOwner(String owner, boolean recursive);
 
     public abstract void changeGroup(String group, boolean recursive);
 
     /**
-     * @param recursive Include subdirectories and files
-     */
-    public abstract void changePermissions(Permission perm, boolean recursive);
-
-    /**
-     * Calculates recursively the size of this path
-     *
-     * @return The size of the file or the sum of all containing files if a directory
-     * @warn Potentially lengthy operation
-     */
-    public double size() {
-        if(this.attributes.isDirectory()) {
-            double size = 0;
-            for(Iterator iter = this.list().iterator(); iter.hasNext();) {
-                size += ((Path) iter.next()).size();
-            }
-            this.attributes.setSize(size);
-        }
-        return this.attributes.getSize();
-    }
-
-    /**
-     * @return true if this paths points to '/'
-     */
-    public boolean isRoot() {
-        return this.getAbsolute().equals(DELIMITER) || this.getAbsolute().indexOf('/') == -1;
-    }
-
-    /**
      * @param p
      * @return true if p is a child of me in the path hierarchy
      */
     public boolean isChild(Path p) {
-        for(Path parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
+        for(AbstractPath parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
             if(parent.equals(p)) {
                 return true;
             }
@@ -476,23 +268,18 @@ public abstract class Path extends NSObject {
      */
     public void setLocal(Local file) {
         if(null != file) {
-            try {
-                if(file.isSymbolicLink()) {
-                    /**
-                     * A canonical pathname is both absolute and unique.  The precise
-                     * definition of canonical form is system-dependent.  This method first
-                     * converts this pathname to absolute form if necessary, as if by invoking the
-                     * {@link #getAbsolutePath} method, and then maps it to its unique form in a
-                     * system-dependent way.  This typically involves removing redundant names
-                     * such as <tt>"."</tt> and <tt>".."</tt> from the pathname, resolving
-                     * symbolic links
-                     */
-                    this.local = new Local(file.getCanonicalPath());
-                    return;
-                }
-            }
-            catch(IOException e) {
-                log.error(e.getMessage());
+            if(file.attributes.isSymbolicLink()) {
+                /**
+                 * A canonical pathname is both absolute and unique.  The precise
+                 * definition of canonical form is system-dependent.  This method first
+                 * converts this pathname to absolute form if necessary, as if by invoking the
+                 * {@link #getAbsolutePath} method, and then maps it to its unique form in a
+                 * system-dependent way.  This typically involves removing redundant names
+                 * such as <tt>"."</tt> and <tt>".."</tt> from the pathname, resolving
+                 * symbolic links
+                 */
+                this.local = new Local(file.getSymbolicLinkPath());
+                return;
             }
         }
         this.local = file;
@@ -515,18 +302,6 @@ public abstract class Path extends NSObject {
      */
     public Path getRemote() {
         return this;
-    }
-
-    /**
-     * @return the extension if any or null otherwise
-     */
-    public String getExtension() {
-        String name = this.getName();
-        int index = name.lastIndexOf(".");
-        if(index != -1 && index != 0) {
-            return name.substring(index + 1, name.length());
-        }
-        return null;
     }
 
     /**
@@ -564,24 +339,6 @@ public abstract class Path extends NSObject {
      *
      */
     public abstract void upload();
-
-    /**
-     *
-     */
-    public void sync() {
-        try {
-            Preferences.instance().setProperty("queue.upload.preserveDate.fallback", true);
-            if(this.compare() > 0) {
-                this.download();
-            }
-            else {
-                this.upload();
-            }
-        }
-        finally {
-            Preferences.instance().setProperty("queue.upload.preserveDate.fallback", false);
-        }
-    }
 
     /**
      * A state variable to mark this path if it should not be considered for file transfers
@@ -693,7 +450,7 @@ public abstract class Path extends NSObject {
         if(this.isRoot()) {
             return true;
         }
-        return this.getParent().list().contains(this);
+        return this.getParent().childs().contains(this);
     }
 
     /**
@@ -720,100 +477,20 @@ public abstract class Path extends NSObject {
     }
 
     /**
-     * @return > 0 if the remote path exists and is newer than
-     *         the local file; < 0 if the local path exists and is newer than
-     *         the remote file; 0 if both files don't exist or have an equal timestamp
-     */
-    public int compare() {
-        if(this.getRemote().exists() && this.getLocal().exists()) {
-            int size = this.compareSize(); //fist make sure both files are larger than 0 bytes
-            if(0 == size) {
-                //both files have a valid size; compare using timestamp
-                return this.compareTimestamp();
-            }
-            return size;
-        }
-        if(this.getRemote().exists()) {
-            // only the remote file exists
-            return 1;
-        }
-        if(this.getLocal().exists()) {
-            // only the local file exists
-            return -1;
-        }
-        // both files don't exist yet
-        return 0;
-    }
-
-    /**
-     * @return
-     */
-    private int compareSize() {
-        if(this.getRemote().attributes.getSize() == 0 && this.getLocal().attributes.getSize() == 0) {
-            return 0;
-        }
-        if(this.getRemote().attributes.getSize() == 0) {
-            return -1;
-        }
-        if(this.getLocal().attributes.getSize() == 0) {
-            return 1;
-        }
-        return 0;
-    }
-
-    /**
-     *
-     * @return
-     */
-    private int compareTimestamp() {
-        Calendar remote = this.asCalendar(
-                this.getRemote().attributes.getModificationDate()
-//                        -this.getHost().getTimezone().getRawOffset()
-                ,
-                this.getHost().getTimezone(),
-                Calendar.MINUTE);
-        Calendar local = this.asCalendar(this.getLocal().attributes.getModificationDate(),
-                TimeZone.getDefault(),
-                Calendar.MINUTE);
-        if(local.before(remote)) {
-            //remote file is newer
-            return 1;
-        }
-        if(local.after(remote)) {
-            //local file is newer
-            return -1;
-        }
-        //same timestamp
-        return 0;
-    }
-
-    private Calendar asCalendar(final long timestamp, final TimeZone timezone, final int precision) {
-        Calendar c = Calendar.getInstance(timezone);
-        c.setTimeInMillis(timestamp);
-        if(precision == Calendar.MILLISECOND) {
-            return c;
-        }
-        c.clear(Calendar.MILLISECOND);
-        if(precision == Calendar.SECOND) {
-            return c;
-        }
-        c.clear(Calendar.SECOND);
-        if(precision == Calendar.MINUTE) {
-            return c;
-        }
-        c.clear(Calendar.MINUTE);
-        if(precision == Calendar.HOUR) {
-            return c;
-        }
-        c.clear(Calendar.HOUR);
-        return c;
-    }
-
-    /**
      * @return The absolute path name
      */
     public String toString() {
         return this.getAbsolute();
+    }
+
+    public URL toURL() {
+        try {
+            return new URL(this.getHost().getURL()+this.getAbsolute());
+        }
+        catch(MalformedURLException e) {
+            log.error(e.getMessage());
+            return null;
+        }
     }
 
     protected void finalize() throws java.lang.Throwable {

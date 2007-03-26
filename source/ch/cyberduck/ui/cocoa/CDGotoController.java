@@ -61,14 +61,14 @@ public class CDGotoController extends CDSheetController{
                 if(!c.isMounted()) {
                     return 0;
                 }
-                return c.workdir().list(comparator, filter).size();
+                return c.workdir().childs(comparator, filter).size();
             }
 
             /**
              * @see NSComboBox.DataSource
              */
             public Object comboBoxObjectValueForItemAtIndex(final NSComboBox sender, final int row) {
-                final List childs = c.workdir().list(comparator, filter);
+                final List childs = c.workdir().childs(comparator, filter);
                 if(row < childs.size()) {
                     return ((Path)childs.get(row)).getAbsolute();
                 }

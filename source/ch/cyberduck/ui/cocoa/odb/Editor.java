@@ -21,10 +21,8 @@ package ch.cyberduck.ui.cocoa.odb;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.io.FileWatcherListener;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDController;
-import ch.cyberduck.ui.cocoa.CDIconCache;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
@@ -132,7 +130,7 @@ public class Editor extends CDController {
 
     private static final Object lock = new Object();
 
-    private boolean jni_load() {
+    private static boolean jni_load() {
         if(!JNI_LOADED) {
             try {
                 synchronized(lock) {
@@ -146,14 +144,15 @@ public class Editor extends CDController {
             }
             catch(UnsatisfiedLinkError e) {
                 log.error("Could not load the libODBEdit.dylib library:" + e.getMessage());
-                throw e;
             }
         }
         return JNI_LOADED;
     }
 
     private void edit(final String bundleIdentifier) {
-        jni_load();
+        if(!Editor.jni_load()) {
+            return;
+        }
         this.edit(path.getLocal().getAbsolute(), bundleIdentifier);
     }
 

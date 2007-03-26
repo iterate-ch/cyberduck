@@ -63,13 +63,25 @@ public class CDPreferencesImpl extends Preferences {
     public void load() {
         this.props = NSUserDefaults.standardUserDefaults();
 
-        // Setting default values that must be accessible using [NSUserDefaults standardUserDefaults]
-        if(null == props.objectForKey("browser.view.autoexpand.useDelay"))
-            this.setProperty("browser.view.autoexpand.useDelay", super.getProperty("browser.view.autoexpand.useDelay"));
-        if(null == props.objectForKey("browser.view.autoexpand.delay"))
-            this.setProperty("browser.view.autoexpand.delay", super.getProperty("browser.view.autoexpand.delay"));
-        if(null == props.objectForKey("queue.maxtransfers"))
-            this.setProperty("queue.maxtransfers", super.getProperty("queue.maxtransfers"));
+        _init("browser.view.autoexpand.useDelay");
+        _init("browser.view.autoexpand.delay");
+
+        _init("queue.maxtransfers");
+
+        _init("connection.retry");
+        _init("connection.retry.delay");
+        _init("connection.timeout.seconds");
+    }
+
+    /**
+     * Setting default values that must be accessible using [NSUserDefaults standardUserDefaults]
+     * @param property
+     */
+    private void _init(String property) {
+        if(null == props.objectForKey(property)) {
+            // Set the default value
+            this.setProperty(property, super.getProperty(property));
+        }
     }
 
     public void save() {

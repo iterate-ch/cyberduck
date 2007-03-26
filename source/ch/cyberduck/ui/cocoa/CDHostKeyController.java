@@ -49,13 +49,13 @@ public class CDHostKeyController implements ServerHostKeyVerifier {
 
     public CDHostKeyController(final CDWindowController windowController) {
         this.parent = windowController;
-        File f = new Local(Preferences.instance().getProperty("ssh.knownhosts"));
-        if(f.canRead()) {
+        Local f = new Local(Preferences.instance().getProperty("ssh.knownhosts"));
+        if(f.isReadable()) {
             try {
-                this.database = new KnownHosts(f);
+                this.database = new KnownHosts(f.getAbsolute());
             }
             catch(IOException e) {
-                log.error("Cannot read "+f.getAbsolutePath());
+                log.error("Cannot read "+f.getAbsolute());
             }
         }
         if(null == this.database) {
@@ -76,7 +76,7 @@ public class CDHostKeyController implements ServerHostKeyVerifier {
                             + ": " + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey) + ".",
                     NSBundle.localizedString("Allow", ""), // default button
                     NSBundle.localizedString("Deny", ""), // alternate button
-                    new Local(Preferences.instance().getProperty("ssh.knownhosts")).canWrite() ?
+                    new Local(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ?
                             NSBundle.localizedString("Always", "") : null //other button
             );
             CDSheetController c = new CDSheetController(parent, sheet) {
@@ -105,7 +105,7 @@ public class CDHostKeyController implements ServerHostKeyVerifier {
                             + NSBundle.localizedString("Do you want to allow the host access?", ""),
                     NSBundle.localizedString("Allow", ""), // defaultbutton
                     NSBundle.localizedString("Deny", ""), //alternative button
-                    new Local(Preferences.instance().getProperty("ssh.knownhosts")).canWrite() ? NSBundle.localizedString("Always", "") : null //other button
+                    new Local(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ? NSBundle.localizedString("Always", "") : null //other button
             );
             CDSheetController c = new CDSheetController(parent, sheet) {
                 public void callback(final int returncode) {

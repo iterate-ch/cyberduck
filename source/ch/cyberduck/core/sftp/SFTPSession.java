@@ -132,7 +132,7 @@ public class SFTPSession extends Session {
         return  client;
     }
 
-    protected void connect() throws IOException, LoginCanceledException {
+    protected void connect() throws IOException, ConnectionCanceledException, LoginCanceledException {
         synchronized(this) {
             if(this.isConnected()) {
                 return;
@@ -146,7 +146,7 @@ public class SFTPSession extends Session {
                         SFTPSession.this.interrupt();
                     }
                 });
-                final int timeout = Preferences.instance().getInteger("connection.timeout");
+                final int timeout = this.timeout();
                 SSH.connect(verifier, timeout, timeout);
                 if(!this.isConnected()) {
                     return;
@@ -166,7 +166,7 @@ public class SFTPSession extends Session {
         }
     }
 
-    protected void login() throws IOException, LoginCanceledException {
+    protected void login() throws IOException, ConnectionCanceledException, LoginCanceledException {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }

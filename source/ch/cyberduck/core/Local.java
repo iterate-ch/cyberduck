@@ -24,26 +24,162 @@ import glguerin.io.imp.mac.macosx.MacOSXForker;
 
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSDate;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSDate;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.util.Iterator;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * @version $Id$
  */
-public class Local extends File implements IAttributes {
+public class Local extends AbstractPath {
     private static Logger log = Logger.getLogger(Local.class);
+
+    {
+        attributes = new Attributes() {
+            public Permission getPermission() {
+                NSDictionary fileAttributes = NSPathUtilities.fileAttributes(_impl.getAbsolutePath(), true);
+                if(null == fileAttributes) {
+                    log.error("No such file:"+getAbsolute());
+                    return null;
+                }
+                Object posix = fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions);
+                if(null == posix) {
+                    log.error("No such file:"+getAbsolute());
+                    return null;
+                }
+                return new Permission(Integer.parseInt(Integer.toOctalString(((Number) posix).intValue())));
+            }
+
+            public void setPermission(Permission p) {
+                ;
+            }
+
+            public boolean isDirectory() {
+                return _impl.isDirectory();
+            }
+
+            public boolean isFile() {
+                return _impl.isFile();
+            }
+
+            /**
+             * Checks whether a given file is a symbolic link.
+             * <p/>
+             * <p>It doesn't really test for symbolic links but whether the
+             * canonical and absolute paths of the file are identical - this
+             * may lead to false positives on some platforms.</p>
+             *
+             * @return true if the file is a symbolic link.
+             */
+            public boolean isSymbolicLink() {
+                if(!Local.this.exists()) {
+                    return false;
+                }
+                // For a link that actually points to something (either a file or a directory),
+                // the absolute path is the path through the link, whereas the canonical path
+                // is the path the link references.
+                try {
+                    return !_impl.getAbsolutePath().equals(_impl.getCanonicalPath());
+                }
+                catch(IOException e) {
+                    return false;
+                }
+            }
+
+            public void setType(int i) {
+                ;
+            }
+
+            public void setSize(double size) {
+                ;
+            }
+
+            public void setOwner(String owner) {
+                ;
+            }
+
+            public void setGroup(String group) {
+                ;
+            }
+
+            public String getOwner() {
+                return null;
+            }
+
+            public String getGroup() {
+                return null;
+            }
+
+            public long getModificationDate() {
+                return _impl.lastModified();
+            }
+
+            public void setModificationDate(long millis) {
+                ;
+            }
+
+            public long getCreationDate() {
+                NSDictionary fileAttributes = NSPathUtilities.fileAttributes(_impl.getAbsolutePath(), true);
+                // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
+                // if the link points to a nonexistent file, this method returns null. If flag is false,
+                // the attributes of the symbolic link are returned.
+                if(null == fileAttributes) {
+                    log.error("No such file:"+getAbsolute());
+                    return -1;
+                }
+                Object date = fileAttributes.objectForKey(NSPathUtilities.FileCreationDate);
+                if(null == date) {
+                    // Returns an entry’s value given its key, or null if no value is associated with key.
+                    log.error("No such file:"+getAbsolute());
+                    return -1;
+                }
+                return NSDate.timeIntervalToMilliseconds(((NSDate)date).timeIntervalSinceDate(NSDate.DateFor1970));
+            }
+
+            public void setCreationDate(long millis) {
+                boolean success = NSPathUtilities.setFileAttributes(_impl.getAbsolutePath(),
+                        new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis)),
+                                NSPathUtilities.FileCreationDate));
+                if(!success) {
+                    log.error("File attribute changed failed:"+getAbsolute());
+                }
+            }
+
+            public long getAccessedDate() {
+                return this.getModificationDate();
+            }
+
+            public void setAccessedDate(long millis) {
+                ;
+            }
+
+            public int getType() {
+                final int t = this.isFile() ? AbstractPath.FILE_TYPE : AbstractPath.DIRECTORY_TYPE;
+                if(this.isSymbolicLink()) {
+                    return t | AbstractPath.SYMBOLIC_LINK_TYPE;
+                }
+                return t;
+            }
+
+            public double getSize() {
+                if(this.isDirectory()) {
+                    return 0;
+                }
+                return _impl.length();
+            }
+        };
+    }
 
     private static boolean JNI_LOADED = false;
 
-    public IAttributes attributes = this;
-
-    private boolean jni_load() {
+    private static boolean jni_load() {
         synchronized(lock) {
             if(!JNI_LOADED) {
                 try {
@@ -56,31 +192,32 @@ public class Local extends File implements IAttributes {
                 }
                 catch(UnsatisfiedLinkError e) {
                     log.error("Could not load the libLocal.dylib library:" + e.getMessage());
-                    throw e;
                 }
             }
             return JNI_LOADED;
         }
     }
 
+    protected File _impl;
+
     public Local(File parent, String name) {
         // See trac #933
-        super(NSPathUtilities.stringByExpandingTildeInPath(parent.getAbsolutePath()),
+        _impl = new File(NSPathUtilities.stringByExpandingTildeInPath(parent.getAbsolutePath()),
                 name.replace('/', ':'));
     }
 
     public Local(String parent, String name) {
         // See trac #933
-        super(NSPathUtilities.stringByExpandingTildeInPath(parent),
+        _impl = new File(NSPathUtilities.stringByExpandingTildeInPath(parent),
                 name.replace('/', ':'));
     }
 
     public Local(String path) {
-        super(NSPathUtilities.stringByExpandingTildeInPath(path));
+        _impl = new File(NSPathUtilities.stringByExpandingTildeInPath(path));
     }
 
     public Local(File path) {
-        super(NSPathUtilities.stringByExpandingTildeInPath(path.getAbsolutePath()));
+        _impl = new File(NSPathUtilities.stringByExpandingTildeInPath(path.getAbsolutePath()));
     }
 
 //    private FileWatcher uk;
@@ -96,13 +233,21 @@ public class Local extends File implements IAttributes {
 //        uk.watch(listener);
 //    }
 
+    public boolean isReadable() {
+        return _impl.canRead();
+    }
+
+    public boolean isWritable() {
+        return _impl.canWrite();
+    }
+
     /**
      * Creates a new file and sets its resource fork to feature a custom progress icon
      * @return
      */
     public boolean createNewFile() {
         try {
-            if(super.createNewFile()) {
+            if(_impl.createNewFile()) {
                 this.setIcon(0);
             }
         }
@@ -132,9 +277,9 @@ public class Local extends File implements IAttributes {
      */
     public boolean delete(boolean recursively) {
         if(!recursively) {
-            return this.delete();
+            return _impl.delete();
         }
-        return this.deleteImpl(this);
+        return this.deleteImpl(_impl);
     }
 
     /**
@@ -142,50 +287,29 @@ public class Local extends File implements IAttributes {
      * @return  <code>true</code> if and only if the file or directory is
      *          successfully deleted; <code>false</code> otherwise
      */
-    private boolean deleteImpl(Local f) {
-        if(f.attributes.isDirectory()) {
+    private boolean deleteImpl(File f) {
+        if(f.isDirectory()) {
             File[] files = f.listFiles();
             for(int i = 0; i < files.length; i++) {
-                this.deleteImpl(new Local(files[i]));
+                this.deleteImpl(files[i]);
             }
         }
         return f.delete();
     }
 
-    /**
-     * @return the extension if any or null
-     */
-    public String getExtension() {
-        String name = this.getName();
-        int index = name.lastIndexOf(".");
-        if(index != -1) {
-            return name.substring(index + 1, name.length());
-        }
-        return null;
+    private Cache cache = new Cache();
+
+    public Cache cache() {
+        return this.cache;
     }
 
-    /**
-     * Checks whether a given file is a symbolic link.
-     * <p/>
-     * <p>It doesn't really test for symbolic links but whether the
-     * canonical and absolute paths of the file are identical - this
-     * may lead to false positives on some platforms.</p>
-     *
-     * @return true if the file is a symbolic link.
-     */
-    public boolean isSymbolicLink() {
-        if(!this.exists()) {
-            return false;
+    public AttributedList list() {
+        final AttributedList childs = new AttributedList();
+        File[] f = _impl.listFiles();
+        for(int i = 0; i < f.length; i++) {
+            childs.add(new Local(f[i]));
         }
-        // For a link that actually points to something (either a file or a directory),
-        // the absolute path is the path through the link, whereas the canonical path
-        // is the path the link references.
-        try {
-            return !this.getAbsolutePath().equals(this.getCanonicalPath());
-        }
-        catch(IOException e) {
-            return false;
-        }
+        return childs;
     }
 
     /**
@@ -199,7 +323,9 @@ public class Local extends File implements IAttributes {
         if(null == extension) {
             return NSBundle.localizedString("Unknown", "");
         }
-        this.jni_load();
+        if(!Local.jni_load()) {
+            return NSBundle.localizedString("Unknown", "");
+        }
         return this.kind(this.getExtension());
     }
 
@@ -210,7 +336,73 @@ public class Local extends File implements IAttributes {
     private native String kind(String extension);
 
     public String getAbsolute() {
-        return super.getAbsolutePath();
+        return _impl.getAbsolutePath();
+    }
+
+    public String getSymbolicLinkPath() {
+        try {
+            return _impl.getCanonicalPath();
+        }
+        catch(IOException e) {
+            log.error(e.getMessage());
+            return this.getAbsolute();
+        }
+    }
+
+    public String getName() {
+        return _impl.getName();
+    }
+
+    public AbstractPath getParent() {
+        return new Local(_impl.getParentFile());
+    }
+
+    public boolean exists() {
+        return _impl.exists();
+    }
+
+    public void setPath(String name) {
+        _impl = new File(Path.normalize(name));
+    }
+
+    public void mkdir(boolean recursive) {
+        if(recursive) _impl.mkdirs(); else _impl.mkdir();
+    }
+
+    public void changePermissions(Permission perm, boolean recursive) {
+        boolean success = NSPathUtilities.setFileAttributes(_impl.getAbsolutePath(),
+                new NSDictionary(new Integer(perm.getOctalNumber()),
+                        NSPathUtilities.FilePosixPermissions));
+        if(!success) {
+            log.error("File attribute changed failed:"+getAbsolute());
+        }
+        if(this.attributes.isDirectory() && recursive) {
+            for(Iterator iter = this.childs().iterator(); iter.hasNext(); ) {
+                Local child = (Local)iter.next();
+                child.changePermissions(perm, recursive);
+            }
+        }
+    }
+
+    public void changeModificationDate(long millis) {
+        boolean success = NSPathUtilities.setFileAttributes(_impl.getAbsolutePath(),
+                new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis)),
+                        NSPathUtilities.FileModificationDate));
+        if(!success) {
+            log.error("File attribute changed failed:"+getAbsolute());
+        }
+    }
+
+    public void delete() {
+        _impl.delete();
+    }
+
+    public void rename(String name) {
+        _impl.renameTo(new File(this.getParent().getAbsolute(), name));
+    }
+
+    public void cwdir() throws IOException {
+        ;
     }
 
     private final static Object lock = new Object();
@@ -227,7 +419,9 @@ public class Local extends File implements IAttributes {
         }
         if(Preferences.instance().getBoolean("queue.download.updateIcon")) {
             synchronized(lock) {
-                this.jni_load();
+                if(!Local.jni_load()) {
+                    return;
+                }
                 if(-1 == progress) {
                     this.removeResourceFork();
                 }
@@ -246,7 +440,7 @@ public class Local extends File implements IAttributes {
         try {
             this.removeCustomIcon();
             FileForker forker = new MacOSXForker();
-            forker.usePathname(new Pathname(this.getAbsoluteFile()));
+            forker.usePathname(new Pathname(_impl.getAbsoluteFile()));
             forker.makeForkOutputStream(true, false).close();
         }
         catch(IOException e) {
@@ -260,98 +454,44 @@ public class Local extends File implements IAttributes {
     private native void setIconFromFile(String path, String icon);
 
     private void removeCustomIcon() {
-        this.jni_load();
+        if(!Local.jni_load()) {
+            return;
+        }
         this.removeCustomIcon(this.getAbsolute());
     }
 
     private native void removeCustomIcon(String path);
 
-    public Permission getPermission() {
-        NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
-        if(null == fileAttributes) {
-            log.error("No such file:"+this.getAbsolute());
-            return null;
-        }
-        Object posix = fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions);
-        if(null == posix) {
-            log.error("No such file:"+this.getAbsolute());
-            return null;
-        }
-        return new Permission(Integer.parseInt(Integer.toOctalString(((Number) posix).intValue())));
-    }
-
-    public void setPermission(Permission p) {
-        boolean success = NSPathUtilities.setFileAttributes(this.getAbsolutePath(),
-                new NSDictionary(new Integer(p.getOctalNumber()),
-                        NSPathUtilities.FilePosixPermissions));
-        if(!success) {
-            log.error("File attribute changed failed:"+this.getAbsolute());
-        }
-    }
-
-    public long getModificationDate() {
-        return super.lastModified();
-    }
-
-    public void setModificationDate(long millis) {
-        boolean success = NSPathUtilities.setFileAttributes(this.getAbsolutePath(),
-                new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis)),
-                        NSPathUtilities.FileModificationDate));
-        if(!success) {
-            log.error("File attribute changed failed:"+this.getAbsolute());
-        }
-    }
-
-    public long getCreationDate() {
-        NSDictionary fileAttributes = NSPathUtilities.fileAttributes(this.getAbsolutePath(), true);
-        // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
-        // if the link points to a nonexistent file, this method returns null. If flag is false,
-        // the attributes of the symbolic link are returned.
-        if(null == fileAttributes) {
-            log.error("No such file:"+this.getAbsolute());
-            return -1;
-        }
-        Object date = fileAttributes.objectForKey(NSPathUtilities.FileCreationDate);
-        if(null == date) {
-            // Returns an entry’s value given its key, or null if no value is associated with key.
-            log.error("No such file:"+this.getAbsolute());
-            return -1;
-        }
-        return NSDate.timeIntervalToMilliseconds(((NSDate)date).timeIntervalSinceDate(NSDate.DateFor1970));
-    }
-
-    public void setCreationDate(long millis) {
-        boolean success = NSPathUtilities.setFileAttributes(this.getAbsolutePath(),
-                new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis)),
-                        NSPathUtilities.FileCreationDate));
-        if(!success) {
-            log.error("File attribute changed failed:"+this.getAbsolute());
-        }
-    }
-
-    public long getAccessedDate() {
-        return this.getModificationDate();
-    }
-
-    public void setAccessedDate(long millis) {
-        ;
-    }
-
-    public double getSize() {
-        if(this.isDirectory()) {
-            return 0;
-        }
-        return super.length();
-    }
-
     public int hashCode() {
-        return this.getAbsolutePath().hashCode();
+        return _impl.getAbsolutePath().hashCode();
     }
 
     public boolean equals(Object other) {
         if(other instanceof Local) {
-            return this.getAbsolute().equalsIgnoreCase(((Local) other).getAbsolute());
+            return this.getAbsolute().equalsIgnoreCase(((AbstractPath) other).getAbsolute());
         }
         return false;
+    }
+
+    public URL toURL() {
+        try {
+            return _impl.toURL();
+        }
+        catch(MalformedURLException e) {
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
+    public static class OutputStream extends FileOutputStream {
+        public OutputStream(Local local, boolean resume) throws FileNotFoundException {
+            super(local._impl, resume);
+        }
+    }
+
+    public static class InputStream extends FileInputStream {
+        public InputStream(Local local) throws FileNotFoundException {
+            super(local._impl);
+        }
     }
 }

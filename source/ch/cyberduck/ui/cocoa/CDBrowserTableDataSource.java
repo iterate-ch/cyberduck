@@ -65,6 +65,12 @@ public abstract class CDBrowserTableDataSource extends NSObject {
      */
     private final List isLoadingListingInBackground = new ArrayList();
 
+    protected CDBrowserController controller;
+
+    public CDBrowserTableDataSource(CDBrowserController controller) {
+        this.controller = controller;
+    }
+
     /**
      * Must be efficient; called very frequently by the table view
      *
@@ -89,7 +95,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     controller.background(new BackgroundAction() {
                         public void run() {
                             try {
-                                path.list();
+                                path.childs();
                             }
                             finally {
                                 synchronized(isLoadingListingInBackground) {
@@ -105,18 +111,12 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     });
                 }
                 else {
-                    return path.list(controller.getComparator(), controller.getFileFilter());
+                    return path.childs(controller.getComparator(), controller.getFileFilter());
                 }
             }
         }
         log.warn("No cached listing for " + path.getName());
         return Collections.EMPTY_LIST;
-    }
-
-    protected CDBrowserController controller;
-
-    public CDBrowserTableDataSource(CDBrowserController controller) {
-        this.controller = controller;
     }
 
     public int indexOf(NSView tableView, Path p) {
@@ -138,7 +138,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
         }
     }
 
-    public NSImage iconforPath(final Path item) {
+    public static NSImage iconForPath(final Path item) {
         final String extension = item.getExtension();
         NSImage icon = null;
         if(item.attributes.isSymbolicLink()) {
@@ -147,7 +147,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
         else if(item.attributes.isDirectory()) {
             if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")) {
                 if(!item.attributes.isExecutable()
-                        || (item.isCached() && !item.cache().attributes().isReadable())) {
+                        || (item.isCached() && !item.childs().attributes().isReadable())) {
                     icon = FOLDER_NOACCESS_ICON;
                 }
                 else if(!item.attributes.isReadable()) {
@@ -170,10 +170,10 @@ public abstract class CDBrowserTableDataSource extends NSObject {
         return icon;
     }
 
-    public Object objectValueForItem(Path item, String identifier) {
+    protected Object objectValueForItem(Path item, String identifier) {
         if(null != item) {
             if(identifier.equals(ICON_COLUMN)) {
-                return this.iconforPath(item);
+                return CDBrowserTableDataSource.iconForPath(item);
             }
             if(identifier.equals(FILENAME_COLUMN)) {
                 return new NSAttributedString(item.getName(),
@@ -249,14 +249,15 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             // A file drag has been received by another application; upload to the dragged directory
             if(o != null) {
                 NSArray elements = (NSArray) o;
-                final Transfer q = new UploadTransfer();
                 final Session session = controller.getTransferSession();
+                final List roots = new ArrayList();
                 for(int i = 0; i < elements.count(); i++) {
                     Path p = PathFactory.createPath(session,
                             destination.getAbsolute(),
                             new Local((String) elements.objectAtIndex(i)));
-                    q.addRoot(p);
+                    roots.add(p);
                 }
+                final Transfer q = new UploadTransfer(roots);
                 if(q.numberOfRoots() > 0) {
                     controller.transfer(q, destination);
                 }
@@ -384,7 +385,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                 // with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory
                 // of files, only include the top directory in the array.
                 NSMutableArray fileTypes = new NSMutableArray();
-                Transfer q = new DownloadTransfer();
+                final List roots = new ArrayList();
                 final Session session = controller.getTransferSession();
                 for(int i = 0; i < items.count(); i++) {
                     promisedDragPaths[i] = (Path) ((Path) items.objectAtIndex(i)).clone(session);
@@ -402,8 +403,9 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     else {
                         fileTypes.addObject(NSPathUtilities.FileTypeUnknown);
                     }
-                    q.addRoot(promisedDragPaths[i]);
+                    roots.add(promisedDragPaths[i]);
                 }
+                final Transfer q = new DownloadTransfer(roots);
 
                 // Writing data for private use when the item gets dragged to the transfer queue.
                 NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
@@ -464,10 +466,11 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     this.promisedDragPaths[0].getLocal().mkdir();
                 }
             }
-            Transfer q = new DownloadTransfer();
+            final List roots = new ArrayList();
             for(int i = 0; i < promisedDragPaths.length; i++) {
-                q.addRoot(promisedDragPaths[i]);
+                roots.add(promisedDragPaths[i]);
             }
+            final Transfer q = new DownloadTransfer(roots);
             if(q.numberOfRoots() > 0) {
                 controller.transfer(q);
             }

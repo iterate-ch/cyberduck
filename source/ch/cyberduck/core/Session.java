@@ -127,6 +127,13 @@ public abstract class Session extends NSObject {
     }
 
     /**
+     * @return The timeout in milliseconds
+     */
+    protected int timeout() {
+        return (int)Preferences.instance().getDouble("connection.timeout.seconds")*1000;
+    }
+
+    /**
      * @return true if the control channel is either tunneled using TLS or SSH
      */
     public abstract boolean isSecure();
@@ -142,7 +149,7 @@ public abstract class Session extends NSObject {
      * @throws IOException
      * @throws LoginCanceledException
      */
-    protected abstract void connect() throws IOException, LoginCanceledException;
+    protected abstract void connect() throws IOException, ConnectionCanceledException, LoginCanceledException;
 
     protected LoginController loginController;
 
@@ -161,7 +168,7 @@ public abstract class Session extends NSObject {
      * @throws IOException
      * @throws LoginCanceledException
      */
-    protected abstract void login() throws IOException, LoginCanceledException;
+    protected abstract void login() throws IOException, ConnectionCanceledException, LoginCanceledException;
 
     /**
      * Connect to the remote host and mount the home directory
@@ -180,7 +187,7 @@ public abstract class Session extends NSObject {
                 if(host.hasReasonableDefaultPath()) {
                     home = PathFactory.createPath(this, host.getDefaultPath());
                     home.attributes.setType(Path.DIRECTORY_TYPE);
-                    if(!home.list().attributes().isReadable()) {
+                    if(!home.childs().attributes().isReadable()) {
                         // the default path does not exist or is not readable due to permission issues
                         home = workdir();
                     }

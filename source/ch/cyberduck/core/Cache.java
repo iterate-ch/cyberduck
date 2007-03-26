@@ -18,18 +18,15 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A cache for remote directory listings
  * @version $Id$
  */
-public class Cache extends HashMap {
+public class Cache {
 
+    private Map _impl = new HashMap();
     /**
      *
      */
@@ -42,8 +39,8 @@ public class Cache extends HashMap {
      * @param path
      * @return True if the directory listing for this path is cached
      */
-    public boolean containsKey(Path path) {
-        return super.containsKey(path.getAbsolute());
+    public boolean containsKey(AbstractPath path) {
+        return _impl.containsKey(path.getAbsolute());
     }
 
     /**
@@ -51,8 +48,8 @@ public class Cache extends HashMap {
      * @param path
      * @return
      */
-    public Object remove(Path path) {
-        return super.remove(path.getAbsolute());
+    public AttributedList remove(AbstractPath path) {
+        return (AttributedList)_impl.remove(path.getAbsolute());
     }
 
     /**
@@ -60,19 +57,8 @@ public class Cache extends HashMap {
      * @param path
      * @return null if no cached file listing is available
      */
-    private AttributedList get(Path path) {
-        return (AttributedList) super.get(path.getAbsolute());
-    }
-
-    /**
-     * 
-     * @param key
-     * @pre key instanceof Path
-     * @return
-     * @see AttributedList
-     */
-    public Object get(Object key) {
-        return this.get((Path)key);
+    public AttributedList get(AbstractPath path) {
+        return (AttributedList) _impl.get(path.getAbsolute());
     }
 
     /**
@@ -81,8 +67,8 @@ public class Cache extends HashMap {
      * @param filter
      * @return null if no cached file listing is available
      */
-    public AttributedList get(final Path path, final Comparator comparator, final PathFilter filter) {
-        AttributedList childs = (AttributedList) super.get(path.getAbsolute());
+    public AttributedList get(final AbstractPath path, final Comparator comparator, final PathFilter filter) {
+        AttributedList childs = (AttributedList) _impl.get(path.getAbsolute());
         if (null == childs) {
             return null;
         }
@@ -118,15 +104,11 @@ public class Cache extends HashMap {
         return childs;
     }
 
-    public Object put(Path path, AttributedList childs) {
-        return super.put(path.getAbsolute(), childs);
+    public AttributedList put(AbstractPath path, AttributedList childs) {
+        return (AttributedList)_impl.put(path.getAbsolute(), childs);
     }
 
-    /**
-     * @param path   ch.cyberduck.core.Path
-     * @param childs ch.cyberduck.core.AttributedList
-     */
-    public Object put(Object path, Object childs) {
-        return this.put((Path) path, (AttributedList) childs);
+    public void clear() {
+        _impl.clear();
     }
 }
