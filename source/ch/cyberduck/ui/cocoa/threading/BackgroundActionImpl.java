@@ -18,17 +18,17 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ErrorListener;
-import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.Path;
+import com.enterprisedt.net.ftp.FTPNullReplyException;
+
+import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.CDErrorCell;
-import ch.cyberduck.ui.cocoa.CDSheetCallback;
 import ch.cyberduck.ui.cocoa.CDSheetController;
 import ch.cyberduck.ui.cocoa.CDWindowController;
+import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
@@ -38,12 +38,14 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @version $Id: BackgroundActionImpl.java 2524 2006-10-26 13:14:03Z dkocher $
  */
 public abstract class BackgroundActionImpl
-        implements BackgroundAction, CDSheetCallback, ErrorListener, TranscriptListener {
+        implements BackgroundAction, ErrorListener, TranscriptListener {
 
 
     private static Logger log = Logger.getLogger(BackgroundActionImpl.class);
@@ -77,6 +79,9 @@ public abstract class BackgroundActionImpl
                 return;
             }
         }
+        Growl.instance().notify(exception.getMessage(),
+                null == exception.getPath() ? exception.getSession().getHost().getHostname()
+                        : exception.getPath().getName());
         exceptions.add(exception);
     }
 
@@ -105,25 +110,91 @@ public abstract class BackgroundActionImpl
         this.transcript = new StringBuffer();
     }
 
-    public abstract void run();
-
-    public abstract void cleanup();
-
-    public void callback(final int returncode) {
-        ;
+    /**
+     * Clear the transcript and exceptions
+     */
+    public void init() {
+        if(transcript.length() > 0) {
+            transcript.delete(0, transcript.length()-1);
+        }
+        exceptions.clear();
     }
 
     /**
-     *
-     * @return
+     * To be overriden in concrete subclass
+     * @return The session if any
+     */
+    public Session session() {
+        return null;
+    }
+
+    /**
+     * The number of times this action has been run
+     */
+    protected int count = 0;
+
+    /**
+     * The number of times a new connection attempt should be made. Takes into
+     * account the number of times already tried.
+     * @return Greater than zero if a failed action should be repeated again
+     */
+    public int retry() {
+        if(!this.isCanceled()) {
+            for(Iterator iter = exceptions.iterator(); iter.hasNext(); ) {
+                Throwable cause = ((Throwable)iter.next()).getCause();
+                // Check for an exception we consider possibly temporary
+                if(cause instanceof SocketException
+                        || cause instanceof UnknownHostException
+                        || cause instanceof FTPNullReplyException)
+                {
+                    // The initial connection attempt does not count
+                    return (int)Preferences.instance().getDouble("connection.retry") - (count -1);
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * To be overriden by a concrete subclass. Returns false by default for actions
+     * not connected to a graphical user interface
+     * @return True if the user canceled this action
+     */
+    public boolean isCanceled() {
+        return false;
+    }
+
+    /**
+     * Called just before #run. After this method is called, a delay
+     * of #delay is added before continuing.
+     * @see #run()
+     */
+    public void prepare() {
+        ;
+    }
+
+    public abstract void run();
+
+    /**
+     * Called after #run but still on the working thread
+     * @see #run
+     */
+    public void finish() {
+        count++;
+    }
+
+    public abstract void cleanup();
+
+    /**
+     * @return True if an error was reported the last time this action was run
      */
     public boolean hasFailed()  {
         return this.exceptions.size() > 0;
     }
 
     /**
-     *
-     * @param lock
+     * Display an alert dialog with a summary of all failed tasks
+     * @param lock The lock to use when the user chooses to re-run the action
      */
     public void alert(final Object lock) {
         CDSheetController c = new CDSheetController(controller) {
@@ -192,11 +263,7 @@ public abstract class BackgroundActionImpl
             }
 
             public void callback(final int returncode) {
-                BackgroundActionImpl.this.callback(returncode);
                 if(returncode == DEFAULT_OPTION) { //Try Again
-                    if(transcript.length() > 0) {
-                        transcript.delete(0, transcript.length()-1);
-                    }
                     for(Iterator iter = exceptions.iterator(); iter.hasNext(); ) {
                         BackgroundException e = (BackgroundException)iter.next();
                         Path workdir = e.getPath();
@@ -205,7 +272,8 @@ public abstract class BackgroundActionImpl
                         }
                         workdir.invalidate();
                     }
-                    exceptions.clear();
+                    // Revert any exceptions and transcript
+                    init();
                     // Re-run the action with the previous lock used
                     controller.background(BackgroundActionImpl.this, lock);
                 }
@@ -238,5 +306,48 @@ public abstract class BackgroundActionImpl
             }
         }
         c.beginSheet(false);
+    }
+
+    /**
+     * Idle this action for some time. Blocks the caller.
+     * @see Preferences#connection.retry.delay
+     * @param lock
+     */
+    public void pause(final Object lock) {
+        Timer wakeup = new Timer();
+        wakeup.scheduleAtFixedRate(new TimerTask() {
+            /**
+             * The delay to wait before execution of the action in seconds
+             */
+            private int delay = (int)Preferences.instance().getDouble("connection.retry.delay");
+
+            public void run() {
+                if(0 == delay || 0 == retry()) {
+                    this.cancel();
+                    return;
+                }
+                session().message(NSBundle.localizedString("Retry in", "Status", "")
+                        +" "+(delay)+" "+NSBundle.localizedString("seconds", "Status", "")
+                        +" ("+NSBundle.localizedString("Will try", "Status", "")+" "+retry()
+                        +" "+NSBundle.localizedString("more times", "Status", "")+")");
+                delay--;
+            }
+
+            public boolean cancel() {
+                synchronized(lock) {
+                    lock.notify();
+                }
+                return super.cancel();
+            }
+        }, 0, 1000); // Schedule for immediate execusion with an interval of 1s
+        try {
+            synchronized(lock) {
+                // Wait for notify from wakeup timer
+                lock.wait();
+            }
+        }
+        catch(InterruptedException e) {
+            log.error(e.getMessage());
+        }
     }
 }

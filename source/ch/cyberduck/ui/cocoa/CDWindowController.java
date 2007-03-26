@@ -110,18 +110,33 @@ public abstract class CDWindowController extends CDController
                     // that calls Cocoa, there won't be a top-level pool.
                     final int pool = NSAutoreleasePool.push();
                     try {
+                        runnable.prepare();
+                        if(runnable.hasFailed()) {
+                            // This is a automated retry. Wait some time first.
+                            runnable.pause(lock);
+                            if(0 == runnable.retry()) {
+                                return;
+                            }
+                        }
+                        // Clear previous failure status
+                        runnable.init();
                         // Execute the action of the runnable
                         runnable.run();
                     }
                     catch(NullPointerException e) {
                         if(log.getLevel().isGreaterOrEqual(Level.WARN)) {
-                            e.printStackTrace();
+                            StackTraceElement[] stacktrace = e.getStackTrace();
+                            for(int i = 0; i < stacktrace.length; i++) {
+                                log.error(stacktrace[i].toString());
+                            }
                         }
                         // We might get a null pointer if the session has been interrupted
                         // during the action in progress and closing the underlying socket
                         // asynchronously. See Session#interrupt
                     }
                     finally {
+                        // Increase the run counter
+                        runnable.finish();
                         // Indicates that you are finished using the
                         // NSAutoreleasePool identified by pool.
                         NSAutoreleasePool.pop(pool);
@@ -132,7 +147,15 @@ public abstract class CDWindowController extends CDController
                                 runnable.cleanup();
                                 // If there was any failure, display the summary now
                                 if(runnable.hasFailed()) {
-                                    runnable.alert(lock);
+                                    if(runnable.retry() > 0) {
+                                        log.info("Retry failed background action:"+runnable);
+                                        // Re-run the action with the previous lock used
+                                        CDWindowController.this.background(runnable, lock);
+                                    }
+                                    // Do not pop up an alert if the action was canceled intentionally
+                                    else if(!runnable.isCanceled()) {
+                                        runnable.alert(lock);
+                                    }
                                 }
                             }
                         });
