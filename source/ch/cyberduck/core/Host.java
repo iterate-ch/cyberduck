@@ -695,7 +695,7 @@ public class Host extends NSObject {
 
     private static final Object lock = new Object();
 
-    private boolean jni_load() {
+    private static boolean jni_load() {
         synchronized(lock) {
             if(!JNI_LOADED) {
                 try {
@@ -708,7 +708,6 @@ public class Host extends NSObject {
                 }
                 catch(UnsatisfiedLinkError e) {
                     log.error("Could not load the libDiagnostics.dylib library:" + e.getMessage());
-                    throw e;
                 }
             }
             return JNI_LOADED;
@@ -722,7 +721,7 @@ public class Host extends NSObject {
      * @see #getURL
      */
     public boolean isReachable() {
-        if(!this.jni_load()) {
+        if(!Host.jni_load()) {
             return false;
         }
         if(!Preferences.instance().getBoolean("connection.hostname.check")) {
@@ -739,7 +738,7 @@ public class Host extends NSObject {
      * @see #getURL
      */
     public void diagnose() {
-        if(!this.jni_load()) {
+        if(!Host.jni_load()) {
             return;
         }
         this.diagnose(this.getURL());
