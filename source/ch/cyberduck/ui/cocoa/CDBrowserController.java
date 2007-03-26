@@ -28,7 +28,6 @@ import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
-import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -164,7 +163,8 @@ public class CDBrowserController extends CDWindowController
                             folder);
                 }
             }
-            for(Iterator i = path.list().iterator(); i.hasNext();) {
+            path.attributes.setType(Path.DIRECTORY_TYPE);
+            for(Iterator i = path.childs().iterator(); i.hasNext();) {
                 result.addObject(((Path) i.next()).getName());
             }
         }
@@ -233,6 +233,13 @@ public class CDBrowserController extends CDWindowController
             Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"));
+            try {
+                path.cwdir();
+                path.attributes.setType(Path.DIRECTORY_TYPE);
+            }
+            catch(IOException e) {
+                path.attributes.setType(Path.FILE_TYPE);
+            }
             path.delete();
             this.reloadData(true);
         }
@@ -259,9 +266,7 @@ public class CDBrowserController extends CDWindowController
                 path.setLocal(new Local((String) localObj));
             }
             final Transfer q = new SyncTransfer(path);
-            q.setResumeReqested(false);
-            q.setReloadRequested(false);
-            q.run(ValidatorFactory.create(q, this));
+            q.transfer(this);
         }
         return null;
     }
@@ -286,12 +291,10 @@ public class CDBrowserController extends CDWindowController
             }
             Object nameObj = args.objectForKey("Name");
             if(nameObj != null) {
-                path.setLocal(new Local(path.getLocal().getParent(), (String) nameObj));
+                path.setLocal(new Local(path.getLocal().getParent().getAbsolute(), (String) nameObj));
             }
-            Transfer q = new DownloadTransfer(path);
-            q.setResumeReqested(false);
-            q.setReloadRequested(false);
-            q.run(ValidatorFactory.create(q, this));
+            final Transfer q = new DownloadTransfer(path);
+            q.transfer(this);
         }
         return null;
     }
@@ -303,10 +306,10 @@ public class CDBrowserController extends CDWindowController
             final Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     new Local((String) args.objectForKey("Path")));
-            if(path.getLocal().isFile()) {
+            if(path.getLocal().attributes.isFile()) {
                 path.attributes.setType(Path.FILE_TYPE);
             }
-            if(path.getLocal().isDirectory()) {
+            if(path.getLocal().attributes.isDirectory()) {
                 path.attributes.setType(Path.DIRECTORY_TYPE);
             }
             Object remoteObj = args.objectForKey("Remote");
@@ -318,9 +321,7 @@ public class CDBrowserController extends CDWindowController
                 path.setPath(this.workdir().getAbsolute(), (String) nameObj);
             }
             final Transfer q = new UploadTransfer(path);
-            q.setResumeReqested(false);
-            q.setReloadRequested(false);
-            q.run(ValidatorFactory.create(q, this));
+            q.transfer(this);
         }
         return null;
     }
@@ -506,11 +507,11 @@ public class CDBrowserController extends CDWindowController
 
     protected void reloadData(final Collection selected) {
         if(this.isMounted()) {
-            if(!this.workdir().isCached() || this.workdir().cache().attributes().isDirty()) {
+            if(!this.workdir().isCached() || this.workdir().childs().attributes().isDirty()) {
                 // Reloading a workdir that is not cached yet would cause the interface to freeze
                 this.background(new BackgroundAction() {
                     public void run() {
-                        workdir().list();
+                        workdir().childs();
                     }
 
                     public void cleanup() {
@@ -889,7 +890,7 @@ public class CDBrowserController extends CDWindowController
                 String identifier = (String) tableColumn.identifier();
                 if(item != null) {
                     if(identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
-                        ((CDOutlineCell) cell).setIcon(browserOutlineModel.iconforPath(item));
+                        ((CDOutlineCell) cell).setIcon(CDBrowserTableDataSource.iconForPath(item));
                         ((CDOutlineCell) cell).setAttributedStringValue(new NSAttributedString(item.getName(),
                                 CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT));
                     }
@@ -935,19 +936,15 @@ public class CDBrowserController extends CDWindowController
              * @see NSOutlineView.Delegate
              */
             public String outlineViewToolTipForCell(NSOutlineView view, NSCell cell, NSMutableRect rect, NSTableColumn tableColumn,
-                                                    Object item, NSPoint mouseLocation) {
-                if(item instanceof Path) {
-                    Path p = (Path) item;
-                    return this.tooltipForPath(p);
-                }
-                return null;
+                                                    final Path item, NSPoint mouseLocation) {
+                return super.tooltipForPath(item);
             }
         });
         NSSelector setResizableMaskSelector = new NSSelector("setResizingMask", new Class[]{int.class});
         {
             NSTableColumn c = new NSTableColumn();
             c.headerCell().setStringValue(NSBundle.localizedString("Filename", "A column in the browser"));
-            c.setIdentifier("FILENAME");
+            c.setIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN);
             c.setMinWidth(100f);
             c.setWidth(250f);
             c.setMaxWidth(1000f);
@@ -1033,7 +1030,7 @@ public class CDBrowserController extends CDWindowController
                                                   NSTableColumn tc, int row, NSPoint mouseLocation) {
                 if(row < getSelectedBrowserModel().childs(CDBrowserController.this.workdir()).size()) {
                     Path p = (Path) getSelectedBrowserModel().childs(CDBrowserController.this.workdir()).get(row);
-                    return this.tooltipForPath(p);
+                    return super.tooltipForPath(p);
                 }
                 return null;
             }
@@ -1399,14 +1396,14 @@ public class CDBrowserController extends CDWindowController
                 if(!isMounted()) {
                     return 0;
                 }
-                return workdir().list(comparator, filter).size();
+                return workdir().childs(comparator, filter).size();
             }
 
             /**
              * @see NSComboBox.DataSource
              */
             public Object comboBoxObjectValueForItemAtIndex(final NSComboBox sender, final int row) {
-                final List childs = workdir().list(comparator, filter);
+                final List childs = workdir().childs(comparator, filter);
                 if(row < childs.size()) {
                     return ((Path)childs.get(row)).getAbsolute();
                 }
@@ -1636,7 +1633,7 @@ public class CDBrowserController extends CDWindowController
         final Path previous = this.workdir();
         this.background(new BackgroundAction() {
             public void run() {
-                setWorkdir(previous.getParent());
+                setWorkdir((Path)previous.getParent());
             }
 
             public void cleanup() {
@@ -1916,21 +1913,19 @@ public class CDBrowserController extends CDWindowController
                             destination.getName());
                     try {
                         source.setLocal(local);
-                        DownloadTransfer d = new DownloadTransfer(source);
-                        d.run(ValidatorFactory.create(d, CDBrowserController.this));
+                        source.download();
                         if(!isConnected()) {
                             break;
                         }
                         source.setLocal(null);
                         destination.setLocal(local);
-                        UploadTransfer u = new UploadTransfer(destination);
-                        u.run(ValidatorFactory.create(u, CDBrowserController.this));
+                        destination.upload();
                         if(!isConnected()) {
                             break;
                         }
                     }
                     finally {
-                        local.delete(true);
+                        local.delete();
                     }
                 }
             }
@@ -2269,13 +2264,14 @@ public class CDBrowserController extends CDWindowController
     public void downloadToPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
         sheet.close();
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
-            final Transfer q = new DownloadTransfer();
             final Session session = this.getTransferSession();
+            final List roots = new ArrayList();
             for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
                 Path path = (Path) ((Path) i.next()).clone(session);
                 path.setLocal(new Local(sheet.filename(), path.getLocal().getName()));
-                q.addRoot(path);
+                roots.add(path);
             }
+            final Transfer q = new DownloadTransfer(roots);
             this.transfer(q);
         }
         lastSelectedDownloadDirectory = sheet.filename();
@@ -2309,8 +2305,7 @@ public class CDBrowserController extends CDWindowController
             if((filename = sheet.filename()) != null) {
                 Path path = (Path) contextInfo;
                 path.setLocal(new Local(filename));
-                Transfer q = new DownloadTransfer();
-                q.addRoot(path);
+                final Transfer q = new DownloadTransfer(path);
                 this.transfer(q);
             }
         }
@@ -2354,8 +2349,7 @@ public class CDBrowserController extends CDWindowController
             if(sheet.filenames().count() > 0) {
                 Path root = (Path)selection.clone(this.getTransferSession());
                 root.setLocal(new Local((String) sheet.filenames().lastObject()));
-                final Transfer q = new SyncTransfer();
-                q.addRoot(root);
+                final Transfer q = new SyncTransfer(root);
                 this.transfer(q, selection);
             }
         }
@@ -2363,12 +2357,13 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void downloadButtonClicked(final Object sender) {
-        Transfer q = new DownloadTransfer();
         final Session session = this.getTransferSession();
+        final List roots = new ArrayList();
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
             Path path = (Path) ((Path) i.next()).clone(session);
-            q.addRoot(path);
+            roots.add(path);
         }
+        final Transfer q = new DownloadTransfer(roots);
         this.transfer(q);
     }
 
@@ -2401,13 +2396,14 @@ public class CDBrowserController extends CDWindowController
             // selected files on the local filesystem
             NSArray selected = sheet.filenames();
             java.util.Enumeration iterator = selected.objectEnumerator();
-            final Transfer q = new UploadTransfer();
             final Session session = this.getTransferSession();
+            final List roots = new ArrayList();
             while(iterator.hasMoreElements()) {
-                q.addRoot(PathFactory.createPath(session,
+                roots.add(PathFactory.createPath(session,
                         workdir.getAbsolute(),
                         new Local((String) iterator.nextElement())));
             }
+            final Transfer q = new UploadTransfer(roots);
             this.transfer(q, workdir);
         }
         lastSelectedUploadDirectory = new File(sheet.filename()).getParent();
@@ -2488,7 +2484,7 @@ public class CDBrowserController extends CDWindowController
             });
             this.background(new BackgroundAction() {
                 public void run() {
-                    transfer.run(ValidatorFactory.create(transfer, CDBrowserController.this));
+                    transfer.transfer(CDBrowserController.this);
                 }
 
                 public void cleanup() {
@@ -2592,6 +2588,12 @@ public class CDBrowserController extends CDWindowController
         return this.hasSession() && this.workdir() != null;
     }
 
+    private boolean interrupted;
+
+    public boolean isInterrupted() {
+        return this.interrupted;
+    }
+
     /**
      * @return true if mounted and the connection to the server is alive
      */
@@ -2616,7 +2618,7 @@ public class CDBrowserController extends CDWindowController
                         parent = selected;
                     }
                     else {
-                        parent = selected.getParent();
+                        parent = (Path)selected.getParent();
                     }
                 }
                 for(int i = 0; i < elements.count(); i++) {
@@ -2642,15 +2644,16 @@ public class CDBrowserController extends CDWindowController
             Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
             if(o != null) {
                 NSArray elements = (NSArray) o;
-                final Transfer q = new UploadTransfer();
                 final Path workdir = this.workdir();
                 final Session session = this.getTransferSession();
+                final List roots = new ArrayList();
                 for(int i = 0; i < elements.count(); i++) {
                     Path p = PathFactory.createPath(session,
                             workdir.getAbsolute(),
                             new Local((String) elements.objectAtIndex(i)));
-                    q.addRoot(p);
+                    roots.add(p);
                 }
+                final Transfer q = new UploadTransfer(roots);
                 if(q.numberOfRoots() > 0) {
                     this.transfer(q, workdir);
                 }
@@ -2677,10 +2680,11 @@ public class CDBrowserController extends CDWindowController
 
     public void cut(final Object sender) {
         if(this.getSelectionCount() > 0) {
-            Transfer q = new DownloadTransfer();
+            final List roots = new ArrayList();
             for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
-                q.addRoot((Path) i.next());
+                roots.add((Path) i.next());
             }
+            final Transfer q = new DownloadTransfer(roots);
             // Writing data for private use when the item gets dragged to the transfer queue.
             NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
             queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
@@ -2726,36 +2730,42 @@ public class CDBrowserController extends CDWindowController
      */
     public void background(final BackgroundAction runnable) {
         super.background(new BackgroundActionImpl(this) {
-            public void run() {
+            public void prepare() {
                 activityRunning = true;
+                interrupted = false;
                 spinner.startAnimation(this);
                 session.addErrorListener(this);
                 session.addTranscriptListener(this);
-                try {
-                    runnable.run();
+                super.prepare();
+            }
+
+            public void run() {
+                runnable.run();
+            }
+
+            public void finish() {
+                activityRunning = false;
+                spinner.stopAnimation(this);
+                if(hasSession()) {
+                    // It is important _not_ to do this in #cleanup as otherwise
+                    // the listeners are still registered when the next BackgroundAction
+                    // is already running
+                    session.removeTranscriptListener(this);
+                    session.removeErrorListener(this);
                 }
-                finally {
-                    activityRunning = false;
-                    spinner.stopAnimation(CDBrowserController.this);
-                    if(hasSession()) {
-                        // It is important _not_ to do this in #cleanup as otherwise
-                        // the listeners are still registered when the next BackgroundAction
-                        // is already running
-                        session.removeTranscriptListener(this);
-                        session.removeErrorListener(this);
-                    }
-                }
+                super.finish();
             }
 
             public void cleanup() {
                 runnable.cleanup();
             }
 
-            public void error(final BackgroundException exception) {
-                Growl.instance().notify(exception.getMessage(),
-                        null == exception.getPath() ? exception.getSession().getHost().getHostname()
-                                : exception.getPath().getName());
-                super.error(exception);
+            public boolean isCanceled() {
+                return CDBrowserController.this.isInterrupted();
+            }
+
+            public Session session() {
+                return session;
             }
         }, backgroundLock);
     }
@@ -2795,7 +2805,7 @@ public class CDBrowserController extends CDWindowController
                     reloadData(false);
                 }
             });
-            final File bookmark = this.getRepresentedFile();
+            final Local bookmark = this.getRepresentedFile();
             if(bookmark != null && bookmark.exists()) {
                 // Delete this history bookmark if there was any error connecting
                 bookmark.delete();
@@ -2812,9 +2822,9 @@ public class CDBrowserController extends CDWindowController
         }
         if(path.isCached()) {
             //Reset the readable attribute
-            path.cache().attributes().setReadable(true);
+            path.childs().attributes().setReadable(true);
         }
-        if(!path.list().attributes().isReadable()) {
+        if(!path.childs().attributes().isReadable()) {
             // the path given cannot be read either because it doesn't exist
             // or you don't have permission; don't update browser view
             return;
@@ -2840,7 +2850,7 @@ public class CDBrowserController extends CDWindowController
                             pathPopupButton.lastItem().setImage(FOLDER_ICON);
                         }
                         pathPopupButton.lastItem().setRepresentedObject(p);
-                        p = p.getParent();
+                        p = (Path)p.getParent();
                     }
                 }
             }
@@ -2887,24 +2897,16 @@ public class CDBrowserController extends CDWindowController
                 this.getRepresentedFile());
         if(this.getRepresentedFile().exists()) {
             // Set the window title
-            this.window.setRepresentedFilename(this.getRepresentedFile().getAbsolutePath());
+            this.window.setRepresentedFilename(this.getRepresentedFile().getAbsolute());
         }
-        session.addConnectionListener(listener = new ConnectionListener() {
-            /**
-             * The listener used to watch for messages and errors during the session
-             */
-            private ProgressListener progress;
-
-            public void connectionWillOpen() {
-                session.addProgressListener(progress = new ProgressListener() {
-                    public void message(final String msg) {
-                        // Update the status label at the bottom of the browser window
-                        statusLabel.setAttributedStringValue(new NSAttributedString(msg,
-                                TRUNCATE_MIDDLE_ATTRIBUTES));
-                    }
-                });
+        this.session.addProgressListener(new ProgressListener() {
+            public void message(final String msg) {
+                // Update the status label at the bottom of the browser window
+                statusLabel.setAttributedStringValue(new NSAttributedString(msg,
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
-
+        });
+        session.addConnectionListener(listener = new ConnectionAdapter() {
             public void connectionDidOpen() {
                 getSelectedBrowserView().setNeedsDisplay();
                 CDBrowserController.this.invoke(new Runnable() {
@@ -2928,7 +2930,6 @@ public class CDBrowserController extends CDWindowController
 
             public void connectionDidClose() {
                 getSelectedBrowserView().setNeedsDisplay();
-                session.removeProgressListener(progress);
                 CDBrowserController.this.invoke(new Runnable() {
                     public void run() {
                         window.setDocumentEdited(false);
@@ -2964,7 +2965,7 @@ public class CDBrowserController extends CDWindowController
      *
      * @return The history bookmark file in the application support directory
      */
-    private File getRepresentedFile() {
+    private Local getRepresentedFile() {
         if(this.hasSession()) {
             return new Local(HistoryMenuDelegate.HISTORY_FOLDER, this.session.getHost().getNickname() + ".duck");
         }
@@ -3102,6 +3103,7 @@ public class CDBrowserController extends CDWindowController
         if(this.hasSession()) {
             this.session.interrupt();
         }
+        this.interrupted = true;
     }
 
     /**

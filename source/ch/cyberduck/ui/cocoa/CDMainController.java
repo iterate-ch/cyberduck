@@ -268,10 +268,11 @@ public class CDMainController extends CDController {
                     if(null != controller) {
                         if(controller.isMounted()) {
                             final Path workdir = controller.workdir();
-                            final Transfer q = new UploadTransfer();
                             final Session session = controller.getTransferSession();
-                            q.addRoot(PathFactory.createPath(session, workdir.getAbsolute(),
-                                    new Local(f.getAbsolutePath())));
+                            final Transfer q = new UploadTransfer(
+                                    PathFactory.createPath(session, workdir.getAbsolute(),
+                                            new Local(f.getAbsolutePath()))
+                            );
                             controller.transfer(q, workdir);
                             break;
                         }
@@ -395,7 +396,6 @@ public class CDMainController extends CDController {
      */
     public void applicationDidFinishLaunching(NSNotification notification) {
         log.info("Running Java " + System.getProperty("java.version"));
-        Growl.instance().register();
         if(log.isInfoEnabled())
             log.info("Available localizations:" + NSBundle.mainBundle().localizations());
         if(Preferences.instance().getBoolean("queue.openByDefault")) {
@@ -745,27 +745,22 @@ public class CDMainController extends CDController {
      * @param bookmark
      * @param file
      */
-    public void exportBookmark(final Host bookmark, File file) {
-        try {
-            log.info("Exporting bookmark " + bookmark + " to " + file);
-            NSMutableData collection = new NSMutableData();
-            String[] errorString = new String[]{null};
-            collection.appendData(NSPropertyListSerialization.dataFromPropertyList(bookmark.getAsDictionary(),
-                    NSPropertyListSerialization.PropertyListXMLFormat,
-                    errorString));
-            if(errorString[0] != null) {
-                log.error("Problem writing bookmark file:" + errorString[0]);
-            }
-            if(collection.writeToURL(file.toURL(), true)) {
-                log.info("Bookmarks sucessfully saved in :" + file.toString());
-                NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(file.getAbsolutePath());
-            }
-            else {
-                log.error("Error saving bookmark to:" + file.toString());
-            }
+    public void exportBookmark(final Host bookmark, Local file) {
+        log.info("Exporting bookmark " + bookmark + " to " + file);
+        NSMutableData collection = new NSMutableData();
+        String[] errorString = new String[]{null};
+        collection.appendData(NSPropertyListSerialization.dataFromPropertyList(bookmark.getAsDictionary(),
+                NSPropertyListSerialization.PropertyListXMLFormat,
+                errorString));
+        if(errorString[0] != null) {
+            log.error("Problem writing bookmark file:" + errorString[0]);
         }
-        catch(java.net.MalformedURLException e) {
-            log.error(e.getMessage());
+        if(collection.writeToURL(file.toURL(), true)) {
+            log.info("Bookmarks sucessfully saved in :" + file.toString());
+            NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(file.getAbsolute());
+        }
+        else {
+            log.error("Error saving bookmark to:" + file.toString());
         }
     }
 

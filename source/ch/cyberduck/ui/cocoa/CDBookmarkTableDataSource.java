@@ -26,6 +26,8 @@ import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @version $Id$
@@ -205,7 +207,7 @@ public class CDBookmarkTableDataSource extends NSObject {
             NSArray filesList = (NSArray) info.draggingPasteboard().propertyListForType(
                     NSPasteboard.FilenamesPboardType);// get the filenames from pasteboard
             // If regular files are dropped, these will be uploaded to the dropped bookmark location
-            Transfer q = new UploadTransfer();
+            final List roots = new ArrayList();
             Session session = null;
             for(int i = 0; i < filesList.count(); i++) {
                 String filename = (String) filesList.objectAtIndex(i);
@@ -234,9 +236,10 @@ public class CDBookmarkTableDataSource extends NSObject {
                         session = SessionFactory.createSession(h);
                     }
                     // Upload to the remote host this bookmark points to
-                    q.addRoot(PathFactory.createPath(session, h.getDefaultPath(), new Local(filename)));
+                    roots.add(PathFactory.createPath(session, h.getDefaultPath(), new Local(filename)));
                 }
             }
+            final Transfer q = new UploadTransfer(roots);
             // If anything has been added to the queue, then process the queue
             if(q.numberOfRoots() > 0) {
                 CDQueueController.instance().startItem(q);

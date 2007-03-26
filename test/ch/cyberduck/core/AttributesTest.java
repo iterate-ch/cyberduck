@@ -27,11 +27,11 @@ public class AttributesTest extends TestCase {
         super(name);
     }
 
-    private Attributes attributes;
+    private PathAttributes attributes;
 
     public void setUp() throws Exception {
         super.setUp();
-        this.attributes = new Attributes();
+        this.attributes = new PathAttributes();
     }
 
     public void tearDown() throws Exception {
@@ -40,7 +40,7 @@ public class AttributesTest extends TestCase {
     }
 
     public void testClone() throws Exception {
-        Attributes clone = (Attributes)attributes.clone();
+        PathAttributes clone = (PathAttributes)attributes.clone();
         assertNotSame(clone, attributes);
 
         assertNotSame(clone.getPermission(), attributes.getPermission());
