@@ -90,7 +90,6 @@
                 sshTransfersCombobox = NSPopUpButton; 
                 tabView = NSTabView; 
                 textFileTypeRegexField = NSTextField; 
-                timeoutField = NSTextField; 
                 transferPopup = NSPopUpButton; 
                 transfermodeCombobox = NSPopUpButton; 
                 ugroupr = NSButton; 
