@@ -216,6 +216,7 @@ public class CDPreferencesController extends CDWindowController {
     private static final String OVERWRITE_EXISTING_FILE = NSBundle.localizedString("Overwrite existing file", "");
     private static final String TRY_TO_RESUME_TRANSFER = NSBundle.localizedString("Try to resume transfer", "");
     private static final String USE_A_SIMILAR_NAME = NSBundle.localizedString("Use similar name", "");
+    private static final String SKIP_EXISTING_FILE = NSBundle.localizedString("Skip existing file", "");
 
     // ----------------------------------------------------------
     // Outlets
@@ -912,31 +913,6 @@ public class CDPreferencesController extends CDWindowController {
         }
     }
 
-    private NSTextField timeoutField; //IBOutlet
-
-    public void setTimeoutField(NSTextField timeoutField) {
-        this.timeoutField = timeoutField;
-        this.timeoutField.setStringValue(String.valueOf(Preferences.instance().getInteger("connection.timeout")/1000));
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("timeoutFieldDidChange", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidChangeNotification,
-                this.timeoutField);
-    }
-
-    public void timeoutFieldDidChange(NSNotification sender) {
-        try {
-            int timeout = Integer.parseInt(this.timeoutField.stringValue())*1000;
-            int MIN_VALUE = 10000;
-            if(timeout < MIN_VALUE) {
-                this.timeoutField.setStringValue(String.valueOf(MIN_VALUE/1000));
-            }
-            Preferences.instance().setProperty("connection.timeout", timeout);
-        }
-        catch (NumberFormatException e) {
-            log.error(e.getMessage());
-        }
-    }
-
     private NSTextField anonymousField; //IBOutlet
 
     public void setAnonymousField(NSTextField anonymousField) {
@@ -1258,6 +1234,24 @@ public class CDPreferencesController extends CDWindowController {
         Preferences.instance().setProperty("queue.postProcessItemWhenComplete", enabled);
     }
 
+    private void duplicateComboboxClicked(String selected, String property) {
+        if (selected.equals(ASK_ME_WHAT_TO_DO)) {
+            Preferences.instance().setProperty(property, Transfer.ACTION_CALLBACK);
+        }
+        else if (selected.equals(OVERWRITE_EXISTING_FILE)) {
+            Preferences.instance().setProperty(property, Transfer.ACTION_OVERWRITE);
+        }
+        else if (selected.equals(TRY_TO_RESUME_TRANSFER)) {
+            Preferences.instance().setProperty(property, Transfer.ACTION_RESUME);
+        }
+        else if (selected.equals(USE_A_SIMILAR_NAME)) {
+            Preferences.instance().setProperty(property, Transfer.ACTION_SIMILARNAME);
+        }
+        else if (selected.equals(SKIP_EXISTING_FILE)) {
+            Preferences.instance().setProperty(property, Transfer.ACTION_SKIP);
+        }
+    }
+
     private NSPopUpButton duplicateDownloadCombobox; //IBOutlet
 
     public void setDuplicateDownloadCombobox(NSPopUpButton duplicateDownloadCombobox) {
@@ -1265,48 +1259,29 @@ public class CDPreferencesController extends CDWindowController {
         this.duplicateDownloadCombobox.setTarget(this);
         this.duplicateDownloadCombobox.setAction(new NSSelector("duplicateDownloadComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.duplicateDownloadCombobox.removeAllItems();
-        this.duplicateDownloadCombobox.addItemsWithTitles(new NSArray(new String[]{ASK_ME_WHAT_TO_DO, OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME}));
-        if (Preferences.instance().getProperty("queue.download.fileExists").equals(Validator.ASK)) {
+        this.duplicateDownloadCombobox.addItemsWithTitles(new NSArray(new String[]{
+                ASK_ME_WHAT_TO_DO, OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME, SKIP_EXISTING_FILE})
+        );
+        if (Preferences.instance().getProperty("queue.download.fileExists").equals(Transfer.ACTION_CALLBACK)) {
             this.duplicateDownloadCombobox.selectItemWithTitle(ASK_ME_WHAT_TO_DO);
         }
-        if (Preferences.instance().getProperty("queue.download.fileExists").equals(Validator.OVERWRITE)) {
+        else if (Preferences.instance().getProperty("queue.download.fileExists").equals(Transfer.ACTION_OVERWRITE)) {
             this.duplicateDownloadCombobox.selectItemWithTitle(OVERWRITE_EXISTING_FILE);
         }
-        else if (Preferences.instance().getProperty("queue.download.fileExists").equals(Validator.RESUME)) {
+        else if (Preferences.instance().getProperty("queue.download.fileExists").equals(Transfer.ACTION_RESUME)) {
             this.duplicateDownloadCombobox.selectItemWithTitle(TRY_TO_RESUME_TRANSFER);
         }
-        else if (Preferences.instance().getProperty("queue.download.fileExists").equals(Validator.SIMILAR)) {
+        else if (Preferences.instance().getProperty("queue.download.fileExists").equals(Transfer.ACTION_SIMILARNAME)) {
             this.duplicateDownloadCombobox.selectItemWithTitle(USE_A_SIMILAR_NAME);
+        }
+        else if (Preferences.instance().getProperty("queue.download.fileExists").equals(Transfer.ACTION_SKIP)) {
+            this.duplicateDownloadCombobox.selectItemWithTitle(SKIP_EXISTING_FILE);
         }
     }
 
     public void duplicateDownloadComboboxClicked(NSPopUpButton sender) {
-        if (sender.selectedItem().title().equals(ASK_ME_WHAT_TO_DO)) {
-            Preferences.instance().setProperty("queue.download.fileExists", Validator.ASK);
-        }
-        else if (sender.selectedItem().title().equals(OVERWRITE_EXISTING_FILE)) {
-            Preferences.instance().setProperty("queue.download.fileExists", Validator.OVERWRITE);
-        }
-        else if (sender.selectedItem().title().equals(TRY_TO_RESUME_TRANSFER)) {
-            Preferences.instance().setProperty("queue.download.fileExists", Validator.RESUME);
-        }
-        else if (sender.selectedItem().title().equals(USE_A_SIMILAR_NAME)) {
-            Preferences.instance().setProperty("queue.download.fileExists", Validator.SIMILAR);
-        }
-        if(!Preferences.instance().getProperty("queue.download.reload.fileExists").equals(Validator.OVERWRITE)) {
-            if (sender.selectedItem().title().equals(ASK_ME_WHAT_TO_DO)) {
-                Preferences.instance().setProperty("queue.download.reload.fileExists", Validator.ASK);
-            }
-            else if (sender.selectedItem().title().equals(OVERWRITE_EXISTING_FILE)) {
-                Preferences.instance().setProperty("queue.download.reload.fileExists", Validator.OVERWRITE);
-            }
-            else if (sender.selectedItem().title().equals(TRY_TO_RESUME_TRANSFER)) {
-                Preferences.instance().setProperty("queue.download.reload.fileExists", Validator.RESUME);
-            }
-            else if (sender.selectedItem().title().equals(USE_A_SIMILAR_NAME)) {
-                Preferences.instance().setProperty("queue.download.reload.fileExists", Validator.SIMILAR);
-            }
-        }
+        this.duplicateComboboxClicked(sender.selectedItem().title(), "queue.download.fileExists");
+        this.duplicateDownloadOverwriteButtonClicked(duplicateDownloadOverwriteButton);
     }
 
     private NSButton duplicateDownloadOverwriteButton;
@@ -1316,13 +1291,13 @@ public class CDPreferencesController extends CDWindowController {
         this.duplicateDownloadOverwriteButton.setTarget(this);
         this.duplicateDownloadOverwriteButton.setAction(new NSSelector("duplicateDownloadOverwriteButtonClicked", new Class[]{NSButton.class}));
         this.duplicateDownloadOverwriteButton.setState(
-                Preferences.instance().getProperty("queue.download.reload.fileExists").equals(Validator.OVERWRITE) ? NSCell.OnState : NSCell.OffState);
+                Preferences.instance().getProperty("queue.download.reload.fileExists").equals(Transfer.ACTION_OVERWRITE) ? NSCell.OnState : NSCell.OffState);
     }
 
     public void duplicateDownloadOverwriteButtonClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.OnState;
         if(enabled) {
-            Preferences.instance().setProperty("queue.download.reload.fileExists", Validator.OVERWRITE);
+            Preferences.instance().setProperty("queue.download.reload.fileExists", Transfer.ACTION_OVERWRITE);
         }
         else {
             Preferences.instance().setProperty("queue.download.reload.fileExists",
@@ -1337,48 +1312,29 @@ public class CDPreferencesController extends CDWindowController {
         this.duplicateUploadCombobox.setTarget(this);
         this.duplicateUploadCombobox.setAction(new NSSelector("duplicateUploadComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.duplicateUploadCombobox.removeAllItems();
-        this.duplicateUploadCombobox.addItemsWithTitles(new NSArray(new String[]{ASK_ME_WHAT_TO_DO, OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME}));
-        if (Preferences.instance().getProperty("queue.upload.fileExists").equals(Validator.ASK)) {
+        this.duplicateUploadCombobox.addItemsWithTitles(new NSArray(new String[]{
+                ASK_ME_WHAT_TO_DO, OVERWRITE_EXISTING_FILE, TRY_TO_RESUME_TRANSFER, USE_A_SIMILAR_NAME, SKIP_EXISTING_FILE})
+        );
+        if (Preferences.instance().getProperty("queue.upload.fileExists").equals(Transfer.ACTION_CALLBACK)) {
             this.duplicateUploadCombobox.selectItemWithTitle(ASK_ME_WHAT_TO_DO);
         }
-        if (Preferences.instance().getProperty("queue.upload.fileExists").equals(Validator.OVERWRITE)) {
+        else if (Preferences.instance().getProperty("queue.upload.fileExists").equals(Transfer.ACTION_OVERWRITE)) {
             this.duplicateUploadCombobox.selectItemWithTitle(OVERWRITE_EXISTING_FILE);
         }
-        else if (Preferences.instance().getProperty("queue.upload.fileExists").equals(Validator.RESUME)) {
+        else if (Preferences.instance().getProperty("queue.upload.fileExists").equals(Transfer.ACTION_RESUME)) {
             this.duplicateUploadCombobox.selectItemWithTitle(TRY_TO_RESUME_TRANSFER);
         }
-        else if (Preferences.instance().getProperty("queue.upload.fileExists").equals(Validator.SIMILAR)) {
+        else if (Preferences.instance().getProperty("queue.upload.fileExists").equals(Transfer.ACTION_SIMILARNAME)) {
             this.duplicateUploadCombobox.selectItemWithTitle(USE_A_SIMILAR_NAME);
+        }
+        else if (Preferences.instance().getProperty("queue.upload.fileExists").equals(Transfer.ACTION_SKIP)) {
+            this.duplicateUploadCombobox.selectItemWithTitle(SKIP_EXISTING_FILE);
         }
     }
 
     public void duplicateUploadComboboxClicked(NSPopUpButton sender) {
-        if (sender.selectedItem().title().equals(ASK_ME_WHAT_TO_DO)) {
-            Preferences.instance().setProperty("queue.upload.fileExists", Validator.ASK);
-        }
-        else if (sender.selectedItem().title().equals(OVERWRITE_EXISTING_FILE)) {
-            Preferences.instance().setProperty("queue.upload.fileExists", Validator.OVERWRITE);
-        }
-        else if (sender.selectedItem().title().equals(TRY_TO_RESUME_TRANSFER)) {
-            Preferences.instance().setProperty("queue.upload.fileExists", Validator.RESUME);
-        }
-        else if (sender.selectedItem().title().equals(USE_A_SIMILAR_NAME)) {
-            Preferences.instance().setProperty("queue.upload.fileExists", Validator.SIMILAR);
-        }
-        if(!Preferences.instance().getProperty("queue.upload.reload.fileExists").equals(Validator.OVERWRITE)) {
-            if (sender.selectedItem().title().equals(ASK_ME_WHAT_TO_DO)) {
-                Preferences.instance().setProperty("queue.upload.reload.fileExists", Validator.ASK);
-            }
-            else if (sender.selectedItem().title().equals(OVERWRITE_EXISTING_FILE)) {
-                Preferences.instance().setProperty("queue.upload.reload.fileExists", Validator.OVERWRITE);
-            }
-            else if (sender.selectedItem().title().equals(TRY_TO_RESUME_TRANSFER)) {
-                Preferences.instance().setProperty("queue.upload.reload.fileExists", Validator.RESUME);
-            }
-            else if (sender.selectedItem().title().equals(USE_A_SIMILAR_NAME)) {
-                Preferences.instance().setProperty("queue.upload.reload.fileExists", Validator.SIMILAR);
-            }
-        }
+        this.duplicateComboboxClicked(sender.selectedItem().title(), "queue.upload.fileExists");
+        this.duplicateUploadOverwriteButtonClicked(duplicateUploadOverwriteButton);
     }
 
     private NSButton duplicateUploadOverwriteButton;
@@ -1388,13 +1344,13 @@ public class CDPreferencesController extends CDWindowController {
         this.duplicateUploadOverwriteButton.setTarget(this);
         this.duplicateUploadOverwriteButton.setAction(new NSSelector("duplicateUploadOverwriteButtonClicked", new Class[]{NSButton.class}));
         this.duplicateUploadOverwriteButton.setState(
-                Preferences.instance().getProperty("queue.upload.reload.fileExists").equals(Validator.OVERWRITE) ? NSCell.OnState : NSCell.OffState);
+                Preferences.instance().getProperty("queue.upload.reload.fileExists").equals(Transfer.ACTION_OVERWRITE) ? NSCell.OnState : NSCell.OffState);
     }
 
     public void duplicateUploadOverwriteButtonClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.OnState;
         if(enabled) {
-            Preferences.instance().setProperty("queue.upload.reload.fileExists", Validator.OVERWRITE);
+            Preferences.instance().setProperty("queue.upload.reload.fileExists", Transfer.ACTION_OVERWRITE);
         }
         else {
             Preferences.instance().setProperty("queue.upload.reload.fileExists",
