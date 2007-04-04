@@ -31,7 +31,7 @@
 					<key>Encoding</key>
 					<dict>
 						<key>Description</key>
-						<string>The character set to decode filenames.</string>
+						<string>The text encoding to use.</string>
 						<key>Name</key>
 						<string>encoding</string>
 					</dict>
@@ -187,7 +187,7 @@
 			<key>DeleteFile</key>
 			<dict>
 				<key>Description</key>
-				<string>Delete file.</string>
+				<string>Delete file or folder.</string>
 				<key>Name</key>
 				<string>delete</string>
 				<key>Arguments</key>
@@ -195,16 +195,16 @@
 					<key>Path</key>
 					<dict>
 						<key>Description</key>
-						<string>The filename.</string>
+						<string>The file or folder.</string>
 						<key>Name</key>
-						<string>file</string>
+						<string>item</string>
 					</dict>
 				</dict>
 			</dict>
 			<key>Refresh</key>
 			<dict>
 				<key>Description</key>
-				<string>Refresh folder listing.</string>
+				<string>Refresh working folder.</string>
 				<key>Name</key>
 				<string>refresh</string>
 			</dict>
@@ -219,7 +219,7 @@
 					<key>Path</key>
 					<dict>
 						<key>Description</key>
-						<string>The filename.</string>
+						<string>The file or folder.</string>
 						<key>Name</key>
 						<string>item</string>
 					</dict>
@@ -250,7 +250,7 @@
 					<key>Path</key>
 					<dict>
 						<key>Description</key>
-						<string>The filename.</string>
+						<string>The file or folder.</string>
 						<key>Name</key>
 						<string>item</string>
 					</dict>
@@ -281,7 +281,7 @@
 					<key>Path</key>
 					<dict>
 						<key>Description</key>
-						<string>The filename.</string>
+						<string>The file or folder.</string>
 						<key>Name</key>
 						<string>file</string>
 					</dict>
@@ -322,7 +322,7 @@
 					<key>Path</key>
 					<dict>
 						<key>Description</key>
-						<string>The filename.</string>
+						<string>The folder.</string>
 						<key>Name</key>
 						<string>to</string>
 					</dict>
