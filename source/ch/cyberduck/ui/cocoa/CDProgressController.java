@@ -130,7 +130,7 @@ public class CDProgressController extends CDController {
                         new NSSelector("update", new Class[]{NSTimer.class}),
                         transfer, //userInfo
                         true); //repeating
-                mainRunLoop.addTimerForMode(progressTimer,
+                CDMainController.mainRunLoop.addTimerForMode(progressTimer,
                         NSRunLoop.DefaultRunLoopMode);
             }
 

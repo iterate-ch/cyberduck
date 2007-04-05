@@ -60,6 +60,12 @@ public class CDMainController extends CDController {
                 Preferences.instance().getProperty("logging")));
     }
 
+    /**
+     * Reference to the main graphical user interface thread.
+     * Assuming this is always called from the main thread, NSRunLoop#currentRunLoop will return the main run loop
+     */
+    protected static NSRunLoop mainRunLoop = NSRunLoop.currentRunLoop();
+
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------

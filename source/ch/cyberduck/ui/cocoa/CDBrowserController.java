@@ -1885,15 +1885,13 @@ public class CDBrowserController extends CDWindowController
                             destination.getName());
                     try {
                         source.setLocal(local);
-                        DownloadTransfer d = new DownloadTransfer(source);
-                        d.run(ValidatorFactory.create(d, CDBrowserController.this));
+                        source.download();
                         if(!isConnected()) {
                             break;
                         }
                         source.setLocal(null);
                         destination.setLocal(local);
-                        UploadTransfer u = new UploadTransfer(destination);
-                        u.run(ValidatorFactory.create(u, CDBrowserController.this));
+                        destination.upload();
                         if(!isConnected()) {
                             break;
                         }
@@ -2431,9 +2429,10 @@ public class CDBrowserController extends CDWindowController
      */
     protected void transfer(final Transfer q) {
         if(q.getSession().getMaxConnections() == 1) {
+            final Validator v = ValidatorFactory.create(q, this);
             this.background(new BackgroundAction() {
                 public void run() {
-                    q.run(ValidatorFactory.create(q, CDBrowserController.this));
+                    q.run(v);
                 }
 
                 public void cleanup() {

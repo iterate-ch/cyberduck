@@ -36,12 +36,16 @@ public class CDDownloadQueueValidatorController extends CDValidatorController {
 
     public CDDownloadQueueValidatorController(final CDWindowController parent) {
         super(parent);
+    }
+
+    public void beginSheet(final boolean blocking) {
         synchronized(NSApplication.sharedApplication()) {
             if(!NSApplication.loadNibNamed("Validator", this)) {
                 log.fatal("Couldn't load Validator.nib");
             }
             this.setEnabled(false);
         }
+        super.beginSheet(blocking);
     }
 
     /**

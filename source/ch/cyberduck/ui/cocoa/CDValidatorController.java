@@ -45,16 +45,30 @@ public abstract class CDValidatorController
      */
     protected List workList = new AttributedList();
 
+    protected final Object promptLock = new Object();
+
     public Collection result() {
         if(this.hasPrompt()) {
-            this.statusIndicator.stopAnimation(null);
-            this.setEnabled(true);
-            this.waitForSheetEnd();
+            parent.invoke(new Runnable() {
+                public void run() {
+                    statusIndicator.stopAnimation(null);
+                    fileTableView.reloadData();
+                    setEnabled(true);
+                }
+            });
+            synchronized(promptLock) {
+                try {
+                    promptLock.wait();
+                }
+                catch(InterruptedException e) {
+                    ;
+                }
+            }
         }
         return workList;
     }
 
-    private boolean canceled = false;
+    protected boolean canceled = false;
 
     public boolean isCanceled() {
         return this.canceled;
@@ -81,6 +95,9 @@ public abstract class CDValidatorController
         if(returncode == CANCEL_OPTION) {
             this.canceled = true;
         }
+        synchronized(promptLock) {
+            promptLock.notifyAll();
+        }
     }
 
     /**
@@ -97,25 +114,21 @@ public abstract class CDValidatorController
     }
 
     /**
-     * The lock used to determine if a sheet should be displayed
-     */
-    private static final Object lock = new Object();
-
-    /**
      * @param p
      */
     public void prompt(Path p) {
-        synchronized(lock) {
-            if(!this.hasPrompt()) {
-                // We should not call parent.hasSheet() because the parent
-                // is a singleton class that may have a sheet from another
-                // ongoing transfer
-                this.beginSheet(false);
-                this.hasPrompt = true;
-            }
-        }
         this.workList.add(p);
-        this.fireDataChanged();
+        if(!this.hasPrompt()) {
+            parent.invoke(new Runnable() {
+                public void run() {
+                    beginSheet(false);
+                }
+            });
+            // We should not call parent.hasSheet() because the parent
+            // is a singleton class that may have a sheet from another
+            // ongoing transfer
+            this.hasPrompt = true;
+        }
     }
 
     // ----------------------------------------------------------
@@ -409,7 +422,7 @@ public abstract class CDValidatorController
      * Notify the view that the model has changed
      */
     protected void fireDataChanged() {
-        this.fileTableView.noteNumberOfRowsChanged();
+        this.fileTableView.reloadData();
     }
 
     protected static final String INCLUDE_COLUMN = "INCLUDE";

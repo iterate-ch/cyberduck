@@ -39,12 +39,16 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
 
     public CDSyncQueueValidatorController(final CDWindowController parent) {
         super(parent);
+    }
+
+    public void beginSheet(final boolean blocking) {
         synchronized(NSApplication.sharedApplication()) {
             if(!NSApplication.loadNibNamed("Sync", this)) {
                 log.fatal("Couldn't load Sync.nib");
             }
             this.setEnabled(false);
         }
+        super.beginSheet(blocking);
     }
 
     /**
@@ -96,23 +100,19 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
         super.awakeFromNib();
     }
 
-    /**
-     * The lock used to determine if a sheet should be displayed
-     */
-    private static final Object lock = new Object();
-
-    public void prompt(Path p) {
+    public void prompt(final Path p) {
         // Check if the timestamps are different or either the remote or local file doesn't exist
         if(p.compare() != 0) {
-            synchronized(lock) {
-                if(!this.hasPrompt()) {
-                    this.beginSheet(false);
-                    this.hasPrompt = true;
-                }
+            if(!this.hasPrompt()) {
+                parent.invoke(new Runnable() {
+                    public void run() {
+                        beginSheet(false);
+                        updateSelection(p);
+                    }
+                });
+                this.hasPrompt = true;
             }
             this.promptList.add(p);
-            this.updateSelection(p);
-            this.fireDataChanged();
         }
     }
 
@@ -190,8 +190,11 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
                 }
             }
         }
-        else {
-            super.callback(returncode);
+        if(returncode == CANCEL_OPTION) {
+            this.canceled = true;
+        }
+        synchronized(promptLock) {
+            promptLock.notifyAll();
         }
     }
 

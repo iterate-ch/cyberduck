@@ -28,6 +28,12 @@ import ch.cyberduck.ui.cocoa.CDWindowController;
  */
 public class ValidatorFactory {
 
+    /**
+     * Must be called from the main interface thread
+     * @param q
+     * @param parent
+     * @return
+     */
     public static Validator create(final Transfer q, final CDWindowController parent) {
         if(q instanceof DownloadTransfer) {
             return new CDDownloadQueueValidatorController(parent);

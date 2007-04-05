@@ -375,6 +375,9 @@ public class CDQueueController extends CDWindowController
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
             this.window.makeKeyAndOrderFront(null);
         }
+
+        final Validator v = ValidatorFactory.create(transfer, this);
+
         this.background(new BackgroundActionImpl(this) {
             boolean resume = resumeRequested;
             boolean reload = reloadRequested;
@@ -387,7 +390,7 @@ public class CDQueueController extends CDWindowController
 
                         public void transferStarted(final Path path) {
                             if(path.attributes.isFile() && !path.getLocal().exists()) {
-                                invoke(new Runnable() {
+                                CDQueueController.this.invoke(new Runnable() {
                                     public void run() {
                                         path.getLocal().createNewFile(); //hack to display actual icon #CDIconCell
                                     }
@@ -401,7 +404,7 @@ public class CDQueueController extends CDWindowController
                         }
 
                         public void queueStarted() {
-                            invoke(new Runnable() {
+                            CDQueueController.this.invoke(new Runnable() {
                                 public void run() {
                                     window.toolbar().validateVisibleItems();
                                 }
@@ -427,7 +430,7 @@ public class CDQueueController extends CDWindowController
                                 }
                                 if(!hasFailed()) {
                                     if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
-                                        invoke(new Runnable() {
+                                        CDQueueController.this.invoke(new Runnable() {
                                             public void run() {
                                                 removeItem(transfer);
                                             }
@@ -446,7 +449,7 @@ public class CDQueueController extends CDWindowController
                     });
                     transfer.setResumeReqested(resume);
                     transfer.setReloadRequested(reload);
-                    transfer.run(ValidatorFactory.create(transfer, CDQueueController.this));
+                    transfer.run(v);
                 }
                 finally {
                     transfer.getSession().close();
