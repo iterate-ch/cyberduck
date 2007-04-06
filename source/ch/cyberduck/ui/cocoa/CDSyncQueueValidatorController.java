@@ -107,12 +107,12 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
                 parent.invoke(new Runnable() {
                     public void run() {
                         beginSheet(false);
-                        updateSelection(p);
                     }
                 });
                 this.hasPrompt = true;
             }
             this.promptList.add(p);
+            this.updateSelection(p);
         }
     }
 
@@ -131,15 +131,29 @@ public class CDSyncQueueValidatorController extends CDValidatorController {
         this.fireDataChanged();
     }
 
+    private boolean shouldDownloadMissing() {
+        if(null == downloadRadioCell) {
+            return true;
+        }
+        return downloadRadioCell.state() == NSCell.OnState;
+    }
+
+    private boolean shouldUploadMissing() {
+        if(null == uploadRadioCell) {
+            return true;
+        }
+        return uploadRadioCell.state() == NSCell.OnState;
+    }
+
     /**
      *
      * @param p
      */
     private void updateSelection(final Path p) {
-        if(!(downloadRadioCell.state() == NSCell.OnState) && !p.getLocal().exists()) {
+        if(!this.shouldDownloadMissing() && !p.getLocal().exists()) {
             return;
         }
-        if(!(uploadRadioCell.state() == NSCell.OnState) && !p.getRemote().exists()) {
+        if(!this.shouldUploadMissing() && !p.getRemote().exists()) {
             return;
         }
         this.workList.add(p);
