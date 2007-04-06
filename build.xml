@@ -157,7 +157,7 @@
 			<arg line="-dmgName '${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg' -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor} (${localization})' -buildDir ${build}/localizations -compressionLevel 9 ${app.bundle.loc} ${app.name}\ Website.webloc Donate.webloc ${localization}.lproj/License.txt Credits.rtf  AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
 		</exec>
 		<checksum file="${build}/localizations/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg" algorithm="md5" />
-		<delete dir="${build}/${localization}"/>
+		<delete dir="${java.io.tmpdir}/${localization}"/>
 	</target>
 	
 	<target name="nightly">
