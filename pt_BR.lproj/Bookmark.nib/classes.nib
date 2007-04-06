@@ -1,0 +1,29 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            CLASS = "ch.cyberduck.ui.cocoa.CDBookmarkController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {
+                alertIcon = NSButton; 
+                connectmodePopup = NSPopUpButton; 
+                downloadPathPopup = NSPopUpButton; 
+                encodingPopup = NSPopUpButton; 
+                hostField = NSTextField; 
+                nicknameField = NSTextField; 
+                pathField = NSTextField; 
+                pkCheckbox = NSButton; 
+                pkLabel = NSTextField; 
+                portField = NSTextField; 
+                protocolPopup = NSPopUpButton; 
+                timezonePopup = NSPopUpButton; 
+                transferPopup = NSPopUpButton; 
+                urlField = NSTextField; 
+                usernameField = NSTextField; 
+                window = NSWindow; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}

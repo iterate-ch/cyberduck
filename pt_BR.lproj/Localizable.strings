@@ -1,0 +1,405 @@
+/* No comment provided by engineer. */
+"A file with the same name already exists. Do you want to replace the existing file?" = "Um arquivo com o mesmo nome já existe. Você quer substituir o arquivo existente?";
+
+/* Toolbar item */
+"Action" = "Ação";
+
+/* No comment provided by engineer. */
+"Active" = "Ativo";
+
+/* No comment provided by engineer. */
+"Allow" = "Permitir";
+
+/* No comment provided by engineer. */
+"Always" = "Sempre";
+
+/* No comment provided by engineer. */
+"ASCII" = "ASCII";
+
+/* No comment provided by engineer. */
+"Ask me what to do" = "Pergunte-me o que fazer";
+
+/* No comment provided by engineer. */
+"Auto" = "Auto";
+
+/* No comment provided by engineer. */
+"Binary" = "Binário";
+
+/* Toolbar item */
+"Bookmarks" = "Favoritos";
+
+/* Alert sheet alternate button */
+"Cancel" = "Cancelar";
+
+/* No comment provided by engineer. */
+"Cannot continue without a valid host key." = "Impossível continuar sem uma chave de servidor válida.";
+
+/* Certificate date mismatch  */
+"Certificate not yet valid" = "Certificado ainda inválido";
+
+/* Certificate date mismatch  */
+"Certificate expired" = "Certificado expirado";
+
+/* Toolbar item tooltip */
+"Character Encoding" = "Codificação de caracteres";
+
+/* No comment provided by engineer. */
+"Choose" = "Escolher";
+
+/* No comment provided by engineer. */
+"Clean Up" = "Apagar";
+
+/* Remove all bookmarks from history. */
+"Clear Menu" = "Limpar menu";
+
+/* Toolbar item */
+"Column" = "Coluna";
+
+/* Toolbar item tooltip */
+"Connect to server" = "Conectar ao servidor";
+
+/* Alert sheet text */
+"Could not open or read the host file" = "Impossível abrir ou ler o arquivo remoto";
+
+/* No comment provided by engineer. */
+"Could not open the file" = "Não foi possível abrir o arquivo";
+
+/* No comment provided by engineer. */
+"Could not show the file" = "Impossível mostrar arquivo";
+
+/* No comment provided by engineer. */
+"Could not show the file in the Finder" = "Impossível mostrar arquivos no Finder";
+
+/* Toolbar item tooltip */
+"Create New Folder" = "Criar nova Pasta";
+
+/* Menu item */
+"Cut" = "Cortar";
+
+/* No comment provided by engineer. */
+"Default" = "Padrão";
+
+/* Alert sheet title
+   Alert sheet default button
+   Toolbar item */
+"Delete" = "Apagar";
+
+/* No comment provided by engineer. */
+"Delete Bookmark" = "Apagar Favorito";
+
+/* Toolbar item tooltip */
+"Delete file" = "Apagar arquivo";
+
+/* No comment provided by engineer. */
+"Deny" = "Negar";
+
+/* Alert sheet default button
+   Toolbar item */
+"Disconnect" = "Desconectar";
+
+/* Alert sheet title */
+"Disconnect from" = "Desconectar de";
+
+/* Toolbar item tooltip */
+"Disconnect from server" = "Desconectar do servidor";
+
+/* No comment provided by engineer. */
+"Do you want to allow the host access?" = "Deseja permitir o acesso remoto?";
+
+/* No comment provided by engineer. */
+"Do you want to delete the selected bookmark?" = "Deseja apagar o favorito selecionado?";
+
+/* Toolbar item */
+"Download" = "Download";
+
+/* No comment provided by engineer. */
+"Download As:" = "Baixar Como:";
+
+/* Toolbar item tooltip */
+"Download file" = "Baixar arquivo";
+
+/* No comment provided by engineer. */
+"Download the selected file to..." = "Baixar o arquivo selecionado para...";
+
+/* Toolbar item */
+"Edit" = "Editar";
+
+/* Toolbar item tooltip */
+"Edit file in external editor" = "Editar arquivo no editor externo";
+
+/* Toolbar item */
+"Encoding" = "Codificação";
+
+/* Alert sheet title */
+"Error" = "Erro";
+
+/* No comment provided by engineer. */
+"File" = "Arquivo";
+
+/* A column in the browser */
+"Filename" = "Nome do arquivo";
+
+/* No comment provided by engineer. */
+"files" = "Arquivos";
+
+/* No comment provided by engineer. */
+"Folder" = "Pasta";
+
+/* No comment provided by engineer. */
+"FTP (File Transfer Protocol)" = "FTP (Protocolo de Transferência de Arquivos)";
+
+/* No comment provided by engineer. */
+"FTP-SSL (FTP over TLS/SSL)" = "FTP-SSL (FTP sobre TLS/SSL)";
+
+/* Toolbar item */
+"Get Info" = "Ver Informação";
+
+/* No comment provided by engineer. */
+"History" = "História";
+
+/* No comment provided by engineer. */
+"Host key mismatch: " = "Erro de chave de servidor: ";
+
+/* No comment provided by engineer. */
+"Invalid character in filename." = "Caracter inválido no nome do arquivo.";
+
+/* No comment provided by engineer. */
+"Invalid character in folder name." = "Caracter inválido no nome da pasta.";
+
+/* Alert sheet text */
+"is out of date. The current version is" = "está desatualizado. A versão actual é";
+
+/* Alert sheet text */
+"is up to date." = "está atualizado.";
+
+/* No comment provided by engineer. */
+"It moved since you downloaded it." = "Foi movido desde que você o baixou.";
+
+/* A column in the browser */
+"Kind" = "Tipo";
+
+/* Toolbar item */
+"List" = "Lista";
+
+/* No comment provided by engineer. */
+"Local" = "Local";
+
+/* No comment provided by engineer. */
+"Local File" = "Arquivo Local";
+
+/* No comment provided by engineer. */
+"Mac Line Endings (CR)" = "Fim de linhas de Mac (CR)";
+
+/* A column in the browser */
+"Modified" = "Modificado";
+
+/* Move a downloaded file to the trash */
+"Move to Trash" = "Move para a Lixeira";
+
+/* No comment provided by engineer. */
+"Multiple files" = "Arquivos múltiplos";
+
+/* Toolbar item */
+"New Connection" = "Nova Conexão";
+
+/* Toolbar item */
+"New Folder" = "Nova Pasta";
+
+/* Alert sheet text */
+"No newer version available." = "Não há nova versão disponível.";
+
+/* No comment provided by engineer. */
+"No Private Key selected" = "Não há Chave Privada selecionada";
+
+/* No comment provided by engineer. */
+"No Bonjour services available" = "Não há serviços Bonjour disponíveis";
+
+/* No comment provided by engineer. */
+"No external editor available" = "Editor externo indisponível";
+
+/* No comment provided by engineer. */
+"No recently connected servers available" = "Não houve conexões a servidores recentemente ";
+
+/* Alert sheet title */
+"No update" = "Sem atualização";
+
+/* No comment provided by engineer. */
+"None" = "Nenhum";
+
+/* 1.2MB of 3.4MB */
+"of" = "de";
+
+/* Alert default button
+   Alert sheet default button */
+"OK" = "Sim";
+
+/* No comment provided by engineer. */
+"Open" = "Abrir";
+
+/* Toolbar item */
+"Outline" = "Estrutura";
+
+/* No comment provided by engineer. */
+"Overwrite" = "Sobrescrever";
+
+/* No comment provided by engineer. */
+"Overwrite existing file" = "Sobrescrever arquivo existente";
+
+/* A column in the browser */
+"Owner" = "Proprietário";
+
+/* No comment provided by engineer. */
+"Passive" = "Passivo";
+
+/* Menu item */
+"Paste" = "Colar";
+
+/* Menu item */
+"Paste from Finder" = "Colar do Finder";
+
+/* A column in the browser */
+"Permissions" = "Permissões";
+
+/* Toolbar item */
+"Quick Connect" = "Conexão Rápida";
+
+/* No comment provided by engineer. */
+"Quit" = "Encerrar";
+
+/* No comment provided by engineer. */
+"Quit Anyway" = "Encerrar mesmo";
+
+/* Confirm deleting files. */
+"Really delete the following files? This cannot be undone." = "Deseja realmente apagar os arquivo selecionados? Isto pode ser desfeito.";
+
+/* Toolbar item */
+"Refresh" = "Atualizar";
+
+/* Toolbar item tooltip */
+"Refresh directory listing" = "Atualizar listagem da pasta";
+
+/* No comment provided by engineer. */
+"Reload" = "Recarregar";
+
+/* No comment provided by engineer. */
+"Remove" = "Remover";
+
+/* No comment provided by engineer. */
+"Resume" = "Continuar";
+
+/* No comment provided by engineer. */
+"Review..." = "Rever...";
+
+/* No comment provided by engineer. */
+"Server File" = "Arquivo do Servidor";
+
+/* No comment provided by engineer. */
+"SFTP (SSH Secure File Transfer)" = "SFTP (Transferência Segura de Arquivos por SSH)";
+
+/* No comment provided by engineer. */
+"SCP (Secure Copy)" = "SCP (Secure Copy)";
+
+/* No comment provided by engineer. */
+"Show" = "Mostrar";
+
+/* Toolbar item tooltip */
+"Show file attributes" = "Mostrar propriedades do arquivo";
+
+/* No comment provided by engineer. */
+"Show in Finder" = "Mostrar no Finder";
+
+/* Toolbar item tooltip */
+"Show Transfers window" = "Mostrar janela de transferências";
+
+/* A column in the browser */
+"Size" = "Tamanho";
+
+/* No comment provided by engineer. */
+"Stop" = "Parar";
+
+/* Toolbar item tooltip */
+"Switch Browser View" = "Trocar Vista do navegador";
+
+/* No comment provided by engineer. */
+"Symbolic Link (File)" = "Link Simbólico (Arquivo)";
+
+/* No comment provided by engineer. */
+"Symbolic Link (Folder)" = "Link Simbólico (pasta)";
+
+/* Toolbar item */
+"Synchronize" = "Sincronizar";
+
+/* Toolbar item tooltip */
+"Synchronize files" = "Sincronizar arquivos";
+
+/* Toolbar item tooltip */
+"Toggle Bookmarks" = "Exibir Favoritos";
+
+/* No comment provided by engineer. */
+"Transfer in progress" = "Transferência em progresso";
+
+/* Toolbar item */
+"Transfers" = "Transferência";
+
+/* Toolbar item */
+"Trash" = "Lixo";
+
+/* No comment provided by engineer. */
+"Unknown size" = "Tamanho desconhecido";
+
+/* No comment provided by engineer. */
+"Unknown" = "Desconhecido";
+
+/* Alert sheet text */
+"The connection will be closed." = "A conexão será encerrada.";
+
+/* No comment provided by engineer. */
+"The current allowed key for this host is" = "A chave atual para este servidor é";
+
+/* No comment provided by engineer. */
+"The file has not yet been downloaded." = "O  arquivo ainda não foi baixado.";
+
+/* No comment provided by engineer. */
+"The host is currently unknown to the system. The host key fingerprint is" = "O servidor no momento é desconhecido para o sistema. A identificaçãoo da chave do servidor é";
+
+/* No comment provided by engineer. */
+"The host key supplied is" = "A chave do servidor fornecida é";
+
+/* Alert sheet text */
+"There was a problem checking for an update. Please try again later." = "Ocorreu um problema ao verificar a existência de atualizações. Por favor tente mais tarde.";
+
+/* No comment provided by engineer. */
+"There are items in the queue currently being transferred. Quit anyway?" = "Existem items aguardando para serem transferidos. Deseja encerrar assim mesmo??";
+
+/* No comment provided by engineer. */
+"Try to resume transfer" = "Tentar retomar a transferência";
+
+/* No comment provided by engineer. */
+"Unix Line Endings (LF)" = "Terminação de linhas de Unix (LF)";
+
+/* No comment provided by engineer. */
+"Unknown host key for" = "Chave de servidor desconhecida para";
+
+/* Toolbar item */
+"Upload" = "Enviar";
+
+/* Toolbar item tooltip */
+"Upload local file to the remote host" = "Enviar arquivo local para servidor remoto";
+
+/* No comment provided by engineer. */
+"Use similar name" = "Utilizar nome semelhante";
+
+/* Toolbar item */
+"View" = "Ver";
+
+/* No comment provided by engineer. */
+"Windows Line Endings (CRLF)" = "Terminação de linhas de Windows (CRLF)";
+
+/* Synchronize <file> with <file> */
+"with" = "com";
+
+/* No comment provided by engineer. */
+"You are connected to at least one remote site. Do you want to review open browsers?" = "Você está conectado a pelo menos um site remoto. Deseja rever as janelas abertas?";
+
+/* Option in error dialog if a connection error occurs, opens the Network Diagnostics application */
+"Open Network Diagnostics" = "Abrir Diagnósticos de Rede";

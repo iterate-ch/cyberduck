@@ -1,0 +1,20 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {closeSheet = id; }; 
+            CLASS = "ch.cyberduck.ui.cocoa.CDX509TrustManagerController"; 
+            LANGUAGE = Java; 
+            OUTLETS = {
+                alertField = NSTextField; 
+                alertIcon = NSButton; 
+                alwaysButton = NSButton; 
+                certificateField = NSTextView; 
+                validityField = NSTextField; 
+                window = NSWindow; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}
