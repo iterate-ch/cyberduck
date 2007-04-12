@@ -79,54 +79,6 @@ build/Growl.framework/Versions/A/Growl -text
 build/Growl.framework/Versions/A/Resources/Info.plist -text
 build/Growl.framework/Versions/Current/Growl -text
 build/Growl.framework/Versions/Current/Resources/Info.plist -text
-build/Keychain.framework/Keychain -text
-build/Keychain.framework/Resources/English.lproj/Algorithm[!!-~]Modes.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Resources/English.lproj/Algorithms.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Resources/English.lproj/BER[!!-~]Names.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Resources/English.lproj/CSSM[!!-~]Errors.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Resources/English.lproj/Certificate[!!-~]Encodings.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Resources/English.lproj/Certificate[!!-~]Types.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Resources/English.lproj/InfoPlist.strings -text
-build/Keychain.framework/Resources/English.lproj/Key[!!-~]Attributes.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Resources/English.lproj/Key[!!-~]Classes.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Resources/English.lproj/Key[!!-~]Usage.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Resources/English.lproj/Keyblob[!!-~]Formats.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Resources/English.lproj/Keyblob[!!-~]Types.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Resources/English.lproj/Misc[!!-~]Names.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Resources/English.lproj/OID[!!-~]Names.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Resources/Info.plist -text
-build/Keychain.framework/Versions/A/Keychain -text
-build/Keychain.framework/Versions/A/Resources/English.lproj/Algorithm[!!-~]Modes.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/A/Resources/English.lproj/Algorithms.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/A/Resources/English.lproj/BER[!!-~]Names.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/A/Resources/English.lproj/CSSM[!!-~]Errors.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/A/Resources/English.lproj/Certificate[!!-~]Encodings.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/A/Resources/English.lproj/Certificate[!!-~]Types.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/A/Resources/English.lproj/InfoPlist.strings -text
-build/Keychain.framework/Versions/A/Resources/English.lproj/Key[!!-~]Attributes.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/A/Resources/English.lproj/Key[!!-~]Classes.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/A/Resources/English.lproj/Key[!!-~]Usage.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/A/Resources/English.lproj/Keyblob[!!-~]Formats.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/A/Resources/English.lproj/Keyblob[!!-~]Types.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/A/Resources/English.lproj/Misc[!!-~]Names.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/A/Resources/English.lproj/OID[!!-~]Names.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/A/Resources/Info.plist -text
-build/Keychain.framework/Versions/Current/Keychain -text
-build/Keychain.framework/Versions/Current/Resources/English.lproj/Algorithm[!!-~]Modes.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/Current/Resources/English.lproj/Algorithms.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/Current/Resources/English.lproj/BER[!!-~]Names.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/Current/Resources/English.lproj/CSSM[!!-~]Errors.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/Current/Resources/English.lproj/Certificate[!!-~]Encodings.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/Current/Resources/English.lproj/Certificate[!!-~]Types.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/Current/Resources/English.lproj/InfoPlist.strings -text
-build/Keychain.framework/Versions/Current/Resources/English.lproj/Key[!!-~]Attributes.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/Current/Resources/English.lproj/Key[!!-~]Classes.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/Current/Resources/English.lproj/Key[!!-~]Usage.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/Current/Resources/English.lproj/Keyblob[!!-~]Formats.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/Current/Resources/English.lproj/Keyblob[!!-~]Types.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/Current/Resources/English.lproj/Misc[!!-~]Names.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/Current/Resources/English.lproj/OID[!!-~]Names.strings -text svneol=unset#application/octet-stream
-build/Keychain.framework/Versions/Current/Resources/Info.plist -text
 build/Sparkle.framework/Headers -text
 build/Sparkle.framework/Resources -text
 build/Sparkle.framework/Sparkle -text
