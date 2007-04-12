@@ -1408,7 +1408,7 @@ pt_BR.lproj/Info.nib/info.nib -text
 pt_BR.lproj/Info.nib/keyedobjects.nib -text
 pt_BR.lproj/Info.strings -text
 pt_BR.lproj/InfoPlist.strings -text svneol=unset#application/octet-stream
-pt_BR.lproj/Localizable.strings -text svneol=unset#application/octet-stream
+pt_BR.lproj/Localizable.strings -text
 pt_BR.lproj/Login.nib/classes.nib -text
 pt_BR.lproj/Login.nib/info.nib -text
 pt_BR.lproj/Login.nib/keyedobjects.nib -text
