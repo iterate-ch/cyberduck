@@ -1,0 +1,12 @@
+/* Authentication Types */
+
+/* The key is the four-character code of the type.  The value states the name of the type and where possible provides a brief description of it. */
+
+"ntlm" = "kSecAuthenticationTypeNTLM - Windows NT LAN Manager authentication";
+"msna" = "kSecAuthenticationTypeMSN - Microsoft Network default authentication";
+"dpaa" = "kSecAuthenticationTypeDPA - Distributed Password authentication";
+"rpaa" = "kSecAuthenticationTypeRPA - Remote Password authentication";
+"http" = "kSecAuthenticationTypeHTTPBasic - HTTP Basic authentication";
+"httd" = "kSecAuthenticationTypeHTTPDigest - HTTP Digest Access authentication";
+"form" = "kSecAuthenticationTypeHTMLForm - HTML form based authentication";
+"dflt" = "kSecAuthenticationTypeDefault - Default authentication type";

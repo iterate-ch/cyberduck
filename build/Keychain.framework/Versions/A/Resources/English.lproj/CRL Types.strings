@@ -1,0 +1,8 @@
+/* CRL Types */
+
+/* Key is the [unsigned] decimal representation of the type, value is the name of the type. */
+
+1 = "X.509v1";
+2 = "X.509v2";
+3 = "SPKI";
+32766 = "Multiple";

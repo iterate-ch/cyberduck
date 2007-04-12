@@ -1,0 +1,10 @@
+/* This file contains the names of various miscellaneous CSSM constants */
+
+/* The key is the defined name of the constant */
+/* The value is a brief name for the constant */
+
+Unknown = "Unknown (%@)";
+YES = "YES"; // It may be redundent having upper and lowercase versions
+yes = "yes"; // However, I've heard that some cultures find all uppercase
+NO = "NO"; // very offensive, or something to that effect.  So, the
+no = "no"; // option is made here to change casing.

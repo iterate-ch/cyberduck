@@ -1,0 +1,30 @@
+/* This file contains names for BER encoding parameters etc. */
+
+/* The key is the numeric value as defined in x509defs.h in Apple's Security framework.  Last updated for 10.3.9. */
+/* The value is human-readable name for the value, generally a single word. */
+
+1 = "BOOL";
+2 = "int";
+3 = "Bit String";
+4 = "Octet String";
+5 = "NULL";
+6 = "OID";
+7 = "Object Descriptor";
+8 = "External";
+9 = "Real";
+10 = "Enumerated";
+12 = "PKIX UTF8 String";
+16 = "Sequence";
+17 = "Set";
+18 = "Numeric String";
+19 = "Printable String";
+20 = "T61/Teletex String";
+21 = "Videotex String";
+22 = "IA5 String";
+23 = "UTC Time";
+24 = "Generalized Time";
+25 = "Graphic String";
+26 = "ISO646/Visible String";
+27 = "General String";
+28 = "PKIX Universal String";
+30 = "PKIX BMP String";

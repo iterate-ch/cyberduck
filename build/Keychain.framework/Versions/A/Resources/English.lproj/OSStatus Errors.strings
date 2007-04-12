@@ -1,0 +1,40 @@
+/* Localized versions of all Security-related OSStatus error code messages */
+
+/* The key is the OSStatus error code, formatted as a signed integer */
+/* The value should be the name of the error in some form, and [optionally] a brief explanation of the error.  These two fields should be separated by a hyphen, in order to aid parsing which may want only the error name, or only the explanation. */
+
+-50 = "paramErr - Invalid parameter(s)";
+
+-25291 = "errSecNotAvailable - No trust results are available";
+-25292 = "errSecReadOnly - A read-only error occurred";
+-25293 = "errSecAuthFailed - Authorization or authentication failed";
+-25294 = "errSecNoSuchKeychain - The keychain does not exist";
+-25295 = "errSecInvalidKeychain - The keychain is not valid";
+-25296 = "errSecDuplicateKeychain - A keychain with the same name already exists";
+-25299 = "errSecDuplicateItem - An item with the same primary key attributes already exists";
+-25300 = "errSecItemNotFound - The item cannot be found";
+-25301 = "errSecBufferTooSmall - The buffer is too small";
+-25302 = "errSecDataTooLarge - The data is too large for the particular data type";
+-25303 = "errSecNoSuchAttr - The attribute does not exist";
+-25304 = "errSecInvalidItemRef - The item object is invalid";
+-25305 = "errSecInvalidSearchRef - The search object is invalid";
+-25306 = "errSecNoSuchClass - The specified item does not appear to be a valid keychain item";
+-25307 = "errSecNoDefaultKeychain - A default keychain does not exist";
+-25308 = "errSecInteractionNotAllowed - Interaction with the user is required in order to grant access or process a request; however, user interaction with the Security Server has been disabled by the program";
+-25309 = "errSecReadOnlyAttr - The attribute is read-only";
+-25310 = "errSecWrongSecVersion - The version is incorrect";
+-25311 = "errSecKeySizeNotAllowed - The key size is not allowed";
+-25312 = "errSecNoStorageModule - No storage module is available";
+-25313 = "errSecNoCertificateModule - No certificate module is available";
+-25314 = "errSecNoPolicyModule - No policy module is available";
+-25315 = "errSecInteractionRequired - Interaction with the user is required in order to grant access or process a request; however, user interaction with the Security Server is impossible because the program is operating in a session incapable of graphics (such as a root session or ssh session)";
+-25316 = "errSecDataNotAvailable - The data is not available";
+-25317 = "errSecDataNotModifiable - The data is not modifiable";
+-25318 = "errSecCreateChainFailed - One or more certificates required in order to validate this certificate cannot be found";
+-25319 = "errSecInvalidPrefsDomain - The preference domain specified is invalid. This error can occur in Mac OS X v10.3 and later";
+-25240 = "errSecACLNotSimple - The access control list is not in standard simple form";
+-25241 = "errSecPolicyNotFound - The policy specified cannot be found";
+-25242 = "errSecInvalidTrustSetting - The trust setting is invalid";
+-25243 = "errSecNoAccessForItem - The specified item has no access control";
+-25244 = "errSecInvalidOwnerEdit - An invalid attempt has been made to change the owner of an item";
+-25245 = "errSecTrustNotAvailable - No trust results are available";

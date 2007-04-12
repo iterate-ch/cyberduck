@@ -1,0 +1,47 @@
+/* This file contains names for CSSM_ENCRYPT_MODEs. */
+
+/* The key is the numeric value as defined in cssmtype.h in Apple's Security framework.  Last updated for 10.3.9. */
+/* The value is human-readable name for the algorithm mode. */
+
+0 = "None";
+1 = "Custom";
+2 = "ECB";
+3 = "ECB Pad";
+4 = "CBC";
+5 = "CBC IV8";
+6 = "CBC Pad IV8";
+7 = "CFB";
+8 = "CFB IV8";
+9 = "CFB Pad IV8";
+10 = "OFB";
+11 = "OFB IV8";
+12 = "OFB Pad IV8";
+13 = "Counter";
+14 = "BC";
+15 = "PCBC";
+16 = "CBCC";
+17 = "OFBNLF";
+18 = "PBC";
+19 = "PFB";
+20 = "CBCPD";
+21 = "Public Key";
+22 = "Private Key";
+23 = "Shuffle";
+24 = "ECB 64";
+25 = "CBC 64";
+26 = "OFB 64";
+28 = "CFB 32";
+29 = "CFB 16";
+30 = "CFB 8";
+31 = "Wrap";
+32 = "Private Wrap";
+33 = "Relay X";
+34 = "ECB 128";
+35 = "ECB 96";
+36 = "CBC 128";
+37 = "OAEP HASH";
+38 = "PKCS1 EME V15";
+39 = "PKCS1 EME OAEP";
+40 = "PKCS1 EMSA V15";
+41 = "ISO 9796";
+42 = "X9 31";

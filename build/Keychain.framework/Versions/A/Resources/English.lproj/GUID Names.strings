@@ -1,0 +1,16 @@
+/* This file contains names for CDSA GUIDs. */
+
+/* The key is the GUID express in "%08x-%08x-%08x%08x" form.  Last updated for 10.4.1. */
+/* The value is human-readable name for the value, generally a single word. */
+
+"87191ca0-0fc911d4-849a000502b52122" = "CSSM";
+
+"87191ca1-0fc911d4-849a000502b52122" = "Apple File DL";
+"87191ca2-0fc911d4-849a000502b52122" = "Apple CSP";
+"87191ca3-0fc911d4-849a000502b52122" = "Apple CSP/DL";
+"87191ca4-0fc911d4-849a000502b52122" = "Apple X509 CL";
+"87191ca5-0fc911d4-849a000502b52122" = "Apple X509 TP";
+"87191ca6-0fc911d4-849a000502b52122" = "Apple LDAP DL";
+"87191ca7-0fc911d4-849a000502b52122" = "Apple .Mac TP";
+"87191ca8-0fc911d4-849a000502b52122" = "Apple Sd CSP/DL";
+"87191ca9-0fc911d4-849a000502b52122" = "Apple .Mac DL";
