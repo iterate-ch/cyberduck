@@ -5,19 +5,17 @@
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {closeSheet = id; }; 
-            CLASS = "ch.sudo.cyberduck.ui.cocoa.CDValidatorController"; 
+            CLASS = "ch.sudo.cyberduck.ui.cocoa.CDTransferPrompt"; 
             LANGUAGE = Java; 
             OUTLETS = {
-                fileTableView = NSTableView; 
+                actionPopup = NSPopUpButton; 
+                browserView = NSTableView; 
                 localModificationField = NSTextField; 
                 localSizeField = NSTextField; 
                 localURLField = NSTextField; 
-                overwriteButton = NSButton; 
                 remoteModificationField = NSTextField; 
                 remoteSizeField = NSTextField; 
                 remoteURLField = NSTextField; 
-                resumeButton = NSButton; 
-                skipButton = NSButton; 
                 statusIndicator = NSProgressIndicator; 
                 window = NSWindow; 
             }; 

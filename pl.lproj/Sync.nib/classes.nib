@@ -4,12 +4,11 @@
         {CLASS = CDOutlineView; LANGUAGE = ObjC; SUPERCLASS = NSOutlineView; }, 
         {
             ACTIONS = {closeSheet = id; }; 
-            CLASS = "ch.cyberduck.ui.cocoa.CDSyncQueueController"; 
+            CLASS = "ch.cyberduck.ui.cocoa.CDTransferPrompt"; 
             LANGUAGE = Java; 
             OUTLETS = {
-                cancelButton = NSButton; 
+                browserView = NSTableView; 
                 downloadRadioCell = NSButton; 
-                fileTableView = NSTableView; 
                 localModificationField = NSTextField; 
                 localSizeField = NSTextField; 
                 localURLField = NSTextField; 
@@ -17,8 +16,6 @@
                 remoteSizeField = NSTextField; 
                 remoteURLField = NSTextField; 
                 statusIndicator = NSProgressIndicator; 
-                syncButton = NSButton; 
-                timezonePopupButton = NSPopUpButton; 
                 uploadRadioCell = NSButton; 
                 window = NSWindow; 
             }; 
