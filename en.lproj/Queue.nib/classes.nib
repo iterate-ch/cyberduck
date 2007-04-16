@@ -17,12 +17,12 @@
         }, 
         {CLASS = NSDatePicker; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
         {
-            ACTIONS = {queueSizeChanged = id; }; 
             CLASS = "ch.cyberduck.core.CDQueueController"; 
             LANGUAGE = Java; 
             OUTLETS = {
                 localField = NSTextField; 
                 localLabel = NSTextField; 
+                queueSizeStepper = NSStepper; 
                 queueSizeView = NSView; 
                 queueTable = NSTableView; 
                 urlField = NSTextField; 
