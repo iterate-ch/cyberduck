@@ -5,8 +5,6 @@ BUILDSTYLE=$(DEFAULT_BUILDSTYLE)
 
 PROJECT=Cyberduck.xcodeproj
 
-export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/1.4/Home
-
 default:
 	cd Spotlight\ Importer; make
 	xcodebuild -project $(PROJECT) -target build -configuration $(BUILDSTYLE)
