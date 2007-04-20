@@ -355,19 +355,19 @@ public class FTPControlSocket {
 
         // assemble the IP address
         // we try connecting, so we don't bother checking digits etc
-        String ip = parts[0] + "." + parts[1] + "." +
+        String ipAddress = parts[0] + "." + parts[1] + "." +
                 parts[2] + "." + parts[3];
 
         // assemble the port number
         int port = (parts[4] << 8) + parts[5];
 
-        if(InetAddress.getByName(ip).isSiteLocalAddress()) {
+        if(InetAddress.getByName(ipAddress).isSiteLocalAddress()) {
             // Do not trust a local address; may be a misconfigured router
             return new FTPPassiveDataSocket(new Socket(controlSock.getInetAddress(), port));
         }
 
         // create the socket
-        return new FTPPassiveDataSocket(new Socket(ip, port));
+        return new FTPPassiveDataSocket(new Socket(ipAddress, port));
     }
 
     protected int[] parsePASVResponse(String reply) throws FTPException {

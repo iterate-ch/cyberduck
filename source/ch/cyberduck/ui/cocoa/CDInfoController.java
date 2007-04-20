@@ -18,11 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Status;
+import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.*;
@@ -299,7 +295,7 @@ public class CDInfoController extends CDWindowController {
             this.initPermissionsCheckbox(false);
             Permission permission = Permission.EMPTY;
             for(Iterator i = files.iterator(); i.hasNext();) {
-                permission = ((Path) i.next()).attributes.getPermission();
+                permission = ((AbstractPath) i.next()).attributes.getPermission();
                 log.debug("Permission:" + permission);
                 if(null == permission) {
                     this.initPermissionsCheckbox(false);
@@ -448,7 +444,7 @@ public class CDInfoController extends CDWindowController {
         controller.background(new BackgroundAction() {
             public void run() {
                 for(Iterator i = files.iterator(); i.hasNext();) {
-                    ((Path) i.next()).changePermissions(permission,
+                    ((AbstractPath) i.next()).writePermissions(permission,
                             recursiveCheckbox.state() == NSCell.OnState);
                     if(!controller.isConnected()) {
                         break;
@@ -472,8 +468,7 @@ public class CDInfoController extends CDWindowController {
         controller.background(new BackgroundAction() {
             public void run() {
                 for(Iterator i = files.iterator(); i.hasNext();) {
-                    Path p = (Path) i.next();
-                    p.attributes.setSize(p.size());
+                    this.calculateSize((Path) i.next());
                     if(!controller.isConnected()) {
                         break;
                     }
@@ -486,6 +481,23 @@ public class CDInfoController extends CDWindowController {
                 sizeButton.setEnabled(true);
                 sizeProgress.stopAnimation(null);
             }
+
+            /**
+             * Calculates recursively the size of this path
+             *
+             * @return The size of the file or the sum of all containing files if a directory
+             * @warn Potentially lengthy operation
+             */
+            private double calculateSize(Path p) {
+                if(p.attributes.isDirectory()) {
+                    double size = 0;
+                    for(Iterator iter = p.childs().iterator(); iter.hasNext();) {
+                        size += this.calculateSize((Path) iter.next());
+                    }
+                    p.attributes.setSize(size);
+                }
+                return p.attributes.getSize();
+            }
         });
     }
 
@@ -496,7 +508,7 @@ public class CDInfoController extends CDWindowController {
     private void updateSize() {
         int size = 0;
         for(Iterator i = files.iterator(); i.hasNext();) {
-            size += ((Path) i.next()).attributes.getSize();
+            size += ((AbstractPath) i.next()).attributes.getSize();
         }
         this.sizeField.setAttributedStringValue(
                 new NSAttributedString(Status.getSizeAsString(size) + " (" + size + " bytes)",

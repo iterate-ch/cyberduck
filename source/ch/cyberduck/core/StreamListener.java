@@ -23,7 +23,15 @@ package ch.cyberduck.core;
  */
 public interface StreamListener
 {
+    /**
+     *
+     * @param bytes
+     */
     public void bytesSent(int bytes);
 
+    /**
+     *
+     * @param bytes
+     */
     public void bytesReceived(int bytes);
 }

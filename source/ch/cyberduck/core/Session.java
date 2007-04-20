@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -487,12 +486,12 @@ public abstract class Session extends NSObject {
     /**
      * Keeps a ordered backward history of previously visited paths
      */
-    private List backHistory = new ArrayList();
+    private List backHistory = new Collection();
 
     /**
      * Keeps a ordered forward history of previously visited paths
      */
-    private List forwardHistory = new ArrayList();
+    private List forwardHistory = new Collection();
 
     /**
      * @param p

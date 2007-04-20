@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
-import java.net.InetAddress;
 
 /**
  * @version $Id$

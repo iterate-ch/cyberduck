@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
 *  dkocher@cyberduck.ch
 */
 
+import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.ftps.AbstractX509TrustManager;
 
@@ -35,10 +36,9 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.CertificateExpiredException;
-import java.util.ArrayList;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.X509Certificate;
 import java.util.List;
 
 /**
@@ -56,7 +56,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 
     public CDX509TrustManagerController(CDWindowController windowController) {
         this.parent = windowController;
-        this.acceptedCertificates = new ArrayList();
+        this.acceptedCertificates = new Collection();
         try {
             this.init(KeyStore.getInstance(KeyStore.getDefaultType()));
         }

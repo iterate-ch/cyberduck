@@ -43,8 +43,8 @@ public class Editor extends CDController {
 
     private static Logger log = Logger.getLogger(Editor.class);
 
-    public static Map SUPPORTED_EDITORS = new HashMap();
-    public static Map INSTALLED_EDITORS = new HashMap();
+    public static final Map SUPPORTED_EDITORS = new HashMap();
+    public static final Map INSTALLED_EDITORS = new HashMap();
 
     static {
         SUPPORTED_EDITORS.put("SubEthaEdit", "de.codingmonkeys.SubEthaEdit");
@@ -73,6 +73,11 @@ public class Editor extends CDController {
         }
     }
 
+    /**
+     * A map of currently open editors
+     */
+    private static final Map OPEN = new HashMap();
+
     private CDBrowserController controller;
 
     /**
@@ -93,37 +98,41 @@ public class Editor extends CDController {
      *                         or null if the default application for this file type should be opened
      */
     public void open(Path f, final String bundleIdentifier) {
-        this.path = (Path) f.clone();
-        String parent = NSPathUtilities.temporaryDirectory();
-        String filename = this.path.getName();
-        String proposal = filename;
-        int no = 0;
-        int index = filename.lastIndexOf(".");
-        do {
-            this.path.setLocal(new Local(parent, proposal));
-            no++;
-            if(index != -1 && index != 0) {
-                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
-            }
-            else {
-                proposal = filename + "-" + no;
-            }
-        }
-        while(this.path.getLocal().exists());
-
-        controller.background(new BackgroundAction() {
-            public void run() {
-                path.download();
-            }
-
-            public void cleanup() {
-                if(path.status.isComplete()) {
-                    path.getSession().message(NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
-                    // Important, should always be run on the main thread; otherwise applescript crashes
-                    edit(bundleIdentifier);
+        if(!OPEN.containsKey(f.getAbsolute())) {
+            this.path = (Path) f.clone();
+            String parent = NSPathUtilities.temporaryDirectory();
+            String filename = this.path.getAbsolute().replace('/', '_');
+            String proposal = filename;
+            int no = 0;
+            int index = filename.lastIndexOf(".");
+            do {
+                this.path.setLocal(new Local(parent, proposal));
+                no++;
+                if(index != -1 && index != 0) {
+                    proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
+                }
+                else {
+                    proposal = filename + "-" + no;
                 }
             }
-        });
+            while(this.path.getLocal().exists());
+
+            controller.background(new BackgroundAction() {
+                public void run() {
+                    path.download();
+                }
+
+                public void cleanup() {
+                    if(path.status.isComplete()) {
+                        path.getSession().message(NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
+                        // Important, should always be run on the main thread; otherwise applescript crashes
+                        edit(bundleIdentifier);
+                    }
+                }
+            });
+
+            OPEN.put(this.path.getAbsolute(), this);
+        }
     }
 
     private static boolean JNI_LOADED = false;
@@ -232,5 +241,10 @@ public class Editor extends CDController {
                 }
             }
         });
+    }
+
+    protected void invalidate() {
+        OPEN.remove(this.path.getAbsolute());
+        super.invalidate();
     }
 }

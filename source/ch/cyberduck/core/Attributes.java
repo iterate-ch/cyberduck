@@ -1,5 +1,7 @@
 package ch.cyberduck.core;
 
+import org.apache.log4j.Logger;
+
 /*
  *  Copyright (c) 2007 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -19,9 +21,10 @@ package ch.cyberduck.core;
  */
 
 /**
- * @version $Id$
+ * @version $Id: IAttributes.java 2821 2007-02-07 09:56:57Z dkocher $
  */
 public abstract class Attributes {
+    private static Logger log = Logger.getLogger(Attributes.class);
 
     public abstract int getType();
 
@@ -102,6 +105,7 @@ public abstract class Attributes {
     public boolean isExecutable() {
         Permission perm = this.getPermission();
         if(null == perm) {
+            log.warn("Unknown permissions");
             return false;
         }
         return perm.getOwnerPermissions()[Permission.EXECUTE]
@@ -116,6 +120,7 @@ public abstract class Attributes {
     public boolean isReadable() {
         Permission perm = this.getPermission();
         if(null == perm) {
+            log.warn("Unknown permissions");
             return false;
         }
         return perm.getOwnerPermissions()[Permission.READ]
@@ -130,6 +135,7 @@ public abstract class Attributes {
     public boolean isWritable() {
         Permission perm = this.getPermission();
         if(null == perm) {
+            log.warn("Unknown permissions");
             return false;
         }
         return perm.getOwnerPermissions()[Permission.WRITE]

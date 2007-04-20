@@ -77,7 +77,7 @@ public class CDCreateFileController extends CDFileController {
                 file.getLocal().createNewFile();
                 Permission d = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
                 if(!Permission.EMPTY.equals(d)) {
-                    file.getLocal().changePermissions(d, false);
+                    file.getLocal().writePermissions(d, false);
                 }
                 file.upload();
                 file.getLocal().delete();

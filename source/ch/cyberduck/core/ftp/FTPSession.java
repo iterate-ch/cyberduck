@@ -19,10 +19,10 @@ package ch.cyberduck.core.ftp;
  */
 
 import com.enterprisedt.net.ftp.FTPClient;
+import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPMessageListener;
 import com.enterprisedt.net.ftp.FTPNullReplyException;
-import com.enterprisedt.net.ftp.FTPConnectMode;
 
 import ch.cyberduck.core.*;
 

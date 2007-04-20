@@ -18,20 +18,20 @@ package ch.cyberduck.core.io;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Local;
 
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSSelector;
 import com.apple.cocoa.foundation.NSObject;
+import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
 
 public class FileWatcher extends NSObject {
     private static Logger log = Logger.getLogger(FileWatcher.class);
@@ -74,7 +74,7 @@ public class FileWatcher extends NSObject {
     /**
      * The listeners to get notified about file system changes
      */
-    private List listeners = new ArrayList();
+    private List listeners = new Collection();
 
     /**
      * 

@@ -33,10 +33,7 @@ import org.apache.log4j.Logger;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.security.cert.CertificateNotYetValidException;
-import java.security.cert.CertificateExpiredException;
 
 /**
  * @version $Id$

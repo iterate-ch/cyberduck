@@ -1,0 +1,438 @@
+package ch.cyberduck.ui.cocoa;
+
+/*
+ *  Copyright (c) 2005 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  Bug fixes, suggestions and comments should be sent to:
+ *  dkocher@cyberduck.ch
+ */
+
+import ch.cyberduck.core.*;
+
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
+
+import org.apache.log4j.Logger;
+
+/**
+ * @version $Id$
+ */
+public abstract class CDTransferPrompt extends CDSheetController implements TransferPrompt {
+    private static Logger log = Logger.getLogger(CDTransferPrompt.class);
+
+    public static TransferPrompt create(CDWindowController parent, Transfer transfer) {
+        if(transfer instanceof DownloadTransfer) {
+            return new CDDownloadPrompt(parent);
+        }
+        if(transfer instanceof UploadTransfer) {
+            return new CDUploadPrompt(parent);
+        }
+        if(transfer instanceof SyncTransfer) {
+            return new CDSyncPrompt(parent);
+        }
+        throw new IllegalArgumentException(transfer.toString());
+    }
+
+    public CDTransferPrompt(final CDWindowController parent) {
+        super(parent);
+    }
+
+    /**
+     *
+     */
+    protected TransferAction action;
+
+    protected Transfer transfer;
+
+    public void callback(final int returncode) {
+        if(returncode == DEFAULT_OPTION) { // Continue
+            if(actionPopup.selectedItem().title().equals(ACTION_OVERWRITE)) {
+                action = TransferAction.ACTION_OVERWRITE;
+            }
+            else if(actionPopup.selectedItem().title().equals(ACTION_RESUME)) {
+                action = TransferAction.ACTION_RESUME;
+            }
+            else if(actionPopup.selectedItem().title().equals(ACTION_SKIP)) {
+                action = TransferAction.ACTION_SKIP;
+            }
+            else if(actionPopup.selectedItem().title().equals(ACTION_SIMILARNAME)) {
+                action = TransferAction.ACTION_SIMILARNAME;
+            }
+        }
+        if(returncode == CANCEL_OPTION) { // Abort
+            action = TransferAction.ACTION_CANCEL;
+        }
+        synchronized(promptLock) {
+            promptLock.notifyAll();
+        }
+    }
+
+    public void beginSheet(final boolean blocking) {
+        super.beginSheet(blocking);
+        this.reloadData();
+    }
+
+    /**
+     * Reload the files in the prompt dialog
+     */
+    public void reloadData() {
+        browserView.reloadData();
+    }
+
+    protected final Object promptLock = new Object();
+
+    /**
+     * 
+     * @param transfer
+     * @return
+     */
+    public TransferAction prompt(Transfer transfer) {
+        this.transfer = transfer;
+
+        parent.invoke(new Runnable() {
+            public void run() {
+                beginSheet(false);
+            }
+        });
+
+        final ConnectionListener l = new ConnectionAdapter() {
+            public void activityStarted() {
+                parent.invoke(new Runnable() {
+                    public void run() {
+                        statusIndicator.startAnimation(null);
+                    }
+                });
+            }
+
+            public void activityStopped() {
+                parent.invoke(new Runnable() {
+                    public void run() {
+                        statusIndicator.stopAnimation(null);
+                    }
+                });
+            }
+        };
+
+        synchronized(promptLock) {
+            this.transfer.getSession().addConnectionListener(l);
+            try {
+                promptLock.wait();
+            }
+            catch(InterruptedException e) {
+                ;
+            }
+            finally {
+                this.transfer.getSession().removeConnectionListener(l);
+            }
+        }
+
+        return action;
+    }
+
+    // ----------------------------------------------------------
+    // Outlets
+    // ----------------------------------------------------------
+
+    private static final NSAttributedString UNKNOWN_STRING = new NSAttributedString(
+            NSBundle.localizedString("Unknown", ""),
+            TRUNCATE_MIDDLE_ATTRIBUTES);
+
+    /**
+     * A browsable listing of duplicate files and folders
+     */
+    protected NSOutlineView browserView; // IBOutlet
+    protected CDTransferPromptModel browserModel;
+    protected CDTableDelegate browserViewDelegate;
+
+    public void setBrowserView(NSOutlineView view) {
+        this.browserView = view;
+        this.browserView.setHeaderView(null);
+        this.browserView.setDelegate(this.browserViewDelegate = new CDAbstractTableDelegate() {
+
+            /**
+             * @see NSOutlineView.Delegate
+             */
+            public String outlineViewToolTipForCell(NSOutlineView view, NSCell cell, NSMutableRect rect, NSTableColumn tableColumn,
+                                                    Path item, NSPoint mouseLocation) {
+                return this.tooltipForPath(item);
+            }
+
+            public void enterKeyPressed(final Object sender) {
+                ;
+            }
+
+            public void deleteKeyPressed(final Object sender) {
+                ;
+            }
+
+            public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
+                ;
+            }
+
+            public void tableRowDoubleClicked(final Object sender) {
+                ;
+            }
+
+            public void selectionDidChange(NSNotification notification) {
+                if(browserView.selectedRow() != -1) {
+                    Path p = (Path)browserView.itemAtRow(browserView.selectedRow());
+                    if(p != null) {
+                        if(p.getLocal().exists()) {
+                            localURLField.setAttributedStringValue(new NSAttributedString(
+                                    p.getLocal().getAbsolute(),
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
+
+                            if(p.getLocal().attributes.getSize() == -1) {
+                                localSizeField.setAttributedStringValue(UNKNOWN_STRING);
+                            }
+                            else {
+                                localSizeField.setAttributedStringValue(new NSAttributedString(
+                                        Status.getSizeAsString(p.getLocal().attributes.getSize()),
+                                        TRUNCATE_MIDDLE_ATTRIBUTES));
+                            }
+                            if(p.getLocal().attributes.getModificationDate() == -1) {
+                                localModificationField.setAttributedStringValue(UNKNOWN_STRING);
+                            }
+                            else {
+                                localModificationField.setAttributedStringValue(new NSAttributedString(
+                                        CDDateFormatter.getLongFormat(p.getLocal().attributes.getModificationDate(),
+                                                p.getHost().getTimezone()),
+                                        TRUNCATE_MIDDLE_ATTRIBUTES));
+                            }
+                        }
+                        hideLocalDetails(!p.getLocal().exists());
+                        if(p.exists()) {
+                            remoteURLField.setAttributedStringValue(new NSAttributedString(
+                                    p.getHost().getURL() + p.getAbsolute(),
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
+
+                            if(p.attributes.getSize() == -1) {
+                                remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
+                            }
+                            else {
+                                remoteSizeField.setAttributedStringValue(new NSAttributedString(
+                                        Status.getSizeAsString(p.attributes.getSize()),
+                                        TRUNCATE_MIDDLE_ATTRIBUTES));
+                            }
+                            if(p.attributes.getModificationDate() == -1) {
+                                remoteModificationField.setAttributedStringValue(UNKNOWN_STRING);
+                            }
+                            else {
+                                remoteModificationField.setAttributedStringValue(new NSAttributedString(
+                                        CDDateFormatter.getLongFormat(p.attributes.getModificationDate(),
+                                                p.getHost().getTimezone()),
+                                        TRUNCATE_MIDDLE_ATTRIBUTES));
+                            }
+                        }
+                        hideRemoteDetails(!p.exists());
+                    }
+                }
+                else {
+                    hideRemoteDetails(true);
+                    hideLocalDetails(true);
+                }
+            }
+
+            private void hideRemoteDetails(boolean hidden) {
+                remoteURLField.setHidden(hidden);
+                remoteSizeField.setHidden(hidden);
+                remoteModificationField.setHidden(hidden);
+            }
+
+            private void hideLocalDetails(boolean hidden) {
+                localURLField.setHidden(hidden);
+                localSizeField.setHidden(hidden);
+                localModificationField.setHidden(hidden);
+            }
+
+            /**
+             * @see NSOutlineView.Delegate
+             */
+            public void outlineViewWillDisplayCell(NSOutlineView outlineView, Object cell,
+                                                   NSTableColumn tableColumn, Path item) {
+                String identifier = (String) tableColumn.identifier();
+                if(item != null) {
+                    if(identifier.equals(CDTransferPromptModel.FILENAME_COLUMN)) {
+                        ((CDOutlineCell) cell).setIcon(CDBrowserTableDataSource.iconForPath(item));
+                    }
+                }
+            }
+        });
+        this.browserView.setRowHeight(17f);
+        // selection properties
+        this.browserView.setAllowsMultipleSelection(true);
+        this.browserView.setAllowsEmptySelection(true);
+        this.browserView.setAllowsColumnResizing(true);
+        this.browserView.setAllowsColumnSelection(false);
+        this.browserView.setAllowsColumnReordering(true);
+        this.browserView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
+        if(Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
+            this.browserView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
+        }
+        else if(Preferences.instance().getBoolean("browser.verticalLines")) {
+            this.browserView.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
+        }
+        else if(Preferences.instance().getBoolean("browser.horizontalLines")) {
+            this.browserView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
+        }
+        else {
+            this.browserView.setGridStyleMask(NSTableView.GridNone);
+        }
+        NSSelector setResizableMaskSelector
+                = new NSSelector("setResizingMask", new Class[]{int.class});
+        {
+            NSTableColumn c = new NSTableColumn();
+            c.headerCell().setStringValue(NSBundle.localizedString("Filename", "A column in the browser"));
+            c.setIdentifier(CDTransferPromptModel.FILENAME_COLUMN);
+            c.setMinWidth(100f);
+            c.setWidth(220f);
+            c.setMaxWidth(800f);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
+            c.setEditable(false);
+            c.setDataCell(new CDOutlineCell());
+            this.browserView.addTableColumn(c);
+            this.browserView.setOutlineTableColumn(c);
+        }
+        {
+            NSTableColumn c = new NSTableColumn();
+            c.setIdentifier(CDTransferPromptModel.SIZE_COLUMN);
+            c.headerCell().setStringValue("");
+            c.setMinWidth(50f);
+            c.setWidth(80f);
+            c.setMaxWidth(100f);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
+            c.setEditable(false);
+            c.setDataCell(new NSTextFieldCell());
+            this.browserView.addTableColumn(c);
+        }
+        {
+            NSTableColumn c = new NSTableColumn();
+            c.setIdentifier(CDTransferPromptModel.WARNING_COLUMN);
+            c.headerCell().setStringValue("");
+            c.setMinWidth(20f);
+            c.setWidth(20f);
+            c.setMaxWidth(20f);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
+            c.setEditable(false);
+            c.setDataCell(new NSImageCell());
+            c.dataCell().setAlignment(NSText.CenterTextAlignment);
+            this.browserView.addTableColumn(c);
+        }
+        {
+            NSTableColumn c = new NSTableColumn();
+            c.setIdentifier(CDTransferPromptModel.INCLUDE_COLUMN);
+            c.headerCell().setStringValue("");
+            c.setMinWidth(20f);
+            c.setWidth(20f);
+            c.setMaxWidth(20f);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
+            c.setEditable(false);
+            NSButtonCell cell = new NSButtonCell();
+            cell.setTitle("");
+            cell.setControlSize(NSCell.SmallControlSize);
+            cell.setButtonType(NSButtonCell.SwitchButton);
+            cell.setAllowsMixedState(false);
+            cell.setTarget(this);
+            c.setDataCell(cell);
+            c.dataCell().setAlignment(NSText.CenterTextAlignment);
+            this.browserView.addTableColumn(c);
+        }
+        this.browserView.sizeToFit();
+    }
+
+    private NSTextField remoteURLField; // IBOutlet
+
+    public void setRemoteURLField(NSTextField f) {
+        this.remoteURLField = f;
+        this.remoteURLField.setHidden(true);
+    }
+
+    private NSTextField remoteSizeField; // IBOutlet
+
+    public void setRemoteSizeField(NSTextField f) {
+        this.remoteSizeField = f;
+        this.remoteSizeField.setHidden(true);
+    }
+
+    private NSTextField remoteModificationField; // IBOutlet
+
+    public void setRemoteModificationField(NSTextField f) {
+        this.remoteModificationField = f;
+        this.remoteModificationField.setHidden(true);
+    }
+
+    private NSTextField localURLField; // IBOutlet
+
+    public void setLocalURLField(NSTextField f) {
+        this.localURLField = f;
+        this.localURLField.setHidden(true);
+    }
+
+    private NSTextField localSizeField; // IBOutlet
+
+    public void setLocalSizeField(NSTextField f) {
+        this.localSizeField = f;
+        this.localSizeField.setHidden(true);
+    }
+
+    private NSTextField localModificationField; // IBOutlet
+
+    public void setLocalModificationField(NSTextField f) {
+        this.localModificationField = f;
+        this.localModificationField.setHidden(true);
+    }
+
+    private NSProgressIndicator statusIndicator; // IBOutlet
+
+    public void setStatusIndicator(NSProgressIndicator f) {
+        this.statusIndicator = f;
+        this.statusIndicator.setUsesThreadedAnimation(true);
+        this.statusIndicator.setDisplayedWhenStopped(false);
+    }
+
+    private static final String ACTION_OVERWRITE = NSBundle.localizedString("Overwrite existing file", "");
+    private static final String ACTION_RESUME = NSBundle.localizedString("Try to resume transfer", "");
+    private static final String ACTION_SIMILARNAME = NSBundle.localizedString("Use similar name", "");
+    private static final String ACTION_SKIP = NSBundle.localizedString("Skip existing file", "");
+
+    private NSPopUpButton actionPopup; // IBOutlet
+
+    public void setActionPopup(NSPopUpButton actionPopup) {
+        this.actionPopup = actionPopup;
+        this.actionPopup.removeAllItems();
+        this.actionPopup.addItemsWithTitles(new NSArray(new String[]{
+                ACTION_OVERWRITE, ACTION_RESUME, ACTION_SIMILARNAME, ACTION_SKIP
+        }));
+    }
+}

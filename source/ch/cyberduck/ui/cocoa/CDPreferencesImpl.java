@@ -35,7 +35,20 @@ public class CDPreferencesImpl extends Preferences {
 
     private NSUserDefaults props;
 
-    public Object getObject(String property) {
+    public CDPreferencesImpl() {
+//        try {
+//            NSBundle bundle = NSBundle.mainBundle();
+//            String lib = bundle.resourcePath() + "/Java/" + "libPreferences.dylib";
+//            log.info("Locating libPreferences.dylib at '" + lib + "'");
+//            System.load(lib);
+//            log.info("libPreferences.dylib loaded");
+//        }
+//        catch(UnsatisfiedLinkError e) {
+//            log.error("Could not load the libPreferences.dylib library:" + e.getMessage());
+//        }
+    }
+
+    public Object getObject(final String property) {
         Object value = props.objectForKey(property);
         if (null == value) {
             return super.getObject(property);
@@ -43,7 +56,11 @@ public class CDPreferencesImpl extends Preferences {
         return value;
     }
 
-    public void setProperty(String property, Object value) {
+//    public native void addObserver(final String property, final PreferencesObserver observer);
+//
+//    public native void removeObserver(final PreferencesObserver observer);
+
+    public void setProperty(final String property, final Object value) {
         log.info("setProperty:"+property+","+value);
         // Sets the value of the default identified by defaultName in the standard application domain.
         // Setting a default has no effect on the value returned by the objectForKey method if
@@ -52,7 +69,7 @@ public class CDPreferencesImpl extends Preferences {
         this.save();
     }
 
-    public void deleteProperty(String property) {
+    public void deleteProperty(final String property) {
         this.props.removeObjectForKey(property);
         this.save();
     }
@@ -60,9 +77,13 @@ public class CDPreferencesImpl extends Preferences {
     /**
      * Overwrite the default values with user props if any.
      */
-    public void load() {
+    protected void load() {
         this.props = NSUserDefaults.standardUserDefaults();
+    }
 
+    protected void setDefaults() {
+        super.setDefaults();
+        
         _init("browser.view.autoexpand.useDelay");
         _init("browser.view.autoexpand.delay");
 
@@ -77,7 +98,7 @@ public class CDPreferencesImpl extends Preferences {
      * Setting default values that must be accessible using [NSUserDefaults standardUserDefaults]
      * @param property
      */
-    private void _init(String property) {
+    private void _init(final String property) {
         if(null == props.objectForKey(property)) {
             // Set the default value
             this.setProperty(property, super.getProperty(property));

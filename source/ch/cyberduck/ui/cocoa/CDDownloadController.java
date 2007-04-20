@@ -21,8 +21,8 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.DownloadTransfer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Transfer;
 import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.Transfer;
 
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSApplication;
@@ -58,10 +58,11 @@ public class CDDownloadController extends CDSheetController {
         if (returncode == DEFAULT_OPTION) {
             try {
                 Host host = Host.parse(urlField.stringValue());
-                Transfer transfer = new DownloadTransfer();
-                transfer.addRoot(PathFactory.createPath(SessionFactory.createSession(host),
-                        host.getDefaultPath()));
-                CDQueueController.instance().startItem(transfer);
+                final Transfer transfer = new DownloadTransfer(
+                        PathFactory.createPath(SessionFactory.createSession(host),
+                                host.getDefaultPath())
+                );
+                CDTransferController.instance().startItem(transfer);
             }
             catch (MalformedURLException e) {
                 log.error(e.getMessage());

@@ -21,8 +21,8 @@ package ch.cyberduck.ui.cocoa;
 import ch.ethz.ssh2.KnownHosts;
 import ch.ethz.ssh2.ServerHostKeyVerifier;
 
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Preferences;
 
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSWindow;

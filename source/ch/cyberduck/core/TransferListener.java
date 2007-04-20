@@ -45,13 +45,13 @@ public interface TransferListener {
     public abstract void transferDidEnd();
 
     /**
-     *
+     * The path part of this transfer will be transferred
      * @param path
      */
     public abstract void willTransferPath(Path path);
 
     /**
-     *
+     * The path part of this transfer has been transferred
      * @param path
      */
     public abstract void didTransferPath(Path path);

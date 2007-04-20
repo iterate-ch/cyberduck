@@ -24,6 +24,7 @@ import ch.cyberduck.core.CollectionListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostCollection;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 
 import com.apple.cocoa.application.*;
@@ -403,12 +404,10 @@ public class CDBookmarkController extends CDWindowController {
      */
     private CDBookmarkController(final Host host) {
         this.host = host;
-        HostCollection.instance().addListener(new CollectionListener() {
-            public void collectionItemAdded(Object item) {
-                ;
-            }
+        HostCollection.instance().addListener(new AbstractCollectionListener() {
 
             public void collectionItemRemoved(Object item) {
+                assert item instanceof Host;
                 if(item.equals(host)) {
                     HostCollection.instance().removeListener(this);
                     final NSWindow window = window();
@@ -416,10 +415,6 @@ public class CDBookmarkController extends CDWindowController {
                         window.close();
                     }
                 }
-            }
-
-            public void collectionItemChanged(Object item) {
-                ;
             }
         });
         synchronized(NSApplication.sharedApplication()) {

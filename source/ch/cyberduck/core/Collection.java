@@ -19,8 +19,8 @@ package ch.cyberduck.core;
  */
 
 import java.util.ArrayList;
-import java.util.Vector;
 import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * @version $Id$
@@ -31,7 +31,7 @@ public class Collection extends ArrayList implements CollectionListener {
         super();
     }
 
-    public Collection(Collection c) {
+    public Collection(java.util.Collection c) {
         super(c);
     }
 

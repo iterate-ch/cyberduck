@@ -27,7 +27,6 @@ import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSMenu;
 import com.apple.cocoa.application.NSMenuItem;
 import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSObject;
 import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;

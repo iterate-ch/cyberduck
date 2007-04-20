@@ -27,7 +27,6 @@ import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSMenu;
 import com.apple.cocoa.application.NSMenuItem;
-import com.apple.cocoa.foundation.NSObject;
 import com.apple.cocoa.foundation.NSSelector;
 import com.apple.cocoa.foundation.NSSize;
 

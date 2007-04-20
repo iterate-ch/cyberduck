@@ -18,7 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.DownloadTransfer;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.TransferCollection;
+import ch.cyberduck.core.TransferFactory;
 
 import com.apple.cocoa.application.NSDraggingInfo;
 import com.apple.cocoa.application.NSPasteboard;
@@ -30,13 +37,14 @@ import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @version $Id$
  */
-public class CDQueueTableDataSource extends NSObject {
-    private static Logger log = Logger.getLogger(CDQueueTableDataSource.class);
-
-    private static CDQueueTableDataSource instance;
+public class CDTransferTableDataSource extends NSObject {
+    private static Logger log = Logger.getLogger(CDTransferTableDataSource.class);
 
     public static final String ICON_COLUMN = "ICON";
     public static final String PROGRESS_COLUMN = "PROGRESS";
@@ -45,11 +53,32 @@ public class CDQueueTableDataSource extends NSObject {
 
     /**
      *
+     */
+    private final Map controllers = new HashMap();
+
+    public CDTransferTableDataSource() {
+        TransferCollection.instance().addListener(new AbstractCollectionListener() {
+            public void collectionItemAdded(Object item) {
+                assert item instanceof Transfer;
+                controllers.put((Transfer)item, new CDProgressController((Transfer)item));
+                TransferCollection.instance().save();
+            }
+
+            public void collectionItemRemoved(Object item) {
+                assert item instanceof Transfer;
+                controllers.remove(item);
+            }
+        });
+        TransferCollection.instance().load();
+    }
+
+    /**
+     *
      * @param view
      */
     public int numberOfRowsInTableView(NSTableView view) {
-        synchronized(QueueCollection.instance()) {
-            return QueueCollection.instance().size();
+        synchronized(TransferCollection.instance()) {
+            return TransferCollection.instance().size();
         }
     }
 
@@ -60,18 +89,17 @@ public class CDQueueTableDataSource extends NSObject {
      * @param row
      */
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
-        synchronized(QueueCollection.instance()) {
+        synchronized(TransferCollection.instance()) {
             if (row < numberOfRowsInTableView(view)) {
                 final String identifier = (String) tableColumn.identifier();
-                final Transfer transfer = (Transfer)QueueCollection.instance().get(row);
                 if (identifier.equals(ICON_COLUMN)) {
-                    return transfer;
+                    return (Transfer) TransferCollection.instance().get(row);
                 }
                 if (identifier.equals(PROGRESS_COLUMN)) {
-                    return QueueCollection.instance().getController(row).view();
+                    return ((CDProgressController)controllers.get(TransferCollection.instance().get(row))).view();
                 }
                 if (identifier.equals(TYPEAHEAD_COLUMN)) {
-                    return transfer.getName();
+                    return ((Transfer) TransferCollection.instance().get(row)).getName();
                 }
                 throw new IllegalArgumentException("Unknown identifier: " + identifier);
             }
@@ -120,10 +148,10 @@ public class CDQueueTableDataSource extends NSObject {
                     Host h = Host.parse(droppedText);
                     String file = h.getDefaultPath();
                     if (file.length() > 1) {
-                        Path p = PathFactory.createPath(SessionFactory.createSession(h), file);
-                        Transfer q = new DownloadTransfer();
-                        q.addRoot(p);
-                        CDQueueController.instance().startItem(q);
+                        final Transfer q = new DownloadTransfer(
+                                PathFactory.createPath(SessionFactory.createSession(h), file)
+                        );
+                        CDTransferController.instance().startItem(q);
                         return true;
                     }
                 }
@@ -142,12 +170,13 @@ public class CDQueueTableDataSource extends NSObject {
                 log.debug("tableViewAcceptDrop:" + o);
                 if (o != null) {
                     NSArray elements = (NSArray) o;
-                    synchronized(QueueCollection.instance()) {
+                    synchronized(TransferCollection.instance()) {
                         for (int i = 0; i < elements.count(); i++) {
                             NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                            QueueCollection.instance().add(row, TransferFactory.create(dict));
+                            TransferCollection.instance().add(row, TransferFactory.create(dict));
                             tableView.reloadData();
                             tableView.selectRow(row, false);
+                            tableView.scrollRowToVisible(row);
                         }
                         pboard.setPropertyListForType(null, "QueuePBoardType");
                     }
@@ -156,5 +185,9 @@ public class CDQueueTableDataSource extends NSObject {
             }
         }
         return false;
+    }
+
+    public void setHighlighted(Transfer transfer, boolean highlighted) {
+        ((CDProgressController)controllers.get(transfer)).setHighlighted(highlighted);
     }
 }

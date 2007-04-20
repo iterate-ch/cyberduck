@@ -65,13 +65,6 @@ public class PathAttributes extends Attributes {
         return copy;
     }
 
-//    /**
-//     * @return True if the modification date or size is unknown
-//     */
-//    public boolean isMissing() {
-//        return -1 == this.modified || -1 == this.size;
-//    }
-
     public PathAttributes(NSDictionary dict) {
         Object typeObj = dict.objectForKey("Type");
         if(typeObj != null) {

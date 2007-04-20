@@ -31,7 +31,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -60,6 +59,12 @@ public class CDMainController extends CDController {
         Logger.getRootLogger().setLevel(Level.toLevel(
                 Preferences.instance().getProperty("logging")));
     }
+
+    /**
+     * Reference to the main graphical user interface thread.
+     * Assuming this is always called from the main thread #currentRunLoop will return the main run loop
+     */
+    protected static NSRunLoop mainRunLoop = NSRunLoop.currentRunLoop();
 
     // ----------------------------------------------------------
     // Outlets
@@ -110,7 +115,7 @@ public class CDMainController extends CDController {
     }
 
     public void historyMenuClicked(NSMenuItem sender) {
-        NSWorkspace.sharedWorkspace().openFile(HistoryMenuDelegate.HISTORY_FOLDER.getAbsolutePath());
+        NSWorkspace.sharedWorkspace().openFile(HistoryMenuDelegate.HISTORY_FOLDER.getAbsolute());
     }
 
     public void bugreportMenuClicked(final Object sender) {
@@ -214,7 +219,7 @@ public class CDMainController extends CDController {
     }
 
     public void newDownloadMenuClicked(final Object sender) {
-        CDSheetController c = new CDDownloadController(CDQueueController.instance());
+        CDSheetController c = new CDDownloadController(CDTransferController.instance());
         c.beginSheet(false);
     }
 
@@ -223,7 +228,7 @@ public class CDMainController extends CDController {
     }
 
     public void showTransferQueueClicked(final Object sender) {
-        CDQueueController c = CDQueueController.instance();
+        CDTransferController c = CDTransferController.instance();
         c.window().makeKeyAndOrderFront(null);
     }
 
@@ -250,9 +255,9 @@ public class CDMainController extends CDController {
      */
     public boolean applicationOpenFile(NSApplication app, String filename) {
         log.debug("applicationOpenFile:" + filename);
-        File f = new File(filename);
+        Local f = new Local(filename);
         if(f.exists()) {
-            if(f.getAbsolutePath().endsWith(".duck")) {
+            if(f.getAbsolute().endsWith(".duck")) {
                 Host host = this.importBookmark(f);
                 if(host != null) {
                     this.newDocument().mount(host);
@@ -270,8 +275,7 @@ public class CDMainController extends CDController {
                             final Path workdir = controller.workdir();
                             final Session session = controller.getTransferSession();
                             final Transfer q = new UploadTransfer(
-                                    PathFactory.createPath(session, workdir.getAbsolute(),
-                                            new Local(f.getAbsolutePath()))
+                                    PathFactory.createPath(session, workdir.getAbsolute(), f)
                             );
                             controller.transfer(q, workdir);
                             break;
@@ -364,23 +368,26 @@ public class CDMainController extends CDController {
         return false;
     }
 
-    private static final File SESSIONS_FOLDER
-            = new File(Preferences.instance().getProperty("application.support.path"), "Sessions");
+    private static final Local SESSIONS_FOLDER
+            = new Local(Preferences.instance().getProperty("application.support.path"), "Sessions");
+
+    static {
+        SESSIONS_FOLDER.mkdir(true);
+    }
 
     /**
      *
      * @return The bookmark files of the last saved workspace
      */
-    private File[] getSavedSessions() {
-        return SESSIONS_FOLDER.listFiles(new java.io.FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".duck");
-            }
-        });
-    }
-
-    static {
-        SESSIONS_FOLDER.mkdir();
+    private Local[] getSavedSessions() {
+        return (Local[])SESSIONS_FOLDER.childs(
+                new NullComparator(),
+                new PathFilter() {
+                    public boolean accept(AbstractPath file) {
+                        return file.getName().endsWith(".duck");
+                    }
+                }
+        ).toArray(new Local[]{});
     }
 
     /**
@@ -415,7 +422,7 @@ public class CDMainController extends CDController {
             Rendezvous.instance().init();
         }
         if(Preferences.instance().getBoolean("browser.serialize")) {
-            File[] files = this.getSavedSessions();
+            Local[] files = this.getSavedSessions();
             for(int i = 0; i < files.length; i++) {
                 this.newDocument(true).mount(this.importBookmark(files[i]));
                 files[i].delete();
@@ -466,7 +473,7 @@ public class CDMainController extends CDController {
             Rendezvous.instance().quit();
         }
         //halt all transfers
-        CDQueueController.instance().stopAllButtonClicked(null);
+        CDTransferController.instance().stopAllButtonClicked(null);
         //close all browsing connections
         NSArray windows = NSApplication.sharedApplication().windows();
         int count = windows.count();
@@ -580,7 +587,7 @@ public class CDMainController extends CDController {
                         }
                         if(choice == CDSheetCallback.CANCEL_OPTION) {
                             // Cancel. Quit has been interrupted. Delete any saved sessions so far.
-                            File[] files = this.getSavedSessions();
+                            Local[] files = this.getSavedSessions();
                             for(int i = 0; i < files.length; i++) {
                                 files[i].delete();
                             }
@@ -588,7 +595,7 @@ public class CDMainController extends CDController {
                         }
                         if(choice == CDSheetCallback.DEFAULT_OPTION) {
                             // Quit
-                            return CDQueueController.applicationShouldTerminate(app);
+                            return CDTransferController.applicationShouldTerminate(app);
                         }
                     }
                     else {
@@ -601,7 +608,7 @@ public class CDMainController extends CDController {
                 }
             }
         }
-        return CDQueueController.applicationShouldTerminate(app);
+        return CDTransferController.applicationShouldTerminate(app);
     }
 
     /**
@@ -668,7 +675,7 @@ public class CDMainController extends CDController {
         for(int i = 0; i < c; i++) {
             if(((NSWindow) orderedWindows.objectAtIndex(i)).isVisible()) {
                 Object delegate = ((NSWindow) orderedWindows.objectAtIndex(i)).delegate();
-                if((delegate != null) && (delegate instanceof CDQueueController)) {
+                if((delegate != null) && (delegate instanceof CDTransferController)) {
                     orderedDocs.addObject(delegate);
                     return orderedDocs;
                 }
@@ -708,7 +715,7 @@ public class CDMainController extends CDController {
      * @return The available character sets available on this platform
      */
     protected String[] availableCharsets() {
-        List charsets = new ArrayList();
+        List charsets = new Collection();
         for(Iterator iter = java.nio.charset.Charset.availableCharsets().values().iterator(); iter.hasNext();) {
             String name = ((java.nio.charset.Charset) iter.next()).displayName();
             if(!(name.startsWith("IBM") || name.startsWith("x-"))) {
@@ -722,8 +729,8 @@ public class CDMainController extends CDController {
      * @param file
      * @return The imported bookmark deserialized as a #Host
      */
-    public Host importBookmark(final File file) {
-        NSData plistData = new NSData(file);
+    public Host importBookmark(final Local file) {
+        NSData plistData = new NSData(file.toURL());
         String[] errorString = new String[]{null};
         Object propertyListFromXMLData =
                 NSPropertyListSerialization.propertyListFromData(plistData,

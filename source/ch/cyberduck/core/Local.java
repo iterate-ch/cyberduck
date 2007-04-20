@@ -30,10 +30,14 @@ import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
 
-import java.io.*;
-import java.util.Iterator;
-import java.net.URL;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
 
 /**
  * @version $Id$
@@ -145,7 +149,7 @@ public class Local extends AbstractPath {
 
             public void setCreationDate(long millis) {
                 boolean success = NSPathUtilities.setFileAttributes(_impl.getAbsolutePath(),
-                        new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis)),
+                        new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis), NSDate.DateFor1970),
                                 NSPathUtilities.FileCreationDate));
                 if(!success) {
                     log.error("File attribute changed failed:"+getAbsolute());
@@ -200,9 +204,9 @@ public class Local extends AbstractPath {
 
     protected File _impl;
 
-    public Local(File parent, String name) {
+    public Local(Local parent, String name) {
         // See trac #933
-        _impl = new File(NSPathUtilities.stringByExpandingTildeInPath(parent.getAbsolutePath()),
+        _impl = new File(NSPathUtilities.stringByExpandingTildeInPath(parent.getAbsolute()),
                 name.replace('/', ':'));
     }
 
@@ -369,7 +373,7 @@ public class Local extends AbstractPath {
         if(recursive) _impl.mkdirs(); else _impl.mkdir();
     }
 
-    public void changePermissions(Permission perm, boolean recursive) {
+    public void writePermissions(Permission perm, boolean recursive) {
         boolean success = NSPathUtilities.setFileAttributes(_impl.getAbsolutePath(),
                 new NSDictionary(new Integer(perm.getOctalNumber()),
                         NSPathUtilities.FilePosixPermissions));
@@ -379,14 +383,14 @@ public class Local extends AbstractPath {
         if(this.attributes.isDirectory() && recursive) {
             for(Iterator iter = this.childs().iterator(); iter.hasNext(); ) {
                 Local child = (Local)iter.next();
-                child.changePermissions(perm, recursive);
+                child.writePermissions(perm, recursive);
             }
         }
     }
 
-    public void changeModificationDate(long millis) {
+    public void writeModificationDate(long millis) {
         boolean success = NSPathUtilities.setFileAttributes(_impl.getAbsolutePath(),
-                new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis)),
+                new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis), NSDate.DateFor1970),
                         NSPathUtilities.FileModificationDate));
         if(!success) {
             log.error("File attribute changed failed:"+getAbsolute());
@@ -430,7 +434,8 @@ public class Local extends AbstractPath {
                 }
             }
         }
-        NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
+        // Disabled because of #221
+        // NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
     }
 
     /**
@@ -471,6 +476,10 @@ public class Local extends AbstractPath {
             return this.getAbsolute().equalsIgnoreCase(((AbstractPath) other).getAbsolute());
         }
         return false;
+    }
+
+    public String toString() {
+        return this.getAbsolute();
     }
 
     public URL toURL() {

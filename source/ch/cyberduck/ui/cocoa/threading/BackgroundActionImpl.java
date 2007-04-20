@@ -34,8 +34,8 @@ import com.apple.cocoa.foundation.NSSelector;
 import org.apache.log4j.Logger;
 
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
@@ -106,7 +106,7 @@ public abstract class BackgroundActionImpl
 
     public BackgroundActionImpl(CDWindowController controller) {
         this.controller = controller;
-        this.exceptions = new ArrayList();
+        this.exceptions = new Collection();
         this.transcript = new StringBuffer();
     }
 
@@ -144,6 +144,7 @@ public abstract class BackgroundActionImpl
                 Throwable cause = ((Throwable)iter.next()).getCause();
                 // Check for an exception we consider possibly temporary
                 if(cause instanceof SocketException
+                        || cause instanceof SocketTimeoutException
                         || cause instanceof UnknownHostException
                         || cause instanceof FTPNullReplyException)
                 {

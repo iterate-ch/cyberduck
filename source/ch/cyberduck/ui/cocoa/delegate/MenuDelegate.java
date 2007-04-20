@@ -18,9 +18,9 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSObject;
 import com.apple.cocoa.application.NSMenu;
 import com.apple.cocoa.application.NSMenuItem;
+import com.apple.cocoa.foundation.NSObject;
 
 /**
  * @version $Id$

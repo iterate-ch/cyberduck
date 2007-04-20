@@ -125,7 +125,7 @@ public class TransportManager
 	int port;
 	final Socket sock = new Socket();
 
-	Object connectionSemaphore = new Object();
+	final Object connectionSemaphore = new Object();
 
 	boolean flagKexOngoing = false;
 	boolean connectionClosed = false;

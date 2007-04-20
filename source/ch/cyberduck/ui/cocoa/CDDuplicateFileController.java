@@ -27,9 +27,6 @@ import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSSize;
 
-import java.util.Calendar;
-import java.util.TimeZone;
-
 /**
  * @version $Id$
  */

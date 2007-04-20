@@ -18,6 +18,10 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.ThrottledInputStream;
+import ch.cyberduck.core.io.ThrottledOutputStream;
+
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
@@ -28,12 +32,13 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Calendar;
-import java.util.TimeZone;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 /**
  * @version $Id$
@@ -60,8 +65,7 @@ public abstract class Path extends AbstractPath {
     public Pattern getTextFiletypePattern() {
         final String regex = Preferences.instance().getProperty("filetype.text.regex");
         if(null == TEXT_FILETYPE_PATTERN ||
-                !TEXT_FILETYPE_PATTERN.pattern().equals(regex))
-        {
+                !TEXT_FILETYPE_PATTERN.pattern().equals(regex)) {
             try {
                 TEXT_FILETYPE_PATTERN = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
             }
@@ -80,8 +84,7 @@ public abstract class Path extends AbstractPath {
     public Pattern getBinaryFiletypePattern() {
         final String regex = Preferences.instance().getProperty("filetype.binary.regex");
         if(null == BINARY_FILETYPE_PATTERN ||
-                !BINARY_FILETYPE_PATTERN.pattern().equals(regex))
-        {
+                !BINARY_FILETYPE_PATTERN.pattern().equals(regex)) {
             try {
                 BINARY_FILETYPE_PATTERN = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
             }
@@ -111,7 +114,7 @@ public abstract class Path extends AbstractPath {
         NSMutableDictionary dict = new NSMutableDictionary();
         dict.setObjectForKey(this.getAbsolute(), "Remote");
         dict.setObjectForKey(this.getLocal().toString(), "Local");
-        dict.setObjectForKey(((PathAttributes)this.attributes).getAsDictionary(), "Attributes");
+        dict.setObjectForKey(((PathAttributes) this.attributes).getAsDictionary(), "Attributes");
         return dict;
     }
 
@@ -121,7 +124,7 @@ public abstract class Path extends AbstractPath {
 
     public Object clone(Session session) {
         Path copy = PathFactory.createPath(session, this.getAsDictionary());
-        copy.attributes = (Attributes)((PathAttributes) this.attributes).clone();
+        copy.attributes = (Attributes) ((PathAttributes) this.attributes).clone();
         return copy;
     }
 
@@ -204,11 +207,11 @@ public abstract class Path extends AbstractPath {
             int cut = this.getAbsolute().lastIndexOf('/', index);
             if(cut > 0) {
                 parent = PathFactory.createPath(this.getSession(), this.getAbsolute().substring(0, cut));
-                ((PathAttributes)parent.attributes).setType(Path.DIRECTORY_TYPE);
+                parent.attributes.setType(Path.DIRECTORY_TYPE);
             }
             else {//if (index == 0) //parent is root
                 parent = PathFactory.createPath(this.getSession(), DELIMITER);
-                ((PathAttributes)parent.attributes).setType(Path.DIRECTORY_TYPE);
+                parent.attributes.setType(Path.DIRECTORY_TYPE);
             }
         }
         return this.parent;
@@ -225,9 +228,27 @@ public abstract class Path extends AbstractPath {
         return this.getSession().cache();
     }
 
-    public abstract void changeOwner(String owner, boolean recursive);
+    public abstract void writeOwner(String owner, boolean recursive);
 
-    public abstract void changeGroup(String group, boolean recursive);
+    public abstract void writeGroup(String group, boolean recursive);
+
+    /**
+     * Read the size of the file
+     * @see Attributes#getSize()
+     */
+    public abstract void readSize();
+
+    /**
+     * Read the modification date of the file
+     * @see Attributes#getModificationDate()
+     */
+    public abstract void readTimestamp();
+
+    /**
+     * Read the file permission of the file
+     * @see Attributes#getPermission()
+     */
+    public abstract void readPermission();
 
     /**
      * @param p
@@ -298,13 +319,6 @@ public abstract class Path extends AbstractPath {
     }
 
     /**
-     * @return reference to myself
-     */
-    public Path getRemote() {
-        return this;
-    }
-
-    /**
      * @return the file type for the extension of this file provided by launch services
      */
     public String kind() {
@@ -331,46 +345,70 @@ public abstract class Path extends AbstractPath {
     public abstract Session getSession();
 
     /**
-     *
+     * Download with no bandwidth limit
      */
-    public abstract void download();
-
-    /**
-     *
-     */
-    public abstract void upload();
-
-    /**
-     * A state variable to mark this path if it should not be considered for file transfers
-     */
-    private boolean skip = false;
-
-    /**
-     * @param ignore
-     */
-    public void setSkipped(boolean ignore) {
-        log.debug("setSkipped:" + ignore);
-        this.skip = ignore;
+    public void download() {
+        this.download(new AbstractStreamListener());
     }
 
     /**
-     * @return true if this path should not be added to any queue
+     *
+     * @param listener The stream listener to notify about bytes received and sent
      */
-    public boolean isSkipped() {
-        return this.skip;
+    public void download(StreamListener listener) {
+        this.download(new BandwidthThrottle(0) {
+            synchronized public int request(int desired) {
+                return desired;
+            }
+        }, listener);
     }
+
+    /**
+     * 
+     * @param throttle The bandwidth limit
+     * @param listener
+     */
+    public abstract void download(BandwidthThrottle throttle, StreamListener listener);
+
+    /**
+     *
+     */
+    public void upload() {
+        this.upload(new AbstractStreamListener());
+    }
+
+    /**
+     *
+     * @param listener The stream listener to notify about bytes received and sent
+     */
+    public void upload(StreamListener listener) {
+        this.upload(new BandwidthThrottle(0) {
+            synchronized public int request(int desired) {
+                return desired;
+            }
+        }, listener);
+    }
+
+    /**
+     * @param throttle The bandwidth limit
+     * @param listener The stream listener to notify about bytes received and sent
+     */
+    public abstract void upload(BandwidthThrottle throttle, StreamListener listener);
 
     /**
      * Will copy from in to out. Will attempt to skip Status#getCurrent
      * from the inputstream but not from the outputstream. The outputstream
      * is asssumed to append to a already existing file if
      * Status#getCurrent > 0
+     *
      * @param in  The stream to read from
      * @param out The stream to write to
+     * @param throttle The bandwidth limit
+     * @param l The stream listener to notify about bytes received and sent
      * @throws IOResumeException If the input stream fails to skip the appropriate
-     * number of bytes
+     *                           number of bytes
      */
-    public void upload(OutputStream out, InputStream in) throws IOException {
+    public void upload(OutputStream out, InputStream in, BandwidthThrottle throttle, final StreamListener l) throws IOException {
         if(log.isDebugEnabled()) {
             log.debug("upload(" + out.toString() + ", " + in.toString());
         }
@@ -382,15 +420,19 @@ public abstract class Path extends AbstractPath {
                 throw new IOResumeException("Skipped " + skipped + " bytes instead of " + status.getCurrent());
             }
         }
-        this.transfer(in, out, new AbstractStreamListener());
+        this.transfer(in, new ThrottledOutputStream(out, throttle), l);
     }
 
     /**
      * Will copy from in to out. Does not attempt to skip any bytes from the streams.
+     *
      * @param in  The stream to read from
      * @param out The stream to write to
+     * @param throttle The bandwidth limit
+     * @param l The stream listener to notify about bytes received and sent
+     * @throws IOException
      */
-    public void download(InputStream in, OutputStream out) throws IOException {
+    public void download(InputStream in, OutputStream out, BandwidthThrottle throttle, final StreamListener l) throws IOException {
         if(log.isDebugEnabled()) {
             log.debug("download(" + in.toString() + ", " + out.toString());
         }
@@ -400,8 +442,12 @@ public abstract class Path extends AbstractPath {
         final boolean updateIcon = attributes.getSize() > Status.MEGA * 5;
         // Set the first progress icon
         this.getLocal().setIcon(0);
-        this.transfer(in, out, new AbstractStreamListener() {
+        final StreamListener listener = new StreamListener() {
             int step = 0;
+
+            public void bytesSent(int bytes) {
+                l.bytesSent(bytes);
+            }
 
             public void bytesReceived(int bytes) {
                 if(-1 == bytes) {
@@ -409,21 +455,30 @@ public abstract class Path extends AbstractPath {
                     // icon for this filetype
                     getLocal().setIcon(-1);
                 }
-                if(updateIcon) {
-                    int fraction = (int) (status.getCurrent() / attributes.getSize() * 10);
-                    // An integer between 0 and 9
-                    if(fraction > step) {
-                        // Another 10 percent of the file has been transferred
-                        getLocal().setIcon(++step);
+                else {
+                    l.bytesReceived(bytes);
+                    if(updateIcon) {
+                        int fraction = (int) (status.getCurrent() / attributes.getSize() * 10);
+                        // An integer between 0 and 9
+                        if(fraction > step) {
+                            // Another 10 percent of the file has been transferred
+                            getLocal().setIcon(++step);
+                        }
                     }
                 }
             }
-        });
+        };
+        this.transfer(new ThrottledInputStream(in, throttle), out, listener);
     }
 
-    private void transfer(InputStream in, OutputStream out, StreamListener listener)
-            throws IOException
-    {
+    /**
+     *
+     * @param in  The stream to read from
+     * @param out The stream to write to
+     * @param listener The stream listener to notify about bytes received and sent
+     * @throws IOException
+     */
+    private void transfer(InputStream in, OutputStream out, StreamListener listener) throws IOException {
         final int chunksize = Preferences.instance().getInteger("connection.buffer");
         byte[] chunk = new byte[chunksize];
         long bytesTransferred = status.getCurrent();
@@ -471,7 +526,7 @@ public abstract class Path extends AbstractPath {
         }
         if(other instanceof Path) {
             //BUG: returns the wrong result on case-insensitive systems, e.g. NT!
-            return this.getAbsolute().equals(((Path) other).getAbsolute());
+            return this.getAbsolute().equals(((AbstractPath) other).getAbsolute());
         }
         return false;
     }
@@ -483,11 +538,23 @@ public abstract class Path extends AbstractPath {
         return this.getAbsolute();
     }
 
+    /**
+     * @return Null if there is a encoding failure
+     */
     public URL toURL() {
         try {
-            return new URL(this.getHost().getURL()+this.getAbsolute());
+            StringBuffer b = new StringBuffer();
+            StringTokenizer t = new StringTokenizer(this.getAbsolute(), "/");
+            while(t.hasMoreTokens()) {
+                b.append(DELIMITER + URLEncoder.encode(t.nextToken(), "UTF-8"));
+            }
+            return new URL(this.getHost().getURL() + b.toString());
         }
         catch(MalformedURLException e) {
+            log.error(e.getMessage());
+            return null;
+        }
+        catch(UnsupportedEncodingException e) {
             log.error(e.getMessage());
             return null;
         }

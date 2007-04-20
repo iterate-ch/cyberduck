@@ -22,7 +22,7 @@ package ch.cyberduck.core;
  * @version $Id$
  */
 public class NullPathFilter implements PathFilter {
-    public boolean accept(Path file) {
+    public boolean accept(AbstractPath file) {
         return true;
     }
 }

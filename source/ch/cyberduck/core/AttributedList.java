@@ -85,7 +85,7 @@ public class AttributedList extends NSObject implements List {
             this.put(READABLE, Boolean.TRUE);
         }
 
-        public void addHidden(Path child) {
+        public void addHidden(AbstractPath child) {
             ((Set) this.get(HIDDEN)).add(child);
         }
 
@@ -190,7 +190,7 @@ public class AttributedList extends NSObject implements List {
     }
 
     /**
-     * @param object Path
+     * @param object AbstractPath
      * @return true if this collection changed as a result of the call
      */
     public boolean add(Object object) {

@@ -27,14 +27,13 @@ import ch.ethz.ssh2.sftp.SFTPv3FileAttributes;
 import ch.ethz.ssh2.sftp.SFTPv3FileHandle;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.io.BandwidthThrottle;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 
 import org.apache.log4j.Logger;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -121,7 +120,10 @@ public class SFTPPath extends Path {
                         p.attributes.setModificationDate(Long.parseLong(f.attributes.mtime.toString()) * 1000L);
                         p.attributes.setAccessedDate(Long.parseLong(f.attributes.atime.toString()) * 1000L);
                         if(f.attributes.isSymlink()) {
-                            final String target = session.sftp().readLink(p.getAbsolute());
+                            String target = session.sftp().readLink(p.getAbsolute());
+                            if(!target.startsWith("/")) {
+                                target = Path.normalize(this.getAbsolute() + Path.DELIMITER + target);
+                            }
                             p.setSymbolicLinkPath(target);
                             SFTPv3FileAttributes attr = session.sftp().stat(target);
                             if(attr.isDirectory()) {
@@ -233,7 +235,7 @@ public class SFTPPath extends Path {
                         if(!session.isConnected()) {
                             break;
                         }
-                        ((Path) iter.next()).delete();
+                        ((AbstractPath) iter.next()).delete();
                     }
                     session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
                     session.sftp().rmdir(this.getAbsolute());
@@ -258,22 +260,20 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void readAttributes() {
+    public void readSize() {
         synchronized(session) {
             if(this.attributes.isFile()) {
                 SFTPv3FileHandle handle = null;
                 try {
                     session.check();
-                    session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
                     handle = session.sftp().openFileRO(this.getAbsolute());
                     SFTPv3FileAttributes attr = session.sftp().fstat(handle);
-                    this.attributes.setModificationDate(Long.parseLong(attr.mtime.toString()) * 1000L);
                     session.message(NSBundle.localizedString("Getting size of", "Status", "") + " " + this.getName());
                     this.attributes.setSize(attr.size.doubleValue());
                     session.sftp().closeFile(handle);
                 }
                 catch(SFTPException e) {
-                    this.error("Cannot get file attributes", e);
+                    this.error("Cannot read file attributes", e);
                 }
                 catch(IOException e) {
                     this.error("Connection failed", e);
@@ -288,12 +288,82 @@ public class SFTPPath extends Path {
                             ;
                         }
                     }
+                    session.fireActivityStoppedEvent();
                 }
             }
         }
     }
 
-    public void changeOwner(String owner, boolean recursive) {
+    public void readTimestamp() {
+        synchronized(session) {
+            if(this.attributes.isFile()) {
+                SFTPv3FileHandle handle = null;
+                try {
+                    session.check();
+                    session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
+                    handle = session.sftp().openFileRO(this.getAbsolute());
+                    SFTPv3FileAttributes attr = session.sftp().fstat(handle);
+                    this.attributes.setModificationDate(Long.parseLong(attr.mtime.toString()) * 1000L);
+                    session.sftp().closeFile(handle);
+                }
+                catch(SFTPException e) {
+                    this.error("Cannot read file attributes", e);
+                }
+                catch(IOException e) {
+                    this.error("Connection failed", e);
+                    session.interrupt();
+                }
+                finally {
+                    if(handle != null) {
+                        try {
+                            session.sftp().closeFile(handle);
+                        }
+                        catch(IOException e) {
+                            ;
+                        }
+                    }
+                    session.fireActivityStoppedEvent();
+                }
+            }
+        }
+    }
+
+    public void readPermission() {
+        synchronized(session) {
+            if(this.attributes.isFile()) {
+                SFTPv3FileHandle handle = null;
+                try {
+                    session.check();
+                    session.message(NSBundle.localizedString("Getting permission of", "Status", "") + " " + this.getName());
+                    handle = session.sftp().openFileRO(this.getAbsolute());
+                    SFTPv3FileAttributes attr = session.sftp().fstat(handle);
+                    String perm = attr.getOctalPermissions();
+                    this.attributes.setPermission(new Permission(Integer.parseInt(perm.substring(perm.length()-3))));
+                    session.sftp().closeFile(handle);
+                }
+                catch(SFTPException e) {
+                    this.error("Cannot read file attributes", e);
+                }
+                catch(IOException e) {
+                    this.error("Connection failed", e);
+                    session.interrupt();
+                }
+                finally {
+                    if(handle != null) {
+                        try {
+                            session.sftp().closeFile(handle);
+                        }
+                        catch(IOException e) {
+                            ;
+                        }
+                    }
+                    session.fireActivityStoppedEvent();
+                }
+            }
+        }
+    }
+
+    public void writeOwner(String owner, boolean recursive) {
         synchronized(session) {
             log.debug("changeOwner");
             try {
@@ -309,7 +379,7 @@ public class SFTPPath extends Path {
                             if(!session.isConnected()) {
                                 break;
                             }
-                            ((Path) iter.next()).changeOwner(owner, recursive);
+                            ((Path) iter.next()).writeOwner(owner, recursive);
                         }
                     }
                 }
@@ -331,7 +401,7 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void changeGroup(String group, boolean recursive) {
+    public void writeGroup(String group, boolean recursive) {
         synchronized(session) {
             log.debug("changeGroup");
             try {
@@ -347,7 +417,7 @@ public class SFTPPath extends Path {
                             if(!session.isConnected()) {
                                 break;
                             }
-                            ((Path) iter.next()).changeGroup(group, recursive);
+                            ((Path) iter.next()).writeGroup(group, recursive);
                         }
                     }
                 }
@@ -369,7 +439,7 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void changePermissions(Permission perm, boolean recursive) {
+    public void writePermissions(Permission perm, boolean recursive) {
         synchronized(session) {
             log.debug("changePermissions");
             try {
@@ -385,7 +455,7 @@ public class SFTPPath extends Path {
                             if(!session.isConnected()) {
                                 break;
                             }
-                            ((Path) iter.next()).changePermissions(perm, recursive);
+                            ((AbstractPath) iter.next()).writePermissions(perm, recursive);
                         }
                     }
                 }
@@ -404,11 +474,11 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void changeModificationDate(long millis) {
+    public void writeModificationDate(long millis) {
         ;
     }
 
-    public void download() {
+    public void download(BandwidthThrottle throttle, StreamListener listener) {
         synchronized(session) {
             log.debug("download:" + this.toString());
             InputStream in = null;
@@ -417,6 +487,7 @@ public class SFTPPath extends Path {
                 status.reset();
                 if(this.attributes.isDirectory()) {
                     this.getLocal().mkdir(true);
+                    status.setComplete(true);
                 }
                 if(this.attributes.isFile()) {
                     session.check();
@@ -438,7 +509,7 @@ public class SFTPPath extends Path {
                         scp.setCharset(session.getEncoding());
                         in = scp.get(this.getAbsolute());
                     }
-                    this.download(in, out);
+                    this.download(in, out, throttle, listener);
                 }
                 if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
                     log.info("Updating permissions");
@@ -457,17 +528,17 @@ public class SFTPPath extends Path {
                             perm.getOwnerPermissions()[Permission.WRITE] = true;
                             perm.getOwnerPermissions()[Permission.EXECUTE] = true;
                         }
-                        this.getLocal().changePermissions(perm, false);
+                        this.getLocal().writePermissions(perm, false);
                     }
                 }
                 if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
                     log.info("Updating timestamp");
                     if(-1 == this.attributes.getModificationDate()) {
-                        this.readAttributes();
+                        this.readTimestamp();
                     }
                     if(this.attributes.getModificationDate() != -1) {
                         long timestamp = this.attributes.getModificationDate();
-                        this.getLocal().changeModificationDate(timestamp/*, this.getHost().getTimezone()*/);
+                        this.getLocal().writeModificationDate(timestamp/*, this.getHost().getTimezone()*/);
                     }
                 }
             }
@@ -497,7 +568,7 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void upload() {
+    public void upload(BandwidthThrottle throttle, StreamListener listener) {
         synchronized(session) {
             log.debug("upload:" + this.toString());
             InputStream in = null;
@@ -507,6 +578,7 @@ public class SFTPPath extends Path {
                 status.reset();
                 if(this.attributes.isDirectory()) {
                     this.mkdir();
+                    status.setComplete(true);
                 }
                 if(attributes.isFile()) {
                     session.check();
@@ -576,7 +648,7 @@ public class SFTPPath extends Path {
                                 this.getParent().getAbsolute(),
                                 "0"+attributes.getPermission().getOctalString());
                     }
-                    this.upload(out, in);
+                    this.upload(out, in, throttle, listener);
                 }
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                     log.info("Updating timestamp");

@@ -20,9 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.BrowserComparator;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Status;
-import ch.cyberduck.core.Permission;
 
 import com.apple.cocoa.application.NSOutlineView;
 import com.apple.cocoa.application.NSTableColumn;

@@ -18,25 +18,27 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
-import java.io.File;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * @version $Id$
  */
 public class SyncTransfer extends Transfer {
 
-    public SyncTransfer() {
-        super();
-    }
-
     public SyncTransfer(Path root) {
         super(root);
+    }
+
+    public SyncTransfer(Collection roots) {
+        super(roots);
     }
 
     public SyncTransfer(NSDictionary dict, Session s) {
@@ -49,88 +51,276 @@ public class SyncTransfer extends Transfer {
         return dict;
     }
 
+    /**
+     * The delegate for files to upload
+     */
+    private Transfer _delegateUpload;
+
+    /**
+     * The delegate for files to download
+     */
+    private Transfer _delegateDownload;
+
+    protected void init() {
+        _delegateUpload = new UploadTransfer(this.roots);
+        _delegateDownload = new DownloadTransfer(this.roots);
+    }
+
     public String getName() {
-        return NSBundle.localizedString("Synchronize", "") + " " + this.getRoot().getAbsolute() + " "
-                + NSBundle.localizedString("with", "") + " " + this.getRoot().getLocal().getName();
+        return this.getRoot().getName() + " \u2194 " /*left-right arrow*/ + this.getRoot().getLocal().getName();
     }
 
-    private void addLocalChilds(List childs, Path p) {
-        if(!this.isCanceled()) {
-            if(p.getLocal().exists()) {// && p.getLocal().canRead()) {
-                if(!childs.contains(p)) {
-                    childs.add(p);
-                }
-                if(p.attributes.isDirectory()) {
-                    if(!p.getRemote().exists()) {
-                        //hack
-                        p.getSession().cache().put(p, new AttributedList());
+    private boolean createLocalFiles = true;
+
+    public boolean shouldCreateLocalFiles() {
+        return createLocalFiles;
+    }
+
+    /**
+     * Download files which only exist on the server
+     * @param create
+     */
+    public void setCreateLocalFiles(boolean create) {
+        createLocalFiles = create;
+    }
+
+    private boolean createRemoteFiles = true;
+
+    public boolean shouldCreateRemoteFiles() {
+        return createRemoteFiles;
+    }
+
+    /**
+     * Upload files which only exist on the localhost
+     * @param create
+     */
+    public void setCreateRemoteFiles(boolean create) {
+        createRemoteFiles = create;
+    }
+
+    public double getSize() {
+        return _delegateDownload.getSize() + _delegateUpload.getSize();
+    }
+
+    public double getTransferred() {
+        return _delegateDownload.getTransferred() + _delegateUpload.getTransferred();
+    }
+
+    public TransferFilter filter(final TransferAction action) {
+        if(action.equals(TransferAction.ACTION_OVERWRITE)) {
+            return new TransferFilter() {
+                private TransferFilter _delegateFilterDownload
+                        = _delegateDownload.filter(TransferAction.ACTION_OVERWRITE);
+
+                private TransferFilter _delegateFilterUpload
+                        = _delegateUpload.filter(TransferAction.ACTION_OVERWRITE);
+
+                public void prepare(Path file) {
+                    Comparison compare = compare(file);
+                    if(compare.equals(COMPARISON_REMOTE_NEWER)) {
+                        _delegateFilterDownload.prepare(file);
                     }
-                    File[] files = p.getLocal().listFiles();
-                    for(int i = 0; i < files.length; i++) {
-                        Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(),
-                                new Local(files[i].getAbsolutePath()));
-                        if(!Preferences.instance().getBoolean("queue.upload.skip.enable")
-                                || !UPLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
-                            this.addLocalChilds(childs, child);
-                        }
+                    else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
+                        _delegateFilterUpload.prepare(file);
                     }
+
+                    super.prepare(file);
                 }
+
+                public boolean accept(AbstractPath file) {
+                    if(!SyncTransfer.this.shouldCreateLocalFiles() && !exists(((Path)file).getLocal())) {
+                        return false;
+                    }
+                    if(!SyncTransfer.this.shouldCreateRemoteFiles() && !exists(((Path)file))) {
+                        return false;
+                    }
+                    if(!COMPARISON_EQUAL.equals(compare((Path)file))) {
+                        return super.accept(file);
+                    }
+                    return false;
+                }
+            };
+        }
+        return super.filter(action);
+    }
+
+    public List childs(final Path parent) {
+        AttributedList childs = new AttributedList();
+        childs.addAll(_delegateDownload.childs(parent));
+        for(Iterator iter = _delegateUpload.childs(parent).iterator(); iter.hasNext(); ) {
+            Path child = (Path)iter.next();
+            if(!childs.contains(child)) {
+                childs.add(child);
             }
+        }
+        return childs;
+    }
+
+    public boolean isCached(Path file) {
+        return _delegateUpload.isCached(file) || _delegateDownload.isCached(file);
+    }
+
+    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
+        return TransferAction.ACTION_CALLBACK;
+    }
+
+    protected void _transfer(final Path p) {
+        try {
+            Preferences.instance().setProperty("queue.upload.preserveDate.fallback", true);
+            Comparison compare = this.compare(p);
+            if(compare.equals(COMPARISON_REMOTE_NEWER)) {
+                _delegateDownload._transfer(p);
+            }
+            else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
+                _delegateUpload._transfer(p);
+            }
+        }
+        finally {
+            Preferences.instance().setProperty("queue.upload.preserveDate.fallback", false);
         }
     }
 
-    private void addRemoteChilds(List childs, Path p) {
-        if(!this.isCanceled()) {
-            if(p.getRemote().exists()) {
-                if(!childs.contains(p)) {
-                    childs.add(p);
-                }
-                if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
-                    p.attributes.setSize(0);
-                    for(Iterator i = p.list().iterator(); i.hasNext();) {
-                        if(this.isCanceled()) {
-                            break;
-                        }
-                        Path child = (Path) i.next();
-                        child.setLocal(new Local(p.getLocal(), child.getName()));
-                        if(!Preferences.instance().getBoolean("queue.download.skip.enable")
-                                || !DOWNLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
-                            this.addRemoteChilds(childs, child);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    protected void getChilds(List childs, Path root) {
-        this.addRemoteChilds(childs, root);
-        this.addLocalChilds(childs, root);
+    protected void clear() {
+        _comparisons.clear();
+        super.clear();
     }
 
     protected void reset() {
-        this.size = 0;
-        for(Iterator iter = this.queue.iterator(); iter.hasNext();) {
-            Path p = (Path) iter.next();
-            if(p.compare() > 0) {
-                this.size += p.getRemote().attributes.getSize();
+        _delegateDownload.reset();
+        _delegateUpload.reset();
+    }
+
+    private final Map _comparisons = new HashMap();
+
+    public static class Comparison {
+        public boolean equals(Object other) {
+            if(null == other) {
+                return false;
             }
-            else {
-                this.size += p.getLocal().attributes.getSize();
-            }
+            return this == other;
         }
     }
 
-    protected void transfer(final Path p) {
-        p.sync();
+    public static final Comparison COMPARISON_REMOTE_NEWER = new Comparison();
+
+    public static final Comparison COMPARISON_LOCAL_NEWER = new Comparison();
+
+    public static final Comparison COMPARISON_EQUAL = new Comparison();
+
+    /**
+     * @return > 0 if the remote path exists and is newer than
+     *         the local file; < 0 if the local path exists and is newer than
+     *         the remote file; 0 if both files don't exist or have an equal timestamp
+     */
+    public Comparison compare(Path p) {
+        if(!_comparisons.containsKey(p)) {
+            Comparison result = null;
+            if(exists(p) && exists(p.getLocal())) {
+                if(p.attributes.isDirectory()) {
+                    result = COMPARISON_EQUAL;
+                }
+                else {
+                    result = this.compareSize(p);
+                    if(result.equals(COMPARISON_EQUAL)) {
+                        //both files have a valid size; compare using timestamp
+                        result = this.compareTimestamp(p);
+                    }
+                }
+            }
+            else if(exists(p)) {
+                // only the remote file exists
+                result = COMPARISON_REMOTE_NEWER;
+            }
+            else if(exists(p.getLocal())) {
+                // only the local file exists
+                result = COMPARISON_LOCAL_NEWER;
+            }
+            else {
+                // both files don't exist yet
+                result = COMPARISON_EQUAL;
+            }
+            _comparisons.put(p, result);
+        }
+        return (Comparison) _comparisons.get(p);
     }
 
-    protected boolean validateFile(final Path p, final boolean resumeRequsted, final boolean reloadRequested) {
-        log.debug("Prompting for file:" + p.getName());
-        return false;
+    /**
+     *
+     * @param p
+     * @return
+     */
+    private Comparison compareSize(Path p) {
+        assert p.attributes.getSize() != -1 : "Remote file size unknown for "+p.getName();
+        assert p.getLocal().attributes.getSize() != -1 : "Local file size unknown for "+p.getName();
+
+        //fist make sure both files are larger than 0 bytes
+        if(p.attributes.getSize() == 0 && p.getLocal().attributes.getSize() == 0) {
+            return COMPARISON_EQUAL;
+        }
+        if(p.attributes.getSize() == 0) {
+            return COMPARISON_LOCAL_NEWER;
+        }
+        if(p.getLocal().attributes.getSize() == 0) {
+            return COMPARISON_REMOTE_NEWER;
+        }
+        //different file size - further comparison check
+        return COMPARISON_EQUAL;
     }
 
-    protected boolean validateDirectory(Path p) {
-        return !p.getRemote().exists() || !p.getLocal().exists();
+    /**
+     *
+     * @param p
+     * @return
+     */
+    private Comparison compareTimestamp(Path p) {
+        assert p.attributes.getModificationDate() != -1: "Remote timestamp unknown for "+p.getName();
+        assert p.getLocal().attributes.getModificationDate() != -1 : "Local timestamp unknown for "+p.getName();
+
+        Calendar remote = this.asCalendar(
+                p.attributes.getModificationDate()
+//                        -this.getHost().getTimezone().getRawOffset()
+                ,
+                p.getHost().getTimezone(),
+                Calendar.MINUTE);
+        Calendar local = this.asCalendar(p.getLocal().attributes.getModificationDate(),
+                TimeZone.getDefault(),
+                Calendar.MINUTE);
+        if(local.before(remote)) {
+            return COMPARISON_REMOTE_NEWER;
+        }
+        if(local.after(remote)) {
+            return COMPARISON_LOCAL_NEWER;
+        }
+        //same timestamp
+        return COMPARISON_EQUAL;
+    }
+
+    /**
+     *
+     * @param timestamp
+     * @param timezone
+     * @param precision
+     * @return
+     */
+    private Calendar asCalendar(final long timestamp, final TimeZone timezone, final int precision) {
+        Calendar c = Calendar.getInstance(timezone);
+        c.setTimeInMillis(timestamp);
+        if(precision == Calendar.MILLISECOND) {
+            return c;
+        }
+        c.clear(Calendar.MILLISECOND);
+        if(precision == Calendar.SECOND) {
+            return c;
+        }
+        c.clear(Calendar.SECOND);
+        if(precision == Calendar.MINUTE) {
+            return c;
+        }
+        c.clear(Calendar.MINUTE);
+        if(precision == Calendar.HOUR) {
+            return c;
+        }
+        c.clear(Calendar.HOUR);
+        return c;
     }
 }

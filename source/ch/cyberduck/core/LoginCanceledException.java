@@ -2,8 +2,6 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.NSBundle;
 
-import java.io.IOException;
-
 /*
  *  Copyright (c) 2006 David Kocher. All rights reserved.
  *  http://cyberduck.ch/

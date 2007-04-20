@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.Collection;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.*;
@@ -63,7 +64,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
     /**
      * Container for all paths currently being listed in the background
      */
-    private final List isLoadingListingInBackground = new ArrayList();
+    private final List isLoadingListingInBackground = new Collection();
 
     protected CDBrowserController controller;
 
@@ -105,8 +106,11 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                         }
 
                         public void cleanup() {
-                            // When expanding multiple items this is called too frequently
-                            controller.reloadData(true);
+                            synchronized(isLoadingListingInBackground) {
+                                if(path.isCached() && isLoadingListingInBackground.isEmpty()) {
+                                    controller.reloadData(true);
+                                }
+                            }
                         }
                     });
                 }
@@ -170,6 +174,10 @@ public abstract class CDBrowserTableDataSource extends NSObject {
         return icon;
     }
 
+    private static final NSAttributedString UNKNOWN_STRING = new NSAttributedString(
+            NSBundle.localizedString("Unknown", ""),
+            CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
+
     protected Object objectValueForItem(Path item, String identifier) {
         if(null != item) {
             if(identifier.equals(ICON_COLUMN)) {
@@ -192,8 +200,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                             item.getHost().getTimezone()),
                             CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
                 }
-                return new NSAttributedString(NSBundle.localizedString("Unknown", ""),
-                        CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
+                return UNKNOWN_STRING;
             }
             if(identifier.equals(OWNER_COLUMN)) {
                 return new NSAttributedString(item.attributes.getOwner(),
@@ -202,7 +209,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             if(identifier.equals(PERMISSIONS_COLUMN)) {
                 Permission permission = item.attributes.getPermission();
                 if(null == permission) {
-                    permission = Permission.EMPTY;
+                    return UNKNOWN_STRING;
                 }
                 return new NSAttributedString(permission.toString(),
                         CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
@@ -250,7 +257,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             if(o != null) {
                 NSArray elements = (NSArray) o;
                 final Session session = controller.getTransferSession();
-                final List roots = new ArrayList();
+                final List roots = new Collection();
                 for(int i = 0; i < elements.count(); i++) {
                     Path p = PathFactory.createPath(session,
                             destination.getAbsolute(),
@@ -385,7 +392,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                 // with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory
                 // of files, only include the top directory in the array.
                 NSMutableArray fileTypes = new NSMutableArray();
-                final List roots = new ArrayList();
+                final List roots = new Collection();
                 final Session session = controller.getTransferSession();
                 for(int i = 0; i < items.count(); i++) {
                     promisedDragPaths[i] = (Path) ((Path) items.objectAtIndex(i)).clone(session);
@@ -466,7 +473,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     this.promisedDragPaths[0].getLocal().mkdir();
                 }
             }
-            final List roots = new ArrayList();
+            final List roots = new Collection();
             for(int i = 0; i < promisedDragPaths.length; i++) {
                 roots.add(promisedDragPaths[i]);
             }

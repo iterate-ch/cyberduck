@@ -67,8 +67,8 @@ public abstract class Preferences {
                 else {
                     current = new CDPortablePreferencesImpl();
                 }
-                current.setDefaults();
                 current.load();
+                current.setDefaults();
                 current.legacy();
             }
             return current;
@@ -82,6 +82,10 @@ public abstract class Preferences {
     protected void legacy() {
         ;
     }
+
+//    public abstract void addObserver(String property, PreferencesObserver observer);
+//
+//    public abstract void removeObserver(PreferencesObserver observer);
 
     /**
      * @param property The name of the property to overwrite
@@ -110,7 +114,7 @@ public abstract class Preferences {
     /**
      * setting the default prefs values
      */
-    public void setDefaults() {
+    protected void setDefaults() {
         this.defaults = new HashMap();
 
         File APP_SUPPORT_DIR = null;
@@ -249,7 +253,9 @@ public abstract class Preferences {
         defaults.put("queue.openByDefault", String.valueOf(false));
         defaults.put("queue.save", String.valueOf(true));
         defaults.put("queue.removeItemWhenComplete", String.valueOf(false));
-
+        /**
+         * The maximum number of concurrent transfers
+         */
         defaults.put("queue.maxtransfers", String.valueOf(5));
 
         /**
@@ -263,14 +269,13 @@ public abstract class Preferences {
         /**
          * Action when duplicate file exists
          */
-        defaults.put("queue.download.fileExists", Validator.ASK);
-        defaults.put("queue.upload.fileExists", Validator.ASK);
+        defaults.put("queue.download.fileExists", TransferAction.ACTION_CALLBACK);
+        defaults.put("queue.upload.fileExists", TransferAction.ACTION_CALLBACK);
         /**
-         * When triggered manually using 'Reload' in the
-         *  window
+         * When triggered manually using 'Reload' in the Transfer window
          */
-        defaults.put("queue.download.reload.fileExists", Validator.ASK);
-        defaults.put("queue.upload.reload.fileExists", Validator.ASK);
+        defaults.put("queue.download.reload.fileExists", TransferAction.ACTION_CALLBACK);
+        defaults.put("queue.upload.reload.fileExists", TransferAction.ACTION_CALLBACK);
 
         defaults.put("queue.upload.changePermissions", String.valueOf(true));
         defaults.put("queue.upload.permissions.useDefault", String.valueOf(false));
@@ -282,9 +287,9 @@ public abstract class Preferences {
 
         defaults.put("queue.upload.skip.enable", String.valueOf(true));
         defaults.put("queue.upload.skip.regex.default",
-                ".*~\\..*|\\.DS_Store|.*\\.svn|CVS");
+                ".*~\\..*|\\.DS_Store|\\.svn|CVS");
         defaults.put("queue.upload.skip.regex",
-                ".*~\\..*|\\.DS_Store|.*\\.svn|CVS");
+                ".*~\\..*|\\.DS_Store|\\.svn|CVS");
 
         defaults.put("queue.download.changePermissions", String.valueOf(true));
         defaults.put("queue.download.permissions.useDefault", String.valueOf(false));
@@ -295,9 +300,19 @@ public abstract class Preferences {
 
         defaults.put("queue.download.skip.enable", String.valueOf(true));
         defaults.put("queue.download.skip.regex.default",
-                ".*~\\..*|\\.DS_Store|.*\\.svn|CVS");
+                ".*~\\..*|\\.DS_Store|\\.svn|CVS");
         defaults.put("queue.download.skip.regex",
-                ".*~\\..*|\\.DS_Store|.*\\.svn|CVS");
+                ".*~\\..*|\\.DS_Store|\\.svn|CVS");
+
+        /**
+         * Bandwidth throttle upload stream
+         */
+        defaults.put("queue.upload.bandwidth.bytes", String.valueOf(-1));
+        /**
+         * Bandwidth throttle download stream
+         */
+        defaults.put("queue.download.bandwidth.bytes", String.valueOf(-1));
+
         /**
          * While downloading, update the icon of the downloaded file as a progress indicator
          */
@@ -354,12 +369,17 @@ public abstract class Preferences {
         defaults.put("connection.port.default", String.valueOf(21));
         defaults.put("connection.protocol.default", "ftp");
 
-        defaults.put("connection.timeout", String.valueOf(30000)); //in milliseconds
+        defaults.put("connection.timeout.seconds", String.valueOf(30));
         /**
          * Send no operation commands to the server
          */
         defaults.put("connection.keepalive", String.valueOf(false));
         defaults.put("connection.keepalive.interval", String.valueOf(30000));
+        /**
+         * Retry to connect after a I/O failure automatically
+         */
+        defaults.put("connection.retry", String.valueOf(1));
+        defaults.put("connection.retry.delay", String.valueOf(10));
         /**
          * Try to resolve the hostname when entered in connection dialog
          */
@@ -371,7 +391,7 @@ public abstract class Preferences {
         /**
          * Use the SFTP subsystem or a SCP channel for file transfers over SSH
          */
-        defaults.put("ssh.transfer", Session.SCP); // Session.SFTP
+        defaults.put("ssh.transfer", Session.SFTP); // Session.SCP
         /**
          * Location of the openssh known_hosts file
          */
@@ -430,5 +450,5 @@ public abstract class Preferences {
     /**
      * Overriding the default values with prefs from the last session.
      */
-    public abstract void load();
+    protected abstract void load();
 }

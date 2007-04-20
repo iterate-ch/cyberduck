@@ -34,21 +34,25 @@ public abstract class Growl {
     public static Growl instance() {
         if (null == instance) {
             if (Preferences.instance().getBoolean("growl.enable")) {
-                return (instance = new GrowlNative());
+                instance = new GrowlNative();
             }
-            return instance = new Growl() {
-                public void register() {
-                    ;
-                }
+            else {
+                instance = new Growl() {
+                    public void register() {
+                        ;
+                    }
 
-                public void notify(String title, String description) {
-                    log.info(description);
-                }
+                    public void notify(String title, String description) {
+                        log.info(description);
+                    }
 
-                public void notifyWithImage(String title, String description, String image) {
-                    log.info(description);
-                }
-            };
+                    public void notifyWithImage(String title, String description, String image) {
+                        log.info(description);
+                    }
+                };
+            }
+            // Make sure we register to Growl first
+            instance.register();
         }
         return instance;
     }

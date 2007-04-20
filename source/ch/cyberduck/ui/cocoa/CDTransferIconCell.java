@@ -18,12 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.DownloadTransfer;
 import ch.cyberduck.core.SyncTransfer;
+import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.UploadTransfer;
 
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSView;
-import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSPoint;
 import com.apple.cocoa.foundation.NSRect;
 import com.apple.cocoa.foundation.NSSize;
@@ -31,11 +32,11 @@ import com.apple.cocoa.foundation.NSSize;
 /**
  * @version $Id$
  */
-public class CDIconCell extends CDTableCell {
+public class CDTransferIconCell extends CDTableCell {
 
     private Transfer transfer;
 
-    public CDIconCell() {
+    public CDTransferIconCell() {
         super();
     }
 
@@ -43,39 +44,36 @@ public class CDIconCell extends CDTableCell {
         this.transfer = (Transfer) q;
     }
 
-    private static final NSImage MULTIPLE_DOCUMENTS_ICON = NSImage.imageNamed("multipleDocuments32.tiff");
-    private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder32.tiff");
-    private static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
-
     private static final float SPACE = 4;
-
-    static {
-        MULTIPLE_DOCUMENTS_ICON.setSize(new NSSize(32f, 32f));
-        FOLDER_ICON.setSize(new NSSize(32f, 32f));
-        NOT_FOUND_ICON.setSize(new NSSize(32f, 32f));
-    }
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
         if(null == transfer) {
             return;
         }
         NSPoint cellPoint = cellFrame.origin();
-        NSImage fileIcon = NOT_FOUND_ICON;
-        if(transfer instanceof SyncTransfer) {
-            fileIcon = FOLDER_ICON;
+        NSImage typeIcon = null;
+        if(transfer instanceof DownloadTransfer) {
+            typeIcon = ARROW_DOWN_ICON;
         }
-        else if(transfer.getRoot().getLocal().exists()) {
-            if(transfer.numberOfRoots() == 1) {
-                fileIcon = transfer.getRoot().getLocal().attributes.isFile() ? NSWorkspace.sharedWorkspace().iconForFile(
-                        transfer.getRoot().getLocal().getAbsolute()) : FOLDER_ICON;
-            }
-            else {
-                fileIcon = MULTIPLE_DOCUMENTS_ICON;
-            }
+        else if(transfer instanceof UploadTransfer) {
+            typeIcon = ARROW_UP_ICON;
         }
-        fileIcon.setSize(new NSSize(32f, 32f));
-        fileIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE,
-                cellPoint.y() + 32 + SPACE),
+        else if(transfer instanceof SyncTransfer) {
+            typeIcon = SYNC_ICON;
+        }
+        assert typeIcon != null;
+        typeIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE,
+                cellPoint.y() + 32),
                 NSImage.CompositeSourceOver);
+    }
+
+    private static final NSImage ARROW_UP_ICON = NSImage.imageNamed("arrowUp.tiff");
+    private static final NSImage ARROW_DOWN_ICON = NSImage.imageNamed("arrowDown.tiff");
+    private static final NSImage SYNC_ICON = NSImage.imageNamed("sync32.tiff");
+
+    static {
+        ARROW_UP_ICON.setSize(new NSSize(32f, 32f));
+        ARROW_DOWN_ICON.setSize(new NSSize(32f, 32f));
+        SYNC_ICON.setSize(new NSSize(32f, 32f));
     }
 }

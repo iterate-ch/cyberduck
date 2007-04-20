@@ -38,18 +38,26 @@ public class Status {
      * Download is resumable
      */
     private boolean resume = false;
+
     /**
      * The number of transfered bytes. Must be less or equals size.
      */
     private long current = 0;
+
     /**
      * Indiciating wheter the transfer has been cancled by the user.
      */
     private boolean canceled;
+
     /**
      * Indicates that the last action has been completed.
      */
     private boolean complete = false;
+
+    /**
+     * Ready for transfer
+     */
+    private boolean prepared = false;
 
     public static final double KILO = 1024; //2^10
     public static final double MEGA = 1048576; // 2^20
@@ -111,6 +119,26 @@ public class Status {
     }
 
     /**
+     * A state variable to mark this path if it should not be considered for file transfers
+     */
+    private boolean skip = false;
+
+    /**
+     * @param ignore
+     */
+    public void setSkipped(boolean ignore) {
+        log.debug("setSkipped:" + ignore);
+        this.skip = ignore;
+    }
+
+    /**
+     * @return true if this path should not be added to any queue
+     */
+    public boolean isSkipped() {
+        return this.skip;
+    }
+
+    /**
      *
      * @param resume
      */
@@ -125,11 +153,20 @@ public class Status {
         return this.resume;
     }
 
+    public boolean isPrepared() {
+        return prepared;
+    }
+
+    public void setPrepared(boolean prepared) {
+        this.prepared = prepared;
+    }
+
     /**
      *
      */
     public void reset() {
         this.complete = false;
         this.canceled = false;
+        this.prepared = false;
     }
 }

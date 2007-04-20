@@ -1638,6 +1638,7 @@ source/ch/cyberduck/core/io/UKMainThreadProxy.m -text
 source/ch/cyberduck/core/util/URLSchemeHandlerConfiguration.m -text
 source/ch/cyberduck/ui/cocoa/CDBottomView.m -text
 source/ch/cyberduck/ui/cocoa/CDNavigationView.m -text
+source/ch/cyberduck/ui/cocoa/CDPreferencesImpl.m -text
 source/ch/cyberduck/ui/cocoa/growl/GrowlNative.java -text
 source/ch/cyberduck/ui/cocoa/threading/BackgroundActionImpl.java -text
 source/com/snoize/SNDisclosableView.m -text

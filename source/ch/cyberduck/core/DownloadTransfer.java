@@ -18,24 +18,29 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * @version $Id$
  */
 public class DownloadTransfer extends Transfer {
 
-    public DownloadTransfer() {
-        super();
-    }
-
     public DownloadTransfer(Path root) {
         super(root);
+    }
+
+    public DownloadTransfer(List roots) {
+        super(roots);
+    }
+
+    public DownloadTransfer(NSDictionary dict, Session s) {
+        super(dict, s);
     }
 
     public NSMutableDictionary getAsDictionary() {
@@ -44,98 +49,161 @@ public class DownloadTransfer extends Transfer {
         return dict;
     }
 
-    public DownloadTransfer(NSDictionary dict, Session s) {
-        super(dict, s);
-    }
-
-    protected void getChilds(List childs, Path p) {
-        if(!this.isCanceled()) {
-            childs.add(p);
-            if(p.attributes.isDirectory() && !p.attributes.isSymbolicLink()) {
-                p.attributes.setSize(0);
-                for(Iterator i = p.list().iterator(); i.hasNext();) {
-                    if(this.isCanceled()) {
-                        break;
-                    }
-                    Path child = (Path) i.next();
-                    if(!Preferences.instance().getBoolean("queue.download.skip.enable")
-                            || !DOWNLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
-                        child.setLocal(new Local(p.getLocal(), child.getName()));
-                        this.getChilds(childs, child);
-                    }
+    /**
+     *
+     */
+    private abstract class DownloadTransferFilter extends TransferFilter {
+        public void prepare(Path file) {
+            // Adjust the download path
+            file.setLocal(new Local(file.getLocal().getParent().getAbsolute(), file.getName()));
+            // Read file size
+            if(file.attributes.isFile()) {
+                size += file.attributes.getSize();
+                if(file.status.isResume()) {
+                    transferred += file.getLocal().attributes.getSize();
                 }
             }
+            super.prepare(file);
         }
     }
 
-    protected void reset() {
-        this.size = 0;
-        for(Iterator iter = this.queue.iterator(); iter.hasNext();) {
-            this.size += ((Path) iter.next()).attributes.getSize();
+    /**
+     * A compiled representation of a regular expression.
+     */
+    private Pattern DOWNLOAD_SKIP_PATTERN = null;
+
+    {
+        try {
+            DOWNLOAD_SKIP_PATTERN = Pattern.compile(
+                    Preferences.instance().getProperty("queue.download.skip.regex"));
+        }
+        catch(PatternSyntaxException e) {
+            log.warn(e.getMessage());
         }
     }
 
-    protected void transfer(final Path p) {
-        p.download();
+    public List childs(final Path parent) {
+        if(!this.exists(parent)) {
+            // Cannot fetch file listing of non existant file
+            return Collections.EMPTY_LIST;
+        }
+        if(parent.attributes.isSymbolicLink()) {
+            return Collections.EMPTY_LIST;
+        }
+        return parent.childs(new NullComparator(), new TransferFilter() {
+            public boolean accept(AbstractPath child) {
+                if(Preferences.instance().getBoolean("queue.download.skip.enable")
+                        && DOWNLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
+                    return false;
+                }
+                ((Path)child).setLocal(new Local(parent.getLocal().getAbsolute(), child.getName()));
+                return super.accept(child);
+            }
+        });
     }
 
-    protected boolean validateFile(final Path p, final boolean resumeRequested, final boolean reloadRequested) {
-        p.readAttributes();
-        if(resumeRequested) { // resume existing files independant of settings in preferences
-            p.status.setResume(p.getLocal().exists() && p.getLocal().getSize() > 0);
-            return true;
-        }
-        String action = null;
-        if(reloadRequested) {
-            action = Preferences.instance().getProperty("queue.download.reload.fileExists");
-        }
-        else {
-            action = Preferences.instance().getProperty("queue.download.fileExists");
-        }
+    public boolean isCached(Path file) {
+        return file.isCached();
+    }
+
+    public TransferFilter filter(final TransferAction action) {
         // When overwriting file anyway we don't have to check if the file already exists
-        if(action.equals(Validator.OVERWRITE)) {
-            log.info("Will overwrite file:" + p.getName());
-            p.status.setResume(false);
-            return true;
+        if(action.equals(TransferAction.ACTION_OVERWRITE)) {
+            return new DownloadTransferFilter() {
+                public boolean accept(final AbstractPath p) {
+                    if(p.attributes.isDirectory()) {
+                        return !exists(((Path)p).getLocal());
+                    }
+                    return super.accept(p);
+                }
+            };
         }
-        if(p.getLocal().exists() && p.getLocal().getSize() > 0) {
-            if(action.equals(Validator.RESUME)) {
-                log.debug("Will resume file:" + p.getName());
-                p.status.setResume(true);
-                return true;
-            }
-            if(action.equals(Validator.SIMILAR)) {
-                log.debug("Will rename file:" + p.getName());
-                p.status.setResume(false);
-                this.adjustFilename(p);
-                log.info("Changed local name to:" + p.getLocal().getName());
-                return true;
-            }
-            log.debug("Prompting for file:" + p.getName());
-            return false;
+        if(action.equals(TransferAction.ACTION_RESUME)) {
+            return new DownloadTransferFilter() {
+                public boolean accept(final AbstractPath p) {
+                    if(((Path)p).status.isComplete()) {
+                        return false;
+                    }
+                    if(p.attributes.isDirectory()) {
+                        return !exists(((Path)p).getLocal());
+                    }
+                    return super.accept(p);
+                }
+
+                public void prepare(final Path p) {
+                    if(p.attributes.isFile()) {
+                        p.status.setResume(exists(p) && p.attributes.getSize() > 0);
+                    }
+                    super.prepare(p);
+                }
+            };
         }
-        else {
-            p.status.setResume(false);
-            return true;
+        if(action.equals(TransferAction.ACTION_SIMILARNAME)) {
+            return new DownloadTransferFilter() {
+                public boolean accept(final AbstractPath p) {
+                    return super.accept(p);
+                }
+
+                public void prepare(final Path p) {
+                    if(exists(p.getLocal())) {
+                        final String parent = p.getLocal().getParent().getAbsolute();
+                        final String filename = p.getName();
+                        String proposal = filename;
+                        int no = 0;
+                        int index = filename.lastIndexOf(".");
+                        while(exists(p.getLocal())) {
+                            no++;
+                            if(index != -1 && index != 0) {
+                                proposal = filename.substring(0, index)
+                                        + "-" + no + filename.substring(index);
+                            }
+                            else {
+                                proposal = filename + "-" + no;
+                            }
+                            p.getLocal().setPath(parent, proposal);
+                        }
+                        log.info("Changed local name to:" + p.getName());
+                    }
+                    p.status.setResume(false);
+                    
+                    super.prepare(p);
+                }
+            };
         }
+        if(action.equals(TransferAction.ACTION_SKIP)) {
+            return new DownloadTransferFilter() {
+                public boolean accept(final AbstractPath p) {
+                    if(!exists(((Path)p).getLocal())) {
+                        return super.accept(p);
+                    }
+                    return false;
+                }
+            };
+        }
+        return super.filter(action);
     }
 
-    private void adjustFilename(Path path) {
-        final String parent = path.getLocal().getParent();
-        final String filename = path.getLocal().getName();
-        String proposal = filename;
-        int no = 0;
-        int index = filename.lastIndexOf(".");
-        while(path.getLocal().exists()) {
-            no++;
-            if(index != -1 && index != 0) {
-                proposal = filename.substring(0, index)
-                        + "-" + no + filename.substring(index);
-            }
-            else {
-                proposal = filename + "-" + no;
-            }
-            path.setLocal(new Local(parent, proposal));
+    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
+        if(resumeRequested) {
+            // Force resume
+            return TransferAction.ACTION_RESUME;
         }
+        if(reloadRequested) {
+            return TransferAction.forName(
+                    Preferences.instance().getProperty("queue.download.reload.fileExists")
+            );
+        }
+        // Use default
+        return TransferAction.forName(
+                Preferences.instance().getProperty("queue.download.fileExists")
+        );
+    }
+
+    protected void _transfer(final Path p) {
+        p.download(new AbstractStreamListener() {
+            public void bytesReceived(int bytes) {
+                transferred += bytes;
+            }
+        });
     }
 }

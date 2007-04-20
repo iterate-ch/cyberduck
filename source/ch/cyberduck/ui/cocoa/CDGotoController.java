@@ -18,8 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.NullComparator;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
@@ -29,8 +30,8 @@ import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
-import java.util.List;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -49,7 +50,7 @@ public class CDGotoController extends CDSheetController{
             final CDBrowserController c = (CDBrowserController)parent;
             private final Comparator comparator = new NullComparator();
             private final PathFilter filter = new PathFilter() {
-                public boolean accept(Path p) {
+                public boolean accept(AbstractPath p) {
                     return p.attributes.isDirectory();
                 }
             };

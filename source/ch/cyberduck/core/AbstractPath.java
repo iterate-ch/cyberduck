@@ -2,10 +2,9 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.NSObject;
 
-import java.util.Iterator;
-import java.util.Comparator;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Comparator;
 
 /*
  *  Copyright (c) 2007 David Kocher. All rights reserved.
@@ -54,23 +53,6 @@ public abstract class AbstractPath extends NSObject {
     public abstract Cache cache();
 
     /**
-     * Calculates recursively the size of this path
-     *
-     * @return The size of the file or the sum of all containing files if a directory
-     * @warn Potentially lengthy operation
-     */
-    public double size() {
-        if(this.attributes.isDirectory()) {
-            double size = 0;
-            for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
-                size += ((AbstractPath) iter.next()).size();
-            }
-            this.attributes.setSize(size);
-        }
-        return this.attributes.getSize();
-    }
-
-    /**
      * Clear cached listing
      * @throws NullPointerException if session is not initialized
      */
@@ -89,7 +71,7 @@ public abstract class AbstractPath extends NSObject {
     public abstract AttributedList list();
 
     /**
-     * Get the cached directory listing
+     * Get the cached directory listing if any or return #list instead
      * @return
      */
     public AttributedList childs() {
@@ -221,7 +203,7 @@ public abstract class AbstractPath extends NSObject {
     }
 
     /**
-     * Where the symbolic link is pointing to
+     * An absolute reference here the symbolic link is pointing to
      */
     private String symbolic = null;
 
@@ -253,9 +235,9 @@ public abstract class AbstractPath extends NSObject {
     /**
      * @param recursive Include subdirectories and files
      */
-    public abstract void changePermissions(Permission perm, boolean recursive);
+    public abstract void writePermissions(Permission perm, boolean recursive);
 
-    public abstract void changeModificationDate(long millis);
+    public abstract void writeModificationDate(long millis);
 
     /**
      * Remove this file from the remote host. Does not affect any corresponding local file

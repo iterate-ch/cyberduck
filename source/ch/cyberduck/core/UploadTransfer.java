@@ -18,24 +18,26 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
-import java.io.File;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * @version $Id$
  */
 public class UploadTransfer extends Transfer {
 
-    public UploadTransfer() {
-        super();
-    }
-
     public UploadTransfer(Path root) {
         super(root);
+    }
+
+    public UploadTransfer(List roots) {
+        super(roots);
     }
 
     public UploadTransfer(NSDictionary dict, Session s) {
@@ -48,118 +50,177 @@ public class UploadTransfer extends Transfer {
         return dict;
     }
 
-    protected void getChilds(List childs, Path p) {
-        if(!this.isCanceled()) {
-            if(p.getLocal().exists()) {// && p.getLocal().canRead()) {
-                childs.add(p);
-                if(p.exists()) {
-                    List list = p.getParent().list();
-                    //Honor existing permissions when replacing files
-                    p.attributes.setPermission(
-                            ((Path)list.get(list.indexOf(p))).attributes.getPermission());
+    /**
+     *
+     */
+    private abstract class UploadTransferFilter extends TransferFilter {
+        public void prepare(Path file) {
+            if(file.attributes.isFile()) {
+                // Read file size
+                size += file.getLocal().attributes.getSize();
+                if(file.status.isResume()) {
+                    transferred += file.attributes.getSize();
                 }
-                if(p.attributes.isDirectory()) {
-                    if(!p.getRemote().exists()) {
-                        //hack
-                        p.getSession().cache().put(p, new AttributedList());
+            }
+            super.prepare(file);
+        }
+    }
+
+    /**
+     * A compiled representation of a regular expression.
+     */
+    private Pattern UPLOAD_SKIP_PATTERN = null;
+
+    {
+        try {
+            UPLOAD_SKIP_PATTERN = Pattern.compile(
+                    Preferences.instance().getProperty("queue.upload.skip.regex"));
+        }
+        catch(PatternSyntaxException e) {
+            log.warn(e.getMessage());
+        }
+    }
+
+    private final Cache _cache = new Cache();
+
+    public List childs(final Path parent) {
+        if(!exists(parent.getLocal())) {
+            // Cannot fetch file listing of non existant file
+            return Collections.EMPTY_LIST;
+        }
+        if(parent.getLocal().attributes.isSymbolicLink()) {
+            return Collections.EMPTY_LIST;
+        }
+        if(!exists(parent)) {
+            parent.cache().put(parent, new AttributedList());
+        }
+        if(!_cache.containsKey(parent)) {
+            AttributedList childs = new AttributedList();
+            for(Iterator iter = parent.getLocal().childs(new NullComparator(), new TransferFilter() {
+                public boolean accept(AbstractPath child) {
+                    if(Preferences.instance().getBoolean("queue.upload.skip.enable")
+                            && UPLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
+                        return false;
                     }
-                    p.attributes.setSize(0);
-                    File[] files = p.getLocal().listFiles();
-                    for(int i = 0; i < files.length; i++) {
-                        if(this.isCanceled()) {
-                            break;
-                        }
-                        if(files[i].canRead()) {
-                            Path child = PathFactory.createPath(p.getSession(), p.getAbsolute(),
-                                    new Local(files[i].getAbsolutePath()));
-                            if(!Preferences.instance().getBoolean("queue.upload.skip.enable")
-                                    || !UPLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
-                                this.getChilds(childs, child);
+                    return super.accept(child);
+                }
+            }).iterator(); iter.hasNext(); ) {
+                Path child = PathFactory.createPath(parent.getSession(),
+                        parent.getAbsolute(),
+                        new Local(((AbstractPath) iter.next()).getAbsolute()));
+                childs.add(child);
+            }
+            _cache.put(parent, childs);
+        }
+        return _cache.get(parent);
+    }
+
+    public boolean isCached(Path file) {
+        return _cache.containsKey(file);
+    }
+
+    public TransferFilter filter(final TransferAction action) {
+        if(action.equals(TransferAction.ACTION_OVERWRITE)) {
+            return new UploadTransferFilter() {
+                public boolean accept(final AbstractPath p) {
+                    if(p.attributes.isDirectory()) {
+                        return !exists(p);
+                    }
+                    return super.accept(p);
+                }
+            };
+        }
+        if(action.equals(TransferAction.ACTION_RESUME)) {
+            return new UploadTransferFilter() {
+                public boolean accept(final AbstractPath p) {
+                    if(((Path)p).status.isComplete()) {
+                        return false;
+                    }
+                    if(p.attributes.isDirectory()) {
+                        return !exists(p);
+                    }
+                    return super.accept(p);
+                }
+
+                public void prepare(final Path p) {
+                    if(p.attributes.isFile()) {
+                        p.status.setResume(exists(p) && p.attributes.getSize() > 0);
+                    }
+                    super.prepare(p);
+                }
+            };
+        }
+        if(action.equals(TransferAction.ACTION_SIMILARNAME)) {
+            return new UploadTransferFilter() {
+                public boolean accept(final AbstractPath p) {
+                    return super.accept(p);
+                }
+
+                public void prepare(final Path p) {
+                    if(exists(p)) {
+                        final String parent = p.getParent().getAbsolute();
+                        final String filename = p.getName();
+                        String proposal = filename;
+                        int no = 0;
+                        int index = filename.lastIndexOf(".");
+                        while(p.exists()) { // Do not use cached value of exists!
+                            no++;
+                            if(index != -1 && index != 0) {
+                                proposal = filename.substring(0, index)
+                                        + "-" + no + filename.substring(index);
                             }
+                            else {
+                                proposal = filename + "-" + no;
+                            }
+                            p.setPath(parent, proposal);
                         }
+                        log.info("Changed local name to:" + p.getName());
                     }
+                    p.status.setResume(false);
+
+                    super.prepare(p);
                 }
-            }
+            };
         }
+        if(action.equals(TransferAction.ACTION_SKIP)) {
+            return new UploadTransferFilter() {
+                public boolean accept(final AbstractPath p) {
+                    if(!exists(p)) {
+                        return super.accept(p);
+                    }
+                    return false;
+                }
+            };
+        }
+        return super.filter(action);
     }
 
-    protected void reset() {
-        this.size = 0;
-        for(java.util.Iterator iter = this.queue.iterator(); iter.hasNext();) {
-            this.size += ((Path) iter.next()).getLocal().getSize();
-        }
+    protected void clear() {
+        _cache.clear();
+        super.clear();
     }
 
-    protected void transfer(final Path p) {
-        p.upload();
-    }
-
-    protected boolean validateDirectory(Path p) {
-        if(!p.getRemote().exists()) {
-            //Directory does not exist yet; include so it will be created on the server
-            return true;
+    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
+        if(resumeRequested) {
+            // Force resume
+            return TransferAction.ACTION_RESUME;
         }
-        //Directory already exists; do not include as this would throw "file already exists"
-        return false;
-    }
-
-    protected boolean validateFile(final Path p, final boolean resumeRequested, final boolean reloadRequested) {
-        if(resumeRequested) { // resume existing files independant of settings in preferences
-            p.status.setResume(p.exists());
-            return true;
-        }
-        String action = null;
         if(reloadRequested) {
-            action = Preferences.instance().getProperty("queue.upload.reload.fileExists");
+            return TransferAction.forName(
+                    Preferences.instance().getProperty("queue.upload.reload.fileExists")
+            );
         }
-        else {
-            action = Preferences.instance().getProperty("queue.upload.fileExists");
-        }
-        // When overwriting file anyway we don't have to check if the file already exists
-        if(action.equals(Validator.OVERWRITE)) {
-            log.info("Will overwrite file:" + p.getName());
-            p.status.setResume(false);
-            return true;
-        }
-        if(p.exists()) {
-            p.readAttributes();
-            if(action.equals(Validator.RESUME)) {
-                log.debug("Will resume file:" + p.getName());
-                p.status.setResume(true);
-                return true;
-            }
-            if(action.equals(Validator.SIMILAR)) {
-                log.debug("Will rename file:" + p.getName());
-                p.status.setResume(false);
-                this.adjustFilename(p);
-                log.info("Changed name to:" + p.getName());
-                return true;
-            }
-            log.debug("Prompting for file:" + p.getName());
-            return false;
-        }
-        else {
-            p.status.setResume(false);
-            return true;
-        }
+        // Use default
+        return TransferAction.forName(
+                Preferences.instance().getProperty("queue.upload.fileExists")
+        );
     }
 
-    private void adjustFilename(Path path) {
-        final String parent = path.getParent().getAbsolute();
-        final String filename = path.getName();
-        String proposal = filename;
-        int no = 0;
-        int index = filename.lastIndexOf(".");
-        while(path.exists()) {
-            no++;
-            if(index != -1 && index != 0) {
-                proposal = filename.substring(0, index)
-                        + "-" + no + filename.substring(index);
+    protected void _transfer(final Path p) {
+        p.upload(new AbstractStreamListener() {
+            public void bytesSent(int bytes) {
+                transferred += bytes;
             }
-            else {
-                proposal = filename + "-" + no;
-            }
-            path.setPath(parent, proposal);
-        }
+        });
     }
 }

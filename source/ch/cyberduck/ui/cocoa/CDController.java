@@ -29,19 +29,12 @@ public abstract class CDController extends NSObject {
     private static Logger log = Logger.getLogger(CDController.class);
 
     public CDController() {
-        //Assuming this is always called from the main thread #currentRunLoop will return the main run loop
-        mainRunLoop = NSRunLoop.currentRunLoop();
         if(null == instances) {
             instances = new NSMutableArray();
         }
         //Add this object to the array to safe weak references from being garbage collected (#hack)
         instances.addObject(this);
     }
-
-    /**
-     * Reference to the main graphical user interface thread
-     */
-    protected NSRunLoop mainRunLoop;
 
     protected static NSMutableArray instances;
 
@@ -59,7 +52,7 @@ public abstract class CDController extends NSObject {
      * @param delay Number of seconds to delay the execution
      */
     protected void invoke(Runnable thread, float delay) {
-        mainRunLoop.addTimerForMode(new NSTimer(delay, this,
+        CDMainController.mainRunLoop.addTimerForMode(new NSTimer(delay, this,
                 new NSSelector("post", new Class[]{NSTimer.class}),
                 thread,
                 false //automatically invalidate

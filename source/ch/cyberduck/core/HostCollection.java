@@ -18,13 +18,11 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.util.Iterator;
 
 /**
  * @version $Id$

@@ -88,7 +88,7 @@ public class Cache {
             //clear the previously set of hidden files
             ((Set) childs.attributes().get(AttributedList.HIDDEN)).clear();
             for (Iterator i = childs.iterator(); i.hasNext();) {
-                Path child = (Path) i.next();
+                AbstractPath child = (AbstractPath) i.next();
                 if (!filter.accept(child)) {
                     //child not accepted by filter; add to cached hidden files
                     childs.attributes().addHidden(child);
@@ -106,6 +106,10 @@ public class Cache {
 
     public AttributedList put(AbstractPath path, AttributedList childs) {
         return (AttributedList)_impl.put(path.getAbsolute(), childs);
+    }
+
+    public AttributedList[] values() {
+        return (AttributedList[])_impl.entrySet().toArray(new AttributedList[]{});
     }
 
     public void clear() {

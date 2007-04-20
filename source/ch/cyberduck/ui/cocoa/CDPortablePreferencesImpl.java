@@ -18,8 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
-
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
@@ -29,7 +27,7 @@ import java.io.File;
 /**
  * @version $Id$
  */
-public class CDPortablePreferencesImpl extends Preferences {
+public class CDPortablePreferencesImpl extends CDPreferencesImpl {
     private static Logger log = Logger.getLogger(CDPortablePreferencesImpl.class);
 
     private NSMutableDictionary props;
@@ -53,7 +51,7 @@ public class CDPortablePreferencesImpl extends Preferences {
         this.props.removeObjectForKey(property);
     }
 
-    public void load() {
+    protected void load() {
         File f = new File(NSPathUtilities.stringByExpandingTildeInPath(
                 (String)NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")));
         if (f.exists()) {

@@ -18,13 +18,7 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPActiveDataSocket;
-import com.enterprisedt.net.ftp.FTPControlSocket;
-import com.enterprisedt.net.ftp.FTPDataSocket;
-import com.enterprisedt.net.ftp.FTPException;
-import com.enterprisedt.net.ftp.FTPMessageListener;
-import com.enterprisedt.net.ftp.FTPPassiveDataSocket;
-import com.enterprisedt.net.ftp.FTPReply;
+import com.enterprisedt.net.ftp.*;
 
 import ch.cyberduck.core.Preferences;
 
@@ -125,6 +119,12 @@ public class FTPSControlSocket extends FTPControlSocket {
 
             // assemble the port number
             int port = (parts[4] << 8) + parts[5];
+
+            if(InetAddress.getByName(ipAddress).isSiteLocalAddress()) {
+                // Do not trust a local address; may be a misconfigured router
+                return new FTPPassiveDataSocket(
+                        new SSLProtocolSocketFactory(trustManager).createSocket(controlSock.getInetAddress().getHostAddress(), port));
+            }
 
             // create the socket
             return new FTPPassiveDataSocket(

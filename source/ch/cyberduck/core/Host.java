@@ -27,8 +27,10 @@ import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.util.TimeZone;
 
@@ -326,7 +328,12 @@ public class Host extends NSObject {
                 if(input.indexOf('/', begin) != -1) {
                     portString = input.substring(begin, input.indexOf('/', begin));
                     begin += portString.length();
-                    path = input.substring(begin, input.length());
+                    try {
+                        path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
+                    }
+                    catch(UnsupportedEncodingException e) {
+                        log.error(e.getMessage());
+                    }
                 }
                 else {
                     portString = input.substring(begin, input.length());
@@ -341,7 +348,12 @@ public class Host extends NSObject {
             cut = input.indexOf('/', begin);
             hostname = input.substring(begin, cut);
             begin += hostname.length();
-            path = input.substring(begin, input.length());
+            try {
+                path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
+            }
+            catch(UnsupportedEncodingException e) {
+                log.error(e.getMessage());
+            }
         }
         Host h = new Host(protocol,
                 hostname,

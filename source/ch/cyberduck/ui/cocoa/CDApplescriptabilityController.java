@@ -65,9 +65,9 @@ public class CDApplescriptabilityController extends NSScriptCommand {
                     // We have to add this to the end of the main thread; there is some obscure
                     // concurrency issue with the rendezvous initialization
                     // running in CDMainController.applicationDidFinishLaunching, see ticket #????
-                    ((CDMainController) NSApplication.sharedApplication().delegate()).invoke(new Runnable() {
+                    ((CDController) NSApplication.sharedApplication().delegate()).invoke(new Runnable() {
                         public void run() {
-                            CDQueueController.instance().startItem(new DownloadTransfer(p));
+                            CDTransferController.instance().startItem(new DownloadTransfer(p));
                         }
                     });
 				}

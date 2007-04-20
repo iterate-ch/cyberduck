@@ -18,7 +18,12 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullComparator;
+import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDMainController;
@@ -28,15 +33,15 @@ import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSMenu;
 import com.apple.cocoa.application.NSMenuItem;
 import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSObject;
 import com.apple.cocoa.foundation.NSSelector;
 import com.apple.cocoa.foundation.NSSize;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -44,11 +49,11 @@ import java.util.*;
 public class HistoryMenuDelegate extends MenuDelegate {
     private static Logger log = Logger.getLogger(HistoryMenuDelegate.class);
 
-    public static final File HISTORY_FOLDER
-            = new File(Preferences.instance().getProperty("application.support.path"), "History");
+    public static final Local HISTORY_FOLDER
+            = new Local(Preferences.instance().getProperty("application.support.path"), "History");
 
     static {
-        HISTORY_FOLDER.mkdirs();
+        HISTORY_FOLDER.mkdir(true);
     }
 
     private static final NSImage DOCUMENT_ICON_SMALL;
@@ -59,14 +64,17 @@ public class HistoryMenuDelegate extends MenuDelegate {
         DOCUMENT_ICON_SMALL.setSize(new NSSize(16f, 16f));
     }
 
-    private List cache = new ArrayList();
+    private final List cache = new Collection();
 
     private List history() {
-        return Arrays.asList(HISTORY_FOLDER.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".duck");
-            }
-        }));
+        return HISTORY_FOLDER.childs(
+                new NullComparator(),
+                new PathFilter() {
+                    public boolean accept(AbstractPath file) {
+                        return file.getName().endsWith(".duck");
+                    }
+                }
+        );
     }
 
     /**
@@ -77,12 +85,12 @@ public class HistoryMenuDelegate extends MenuDelegate {
         if(!(cache.size() == history.size())) {
             Collections.sort(history, new Comparator() {
                 public int compare(Object o1, Object o2) {
-                    File f1 = (File) o1;
-                    File f2 = (File) o2;
-                    if(f1.lastModified() < f2.lastModified()) {
+                    Local f1 = (Local) o1;
+                    Local f2 = (Local) o2;
+                    if(f1.attributes.getModificationDate() < f2.attributes.getModificationDate()) {
                         return 1;
                     }
-                    if(f1.lastModified() > f2.lastModified()) {
+                    if(f1.attributes.getModificationDate() > f2.attributes.getModificationDate()) {
                         return -1;
                     }
                     return 0;
@@ -90,9 +98,9 @@ public class HistoryMenuDelegate extends MenuDelegate {
             });
             cache.clear();
             CDMainController m = (CDMainController) NSApplication.sharedApplication().delegate();
-            for(Iterator iter = history.iterator(); iter.hasNext(); ) {
+            for(Iterator iter = history.iterator(); iter.hasNext();) {
                 // Add the imported bookmark to the cache
-                cache.add(m.importBookmark((File)iter.next()));
+                cache.add(m.importBookmark((Local) iter.next()));
             }
         }
         if(cache.size() > 0) {
@@ -137,7 +145,7 @@ public class HistoryMenuDelegate extends MenuDelegate {
             menu.insertItemAtIndex(separator, index);
             return !shouldCancel;
         }
-        if(index == cache.size()+1) {
+        if(index == cache.size() + 1) {
             menu.removeItemAtIndex(index);
             NSMenuItem clear = new NSMenuItem();
             clear.setTitle(NSBundle.localizedString("Clear Menu", ""));
@@ -158,8 +166,8 @@ public class HistoryMenuDelegate extends MenuDelegate {
 
     public void clearMenuItemClicked(NSMenuItem sender) {
         // Delete all bookmark files
-        for(Iterator iter = this.history().iterator(); iter.hasNext(); ) {
-            ((File)iter.next()).delete();
+        for(Iterator iter = this.history().iterator(); iter.hasNext();) {
+            ((AbstractPath) iter.next()).delete();
         }
     }
 }
