@@ -16,12 +16,12 @@
             CLASS = "ch.cyberduck.ui.cocoa.CDProgressController"; 
             LANGUAGE = Java; 
             OUTLETS = {
-                filenameField = NSTextField; 
+                filesPopup = NSPopUpButton; 
                 progressBar = NSProgressIndicator; 
                 progressField = NSTextField; 
                 progressView = NSView; 
+                statusField = NSTextField; 
                 statusIconView = NSImageView; 
-                typeIconView = NSImageView; 
             }; 
             SUPERCLASS = NSObject; 
         }
