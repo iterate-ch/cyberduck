@@ -18,11 +18,14 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.io.BandwidthThrottle;
+
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -47,6 +50,11 @@ public class DownloadTransfer extends Transfer {
         NSMutableDictionary dict = super.getAsDictionary();
         dict.setObjectForKey(String.valueOf(TransferFactory.KIND_DOWNLOAD), "Kind");
         return dict;
+    }
+
+    protected void init() {
+        bandwidth = new BandwidthThrottle(
+                Preferences.instance().getInteger("queue.download.bandwidth.bytes"));
     }
 
     /**
@@ -107,7 +115,6 @@ public class DownloadTransfer extends Transfer {
     }
 
     public TransferFilter filter(final TransferAction action) {
-        // When overwriting file anyway we don't have to check if the file already exists
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             return new DownloadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
@@ -180,6 +187,24 @@ public class DownloadTransfer extends Transfer {
                 }
             };
         }
+        if(action.equals(TransferAction.ACTION_CALLBACK)) {
+            for(Iterator iter = roots.iterator(); iter.hasNext(); ) {
+                Path root = (Path)iter.next();
+                if(exists(root.getLocal())) {
+                    if(root.getLocal().attributes.isDirectory()) {
+                        if(0 == root.getLocal().childs().size()) {
+                            // Do not prompt for existing empty directories
+                            continue;
+                        }
+                    }
+                    // Prompt user to choose a filter
+                    TransferAction result = prompt.prompt(this);
+                    return this.filter(result); //break out of loop
+                }
+            }
+            // No files exist yet therefore it is most straightforward to use the overwrite action
+            return this.filter(TransferAction.ACTION_OVERWRITE);
+        }
         return super.filter(action);
     }
 
@@ -200,7 +225,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     protected void _transfer(final Path p) {
-        p.download(new AbstractStreamListener() {
+        p.download(bandwidth, new AbstractStreamListener() {
             public void bytesReceived(int bytes) {
                 transferred += bytes;
             }

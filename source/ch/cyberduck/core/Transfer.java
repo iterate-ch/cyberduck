@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.io.BandwidthThrottle;
+
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -106,12 +108,48 @@ public abstract class Transfer extends NSObject {
     }
 
     /**
-     *
+     * Called from the constructor for initialization
      */
-    protected void init() {
-       ;
+    protected abstract void init();
+
+    public Transfer(NSDictionary dict, Session s) {
+        Object rootsObj = dict.objectForKey("Roots");
+        if(rootsObj != null) {
+            NSArray r = (NSArray) rootsObj;
+            roots = new Collection();
+            for(int i = 0; i < r.count(); i++) {
+                roots.add(PathFactory.createPath(s, (NSDictionary) r.objectAtIndex(i)));
+            }
+        }
+        Object sizeObj = dict.objectForKey("Size");
+        if(sizeObj != null) {
+            this.size = Double.parseDouble(sizeObj.toString());
+        }
+        Object currentObj = dict.objectForKey("Current");
+        if(currentObj != null) {
+            this.transferred = Double.parseDouble(currentObj.toString());
+        }
+        this.init();
+        Object bandwidthObj = dict.objectForKey("Bandwidth");
+        if(bandwidthObj != null) {
+            this.bandwidth.setRate(Float.parseFloat(bandwidthObj.toString()));
+        }
     }
-    
+
+    public NSMutableDictionary getAsDictionary() {
+        NSMutableDictionary dict = new NSMutableDictionary();
+        dict.setObjectForKey(this.getHost().getAsDictionary(), "Host");
+        NSMutableArray r = new NSMutableArray();
+        for(Iterator iter = this.roots.iterator(); iter.hasNext();) {
+            r.addObject(((Path) iter.next()).getAsDictionary());
+        }
+        dict.setObjectForKey(r, "Roots");
+        dict.setObjectForKey(""+this.getSize(), "Size");
+        dict.setObjectForKey(""+this.getTransferred(), "Current");
+        dict.setObjectForKey(""+bandwidth.getRate(), "Bandwidth");
+        return dict;
+    }
+
     private List listeners = new Vector();
 
     /**
@@ -186,36 +224,21 @@ public abstract class Transfer extends NSObject {
         }
     }
 
-    public Transfer(NSDictionary dict, Session s) {
-        Object rootsObj = dict.objectForKey("Roots");
-        if(rootsObj != null) {
-            NSArray r = (NSArray) rootsObj;
-            roots = new Collection();
-            for(int i = 0; i < r.count(); i++) {
-                roots.add(PathFactory.createPath(s, (NSDictionary) r.objectAtIndex(i)));
-            }
-        }
-        Object sizeObj = dict.objectForKey("Size");
-        if(sizeObj != null) {
-            this.size = Double.parseDouble((String) sizeObj);
-        }
-        Object currentObj = dict.objectForKey("Current");
-        if(currentObj != null) {
-            this.transferred = Double.parseDouble((String) currentObj);
-        }
+    /**
+     * In Bytes per second
+     */
+    protected BandwidthThrottle bandwidth;
+
+    /**
+     *
+     * @param bytes
+     */
+    public void setBandwidth(float bytesPerSecond) {
+        bandwidth.setRate(bytesPerSecond);
     }
 
-    public NSMutableDictionary getAsDictionary() {
-        NSMutableDictionary dict = new NSMutableDictionary();
-        dict.setObjectForKey(this.getHost().getAsDictionary(), "Host");
-        NSMutableArray r = new NSMutableArray();
-        for(Iterator iter = this.roots.iterator(); iter.hasNext();) {
-            r.addObject(((Path) iter.next()).getAsDictionary());
-        }
-        dict.setObjectForKey(r, "Roots");
-        dict.setObjectForKey("" + this.getSize(), "Size");
-        dict.setObjectForKey("" + this.getTransferred(), "Current");
-        return dict;
+    public float getBandwidth() {
+        return bandwidth.getRate();
     }
 
     /**
@@ -305,18 +328,6 @@ public abstract class Transfer extends NSObject {
      * @return Null if the filter could not be determined and the transfer should be canceled instead
      */
     public TransferFilter filter(final TransferAction action) {
-        if(action.equals(TransferAction.ACTION_CALLBACK)) {
-            for(Iterator iter = roots.iterator(); iter.hasNext(); ) {
-                Path root = (Path)iter.next();
-                if(exists(root.getLocal())) {
-                    // Prompt user to choose a filter
-                    TransferAction result = prompt.prompt(this);
-                    return this.filter(result); //break out of loop
-                }
-            }
-            // No files exist yet therefore it is most straightforward to use the overwrite action
-            return this.filter(TransferAction.ACTION_OVERWRITE);
-        }
         if(action.equals(TransferAction.ACTION_CANCEL)) {
             return null;
         }
@@ -362,9 +373,9 @@ public abstract class Transfer extends NSObject {
             return;
         }
 
-        if(filter.accept(p)) {
-            this.prepare(p, filter);
+        this.prepare(p, filter);
 
+        if(filter.accept(p)) {
             this.fireWillTransferPath(p);
             _transfer(_current = p);
             this.fireDidTransferPath(p);

@@ -59,14 +59,14 @@ public class CDTransferController extends CDWindowController implements NSToolba
      * @param notification
      */
     public void windowDidBecomeKey(NSNotification notification) {
-        this.updateSelection();
+        updateHighlight();
     }
 
     /**
      * @param notification
      */
     public void windowDidResignKey(NSNotification notification) {
-        this.updateSelection();
+        updateHighlight();
     }
 
     /**
@@ -132,6 +132,33 @@ public class CDTransferController extends CDWindowController implements NSToolba
         synchronized(Queue.instance()) {
             Queue.instance().notifyAll();
         }
+    }
+
+    private NSPopUpButton bandwidthPopup;
+
+    public void setBandwidthPopup(NSPopUpButton bandwidthPopup) {
+        this.bandwidthPopup = bandwidthPopup;
+        this.bandwidthPopup.setEnabled(false);
+        this.bandwidthPopup.setAllowsMixedState(true);
+        this.bandwidthPopup.setTarget(this);
+        this.bandwidthPopup.setAction(new NSSelector("bandwidthPopupChanged", new Class[]{Object.class}));
+        this.bandwidthPopup.itemAtIndex(0).setImage(NSImage.imageNamed("bandwidth16.tiff"));
+    }
+
+    public void bandwidthPopupChanged(NSPopUpButton sender) {
+        NSEnumerator iterator = transferTable.selectedRowEnumerator();
+        synchronized(TransferCollection.instance()) {
+            int bandwidth = -1;
+            if(sender.selectedItem().tag() > 0 ) {
+                bandwidth = sender.selectedItem().tag()*1024; // from Kilobytes to Bytes
+            }
+            while(iterator.hasMoreElements()) {
+                int i = ((Number) iterator.nextElement()).intValue();
+                Transfer transfer = (Transfer) TransferCollection.instance().get(i);
+                transfer.setBandwidth(bandwidth);
+            }
+        }
+        this.updateBandwidthPopup();
     }
 
     private CDTransferController() {
@@ -231,10 +258,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
 
             public void tableViewSelectionIsChanging(NSNotification aNotification) {
-                updateSelection();
+                updateHighlight();
             }
 
             public void selectionDidChange(NSNotification notification) {
+                updateHighlight();
                 updateSelection();
             }
         });
@@ -292,55 +320,85 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder32.tiff");
     private static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
-    static {
-        MULTIPLE_DOCUMENTS_ICON.setSize(new NSSize(32f, 32f));
-        FOLDER_ICON.setSize(new NSSize(32f, 32f));
-        NOT_FOUND_ICON.setSize(new NSSize(32f, 32f));
+    private void updateHighlight() {
+        synchronized(TransferCollection.instance()) {
+            boolean key = window().isKeyWindow();
+            for(int i = 0; i < TransferCollection.instance().size(); i++) {
+                transferModel.setHighlighted((Transfer)TransferCollection.instance().get(i), transferTable.isRowSelected(i) && key);
+            }
+        }
     }
 
     /**
      * Highlights the currently selected item and udpates the text fields
      */
     private void updateSelection() {
-        synchronized(TransferCollection.instance()) {
-            boolean key = window().isKeyWindow();
-            for(int i = 0; i < TransferCollection.instance().size(); i++) {
-                transferModel.setHighlighted((Transfer)TransferCollection.instance().get(i), transferTable.isRowSelected(i) && key);
-            }
-            if(transferTable.selectedRow() != -1) {
-                final Transfer transfer = (Transfer) TransferCollection.instance().get(transferTable.selectedRow());
-                // Draw file type icon
-                NSImage fileIcon = NOT_FOUND_ICON;
-                if(transfer.getRoot().getLocal().exists()) {
-                    if(transfer.numberOfRoots() == 1) {
-                        fileIcon = transfer.getRoot().getLocal().attributes.isFile() ? NSWorkspace.sharedWorkspace().iconForFile(
-                                transfer.getRoot().getLocal().getAbsolute()) : FOLDER_ICON;
-                    }
-                    else {
-                        fileIcon = MULTIPLE_DOCUMENTS_ICON;
-                    }
-                    fileIcon.setSize(new NSSize(32f, 32f));
-                }
-                iconView.setImage(fileIcon);
-                // Draw text fields at the bottom
-                urlField.setAttributedStringValue(new NSAttributedString(transfer.getRoot().getHost().getURL(),
+        this.updateLabels();
+        this.updateIcon();
+        this.updateBandwidthPopup();
+        toolbar.validateVisibleItems();
+    }
+
+    private void updateLabels() {
+        final int selected = transferTable.numberOfSelectedRows();
+        if(1 == selected) {
+            final Transfer transfer = (Transfer) TransferCollection.instance().get(transferTable.selectedRow());
+            // Draw text fields at the bottom
+            urlField.setAttributedStringValue(new NSAttributedString(transfer.getRoot().getHost().getURL(),
+                    TRUNCATE_MIDDLE_ATTRIBUTES));
+            if(transfer.numberOfRoots() == 1) {
+                localField.setAttributedStringValue(new NSAttributedString(transfer.getRoot().getLocal().getAbsolute(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
-                if(transfer.numberOfRoots() == 1) {
-                    localField.setAttributedStringValue(new NSAttributedString(transfer.getRoot().getLocal().getAbsolute(),
-                            TRUNCATE_MIDDLE_ATTRIBUTES));
-                }
-                else {
-                    localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiple files", ""),
-                            TRUNCATE_MIDDLE_ATTRIBUTES));
-                }
             }
             else {
-                iconView.setImage(null);
-                urlField.setStringValue("");
-                localField.setStringValue("");
+                localField.setAttributedStringValue(new NSAttributedString(NSBundle.localizedString("Multiple files", ""),
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
-            toolbar.validateVisibleItems();
         }
+        else {
+            urlField.setStringValue("");
+            localField.setStringValue("");
+        }
+    }
+
+    private void updateIcon() {
+        NSImage fileIcon = NOT_FOUND_ICON;
+        final int selected = transferTable.numberOfSelectedRows();
+        if(1 == selected) {
+            final Transfer transfer = (Transfer) TransferCollection.instance().get(transferTable.selectedRow());
+            // Draw file type icon
+            if(transfer.getRoot().getLocal().exists()) {
+                if(transfer.numberOfRoots() == 1) {
+                    fileIcon = transfer.getRoot().getLocal().attributes.isFile() ? NSWorkspace.sharedWorkspace().iconForFile(
+                            transfer.getRoot().getLocal().getAbsolute()) : FOLDER_ICON;
+                }
+                else {
+                    fileIcon = MULTIPLE_DOCUMENTS_ICON;
+                }
+            }
+        }
+        fileIcon.setSize(new NSSize(32f, 32f));
+        iconView.setImage(fileIcon);
+    }
+
+    private void updateBandwidthPopup() {
+        for(int i = 0; i < bandwidthPopup.numberOfItems(); i++) {
+            bandwidthPopup.itemAtIndex(i).setState(NSCell.OffState);
+        }
+        final int selected = transferTable.numberOfSelectedRows();
+        NSEnumerator iterator = transferTable.selectedRowEnumerator();
+        while(iterator.hasMoreElements()) {
+            int i = ((Number) iterator.nextElement()).intValue();
+            Transfer transfer = (Transfer) TransferCollection.instance().get(i);
+            if(-1 == transfer.getBandwidth()) {
+                bandwidthPopup.itemAtIndex(bandwidthPopup.indexOfItemWithTag(-1)).setState(selected > 1 ? NSCell.MixedState : NSCell.OnState);
+            }
+            else {
+                int bandwidth = (int)transfer.getBandwidth()/1024;
+                bandwidthPopup.itemAtIndex(bandwidthPopup.indexOfItemWithTag(bandwidth)).setState(selected > 1 ? NSCell.MixedState : NSCell.OnState);
+            }
+        }
+        bandwidthPopup.setEnabled(selected > 0);
     }
 
     private void reloadData() {
@@ -349,7 +407,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 ((NSView) transferTable.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
             }
             transferTable.reloadData();
-            this.updateSelection();
         }
     }
 
@@ -796,7 +853,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 }
             }
         }
-        this.reloadData();
+        this.updateIcon();
     }
 
     /**

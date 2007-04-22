@@ -176,9 +176,7 @@ public abstract class CDTransferPromptModel extends NSObject {
         return Collections.EMPTY_LIST;
     }
 
-    protected static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
     protected static final NSImage ALERT_ICON = NSImage.imageNamed("alert.tiff");
-    protected static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
     protected Object objectValueForItem(final Path item, final String identifier) {
         if(identifier.equals(INCLUDE_COLUMN)) {

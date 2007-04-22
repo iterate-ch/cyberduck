@@ -235,7 +235,7 @@ public class CDProgressController extends CDController {
 
     private void setProgressText() {
         StringBuffer b = new StringBuffer();
-        b.append(Status.getSizeAsString(this.transfer.getTransferred()));
+        b.append(Status.getSizeAsString(transfer.getTransferred()));
         b.append(" ");
         b.append(NSBundle.localizedString("of", "1.2MB of 3.4MB"));
         b.append(" ");

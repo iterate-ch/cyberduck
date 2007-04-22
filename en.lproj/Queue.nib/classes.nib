@@ -20,6 +20,8 @@
             CLASS = "ch.cyberduck.core.CDQueueController"; 
             LANGUAGE = Java; 
             OUTLETS = {
+                bandwidthPopup = NSPopUpButton; 
+                iconView = NSImageView; 
                 localField = NSTextField; 
                 localLabel = NSTextField; 
                 queueSizeStepper = NSStepper; 

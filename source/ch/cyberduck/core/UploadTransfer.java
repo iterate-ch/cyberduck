@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.io.BandwidthThrottle;
+
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
@@ -48,6 +50,11 @@ public class UploadTransfer extends Transfer {
         NSMutableDictionary dict = super.getAsDictionary();
         dict.setObjectForKey(String.valueOf(TransferFactory.KIND_UPLOAD), "Kind");
         return dict;
+    }
+
+    protected void init() {
+        bandwidth = new BandwidthThrottle(
+                Preferences.instance().getInteger("queue.upload.bandwidth.bytes"));
     }
 
     /**
@@ -192,6 +199,18 @@ public class UploadTransfer extends Transfer {
                 }
             };
         }
+        if(action.equals(TransferAction.ACTION_CALLBACK)) {
+            for(Iterator iter = roots.iterator(); iter.hasNext(); ) {
+                Path root = (Path)iter.next();
+                if(exists(root)) {
+                    // Prompt user to choose a filter
+                    TransferAction result = prompt.prompt(this);
+                    return this.filter(result); //break out of loop
+                }
+            }
+            // No files exist yet therefore it is most straightforward to use the overwrite action
+            return this.filter(TransferAction.ACTION_OVERWRITE);
+        }
         return super.filter(action);
     }
 
@@ -217,7 +236,7 @@ public class UploadTransfer extends Transfer {
     }
 
     protected void _transfer(final Path p) {
-        p.upload(new AbstractStreamListener() {
+        p.upload(bandwidth, new AbstractStreamListener() {
             public void bytesSent(int bytes) {
                 transferred += bytes;
             }

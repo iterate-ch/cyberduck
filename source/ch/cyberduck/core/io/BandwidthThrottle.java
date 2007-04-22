@@ -94,6 +94,8 @@ public class BandwidthThrottle {
 
     }
 
+    private float _rate = -1;
+
     /**
      * Sets the throttle to the given throttle rate.  The default windows size
      * T is used.  The bytes per windows N is calculated from bytesPerSecond.
@@ -102,10 +104,20 @@ public class BandwidthThrottle {
      *                       (not milliseconds!)
      */
     public void setRate(float bytesPerSecond) {
-        _bytesPerTick = (int) (bytesPerSecond / TICKS_PER_SECOND);
+        if(bytesPerSecond < 0) {
+            _rate = -1;
+        }
+        else {
+            _rate = bytesPerSecond;
+            _bytesPerTick = (int) (bytesPerSecond / TICKS_PER_SECOND);
+        }
         if(_switching) {
             this.fixBytesPerTick(true);
         }
+    }
+
+    public float getRate() {
+        return _rate;
     }
 
     /**
@@ -143,6 +155,9 @@ public class BandwidthThrottle {
      *         is always greater than one and less than or equal to desired
      */
     synchronized public int request(int desired) {
+        if(-1 == _rate) {
+            return desired;
+        }
         waitForBandwidth();
         int result = Math.min(desired, _availableBytes);
         _availableBytes -= result;
