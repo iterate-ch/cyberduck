@@ -23,7 +23,14 @@ import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSObject;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * Facade for com.apple.cocoa.foundation.NSMutableArray
@@ -410,5 +417,3 @@ public class AttributedList extends NSObject implements List {
         throw new UnsupportedOperationException("Not implemented");
     }
 }
-
-

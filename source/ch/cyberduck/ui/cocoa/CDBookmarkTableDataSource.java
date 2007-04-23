@@ -20,8 +20,20 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSDraggingInfo;
+import com.apple.cocoa.application.NSDraggingSource;
+import com.apple.cocoa.application.NSEvent;
+import com.apple.cocoa.application.NSImage;
+import com.apple.cocoa.application.NSPasteboard;
+import com.apple.cocoa.application.NSTableColumn;
+import com.apple.cocoa.application.NSTableView;
+import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSMutableArray;
+import com.apple.cocoa.foundation.NSObject;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSRect;
+import com.apple.cocoa.foundation.NSSize;
 
 import org.apache.log4j.Logger;
 
@@ -79,50 +91,6 @@ public class CDBookmarkTableDataSource extends NSObject {
 //            }
 //        }
 //        return filtered;
-//    }
-//
-//    /**
-//     * Overwritten returning filtered resultset
-//     * @param row
-//     * @return
-//     */
-//    public Object get(int row) {
-//        return this.filter(HostCollection.instance()).get(row);
-//    }
-//
-//    /**
-//     * Overwritten returning filtered resultset
-//     * @param item
-//     * @return
-//     */
-//    public int indexOf(Host item) {
-//        return this.filter(HostCollection.instance()).indexOf(item);
-//    }
-//
-//    /**
-//     * Overwritten returning filtered resultset
-//     * @param row
-//     */
-//    public void remove(int row) {
-//        HostCollection.instance().remove(
-//                HostCollection.instance().indexOf(this.filter(HostCollection.instance()).get(row)));
-//    }
-//
-//    /**
-//     * Overwritten returning filtered resultset
-//     * @param item
-//     * @return
-//     */
-//    public int lastIndexOf(Host item) {
-//        return this.filter(HostCollection.instance()).lastIndexOf(item);
-//    }
-//
-//    /**
-//     * Overwritten returning filtered resultset
-//     * @return
-//     */
-//    public int size() {
-//        return this.filter(HostCollection.instance()).size();
 //    }
 
     /**

@@ -18,14 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.core.DownloadTransfer;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.Transfer;
-import ch.cyberduck.core.TransferCollection;
-import ch.cyberduck.core.TransferFactory;
+import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.NSDraggingInfo;
 import com.apple.cocoa.application.NSPasteboard;
@@ -38,6 +31,7 @@ import com.apple.cocoa.foundation.NSObject;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -74,11 +68,52 @@ public class CDTransferTableDataSource extends NSObject {
 
     /**
      *
+     */
+    private TransferFilter filter = new NullTransferFilter();
+
+    /**
+     *
+     * @param searchString
+     */
+    public void setFilter(final String searchString) {
+        if(null == searchString || searchString.length() == 0) {
+            // Revert to the default filter
+            this.filter = new NullTransferFilter();
+        }
+        else {
+            // Setting up a custom filter
+            this.filter = new TransferFilter() {
+                public boolean accept(Transfer transfer) {
+                    // Match for pathnames and hostname
+                    return transfer.getName().indexOf(searchString) != -1
+                            || transfer.getHost().getHostname().indexOf(searchString) != -1;
+                }
+            };
+        }
+    }
+
+    private Collection filter(Collection c) {
+        if(null == filter) {
+            return c;
+        }
+        Collection filtered = new Collection(c);
+        Transfer t = null;
+        for(Iterator i = filtered.iterator(); i.hasNext();) {
+            if(!filter.accept(t = (Transfer) i.next())) {
+                //temporarly remove the t from the collection
+                i.remove();
+            }
+        }
+        return filtered;
+    }
+
+    /**
+     *
      * @param view
      */
     public int numberOfRowsInTableView(NSTableView view) {
         synchronized(TransferCollection.instance()) {
-            return TransferCollection.instance().size();
+            return this.filter(TransferCollection.instance()).size();
         }
     }
 
@@ -93,13 +128,13 @@ public class CDTransferTableDataSource extends NSObject {
             if (row < numberOfRowsInTableView(view)) {
                 final String identifier = (String) tableColumn.identifier();
                 if (identifier.equals(ICON_COLUMN)) {
-                    return (Transfer) TransferCollection.instance().get(row);
+                    return (Transfer) this.filter(TransferCollection.instance()).get(row);
                 }
                 if (identifier.equals(PROGRESS_COLUMN)) {
-                    return ((CDProgressController)controllers.get(TransferCollection.instance().get(row))).view();
+                    return ((CDProgressController)controllers.get(this.filter(TransferCollection.instance()).get(row))).view();
                 }
                 if (identifier.equals(TYPEAHEAD_COLUMN)) {
-                    return ((Transfer) TransferCollection.instance().get(row)).getName();
+                    return ((Transfer) this.filter(TransferCollection.instance()).get(row)).getName();
                 }
                 throw new IllegalArgumentException("Unknown identifier: " + identifier);
             }

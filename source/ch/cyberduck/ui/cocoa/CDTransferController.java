@@ -134,6 +134,28 @@ public class CDTransferController extends CDWindowController implements NSToolba
             Queue.instance().notifyAll();
         }
     }
+        
+    private NSTextField filterField; // IBOutlet
+
+    public void setFilterField(NSTextField filterField) {
+        this.filterField = filterField;
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("filterFieldTextDidChange", new Class[]{Object.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.filterField);
+    }
+
+    public void filterFieldTextDidChange(NSNotification notification) {
+        NSDictionary userInfo = notification.userInfo();
+        if(null != userInfo) {
+            Object o = userInfo.allValues().lastObject();
+            if(null != o) {
+                final String searchString = ((NSText) o).string();
+                transferModel.setFilter(searchString);
+                this.reloadData();
+            }
+        }
+    }
 
     private NSPopUpButton bandwidthPopup;
 
@@ -378,7 +400,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private void updateSelection() {
         log.debug("updateSelection");
         this.updateLabels();
-        this.updateIcon();
+        this.updateIcon(null);
         this.updateBandwidthPopup();
         toolbar.validateVisibleItems();
     }
@@ -407,10 +429,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
             urlField.setStringValue("");
             localField.setStringValue("");
         }
-    }
-
-    private void updateIcon() {
-        this.updateIcon(null);
     }
 
     /**
@@ -592,7 +610,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
             public void cleanup() {
                 window.toolbar().validateVisibleItems();
-                updateIcon();
+                updateIcon(null);
                 if(transfer.isComplete() && !transfer.isCanceled()) {
                     if(transfer instanceof DownloadTransfer) {
                         Growl.instance().notify("Download complete", transfer.getName());
@@ -647,6 +665,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private static final String TOOLBAR_SHOW = "Show";
     private static final String TOOLBAR_TRASH = "Trash";
     private static final String TOOLBAR_QUEUE = "Maximum Transfers";
+    private static final String TOOLBAR_FILTER = "Search";
 
     /**
      * NSToolbar.Delegate
@@ -736,6 +755,14 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setView(this.queueSizeView);
             item.setMinSize(this.queueSizeView.frame().size());
             item.setMaxSize(this.queueSizeView.frame().size());
+            return item;
+        }
+        if(itemIdentifier.equals(TOOLBAR_FILTER)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_FILTER, ""));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_FILTER, ""));
+            item.setView(this.filterField);
+            item.setMinSize(this.filterField.frame().size());
+            item.setMaxSize(this.filterField.frame().size());
             return item;
         }
         // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
@@ -909,7 +936,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 }
             }
         }
-        this.updateIcon();
+        this.updateIcon(null);
     }
 
     /**
@@ -947,6 +974,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 TOOLBAR_OPEN,
                 TOOLBAR_TRASH,
                 TOOLBAR_QUEUE,
+                TOOLBAR_FILTER,
                 NSToolbarItem.CustomizeToolbarItemIdentifier,
                 NSToolbarItem.SpaceItemIdentifier,
                 NSToolbarItem.SeparatorItemIdentifier,

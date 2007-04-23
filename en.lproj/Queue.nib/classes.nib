@@ -21,6 +21,7 @@
             LANGUAGE = Java; 
             OUTLETS = {
                 bandwidthPopup = NSPopUpButton; 
+                filterField = NSSearchField; 
                 iconView = NSImageView; 
                 localField = NSTextField; 
                 localLabel = NSTextField; 
