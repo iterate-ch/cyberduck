@@ -56,6 +56,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     protected Transfer transfer;
 
     public void callback(final int returncode) {
+        log.debug("callback:"+returncode);
         if(returncode == DEFAULT_OPTION) { // Continue
             if(actionPopup.selectedItem().title().equals(ACTION_OVERWRITE)) {
                 action = TransferAction.ACTION_OVERWRITE;
@@ -81,12 +82,16 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     public void beginSheet(final boolean blocking) {
         super.beginSheet(blocking);
         this.reloadData();
+        if(browserView.numberOfRows() > 0) {
+            browserView.selectRow(0, false);
+        }
     }
 
     /**
      * Reload the files in the prompt dialog
      */
     public void reloadData() {
+        log.debug("reloadData");
         browserView.reloadData();
     }
 
@@ -98,6 +103,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
      * @return
      */
     public TransferAction prompt(Transfer transfer) {
+        log.debug("prompt:"+transfer);
         this.transfer = transfer;
 
         parent.invoke(new Runnable() {

@@ -107,6 +107,7 @@ public class SyncTransfer extends Transfer {
     }
 
     public TransferFilter filter(final TransferAction action) {
+        log.debug("filter:"+action);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             return new TransferFilter() {
                 private TransferFilter _delegateFilterDownload
@@ -161,18 +162,19 @@ public class SyncTransfer extends Transfer {
     }
 
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
+        log.debug("action:");
         return TransferAction.ACTION_CALLBACK;
     }
 
-    protected void _transfer(final Path p) {
+    protected void _transferImpl(final Path p) {
         try {
             Preferences.instance().setProperty("queue.upload.preserveDate.fallback", true);
             Comparison compare = this.compare(p);
             if(compare.equals(COMPARISON_REMOTE_NEWER)) {
-                _delegateDownload._transfer(p);
+                _delegateDownload._transferImpl(p);
             }
             else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
-                _delegateUpload._transfer(p);
+                _delegateUpload._transferImpl(p);
             }
         }
         finally {

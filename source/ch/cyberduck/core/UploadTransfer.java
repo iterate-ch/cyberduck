@@ -54,7 +54,7 @@ public class UploadTransfer extends Transfer {
 
     protected void init() {
         bandwidth = new BandwidthThrottle(
-                Preferences.instance().getInteger("queue.upload.bandwidth.bytes"));
+                Preferences.instance().getFloat("queue.upload.bandwidth.bytes"));
     }
 
     /**
@@ -127,6 +127,7 @@ public class UploadTransfer extends Transfer {
     }
 
     public TransferFilter filter(final TransferAction action) {
+        log.debug("filter:"+action);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             return new UploadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
@@ -220,6 +221,7 @@ public class UploadTransfer extends Transfer {
     }
 
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
+        log.debug("action:");
         if(resumeRequested) {
             // Force resume
             return TransferAction.ACTION_RESUME;
@@ -235,7 +237,7 @@ public class UploadTransfer extends Transfer {
         );
     }
 
-    protected void _transfer(final Path p) {
+    protected void _transferImpl(final Path p) {
         p.upload(bandwidth, new AbstractStreamListener() {
             public void bytesSent(int bytes) {
                 transferred += bytes;

@@ -54,7 +54,7 @@ public class DownloadTransfer extends Transfer {
 
     protected void init() {
         bandwidth = new BandwidthThrottle(
-                Preferences.instance().getInteger("queue.download.bandwidth.bytes"));
+                Preferences.instance().getFloat("queue.download.bandwidth.bytes"));
     }
 
     /**
@@ -115,6 +115,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     public TransferFilter filter(final TransferAction action) {
+        log.debug("filter:"+action);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             return new DownloadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
@@ -209,6 +210,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
+        log.debug("action:");
         if(resumeRequested) {
             // Force resume
             return TransferAction.ACTION_RESUME;
@@ -224,7 +226,7 @@ public class DownloadTransfer extends Transfer {
         );
     }
 
-    protected void _transfer(final Path p) {
+    protected void _transferImpl(final Path p) {
         p.download(bandwidth, new AbstractStreamListener() {
             public void bytesReceived(int bytes) {
                 transferred += bytes;

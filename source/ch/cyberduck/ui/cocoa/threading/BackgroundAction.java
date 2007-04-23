@@ -31,6 +31,7 @@ public interface BackgroundAction extends Runnable {
     /**
      * To be called from the main interface thread after the #run
      * has finished to allow calls to non-threadable view classes
+     * @see CDMainController#invoke
      */
     public abstract void cleanup();
 }

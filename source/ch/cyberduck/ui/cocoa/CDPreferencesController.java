@@ -70,6 +70,7 @@ public class CDPreferencesController extends CDWindowController {
     private NSView panelFTP;
     private NSView panelFTPTLS;
     private NSView panelSFTP;
+    private NSView panelBandwidth;
     private NSView panelAdvanced;
     private NSView panelUpdate;
 
@@ -79,6 +80,10 @@ public class CDPreferencesController extends CDWindowController {
 
     public void setPanelAdvanced(NSView panelAdvanced) {
         this.panelAdvanced = panelAdvanced;
+    }
+
+    public void setPanelBandwidth(NSView panelBandwidth) {
+        this.panelBandwidth = panelBandwidth;
     }
 
     public void setPanelSFTP(NSView panelSFTP) {
@@ -197,8 +202,9 @@ public class CDPreferencesController extends CDWindowController {
         tabView.tabViewItemAtIndex(3).setView(panelFTP);
         tabView.tabViewItemAtIndex(4).setView(panelFTPTLS);
         tabView.tabViewItemAtIndex(5).setView(panelSFTP);
-        tabView.tabViewItemAtIndex(6).setView(panelAdvanced);
-        tabView.tabViewItemAtIndex(7).setView(panelUpdate);
+        tabView.tabViewItemAtIndex(6).setView(panelBandwidth);
+        tabView.tabViewItemAtIndex(7).setView(panelAdvanced);
+        tabView.tabViewItemAtIndex(8).setView(panelUpdate);
     }
 
     private static final String CONNECTMODE_ACTIVE = NSBundle.localizedString("Active", "");
@@ -1123,6 +1129,10 @@ public class CDPreferencesController extends CDWindowController {
 
     private NSTextField loginField; //IBOutlet
 
+    /**
+     * Default SSH login name
+     * @param loginField
+     */
     public void setLoginField(NSTextField loginField) {
         this.loginField = loginField;
         this.loginField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
@@ -1502,6 +1512,10 @@ public class CDPreferencesController extends CDWindowController {
 
     private NSButton acceptAnyCertificateCheckbox; //IBOutlet
 
+    /**
+     * FTPS Certificate
+     * @param acceptAnyCertificateCheckbox
+     */
     public void setAcceptAnyCertificateCheckbox(NSButton acceptAnyCertificateCheckbox) {
         this.acceptAnyCertificateCheckbox = acceptAnyCertificateCheckbox;
         this.acceptAnyCertificateCheckbox.setTarget(this);
@@ -1517,6 +1531,10 @@ public class CDPreferencesController extends CDWindowController {
 
     private NSButton secureDataChannelCheckbox; //IBOutlet
 
+    /**
+     * FTPS Data Channel Security
+     * @param secureDataChannelCheckbox
+     */
     public void setSecureDataChannelCheckbox(NSButton secureDataChannelCheckbox) {
         this.secureDataChannelCheckbox = secureDataChannelCheckbox;
         this.secureDataChannelCheckbox.setTarget(this);
@@ -1536,6 +1554,10 @@ public class CDPreferencesController extends CDWindowController {
 
     private NSButton failInsecureDataChannelCheckbox; //IBOutlet
 
+    /**
+     * FTPS Data Channel Security
+     * @param failInsecureDataChannelCheckbox
+     */
     public void setFailInsecureDataChannelCheckbox(NSButton failInsecureDataChannelCheckbox) {
         this.failInsecureDataChannelCheckbox = failInsecureDataChannelCheckbox;
         this.failInsecureDataChannelCheckbox.setTarget(this);
@@ -1551,6 +1573,10 @@ public class CDPreferencesController extends CDWindowController {
 
     private NSPopUpButton sshTransfersCombobox; //IBOutlet
 
+    /**
+     * SSH Transfers (SFTP or SCP)
+     * @param sshTransfersCombobox
+     */
     public void setSshTransfersCombobox(NSPopUpButton sshTransfersCombobox) {
         this.sshTransfersCombobox = sshTransfersCombobox;
         this.sshTransfersCombobox.setTarget(this);
@@ -1594,6 +1620,10 @@ public class CDPreferencesController extends CDWindowController {
 
     private NSPopUpButton defaultFTPHandlerCombobox; //IBOutlet
 
+    /**
+     * Protocol Handler FTP
+     * @param defaultFTPHandlerCombobox
+     */
     public void setDefaultFTPHandlerCombobox(NSPopUpButton defaultFTPHandlerCombobox) {
         this.defaultFTPHandlerCombobox = defaultFTPHandlerCombobox;
         this.defaultFTPHandlerCombobox.setTarget(this);
@@ -1610,6 +1640,10 @@ public class CDPreferencesController extends CDWindowController {
 
     private NSPopUpButton defaultSFTPHandlerCombobox; //IBOutlet
 
+    /**
+     * Protocol Handler SFTP
+     * @param defaultSFTPHandlerCombobox
+     */
     public void setDefaultSFTPHandlerCombobox(NSPopUpButton defaultSFTPHandlerCombobox) {
         this.defaultSFTPHandlerCombobox = defaultSFTPHandlerCombobox;
         this.defaultSFTPHandlerCombobox.setTarget(this);
@@ -1622,5 +1656,63 @@ public class CDPreferencesController extends CDWindowController {
         URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
                 Session.SFTP, sender.selectedItem().representedObject().toString()
         );
+    }
+
+    private NSPopUpButton defaultDownloadThrottleCombobox; //IBOutlet
+
+    /**
+     * Download Bandwidth
+     * @param defaultDownloadThrottleCombobox
+     */
+    public void setDefaultDownloadThrottleCombobox(NSPopUpButton defaultDownloadThrottleCombobox) {
+        this.defaultDownloadThrottleCombobox = defaultDownloadThrottleCombobox;
+        this.defaultDownloadThrottleCombobox.setTarget(this);
+        this.defaultDownloadThrottleCombobox.setAction(new NSSelector("defaultDownloadThrottleComboboxClicked", new Class[]{NSPopUpButton.class}));
+        float bandwidth = (int)Preferences.instance().getFloat("queue.download.bandwidth.bytes");
+        if(-1 == bandwidth) {
+            this.defaultDownloadThrottleCombobox.selectItemWithTag(-1);
+        }
+        else {
+            this.defaultDownloadThrottleCombobox.selectItemWithTag((int)bandwidth/1024);
+        }
+    }
+
+    public void defaultDownloadThrottleComboboxClicked(NSPopUpButton sender) {
+        int tag = sender.selectedItem().tag();
+        if(-1 == tag) {
+            Preferences.instance().setProperty("queue.download.bandwidth.bytes", -1);
+        }
+        else {
+            Preferences.instance().setProperty("queue.download.bandwidth.bytes", (float)tag*1024);
+        }
+    }
+
+    private NSPopUpButton defaultUploadThrottleCombobox; //IBOutlet
+
+    /**
+     * Upload Bandwidth
+     * @param defaultUploadThrottleCombobox
+     */
+    public void setDefaultUploadThrottleCombobox(NSPopUpButton defaultUploadThrottleCombobox) {
+        this.defaultUploadThrottleCombobox = defaultUploadThrottleCombobox;
+        this.defaultUploadThrottleCombobox.setTarget(this);
+        this.defaultUploadThrottleCombobox.setAction(new NSSelector("defaultUploadThrottleComboboxClicked", new Class[]{NSPopUpButton.class}));
+        float bandwidth = (int)Preferences.instance().getFloat("queue.upload.bandwidth.bytes");
+        if(-1 == bandwidth) {
+            this.defaultUploadThrottleCombobox.selectItemWithTag(-1);
+        }
+        else {
+            this.defaultUploadThrottleCombobox.selectItemWithTag((int)bandwidth/1024);
+        }
+    }
+
+    public void defaultUploadThrottleComboboxClicked(NSPopUpButton sender) {
+        int tag = sender.selectedItem().tag();
+        if(-1 == tag) {
+            Preferences.instance().setProperty("queue.upload.bandwidth.bytes", -1);
+        }
+        else {
+            Preferences.instance().setProperty("queue.upload.bandwidth.bytes", (float)tag*1024);
+        }
     }
 }

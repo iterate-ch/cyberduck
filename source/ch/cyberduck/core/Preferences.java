@@ -112,6 +112,14 @@ public abstract class Preferences {
     }
 
     /**
+     * @param property The name of the property to overwrite
+     * @param v        The new vlaue
+     */
+    public void setProperty(String property, float v) {
+        this.setProperty(property, String.valueOf(v));
+    }
+
+    /**
      * setting the default prefs values
      */
     protected void setDefaults() {
@@ -426,6 +434,10 @@ public abstract class Preferences {
 
     public int getInteger(String property) {
         return Integer.parseInt(this.getObject(property).toString());
+    }
+
+    public float getFloat(String property) {
+        return Float.parseFloat(this.getObject(property).toString());
     }
 
     public double getDouble(String property) {

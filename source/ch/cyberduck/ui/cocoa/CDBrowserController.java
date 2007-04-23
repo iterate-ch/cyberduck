@@ -288,7 +288,7 @@ public class CDBrowserController extends CDWindowController
                 path.setLocal(new Local((String) localObj));
             }
             final Transfer q = new SyncTransfer(path);
-            q.transfer(CDTransferPrompt.create(this, q));
+            q.start(CDTransferPrompt.create(this, q));
         }
         return null;
     }
@@ -316,7 +316,7 @@ public class CDBrowserController extends CDWindowController
                 path.setLocal(new Local(path.getLocal().getParent().getAbsolute(), (String) nameObj));
             }
             final Transfer q = new DownloadTransfer(path);
-            q.transfer(CDTransferPrompt.create(this, q));
+            q.start(CDTransferPrompt.create(this, q));
         }
         return null;
     }
@@ -343,7 +343,7 @@ public class CDBrowserController extends CDWindowController
                 path.setPath(this.workdir().getAbsolute(), (String) nameObj);
             }
             final Transfer q = new UploadTransfer(path);
-            q.transfer(CDTransferPrompt.create(this, q));
+            q.start(CDTransferPrompt.create(this, q));
         }
         return null;
     }
@@ -2414,7 +2414,10 @@ public class CDBrowserController extends CDWindowController
     public void uploadPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
         sheet.close();
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
-            final Path workdir = this.workdir();
+            Path workdir = this.getSelectedPath();
+            if(null == workdir || !workdir.attributes.isDirectory()) {
+                workdir = this.workdir();
+            }
             // selected files on the local filesystem
             NSArray selected = sheet.filenames();
             java.util.Enumeration iterator = selected.objectEnumerator();
@@ -2508,7 +2511,7 @@ public class CDBrowserController extends CDWindowController
             });
             this.background(new BackgroundAction() {
                 public void run() {
-                    transfer.transfer(CDTransferPrompt.create(CDBrowserController.this, transfer));
+                    transfer.start(CDTransferPrompt.create(CDBrowserController.this, transfer));
                 }
 
                 public void cleanup() {

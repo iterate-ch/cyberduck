@@ -82,6 +82,7 @@ public abstract class CDTransferPromptModel extends NSObject {
 
     protected abstract class PromptFilter implements PathFilter {
         public boolean accept(AbstractPath file) {
+            log.debug("accept:"+file);
             if(transfer.exists(file)) {
                 if(file.attributes.getSize() == -1) {
                     ((Path)file).readSize();
@@ -143,6 +144,7 @@ public abstract class CDTransferPromptModel extends NSObject {
                     controller.background(new BackgroundActionImpl(controller) {
                         public void run() {
                             try {
+                                log.debug("childs:"+parent);
                                 transfer.childs(parent);
                             }
                             finally {

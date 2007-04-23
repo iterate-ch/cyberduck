@@ -234,6 +234,7 @@ public abstract class Transfer extends NSObject {
      * @param bytes
      */
     public void setBandwidth(float bytesPerSecond) {
+        log.debug("setBandwidth:"+bytesPerSecond);
         bandwidth.setRate(bytesPerSecond);
     }
 
@@ -289,10 +290,12 @@ public abstract class Transfer extends NSObject {
          * @see PathFilter#accept(AbstractPath)
          */
         public void prepare(Path file) {
+            log.debug("prepare:"+file);
             file.status.setPrepared(true);
         }
 
         public boolean accept(AbstractPath file) {
+            log.debug("accept:"+file);
             if(exists(file)) {
                 if(file.attributes.getSize() == -1) {
                     ((Path)file).readSize();
@@ -318,6 +321,7 @@ public abstract class Transfer extends NSObject {
      */
     public boolean exists(AbstractPath file) {
         if(!_existing.containsKey(file)) {
+            log.debug("exists:"+file);
             _existing.put(file, Boolean.valueOf(file.exists()));
         }
         return ((Boolean)_existing.get(file)).booleanValue();
@@ -377,7 +381,7 @@ public abstract class Transfer extends NSObject {
 
         if(filter.accept(p)) {
             this.fireWillTransferPath(p);
-            _transfer(_current = p);
+            _transferImpl(_current = p);
             this.fireDidTransferPath(p);
         }
 
@@ -400,7 +404,7 @@ public abstract class Transfer extends NSObject {
      * @see ch.cyberduck.core.Path#download()
      * @see ch.cyberduck.core.Path#upload()
      */
-    protected abstract void _transfer(final Path p);
+    protected abstract void _transferImpl(final Path p);
 
     /**
      * @param resumeRequested
@@ -459,6 +463,7 @@ public abstract class Transfer extends NSObject {
      * @param filter
      */
     private void prepare(Path p, final TransferFilter filter) {
+        log.debug("prepare:"+p);
         if(p.status.isPrepared()) {
             // The path has already been prepared for transfer
             return;
@@ -493,6 +498,7 @@ public abstract class Transfer extends NSObject {
      * no longer connected
      */
     private boolean check() {
+        log.debug("check:");
         if(!this.getSession().isConnected()) {
             // Bail out if no more connected
             return false;
@@ -508,14 +514,15 @@ public abstract class Transfer extends NSObject {
      * Clear all cached values
      */
     protected void clear() {
+        log.debug("clear");
         _existing.clear();
     }
 
     /**
      * @param prompt
      */
-    public void transfer(TransferPrompt prompt) {
-        this.transfer(prompt, false, false, false);
+    public void start(TransferPrompt prompt) {
+        this.start(prompt, false, false, false);
     }
 
     /**
@@ -533,8 +540,8 @@ public abstract class Transfer extends NSObject {
      * @param reloadRequested
      * @param queued
      */
-    public void transfer(TransferPrompt prompt, final boolean resumeRequested, final boolean reloadRequested, final boolean queued) {
-        log.debug("run:" + queued);
+    public void start(TransferPrompt prompt, final boolean resumeRequested, final boolean reloadRequested, final boolean queued) {
+        log.debug("start:"+prompt);
         try {
             this.fireTransferWillStart();
             if(queued) {
@@ -579,6 +586,7 @@ public abstract class Transfer extends NSObject {
      * @see Session#interrupt()
      */
     public void interrupt() {
+        log.debug("interrupt:");
         this.getSession().interrupt();
     }
 
@@ -588,6 +596,7 @@ public abstract class Transfer extends NSObject {
      * state, the underlying session's socket is interrupted to force exit.
      */
     public void cancel() {
+        log.debug("cancel:");
         if(this.isCanceled()) {
             // Called prevously; now force
             this.interrupt();
@@ -607,6 +616,7 @@ public abstract class Transfer extends NSObject {
      * Recalculate the size of the <code>queue</code>
      */
     protected void reset() {
+        log.debug("reset:");
         this.transferred = 0;
         this.size = 0;
     }
