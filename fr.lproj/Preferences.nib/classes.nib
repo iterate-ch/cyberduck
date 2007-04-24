@@ -42,8 +42,10 @@
                 confirmDisconnectCheckbox = NSButton; 
                 connectmodeCombobox = NSPopUpButton; 
                 defaultBookmarkCombobox = NSPopUpButton; 
+                defaultDownloadThrottleCombobox = NSPopUpButton; 
                 defaultFTPHandlerCombobox = NSPopUpButton; 
                 defaultSFTPHandlerCombobox = NSPopUpButton; 
+                defaultUploadThrottleCombobox = NSPopUpButton; 
                 dgroupr = NSButton; 
                 dgroupw = NSButton; 
                 dgroupx = NSButton; 
@@ -74,6 +76,7 @@
                 openAfterDownloadCheckbox = NSButton; 
                 openUntitledBrowserCheckbox = NSButton; 
                 panelAdvanced = NSView; 
+                panelBandwidth = NSView; 
                 panelFTP = NSView; 
                 panelFTPTLS = NSView; 
                 panelGeneral = NSView; 
