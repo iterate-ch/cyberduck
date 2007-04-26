@@ -25,7 +25,7 @@
 
 	<property file="build.properties"/>
 
-	<property name="debug" value="on"/>
+	<property name="debug" value="off"/>
 	<property name="home" value="."/>
 	<property name="unittests" value="${home}/test"/>
 	<property name="build" value="${home}/build"/>
@@ -359,7 +359,6 @@
 			manifest="${build}/MANIFEST.MF">
 			<fileset dir="${build.classes}">
 				<include name="com/enterprisedt/**/*.class"/>
-				<include name="org/apache/commons/net/**/*.class"/>
 			</fileset>
 		</jar>
 	</target>
