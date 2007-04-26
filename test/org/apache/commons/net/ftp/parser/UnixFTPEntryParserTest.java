@@ -19,15 +19,15 @@ package org.apache.commons.net.ftp.parser;
  */
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ftp.FTPParserFactory;
 
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+
+import java.util.Calendar;
 
 /**
  * @version $Id$
@@ -41,14 +41,11 @@ public class UnixFTPEntryParserTest extends TestCase
     }
 
     private FTPFileEntryParser parser;
-    private Path parent;
 
 
     public void setUp() throws Exception
     {
-        this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser("UNIX");
-        this.parent = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
-                "/");
+        this.parser = new FTPParserFactory().createFileEntryParser("UNIX");
     }
 
     public void tearDown() throws Exception
@@ -56,41 +53,81 @@ public class UnixFTPEntryParserTest extends TestCase
         super.tearDown();
     }
 
-    public void testParseFTPEntry() throws Exception
+    public void testParseFTPEntryExpected() throws Exception
     {
-        Path parsed = null;
-        parsed = parser.parseFTPEntry(parent,
-                "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 ADMIN_Documentation");
+        FTPFile parsed = null;
+
+        parsed = parser.parseFTPEntry(
+                "drw-rw-rw-   1 user      ftp             0  Mar 11 20:56 ADMIN_Documentation");
         assertNotNull(parsed);
-        assertEquals(parsed.attributes.getType(), Path.DIRECTORY_TYPE);
-        assertEquals(parsed.attributes.getPermission().getMask(), "rw-rw-rw-");
-        assertEquals(parsed.attributes.getOwner(), "ftp");
-        assertEquals(parsed.attributes.getGroup(), "ftp");
+        assertEquals(parsed.getType(), FTPFile.DIRECTORY_TYPE);
+        assertEquals(parsed.getUser(), "user");
+        assertEquals(parsed.getGroup(), "ftp");
         assertEquals(parsed.getName(), "ADMIN_Documentation");
 
-//        "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 127.0.0.1x
-//        "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 ADMIN_Documentation
-//        "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 ADMIN_Interfaces
-//        "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 ADMIN_Scripts
-//        "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 ADMIN_Web
-//        "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 Groups
-//        "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 My web page
-//        "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 Personal
-//        "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 Test
-//        "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 TestCollaba
-//        "drw-rw-rw-   1 ftp      ftp             0  Mar 11 20:56 TestCSSH
-        parsed = parser.parseFTPEntry(parent,
+        parsed = parser.parseFTPEntry(
                 "drwxr--r--   1 user     group          0 Feb 14 18:14 Downloads");
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "Downloads");
     }
 
-    public void testUpperLowerCase() throws Exception {
-        Path parsed = null;
+    public void testParseNameWithBeginningWhitespace() {
+        FTPFile parsed = null;
+
+        parsed = parser.parseFTPEntry(
+                "drw-rw-rw-   1 user      ftp             0  Mar 11 20:56  ADMIN_Documentation");
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), " ADMIN_Documentation");
+    }
+
+    public void testSizeWithIndicator() throws Exception {
+        FTPFile parsed = null;
+
+        parsed = parser.parseFTPEntry(
+                "-rw-rw-rw- 1 ftp operator 9.0M Mar 22 17:44 Cyberduck-2.7.3.dmg");
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), "Cyberduck-2.7.3.dmg");
+        assertTrue(parsed.getSize() == 9.0*(2^20));
+    }
+
+    public void testDoubleWhitespace() throws Exception {
+        FTPFile parsed = null;
+
+        parsed = parser.parseFTPEntry(
+                "-rwxrwxrwx   1 root     system         9960 Dec 29 2005  dispus");
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), "dispus");
+        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
+        assertEquals(parsed.getUser(), "root");
+        assertEquals(parsed.getGroup(), "system");
+    }
+
+    public void testLowerCaseMonths() throws Exception {
+        FTPFile parsed = null;
         
-        parsed = parser.parseFTPEntry(parent,
+        parsed = parser.parseFTPEntry(
                 "drwxrwxrwx    41 spinkb  spinkb      1394 jan 21 20:57 Desktop");
         assertNotNull(parsed);
+        assertEquals(parsed.getName(), "Desktop");
+        assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
+        assertEquals(parsed.getUser(), "spinkb");
+        assertEquals(parsed.getGroup(), "spinkb");
+        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.JANUARY);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 21);
+    }
+
+    public void testUpperCaseMonths() throws Exception {
+        FTPFile parsed = null;
+
+        parsed = parser.parseFTPEntry(
+                "drwxrwxrwx    41 spinkb  spinkb      1394 Feb 21 20:57 Desktop");
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), "Desktop");
+        assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
+        assertEquals(parsed.getUser(), "spinkb");
+        assertEquals(parsed.getGroup(), "spinkb");
+        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.FEBRUARY);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 21);
     }
 
     public static Test suite()

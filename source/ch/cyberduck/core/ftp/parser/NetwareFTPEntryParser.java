@@ -16,8 +16,8 @@ package ch.cyberduck.core.ftp.parser;
  * limitations under the License.
  */
 
-import org.apache.commons.net.ftp.parser.RegexFTPFileEntryParserImpl;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.parser.RegexFTPFileEntryParserImpl;
 
 import java.util.Calendar;
 
