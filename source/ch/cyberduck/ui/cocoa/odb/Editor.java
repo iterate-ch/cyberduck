@@ -73,6 +73,29 @@ public class Editor extends CDController {
         }
     }
 
+    private static boolean JNI_LOADED = false;
+
+    private static final Object lock = new Object();
+
+    private static boolean jni_load() {
+        if(!JNI_LOADED) {
+            try {
+                synchronized(lock) {
+                    NSBundle bundle = NSBundle.mainBundle();
+                    String lib = bundle.resourcePath() + "/Java/" + "libODBEdit.dylib";
+                    log.info("Locating libODBEdit.dylib at '" + lib + "'");
+                    System.load(lib);
+                    JNI_LOADED = true;
+                    log.info("libODBEdit.dylib loaded");
+                }
+            }
+            catch(UnsatisfiedLinkError e) {
+                log.error("Could not load the libODBEdit.dylib library:" + e.getMessage());
+            }
+        }
+        return JNI_LOADED;
+    }
+
     /**
      * A map of currently open editors
      */
@@ -99,63 +122,47 @@ public class Editor extends CDController {
      */
     public void open(Path f, final String bundleIdentifier) {
         if(!OPEN.containsKey(f.getAbsolute())) {
-            this.path = (Path) f.clone();
-            String parent = NSPathUtilities.temporaryDirectory();
-            String filename = this.path.getAbsolute().replace('/', '_');
-            String proposal = filename;
-            int no = 0;
-            int index = filename.lastIndexOf(".");
-            do {
-                this.path.setLocal(new Local(parent, proposal));
-                no++;
-                if(index != -1 && index != 0) {
-                    proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
-                }
-                else {
-                    proposal = filename + "-" + no;
-                }
-            }
-            while(this.path.getLocal().exists());
-
-            controller.background(new BackgroundAction() {
-                public void run() {
-                    path.download();
-                }
-
-                public void cleanup() {
-                    if(path.status.isComplete()) {
-                        path.getSession().message(NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
-                        // Important, should always be run on the main thread; otherwise applescript crashes
-                        edit(bundleIdentifier);
-                    }
-                }
-            });
-
-            OPEN.put(this.path.getAbsolute(), this);
+            path = (Path) f.clone();
+            open(bundleIdentifier);
+            OPEN.put(path.getAbsolute(), this);
+        }
+        else {
+            NSWorkspace.sharedWorkspace().openFile(f.getAbsolute(),
+                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier));
         }
     }
 
-    private static boolean JNI_LOADED = false;
-
-    private static final Object lock = new Object();
-
-    private static boolean jni_load() {
-        if(!JNI_LOADED) {
-            try {
-                synchronized(lock) {
-                    NSBundle bundle = NSBundle.mainBundle();
-                    String lib = bundle.resourcePath() + "/Java/" + "libODBEdit.dylib";
-                    log.info("Locating libODBEdit.dylib at '" + lib + "'");
-                    System.load(lib);
-                    JNI_LOADED = true;
-                    log.info("libODBEdit.dylib loaded");
-                }
+    private void open(final String bundleIdentifier) {
+        String parent = NSPathUtilities.temporaryDirectory();
+        String filename = path.getAbsolute().replace('/', '_');
+        String proposal = filename;
+        int no = 0;
+        int index = filename.lastIndexOf(".");
+        do {
+            path.setLocal(new Local(parent, proposal));
+            no++;
+            if(index != -1 && index != 0) {
+                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
             }
-            catch(UnsatisfiedLinkError e) {
-                log.error("Could not load the libODBEdit.dylib library:" + e.getMessage());
+            else {
+                proposal = filename + "-" + no;
             }
         }
-        return JNI_LOADED;
+        while(path.getLocal().exists());
+
+        controller.background(new BackgroundAction() {
+            public void run() {
+                path.download();
+            }
+
+            public void cleanup() {
+                if(path.status.isComplete()) {
+                    path.getSession().message(NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
+                    // Important, should always be run on the main thread; otherwise applescript crashes
+                    edit(bundleIdentifier);
+                }
+            }
+        });
     }
 
     private void edit(final String bundleIdentifier) {
@@ -168,45 +175,12 @@ public class Editor extends CDController {
     /**
      * Open the file using the ODB external editor protocol
      */
-    private native void edit(String path, String bundleIdentifier);
-
-//    private void edit() {
-//        final String defaultAppPath
-//                = NSWorkspace.sharedWorkspace().applicationForFile(path.getLocal().getAbsolute());
-//        //Returns null if the file cannot be found or if the file is of an unknown type.
-//        if(null == defaultAppPath) {
-//            log.warn("No application found to edit "+path.getName());
-//            return;
-//        }
-////        for(Iterator iter = INSTALLED_EDITORS.values().iterator(); iter.hasNext();) {
-////            String bundleIdentifier = (String) iter.next();
-////            if(defaultAppPath.equals(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-////                    bundleIdentifier))) {
-////                // Open with ODB as the default app for this file happens to support the ODB protocol
-////                this.edit(path.getLocal().getAbsolute(), bundleIdentifier);
-////            }
-////        }
-//        final Local l = path.getLocal();
-//        l.watch(new FileWatcherListener() {
-//            public void fileWritten(Local file) {
-//                didModifyFile();
-//            }
-//
-//            public void fileRenamed(Local file) {
-//                //path.rename();
-//            }
-//
-//            public void fileDeleted(Local file) {
-//                invalidate();
-//            }
-//        });
-//        log.info("Opening " + l.getName() + " with " + defaultAppPath);
-//        NSWorkspace.sharedWorkspace().openFile(l.getAbsolute(), defaultAppPath, true);
-//    }
+    private native void edit(final String path, final String bundleIdentifier);
 
     public void didCloseFile() {
         if(!uploadInProgress) {
-            this.path.getLocal().delete();
+            path.getLocal().delete();
+            OPEN.remove(path.getAbsolute());
             this.invalidate();
         }
         else {
@@ -241,10 +215,5 @@ public class Editor extends CDController {
                 }
             }
         });
-    }
-
-    protected void invalidate() {
-        OPEN.remove(this.path.getAbsolute());
-        super.invalidate();
     }
 }
