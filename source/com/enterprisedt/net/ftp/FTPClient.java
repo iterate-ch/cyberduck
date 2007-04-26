@@ -26,20 +26,22 @@
 
 package com.enterprisedt.net.ftp;
 
+import ch.cyberduck.core.Preferences;
+
+import org.apache.log4j.Logger;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 import java.util.TimeZone;
-import java.util.Vector;
-
-import ch.cyberduck.core.Preferences;
-
-import org.apache.log4j.Logger;
 
 /**
  * Supports client-side FTP. Most common
@@ -461,7 +463,7 @@ public class FTPClient {
      * @param remoteFile name of remote file we are writing to
      * @param append     true if appending, false otherwise
      */
-    public java.io.OutputStream put(String remoteFile, boolean append) throws IOException, FTPException {
+    public OutputStream put(String remoteFile, boolean append) throws IOException, FTPException {
         this.initPut(remoteFile, append);
         return data.getOutputStream();
     }
@@ -471,7 +473,7 @@ public class FTPClient {
      *
      * @param remoteFile name of remote file
      */
-    public java.io.InputStream get(String remoteFile, long resume) throws IOException, FTPException {
+    public InputStream get(String remoteFile, long resume) throws IOException, FTPException {
         this.initGet(remoteFile, resume);
         return data.getInputStream();
     }
@@ -500,7 +502,7 @@ public class FTPClient {
         return reply.getReplyCode().equals("200");
     }
 
-    public String[] dir(String encoding) throws IOException, FTPException {
+    public BufferedReader dir(String encoding) throws IOException, FTPException {
         if(Preferences.instance().getBoolean("ftp.sendExtendedListCommand")) {
             try {
                 return this.dir(encoding, "LIST -a");
@@ -523,7 +525,7 @@ public class FTPClient {
      * @param command the list command to use. E.g. LIST, LIST -a or NLST
      * @return an array of directory listing strings
      */
-    public String[] dir(String encoding, String command) throws IOException, FTPException {
+    public BufferedReader dir(String encoding, String command) throws IOException, FTPException {
         // set up data channel
         data = control.createDataSocket(connectMode);
         data.setTimeout(timeout);
@@ -535,39 +537,26 @@ public class FTPClient {
         // proFTPD returns 450
         lastValidReply = control.validateReply(reply, new String[]{"125", "150", "450", "550"});
 
-        // an empty array of files for 450/550
-        String[] result = new String[0];
-
         // a normal reply ... extract the file list
         String replyCode = lastValidReply.getReplyCode();
         if(!replyCode.equals("450") && !replyCode.equals("550")) {
             // get a character input stream to read data from .
-            LineNumberReader in = new LineNumberReader(new InputStreamReader(data.getInputStream(),
-                encoding));
-
-            // read a line at a time
-            Vector lines = new Vector();
-            String line = null;
-            while((line = readLine(in)) != null) {
-                control.log(line, false);
-                lines.addElement(line);
-            }
-            this.closeDataSocket();
-
-            // check the control response
-            reply = control.readReply();
-            lastValidReply = control.validateReply(reply, new String[]{"226", "250"});
-
-            // empty array is default
-            if(!lines.isEmpty()) {
-                result = new String[lines.size()];
-                lines.copyInto(result);
-            }
+            return new LineNumberReader(new InputStreamReader(data.getInputStream(), encoding));
         }
-        else { // 450 or 550 - still need to close data socket
-            this.closeDataSocket();
-        }
-        return result;
+        // 450 or 550 - still need to close data socket
+        this.closeDataSocket(); return null;
+    }
+
+    /**
+     *
+     * @throws IOException
+     * @throws FTPException
+     */
+    public void finishDir() throws IOException, FTPException {
+        this.closeDataSocket();
+
+        // check the control response
+        lastValidReply = control.validateReply(control.readReply(), new String[]{"226", "250"});
     }
 
     /**

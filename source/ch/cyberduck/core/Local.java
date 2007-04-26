@@ -307,7 +307,7 @@ public class Local extends AbstractPath {
         return this.cache;
     }
 
-    public AttributedList list() {
+    public AttributedList list(ListParseListener listener) {
         final AttributedList childs = new AttributedList();
         File[] f = _impl.listFiles();
         for(int i = 0; i < f.length; i++) {

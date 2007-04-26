@@ -23,20 +23,22 @@ import com.enterprisedt.net.ftp.FTPTransferType;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.FromNetASCIIInputStream;
+import ch.cyberduck.core.io.FromNetASCIIOutputStream;
+import ch.cyberduck.core.io.ToNetASCIIInputStream;
+import ch.cyberduck.core.io.ToNetASCIIOutputStream;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
-import org.apache.commons.net.io.FromNetASCIIInputStream;
-import org.apache.commons.net.io.FromNetASCIIOutputStream;
-import org.apache.commons.net.io.ToNetASCIIInputStream;
-import org.apache.commons.net.io.ToNetASCIIOutputStream;
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.BufferedReader;
 import java.util.Iterator;
 import java.util.List;
 
@@ -106,22 +108,65 @@ public class FTPPath extends Path {
         return this.session;
     }
 
-    public AttributedList list() {
+    public AttributedList list(final ListParseListener listener) {
         synchronized(session) {
-            AttributedList childs = new AttributedList();
+            AttributedList childs = new AttributedList() {
+                public boolean add(Object object) {
+                    boolean result = super.add(object);
+                    listener.parsed(this);
+                    return result;
+                }
+            };
             try {
                 session.check();
                 session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
                 session.FTP.setTransferType(FTPTransferType.ASCII);
                 this.cwdir();
-                String[] lines = session.FTP.dir(this.session.getEncoding());
-                // Read line for line if the connection hasn't been interrupted since
-                for(int i = 0; i < lines.length; i++) {
-                    Path p = session.parser.parseFTPEntry(this, lines[i]);
-                    if(p != null) {
-                        childs.add(p);
-                    }
+                final BufferedReader reader = session.FTP.dir(this.session.getEncoding());
+                if(null == reader) {
+                    // This is an empty directory
+                    return childs;
                 }
+                String line = null;
+                while((line = session.parser.readNextEntry(reader)) != null) {
+                    FTPFile f = session.parser.parseFTPEntry(line);
+                    if(null == f || f.getName().equals(".") || f.getName().equals("..")) {
+                        continue;
+                    }
+                    Path p = new FTPPath(session);
+                    p.setPath(this.getAbsolute(), f.getName());
+                    switch(f.getType()) {
+                        case FTPFile.SYMBOLIC_LINK_TYPE:
+                            p.setSymbolicLinkPath(this.getAbsolute(), f.getLink());
+                            try {
+                                p.cwdir();
+                                p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                            }
+                            catch(FTPException e) {
+                                p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                            }
+                            break;
+                        case FTPFile.DIRECTORY_TYPE:
+                            p.attributes.setType(Path.DIRECTORY_TYPE);
+                            break;
+                        case FTPFile.FILE_TYPE:
+                            p.attributes.setType(Path.FILE_TYPE);
+                            break;
+                    }
+                    p.attributes.setSize(f.getSize());
+                    p.attributes.setOwner(f.getUser());
+                    p.attributes.setGroup(f.getGroup());
+                    p.attributes.setPermission(new Permission(
+                            new boolean[][] {
+                                    {f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION), f.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION), f.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION)},
+                                    {f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION), f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION), f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION)},
+                                    {f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION), f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION), f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION)},
+                            }
+                    ));
+                    p.attributes.setModificationDate(f.getTimestamp().getTimeInMillis());
+                    childs.add(p);
+                }
+                session.FTP.finishDir();
             }
             catch(FTPException e) {
                 childs.attributes().setReadable(false);
