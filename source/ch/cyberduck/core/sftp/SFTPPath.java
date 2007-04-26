@@ -102,9 +102,15 @@ public class SFTPPath extends Path {
         return this.session;
     }
 
-    public AttributedList list() {
+    public AttributedList list(final ListParseListener listener) {
         synchronized(session) {
-            AttributedList childs = new AttributedList();
+            AttributedList childs = new AttributedList() {
+                public boolean add(Object object) {
+                    boolean result = super.add(object);
+                    listener.parsed(this);
+                    return result;
+                }
+            };
             try {
                 session.check();
                 session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
@@ -507,7 +513,7 @@ public class SFTPPath extends Path {
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SCP)) {
                         SCPClient scp = session.openScp();
                         scp.setCharset(session.getEncoding());
-                        in = scp.get(this.getAbsolute());
+                        in = scp.get(this.getAbsolute().replaceAll("\\s+", "\\\\ "));
                     }
                     this.download(in, out, throttle, listener);
                 }
@@ -644,8 +650,8 @@ public class SFTPPath extends Path {
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SCP)) {
                         SCPClient scp = session.openScp();
                         scp.setCharset(session.getEncoding());
-                        out = scp.put(this.getName(), (long)this.getLocal().attributes.getSize(),
-                                this.getParent().getAbsolute(),
+                        out = scp.put(this.getName().replaceAll("\\s+", "\\\\ "), (long)this.getLocal().attributes.getSize(),
+                                this.getParent().getAbsolute().replaceAll("\\s+", "\\\\ "),
                                 "0"+attributes.getPermission().getOctalString());
                     }
                     this.upload(out, in, throttle, listener);
