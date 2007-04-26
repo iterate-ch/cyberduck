@@ -24,12 +24,20 @@ import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPMessageListener;
 import com.enterprisedt.net.ftp.FTPNullReplyException;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCanceledException;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Proxy;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 
 import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
-import org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory;
+import org.apache.commons.net.ftp.parser.ParserInitializationException;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -239,7 +247,12 @@ public class FTPSession extends Session {
                 catch(FTPException e) {
                     log.warn(this.host.getHostname()+" does not support the SYST command:"+e.getMessage());
                 }
-                this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.getIdentification());
+                try {
+                this.parser = new FTPParserFactory().createFileEntryParser(this.getIdentification());
+                }
+                catch(ParserInitializationException e) {
+                    throw new IOException(e.getMessage());
+                }
                 this.fireConnectionDidOpenEvent();
             }
             catch(NullPointerException e) {

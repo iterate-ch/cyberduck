@@ -65,10 +65,18 @@ public abstract class AbstractPath extends NSObject {
     public abstract URL toURL();
 
     /**
+     *
+     * @return
+     */
+    public AttributedList list() {
+        return this.list(new NullListParseListener());
+    }
+
+    /**
      * Fetch the directory listing
      * @return
      */
-    public abstract AttributedList list();
+    public abstract AttributedList list(ListParseListener listener);
 
     /**
      * Get the cached directory listing if any or return #list instead
@@ -147,15 +155,6 @@ public abstract class AbstractPath extends NSObject {
                 normalized = normalized.substring(0, normalized.lastIndexOf('/', index - 1)) +
                         normalized.substring(index + 3);
             }
-//            // Resolve occurrences of "//" in the normalized path
-//            while(true) {
-//                int index = normalized.indexOf("//");
-//                if(index < 0) {
-//                    break;
-//                }
-//                normalized = normalized.substring(0, index) +
-//                        normalized.substring(index + 1);
-//            }
             while(normalized.endsWith(DELIMITER) && normalized.length() > 1) {
                 //Strip any redundant delimiter at the end of the path
                 normalized = normalized.substring(0, normalized.length() - 1);
