@@ -1224,6 +1224,7 @@ ko.lproj/Sync.strings -text
 ko.lproj/Validator.nib/data.dependency -text
 ko.lproj/Validator.nib/keyedobjects.nib -text
 ko.lproj/Validator.strings -text
+lib/commons-net-1.4.1.jar -text
 lib/ext/junit.jar -text
 lib/jakarta-oro-2.0.8.jar -text
 lib/log4j-1.2.13.jar -text
