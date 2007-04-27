@@ -556,7 +556,6 @@ public class SFTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.fireActivityStoppedEvent();
                 try {
                     if(in != null) {
                         in.close();
@@ -569,6 +568,9 @@ public class SFTPPath extends Path {
                 }
                 catch(IOException e) {
                     log.error(e.getMessage());
+                }
+                finally {
+                    session.fireActivityStoppedEvent();
                 }
             }
         }
@@ -687,7 +689,6 @@ public class SFTPPath extends Path {
                 session.interrupt();
             }
             finally {
-                session.fireActivityStoppedEvent();
                 try {
                     if(handle != null) {
                         session.sftp().closeFile(handle);
@@ -703,6 +704,9 @@ public class SFTPPath extends Path {
                 }
                 catch(IOException e) {
                     log.error(e.getMessage());
+                }
+                finally {
+                    session.fireActivityStoppedEvent();
                 }
             }
         }
