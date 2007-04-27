@@ -77,6 +77,7 @@
 		<string>ftp.jar</string>
 		<string>log4j-1.2.13.jar</string>
 		<string>jakarta-oro-2.0.8.jar</string>
+		<string>commons-net-1.4.1.jar</string>
 	</array>
 	<key>NSJavaRoot</key>
 	<string>Contents/Resources/Java</string>
