@@ -530,7 +530,6 @@ public class CDBrowserController extends CDWindowController
     protected void reloadData(final java.util.Collection selected) {
         if(this.isMounted()) {
             if(!this.workdir().isCached() || this.workdir().childs().attributes().isDirty()) {
-                // Reloading a workdir that is not cached yet would cause the interface to freeze
                 this.background(new BackgroundAction() {
                     public void run() {
                         workdir().childs();
@@ -2689,7 +2688,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void copyURLButtonClicked(final Object sender) {
-        URL url = null;
+        String url = null;
         if(this.getSelectionCount() > 0) {
             url = this.getSelectedPath().toURL();
         }
@@ -2701,7 +2700,7 @@ public class CDBrowserController extends CDWindowController
         }
         NSPasteboard pboard = NSPasteboard.generalPasteboard();
         pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
-        if(!pboard.setStringForType(url.toString(), NSPasteboard.StringPboardType)) {
+        if(!pboard.setStringForType(url, NSPasteboard.StringPboardType)) {
             log.error("Error writing URL to NSPasteboard.StringPboardType.");
         }
     }
@@ -2929,9 +2928,13 @@ public class CDBrowserController extends CDWindowController
         }
         this.session.addProgressListener(new ProgressListener() {
             public void message(final String msg) {
-                // Update the status label at the bottom of the browser window
-                statusLabel.setAttributedStringValue(new NSAttributedString(msg,
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
+                invoke(new Runnable() {
+                    public void run() {
+                        // Update the status label at the bottom of the browser window
+                        statusLabel.setAttributedStringValue(new NSAttributedString(msg,
+                                TRUNCATE_MIDDLE_ATTRIBUTES));
+                    }
+                });
             }
         });
         session.addConnectionListener(listener = new ConnectionAdapter() {

@@ -541,18 +541,15 @@ public abstract class Path extends AbstractPath {
     /**
      * @return Null if there is a encoding failure
      */
-    public URL toURL() {
+    public String toURL() {
         try {
             StringBuffer b = new StringBuffer();
             StringTokenizer t = new StringTokenizer(this.getAbsolute(), "/");
             while(t.hasMoreTokens()) {
                 b.append(DELIMITER + URLEncoder.encode(t.nextToken(), "UTF-8"));
             }
-            return new URL(this.getHost().getURL() + b.toString());
-        }
-        catch(MalformedURLException e) {
-            log.error(e.getMessage());
-            return null;
+            // Do not use java.net.URL because it doesn't know about SFTP!
+            return this.getHost().getURL() + b.toString();
         }
         catch(UnsupportedEncodingException e) {
             log.error(e.getMessage());

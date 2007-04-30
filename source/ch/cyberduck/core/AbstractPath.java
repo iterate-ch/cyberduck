@@ -62,7 +62,7 @@ public abstract class AbstractPath extends NSObject {
         }
     }
 
-    public abstract URL toURL();
+    public abstract String toURL();
 
     /**
      *

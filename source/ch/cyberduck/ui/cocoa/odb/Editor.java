@@ -96,11 +96,6 @@ public class Editor extends CDController {
         return JNI_LOADED;
     }
 
-    /**
-     * A map of currently open editors
-     */
-    private static final Map OPEN = new HashMap();
-
     private CDBrowserController controller;
 
     /**
@@ -121,15 +116,8 @@ public class Editor extends CDController {
      *                         or null if the default application for this file type should be opened
      */
     public void open(Path f, final String bundleIdentifier) {
-        if(!OPEN.containsKey(f.getAbsolute())) {
-            path = (Path) f.clone();
-            open(bundleIdentifier);
-            OPEN.put(path.getAbsolute(), this);
-        }
-        else {
-            NSWorkspace.sharedWorkspace().openFile(f.getAbsolute(),
-                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier));
-        }
+        path = (Path) f.clone();
+        open(bundleIdentifier);
     }
 
     private void open(final String bundleIdentifier) {
@@ -180,7 +168,6 @@ public class Editor extends CDController {
     public void didCloseFile() {
         if(!uploadInProgress) {
             path.getLocal().delete();
-            OPEN.remove(path.getAbsolute());
             this.invalidate();
         }
         else {

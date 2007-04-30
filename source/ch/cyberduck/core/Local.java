@@ -482,9 +482,9 @@ public class Local extends AbstractPath {
         return this.getAbsolute();
     }
 
-    public URL toURL() {
+    public String toURL() {
         try {
-            return _impl.toURL();
+            return _impl.toURL().toString();
         }
         catch(MalformedURLException e) {
             log.error(e.getMessage());

@@ -35,6 +35,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * @version $Id$
@@ -730,7 +732,13 @@ public class CDMainController extends CDController {
      * @return The imported bookmark deserialized as a #Host
      */
     public Host importBookmark(final Local file) {
-        NSData plistData = new NSData(file.toURL());
+        NSData plistData = null;
+        try {
+            plistData = new NSData(new URL(file.toURL()));
+        }
+        catch(MalformedURLException e) {
+            log.error(e.getMessage());
+        }
         String[] errorString = new String[]{null};
         Object propertyListFromXMLData =
                 NSPropertyListSerialization.propertyListFromData(plistData,
@@ -762,12 +770,17 @@ public class CDMainController extends CDController {
         if(errorString[0] != null) {
             log.error("Problem writing bookmark file:" + errorString[0]);
         }
-        if(collection.writeToURL(file.toURL(), true)) {
-            log.info("Bookmarks sucessfully saved in :" + file.toString());
-            NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(file.getAbsolute());
+        try {
+            if(collection.writeToURL(new URL(file.toURL()), true)) {
+                log.info("Bookmarks sucessfully saved in :" + file.toString());
+                NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(file.getAbsolute());
+            }
+            else {
+                log.error("Error saving bookmark to:" + file.toString());
+            }
         }
-        else {
-            log.error("Error saving bookmark to:" + file.toString());
+        catch(MalformedURLException e) {
+            log.error(e.getMessage());
         }
     }
 

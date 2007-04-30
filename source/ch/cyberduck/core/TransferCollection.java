@@ -28,6 +28,8 @@ import com.apple.cocoa.foundation.NSPropertyListSerialization;
 import org.apache.log4j.Logger;
 
 import java.util.Iterator;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 
 /**
@@ -82,11 +84,16 @@ public class TransferCollection extends Collection {
                     log.error("Problem writing queue file: " + errorString[0]);
                 }
 
-                if(collection.writeToURL(f.toURL(), true)) {
-                    log.info("Queue sucessfully saved to :" + f.toString());
+                try {
+                    if(collection.writeToURL(new URL(f.toURL()), true)) {
+                        log.info("Queue sucessfully saved to :" + f.toString());
+                    }
+                    else {
+                        log.error("Error saving queue to :" + f.toString());
+                    }
                 }
-                else {
-                    log.error("Error saving queue to :" + f.toString());
+                catch(MalformedURLException e) {
+                    log.error(e.getMessage());
                 }
             }
         }
@@ -101,7 +108,13 @@ public class TransferCollection extends Collection {
         synchronized(this) {
             if(f.exists()) {
                 log.info("Found Queue file: " + f.toString());
-                NSData plistData = new NSData(f.toURL());
+                NSData plistData = null;
+                try {
+                    plistData = new NSData(new URL(f.toURL()));
+                }
+                catch(MalformedURLException e) {
+                    log.error(e.getMessage());
+                }
                 String[] errorString = new String[]{null};
                 Object propertyListFromXMLData =
                         NSPropertyListSerialization.propertyListFromData(plistData,

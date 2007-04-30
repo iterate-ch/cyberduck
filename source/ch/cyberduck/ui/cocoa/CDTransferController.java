@@ -220,6 +220,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 transfer.setBandwidth(bandwidth);
             }
         }
+        this.updateBandwidthPopup();
     }
 
     private CDTransferController() {
@@ -400,7 +401,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private void updateSelection() {
         log.debug("updateSelection");
         this.updateLabels();
-        this.updateIcon(null);
+        this.updateIcon();
         this.updateBandwidthPopup();
         toolbar.validateVisibleItems();
     }
@@ -434,22 +435,25 @@ public class CDTransferController extends CDWindowController implements NSToolba
     /**
      *
      */
-    private void updateIcon(NSImage fileIcon) {
-        log.debug("updateIcon:"+fileIcon);
-        if(null == fileIcon) {
-            fileIcon = NOT_FOUND_ICON;
-            final int selected = transferTable.numberOfSelectedRows();
-            if(1 == selected) {
-                final Transfer transfer = (Transfer) TransferCollection.instance().get(transferTable.selectedRow());
-                // Draw file type icon
-                if(transfer.getRoot().getLocal().exists()) {
-                    if(transfer.numberOfRoots() == 1) {
-                        fileIcon = transfer.getRoot().getLocal().attributes.isFile() ? NSWorkspace.sharedWorkspace().iconForFile(
-                                transfer.getRoot().getLocal().getAbsolute()) : FOLDER_ICON;
-                    }
-                    else {
-                        fileIcon = MULTIPLE_DOCUMENTS_ICON;
-                    }
+    private void updateIcon() {
+        log.debug("updateIcon:");
+        final int selected = transferTable.numberOfSelectedRows();
+        if(0 == selected) {
+            iconView.setImage(null);
+            return;
+        }
+        NSImage fileIcon = NOT_FOUND_ICON;
+        if(1 == selected) {
+            final Transfer transfer = (Transfer) TransferCollection.instance().get(transferTable.selectedRow());
+            // Draw file type icon
+            if(transfer.getRoot().getLocal().exists()) {
+                if(transfer.numberOfRoots() == 1) {
+//                    fileIcon = transfer.getRoot().getLocal().attributes.isFile() ? NSWorkspace.sharedWorkspace().iconForFile(
+//                            transfer.getRoot().getLocal().getAbsolute()) : FOLDER_ICON;
+                    fileIcon = transfer.getRoot().getLocal().attributes.isFile() ? CDBrowserTableDataSource.iconForPath(transfer.getRoot()) : FOLDER_ICON;
+                }
+                else {
+                    fileIcon = MULTIPLE_DOCUMENTS_ICON;
                 }
             }
         }
@@ -462,23 +466,22 @@ public class CDTransferController extends CDWindowController implements NSToolba
      */
     private void updateBandwidthPopup() {
         log.debug("updateBandwidthPopup");
-//        for(int i = 0; i < bandwidthPopup.numberOfItems(); i++) {
-//            bandwidthPopup.itemAtIndex(i).setState(NSCell.OffState);
-//        }
         final int selected = transferTable.numberOfSelectedRows();
-//        NSEnumerator iterator = transferTable.selectedRowEnumerator();
-//        while(iterator.hasMoreElements()) {
-//            int i = ((Number) iterator.nextElement()).intValue();
-//            Transfer transfer = (Transfer) TransferCollection.instance().get(i);
-//            if(-1 == transfer.getBandwidth()) {
-//                bandwidthPopup.itemAtIndex(bandwidthPopup.indexOfItemWithTag(-1)).setState(selected > 1 ? NSCell.MixedState : NSCell.OnState);
-//            }
-//            else {
-//                int bandwidth = (int)transfer.getBandwidth()/1024;
-//                bandwidthPopup.itemAtIndex(bandwidthPopup.indexOfItemWithTag(bandwidth)).setState(selected > 1 ? NSCell.MixedState : NSCell.OnState);
-//            }
-//        }
         bandwidthPopup.setEnabled(selected > 0);
+        NSEnumerator iterator = transferTable.selectedRowEnumerator();
+        synchronized(TransferCollection.instance()) {
+            while(iterator.hasMoreElements()) {
+                int i = ((Number) iterator.nextElement()).intValue();
+                Transfer transfer = (Transfer) TransferCollection.instance().get(i);
+                if(transfer.getBandwidth() != -1) {
+                    // Mark as throttled
+                    this.bandwidthPopup.itemAtIndex(0).setImage(NSImage.imageNamed("turtle.tiff"));
+                    return;
+                }
+            }
+        }
+        // Set the standard icon
+        this.bandwidthPopup.itemAtIndex(0).setImage(NSImage.imageNamed("bandwidth16.tiff"));
     }
 
     private void reloadData() {
@@ -571,10 +574,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
                             }
                         });
                     }
-
-                    public void willTransferPath(final Path path) {
-                        updateIcon(CDBrowserTableDataSource.iconForPath(path));
-                    }
                 });
                 if(transfer.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
                     ((ch.cyberduck.core.sftp.SFTPSession) transfer.getSession()).setHostKeyVerificationController(
@@ -610,7 +609,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
             public void cleanup() {
                 window.toolbar().validateVisibleItems();
-                updateIcon(null);
                 if(transfer.isComplete() && !transfer.isCanceled()) {
                     if(transfer instanceof DownloadTransfer) {
                         Growl.instance().notify("Download complete", transfer.getName());
@@ -936,7 +934,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 }
             }
         }
-        this.updateIcon(null);
+        this.updateIcon();
     }
 
     /**

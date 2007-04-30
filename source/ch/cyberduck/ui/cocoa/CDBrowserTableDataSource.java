@@ -118,10 +118,10 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     return path.childs(controller.getComparator(), controller.getFileFilter());
                 }
             }
+            }
+            log.warn("No cached listing for " + path.getName());
+            return Collections.EMPTY_LIST;
         }
-        log.warn("No cached listing for " + path.getName());
-        return Collections.EMPTY_LIST;
-    }
 
     public int indexOf(NSView tableView, Path p) {
         return this.childs(controller.workdir()).indexOf(p);
