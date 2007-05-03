@@ -7,6 +7,7 @@
         {CLASS = CDOutlineView; LANGUAGE = ObjC; SUPERCLASS = NSOutlineView; }, 
         {
             ACTIONS = {
+                copyURLButtonClicked = id; 
                 createFileButtonClicked = id; 
                 createFolderButtonClicked = id; 
                 deleteFileButtonClicked = id; 
