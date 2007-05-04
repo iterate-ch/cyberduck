@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.odb;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDController;
 import ch.cyberduck.ui.cocoa.growl.Growl;
@@ -35,6 +36,7 @@ import org.apache.log4j.Logger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.io.File;
 
 /**
  * @version $Id$
@@ -120,14 +122,21 @@ public class Editor extends CDController {
         open(bundleIdentifier);
     }
 
+    /**
+     *
+     */
+    private static Local TEMPORARY_DIRECTORY = new Local(NSPathUtilities.temporaryDirectory());
+
     private void open(final String bundleIdentifier) {
-        String parent = NSPathUtilities.temporaryDirectory();
-        String filename = path.getAbsolute().replace('/', '_');
+        Local folder = new Local(new File(TEMPORARY_DIRECTORY.getAbsolute(), path.getParent().getAbsolute()));
+        folder.mkdir(true);
+        
+        String filename = path.getName();
         String proposal = filename;
         int no = 0;
         int index = filename.lastIndexOf(".");
         do {
-            path.setLocal(new Local(parent, proposal));
+            path.setLocal(new Local(folder, proposal));
             no++;
             if(index != -1 && index != 0) {
                 proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
@@ -168,6 +177,11 @@ public class Editor extends CDController {
     public void didCloseFile() {
         if(!uploadInProgress) {
             path.getLocal().delete();
+            for(AbstractPath parent = path.getLocal().getParent(); !parent.equals(TEMPORARY_DIRECTORY); parent = parent.getParent()) {
+                if(parent.isEmpty()) {
+                    parent.delete();
+                }
+            }
             this.invalidate();
         }
         else {

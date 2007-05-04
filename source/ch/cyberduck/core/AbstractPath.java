@@ -244,6 +244,13 @@ public abstract class AbstractPath extends NSObject {
     public abstract void delete();
 
     /**
+     * @return True if the directory contains no childs items
+     */
+    public boolean isEmpty() {
+        return this.childs().size() == 0;
+    }
+
+    /**
      * @param name Must be an absolute path
      */
     public abstract void rename(String name);
