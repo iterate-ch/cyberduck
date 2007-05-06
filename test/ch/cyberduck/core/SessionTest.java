@@ -46,29 +46,9 @@ public class SessionTest extends TestCase {
         assertNotSame(clone.getHost(), session.getHost());
     }
 
-    public void testSetLoginController() throws Exception {
-
-    }
-
     public void testGetHost() throws Exception {
         assertEquals(session.getHost(), session.getHost());
         assertEquals(session.getHost().getCredentials(), session.getHost().getCredentials());
-    }
-
-    public void testGetPreviousPath() throws Exception {
-        assertNull(session.getPreviousPath());
-    }
-
-    public void testGetForwardPath() throws Exception {
-        assertNull(session.getForwardPath());
-    }
-
-    public void testGetBackHistory() throws Exception {
-        assertEquals(0, session.getBackHistory().length);
-    }
-
-    public void testGetForwardHistory() throws Exception {
-        assertEquals(0, session.getForwardHistory().length);
     }
 
     public static Test suite() {
