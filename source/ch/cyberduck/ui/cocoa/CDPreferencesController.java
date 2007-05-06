@@ -1174,6 +1174,20 @@ public class CDPreferencesController extends CDWindowController {
         Preferences.instance().setProperty("browser.doubleclick.edit", enabled);
     }
 
+    private NSButton returnKeyCheckbox; //IBOutlet
+
+    public void setReturnKeyCheckbox(NSButton returnKeyCheckbox) {
+        this.returnKeyCheckbox = returnKeyCheckbox;
+        this.returnKeyCheckbox.setTarget(this);
+        this.returnKeyCheckbox.setAction(new NSSelector("returnKeyCheckboxClicked", new Class[]{NSButton.class}));
+        this.returnKeyCheckbox.setState(Preferences.instance().getBoolean("browser.enterkey.rename") ? NSCell.OnState : NSCell.OffState);
+    }
+
+    public void returnKeyCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.OnState;
+        Preferences.instance().setProperty("browser.enterkey.rename", enabled);
+    }
+
     private NSButton showHiddenCheckbox; //IBOutlet
 
     public void setShowHiddenCheckbox(NSButton showHiddenCheckbox) {
