@@ -61,6 +61,13 @@ public class UploadTransfer extends Transfer {
      *
      */
     private abstract class UploadTransferFilter extends TransferFilter {
+        public boolean accept(AbstractPath file) {
+            if(!exists(((Path)file).getLocal())) {
+                return false;
+            }
+            return super.accept(file);
+        }
+
         public void prepare(Path file) {
             if(file.attributes.isFile()) {
                 // Read file size
@@ -91,10 +98,6 @@ public class UploadTransfer extends Transfer {
     private final Cache _cache = new Cache();
 
     public List childs(final Path parent) {
-        if(!exists(parent.getLocal())) {
-            // Cannot fetch file listing of non existant file
-            return Collections.EMPTY_LIST;
-        }
         if(parent.getLocal().attributes.isSymbolicLink()) {
             return Collections.EMPTY_LIST;
         }
