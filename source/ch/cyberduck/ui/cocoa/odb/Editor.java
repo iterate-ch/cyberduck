@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa.odb;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDController;
 import ch.cyberduck.ui.cocoa.growl.Growl;
@@ -33,10 +33,10 @@ import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.io.File;
 
 /**
  * @version $Id$
@@ -174,45 +174,49 @@ public class Editor extends CDController {
      */
     private native void edit(final String path, final String bundleIdentifier);
 
+    /**
+     * Called by the native editor when the file has been closed
+     */
     public void didCloseFile() {
-        if(!uploadInProgress) {
-            path.getLocal().delete();
-            for(AbstractPath parent = path.getLocal().getParent(); !parent.equals(TEMPORARY_DIRECTORY); parent = parent.getParent()) {
-                if(parent.isEmpty()) {
-                    parent.delete();
-                }
-            }
-            this.invalidate();
+        if(!path.status.isComplete()) {
+            deferredDelete = true;
         }
         else {
-            shouldCloseFile = true;
+            this.delete();
         }
     }
 
-    private boolean uploadInProgress;
+    private void delete() {
+        path.getLocal().delete();
+        for(AbstractPath parent = path.getLocal().getParent(); !parent.equals(TEMPORARY_DIRECTORY); parent = parent.getParent()) {
+            if(parent.isEmpty()) {
+                parent.delete();
+            }
+        }
+        this.invalidate();
+    }
 
-    private boolean shouldCloseFile;
+    /**
+     * The file has been closed in the editor while the upload was in progress
+     */
+    private boolean deferredDelete;
 
+    /**
+     * called by the native editor when the file has been saved
+     */
     public void didModifyFile() {
         controller.background(new BackgroundAction() {
             public void run() {
-                uploadInProgress = true;
-                try {
-                    path.upload();
-                }
-                finally {
-                    uploadInProgress = false;
-                }
+                path.upload();
             }
 
             public void cleanup() {
-                if(shouldCloseFile) {
-                    didCloseFile();
+                if(deferredDelete) {
+                    delete();
                 }
                 if(path.status.isComplete()) {
-                    path.getSession().message(
-                            NSBundle.localizedString("Upload complete", "Growl", "Growl Notification"));
                     Growl.instance().notify("Upload complete", path.getName());
+                    controller.reloadData(true);
                 }
             }
         });
