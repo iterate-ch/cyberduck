@@ -88,6 +88,7 @@
                 preserveModificationUploadCheckbox = NSButton; 
                 protocolCombobox = NSPopUpButton; 
                 removeFromQueueCheckbox = NSButton; 
+                returnKeyCheckbox = NSButton; 
                 secureDataChannelCheckbox = NSButton; 
                 showHiddenCheckbox = NSButton; 
                 sshTransfersCombobox = NSPopUpButton; 
