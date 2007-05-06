@@ -112,6 +112,10 @@ public class Cache {
         return (AttributedList[])_impl.entrySet().toArray(new AttributedList[]{});
     }
 
+    public AbstractPath[] keys() {
+        return (AbstractPath[])_impl.keySet().toArray(new AbstractPath[]{});
+    }
+
     public void clear() {
         _impl.clear();
     }
