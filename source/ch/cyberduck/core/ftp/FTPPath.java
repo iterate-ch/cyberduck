@@ -138,13 +138,7 @@ public class FTPPath extends Path {
                     switch(f.getType()) {
                         case FTPFile.SYMBOLIC_LINK_TYPE:
                             p.setSymbolicLinkPath(this.getAbsolute(), f.getLink());
-                            try {
-                                p.cwdir();
-                                p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
-                            }
-                            catch(FTPException e) {
-                                p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
-                            }
+                            p.attributes.setType(Path.SYMBOLIC_LINK_TYPE);
                             break;
                         case FTPFile.DIRECTORY_TYPE:
                             p.attributes.setType(Path.DIRECTORY_TYPE);
@@ -167,6 +161,18 @@ public class FTPPath extends Path {
                     childs.add(p);
                 }
                 session.FTP.finishDir();
+                for(Iterator iter = childs.iterator(); iter.hasNext(); ) {
+                    Path p = (Path)iter.next();
+                    if(p.attributes.getType() == Path.SYMBOLIC_LINK_TYPE) {
+                        try {
+                            p.cwdir();
+                            p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                        }
+                        catch(FTPException e) {
+                            p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                        }
+                    }
+                }
             }
             catch(FTPException e) {
                 childs.attributes().setReadable(false);
