@@ -47,7 +47,9 @@ init() {
 	cp $base_language/Localizable.strings $language/
 	cp $base_language/Crash.strings $language/
 	cp $base_language/Status.strings $language/
+	cp $base_language/Error.strings $language/
 	cp $base_language/Credentials.strings $language/
+	cp $base_language/Configuration.strings $language/
 	cp $base_language/IDisk.strings $language/
 	cp $base_language/Growl.strings $language/
 	cp $base_language/InfoPlist.strings $language/
