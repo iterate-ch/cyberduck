@@ -140,7 +140,6 @@
 		</copy>
 		<copy todir="${app.bundle.loc}/Contents/Resources/${localization}.lproj">
 			<fileset dir="${app.resources}/en.lproj">
-				<include name="Queue.nib/**"/>
 				<include name="Progress.nib/**"/>
 				<include name="Security.nib/**"/>
 				<include name="Alert.nib/**"/>
