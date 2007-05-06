@@ -451,7 +451,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
         NSMutableArray promisedDragNames = new NSMutableArray();
         try {
             if(null != dropDestination) {
-                final String d = java.net.URLDecoder.decode(dropDestination.getPath(), "UTF-8");
+                final String d = java.net.URLDecoder.decode(dropDestination.getFile().replaceAll("\\+", "%2B"), "UTF-8");
                 for(int i = 0; i < this.promisedDragPaths.length; i++) {
                     this.promisedDragPaths[i].setLocal(new Local(d,
                             this.promisedDragPaths[i].getName()));
