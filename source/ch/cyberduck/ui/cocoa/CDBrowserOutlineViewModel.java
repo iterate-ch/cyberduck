@@ -18,12 +18,20 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 
-import com.apple.cocoa.application.*;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSDraggingInfo;
+import com.apple.cocoa.application.NSEvent;
+import com.apple.cocoa.application.NSOutlineView;
+import com.apple.cocoa.application.NSPasteboard;
+import com.apple.cocoa.application.NSTableColumn;
+import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.foundation.NSArray;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,6 +41,19 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
 
     public CDBrowserOutlineViewModel(CDBrowserController controller) {
         super(controller);
+    }
+
+    protected AttributedList childs(final Path path) {
+        NSEvent event = NSApplication.sharedApplication().currentEvent();
+        if (event != null) {
+            if(NSEvent.LeftMouseDragged == event.type()) {
+                if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
+                    log.debug("Returning Collections.EMPTY_LIST to #childs:"+path.getName()+" while dragging because browser.view.autoexpand == true");
+                    return AttributedList.EMPTY_LIST;
+                }
+            }
+        }
+        return super.childs(path);
     }
 
     public int indexOf(NSView tableView, Path p) {
@@ -57,7 +78,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
             if (event != null) {
                 if(NSEvent.LeftMouseDragged == event.type()) {
                     if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
-                        log.info("Returning false to outlineViewIsItemExpandable:"+item.getName()+" while dragging");
+                        log.debug("Returning false to #outlineViewIsItemExpandable:"+item.getName()+" while dragging because browser.view.autoexpand == true");
                         // See tickets #98 and #633
                         return false;
                     }
