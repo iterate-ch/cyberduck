@@ -156,13 +156,19 @@ public abstract class BackgroundActionImpl
         return 0;
     }
 
+    private boolean canceled;
+
+    public void cancel() {
+        canceled = true;
+    }
+
     /**
      * To be overriden by a concrete subclass. Returns false by default for actions
      * not connected to a graphical user interface
      * @return True if the user canceled this action
      */
     public boolean isCanceled() {
-        return false;
+        return canceled;
     }
 
     /**
@@ -323,7 +329,7 @@ public abstract class BackgroundActionImpl
             private int delay = (int)Preferences.instance().getDouble("connection.retry.delay");
 
             public void run() {
-                if(0 == delay || 0 == retry()) {
+                if(0 == delay || 0 == retry()) { // Cancel if the delay is set to zero or if too many attempts
                     this.cancel();
                     return;
                 }

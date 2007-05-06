@@ -36,16 +36,15 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Comparator;
 import java.util.Collections;
-import java.util.Map;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -516,7 +515,7 @@ public class CDBrowserController extends CDWindowController
      * @param preserveSelection All selected files should be reselected after reloading the view
      * @pre Must always be invoked from the main interface thread
      */
-    protected void reloadData(final boolean preserveSelection) {
+    public void reloadData(final boolean preserveSelection) {
         log.debug("reloadData:" + preserveSelection);
         if(preserveSelection) {
             //Remember the previously selected paths
@@ -1332,6 +1331,22 @@ public class CDBrowserController extends CDWindowController
         this.actionPopupButton.itemAtIndex(0).setImage(NSImage.imageNamed("gear.tiff"));
     }
 
+//    private NSPopUpButton historyPopupButton;
+//
+//    private NSMenu historyPopupButtonMenu;
+//
+//    private Object historyPopupButtonMenuDelegate;
+//
+//    public void setHistoryPopupButton(NSPopUpButton historyPopupButton) {
+//        this.historyPopupButton = historyPopupButton;
+//        this.historyPopupButton.setPullsDown(true);
+//        this.historyPopupButton.setAutoenablesItems(true);
+//        this.historyPopupButton.setEnabled(false);
+//        this.historyPopupButton.setImage(NSImage.imageNamed("history.tiff"));
+//        this.historyPopupButton.setMenu(historyPopupButtonMenu = new NSMenu());
+//        this.historyPopupButton.menu().setDelegate(historyPopupButtonMenuDelegate = new PathHistoryMenuDelegate(this));
+//    }
+
     private NSComboBox quickConnectPopup; // IBOutlet
 
     private NSObject quickConnectPopupModel;
@@ -1392,71 +1407,72 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
-    private NSComboBox navigationPopup; // IBOutlet
+//    private NSComboBox navigationPopup; // IBOutlet
+//
+//    private NSObject navigationPopupModel;
+//
+//    public void setNavigationPopup(NSComboBox navigationPopup) {
+//        this.navigationPopup = navigationPopup;
+//        this.navigationPopup.setCompletes(true);
+//        this.navigationPopup.setUsesDataSource(true);
+//        this.navigationPopup.setDataSource(this.navigationPopupModel = new NSObject()/*NSComboBox.DataSource*/ {
+//            private final Comparator comparator = new NullComparator();
+//            private final PathFilter filter = new PathFilter() {
+//                public boolean accept(AbstractPath p) {
+//                    return p.attributes.isDirectory();
+//                }
+//            };
+//
+//            /**
+//             * @see NSComboBox.DataSource
+//             */
+//            public int numberOfItemsInComboBox(NSComboBox combo) {
+//                if(!isMounted()) {
+//                    return 0;
+//                }
+//                return workdir().childs(comparator, filter).size();
+//            }
+//
+//            /**
+//             * @see NSComboBox.DataSource
+//             */
+//            public Object comboBoxObjectValueForItemAtIndex(final NSComboBox sender, final int row) {
+//                final List childs = workdir().childs(comparator, filter);
+//                final int size = childs.size();
+//                if(row < size) {
+//                    return ((Path)childs.get(row)).getAbsolute();
+//                }
+//                return null;
+//            }
+//        });
+//        this.navigationPopup.setTarget(this);
+//        this.navigationPopup.setAction(new NSSelector("navigationPopupSelectionChanged", new Class[]{Object.class}));
+//    }
 
-    private NSObject navigationPopupModel;
-
-    public void setNavigationPopup(NSComboBox navigationPopup) {
-        this.navigationPopup = navigationPopup;
-        this.navigationPopup.setCompletes(true);
-        this.navigationPopup.setUsesDataSource(true);
-        this.navigationPopup.setDataSource(this.navigationPopupModel = new NSObject()/*NSComboBox.DataSource*/ {
-            private final Comparator comparator = new NullComparator();
-            private final PathFilter filter = new PathFilter() {
-                public boolean accept(AbstractPath p) {
-                    return p.attributes.isDirectory();
-                }
-            };
-
-            /**
-             * @see NSComboBox.DataSource
-             */
-            public int numberOfItemsInComboBox(NSComboBox combo) {
-                if(!isMounted()) {
-                    return 0;
-                }
-                return workdir().childs(comparator, filter).size();
-            }
-
-            /**
-             * @see NSComboBox.DataSource
-             */
-            public Object comboBoxObjectValueForItemAtIndex(final NSComboBox sender, final int row) {
-                final List childs = workdir().childs(comparator, filter);
-                if(row < childs.size()) {
-                    return ((Path)childs.get(row)).getAbsolute();
-                }
-                return null;
-            }
-        });
-        this.navigationPopup.setTarget(this);
-        this.navigationPopup.setAction(new NSSelector("navigationPopupSelectionChanged", new Class[]{Object.class}));
-    }
-
-    public void navigationPopupSelectionChanged(NSComboBox sender) {
-        if(this.navigationPopup.stringValue().length() != 0) {
-            this.background(new BackgroundAction() {
-                final Path dir = (Path)workdir.clone();
-                final String filename = navigationPopup.stringValue();
-
-                public void run() {
-                    if (filename.charAt(0) != '/') {
-                        dir.setPath(workdir.getAbsolute(), filename);
-                    }
-                    else {
-                        dir.setPath(filename);
-                    }
-                    setWorkdir(dir);
-                }
-
-                public void cleanup() {
-                    if(workdir.getParent().equals(dir)) {
-                        setSelectedPath(workdir);
-                    }
-                }
-            });
-        }
-    }
+//    public void navigationPopupSelectionChanged(NSComboBox sender) {
+//        if(this.navigationPopup.stringValue().length() != 0) {
+//            this.background(new BackgroundAction() {
+//                final Path dir = (Path)workdir.clone();
+//                final String filename = navigationPopup.stringValue();
+//
+//                public void run() {
+//                    if (filename.charAt(0) != '/') {
+//                        dir.setPath(workdir.getAbsolute(), filename);
+//                    }
+//                    else {
+//                        dir.setPath(filename);
+//                    }
+//                    setWorkdir(dir);
+//                }
+//
+//                public void cleanup() {
+//                    if(workdir.getParent().equals(dir)) {
+//                        setSelectedPath(workdir);
+//                    }
+//                }
+//            });
+//        }
+//    }
 
     private NSTextField searchField; // IBOutlet
 
@@ -1610,7 +1626,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void backButtonClicked(final Object sender) {
-        final Path selected = this.session.getPreviousPath();
+        final Path selected = this.getPreviousPath();
         if(selected != null) {
             final Path previous = this.workdir();
             this.background(new BackgroundAction() {
@@ -1628,7 +1644,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void forwardButtonClicked(final Object sender) {
-        final Path selected = this.session.getForwardPath();
+        final Path selected = this.getForwardPath();
         if(selected != null) {
             this.background(new BackgroundAction() {
                 public void run() {
@@ -2745,6 +2761,8 @@ public class CDBrowserController extends CDWindowController
      */
     protected final Object backgroundLock = new Object();
 
+    private BackgroundActionImpl backgroundAction = null;
+
     /**
      * Will queue up the <code>BackgroundAction</code> to be run in a background thread. Will be executed
      * as soon as no other previous <code>BackgroundAction</code> is pending.
@@ -2756,7 +2774,7 @@ public class CDBrowserController extends CDWindowController
      * @see #isBusy()
      */
     public void background(final BackgroundAction runnable) {
-        super.background(new BackgroundActionImpl(this) {
+        super.background(backgroundAction = new BackgroundActionImpl(this) {
             public void prepare() {
                 activityRunning = true;
                 interrupted = false;
@@ -2787,10 +2805,6 @@ public class CDBrowserController extends CDWindowController
                 runnable.cleanup();
             }
 
-            public boolean isCanceled() {
-                return CDBrowserController.this.isInterrupted();
-            }
-
             public Session session() {
                 return session;
             }
@@ -2816,14 +2830,14 @@ public class CDBrowserController extends CDWindowController
      *
      * @param path The new working directory to display or null to detach any working directory from the browser
      */
-    protected void setWorkdir(final Path path) {
+    public void setWorkdir(final Path path) {
         log.debug("setWorkdir:" + path);
         if(null == path) {
             // Clear the browser view if no working directory is given
             this.workdir = null;
             this.invoke(new Runnable() {
                 public void run() {
-                    navigationPopup.setStringValue("");
+//                    navigationPopup.setStringValue("");
                     pathPopupButton.removeAllItems();
                 }
             });
@@ -2859,24 +2873,22 @@ public class CDBrowserController extends CDWindowController
         // Remove any custom file filter
         this.setFileFilter(null);
         // Update the current working directory
-        this.workdir = path;
-        this.session.addPathToHistory(this.workdir);
+        this.addPathToHistory(this.workdir = path);
         this.invoke(new Runnable() {
             public void run() {
-                navigationPopup.setStringValue(workdir().getAbsolute());
+//                navigationPopup.setStringValue(workdir().getAbsolute());
                 pathPopupButton.removeAllItems();
                 // Update the path selection menu above the browser
                 if(isMounted()) {
                     Path p = workdir;
-                    while(pathPopupButton.indexOfItemWithRepresentedObject(p) < 0) {
+                    while(true) {
                         pathPopupButton.addItem(p.getAbsolute());
+                        pathPopupButton.lastItem().setRepresentedObject(p);
                         if(p.isRoot()) {
                             pathPopupButton.lastItem().setImage(DISK_ICON);
+                            break;
                         }
-                        else {
-                            pathPopupButton.lastItem().setImage(FOLDER_ICON);
-                        }
-                        pathPopupButton.lastItem().setRepresentedObject(p);
+                        pathPopupButton.lastItem().setImage(FOLDER_ICON);
                         p = (Path)p.getParent();
                     }
                 }
@@ -2888,6 +2900,92 @@ public class CDBrowserController extends CDWindowController
                 reloadData(false);
             }
         });
+    }
+
+    /**
+     * Keeps a ordered backward history of previously visited paths
+     */
+    private List backHistory = new Collection();
+
+    /**
+     * Keeps a ordered forward history of previously visited paths
+     */
+    private List forwardHistory = new Collection();
+
+    /**
+     * @param p
+     */
+    public void addPathToHistory(Path p) {
+//        if(!fullHistory.contains(p)) {
+//            fullHistory.add(p);
+//        }
+        if(backHistory.size() > 0) {
+            // Do not add if this was a reload
+            if(p.equals(backHistory.get(backHistory.size() - 1))) {
+                return;
+            }
+        }
+        backHistory.add(p);
+    }
+
+    /**
+     * Returns the prevously browsed path and moves it to the forward history
+     * @return The previously browsed path or null if there is none
+     */
+    public Path getPreviousPath() {
+        int size = backHistory.size();
+        if(size > 1) {
+            forwardHistory.add(backHistory.get(size - 1));
+            Path p = (Path) backHistory.get(size - 2);
+            //delete the fetched path - otherwise we produce a loop
+            backHistory.remove(size - 1);
+            backHistory.remove(size - 2);
+            return p;
+        }
+        else if(1 == size) {
+            forwardHistory.add(backHistory.get(size - 1));
+            return (Path) backHistory.get(size - 1);
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @return The last path browsed before #getPrevoiusPath was called
+     * @see #getPreviousPath()
+     */
+    public Path getForwardPath() {
+        int size = forwardHistory.size();
+        if(size > 0) {
+            Path p = (Path) forwardHistory.get(size - 1);
+            forwardHistory.remove(size - 1);
+            return p;
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @return The ordered array of prevoiusly visited directories
+     */
+    public Path[] getBackHistory() {
+        return (Path[]) backHistory.toArray(new Path[backHistory.size()]);
+    }
+
+    /**
+     *
+     * @return The ordered array of prevoiusly visited directories
+     */
+    public Path[] getForwardHistory() {
+        return (Path[]) forwardHistory.toArray(new Path[forwardHistory.size()]);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Path[] getFullHistory() {
+        return (Path[])session.cache().keys();
     }
 
     /**
@@ -3132,6 +3230,9 @@ public class CDBrowserController extends CDWindowController
      */
     protected void interrupt() {
         if(this.hasSession()) {
+            if(this.activityRunning) {
+                backgroundAction.cancel();
+            }
             this.session.interrupt();
         }
         this.interrupted = true;
@@ -3206,9 +3307,9 @@ public class CDBrowserController extends CDWindowController
     }
 
     private void validateNavigationButtons() {
-        this.navigationButton.setEnabled(this.isMounted() && session.getBackHistory().length > 1,
+        this.navigationButton.setEnabled(this.isMounted() && this.getBackHistory().length > 1,
                 NAVIGATION_LEFT_SEGMENT_BUTTON);
-        this.navigationButton.setEnabled(this.isMounted() && session.getForwardHistory().length > 0,
+        this.navigationButton.setEnabled(this.isMounted() && this.getForwardHistory().length > 0,
                 NAVIGATION_RIGHT_SEGMENT_BUTTON);
         this.upButton.setEnabled(this.isMounted() && !this.workdir().isRoot(),
                 NAVIGATION_UP_SEGMENT_BUTTON);
@@ -3440,10 +3541,10 @@ public class CDBrowserController extends CDWindowController
             return this.isMounted() && !this.workdir().isRoot();
         }
         if(identifier.equals("backButtonClicked:")) {
-            return this.isMounted() && session.getBackHistory().length > 1;
+            return this.isMounted() && this.getBackHistory().length > 1;
         }
         if(identifier.equals("forwardButtonClicked:")) {
-            return this.isMounted() && session.getForwardHistory().length > 0;
+            return this.isMounted() && this.getForwardHistory().length > 0;
         }
         if(identifier.equals("copyURLButtonClicked:")) {
             return this.isMounted();
@@ -3505,6 +3606,7 @@ public class CDBrowserController extends CDWindowController
     private static final String TOOLBAR_QUICK_CONNECT = "Quick Connect";
     private static final String TOOLBAR_NAVIGATION = "Location";
     private static final String TOOLBAR_TOOLS = "Tools";
+    private static final String TOOLBAR_HISTORY = "History";
     private static final String TOOLBAR_REFRESH = "Refresh";
     private static final String TOOLBAR_ENCODING = "Encoding";
     private static final String TOOLBAR_SYNCHRONIZE = "Synchronize";
@@ -3595,6 +3697,21 @@ public class CDBrowserController extends CDWindowController
             item.setMaxSize(this.actionPopupButton.frame().size());
             return item;
         }
+//        if(itemIdentifier.equals(TOOLBAR_HISTORY)) {
+//            item.setLabel(NSBundle.localizedString("History", "Toolbar item"));
+//            item.setPaletteLabel(NSBundle.localizedString("History", "Toolbar item"));
+//            item.setView(this.historyPopupButton);
+//            // Add a menu representation for text mode of toolbar
+//            NSMenuItem menu = new NSMenuItem();
+//            menu.setTitle(NSBundle.localizedString("History", "Toolbar item"));
+//            NSMenu historyMenu = new NSMenu();
+//            historyMenu.setDelegate(historyPopupButtonMenuDelegate);
+//            menu.setSubmenu(historyMenu);
+//            item.setMenuFormRepresentation(menu);
+//            item.setMinSize(this.historyPopupButton.frame().size());
+//            item.setMaxSize(this.historyPopupButton.frame().size());
+//            return item;
+//        }
         if(itemIdentifier.equals(TOOLBAR_QUICK_CONNECT)) {
             item.setLabel(NSBundle.localizedString(TOOLBAR_QUICK_CONNECT, "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_QUICK_CONNECT, "Toolbar item"));
@@ -3604,14 +3721,14 @@ public class CDBrowserController extends CDWindowController
             item.setMaxSize(this.quickConnectPopup.frame().size());
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_NAVIGATION)) {
-            item.setLabel(NSBundle.localizedString(TOOLBAR_NAVIGATION, "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_NAVIGATION, "Toolbar item"));
-            item.setView(this.navigationPopup);
-            item.setMinSize(this.navigationPopup.frame().size());
-            item.setMaxSize(this.navigationPopup.frame().size());
-            return item;
-        }
+//        if(itemIdentifier.equals(TOOLBAR_NAVIGATION)) {
+//            item.setLabel(NSBundle.localizedString(TOOLBAR_NAVIGATION, "Toolbar item"));
+//            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_NAVIGATION, "Toolbar item"));
+//            item.setView(this.navigationPopup);
+//            item.setMinSize(this.navigationPopup.frame().size());
+//            item.setMaxSize(this.navigationPopup.frame().size());
+//            return item;
+//        }
         if(itemIdentifier.equals(TOOLBAR_ENCODING)) {
             item.setLabel(NSBundle.localizedString(TOOLBAR_ENCODING, "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_ENCODING, "Toolbar item"));
@@ -3765,6 +3882,7 @@ public class CDBrowserController extends CDWindowController
                 TOOLBAR_TRANSFERS,
                 TOOLBAR_QUICK_CONNECT,
 //                TOOLBAR_NAVIGATION,
+//                TOOLBAR_HISTORY,
                 TOOLBAR_TOOLS,
                 TOOLBAR_REFRESH,
                 TOOLBAR_ENCODING,
@@ -3823,6 +3941,7 @@ public class CDBrowserController extends CDWindowController
         this.editBookmarkButton.setTarget(null);
 
         this.actionPopupButton.setTarget(null);
+//        this.historyPopupButton.setTarget(null);
 
         this.navigationButton.setTarget(null);
         this.upButton.setTarget(null);
@@ -3834,10 +3953,10 @@ public class CDBrowserController extends CDWindowController
         this.quickConnectPopup.setTarget(null);
         this.quickConnectPopup = null;
 
-        this.navigationPopup.setDataSource(null);
-        this.navigationPopupModel = null;
-        this.navigationPopup.setTarget(null);
-        this.navigationPopup = null;
+//        this.navigationPopup.setDataSource(null);
+//        this.navigationPopupModel = null;
+//        this.navigationPopup.setTarget(null);
+//        this.navigationPopup = null;
 
         super.invalidate();
     }

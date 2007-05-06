@@ -115,12 +115,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
         this.iconView = iconView;
     }
 
-    private NSView queueSizeView; // IBOutlet
-
-    public void setQueueSizeView(final NSView queueSizeView) {
-        this.queueSizeView = queueSizeView;
-    }
-
     private NSStepper queueSizeStepper; // IBOutlet
 
     public void setQueueSizeStepper(final NSStepper queueSizeStepper) {
@@ -231,8 +225,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
         synchronized(NSApplication.sharedApplication()) {
             if(null == instance) {
                 instance = new CDTransferController();
-                if(!NSApplication.loadNibNamed("Queue", instance)) {
-                    log.fatal("Couldn't load Queue.nib");
+                if(!NSApplication.loadNibNamed("Transfer", instance)) {
+                    log.fatal("Couldn't load Transfer.nib");
                 }
             }
             return instance;
@@ -491,6 +485,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
             transferTable.reloadData();
         }
+        this.updateHighlight();
     }
 
     /**
@@ -639,7 +634,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
 
             public boolean isCanceled() {
-                return transfer.isCanceled();
+                if(transfer.isCanceled()) {
+                    return true;
+                }
+                return super.isCanceled();
             }
 
             public Session session() {
@@ -662,7 +660,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private static final String TOOLBAR_OPEN = "Open";
     private static final String TOOLBAR_SHOW = "Show";
     private static final String TOOLBAR_TRASH = "Trash";
-    private static final String TOOLBAR_QUEUE = "Maximum Transfers";
     private static final String TOOLBAR_FILTER = "Search";
 
     /**
@@ -744,15 +741,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setImage(NSImage.imageNamed("trash.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("trashButtonClicked", new Class[]{Object.class}));
-            return item;
-        }
-        if(itemIdentifier.equals(TOOLBAR_QUEUE)) {
-            item.setLabel(NSBundle.localizedString(TOOLBAR_QUEUE, ""));
-            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_QUEUE, ""));
-            item.setToolTip(NSBundle.localizedString("Maximum number of simultaneous transfers", ""));
-            item.setView(this.queueSizeView);
-            item.setMinSize(this.queueSizeView.frame().size());
-            item.setMaxSize(this.queueSizeView.frame().size());
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_FILTER)) {
@@ -945,7 +933,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return new NSArray(new Object[]{
                 TOOLBAR_RESUME,
-                TOOLBAR_QUEUE,
                 TOOLBAR_RELOAD,
                 TOOLBAR_STOP,
                 TOOLBAR_REMOVE,
@@ -971,7 +958,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 TOOLBAR_SHOW,
                 TOOLBAR_OPEN,
                 TOOLBAR_TRASH,
-                TOOLBAR_QUEUE,
                 TOOLBAR_FILTER,
                 NSToolbarItem.CustomizeToolbarItemIdentifier,
                 NSToolbarItem.SpaceItemIdentifier,
