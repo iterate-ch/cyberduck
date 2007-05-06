@@ -18,8 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.foundation.NSSize;
 
 import java.util.HashMap;
 
@@ -46,5 +50,38 @@ public class CDIconCache extends HashMap {
             this.put(key, img = NSWorkspace.sharedWorkspace().iconForFileType(key));
         }
         return img;
+    }
+
+    protected static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
+    protected static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
+    protected static final NSImage FOLDER_NOACCESS_ICON = NSImage.imageNamed("folder_noaccess.tiff");
+    protected static final NSImage FOLDER_WRITEONLY_ICON = NSImage.imageNamed("folder_writeonly.tiff");
+    protected static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
+
+    static {
+        SYMLINK_ICON.setSize(new NSSize(16f, 16f));
+        FOLDER_ICON.setSize(new NSSize(16f, 16f));
+        FOLDER_NOACCESS_ICON.setSize(new NSSize(16f, 16f));
+        FOLDER_WRITEONLY_ICON.setSize(new NSSize(16f, 16f));
+        NOT_FOUND_ICON.setSize(new NSSize(16f, 16f));
+    }
+
+    public NSImage iconForPath(final Path item) {
+        final String extension = item.getExtension();
+        NSImage icon = null;
+        if(item.attributes.isSymbolicLink()) {
+            icon = SYMLINK_ICON;
+        }
+        else if(item.attributes.isDirectory()) {
+            icon = FOLDER_ICON;
+        }
+        else if(item.attributes.isFile()) {
+            icon = this.get(extension);
+        }
+        else {
+            icon = NOT_FOUND_ICON;
+        }
+        icon.setSize(new NSSize(16f, 16f));
+        return icon;
     }
 }

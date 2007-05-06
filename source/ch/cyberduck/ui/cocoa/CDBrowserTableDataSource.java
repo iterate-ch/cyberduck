@@ -19,17 +19,28 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
-import com.apple.cocoa.application.*;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSDraggingInfo;
+import com.apple.cocoa.application.NSDraggingSource;
+import com.apple.cocoa.application.NSEvent;
+import com.apple.cocoa.application.NSImage;
+import com.apple.cocoa.application.NSPasteboard;
+import com.apple.cocoa.application.NSTableView;
+import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -37,18 +48,12 @@ import java.util.*;
 public abstract class CDBrowserTableDataSource extends NSObject {
     protected static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 
-    protected static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
-    protected static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
     protected static final NSImage FOLDER_NOACCESS_ICON = NSImage.imageNamed("folder_noaccess.tiff");
     protected static final NSImage FOLDER_WRITEONLY_ICON = NSImage.imageNamed("folder_writeonly.tiff");
-    protected static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
     static {
-        SYMLINK_ICON.setSize(new NSSize(16f, 16f));
-        FOLDER_ICON.setSize(new NSSize(16f, 16f));
         FOLDER_NOACCESS_ICON.setSize(new NSSize(16f, 16f));
         FOLDER_WRITEONLY_ICON.setSize(new NSSize(16f, 16f));
-        NOT_FOUND_ICON.setSize(new NSSize(16f, 16f));
     }
 
     public static final String ICON_COLUMN = "ICON";
@@ -79,34 +84,26 @@ public abstract class CDBrowserTableDataSource extends NSObject {
      * @return The cached or newly fetched file listing of the directory
      * @pre Call from the main thread
      */
-    protected List childs(final Path path) {
+    protected AttributedList childs(final Path path) {
         // Check first if it hasn't been already requested so we don't spawn
         // a multitude of unecessary threads
         synchronized(isLoadingListingInBackground) {
             if(!isLoadingListingInBackground.contains(path)) {
-                // For dirty paths, we do not currently load in background as the outline
-                // view otherwise forgets about expanded items as it seems the outline view
-                // wrongly compares using '==' instead of using 'Object#equals'. As a
-                // workaround, items marked as dirty are loaded in the main interface thread
-                // This has been filed to bugreport.apple.com but been marked as 'Behaves correctly'.
-                if(!path.isCached()) {// || path.cache().attributes().isDirty()) {
+                if(!path.isCached() || path.cache().get(path).attributes().isDirty()) {
                     isLoadingListingInBackground.add(path);
                     // Reloading a workdir that is not cached yet would cause the interface to freeze;
                     // Delay until path is cached in the background
+                    
                     controller.background(new BackgroundAction() {
                         public void run() {
-                            try {
-                                path.childs();
-                            }
-                            finally {
-                                synchronized(isLoadingListingInBackground) {
-                                    isLoadingListingInBackground.remove(path);
-                                }
-                            }
+                            log.debug("childs#run");
+                            path.childs();
                         }
 
                         public void cleanup() {
+                            log.debug("childs#cleanup");
                             synchronized(isLoadingListingInBackground) {
+                                isLoadingListingInBackground.remove(path);
                                 if(path.isCached() && isLoadingListingInBackground.isEmpty()) {
                                     controller.reloadData(true);
                                 }
@@ -118,10 +115,10 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     return path.childs(controller.getComparator(), controller.getFileFilter());
                 }
             }
-            }
-            log.warn("No cached listing for " + path.getName());
-            return Collections.EMPTY_LIST;
         }
+        log.warn("No cached listing for " + path.getName());
+        return AttributedList.EMPTY_LIST;
+    }
 
     public int indexOf(NSView tableView, Path p) {
         return this.childs(controller.workdir()).indexOf(p);
@@ -142,16 +139,12 @@ public abstract class CDBrowserTableDataSource extends NSObject {
         }
     }
 
-    public static NSImage iconForPath(final Path item) {
-        final String extension = item.getExtension();
+    protected NSImage iconForPath(final Path item) {
         NSImage icon = null;
-        if(item.attributes.isSymbolicLink()) {
-            icon = SYMLINK_ICON;
-        }
-        else if(item.attributes.isDirectory()) {
+        if(item.attributes.isDirectory()) {
             if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")) {
                 if(!item.attributes.isExecutable()
-                        || (item.isCached() && !item.childs().attributes().isReadable())) {
+                        || (item.isCached() && !this.childs(item).attributes().isReadable())) {
                     icon = FOLDER_NOACCESS_ICON;
                 }
                 else if(!item.attributes.isReadable()) {
@@ -160,17 +153,10 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     }
                 }
             }
-            if(null == icon) {
-                icon = FOLDER_ICON;
-            }
         }
-        else if(item.attributes.isFile()) {
-            icon = CDIconCache.instance().get(extension);
+        if(null == icon) {
+            icon = CDIconCache.instance().iconForPath(item);
         }
-        else {
-            icon = NOT_FOUND_ICON;
-        }
-        icon.setSize(new NSSize(16f, 16f));
         return icon;
     }
 
@@ -181,7 +167,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
     protected Object objectValueForItem(Path item, String identifier) {
         if(null != item) {
             if(identifier.equals(ICON_COLUMN)) {
-                return CDBrowserTableDataSource.iconForPath(item);
+                return this.iconForPath(item);
             }
             if(identifier.equals(FILENAME_COLUMN)) {
                 return new NSAttributedString(item.getName(),

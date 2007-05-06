@@ -444,7 +444,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 if(transfer.numberOfRoots() == 1) {
 //                    fileIcon = transfer.getRoot().getLocal().attributes.isFile() ? NSWorkspace.sharedWorkspace().iconForFile(
 //                            transfer.getRoot().getLocal().getAbsolute()) : FOLDER_ICON;
-                    fileIcon = transfer.getRoot().getLocal().attributes.isFile() ? CDBrowserTableDataSource.iconForPath(transfer.getRoot()) : FOLDER_ICON;
+                    fileIcon = transfer.getRoot().getLocal().attributes.isFile() ? CDIconCache.instance().iconForPath(transfer.getRoot()) : FOLDER_ICON;
                 }
                 else {
                     fileIcon = MULTIPLE_DOCUMENTS_ICON;

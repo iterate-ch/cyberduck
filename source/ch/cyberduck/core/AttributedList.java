@@ -23,14 +23,8 @@ import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSObject;
 
 import java.lang.reflect.Array;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
+import java.io.Serializable;
 
 /**
  * Facade for com.apple.cocoa.foundation.NSMutableArray
@@ -415,5 +409,23 @@ public class AttributedList extends NSObject implements List {
 
     public List subList(int fromIndex, int toIndex) {
         throw new UnsupportedOperationException("Not implemented");
+    }
+
+    public static final AttributedList EMPTY_LIST = new EmptyList();
+
+    private static class EmptyList extends AttributedList implements RandomAccess, Serializable {
+
+        public int size() {return 0;}
+
+        public boolean contains(Object obj) {return false;}
+
+        public Object get(int index) {
+            throw new IndexOutOfBoundsException("Index: "+index);
+        }
+
+        // Preserves singleton property
+        private Object readResolve() {
+            return EMPTY_LIST;
+        }
     }
 }

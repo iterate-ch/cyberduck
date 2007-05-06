@@ -31,6 +31,7 @@ import com.apple.cocoa.application.NSOutlineView;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSObject;
+import com.apple.cocoa.foundation.NSSize;
 
 import org.apache.log4j.Logger;
 

@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.delegate;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
+import ch.cyberduck.ui.cocoa.CDIconCache;
 
 import com.apple.cocoa.application.NSMenu;
 import com.apple.cocoa.application.NSMenuItem;
@@ -64,18 +65,7 @@ public class TransferMenuDelegate extends MenuDelegate {
             item.setTarget(null);
         }
         item.setRepresentedObject(path);
-        item.setImage(CDBrowserTableDataSource.iconForPath(path));
-//        if(path.attributes.isDirectory()) {
-//            if(transfer.getSession().isConnected()) {
-//                menu.removeItemAtIndex(index);
-//                final NSMenu submenu = new NSMenu();
-//                submenu.setDelegate(new TransferMenuDelegate(transfer, transfer.childs(path)));
-//                NSMenuItem directory = new NSMenuItem();
-//                directory.setSubmenu(submenu);
-//                directory.setEnabled(true);
-//                menu.insertItemAtIndex(directory, index);
-//            }
-//        }
+        item.setImage(CDIconCache.instance().iconForPath(path));
         return !shouldCancel;
     }
 

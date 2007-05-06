@@ -422,6 +422,7 @@ public class CDBrowserController extends CDWindowController
     private NSToolbar toolbar;
 
     public void awakeFromNib() {
+        log.debug("awakeFromNib");
         this._updateBrowserColumns(this.browserListView);
         this._updateBrowserColumns(this.browserOutlineView);
 
@@ -469,6 +470,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     protected void setFileFilter(final String searchString) {
+        log.debug("setFileFilter:"+searchString);
         if(null == searchString || searchString.length() == 0) {
             this.searchField.setStringValue("");
             // Revert to the last used default filter
@@ -516,7 +518,6 @@ public class CDBrowserController extends CDWindowController
      * @pre Must always be invoked from the main interface thread
      */
     public void reloadData(final boolean preserveSelection) {
-        log.debug("reloadData:" + preserveSelection);
         if(preserveSelection) {
             //Remember the previously selected paths
             this.reloadData(this.getSelectedPaths());
@@ -527,6 +528,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     protected void reloadData(final java.util.Collection selected) {
+        log.debug("reloadData");
         if(this.isMounted()) {
             if(!this.workdir().isCached() || this.workdir().childs().attributes().isDirty()) {
                 this.background(new BackgroundAction() {
@@ -585,6 +587,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     protected void setSelectedPaths(java.util.Collection selected) {
+        log.debug("setSelectedPaths");
         this.deselectAll();
         if(!selected.isEmpty()) {
             switch(this.browserSwitchView.selectedSegment()) {
@@ -664,6 +667,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     private void deselectAll() {
+        log.debug("deselectAll");
         this.getSelectedBrowserView().deselectAll(null);
     }
 
@@ -910,7 +914,7 @@ public class CDBrowserController extends CDWindowController
                 String identifier = (String) tableColumn.identifier();
                 if(item != null) {
                     if(identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
-                        ((CDOutlineCell) cell).setIcon(CDBrowserTableDataSource.iconForPath(item));
+                        ((CDOutlineCell) cell).setIcon(browserOutlineModel.iconForPath(item));
                     }
                     if(cell instanceof NSTextFieldCell) {
                         if(!CDBrowserController.this.isConnected()) {// || CDBrowserController.this.activityRunning) {

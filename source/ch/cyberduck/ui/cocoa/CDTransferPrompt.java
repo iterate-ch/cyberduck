@@ -270,7 +270,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 String identifier = (String) tableColumn.identifier();
                 if(item != null) {
                     if(identifier.equals(CDTransferPromptModel.FILENAME_COLUMN)) {
-                        ((CDOutlineCell) cell).setIcon(CDBrowserTableDataSource.iconForPath(item));
+                        ((CDOutlineCell) cell).setIcon(CDIconCache.instance().iconForPath(item));
                     }
                 }
             }

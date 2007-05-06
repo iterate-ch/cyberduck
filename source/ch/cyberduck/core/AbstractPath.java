@@ -38,6 +38,7 @@ public abstract class AbstractPath extends NSObject {
      * Attributes denoting this path
      */
     public Attributes attributes;
+    
     public static final int FILE_TYPE = 1;
     public static final int DIRECTORY_TYPE = 2;
     public static final int SYMBOLIC_LINK_TYPE = 4;
