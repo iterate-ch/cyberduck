@@ -190,12 +190,6 @@
 /* No comment provided by engineer. */
 "Mac Line Endings (CR)" = "Terminação de linhas de Mac (CR)";
 
-/* Tooltip in Transfer Window. */
-"Maximum number of simultaneous transfers" = "Maximum number of simultaneous transfers";
-
-/* Toolbar item in Transfer Window. */
-"Maximum Transfers" = "Maximum Transfers";
-
 /* A column in the browser */
 "Modified" = "Modificado";
 
