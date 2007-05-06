@@ -362,7 +362,13 @@ public class Local extends AbstractPath {
     }
 
     public boolean exists() {
-        return _impl.exists() && this.attributes.getSize() > 0;
+        boolean v =_impl.exists();
+        if(v) {
+            if(this.attributes.isFile()) {
+                return this.attributes.getSize() > 0;
+            }
+        }
+        return v;
     }
 
     public void setPath(String name) {
