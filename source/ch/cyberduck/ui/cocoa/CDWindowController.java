@@ -124,11 +124,9 @@ public abstract class CDWindowController extends CDController
                         runnable.run();
                     }
                     catch(NullPointerException e) {
-                        if(log.getLevel().isGreaterOrEqual(Level.WARN)) {
-                            StackTraceElement[] stacktrace = e.getStackTrace();
-                            for(int i = 0; i < stacktrace.length; i++) {
-                                log.error(stacktrace[i].toString());
-                            }
+                        StackTraceElement[] stacktrace = e.getStackTrace();
+                        for(int i = 0; i < stacktrace.length; i++) {
+                            log.error(stacktrace[i].toString());
                         }
                         // We might get a null pointer if the session has been interrupted
                         // during the action in progress and closing the underlying socket
