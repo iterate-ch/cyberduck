@@ -64,9 +64,6 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             else if(actionPopup.selectedItem().title().equals(ACTION_RESUME)) {
                 action = TransferAction.ACTION_RESUME;
             }
-            else if(actionPopup.selectedItem().title().equals(ACTION_SKIP)) {
-                action = TransferAction.ACTION_SKIP;
-            }
             else if(actionPopup.selectedItem().title().equals(ACTION_SIMILARNAME)) {
                 action = TransferAction.ACTION_SIMILARNAME;
             }
@@ -430,7 +427,6 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     private static final String ACTION_OVERWRITE = NSBundle.localizedString("Overwrite existing file", "");
     private static final String ACTION_RESUME = NSBundle.localizedString("Try to resume transfer", "");
     private static final String ACTION_SIMILARNAME = NSBundle.localizedString("Use similar name", "");
-    private static final String ACTION_SKIP = NSBundle.localizedString("Skip existing file", "");
 
     private NSPopUpButton actionPopup; // IBOutlet
 
@@ -438,7 +434,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         this.actionPopup = actionPopup;
         this.actionPopup.removeAllItems();
         this.actionPopup.addItemsWithTitles(new NSArray(new String[]{
-                ACTION_OVERWRITE, ACTION_RESUME, ACTION_SIMILARNAME, ACTION_SKIP
+                ACTION_OVERWRITE, ACTION_RESUME, ACTION_SIMILARNAME
         }));
     }
 }

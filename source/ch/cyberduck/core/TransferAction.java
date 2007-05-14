@@ -76,7 +76,7 @@ public abstract class TransferAction {
     };
 
     /**
-     * Overwrite any prior existing file
+     * Do not transfer file
      */
     public static final TransferAction ACTION_SKIP = new TransferAction() {
         public String toString() {
