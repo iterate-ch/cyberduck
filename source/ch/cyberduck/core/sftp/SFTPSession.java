@@ -141,11 +141,6 @@ public class SFTPSession extends Session {
             this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getHostname() + "...");
             SSH = new Connection(this.host.getHostname(), this.host.getPort());
             try {
-                SSH.addConnectionMonitor(new ConnectionMonitor() {
-                    public void connectionLost(final Throwable reason) {
-                        SFTPSession.this.interrupt();
-                    }
-                });
                 final int timeout = this.timeout();
                 SSH.connect(verifier, timeout, timeout);
                 if(!this.isConnected()) {
@@ -200,6 +195,7 @@ public class SFTPSession extends Session {
     }
 
     private boolean loginUsingPublicKeyAuthentication(final Login credentials) throws IOException {
+        log.debug("loginUsingPublicKeyAuthentication:"+credentials);
         if(SSH.isAuthMethodAvailable(host.getCredentials().getUsername(), "publickey")) {
             File key = new File(NSPathUtilities.stringByExpandingTildeInPath(credentials.getPrivateKeyFile()));
             if(key.exists()) {
@@ -243,6 +239,7 @@ public class SFTPSession extends Session {
     }
 
     private boolean loginUsingPasswordAuthentication(final Login credentials) throws IOException {
+        log.debug("loginUsingPasswordAuthentication:"+credentials);
         if(SSH.isAuthMethodAvailable(host.getCredentials().getUsername(), "password")) {
             return SSH.authenticateWithPassword(credentials.getUsername(), credentials.getPassword());
         }
@@ -250,6 +247,8 @@ public class SFTPSession extends Session {
     }
 
     private boolean loginUsingKBIAuthentication(final Login credentials) throws IOException {
+        log.debug("loginUsingKBIAuthentication" +
+                "make:"+credentials);
         if(SSH.isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
             InteractiveLogic il = new InteractiveLogic(credentials);
             return SSH.authenticateWithKeyboardInteractive(credentials.getUsername(), il);
@@ -364,6 +363,15 @@ public class SFTPSession extends Session {
         if(null == SSH) {
             return false;
         }
-        return true;
+        try {
+            SSH.getConnectionInfo(); return true;
+        }
+        catch(IOException e) {
+            log.debug("isConnected:"+e.getMessage());
+        }
+        catch(IllegalStateException e) {
+            log.debug("isConnected"+e.getMessage());
+        }
+        return false;
     }
 }
