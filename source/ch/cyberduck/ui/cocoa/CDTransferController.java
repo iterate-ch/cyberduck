@@ -777,18 +777,32 @@ public class CDTransferController extends CDWindowController implements NSToolba
         NSEnumerator iterator = transferTable.selectedRowEnumerator();
         while(iterator.hasMoreElements()) {
             int i = ((Number) iterator.nextElement()).intValue();
-            Transfer transfer = (Transfer) TransferCollection.instance().get(i);
+            final Transfer transfer = (Transfer) TransferCollection.instance().get(i);
             if(transfer.isRunning() || transfer.isQueued()) {
-                transfer.cancel();
+                this.background(new BackgroundActionImpl(this) {
+                    public void run() {
+                        transfer.cancel();
+                    }
+
+                    public void cleanup() {
+                    }
+                }, this);
             }
         }
     }
 
     public void stopAllButtonClicked(final Object sender) {
         for(int i = 0; i < TransferCollection.instance().size(); i++) {
-            Transfer transfer = (Transfer) TransferCollection.instance().get(i);
+            final Transfer transfer = (Transfer) TransferCollection.instance().get(i);
             if(transfer.isRunning() || transfer.isQueued()) {
-                transfer.cancel();
+                this.background(new BackgroundActionImpl(this) {
+                    public void run() {
+                        transfer.cancel();
+                    }
+
+                    public void cleanup() {
+                    }
+                }, this);
             }
         }
     }
