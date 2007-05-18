@@ -71,6 +71,9 @@ public class UnixFTPEntryParserTest extends TestCase
         assertEquals(parsed.getName(), "Downloads");
     }
 
+    /**
+     * http://trac.cyberduck.ch/ticket/1066
+     */
     public void testParseNameWithBeginningWhitespace() {
         FTPFile parsed = null;
 
@@ -80,6 +83,22 @@ public class UnixFTPEntryParserTest extends TestCase
         assertEquals(parsed.getName(), " ADMIN_Documentation");
     }
 
+    /**
+     * http://trac.cyberduck.ch/ticket/1118
+     */
+    public void testParseNameWithEndingWhitespace() {
+        FTPFile parsed = null;
+
+        parsed = parser.parseFTPEntry(
+                "drw-rw-rw-   1 user      ftp             0  Mar 11 20:56 ADMIN_Documentation ");
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), "ADMIN_Documentation ");
+    }
+
+    /**
+     * http://trac.cyberduck.ch/ticket/1076
+     * @throws Exception
+     */
     public void testSizeWithIndicator() throws Exception {
         FTPFile parsed = null;
 
