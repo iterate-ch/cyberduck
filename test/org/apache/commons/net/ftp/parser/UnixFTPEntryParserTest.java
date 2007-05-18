@@ -130,6 +130,21 @@ public class UnixFTPEntryParserTest extends TestCase
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 21);
     }
 
+    public void testSolarisAcl() throws Exception {
+        FTPFile parsed = null;
+
+        //#215
+        parsed = parser.parseFTPEntry(
+                "drwxrwsr-x+ 34 cristol  molvis      3072 Jul 12 20:16 molvis");
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), "molvis");
+        assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
+        assertEquals(parsed.getUser(), "cristol");
+        assertEquals(parsed.getGroup(), "molvis");
+        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.JULY);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 12);
+    }
+
     public static Test suite()
     {
         return new TestSuite(UnixFTPEntryParserTest.class);
