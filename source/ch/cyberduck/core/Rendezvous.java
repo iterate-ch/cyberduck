@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * @version $Id$
@@ -96,26 +98,26 @@ public class Rendezvous
 
     private RendezvousListener notifier = new RendezvousListener() {
 
-        public void serviceResolved(final String servicename) {
+        public void serviceResolved(final String servicename, final String hostname) {
             log.info("Service resolved:"+servicename);
-//            if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
-//                try {
-//                    if(InetAddress.getByName(servicename).isLoopbackAddress()) {
-//                        log.debug("Supressed notification for "+servicename);
-//                        return;
-//                    }
-//                }
-//                catch(UnknownHostException e) {
-//                    ; //Ignore
-//                }
-//            }
+            if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
+                try {
+                    if(InetAddress.getByName(hostname).equals(InetAddress.getLocalHost())) {
+                        log.debug("Supressed Rendezvous notification for "+servicename);
+                        return;
+                    }
+                }
+                catch(UnknownHostException e) {
+                    ; //Ignore
+                }
+            }
             RendezvousListener[] l = null;
             synchronized(this) {
                 l = (RendezvousListener[]) listeners.toArray(
                         new RendezvousListener[listeners.size()]);
             }
             for(int i = 0; i < l.length; i++) {
-                l[i].serviceResolved(servicename);
+                l[i].serviceResolved(servicename, hostname);
             }
         }
 
@@ -291,7 +293,7 @@ public class Rendezvous
         }
         synchronized(this) {
             if(null == this.services.put(fullname, host)) {
-                this.notifier.serviceResolved(fullname);
+                this.notifier.serviceResolved(fullname, hostname);
             }
         }
     }
