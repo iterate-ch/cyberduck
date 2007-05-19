@@ -411,7 +411,7 @@ public class CDMainController extends CDController {
             this.showTransferQueueClicked(null);
         }
         Rendezvous.instance().addListener(new RendezvousListener() {
-            public void serviceResolved(String identifier) {
+            public void serviceResolved(String identifier, String hostname) {
                 Growl.instance().notifyWithImage("Bonjour", Rendezvous.instance().getDisplayedName(identifier),
                         "rendezvous.icns");
             }

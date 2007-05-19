@@ -165,7 +165,7 @@ public abstract class Preferences {
         defaults.put("website.bug", "http://trac.cyberduck.ch/newticket/");
 
         defaults.put("rendezvous.enable", String.valueOf(true));
-        defaults.put("rendezvous.loopback.supress", String.valueOf(false));
+        defaults.put("rendezvous.loopback.supress", String.valueOf(true));
 
         defaults.put("growl.enable", String.valueOf(true));
 

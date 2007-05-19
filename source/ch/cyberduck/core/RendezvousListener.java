@@ -26,12 +26,13 @@ public interface RendezvousListener {
     /**
      *
      * @param servicename The full service domain name, in the form &lt;servicename&gt;.&lt;protocol&gt;.&lt;domain&gt;.
+     * @param hostname
      */
-    public abstract  void serviceResolved(String servicename);
+    public abstract void serviceResolved(String servicename, String hostname);
 
     /**
      *
      * @param servicename The full service domain name, in the form &lt;servicename&gt;.&lt;protocol&gt;.&lt;domain&gt;.
      */
-    public abstract  void serviceLost(String servicename);
+    public abstract void serviceLost(String servicename);
 }
