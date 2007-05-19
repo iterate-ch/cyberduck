@@ -21,6 +21,7 @@
 @interface CDOutlineView (Private)
 - (NSTableColumn *)_typeAheadSelectionColumn;
 - (void)selectRow;
+- (void)clearSelectString:(NSTimer *)sender;
 - (void)selectRowWithTimer:(NSTimer *)sender;
 - (void)_scheduleAutoExpandTimerForItem:(id)object; 
 @end
@@ -232,6 +233,12 @@
 		[select_string appendString:[event charactersIgnoringModifiers]];
 		if([select_string length] == 1) {
 			[self selectRow];
+			// Fix for http://trac.cyberduck.ch/ticket/896
+			select_timer = [NSTimer scheduledTimerWithTimeInterval:0.5
+															target:self 
+														  selector:@selector(clearSelectString:) 
+														  userInfo:nil 
+														   repeats:NO];
 		}
 		else {
 			[select_timer invalidate];
@@ -293,8 +300,13 @@
 - (void)selectRowWithTimer:(NSTimer *)sender
 {
 	[self selectRow];
-	[select_timer invalidate];
-	select_timer = nil;
+	[self clearSelectString:sender];
+}
+
+- (void)clearSelectString:(NSTimer *)sender
+{
+	[sender invalidate];
+	sender = nil;
 	[select_string setString:@""];
 }
 
