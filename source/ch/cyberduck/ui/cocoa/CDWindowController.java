@@ -89,6 +89,14 @@ public abstract class CDWindowController extends CDController
     );
 
     /**
+     *
+     * @param runnable
+     */
+    public void background(final BackgroundActionImpl runnable) {
+        this.background(runnable, new Object());
+    }
+
+    /**
      * Run the runnable in the background using a new thread. Will return
      * immediatly but not run the runnable before the lock is acquired.
      * If the <code>BackgroundAction</code> has failed, <code>BackgroundAction#alert</code>

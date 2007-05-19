@@ -785,8 +785,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     }
 
                     public void cleanup() {
+                        ;
                     }
-                }, this);
+                });
             }
         }
     }
@@ -801,8 +802,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     }
 
                     public void cleanup() {
+                        ;
                     }
-                }, this);
+                });
             }
         }
     }

@@ -3237,7 +3237,15 @@ public class CDBrowserController extends CDWindowController
             if(this.activityRunning) {
                 backgroundAction.cancel();
             }
-            this.session.interrupt();
+            this.background(new BackgroundActionImpl(this) {
+                public void run() {
+                    session.interrupt();
+                }
+
+                public void cleanup() {
+                    ;
+                }
+            });
         }
         this.interrupted = true;
     }
