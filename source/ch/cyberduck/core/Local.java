@@ -249,7 +249,7 @@ public class Local extends AbstractPath {
      * Creates a new file and sets its resource fork to feature a custom progress icon
      * @return
      */
-    public boolean createNewFile() {
+    public boolean touch() {
         try {
             if(_impl.createNewFile()) {
                 this.setIcon(0);
@@ -310,6 +310,10 @@ public class Local extends AbstractPath {
     public AttributedList list(ListParseListener listener) {
         final AttributedList childs = new AttributedList();
         File[] f = _impl.listFiles();
+        if(null == f) {
+            log.error("_impl.listFiles == null");
+            return childs;
+        }
         for(int i = 0; i < f.length; i++) {
             childs.add(new Local(f[i]));
         }

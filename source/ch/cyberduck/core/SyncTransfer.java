@@ -66,6 +66,15 @@ public class SyncTransfer extends Transfer {
         _delegateDownload = new DownloadTransfer(this.roots);
     }
 
+    public void setBandwidth(float bytesPerSecond) {
+        _delegateUpload.setBandwidth(bytesPerSecond);
+        _delegateDownload.setBandwidth(bytesPerSecond);
+    }
+
+    public float getBandwidth() {
+        return _delegateDownload.getBandwidth(); //todo we should have a Bandwidth
+    }
+
     public String getName() {
         return this.getRoot().getName() + " \u2194 " /*left-right arrow*/ + this.getRoot().getLocal().getName();
     }
@@ -117,6 +126,8 @@ public class SyncTransfer extends Transfer {
                         = _delegateUpload.filter(TransferAction.ACTION_OVERWRITE);
 
                 public void prepare(Path file) {
+                    super.prepare(file);
+
                     Comparison compare = compare(file);
                     if(compare.equals(COMPARISON_REMOTE_NEWER)) {
                         _delegateFilterDownload.prepare(file);
@@ -124,8 +135,6 @@ public class SyncTransfer extends Transfer {
                     else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
                         _delegateFilterUpload.prepare(file);
                     }
-
-                    super.prepare(file);
                 }
 
                 public boolean accept(AbstractPath file) {
@@ -135,12 +144,19 @@ public class SyncTransfer extends Transfer {
                     if(!SyncTransfer.this.shouldCreateRemoteFiles() && !exists(((Path)file))) {
                         return false;
                     }
-                    if(!COMPARISON_EQUAL.equals(compare((Path)file))) {
-                        return super.accept(file);
-                    }
-                    return false;
+                    return !COMPARISON_EQUAL.equals(compare((Path) file));
                 }
             };
+        }
+        if(action.equals(TransferAction.ACTION_CALLBACK)) {
+            for(Iterator iter = roots.iterator(); iter.hasNext(); ) {
+                Path root = (Path)iter.next();
+                if(!COMPARISON_EQUAL.equals(compare(root))) {
+                    TransferAction result = prompt.prompt(this);
+                    return this.filter(result);
+                }
+                return this.filter(TransferAction.ACTION_CANCEL);
+            }
         }
         return super.filter(action);
     }
@@ -219,7 +235,7 @@ public class SyncTransfer extends Transfer {
             Comparison result = null;
             if(exists(p) && exists(p.getLocal())) {
                 if(p.attributes.isDirectory()) {
-                    result = COMPARISON_EQUAL;
+                    result = this.compareTimestamp(p);
                 }
                 else {
                     result = this.compareSize(p);
@@ -252,9 +268,9 @@ public class SyncTransfer extends Transfer {
      * @return
      */
     private Comparison compareSize(Path p) {
-        assert p.attributes.getSize() != -1 : "Remote file size unknown for "+p.getName();
-        assert p.getLocal().attributes.getSize() != -1 : "Local file size unknown for "+p.getName();
-
+        if(p.attributes.getSize() == -1) {
+            p.readSize();
+        }
         //fist make sure both files are larger than 0 bytes
         if(p.attributes.getSize() == 0 && p.getLocal().attributes.getSize() == 0) {
             return COMPARISON_EQUAL;
@@ -275,9 +291,9 @@ public class SyncTransfer extends Transfer {
      * @return
      */
     private Comparison compareTimestamp(Path p) {
-        assert p.attributes.getModificationDate() != -1: "Remote timestamp unknown for "+p.getName();
-        assert p.getLocal().attributes.getModificationDate() != -1 : "Local timestamp unknown for "+p.getName();
-
+        if(p.attributes.getModificationDate() == -1) {
+            p.readTimestamp();
+        }
         Calendar remote = this.asCalendar(
                 p.attributes.getModificationDate()
 //                        -this.getHost().getTimezone().getRawOffset()

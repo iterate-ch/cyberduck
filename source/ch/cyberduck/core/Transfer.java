@@ -146,7 +146,9 @@ public abstract class Transfer extends NSObject {
         dict.setObjectForKey(r, "Roots");
         dict.setObjectForKey(""+this.getSize(), "Size");
         dict.setObjectForKey(""+this.getTransferred(), "Current");
-        dict.setObjectForKey(""+bandwidth.getRate(), "Bandwidth");
+        if(bandwidth != null) {
+            dict.setObjectForKey(""+bandwidth.getRate(), "Bandwidth");
+        }
         return dict;
     }
 
@@ -291,23 +293,18 @@ public abstract class Transfer extends NSObject {
          */
         public void prepare(Path file) {
             log.debug("prepare:"+file);
-            file.status.setPrepared(true);
-        }
-
-        public boolean accept(AbstractPath file) {
-            log.debug("accept:"+file);
             if(exists(file)) {
                 if(file.attributes.getSize() == -1) {
-                    ((Path)file).readSize();
+                    file.readSize();
                 }
                 if(file.attributes.getModificationDate() == -1) {
-                    ((Path)file).readTimestamp();
+                    file.readTimestamp();
                 }
                 if(file.attributes.getPermission() == null) {
-                    ((Path)file).readPermission();
+                    file.readPermission();
                 }
             }
-            return true;
+            file.status.setPrepared(true);
         }
     }
 
@@ -411,50 +408,54 @@ public abstract class Transfer extends NSObject {
      * @param reloadRequested
      */
     private void transfer(final boolean resumeRequested, final boolean reloadRequested) {
+        final Session session = this.getSession();
         try {
-            // We manually open the connection here first as otherwise
-            // every transfer will try again if it should fail
-            this.getSession().check();
+            try {
+                // We manually open the connection here first as otherwise
+                // every transfer will try again if it should fail
+                session.check();
+            }
+            catch(IOException e) {
+                session.error(null, NSBundle.localizedString("Connection failed", "Error"), e);
+            }
+            if(!this.check()) {
+                return;
+            }
+
+            // Determine the filter to match files against
+            final TransferAction action = this.action(resumeRequested, reloadRequested);
+            if(action.equals(TransferAction.ACTION_CANCEL)) {
+                this.cancel(); return;
+            }
+
+            this.clear();
+
+            // Get the transfer filter from the concret transfer class
+            final TransferFilter filter = this.filter(action);
+            if(null == filter) {
+                // The user has canceled choosing a transfer filter
+                this.cancel(); return;
+            }
+
+            // Reset the cached size of the transfer and progress value
+            this.reset();
+
+            // Calculate some information about the files in advance to give some progress information
+            for(Iterator iter = roots.iterator(); iter.hasNext();) {
+                this.prepare((Path) iter.next(), filter);
+            }
+
+            // Transfer all files sequentially
+            for(Iterator iter = roots.iterator(); iter.hasNext();) {
+                this.transfer((Path) iter.next(), filter);
+            }
+
+            this.clear();
         }
-        catch(IOException e) {
-            this.getSession().error(null, NSBundle.localizedString("Connection failed", "Error"), e);
+        finally {
+            session.close();
+            session.cache().clear();
         }
-        if(!this.check()) {
-            return;
-        }
-
-        // Determine the filter to match files against
-        final TransferAction action = this.action(resumeRequested, reloadRequested);
-        if(action.equals(TransferAction.ACTION_CANCEL)) {
-            this.cancel(); return;
-        }
-
-        this.clear();
-
-        // Get the transfer filter from the concret transfer class
-        final TransferFilter filter = this.filter(action);
-        if(null == filter) {
-            // The user has canceled choosing a transfer filter
-            this.cancel(); return;
-        }
-
-        // Reset the cached size of the transfer and progress value
-        this.reset();
-
-        // Calculate some information about the files in advance to give some progress information
-        for(Iterator iter = roots.iterator(); iter.hasNext();) {
-            this.prepare((Path) iter.next(), filter);
-        }
-
-        // Transfer all files sequentially
-        for(Iterator iter = roots.iterator(); iter.hasNext();) {
-            this.transfer((Path) iter.next(), filter);
-        }
-
-        this.clear();
-
-        this.getSession().close();
-        this.getSession().cache().clear();
     }
 
     /**
@@ -641,9 +642,9 @@ public abstract class Transfer extends NSObject {
      *         the bytes transfered is > 0
      */
     public boolean isComplete() {
-        if(0 == this.getTransferred()) {
-            return false;
-        }
+//        if(0 == this.getTransferred()) {
+//            return false;
+//        }
         return this.getSize() == this.getTransferred();
     }
 

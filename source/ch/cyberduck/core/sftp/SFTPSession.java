@@ -125,9 +125,9 @@ public class SFTPSession extends Session {
         if(!SSH.isAuthenticationComplete()) {
             throw new LoginCanceledException();
         }
-        this.message(NSBundle.localizedString("Starting SCP subsystem...", "Status", ""));
+//        this.message(NSBundle.localizedString("Starting SCP subsystem...", "Status", ""));
         final SCPClient client = new SCPClient(SSH);
-        this.message(NSBundle.localizedString("SCP subsystem ready", "Status", ""));
+//        this.message(NSBundle.localizedString("SCP subsystem ready", "Status", ""));
         client.setCharset(this.getEncoding());
         return  client;
     }
@@ -366,11 +366,11 @@ public class SFTPSession extends Session {
         try {
             SSH.getConnectionInfo(); return true;
         }
+        catch(IllegalStateException e) {
+            return false;
+        }
         catch(IOException e) {
             log.debug("isConnected:"+e.getMessage());
-        }
-        catch(IllegalStateException e) {
-            log.debug("isConnected"+e.getMessage());
         }
         return false;
     }

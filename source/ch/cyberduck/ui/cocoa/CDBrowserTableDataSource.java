@@ -36,7 +36,6 @@ import org.apache.log4j.Logger;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -453,7 +452,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             }
             if(this.promisedDragPaths.length == 1) {
                 if(this.promisedDragPaths[0].attributes.isFile()) {
-                    this.promisedDragPaths[0].getLocal().createNewFile();
+                    this.promisedDragPaths[0].getLocal().touch();
                 }
                 if(this.promisedDragPaths[0].attributes.isDirectory()) {
                     this.promisedDragPaths[0].getLocal().mkdir();

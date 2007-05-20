@@ -23,7 +23,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -62,13 +61,12 @@ public class UploadTransfer extends Transfer {
      */
     private abstract class UploadTransferFilter extends TransferFilter {
         public boolean accept(AbstractPath file) {
-            if(!exists(((Path)file).getLocal())) {
-                return false;
-            }
-            return super.accept(file);
+            return exists(((Path) file).getLocal());
         }
 
         public void prepare(Path file) {
+            super.prepare(file);
+
             if(file.attributes.isFile()) {
                 // Read file size
                 size += file.getLocal().attributes.getSize();
@@ -76,7 +74,6 @@ public class UploadTransfer extends Transfer {
                     transferred += file.attributes.getSize();
                 }
             }
-            super.prepare(file);
         }
     }
 
@@ -98,9 +95,6 @@ public class UploadTransfer extends Transfer {
     private final Cache _cache = new Cache();
 
     public List childs(final Path parent) {
-        if(parent.getLocal().attributes.isSymbolicLink()) {
-            return Collections.EMPTY_LIST;
-        }
         if(!exists(parent)) {
             parent.cache().put(parent, new AttributedList());
         }
@@ -112,7 +106,7 @@ public class UploadTransfer extends Transfer {
                             && UPLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
                         return false;
                     }
-                    return super.accept(child);
+                    return true;
                 }
             }).iterator(); iter.hasNext(); ) {
                 Path child = PathFactory.createPath(parent.getSession(),
@@ -134,29 +128,43 @@ public class UploadTransfer extends Transfer {
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             return new UploadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
-                    if(p.attributes.isDirectory()) {
-                        return !exists(p);
+                    if(super.accept(p)) {
+                        if(p.attributes.isDirectory()) {
+                            return !exists(p);
+                        }
+                        return true;
                     }
-                    return super.accept(p);
+                    return false;
                 }
+
+                public void prepare(final Path p) {
+                    p.status.setResume(false);
+
+                    super.prepare(p);
+                }
+
             };
         }
         if(action.equals(TransferAction.ACTION_RESUME)) {
             return new UploadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
-                    if(((Path)p).status.isComplete()) {
-                        return false;
+                    if(super.accept(p)) {
+                        if(((Path)p).status.isComplete()) {
+                            return false;
+                        }
+                        if(p.attributes.isDirectory()) {
+                            return !exists(p);
+                        }
+                        return true;
                     }
-                    if(p.attributes.isDirectory()) {
-                        return !exists(p);
-                    }
-                    return super.accept(p);
+                    return false;
                 }
 
                 public void prepare(final Path p) {
                     if(p.attributes.isFile()) {
                         p.status.setResume(exists(p) && p.attributes.getSize() > 0);
                     }
+
                     super.prepare(p);
                 }
             };
@@ -196,8 +204,10 @@ public class UploadTransfer extends Transfer {
         if(action.equals(TransferAction.ACTION_SKIP)) {
             return new UploadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
-                    if(!exists(p)) {
-                        return super.accept(p);
+                    if(super.accept(p)) {
+                        if(!exists(p)) {
+                            return true;
+                        }
                     }
                     return false;
                 }

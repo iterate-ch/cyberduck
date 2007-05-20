@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;

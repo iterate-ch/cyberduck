@@ -61,17 +61,27 @@ public class DownloadTransfer extends Transfer {
      *
      */
     private abstract class DownloadTransferFilter extends TransferFilter {
-        public void prepare(Path file) {
+        public void prepare(Path p) {
+            super.prepare(p);
+
             // Adjust the download path
-            file.setLocal(new Local(file.getLocal().getParent().getAbsolute(), file.getName()));
+            p.setLocal(new Local(p.getLocal().getParent().getAbsolute(), p.getName()));
             // Read file size
-            if(file.attributes.isFile()) {
-                size += file.attributes.getSize();
-                if(file.status.isResume()) {
-                    transferred += file.getLocal().attributes.getSize();
+            if(p.attributes.isFile()) {
+                if(p.attributes.isSymbolicLink()) {
+//                    Path symlink = PathFactory.createPath(p.getSession(), p.getSymbolicLinkPath());
+//                    if(symlink.attributes.getSize() == -1) {
+//                        symlink.readSize();
+//                    }
+//                    size += symlink.attributes.getSize();
+                }
+                else {
+                    size += p.attributes.getSize();
+                }
+                if(p.status.isResume()) {
+                    transferred += p.getLocal().attributes.getSize();
                 }
             }
-            super.prepare(file);
         }
     }
 
@@ -95,9 +105,6 @@ public class DownloadTransfer extends Transfer {
             // Cannot fetch file listing of non existant file
             return Collections.EMPTY_LIST;
         }
-        if(parent.attributes.isSymbolicLink()) {
-            return Collections.EMPTY_LIST;
-        }
         return parent.childs(new NullComparator(), new TransferFilter() {
             public boolean accept(AbstractPath child) {
                 if(Preferences.instance().getBoolean("queue.download.skip.enable")
@@ -105,7 +112,7 @@ public class DownloadTransfer extends Transfer {
                     return false;
                 }
                 ((Path)child).setLocal(new Local(parent.getLocal().getAbsolute(), child.getName()));
-                return super.accept(child);
+                return true;
             }
         });
     }
@@ -122,7 +129,12 @@ public class DownloadTransfer extends Transfer {
                     if(p.attributes.isDirectory()) {
                         return !exists(((Path)p).getLocal());
                     }
-                    return super.accept(p);
+                    return true;
+                }
+
+                public void prepare(final Path p) {
+                    p.status.setResume(false);
+                    super.prepare(p);
                 }
             };
         }
@@ -135,7 +147,7 @@ public class DownloadTransfer extends Transfer {
                     if(p.attributes.isDirectory()) {
                         return !exists(((Path)p).getLocal());
                     }
-                    return super.accept(p);
+                    return true;
                 }
 
                 public void prepare(final Path p) {
@@ -149,7 +161,7 @@ public class DownloadTransfer extends Transfer {
         if(action.equals(TransferAction.ACTION_SIMILARNAME)) {
             return new DownloadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
-                    return super.accept(p);
+                    return true;
                 }
 
                 public void prepare(final Path p) {
@@ -173,8 +185,9 @@ public class DownloadTransfer extends Transfer {
                         log.info("Changed local name to:" + p.getName());
                     }
                     p.status.setResume(false);
-                    
+
                     super.prepare(p);
+
                 }
             };
         }
@@ -182,7 +195,7 @@ public class DownloadTransfer extends Transfer {
             return new DownloadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
                     if(!exists(((Path)p).getLocal())) {
-                        return super.accept(p);
+                        return true;
                     }
                     return false;
                 }

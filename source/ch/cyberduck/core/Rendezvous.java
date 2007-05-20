@@ -103,7 +103,7 @@ public class Rendezvous
             if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
                 try {
                     if(InetAddress.getByName(hostname).equals(InetAddress.getLocalHost())) {
-                        log.debug("Supressed Rendezvous notification for "+servicename);
+                        log.info("Supressed Rendezvous notification for "+servicename);
                         return;
                     }
                 }
