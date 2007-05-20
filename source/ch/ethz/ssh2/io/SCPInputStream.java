@@ -26,7 +26,8 @@ public class SCPInputStream extends BufferedInputStream
 
     public SCPInputStream(SCPClient client, Session session) throws IOException
     {
-        super(session.getStdout(), 512);
+        super(session.getStdout(), 40000);
+
         this.scp = client;
         this.session = session;
 
@@ -106,7 +107,7 @@ public class SCPInputStream extends BufferedInputStream
     public void close() throws IOException
     {
         try {
-            scp.readResponse(session.getStdout());
+//            scp.readResponse(session.getStdout());
             
             session.getStdin().write(0x0);
             session.getStdin().flush();
