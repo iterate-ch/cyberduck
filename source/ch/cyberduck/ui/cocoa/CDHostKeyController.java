@@ -142,7 +142,7 @@ public class CDHostKeyController implements ServerHostKeyVerifier {
         if(always) {
             // Also try to add the key to a known_host file
             try {
-                KnownHosts.addHostkeyToFile(new File(Preferences.instance().getProperty("ssh.knownhosts")),
+                KnownHosts.addHostkeyToFile(new File(new Local(Preferences.instance().getProperty("ssh.knownhosts")).getAbsolute()),
                         new String[]{KnownHosts.createHashedHostname(hostname)},
                         serverHostKeyAlgorithm, serverHostKey);
             }
