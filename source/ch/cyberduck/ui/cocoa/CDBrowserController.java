@@ -527,6 +527,11 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
+    /**
+     * 
+     * @param selected The items to be selected
+     * @see #setSelectedPaths(java.util.Collection)
+     */
     protected void reloadData(final java.util.Collection selected) {
         log.debug("reloadData");
         if(this.isMounted()) {
@@ -549,10 +554,15 @@ public class CDBrowserController extends CDWindowController
         final NSTableView browser = this.getSelectedBrowserView();
         browser.reloadData();
         if(this.isMounted()) {
-            this.statusLabel.setAttributedStringValue(new NSAttributedString(
-                    browser.numberOfRows() + " " + NSBundle.localizedString("files", ""),
-                    TRUNCATE_MIDDLE_ATTRIBUTES));
-            this.statusLabel.display();
+            // Delay for later invocation to make sure this is displayed as the last status message
+            this.invoke(new Runnable() {
+                public void run() {
+                    statusLabel.setAttributedStringValue(new NSAttributedString(
+                            browser.numberOfRows() + " " + NSBundle.localizedString("files", ""),
+                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                    statusLabel.display();
+                }
+            });
         }
         this.setSelectedPaths(selected);
     }
