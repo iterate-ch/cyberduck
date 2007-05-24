@@ -2007,12 +2007,12 @@ public class CDBrowserController extends CDWindowController
      */
     protected void renamePaths(final Map selected) {
         final Map normalized = this.checkHierarchy(selected);
-        this.checkOverwrite(normalized.values(), new BackgroundAction() {
+        this.checkMove(normalized.values(), new BackgroundAction() {
             public void run() {
                 Iterator originalIterator = normalized.keySet().iterator();
                 Iterator renamedIterator = normalized.values().iterator();
                 while(originalIterator.hasNext()) {
-                    ((Path)originalIterator.next()).rename(((Path)renamedIterator.next()).getAbsolute());
+                    ((Path)originalIterator.next()).rename(((AbstractPath) renamedIterator.next()).getAbsolute());
                     if(!isConnected()) {
                         break;
                     }
@@ -2026,7 +2026,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
-     * Displays a warning dialog about about already existing files
+     * Displays a warning dialog about already existing files
      * @param selected The files to check for existance
      */
     private void checkOverwrite(final java.util.Collection selected, final BackgroundAction action) {
@@ -2066,6 +2066,47 @@ public class CDBrowserController extends CDWindowController
             }
             else {
                 this.background(action);
+            }
+        }
+    }
+
+    /**
+     * Displays a warning dialog about files to be moved
+     * @param selected The files to check for existance
+     */
+    private void checkMove(final java.util.Collection selected, final BackgroundAction action) {
+        if(selected.size() > 0) {
+            if(Preferences.instance().getBoolean("browser.confirmMove")) {
+                StringBuffer alertText = new StringBuffer(
+                        NSBundle.localizedString("Do you want to move the selected files?", ""));
+                int i = 0;
+                Iterator iter = null;
+                for(iter = selected.iterator(); i < 10 && iter.hasNext();) {
+                    Path item = (Path) iter.next();
+                    alertText.append("\n"+Character.toString('\u2022')+" "+item.getName());
+                    i++;
+                }
+                if(iter.hasNext()) {
+                    alertText.append("\n"+Character.toString('\u2022')+" ...)");
+                }
+                NSWindow sheet = NSAlertPanel.criticalAlertPanel(
+                        NSBundle.localizedString("Move", "Alert sheet title"), //title
+                        alertText.toString(),
+                        NSBundle.localizedString("Move", "Alert sheet default button"), // defaultbutton
+                        NSBundle.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
+                        null //other button
+                );
+                CDSheetController c = new CDSheetController(this, sheet) {
+                    public void callback(final int returncode) {
+                        if(returncode == DEFAULT_OPTION) {
+                            checkOverwrite(selected, action);
+                        }
+                    }
+                };
+                c.beginSheet(true);
+            }
+            else {
+                this.checkOverwrite(selected, action);
             }
         }
     }
