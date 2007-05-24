@@ -78,6 +78,10 @@ public abstract class BackgroundActionImpl
                 log.warn("Supressed socket exception:"+cause.getMessage());
                 return;
             }
+            if(cause.getMessage().equals("Closed due to user request.")) {
+                log.warn("Suppressed SSH exception:"+cause.getMessage());
+                return;
+            }
         }
         Growl.instance().notify(exception.getMessage(),
                 null == exception.getPath() ? exception.getSession().getHost().getHostname()
