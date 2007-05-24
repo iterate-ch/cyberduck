@@ -641,32 +641,13 @@ public class CDBrowserController extends CDWindowController
     protected Collection getSelectedPaths() {
         Collection selectedFiles = new Collection();
         if(this.isMounted()) {
-            switch(this.browserSwitchView.selectedSegment()) {
-                case LIST_VIEW: {
-                    NSEnumerator iterator = this.browserListView.selectedRowEnumerator();
-                    List childs = this.browserListModel.childs(this.workdir());
-                    while(iterator.hasMoreElements()) {
-                        int row = ((Integer) iterator.nextElement()).intValue();
-                        Path selected = (Path) childs.get(row);
-                        if(null == selected) {
-                            break;
-                        }
-                        selectedFiles.add(selected);
-                    }
+            NSIndexSet iterator = this.getSelectedBrowserView().selectedRowIndexes();
+            for(int index = iterator.firstIndex(); index != NSIndexSet.NotFound; index = iterator.indexGreaterThanIndex(index)) {
+                Path selected = this.pathAtRow(index);
+                if(null == selected) {
                     break;
                 }
-                case OUTLINE_VIEW: {
-                    NSEnumerator iterator = this.browserOutlineView.selectedRowEnumerator();
-                    while(iterator.hasMoreElements()) {
-                        int row = ((Integer) iterator.nextElement()).intValue();
-                        Path selected = (Path) this.browserOutlineView.itemAtRow(row);
-                        if(null == selected) {
-                            break;
-                        }
-                        selectedFiles.add(selected);
-                    }
-                    break;
-                }
+                selectedFiles.add(selected);
             }
         }
         return selectedFiles;
@@ -679,6 +660,21 @@ public class CDBrowserController extends CDWindowController
     private void deselectAll() {
         log.debug("deselectAll");
         this.getSelectedBrowserView().deselectAll(null);
+    }
+
+    private Path pathAtRow(int row) {
+        Path item = null;
+        switch(this.browserSwitchView.selectedSegment()) {
+            case LIST_VIEW: {
+                item = (Path) this.browserListModel.childs(this.workdir()).get(row);
+                break;
+            }
+            case OUTLINE_VIEW: {
+                item = (Path) this.browserOutlineView.itemAtRow(row);
+                break;
+            }
+        }
+        return item;
     }
 
     // ----------------------------------------------------------
