@@ -39,9 +39,6 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
     protected PathFilter filter() {
         return new PromptFilter() {
             public boolean accept(AbstractPath child) {
-                if(child.attributes.isDirectory()) {
-                    return true;
-                }
                 if(!((SyncTransfer)transfer).shouldCreateLocalFiles() && !transfer.exists(((Path)child).getLocal())) {
                     // The local file does not exist but no files should be created
                     return false;
