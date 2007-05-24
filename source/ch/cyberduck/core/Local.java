@@ -208,20 +208,40 @@ public class Local extends AbstractPath {
         // See trac #933
         _impl = new File(NSPathUtilities.stringByExpandingTildeInPath(parent.getAbsolute()),
                 name.replace('/', ':'));
+        this.init();
     }
 
     public Local(String parent, String name) {
         // See trac #933
         _impl = new File(NSPathUtilities.stringByExpandingTildeInPath(parent),
                 name.replace('/', ':'));
+        this.init();
     }
 
     public Local(String path) {
         _impl = new File(NSPathUtilities.stringByExpandingTildeInPath(path));
+        this.init();
     }
 
     public Local(File path) {
         _impl = new File(NSPathUtilities.stringByExpandingTildeInPath(path.getAbsolutePath()));
+        this.init();
+    }
+
+    private void init() {
+        if(!Local.jni_load()) {
+            return;
+        }
+        FileForker forker = new MacOSXForker();
+        forker.usePathname(new Pathname(_impl.getAbsoluteFile()));
+        if(forker.isAlias()) {
+            try {
+                _impl = new File(forker.makeResolved().getPath());
+            }
+            catch(IOException e) {
+                log.error("Error resolving alias:"+e.getMessage());
+            }
+        }
     }
 
 //    private FileWatcher uk;
