@@ -91,6 +91,11 @@ public class Host extends NSObject {
      */
     private TimeZone timezone;
 
+    /**
+     * Arbitrary text
+     */
+    private String comment;
+
     public static final String HOSTNAME = "Hostname";
     public static final String NICKNAME = "Nickname";
     public static final String PORT = "Port";
@@ -103,6 +108,7 @@ public class Host extends NSObject {
     public static final String MAXCONNECTIONS = "Maximum Connections";
     public static final String DOWNLOADFOLDER = "Download Folder";
     public static final String TIMEZONE = "Timezone";
+    public static final String COMMENT = "Comment";
 
     /**
      * @param dict
@@ -166,6 +172,10 @@ public class Host extends NSObject {
         if(timezoneObj != null) {
             this.setTimezone(TimeZone.getTimeZone((String) timezoneObj));
         }
+        Object commentObj = dict.objectForKey(Host.COMMENT);
+        if(commentObj != null) {
+            this.setComment((String) commentObj);
+        }
     }
 
     /**
@@ -203,6 +213,9 @@ public class Host extends NSObject {
         }
         if(null != this.timezone) {
             dict.setObjectForKey(this.timezone.getID(), Host.TIMEZONE);
+        }
+        if(null != this.comment) {
+            dict.setObjectForKey(comment, Host.COMMENT);
         }
         return dict;
     }
@@ -655,6 +668,25 @@ public class Host extends NSObject {
             return TimeZone.getDefault();
         }
         return this.timezone;
+    }
+
+    /**
+     *
+     * @param comment
+     */
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getComment() {
+        if(null == comment) {
+            return "";
+        }
+        return this.comment;
     }
 
     /**
