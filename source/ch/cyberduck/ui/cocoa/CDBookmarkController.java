@@ -180,6 +180,16 @@ public class CDBookmarkController extends CDWindowController {
                 this.usernameField);
     }
 
+    private NSTextView commentField; // IBOutlet
+
+    public void setCommentField(NSTextView commentField) {
+        this.commentField = commentField;
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("commentInputDidChange", new Class[]{NSNotification.class}),
+                NSText.TextDidChangeNotification,
+                this.commentField);
+    }
+
     private NSPopUpButton timezonePopup; //IBOutlet
 
     public void setTimezonePopup(NSPopUpButton timezonePopup) {
@@ -538,6 +548,11 @@ public class CDBookmarkController extends CDWindowController {
         this.itemChanged();
     }
 
+    public void commentInputDidChange(final NSNotification sender) {
+        this.host.setComment(commentField.textStorage().stringReference().string());
+        this.itemChanged();
+    }
+
     /**
      * Updates the window title and url label with the properties of this bookmark
      */
@@ -576,5 +591,6 @@ public class CDBookmarkController extends CDWindowController {
             this.pkCheckbox.setState(NSCell.OffState);
             this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
         }
+        this.commentField.setString(this.host.getComment());
     }
 }
