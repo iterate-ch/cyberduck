@@ -234,6 +234,10 @@ public abstract class Preferences {
          * Close bookmark drawer upon opening a connection
          */
         defaults.put("browser.closeDrawer", String.valueOf(false));
+        /**
+         * Warn before renaming files
+         */
+        defaults.put("browser.confirmMove", String.valueOf(false));
 
         /**
          * Default editor
