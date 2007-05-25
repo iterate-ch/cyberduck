@@ -21,7 +21,7 @@
 		<key>848</key>
 		<string>696 523 527 560 0 0 1920 1178 </string>
 		<key>874</key>
-		<string>696 505 527 576 0 0 1920 1178 </string>
+		<string>696 515 527 576 0 0 1920 1178 </string>
 		<key>906</key>
 		<string>696 597 527 412 0 0 1920 1178 </string>
 	</dict>
@@ -31,8 +31,8 @@
 	<dict>
 		<key>10</key>
 		<array>
-			<string>1302</string>
 			<string>1300</string>
+			<string>1302</string>
 		</array>
 		<key>11</key>
 		<array>
@@ -63,9 +63,6 @@
 		</array>
 		<key>5</key>
 		<array>
-			<string>1262</string>
-			<string>1245</string>
-			<string>1256</string>
 			<string>1260</string>
 			<string>1246</string>
 			<string>1267</string>
@@ -75,6 +72,9 @@
 			<string>1242</string>
 			<string>1252</string>
 			<string>1255</string>
+			<string>1262</string>
+			<string>1245</string>
+			<string>1256</string>
 		</array>
 		<key>6</key>
 		<array>
@@ -83,8 +83,6 @@
 		</array>
 		<key>7</key>
 		<array>
-			<string>1250</string>
-			<string>1266</string>
 			<string>1243</string>
 			<string>1249</string>
 			<string>1261</string>
@@ -95,11 +93,13 @@
 			<string>1248</string>
 			<string>1269</string>
 			<string>1251</string>
+			<string>1250</string>
+			<string>1266</string>
 		</array>
 		<key>8</key>
 		<array>
-			<string>1277</string>
 			<string>1280</string>
+			<string>1277</string>
 		</array>
 		<key>9</key>
 		<array>
