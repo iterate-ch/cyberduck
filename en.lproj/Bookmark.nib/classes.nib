@@ -6,6 +6,7 @@
             LANGUAGE = Java; 
             OUTLETS = {
                 alertIcon = NSButton; 
+                commentField = NSTextView; 
                 connectmodePopup = NSPopUpButton; 
                 downloadPathPopup = NSPopUpButton; 
                 encodingPopup = NSPopUpButton; 
