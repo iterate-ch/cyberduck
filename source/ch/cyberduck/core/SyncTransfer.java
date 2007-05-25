@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.io.BandwidthThrottle;
+
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
@@ -67,12 +69,11 @@ public class SyncTransfer extends Transfer {
     }
 
     public void setBandwidth(float bytesPerSecond) {
-        _delegateUpload.setBandwidth(bytesPerSecond);
-        _delegateDownload.setBandwidth(bytesPerSecond);
+        ;
     }
 
     public float getBandwidth() {
-        return _delegateDownload.getBandwidth(); //todo we should have a Bandwidth
+        return BandwidthThrottle.UNLIMITED;
     }
 
     public String getName() {
@@ -155,8 +156,8 @@ public class SyncTransfer extends Transfer {
                     TransferAction result = prompt.prompt(this);
                     return this.filter(result);
                 }
-                return this.filter(TransferAction.ACTION_CANCEL);
             }
+            return this.filter(TransferAction.ACTION_CANCEL);
         }
         return super.filter(action);
     }

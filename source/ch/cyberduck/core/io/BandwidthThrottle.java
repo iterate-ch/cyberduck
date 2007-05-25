@@ -94,7 +94,12 @@ public class BandwidthThrottle {
 
     }
 
-    private float _rate = -1;
+    /**
+     * No throttling
+     */
+    public static final int UNLIMITED = -1;
+
+    private float _rate = UNLIMITED;
 
     /**
      * Sets the throttle to the given throttle rate.  The default windows size
@@ -105,7 +110,7 @@ public class BandwidthThrottle {
      */
     public void setRate(float bytesPerSecond) {
         if(bytesPerSecond < 0) {
-            _rate = -1;
+            _rate = UNLIMITED;
         }
         else {
             _rate = bytesPerSecond;
@@ -155,7 +160,7 @@ public class BandwidthThrottle {
      *         is always greater than one and less than or equal to desired
      */
     synchronized public int request(int desired) {
-        if(-1 == _rate) {
+        if(UNLIMITED == _rate) {
             return desired;
         }
         waitForBandwidth();

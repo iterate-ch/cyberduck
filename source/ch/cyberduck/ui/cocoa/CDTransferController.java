@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
@@ -177,8 +178,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
             while(iterator.hasMoreElements()) {
                 int i = ((Number) iterator.nextElement()).intValue();
                 Transfer transfer = (Transfer) TransferCollection.instance().get(i);
-                if(-1 == transfer.getBandwidth()) {
-                    if(-1 == tag) {
+                if(BandwidthThrottle.UNLIMITED == transfer.getBandwidth()) {
+                    if(BandwidthThrottle.UNLIMITED == tag) {
                         item.setState(selected > 1 ? NSCell.MixedState : NSCell.OnState);
                         break;
                     }
@@ -204,7 +205,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     public void bandwidthPopupChanged(NSPopUpButton sender) {
         NSEnumerator iterator = transferTable.selectedRowEnumerator();
         synchronized(TransferCollection.instance()) {
-            int bandwidth = -1;
+            int bandwidth = BandwidthThrottle.UNLIMITED;
             if(sender.selectedItem().tag() > 0 ) {
                 bandwidth = sender.selectedItem().tag()*1024; // from Kilobytes to Bytes
             }
@@ -467,7 +468,14 @@ public class CDTransferController extends CDWindowController implements NSToolba
             while(iterator.hasMoreElements()) {
                 int i = ((Number) iterator.nextElement()).intValue();
                 Transfer transfer = (Transfer) TransferCollection.instance().get(i);
-                if(transfer.getBandwidth() != -1) {
+                if(transfer instanceof SyncTransfer) {
+                    // Currently we do not support bandwidth throtling for sync transfers due to
+                    // the problem of mapping both download and upload rate in the GUI
+                    bandwidthPopup.setEnabled(false);
+                    // Break through and set the standard icon below
+                    break;
+                }
+                if(transfer.getBandwidth() != BandwidthThrottle.UNLIMITED) {
                     // Mark as throttled
                     this.bandwidthPopup.itemAtIndex(0).setImage(NSImage.imageNamed("turtle.tiff"));
                     return;
