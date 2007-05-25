@@ -185,7 +185,7 @@ public class SCPClient
      * @return
      * @throws IOException
      */
-    public SCPOutputStream put(String remoteFile, long length, String remoteTargetDirectory, String mode) throws IOException
+    public SCPOutputStream put(final String remoteFile, long length, String remoteTargetDirectory, String mode) throws IOException
     {
         Session sess = null;
 
@@ -220,24 +220,49 @@ public class SCPClient
      * @return
      * @throws IOException
      */
-    public SCPInputStream get(String remoteFile) throws IOException
+    public SCPInputStream get(final String remoteFile) throws IOException
     {
         Session sess = null;
 
         if (null == remoteFile)
             throw new IllegalArgumentException("Null argument.");
 
-        String tmp = remoteFile.trim();
+        String escapedRemoteFile = this.escape(remoteFile.trim());
 
-        if (tmp.length() == 0)
+        if (escapedRemoteFile.length() == 0)
             throw new IllegalArgumentException("Cannot accept empty filename.");
 
         String cmd = "scp -f";
-        cmd += (" " + tmp);
+        cmd += (" " + escapedRemoteFile);
 
         sess = conn.openSession();
         sess.execCommand(cmd, charsetName);
 
         return new SCPInputStream(this, sess);
+    }
+
+    /**
+     * Escapes metacharacters used in a typical shell
+     *
+     * metacharacter
+     *        A character that, when unquoted, separates words.   One  of  the
+     *        following:
+     *        |  & ; ( ) < > space tab
+     * @param path
+     * @return
+     */
+    private String escape(String path) {
+        // Escape all whitespace. ' ' becomes '\ '.
+        path = path.replaceAll("\\s+", "\\\\ ");
+        path = path.replaceAll("\\|", "\\\\|");
+        path = path.replaceAll("&", "\\\\&");
+        path = path.replaceAll(";", "\\\\;");
+        path = path.replaceAll("\\(", "\\\\(");
+        path = path.replaceAll("\\)", "\\\\)");
+        path = path.replaceAll("<", "\\\\<");
+        path = path.replaceAll(">", "\\\\>");
+        // Escape the 'escape' character. '\' becomes '\\'. This is a mess because '\' is the escape character for Java itself
+        path = path.replaceAll("\\\\", "\\\\\\\\");
+        return path;
     }
 }
