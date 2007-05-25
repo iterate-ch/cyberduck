@@ -1,5 +1,7 @@
 package ch.cyberduck.core.io;
 
+import org.apache.log4j.Logger;
+
 /**
  * Limits throughput of a stream to at most N bytes per T seconds.  Mutable and
  * thread-safe.<p>
@@ -35,6 +37,8 @@ package ch.cyberduck.core.io;
  * @version $Id$
  */
 public class BandwidthThrottle {
+    protected static Logger log = Logger.getLogger(BandwidthThrottle.class);
+
     /**
      * The number of windows per second.
      */
@@ -99,6 +103,9 @@ public class BandwidthThrottle {
      */
     public static final int UNLIMITED = -1;
 
+    /**
+     * Bytes per second allowed
+     */
     private float _rate = UNLIMITED;
 
     /**
@@ -109,6 +116,7 @@ public class BandwidthThrottle {
      *                       (not milliseconds!)
      */
     public void setRate(float bytesPerSecond) {
+        log.debug("setRate:"+bytesPerSecond);
         if(bytesPerSecond < 0) {
             _rate = UNLIMITED;
         }
@@ -129,6 +137,7 @@ public class BandwidthThrottle {
      * Sets whether or not this throttle is switching bandwidth on/off.
      */
     public void setSwitching(boolean switching) {
+        log.debug("setSwitching:"+switching);
         if(_switching != switching) {
             fixBytesPerTick(switching);
         }
@@ -179,6 +188,7 @@ public class BandwidthThrottle {
             if(_availableBytes != 0)
                 break;
             try {
+                log.info("Throttling bandwidth for "+(_nextTickTime - now) +" milliseconds");
                 Thread.sleep(_nextTickTime - now);
             }
             catch(InterruptedException e) {

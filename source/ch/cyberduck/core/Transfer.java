@@ -90,6 +90,11 @@ public abstract class Transfer extends NSObject {
     }
 
     /**
+     * The transfer has been reset
+     */
+    private boolean reset;
+
+    /**
      * Create a transfer with a single root which can
      * be a plain file or a directory
      *
@@ -620,6 +625,7 @@ public abstract class Transfer extends NSObject {
         log.debug("reset:");
         this.transferred = 0;
         this.size = 0;
+        this.reset = true;
     }
 
     /**
@@ -642,9 +648,13 @@ public abstract class Transfer extends NSObject {
      *         the bytes transfered is > 0
      */
     public boolean isComplete() {
-//        if(0 == this.getTransferred()) {
-//            return false;
-//        }
+        if(0 == this.getTransferred()) {
+            // No bytes transferred
+            if(!reset) {
+                // Not even attempted to transfer anything yet
+                return false;
+            }
+        }
         return this.getSize() == this.getTransferred();
     }
 

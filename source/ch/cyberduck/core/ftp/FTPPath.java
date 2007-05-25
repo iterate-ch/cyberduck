@@ -543,6 +543,7 @@ public class FTPPath extends Path {
                 if(attributes.isFile()) {
                     session.check();
                     this.getParent().cwdir();
+                    this.getLocal().touch();
                     if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                         if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
                             this.downloadASCII(throttle, listener);
@@ -836,9 +837,6 @@ public class FTPPath extends Path {
         try {
             session.FTP.setTransferType(FTPTransferType.BINARY);
             if(this.status.isResume()) {
-                if(-1 == attributes.getSize()) {
-                    this.readSize();
-                }
                 this.status.setCurrent((long)attributes.getSize());
             }
             in = new Local.InputStream(this.getLocal());

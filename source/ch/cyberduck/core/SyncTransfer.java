@@ -237,6 +237,9 @@ public class SyncTransfer extends Transfer {
             if(exists(p) && exists(p.getLocal())) {
                 if(p.attributes.isDirectory()) {
                     result = this.compareTimestamp(p);
+//                    if(COMPARISON_EQUAL.equals(result)) {
+//
+//                    }
                 }
                 else {
                     result = this.compareSize(p);
@@ -296,14 +299,13 @@ public class SyncTransfer extends Transfer {
             p.readTimestamp();
         }
         Calendar remote = this.asCalendar(
-                p.attributes.getModificationDate()
+                p.attributes.getModificationDate(),
 //                        -this.getHost().getTimezone().getRawOffset()
-                ,
                 p.getHost().getTimezone(),
-                Calendar.MINUTE);
+                Calendar.SECOND);
         Calendar local = this.asCalendar(p.getLocal().attributes.getModificationDate(),
                 TimeZone.getDefault(),
-                Calendar.MINUTE);
+                Calendar.SECOND);
         if(local.before(remote)) {
             return COMPARISON_REMOTE_NEWER;
         }

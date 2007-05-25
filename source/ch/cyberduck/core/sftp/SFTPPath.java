@@ -498,6 +498,7 @@ public class SFTPPath extends Path {
                 if(this.attributes.isFile()) {
                     session.check();
                     out = new Local.OutputStream(this.getLocal(), status.isResume());
+                    this.getLocal().touch();
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
                         SFTPv3FileHandle handle = session.sftp().openFileRO(this.getAbsolute());
                         in = new SFTPInputStream(handle);
@@ -513,7 +514,7 @@ public class SFTPPath extends Path {
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SCP)) {
                         SCPClient scp = session.openScp();
                         scp.setCharset(session.getEncoding());
-                        in = scp.get(this.getAbsolute().replaceAll("\\s+", "\\\\ "));
+                        in = scp.get(this.getAbsolute());
                     }
                     this.download(in, out, throttle, listener);
                 }
@@ -590,6 +591,7 @@ public class SFTPPath extends Path {
                 }
                 if(attributes.isFile()) {
                     session.check();
+                    in = new Local.InputStream(this.getLocal());
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
                         if(status.isResume() && this.exists()) {
                             handle = session.sftp().openFileRWAppend(this.getAbsolute());
@@ -638,7 +640,6 @@ public class SFTPPath extends Path {
                                     session.sftp().stat(this.getAbsolute()).size.intValue());
                         }
                     }
-                    in = new Local.InputStream(this.getLocal());
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
                         out = new SFTPOutputStream(handle);
                         if(status.isResume()) {
@@ -652,8 +653,8 @@ public class SFTPPath extends Path {
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SCP)) {
                         SCPClient scp = session.openScp();
                         scp.setCharset(session.getEncoding());
-                        out = scp.put(this.getName().replaceAll("\\s+", "\\\\ "), (long)this.getLocal().attributes.getSize(),
-                                this.getParent().getAbsolute().replaceAll("\\s+", "\\\\ "),
+                        out = scp.put(this.getName(), (long)this.getLocal().attributes.getSize(),
+                                this.getParent().getAbsolute(),
                                 "0"+attributes.getPermission().getOctalString());
                     }
                     this.upload(out, in, throttle, listener);
