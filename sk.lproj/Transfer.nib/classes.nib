@@ -25,11 +25,9 @@
                 filterField = NSSearchField; 
                 iconView = NSImageView; 
                 localField = NSTextField; 
-                localLabel = NSTextField; 
                 queueSizeStepper = NSStepper; 
                 queueTable = NSTableView; 
                 urlField = NSTextField; 
-                urlLabel = NSTextField; 
                 window = NSWindow; 
             }; 
             SUPERCLASS = NSObject; 

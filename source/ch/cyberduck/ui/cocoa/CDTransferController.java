@@ -82,26 +82,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
     // Outlets
     // ----------------------------------------------------------
 
-    private NSTextField urlLabel; // IBOutlet
-
-    public void setUrlLabel(NSTextField urlLabel) {
-        this.urlLabel = urlLabel;
-        this.urlLabel.setTextColor(NSColor.darkGrayColor());
-        this.urlLabel.setStringValue("URL:");
-    }
-
     private NSTextField urlField; // IBOutlet
 
     public void setUrlField(NSTextField urlField) {
         this.urlField = urlField;
-    }
-
-    private NSTextField localLabel; // IBOutlet
-
-    public void setLocalLabel(NSTextField localLabel) {
-        this.localLabel = localLabel;
-        this.localLabel.setTextColor(NSColor.darkGrayColor());
-        this.localLabel.setStringValue(NSBundle.localizedString("Local File", "") + ":");
     }
 
     private NSTextField localField; // IBOutlet
