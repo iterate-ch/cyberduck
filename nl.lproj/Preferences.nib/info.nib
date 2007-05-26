@@ -11,7 +11,7 @@
 		<key>1033</key>
 		<string>696 697 527 212 0 0 1920 1178 </string>
 		<key>1034</key>
-		<string>696 663 527 279 0 0 1920 1178 </string>
+		<string>696 663 527 280 0 0 1920 1178 </string>
 		<key>1035</key>
 		<string>696 685 527 235 0 0 1920 1178 </string>
 		<key>1374</key>
@@ -19,11 +19,11 @@
 		<key>1664</key>
 		<string>696 690 527 225 0 0 1920 1178 </string>
 		<key>848</key>
-		<string>696 523 527 560 0 0 1920 1178 </string>
+		<string>696 469 527 560 0 0 1920 1178 </string>
 		<key>874</key>
-		<string>696 504 527 578 0 0 1920 1178 </string>
+		<string>696 514 527 578 0 0 1920 1178 </string>
 		<key>906</key>
-		<string>696 593 527 420 0 0 1920 1178 </string>
+		<string>696 597 527 412 0 0 1920 1178 </string>
 	</dict>
 	<key>IBFramework Version</key>
 	<string>446.1</string>
