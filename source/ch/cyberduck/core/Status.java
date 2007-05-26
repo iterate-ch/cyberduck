@@ -90,6 +90,39 @@ public class Status {
                 BigDecimal.ROUND_DOWN).toString() + " GB";
     }
 
+
+    private static final String SEC_REMAINING = NSBundle.localizedString("seconds remaining", "Status", "");
+    private static final String MIN_REMAINING = NSBundle.localizedString("minutes remaining", "Status", "");
+    private static final String HOURS_REMAINING = NSBundle.localizedString("hours remaining", "Status", "");
+
+    /**
+     *
+     * @param remaining
+     * @return
+     */
+    public static String getRemainingAsString(double remaining) {
+        StringBuffer b = new StringBuffer();
+        if(remaining > 7200) { // More than two hours
+            b.append(new BigDecimal(remaining).divide(new BigDecimal(3600),
+                    1,
+                    BigDecimal.ROUND_DOWN).toString());
+            b.append(" ");
+            b.append(HOURS_REMAINING);
+        }
+        else if(remaining > 120) { // More than two minutes
+            b.append((int) (remaining / 60));
+            b.append(" ");
+            b.append(MIN_REMAINING);
+        }
+        else {
+            b.append((int )remaining);
+            b.append(" ");
+            b.append(SEC_REMAINING);
+
+        }
+        return b.toString();
+    }
+
     public void setComplete(boolean complete) {
         this.complete = complete;
         log.info("------------------- Complete:" + this.getCurrent());

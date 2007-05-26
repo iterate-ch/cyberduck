@@ -91,6 +91,9 @@
 /* Indicates remaining time needed for files to transfer */
 "minutes remaining" = "minutes remaining";
 
+/* Indicates remaining time needed for files to transfer */
+"hours remaining" = "hours remaining";
+
 /* When trying to determine the IP address of a server hostname; e.g. Resolving example.net... */
 "Resolving" = "Resolving";
 

@@ -230,9 +230,6 @@ public class CDProgressController extends CDController {
         }
     }
 
-    private static final String SEC_REMAINING = NSBundle.localizedString("seconds remaining", "Status", "");
-    private static final String MIN_REMAINING = NSBundle.localizedString("minutes remaining", "Status", "");
-
     private void setProgressText() {
         StringBuffer b = new StringBuffer();
         b.append(Status.getSizeAsString(transfer.getTransferred()));
@@ -246,18 +243,9 @@ public class CDProgressController extends CDController {
                 b.append(" (");
                 b.append(Status.getSizeAsString(speed));
                 b.append("/sec, ");
-                int remaining = (int) ((transfer.getSize() - meter.getBytesTransfered()) / speed);
-                if(remaining > 120) {
-                    b.append(remaining / 60);
-                    b.append(" ");
-                    b.append(MIN_REMAINING);
-                }
-                else {
-                    b.append(remaining);
-                    b.append(" ");
-                    b.append(SEC_REMAINING);
-
-                }
+                // remaining time in seconds
+                double remaining = ((transfer.getSize() - meter.getBytesTransfered()) / speed);
+                b.append(Status.getRemainingAsString(remaining));
                 b.append(")");
             }
         }
