@@ -3,7 +3,6 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.NSObject;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Comparator;
 
 /*
@@ -208,7 +207,7 @@ public abstract class AbstractPath extends NSObject {
     private String symbolic = null;
 
     public void setSymbolicLinkPath(String p) {
-        this.symbolic = p;
+        this.symbolic = AbstractPath.normalize(p);
     }
 
     /**

@@ -18,22 +18,24 @@ package ch.cyberduck.core.sftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.ethz.ssh2.*;
+import ch.ethz.ssh2.Connection;
+import ch.ethz.ssh2.ConnectionInfo;
+import ch.ethz.ssh2.InteractiveCallback;
+import ch.ethz.ssh2.SCPClient;
+import ch.ethz.ssh2.ServerHostKeyVerifier;
 import ch.ethz.ssh2.crypto.PEMDecoder;
 import ch.ethz.ssh2.sftp.SFTPv3Client;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.Session;
 
 import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
 
 import java.io.CharArrayWriter;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.File;
 
 /**
  * @version $Id$
@@ -197,12 +199,12 @@ public class SFTPSession extends Session {
     private boolean loginUsingPublicKeyAuthentication(final Login credentials) throws IOException {
         log.debug("loginUsingPublicKeyAuthentication:"+credentials);
         if(SSH.isAuthMethodAvailable(host.getCredentials().getUsername(), "publickey")) {
-            File key = new File(NSPathUtilities.stringByExpandingTildeInPath(credentials.getPrivateKeyFile()));
+            Local key = new Local(credentials.getPrivateKeyFile());
             if(key.exists()) {
                 // If the private key is passphrase protected then ask for the passphrase
                 char[] buff = new char[256];
                 CharArrayWriter cw = new CharArrayWriter();
-                FileReader fr = new FileReader(key);
+                FileReader fr = new FileReader(new File(key.getAbsolute()));
                 while (true) {
                     int len = fr.read(buff);
                     if (len < 0)
@@ -230,10 +232,10 @@ public class SFTPSession extends Session {
                         }
                     }
                 }
-                return SSH.authenticateWithPublicKey(host.getCredentials().getUsername(), key,
+                return SSH.authenticateWithPublicKey(host.getCredentials().getUsername(), new File(key.getAbsolute()),
                         passphrase);
             }
-            log.error("Key file " + key.getAbsolutePath() + " does not exist.");
+            log.error("Key file " + key.getAbsolute() + " does not exist.");
         }
         return false;
     }

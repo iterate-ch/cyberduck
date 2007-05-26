@@ -96,19 +96,19 @@ public class Host extends NSObject {
      */
     private String comment;
 
-    public static final String HOSTNAME = "Hostname";
-    public static final String NICKNAME = "Nickname";
-    public static final String PORT = "Port";
-    public static final String PROTOCOL = "Protocol";
-    public static final String USERNAME = "Username";
-    public static final String PATH = "Path";
-    public static final String ENCODING = "Encoding";
-    public static final String KEYFILE = "Private Key File";
-    public static final String FTPCONNECTMODE = "FTP Connect Mode";
-    public static final String MAXCONNECTIONS = "Maximum Connections";
-    public static final String DOWNLOADFOLDER = "Download Folder";
-    public static final String TIMEZONE = "Timezone";
-    public static final String COMMENT = "Comment";
+    private static final String HOSTNAME = "Hostname";
+    private static final String NICKNAME = "Nickname";
+    private static final String PORT = "Port";
+    private static final String PROTOCOL = "Protocol";
+    private static final String USERNAME = "Username";
+    private static final String PATH = "Path";
+    private static final String ENCODING = "Encoding";
+    private static final String KEYFILE = "Private Key File";
+    private static final String FTPCONNECTMODE = "FTP Connect Mode";
+    private static final String MAXCONNECTIONS = "Maximum Connections";
+    private static final String DOWNLOADFOLDER = "Download Folder";
+    private static final String TIMEZONE = "Timezone";
+    private static final String COMMENT = "Comment";
 
     /**
      * @param dict

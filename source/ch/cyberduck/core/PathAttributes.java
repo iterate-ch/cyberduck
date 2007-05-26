@@ -65,8 +65,10 @@ public class PathAttributes extends Attributes {
         return copy;
     }
 
+    private static final String TYPE = "Type";
+
     public PathAttributes(NSDictionary dict) {
-        Object typeObj = dict.objectForKey("Type");
+        Object typeObj = dict.objectForKey(TYPE);
         if(typeObj != null) {
             this.type = Integer.parseInt((String) typeObj);
         }
@@ -74,7 +76,7 @@ public class PathAttributes extends Attributes {
 
     public NSDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
-        dict.setObjectForKey(String.valueOf(this.type), "Type");
+        dict.setObjectForKey(String.valueOf(this.type), TYPE);
         return dict;
     }
 

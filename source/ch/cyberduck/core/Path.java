@@ -25,7 +25,6 @@ import ch.cyberduck.core.io.ThrottledOutputStream;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
-import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
 
@@ -33,8 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
@@ -95,16 +92,25 @@ public abstract class Path extends AbstractPath {
         return BINARY_FILETYPE_PATTERN;
     }
 
+    private static final String REMOTE = "Remote";
+    private static final String LOCAL = "Local";
+    private static final String SYMLINK = "Symlink";
+    private static final String ATTRIBUTES = "Attributes";
+
     public Path(NSDictionary dict) {
-        Object pathObj = dict.objectForKey("Remote");
+        Object pathObj = dict.objectForKey(REMOTE);
         if(pathObj != null) {
             this.setPath((String) pathObj);
         }
-        Object localObj = dict.objectForKey("Local");
+        Object localObj = dict.objectForKey(LOCAL);
         if(localObj != null) {
             this.setLocal(new Local((String) localObj));
         }
-        Object attributesObj = dict.objectForKey("Attributes");
+        Object symlinkObj = dict.objectForKey(SYMLINK);
+        if(symlinkObj != null) {
+            this.setSymbolicLinkPath((String) symlinkObj);
+        }
+        Object attributesObj = dict.objectForKey(ATTRIBUTES);
         if(attributesObj != null) {
             this.attributes = new PathAttributes((NSDictionary) attributesObj);
         }
@@ -112,9 +118,12 @@ public abstract class Path extends AbstractPath {
 
     public NSDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
-        dict.setObjectForKey(this.getAbsolute(), "Remote");
-        dict.setObjectForKey(this.getLocal().toString(), "Local");
-        dict.setObjectForKey(((PathAttributes) this.attributes).getAsDictionary(), "Attributes");
+        dict.setObjectForKey(this.getAbsolute(), REMOTE);
+        dict.setObjectForKey(this.getLocal().toString(), LOCAL);
+        if(null != this.getSymbolicLinkPath()) {
+            dict.setObjectForKey(this.getSymbolicLinkPath(), SYMLINK);
+        }
+        dict.setObjectForKey(((PathAttributes) this.attributes).getAsDictionary(), ATTRIBUTES);
         return dict;
     }
 
@@ -312,8 +321,7 @@ public abstract class Path extends AbstractPath {
     public Local getLocal() {
         //default value if not set explicitly, i.e. with drag and drop
         if(null == this.local) {
-            return new Local(NSPathUtilities.stringByExpandingTildeInPath(this.getHost().getDownloadFolder()),
-                    this.getName());
+            return new Local(this.getHost().getDownloadFolder(), this.getName());
         }
         return this.local;
     }
