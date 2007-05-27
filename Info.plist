@@ -30,7 +30,7 @@
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
-	<string>Cyberduck</string>
+	<string>${EXECUTABLE_NAME}${SYSTEM_VERSION_CHECK_SUFFIX}</string>
 	<key>CFBundleIconFile</key>
 	<string>cyberduck-application</string>
 	<key>CFBundleIdentifier</key>
@@ -110,5 +110,7 @@
 			</dict>
 		</dict>
 	</array>
+	<key>LSMinimumSystemVersion</key> 
+	<string>10.3.9</string>
 </dict>
 </plist>
