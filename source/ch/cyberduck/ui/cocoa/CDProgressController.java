@@ -239,13 +239,16 @@ public class CDProgressController extends CDController {
         b.append(Status.getSizeAsString(transfer.getSize()));
         if(transfer.isRunning() && null != meter) {
             float speed = meter.getSpeed();
-            if(speed > -1) {
+            if(speed > 0) {
                 b.append(" (");
                 b.append(Status.getSizeAsString(speed));
-                b.append("/sec, ");
-                // remaining time in seconds
-                double remaining = ((transfer.getSize() - meter.getBytesTransfered()) / speed);
-                b.append(Status.getRemainingAsString(remaining));
+                b.append("/sec");
+                if(transfer.getSize() > 0) {
+                    b.append(", ");
+                    // remaining time in seconds
+                    double remaining = ((transfer.getSize() - meter.getBytesTransfered()) / speed);
+                    b.append(Status.getRemainingAsString(remaining));
+                }
                 b.append(")");
             }
         }
