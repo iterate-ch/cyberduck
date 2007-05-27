@@ -211,11 +211,11 @@ public class Editor extends CDController {
             }
 
             public void cleanup() {
-                if(deferredDelete) {
-                    delete();
-                }
                 if(path.status.isComplete()) {
                     Growl.instance().notify("Upload complete", path.getName());
+                    if(deferredDelete) {
+                        delete();
+                    }
                     controller.reloadData(true);
                 }
             }
