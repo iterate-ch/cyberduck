@@ -30,7 +30,7 @@
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
-	<string>${EXECUTABLE_NAME}${SYSTEM_VERSION_CHECK_SUFFIX}</string>
+	<string>Cyberduck</string>
 	<key>CFBundleIconFile</key>
 	<string>cyberduck-application</string>
 	<key>CFBundleIdentifier</key>
