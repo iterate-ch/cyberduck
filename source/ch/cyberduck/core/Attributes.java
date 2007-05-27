@@ -106,7 +106,7 @@ public abstract class Attributes {
         Permission perm = this.getPermission();
         if(null == perm) {
             log.warn("Unknown permissions");
-            return false;
+            return true;
         }
         return perm.getOwnerPermissions()[Permission.EXECUTE]
                 || perm.getGroupPermissions()[Permission.EXECUTE]
@@ -121,7 +121,7 @@ public abstract class Attributes {
         Permission perm = this.getPermission();
         if(null == perm) {
             log.warn("Unknown permissions");
-            return false;
+            return true;
         }
         return perm.getOwnerPermissions()[Permission.READ]
                 || perm.getGroupPermissions()[Permission.READ]
@@ -136,7 +136,7 @@ public abstract class Attributes {
         Permission perm = this.getPermission();
         if(null == perm) {
             log.warn("Unknown permissions");
-            return false;
+            return true;
         }
         return perm.getOwnerPermissions()[Permission.WRITE]
                 || perm.getGroupPermissions()[Permission.WRITE]
