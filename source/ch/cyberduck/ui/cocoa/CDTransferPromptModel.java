@@ -56,7 +56,7 @@ public abstract class CDTransferPromptModel extends NSObject {
     private final Collection roots;
 
     /**
-     *
+     * The filter used to decide which files to include in the prompt dialog
      */
     private final PathFilter filter;
 
@@ -90,9 +90,6 @@ public abstract class CDTransferPromptModel extends NSObject {
                 }
                 if(file.attributes.getModificationDate() == -1) {
                     ((Path)file).readTimestamp();
-                }
-                if(file.attributes.getPermission() == null) {
-                    ((Path)file).readPermission();
                 }
             }
             return true;
