@@ -732,8 +732,7 @@ public class FTPClient {
      */
     public void utime(long modtime, long createdtime, String remoteFile, TimeZone timezone)
             throws IOException, FTPException {
-        tsFormat.setTimeZone(timezone);
-        String date = tsFormat.format(new Date(modtime));
+
         if(this.setUtimeSupported) {
             try {
                 // The utime() function sets the access and modification times of the named
@@ -741,9 +740,11 @@ public class FTPClient {
                 // The access time is set to the value of the first element,
                 // and the modification time is set to the value of the second element
                 // Accessed date, modified date, created date
-                this.site("UTIME "+remoteFile+" "+tsFormat.format(new Date(modtime))
-                        +" "+tsFormat.format(new Date(modtime))
-                        +" "+tsFormat.format(new Date(createdtime))+" UTC");
+                this.site("UTIME "+remoteFile+" "+tsFormat.format(new Date(modtime-timezone.getOffset(modtime)))
+                        +" "+tsFormat.format(new Date(modtime-timezone.getOffset(modtime)))
+                        +" "+tsFormat.format(new Date(createdtime-timezone.getOffset(createdtime)))
+//                        +" "+timezone.getDisplayName(false, TimeZone.SHORT));
+                        +" UTC");
             }
             catch(FTPException e) {
                 this.setUtimeSupported = false;
@@ -759,10 +760,9 @@ public class FTPClient {
 
     public void setmodtime(long modtime, String remoteFile, TimeZone timezone) throws IOException, FTPException {
         tsFormat.setTimeZone(timezone);
-        String date = tsFormat.format(new Date(modtime));
         if(this.setModtimeSupported) {
             try {
-                FTPReply reply = control.sendCommand("MDTM "+date+" "+remoteFile);
+                FTPReply reply = control.sendCommand("MDTM "+tsFormat.format(new Date(modtime))+" "+remoteFile);
                 lastValidReply = control.validateReply(reply, "213");
             }
             catch(FTPException e) {
