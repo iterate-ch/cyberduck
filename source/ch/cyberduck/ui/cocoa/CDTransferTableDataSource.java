@@ -152,8 +152,8 @@ public class CDTransferTableDataSource extends NSObject {
             tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
             return NSDraggingInfo.DragOperationCopy;
         }
-        NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-        if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
+        NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+        if (pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
             tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
             return NSDraggingInfo.DragOperationCopy;
         }
@@ -198,10 +198,10 @@ public class CDTransferTableDataSource extends NSObject {
         else {
             // we are only interested in our private pasteboard with a description of the queue
             // encoded in as a xml.
-            NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-            log.debug("availableTypeFromArray:QueuePBoardType: " + pboard.availableTypeFromArray(new NSArray("QueuePBoardType")));
-            if (pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-                Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
+            NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+            log.debug("availableTypeFromArray:TransferPasteboardType: " + pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)));
+            if (pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
+                Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);// get the data from paste board
                 log.debug("tableViewAcceptDrop:" + o);
                 if (o != null) {
                     NSArray elements = (NSArray) o;
@@ -213,7 +213,7 @@ public class CDTransferTableDataSource extends NSObject {
                             tableView.selectRow(row, false);
                             tableView.scrollRowToVisible(row);
                         }
-                        pboard.setPropertyListForType(null, "QueuePBoardType");
+                        pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
                     }
                     return true;
                 }

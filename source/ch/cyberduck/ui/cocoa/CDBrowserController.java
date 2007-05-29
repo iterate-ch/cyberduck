@@ -287,7 +287,9 @@ public class CDBrowserController extends CDWindowController
                 path.setLocal(new Local((String) localObj));
             }
             final Transfer q = new SyncTransfer(path);
-            q.start(CDTransferPrompt.create(this, q));
+            TransferOptions options = new TransferOptions();
+            options.closeSession = false;
+            q.start(CDTransferPrompt.create(this, q), options);
         }
         return null;
     }
@@ -315,7 +317,9 @@ public class CDBrowserController extends CDWindowController
                 path.setLocal(new Local(path.getLocal().getParent().getAbsolute(), (String) nameObj));
             }
             final Transfer q = new DownloadTransfer(path);
-            q.start(CDTransferPrompt.create(this, q));
+            TransferOptions options = new TransferOptions();
+            options.closeSession = false;
+            q.start(CDTransferPrompt.create(this, q), options);
         }
         return null;
     }
@@ -342,7 +346,9 @@ public class CDBrowserController extends CDWindowController
                 path.setPath(this.workdir().getAbsolute(), (String) nameObj);
             }
             final Transfer q = new UploadTransfer(path);
-            q.start(CDTransferPrompt.create(this, q));
+            TransferOptions options = new TransferOptions();
+            options.closeSession = false;
+            q.start(CDTransferPrompt.create(this, q), options);
         }
         return null;
     }
@@ -880,9 +886,9 @@ public class CDBrowserController extends CDWindowController
         this.browserOutlineView = browserOutlineView;
         // receive drag events from types
         this.browserOutlineView.registerForDraggedTypes(new NSArray(new Object[]{
-                "QueuePboardType",
+                CDPasteboards.TransferPasteboardType,
                 NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
-                NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as QueuePboardType
+                NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as TransferPasteboardType
         ));
 
         // setting appearance attributes
@@ -1012,9 +1018,9 @@ public class CDBrowserController extends CDWindowController
         this.browserListView = view;
         // receive drag events from types
         this.browserListView.registerForDraggedTypes(new NSArray(new Object[]{
-                "QueuePboardType",
+                CDPasteboards.TransferPasteboardType,
                 NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
-                NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as QueuePboardType
+                NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as TransferPasteboardType
         ));
 
         // setting appearance attributes
@@ -1958,21 +1964,33 @@ public class CDBrowserController extends CDWindowController
                     final Path destination = (Path) destinationsIter.next();
                     final Local local = new Local(NSPathUtilities.temporaryDirectory(),
                             destination.getName());
+                    TransferOptions options = new TransferOptions();
+                    options.closeSession = false;
                     try {
                         source.setLocal(local);
-                        source.download();
+                        DownloadTransfer download = new DownloadTransfer(source);
+                        download.start(new TransferPrompt() {
+                            public TransferAction prompt(Transfer transfer) {
+                                return TransferAction.ACTION_OVERWRITE;
+                            }
+                        }, options);
                         if(!isConnected()) {
                             break;
                         }
                         source.setLocal(null);
                         destination.setLocal(local);
-                        destination.upload();
+                        UploadTransfer upload = new UploadTransfer(destination);
+                        upload.start(new TransferPrompt() {
+                            public TransferAction prompt(Transfer transfer) {
+                                return TransferAction.ACTION_OVERWRITE;
+                            }
+                        }, options);
                         if(!isConnected()) {
                             break;
                         }
                     }
                     finally {
-                        local.delete();
+                        local.delete(true);
                     }
                 }
             }
@@ -2697,12 +2715,33 @@ public class CDBrowserController extends CDWindowController
         return false;
     }
 
+    public void cut(final Object sender) {
+        if(this.getSelectionCount() > 0) {
+            final List roots = new Collection();
+            for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
+                roots.add((Path) i.next());
+            }
+            final Transfer q = new DownloadTransfer(roots);
+            // Writing data for private use when the item gets dragged to the transfer queue.
+            NSPasteboard queuePboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+            queuePboard.declareTypes(new NSArray(CDPasteboards.TransferPasteboardType), null);
+            if(queuePboard.setPropertyListForType(new NSArray(q.getAsDictionary()), CDPasteboards.TransferPasteboardType)) {
+                log.debug("TransferPasteboardType data sucessfully written to pasteboard");
+            }
+            Path p = this.getSelectedPath();
+            NSPasteboard pboard = NSPasteboard.generalPasteboard();
+            pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
+            if(!pboard.setStringForType(p.getAbsolute(), NSPasteboard.StringPboardType)) {
+                log.error("Error writing absolute path of selected item to NSPasteboard.StringPboardType.");
+            }
+        }
+    }
+
     public void paste(final Object sender) {
-        final NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-        if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-            Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
+        final NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+        if(pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
+            Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);// get the data from paste board
             if(o != null) {
-                final NSArray elements = (NSArray) o;
                 final Map files = new HashMap();
                 Path parent = this.workdir();
                 if(this.getSelectionCount() == 1) {
@@ -2714,6 +2753,7 @@ public class CDBrowserController extends CDWindowController
                         parent = (Path)selected.getParent();
                     }
                 }
+                final NSArray elements = (NSArray) o;
                 for(int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                     Transfer q = TransferFactory.create(dict);
@@ -2769,28 +2809,6 @@ public class CDBrowserController extends CDWindowController
         pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
         if(!pboard.setStringForType(url, NSPasteboard.StringPboardType)) {
             log.error("Error writing URL to NSPasteboard.StringPboardType.");
-        }
-    }
-
-    public void cut(final Object sender) {
-        if(this.getSelectionCount() > 0) {
-            final List roots = new Collection();
-            for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
-                roots.add((Path) i.next());
-            }
-            final Transfer q = new DownloadTransfer(roots);
-            // Writing data for private use when the item gets dragged to the transfer queue.
-            NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-            queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
-            if(queuePboard.setPropertyListForType(new NSArray(q.getAsDictionary()), "QueuePBoardType")) {
-                log.debug("QueuePBoardType data sucessfully written to pasteboard");
-            }
-            Path p = this.getSelectedPath();
-            NSPasteboard pboard = NSPasteboard.generalPasteboard();
-            pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
-            if(!pboard.setStringForType(p.getAbsolute(), NSPasteboard.StringPboardType)) {
-                log.error("Error writing absolute path of selected item to NSPasteboard.StringPboardType.");
-            }
         }
     }
 
@@ -3412,9 +3430,9 @@ public class CDBrowserController extends CDWindowController
         if(identifier.equals("paste:")) {
             boolean valid = false;
             if(this.isMounted()) {
-                NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-                if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-                    Object o = pboard.propertyListForType("QueuePBoardType");
+                NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+                if(pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
+                    Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
                     if(o != null) {
                         NSArray elements = (NSArray) o;
                         for(int i = 0; i < elements.count(); i++) {
@@ -3481,9 +3499,6 @@ public class CDBrowserController extends CDWindowController
      * @return true if the item by that identifier should be enabled
      */
     private boolean validateItem(String identifier) {
-        if(identifier.equals("copy:")) {
-            return this.isMounted() && this.getSelectionCount() > 0;
-        }
         if(identifier.equals("cut:")) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
@@ -3501,9 +3516,9 @@ public class CDBrowserController extends CDWindowController
         }
         if(identifier.equals("paste:")) {
             if(this.isMounted()) {
-                NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-                if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-                    Object o = pboard.propertyListForType("QueuePBoardType");
+                NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+                if(pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
+                    Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
                     if(o != null) {
                         return true;
                     }

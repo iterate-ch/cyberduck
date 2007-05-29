@@ -256,8 +256,8 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             }
             return true;
         }
-        if(NSPasteboard.pasteboardWithName("QueuePBoard").availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-            Object o = NSPasteboard.pasteboardWithName("QueuePBoard").propertyListForType("QueuePBoardType");
+        if(NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard).availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
+            Object o = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard).propertyListForType(CDPasteboards.TransferPasteboardType);
             if(o != null) {
                 // A file dragged within the browser has been received
                 final NSArray elements = (NSArray) o;
@@ -293,7 +293,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     }
                     controller.duplicatePaths(files, false);
                 }
-                NSPasteboard.pasteboardWithName("QueuePBoard").setPropertyListForType(null, "QueuePBoardType");
+                NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard).setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
                 return true;
             }
         }
@@ -313,9 +313,9 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     return NSDraggingInfo.DragOperationCopy;
                 }
             }
-            NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-            if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-                Object o = pboard.propertyListForType("QueuePBoardType");
+            NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+            if(pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
+                Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
                 if(o != null) {
                     NSArray elements = (NSArray) o;
                     for(int i = 0; i < elements.count(); i++) {
@@ -400,10 +400,10 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                 final Transfer q = new DownloadTransfer(roots);
 
                 // Writing data for private use when the item gets dragged to the transfer queue.
-                NSPasteboard queuePboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-                queuePboard.declareTypes(new NSArray("QueuePBoardType"), null);
-                if(queuePboard.setPropertyListForType(new NSArray(q.getAsDictionary()), "QueuePBoardType")) {
-                    log.debug("QueuePBoardType data sucessfully written to pasteboard");
+                NSPasteboard queuePboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+                queuePboard.declareTypes(new NSArray(CDPasteboards.TransferPasteboardType), null);
+                if(queuePboard.setPropertyListForType(new NSArray(q.getAsDictionary()), CDPasteboards.TransferPasteboardType)) {
+                    log.debug("TransferPasteboardType data sucessfully written to pasteboard");
                 }
                 NSEvent event = NSApplication.sharedApplication().currentEvent();
                 if(event != null) {

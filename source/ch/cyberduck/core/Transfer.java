@@ -412,7 +412,7 @@ public abstract class Transfer extends NSObject {
      * @param resumeRequested
      * @param reloadRequested
      */
-    private void transfer(final boolean resumeRequested, final boolean reloadRequested) {
+    private void transfer(final TransferOptions options) {
         final Session session = this.getSession();
         try {
             try {
@@ -428,7 +428,7 @@ public abstract class Transfer extends NSObject {
             }
 
             // Determine the filter to match files against
-            final TransferAction action = this.action(resumeRequested, reloadRequested);
+            final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
             if(action.equals(TransferAction.ACTION_CANCEL)) {
                 this.cancel(); return;
             }
@@ -458,7 +458,9 @@ public abstract class Transfer extends NSObject {
             this.clear();
         }
         finally {
-            session.close();
+            if(options.closeSession) {
+                session.close();
+            }
             session.cache().clear();
         }
     }
@@ -525,10 +527,20 @@ public abstract class Transfer extends NSObject {
     }
 
     /**
+     * Calls #start with TransferOptions.DEFAULT
      * @param prompt
      */
     public void start(TransferPrompt prompt) {
-        this.start(prompt, false, false, false);
+        this.start(prompt, TransferOptions.DEFAULT);
+    }
+
+    /**
+     * Calls #start with queueing off
+     * @param prompt
+     * @param options
+     */
+    public void start(TransferPrompt prompt, final TransferOptions options) {
+        this.start(prompt, options, false);
     }
 
     /**
@@ -542,11 +554,13 @@ public abstract class Transfer extends NSObject {
     private static final Object lock = Queue.instance();
 
     /**
-     * @param resumeRequested
-     * @param reloadRequested
+     *
+     * @param prompt
+     * @param options
      * @param queued
      */
-    public void start(TransferPrompt prompt, final boolean resumeRequested, final boolean reloadRequested, final boolean queued) {
+    public void start(TransferPrompt prompt, final TransferOptions options,
+                      final boolean queued) {
         log.debug("start:"+prompt);
         try {
             this.fireTransferWillStart();
@@ -581,7 +595,7 @@ public abstract class Transfer extends NSObject {
                 }
             }
             this.prompt = prompt;
-            this.transfer(resumeRequested, reloadRequested);
+            this.transfer(options);
         }
         finally {
             this.fireTransferDidEnd();

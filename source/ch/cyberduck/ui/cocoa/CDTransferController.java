@@ -312,7 +312,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         // a drag with tableView.dragPromisedFilesOfTypes(), we listens for those events
         // and then use the private pasteboard instead.
         this.transferTable.registerForDraggedTypes(new NSArray(new Object[]{
-                "QueuePBoardType",
+                CDPasteboards.TransferPasteboardType,
                 NSPasteboard.StringPboardType,
                 NSPasteboard.FilesPromisePboardType}));
 
@@ -575,7 +575,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
 
             public void run() {
-                transfer.start(CDTransferPrompt.create(CDTransferController.this, transfer), resume, reload, true);
+                TransferOptions options = new TransferOptions();
+                options.reloadRequested = reload;
+                options.resumeRequested = resume;
+                transfer.start(CDTransferPrompt.create(CDTransferController.this, transfer), options ,true);
             }
 
             public void finish() {
@@ -750,16 +753,16 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void paste(final Object sender) {
         log.debug("paste");
-        NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-        if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-            Object o = pboard.propertyListForType("QueuePBoardType");// get the data from paste board
+        NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+        if(pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
+            Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);// get the data from paste board
             if(o != null) {
                 NSArray elements = (NSArray) o;
                 for(int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                     TransferCollection.instance().add(TransferFactory.create(dict));
                 }
-                pboard.setPropertyListForType(null, "QueuePBoardType");
+                pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
                 this.reloadData();
             }
         }
@@ -981,9 +984,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
         String identifier = item.action().name();
         if(item.action().name().equals("paste:")) {
             boolean valid = false;
-            NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-            if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-                Object o = pboard.propertyListForType("QueuePBoardType");
+            NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+            if(pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
+                Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
                 if(o != null) {
                     NSArray elements = (NSArray) o;
                     for(int i = 0; i < elements.count(); i++) {
@@ -1023,9 +1026,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
      */
     private boolean validateItem(String identifier) {
         if(identifier.equals("paste:")) {
-            NSPasteboard pboard = NSPasteboard.pasteboardWithName("QueuePBoard");
-            if(pboard.availableTypeFromArray(new NSArray("QueuePBoardType")) != null) {
-                return pboard.propertyListForType("QueuePBoardType") != null;
+            NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+            if(pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
+                return pboard.propertyListForType(CDPasteboards.TransferPasteboardType) != null;
             }
             return false;
         }
