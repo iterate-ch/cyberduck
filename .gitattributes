@@ -1081,6 +1081,7 @@ img/ftp-tls.tiff -text svneol=unset#image/tiff
 img/ftp.tiff -text svneol=unset#image/tiff
 img/gear.tiff -text svneol=unset#image/tiff
 img/general.tiff -text svneol=unset#image/tiff
+img/goto.tiff -text svneol=unset#image/tiff
 img/history.tiff -text svneol=unset#image/tiff
 img/idisk.tiff -text svneol=unset#image/tiff
 img/info.tiff -text svneol=unset#image/tiff
