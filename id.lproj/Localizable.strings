@@ -119,7 +119,7 @@
 "Download file" = "Download file";
 
 /* No comment provided by engineer. */
-"Download the selected file to..." = "Download file yang terpilih ke...";
+"Download the selected file to..." = "Download file yang terpilih ke…";
 
 /* Toolbar item */
 "Edit" = "Rubah";
@@ -153,6 +153,9 @@
 
 /* Toolbar item */
 "Get Info" = "Ambil Info";
+
+/* Toolbar item */
+"Go to Folder" = "Masuk ke Direktori";
 
 /* No comment provided by engineer. */
 "History" = "History";
@@ -288,7 +291,7 @@
 "Resume" = "Melanjutkan";
 
 /* No comment provided by engineer. */
-"Review..." = "Review...";
+"Review..." = "Review…";
 
 /* No comment provided by engineer. */
 "Server File" = "File Server";

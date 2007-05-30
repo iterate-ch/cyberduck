@@ -119,7 +119,7 @@
 "Download file" = "Receber ficheiro";
 
 /* No comment provided by engineer. */
-"Download the selected file to..." = "Descarregar o ficheiro seleccionado para...";
+"Download the selected file to..." = "Descarregar o ficheiro seleccionado para…";
 
 /* Toolbar item */
 "Edit" = "Editar";
@@ -153,6 +153,9 @@
 
 /* Toolbar item */
 "Get Info" = "Ver Informação";
+
+/* Toolbar item */
+"Go to Folder" = "Ir para Pasta";
 
 /* No comment provided by engineer. */
 "History" = "Historial";
@@ -288,7 +291,7 @@
 "Resume" = "Continuar";
 
 /* No comment provided by engineer. */
-"Review..." = "Rever...";
+"Review..." = "Rever…";
 
 /* No comment provided by engineer. */
 "Server File" = "Ficheiro de Servidor";

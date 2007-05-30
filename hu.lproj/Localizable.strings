@@ -119,7 +119,7 @@
 "Download file" = "File letöltése";
 
 /* No comment provided by engineer. */
-"Download the selected file to..." = "A kiválasztott file letöltése mint...";
+"Download the selected file to..." = "A kiválasztott file letöltése mint…";
 
 /* Toolbar item */
 "Edit" = "Szerkesztés";
@@ -153,6 +153,9 @@
 
 /* Toolbar item */
 "Get Info" = "Infó";
+
+/* Toolbar item */
+"Go to Folder" = "Mappa választása";
 
 /* No comment provided by engineer. */
 "History" = "Régebbi";
@@ -288,7 +291,7 @@
 "Resume" = "Visszalép";
 
 /* No comment provided by engineer. */
-"Review..." = "Áttekint...";
+"Review..." = "Áttekint…";
 
 /* No comment provided by engineer. */
 "Server File" = "Szerver File";
