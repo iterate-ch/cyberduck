@@ -44,7 +44,7 @@ public class CDPortablePreferencesImpl extends CDPreferencesImpl {
         if (log.isDebugEnabled()) {
             log.debug("setProperty(" + property + ", " + value + ")");
         }
-        this.props.setObjectForKey(value, property);
+        this.props.setObjectForKey(value.toString(), property);
     }
 
     public void deleteProperty(String property) {
