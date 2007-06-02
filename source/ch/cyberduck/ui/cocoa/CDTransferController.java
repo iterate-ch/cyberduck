@@ -75,7 +75,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
      * @param notification
      */
     public void windowWillClose(NSNotification notification) {
-        TransferCollection.instance().save();
+        // Do not call super as we are a singleton. super#windowWillClose would invalidate me
     }
 
     // ----------------------------------------------------------
@@ -902,6 +902,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 j++;
             }
         }
+        TransferCollection.instance().save();
         this.reloadData();
     }
 
@@ -913,6 +914,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 i--;
             }
         }
+        TransferCollection.instance().save();
         this.reloadData();
     }
 

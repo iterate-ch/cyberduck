@@ -55,7 +55,6 @@ public class CDTransferTableDataSource extends NSObject {
             public void collectionItemAdded(Object item) {
                 assert item instanceof Transfer;
                 controllers.put(item, new CDProgressController((Transfer)item));
-                TransferCollection.instance().save();
             }
 
             public void collectionItemRemoved(Object item) {

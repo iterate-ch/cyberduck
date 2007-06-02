@@ -62,6 +62,34 @@ public class TransferCollection extends Collection {
         QUEUE_FILE.getParent().mkdir();
     }
 
+    public boolean add(Object o) {
+        assert o instanceof Transfer;
+        boolean r = super.add(o);
+        this.save();
+        return r;
+    }
+
+    /**
+     * Saves the collection after adding the new item
+     * @param row
+     * @param o
+     * @see #save()
+     */
+    public void add(int row, Object o) {
+        assert o instanceof Transfer;
+        super.add(row, o);
+        this.save();
+    }
+
+    /**
+     * Does not save the collection after modifiying
+     * @param row
+     * @return
+     * @see #save()
+     */
+    public Object remove(int row) {
+        return super.remove(row);
+    }
 
     public void save() {
         this.save(QUEUE_FILE);
@@ -130,7 +158,7 @@ public class TransferCollection extends Collection {
                     while(i.hasMoreElements()) {
                         Object element = i.nextElement();
                         if(element instanceof NSDictionary) {
-                            this.add(TransferFactory.create((NSDictionary) element));
+                            super.add(TransferFactory.create((NSDictionary) element));
                         }
                     }
                 }
