@@ -85,8 +85,6 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>SUCheckAtStartup</key>
-	<integer>1</integer>
 	<key>SUFeedURL</key>
 	<string>_SPARKLEFEED_</string>
 	<key>UTExportedTypeDeclarations</key>
