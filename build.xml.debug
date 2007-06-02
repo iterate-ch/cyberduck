@@ -1,8 +1,8 @@
 <!--
  *	Simple Ant (http://jakarta.apache.org/ant) build script for Cyberduck
  *
- *	$Revision: 2837 $
- *	$Date: 2007-02-12 12:53:35 +0530 (Mon, 12 Feb 2007) $
+ *	$Revision: 2968 $
+ *	$Date: 2007-05-06 14:42:19 +0200 (Sun, 06 May 2007) $
  *
  *	Copyright (c) 2005 David Kocher. All rights reserved.
  *	http://icu.unizh.ch/~dkocher/
@@ -156,7 +156,7 @@
 			<arg line="-dmgName '${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg' -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor} (${localization})' -buildDir ${build}/localizations -compressionLevel 9 ${app.bundle.loc} ${app.name}\ Website.webloc Donate.webloc ${localization}.lproj/License.txt Credits.rtf  AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
 		</exec>
 		<checksum file="${build}/localizations/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg" algorithm="md5" />
-		<delete dir="${build}/${localization}"/>
+		<delete dir="${java.io.tmpdir}/${localization}"/>
 	</target>
 	
 	<target name="nightly">
@@ -358,7 +358,6 @@
 			manifest="${build}/MANIFEST.MF">
 			<fileset dir="${build.classes}">
 				<include name="com/enterprisedt/**/*.class"/>
-				<include name="org/apache/commons/net/**/*.class"/>
 			</fileset>
 		</jar>
 	</target>
@@ -390,7 +389,7 @@
 		<delete dir="${app.bundle}"/>
 	</target>
 
-	<target name="manifest" depends="revision" description="Create a manifest used in the jar files">
+	<target name="manifest" description="Create a manifest used in the jar files">
 		<manifest file="${build}/MANIFEST.MF">
 			<attribute name="Built-By" value="${user.name}"/>
 			<attribute name="Specification-Title" value="${app.name}"/>
