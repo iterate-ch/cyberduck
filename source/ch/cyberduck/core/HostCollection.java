@@ -82,9 +82,9 @@ public class HostCollection extends Collection {
     }
 
     public Object remove(int row) {
-        super.remove(row);
+        Object previous = super.remove(row);
         this.save();
-        return null;
+        return previous;
     }
 
     /**
