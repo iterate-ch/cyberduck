@@ -105,6 +105,7 @@
                 uownerr = NSButton; 
                 uownerw = NSButton; 
                 uownerx = NSButton; 
+                updateCheckbox = NSButton; 
                 uploadSkipButton = NSButton; 
                 uploadSkipRegexDefaultButton = NSButton; 
                 uploadSkipRegexField = NSTextView; 

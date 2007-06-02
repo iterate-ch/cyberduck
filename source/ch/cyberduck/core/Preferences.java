@@ -415,6 +415,10 @@ public abstract class Preferences {
         defaults.put("ssh.SCAuthentication", "hmac-md5"); //server -> client message authentication
         defaults.put("ssh.publickey", "ssh-rsa");
         defaults.put("ssh.compression", "none"); //zlib
+
+        defaults.put("update.check", String.valueOf(true));
+        final int DAY = 60*60*24;
+        defaults.put("update.check.interval", String.valueOf(DAY)); // periodic update check in seconds
     }
 
     /**

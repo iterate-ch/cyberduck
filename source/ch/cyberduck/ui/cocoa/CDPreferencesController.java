@@ -1729,4 +1729,25 @@ public class CDPreferencesController extends CDWindowController {
             Preferences.instance().setProperty("queue.upload.bandwidth.bytes", (float)tag*1024);
         }
     }
+
+    private NSButton updateCheckbox; //IBOutlet
+
+    public void setUpdateCheckbox(NSButton updateCheckbox) {
+        this.updateCheckbox = updateCheckbox;
+        this.updateCheckbox.setTarget(this);
+        this.updateCheckbox.setAction(new NSSelector("updateCheckboxClicked", new Class[]{NSButton.class}));
+        this.updateCheckbox.setState(Preferences.instance().getBoolean("update.check") ? NSCell.OnState : NSCell.OffState);
+    }
+
+    public void updateCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.OnState;
+        Preferences.instance().setProperty("update.check", enabled);
+        // Update the Sparkle property
+        if(enabled) {
+            Preferences.instance().setProperty("SUScheduledCheckInterval", Preferences.instance().getProperty("update.check.interval"));
+        }
+        else {
+            Preferences.instance().deleteProperty("SUScheduledCheckInterval");
+        }
+    }
 }
