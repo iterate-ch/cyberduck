@@ -48,12 +48,15 @@ public class CDUploadPromptModel extends CDTransferPromptModel {
 
     protected Object objectValueForItem(final Path item, final String identifier) {
         if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {
-            if(item.getLocal().attributes.isFile() && item.getLocal().attributes.getSize() == 0) {
-                return ALERT_ICON;
+            if(item.attributes.isFile()) {
+                if(item.getLocal().attributes.getSize() == 0) {
+                    return ALERT_ICON;
+                }
+                if(item.attributes.getSize() > item.getLocal().attributes.getSize()) {
+                    return ALERT_ICON;
+                }
             }
-            if(item.attributes.getSize() > item.getLocal().attributes.getSize()) {
-                return ALERT_ICON;
-            }
+            return null;
         }
         if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
             return new NSAttributedString(Status.getSizeAsString(item.attributes.getSize()),

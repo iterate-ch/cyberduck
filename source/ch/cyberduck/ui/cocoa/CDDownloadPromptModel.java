@@ -52,11 +52,13 @@ public class CDDownloadPromptModel extends CDTransferPromptModel {
                     CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
         }
         if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {
-            if(item.attributes.isFile() && item.attributes.getSize() == 0) {
-                return CDTransferPromptModel.ALERT_ICON;
-            }
-            if(item.getLocal().attributes.getSize() > item.attributes.getSize()) {
-                return CDTransferPromptModel.ALERT_ICON;
+            if(item.attributes.isFile()) {
+                if(item.attributes.getSize() == 0) {
+                    return ALERT_ICON;
+                }
+                if(item.getLocal().attributes.getSize() > item.attributes.getSize()) {
+                    return ALERT_ICON;
+                }
             }
             return null;
         }
