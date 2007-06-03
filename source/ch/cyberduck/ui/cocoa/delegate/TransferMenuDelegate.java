@@ -48,7 +48,6 @@ public class TransferMenuDelegate extends MenuDelegate {
     }
 
     public int numberOfItemsInMenu(NSMenu menu) {
-        log.debug("numberOfItemsInMenu"+menu);
         return roots.size();
     }
 
