@@ -379,8 +379,6 @@ public abstract class Transfer extends NSObject {
             return;
         }
 
-        this.prepare(p, filter);
-
         if(filter.accept(p)) {
             this.fireWillTransferPath(p);
             _transferImpl(_current = p);
@@ -491,11 +489,7 @@ public abstract class Transfer extends NSObject {
 
         if(p.attributes.isDirectory()) {
             for(Iterator iter = this.childs(p).iterator(); iter.hasNext();) {
-                Path next = (Path)iter.next();
-                if(filter.accept(next)) {
-                    // Only one level of the path hierarchy is prepared in advance
-                    filter.prepare(next);
-                }
+                this.prepare((Path)iter.next(), filter);
             }
         }
     }
@@ -511,11 +505,8 @@ public abstract class Transfer extends NSObject {
             // Bail out if no more connected
             return false;
         }
-        if(this.isCanceled()) {
-            // Bail out if canceled
-            return false;
-        }
-        return true;
+        // Bail out if canceled
+        return !this.isCanceled();
     }
 
     /**
