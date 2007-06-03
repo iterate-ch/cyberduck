@@ -454,8 +454,14 @@ public abstract class Preferences {
 
     public boolean getBoolean(String property) {
         String value = this.getObject(property).toString();
+        if(value.equalsIgnoreCase(String.valueOf(true))) {
+            return true;
+        }
+        if(value.equalsIgnoreCase(String.valueOf(false))) {
+            return false;
+        }
         try {
-            return value.equalsIgnoreCase(String.valueOf(true)) || value.equalsIgnoreCase("yes") || Integer.parseInt(value) == 1;
+            return value.equalsIgnoreCase("yes") || Integer.parseInt(value) == 1;
         }
         catch(NumberFormatException e) {
             return false;
