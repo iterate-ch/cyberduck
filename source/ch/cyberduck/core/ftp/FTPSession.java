@@ -248,7 +248,7 @@ public class FTPSession extends Session {
                     log.warn(this.host.getHostname()+" does not support the SYST command:"+e.getMessage());
                 }
                 try {
-                this.parser = new FTPParserFactory().createFileEntryParser(this.getIdentification());
+                    this.parser = new FTPParserFactory().createFileEntryParser(this.getIdentification());
                 }
                 catch(ParserInitializationException e) {
                     throw new IOException(e.getMessage());
@@ -264,7 +264,6 @@ public class FTPSession extends Session {
     }
 
     /**
-     *
      * @return The custom encoding specified in the host of this session
      * or the default encoding if no cusdtom encoding is set
      * @see Preferences
@@ -309,21 +308,36 @@ public class FTPSession extends Session {
         }
     }
 
-    protected Path workdir() throws ConnectionCanceledException {
+    protected Path workdir() throws IOException {
         synchronized(this) {
             if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
             }
-            Path workdir = null;
-            try {
+            if(null == workdir) {
                 workdir = PathFactory.createPath(this, this.FTP.pwd());
                 workdir.attributes.setType(Path.DIRECTORY_TYPE);
             }
-            catch(IOException e) {
-                this.error(null, "Connection failed", e);
-                this.interrupt();
-            }
             return workdir;
+        }
+    }
+
+    protected void setWorkdir(Path workdir) throws IOException {
+        if(workdir.equals(this.workdir)) {
+            // Do not attempt to change the workdir if the same
+            return;
+        }
+        synchronized(this) {
+            if(!this.isConnected()) {
+                throw new ConnectionCanceledException();
+            }
+            try {
+                this.FTP.chdir(workdir.getAbsolute());
+                // Workdir change succeeded
+                this.workdir = workdir;
+            }
+            catch(IOException e) {
+                throw e;
+            }
         }
     }
 

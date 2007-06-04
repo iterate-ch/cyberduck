@@ -191,7 +191,7 @@ public class FTPPath extends Path {
 
     public void cwdir() throws IOException {
         synchronized(session) {
-            session.FTP.chdir(this.getAbsolute());
+            session.setWorkdir(this);
         }
     }
 
@@ -774,7 +774,7 @@ public class FTPPath extends Path {
                                             Preferences.instance().getInteger("queue.upload.permissions.file.default"))
                                     );
                                 }
-                                if(attributes                  .isDirectory()) {
+                                if(attributes.isDirectory()) {
                                     attributes.setPermission(new Permission(
                                             Preferences.instance().getInteger("queue.upload.permissions.folder.default"))
                                     );

@@ -330,23 +330,22 @@ public class SFTPSession extends Session {
         }
     }
 
-    protected Path workdir() throws ConnectionCanceledException {
+    protected Path workdir() throws IOException {
         synchronized(this) {
             if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
             }
-            Path workdir = null;
-            try {
+            if(null == workdir) {
                 // "." as referring to the current directory
                 workdir = PathFactory.createPath(this, this.sftp().canonicalPath("."));
                 workdir.attributes.setType(Path.DIRECTORY_TYPE);
             }
-            catch(IOException e) {
-                this.error(null, "Connection failed", e.getCause());
-                this.interrupt();
-            }
             return workdir;
         }
+    }
+
+    protected void setWorkdir(Path workdir) throws IOException {
+        this.workdir = workdir;
     }
 
     protected void noop() throws IOException {

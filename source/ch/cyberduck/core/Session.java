@@ -63,6 +63,11 @@ public abstract class Session extends NSObject {
      */
     protected Host host = null;
 
+    /**
+     *
+     */
+    protected Path workdir;
+
     public Object clone() {
         return SessionFactory.createSession((Host) this.host.clone());
     }
@@ -187,11 +192,11 @@ public abstract class Session extends NSObject {
                     home.attributes.setType(Path.DIRECTORY_TYPE);
                     if(!home.childs().attributes().isReadable()) {
                         // the default path does not exist or is not readable due to permission issues
-                        home = workdir();
+                        home = this.workdir();
                     }
                 }
                 else {
-                    home = workdir();
+                    home = this.workdir();
                 }
                 return home;
             }
@@ -247,7 +252,9 @@ public abstract class Session extends NSObject {
      * @return The current working directory (pwd) or null if it cannot be retrieved for whatever reason
      * @throws ConnectionCanceledException If the underlying connection has already been closed before
      */
-    protected abstract Path workdir() throws ConnectionCanceledException;
+    protected abstract Path workdir() throws IOException;
+
+    protected abstract void setWorkdir(Path workdir) throws IOException;
 
     /**
      * Send a 'no operation' command
