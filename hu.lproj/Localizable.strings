@@ -16,7 +16,7 @@
 /* No comment provided by engineer. */
 "ASCII" = "ASCII";
 
-/* No comment provided by engineer. */
+/* Default preference when attempting to transfer an existing file */
 "Ask me what to do" = "Kérdezd meg mit csináljak";
 
 /* No comment provided by engineer. */
@@ -245,7 +245,7 @@
 /* No comment provided by engineer. */
 "Overwrite" = "Overwrite";
 
-/* No comment provided by engineer. */
+/* Default preference when attempting to transfer an existing file */
 "Overwrite existing file" = "Létező file felülírása";
 
 /* A column in the browser */
@@ -320,6 +320,9 @@
 /* Toolbar item in Transfer Window. */
 "Stop" = "Stop";
 
+/* Default preference when attempting to transfer an existing file */
+"Skip existing file" = "Skip existing file";
+
 /* Toolbar item tooltip */
 "Switch Browser View" = "Switch Browser View";
 
@@ -368,7 +371,7 @@
 /* Toolbar item */
 "Trash" = "Trash";
 
-/* No comment provided by engineer. */
+/* Default preference when attempting to transfer an existing file */
 "Try to resume transfer" = "Visszalépés később";
 
 /* No comment provided by engineer. */
@@ -389,7 +392,7 @@
 /* Toolbar item tooltip */
 "Upload local file to the remote host" = "Lokális file feltöltése a kiszolgálóhoz";
 
-/* No comment provided by engineer. */
+/* Default preference when attempting to transfer an existing file */
 "Use similar name" = "Használjon hasonló nevet";
 
 /* Toolbar item */
