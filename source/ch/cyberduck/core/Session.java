@@ -364,6 +364,7 @@ public abstract class Session extends NSObject {
         if(this.keepAliveTimer != null) {
             this.keepAliveTimer.cancel();
         }
+        this.workdir = null;
         this.message(NSBundle.localizedString("Disconnected", "Status", ""));
         ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
                 new ConnectionListener[listeners.size()]);
