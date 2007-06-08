@@ -313,6 +313,9 @@ public abstract class Transfer extends NSObject {
         }
     }
 
+    /**
+     *
+     */
     private Map _existing = new HashMap();
 
     /**
@@ -391,11 +394,20 @@ public abstract class Transfer extends NSObject {
 
         if(p.attributes.isDirectory()) {
             for(Iterator iter = this.childs(p).iterator(); iter.hasNext();) {
-                this.transfer((Path) iter.next(), filter);
+                Path child = (Path) iter.next();
+                this.transfer(child, filter);
+
             }
-            // Save memory
-            p.cache().remove(p);
         }
+
+        this.cleanup(p);
+    }
+
+    private void cleanup(final Path p) {
+        // Save memory
+        p.cache().remove(p);
+        // Remove from the _existing hashmap
+        _existing.remove(p);
     }
 
     /**
