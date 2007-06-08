@@ -272,7 +272,7 @@ public class CDBookmarkTableDataSource extends NSObject {
             this.promisedDragBookmarks = new Host[rows.count()];
             for(int i = 0; i < rows.count(); i++) {
                 promisedDragBookmarks[i]
-                        = (Host) HostCollection.instance().get(((Integer) rows.objectAtIndex(i)).intValue());
+                        = (Host) HostCollection.instance().get(((Number) rows.objectAtIndex(i)).intValue());
             }
             NSEvent event = NSApplication.sharedApplication().currentEvent();
             if (event != null) {

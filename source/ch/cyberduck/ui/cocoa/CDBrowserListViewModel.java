@@ -107,7 +107,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource {
             NSMutableArray items = new NSMutableArray();
             List childs = this.childs(this.controller.workdir());
             for (int i = 0; i < rows.count(); i++) {
-                items.addObject(childs.get(((Integer) rows.objectAtIndex(i)).intValue()));
+                items.addObject(childs.get(((Number) rows.objectAtIndex(i)).intValue()));
             }
             return super.writeItemsToPasteBoard(view, items, pboard);
         }
