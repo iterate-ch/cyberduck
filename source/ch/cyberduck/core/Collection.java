@@ -88,6 +88,11 @@ public class Collection extends ArrayList implements CollectionListener {
         return super.contains(o);
     }
 
+    /**
+     *
+     * @param row
+     * @return the element that was removed from the list.
+     */
     public Object remove(int row) {
         Object previous = super.remove(row);
         this.collectionItemRemoved(previous);

@@ -81,6 +81,11 @@ public class HostCollection extends Collection {
         this.save();
     }
 
+    /**
+     *
+     * @param row
+     * @return the element that was removed from the list.
+     */
     public Object remove(int row) {
         Object previous = super.remove(row);
         this.save();

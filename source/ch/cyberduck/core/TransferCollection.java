@@ -64,6 +64,12 @@ public class TransferCollection extends Collection {
 
     public boolean add(Object o) {
         assert o instanceof Transfer;
+        ((Transfer)o).addListener(new TransferAdapter() {
+            public void transferDidEnd() {
+                // Save the new state of the transfer collection
+                TransferCollection.instance().save();
+            }
+        });
         boolean r = super.add(o);
         this.save();
         return r;
@@ -77,6 +83,12 @@ public class TransferCollection extends Collection {
      */
     public void add(int row, Object o) {
         assert o instanceof Transfer;
+        ((Transfer)o).addListener(new TransferAdapter() {
+            public void transferDidEnd() {
+                // Save the new state of the transfer collection
+                TransferCollection.instance().save();
+            }
+        });
         super.add(row, o);
         this.save();
     }
@@ -84,7 +96,7 @@ public class TransferCollection extends Collection {
     /**
      * Does not save the collection after modifiying
      * @param row
-     * @return
+     * @return the element that was removed from the list.
      * @see #save()
      */
     public Object remove(int row) {
