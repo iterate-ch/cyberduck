@@ -740,10 +740,10 @@ public class FTPClient {
                 // The access time is set to the value of the first element,
                 // and the modification time is set to the value of the second element
                 // Accessed date, modified date, created date
-                this.site("UTIME "+remoteFile+" "+tsFormat.format(new Date(modtime-timezone.getOffset(modtime)))
-                        +" "+tsFormat.format(new Date(modtime-timezone.getOffset(modtime)))
-                        +" "+tsFormat.format(new Date(createdtime-timezone.getOffset(createdtime)))
-//                        +" "+timezone.getDisplayName(false, TimeZone.SHORT));
+                int offset = timezone.getRawOffset();
+                this.site("UTIME "+remoteFile+" "+tsFormat.format(new Date(modtime- offset))
+                        +" "+tsFormat.format(new Date(modtime-offset))
+                        +" "+tsFormat.format(new Date(createdtime-offset))
                         +" UTC");
             }
             catch(FTPException e) {
