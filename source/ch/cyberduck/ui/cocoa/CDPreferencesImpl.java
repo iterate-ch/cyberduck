@@ -70,6 +70,7 @@ public class CDPreferencesImpl extends Preferences {
     }
 
     public void deleteProperty(final String property) {
+        log.debug("deleteProperty:"+property);
         this.props.removeObjectForKey(property);
         this.save();
     }
@@ -95,7 +96,7 @@ public class CDPreferencesImpl extends Preferences {
 
         if(this.getBoolean("update.check")) {
             // Will override SUCheckAtStartup
-            this.setProperty("SUScheduledCheckInterval", super.getProperty("update.check.interval"));
+            this.props.setObjectForKey("SUScheduledCheckInterval", super.getProperty("update.check.interval"));
         }
     }
 
