@@ -46,6 +46,9 @@ public class CDMainController extends CDController {
 
     static {
         BasicConfigurator.configure();
+        Logger.getRootLogger().setLevel(Level.toLevel(
+                Preferences.instance().getProperty("logging")));
+        log.debug("Logger configured.");
     }
 
     public void awakeFromNib() {
@@ -58,8 +61,6 @@ public class CDMainController extends CDController {
                 new NSSelector("applicationShouldWake", new Class[]{Object.class}),
                 NSWorkspace.WorkspaceDidWakeNotification,
                 null);
-        Logger.getRootLogger().setLevel(Level.toLevel(
-                Preferences.instance().getProperty("logging")));
     }
 
     /**
