@@ -92,6 +92,11 @@ public class CDPreferencesImpl extends Preferences {
         _init("connection.retry");
         _init("connection.retry.delay");
         _init("connection.timeout.seconds");
+
+        if(this.getBoolean("update.check")) {
+            // Will override SUCheckAtStartup
+            this.setProperty("SUScheduledCheckInterval", super.getProperty("update.check.interval"));
+        }
     }
 
     /**
