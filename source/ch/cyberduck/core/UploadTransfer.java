@@ -130,6 +130,7 @@ public class UploadTransfer extends Transfer {
                 public boolean accept(final AbstractPath p) {
                     if(super.accept(p)) {
                         if(p.attributes.isDirectory()) {
+                            // Do not attempt to create a directory that already exists
                             return !exists(p);
                         }
                         return true;
@@ -150,6 +151,7 @@ public class UploadTransfer extends Transfer {
                 public boolean accept(final AbstractPath p) {
                     if(super.accept(p)) {
                         if(((Path)p).status.isComplete()) {
+                            // No need to resume completed transfers
                             return false;
                         }
                         if(p.attributes.isDirectory()) {
@@ -162,6 +164,7 @@ public class UploadTransfer extends Transfer {
 
                 public void prepare(final Path p) {
                     if(p.attributes.isFile()) {
+                        // Append to file if size is not zero
                         p.status.setResume(exists(p) && p.attributes.getSize() > 0);
                     }
 
@@ -172,6 +175,7 @@ public class UploadTransfer extends Transfer {
         if(action.equals(TransferAction.ACTION_SIMILARNAME)) {
             return new UploadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
+                    // Rename every file
                     return super.accept(p);
                 }
 
@@ -234,7 +238,7 @@ public class UploadTransfer extends Transfer {
     }
 
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-        log.debug("action:");
+        log.debug("action:"+resumeRequested+","+reloadRequested);
         if(resumeRequested) {
             // Force resume
             return TransferAction.ACTION_RESUME;

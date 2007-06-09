@@ -222,7 +222,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-        log.debug("action:");
+        log.debug("action:"+resumeRequested+","+reloadRequested);
         if(resumeRequested) {
             // Force resume
             return TransferAction.ACTION_RESUME;

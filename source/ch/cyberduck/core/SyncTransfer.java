@@ -119,10 +119,17 @@ public class SyncTransfer extends Transfer {
     public TransferFilter filter(final TransferAction action) {
         log.debug("filter:"+action);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
+            // When synchronizing, either cancel or overwrite. Resume is not supported
             return new TransferFilter() {
+                /**
+                 * Download delegate filter
+                 */
                 private TransferFilter _delegateFilterDownload
                         = _delegateDownload.filter(TransferAction.ACTION_OVERWRITE);
 
+                /**
+                 * Upload delegate filter
+                 */
                 private TransferFilter _delegateFilterUpload
                         = _delegateUpload.filter(TransferAction.ACTION_OVERWRITE);
 
@@ -140,12 +147,26 @@ public class SyncTransfer extends Transfer {
 
                 public boolean accept(AbstractPath file) {
                     if(!SyncTransfer.this.shouldCreateLocalFiles() && !exists(((Path)file).getLocal())) {
+                        // Do not attempt to download new files
                         return false;
                     }
                     if(!SyncTransfer.this.shouldCreateRemoteFiles() && !exists(((Path)file))) {
+                        // Do not attempt to upload new files
                         return false;
                     }
-                    return !COMPARISON_EQUAL.equals(compare((Path) file));
+                    Comparison compare = compare((Path) file);
+                    if(!COMPARISON_EQUAL.equals(compare)) {
+                        if(compare.equals(COMPARISON_REMOTE_NEWER)) {
+                            // Ask the download delegate for inclusion
+                            return _delegateFilterDownload.accept(file);
+                        }
+                        else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
+                            // Ask the upload delegate for inclusion
+                            return _delegateFilterUpload.accept(file);
+                        }
+                    }
+                    // Do not include equal files
+                    return false;
                 }
             };
         }
@@ -179,7 +200,8 @@ public class SyncTransfer extends Transfer {
     }
 
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-        log.debug("action:");
+        log.debug("action:"+resumeRequested+","+reloadRequested);
+        // Always prompt for synchronization
         return TransferAction.ACTION_CALLBACK;
     }
 
@@ -201,6 +223,8 @@ public class SyncTransfer extends Transfer {
 
     protected void clear() {
         _comparisons.clear();
+        _delegateDownload.clear();
+        _delegateUpload.clear();
         super.clear();
     }
 
@@ -237,9 +261,6 @@ public class SyncTransfer extends Transfer {
             if(exists(p) && exists(p.getLocal())) {
                 if(p.attributes.isDirectory()) {
                     result = this.compareTimestamp(p);
-//                    if(COMPARISON_EQUAL.equals(result)) {
-//
-//                    }
                 }
                 else {
                     result = this.compareSize(p);
