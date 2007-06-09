@@ -309,7 +309,6 @@ public abstract class Transfer extends NSObject {
                     file.readPermission();
                 }
             }
-            file.status.setPrepared(true);
         }
     }
 
@@ -482,11 +481,6 @@ public abstract class Transfer extends NSObject {
      */
     private void prepare(Path p, final TransferFilter filter) {
         log.debug("prepare:"+p);
-        if(p.status.isPrepared()) {
-            // The path has already been prepared for transfer
-            return;
-        }
-
         if(!this.check()) {
             return;
         }
@@ -495,12 +489,14 @@ public abstract class Transfer extends NSObject {
             return;
         }
 
+        // Only prepare the path it will be actually transferred
         if(filter.accept(p)) {
             filter.prepare(p);
         }
 
         if(p.attributes.isDirectory()) {
             for(Iterator iter = this.childs(p).iterator(); iter.hasNext();) {
+                // Call recursively for all childs
                 this.prepare((Path)iter.next(), filter);
             }
         }

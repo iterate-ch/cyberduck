@@ -54,11 +54,6 @@ public class Status {
      */
     private boolean complete = false;
 
-    /**
-     * Ready for transfer
-     */
-    private boolean prepared = false;
-
     public static final double KILO = 1024; //2^10
     public static final double MEGA = 1048576; // 2^20
     public static final double GIGA = 1073741824; // 2^30
@@ -186,20 +181,11 @@ public class Status {
         return this.resume;
     }
 
-    public boolean isPrepared() {
-        return prepared;
-    }
-
-    public void setPrepared(boolean prepared) {
-        this.prepared = prepared;
-    }
-
     /**
      *
      */
     public void reset() {
         this.complete = false;
         this.canceled = false;
-        this.prepared = false;
     }
 }
