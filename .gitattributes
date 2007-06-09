@@ -1986,6 +1986,7 @@ www/help/ca/howto/upload.html -text
 www/help/ca/index.html -text
 www/help/ca/problems/index.html -text
 www/help/cs/.htaccess -text
+www/help/cy/.htaccess -text
 www/help/da/.htaccess -text
 www/help/de/faq/index.html -text
 www/help/de/howto/bookmark.html -text
@@ -2059,7 +2060,8 @@ www/help/ko/.htaccess -text
 www/help/nl/.htaccess -text
 www/help/no/.htaccess -text
 www/help/pl/.htaccess -text
-www/help/pt/.htaccess -text
+www/help/pt_BR/.htaccess -text
+www/help/pt_PT/.htaccess -text
 www/help/ru/.htaccess -text
 www/help/sk/faq/index.html -text
 www/help/sk/howto/bookmark.html -text
@@ -2074,6 +2076,7 @@ www/help/sk/problems/index.html -text
 www/help/style.css -text
 www/help/sv/.htaccess -text
 www/help/th/.htaccess -text
+www/help/tr/.htaccess -text
 www/help/zh_CN/.htaccess -text
 www/help/zh_TW/.htaccess -text
 www/update/changelog.html -text
