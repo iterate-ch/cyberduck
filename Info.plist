@@ -87,6 +87,8 @@
 	<string>NSApplication</string>
 	<key>SUFeedURL</key>
 	<string>_SPARKLEFEED_</string>
+	<key>SUCheckAtStartup</key>
+	<false/>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>
