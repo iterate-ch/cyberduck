@@ -427,9 +427,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
             // Draw file type icon
             if(transfer.getRoot().getLocal().exists()) {
                 if(transfer.numberOfRoots() == 1) {
-//                    fileIcon = transfer.getRoot().getLocal().attributes.isFile() ? NSWorkspace.sharedWorkspace().iconForFile(
-//                            transfer.getRoot().getLocal().getAbsolute()) : FOLDER_ICON;
-                    fileIcon = transfer.getRoot().getLocal().attributes.isFile() ? CDIconCache.instance().iconForPath(transfer.getRoot()) : FOLDER_ICON;
+                    fileIcon = transfer.getRoot().getLocal().attributes.isFile() ? NSWorkspace.sharedWorkspace().iconForFile(
+                            transfer.getRoot().getLocal().getAbsolute()) : FOLDER_ICON;
+//                    fileIcon = transfer.getRoot().getLocal().attributes.isFile() ? CDIconCache.instance().iconForPath(
+//                            transfer.getRoot()) : FOLDER_ICON;
                 }
                 else {
                     fileIcon = MULTIPLE_DOCUMENTS_ICON;
@@ -558,6 +559,16 @@ public class CDTransferController extends CDWindowController implements NSToolba
                         invoke(new Runnable() {
                             public void run() {
                                 window.toolbar().validateVisibleItems();
+                                updateIcon();
+                            }
+                        });
+                    }
+
+                    public void transferDidEnd() {
+                        invoke(new Runnable() {
+                            public void run() {
+                                window.toolbar().validateVisibleItems();
+                                updateIcon();
                             }
                         });
                     }
@@ -598,7 +609,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
 
             public void cleanup() {
-                window.toolbar().validateVisibleItems();
                 if(transfer.isComplete() && !transfer.isCanceled()) {
                     if(transfer instanceof DownloadTransfer) {
                         Growl.instance().notify("Download complete", transfer.getName());

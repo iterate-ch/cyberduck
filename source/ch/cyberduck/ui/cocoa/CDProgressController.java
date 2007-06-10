@@ -25,6 +25,7 @@ import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Transfer;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.TransferListener;
+import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
 import ch.cyberduck.ui.cocoa.growl.Growl;
@@ -149,7 +150,7 @@ public class CDProgressController extends CDController {
             }
 
             public void willTransferPath(final Path path) {
-                meter = new Speedometer();
+                meter.reset();
                 progressTimer = new NSTimer(0.1, //seconds
                         CDProgressController.this, //target
                         new NSSelector("update", new Class[]{NSTimer.class}),
@@ -161,10 +162,15 @@ public class CDProgressController extends CDController {
 
             public void didTransferPath(final Path path) {
                 progressTimer.invalidate();
-                meter = null;
+                meter.reset();
+            }
+
+            public void bandwidthChanged(BandwidthThrottle bandwidth) {
+                meter.reset();
             }
         };
         this.transfer.addListener(tl);
+        this.meter = new Speedometer();
     }
 
     /**
@@ -193,14 +199,21 @@ public class CDProgressController extends CDController {
         }
     }
 
+    /**
+     * Keeping track of the current transfer rate
+     */
     private Speedometer meter;
 
     private class Speedometer {
         //the time to start counting bytes transfered
-        private long timestamp = System.currentTimeMillis();
+        private long timestamp;
         //initial data already transfered
-        private double initialBytesTransfered = transfer.getTransferred();
-        private double bytesTransferred = 0;
+        private double initialBytesTransfered;
+        private double bytesTransferred;
+
+        public Speedometer() {
+            this.reset();
+        }
 
         /**
          * Returns the data transfer rate. The rate should depend on the transfer
@@ -228,6 +241,15 @@ public class CDProgressController extends CDController {
         public double getBytesTransfered() {
             return bytesTransferred;
         }
+
+        /**
+         * Reset this meter
+         */
+        public void reset() {
+            this.timestamp = System.currentTimeMillis();
+            this.initialBytesTransfered = transfer.getTransferred();
+            this.bytesTransferred = 0;
+        }
     }
 
     private void setProgressText() {
@@ -237,7 +259,7 @@ public class CDProgressController extends CDController {
         b.append(NSBundle.localizedString("of", "1.2MB of 3.4MB"));
         b.append(" ");
         b.append(Status.getSizeAsString(transfer.getSize()));
-        if(transfer.isRunning() && null != meter) {
+        if(transfer.isRunning()) {
             float speed = meter.getSpeed();
             if(speed > 0) {
                 b.append(" (");

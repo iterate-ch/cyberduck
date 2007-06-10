@@ -129,6 +129,10 @@ public class BandwidthThrottle {
         }
     }
 
+    /**
+     *
+     * @return Transfer rate in bytes per second allowed by this throttle
+     */
     public float getRate() {
         return _rate;
     }

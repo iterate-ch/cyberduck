@@ -231,6 +231,14 @@ public abstract class Transfer extends NSObject {
         }
     }
 
+    protected void fireBandwidthChanged(BandwidthThrottle bandwidth) {
+        TransferListener[] l = (TransferListener[]) listeners.toArray(
+                new TransferListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].bandwidthChanged(bandwidth);
+        }
+    }
+
     /**
      * In Bytes per second
      */
@@ -243,8 +251,13 @@ public abstract class Transfer extends NSObject {
     public void setBandwidth(float bytesPerSecond) {
         log.debug("setBandwidth:"+bytesPerSecond);
         bandwidth.setRate(bytesPerSecond);
+        this.fireBandwidthChanged(bandwidth);
     }
 
+    /**
+     *
+     * @return Rate in bytes per second allowed for this transfer
+     */
     public float getBandwidth() {
         return bandwidth.getRate();
     }
@@ -373,11 +386,11 @@ public abstract class Transfer extends NSObject {
      * @param filter
      */
     private void transfer(final Path p, final TransferFilter filter) {
-        if(!this.check()) {
+        if(p.status.isSkipped()) {
             return;
         }
 
-        if(p.status.isSkipped()) {
+        if(!this.check()) {
             return;
         }
 
@@ -661,7 +674,8 @@ public abstract class Transfer extends NSObject {
      *         the bytes transfered is > 0
      */
     public boolean isComplete() {
-        if(0 == this.getTransferred()) {
+        log.debug("isComplete");
+        if(this.isVirgin()) {
             // No bytes transferred
             if(!reset) {
                 // Not even attempted to transfer anything yet

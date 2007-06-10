@@ -1,5 +1,7 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.io.BandwidthThrottle;
+
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -55,4 +57,9 @@ public interface TransferListener {
      * @param path
      */
     public abstract void didTransferPath(Path path);
+
+    /**
+     * 
+     */
+    public abstract void bandwidthChanged(BandwidthThrottle bandwidth);
 }
