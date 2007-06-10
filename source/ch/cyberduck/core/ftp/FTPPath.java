@@ -289,7 +289,9 @@ public class FTPPath extends Path {
                 if(-1 == attributes.getSize()) {
                     // Read the timestamp from the directory listing
                     List l = this.getParent().childs();
-                    attributes.setSize(((AbstractPath) l.get(l.indexOf(this))).attributes.getSize());
+                    if(l.contains(this)) {
+                        attributes.setSize(((AbstractPath) l.get(l.indexOf(this))).attributes.getSize());
+                    }
                 }
             }
             catch(FTPException e) {
@@ -320,7 +322,9 @@ public class FTPPath extends Path {
                 if(-1 == attributes.getModificationDate()) {
                     // Read the timestamp from the directory listing
                     List l = this.getParent().childs();
-                    attributes.setModificationDate(((AbstractPath) l.get(l.indexOf(this))).attributes.getModificationDate());
+                    if(l.contains(this)) {
+                        attributes.setModificationDate(((AbstractPath) l.get(l.indexOf(this))).attributes.getModificationDate());
+                    }
                 }
             }
             catch(FTPException e) {
@@ -343,7 +347,9 @@ public class FTPPath extends Path {
                 session.message(NSBundle.localizedString("Getting permission of", "Status", "") + " " + this.getName());
                 // Read the permission from the directory listing
                 List l = this.getParent().childs();
-                attributes.setPermission(((AbstractPath) l.get(l.indexOf(this))).attributes.getPermission());
+                if(l.contains(this)) {
+                    attributes.setPermission(((AbstractPath) l.get(l.indexOf(this))).attributes.getPermission());
+                }
             }
             catch(FTPException e) {
                 this.error("Cannot read file attributes", e);
