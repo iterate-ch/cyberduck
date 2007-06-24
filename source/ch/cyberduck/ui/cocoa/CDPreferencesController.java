@@ -718,7 +718,7 @@ public class CDPreferencesController extends CDWindowController {
         this.syncIgnoreTimestampCheckbox = syncIgnoreTimestampCheckbox;
         this.syncIgnoreTimestampCheckbox.setTarget(this);
         this.syncIgnoreTimestampCheckbox.setAction(new NSSelector("syncIgnoreTimestampCheckboxClicked", new Class[]{NSButton.class}));
-        this.syncIgnoreTimestampCheckbox.setState(Preferences.instance().getBoolean("queue.sync.timestamp.ignore") ? NSCell.OnState : NSCell.OffState);
+        this.syncIgnoreTimestampCheckbox.setState(Preferences.instance().getBoolean("queue.sync.timestamp.ignore") ? NSCell.OffState : NSCell.OnState);
     }
 
     public void syncIgnoreTimestampCheckboxClicked(final NSButton sender) {
