@@ -198,6 +198,10 @@ public abstract class Path extends AbstractPath {
         this.parent = null;
     }
 
+    public void setParent(Path parent) {
+        this.parent = parent;
+    }
+
     /**
      * Reference to the parent created lazily if needed
      */

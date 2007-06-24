@@ -120,6 +120,7 @@ public class SFTPPath extends Path {
                     SFTPv3DirectoryEntry f = (SFTPv3DirectoryEntry) i.next();
                     if(!f.filename.equals(".") && !f.filename.equals("..")) {
                         Path p = PathFactory.createPath(session, this.getAbsolute(), f.filename);
+                        p.setParent(this);
                         p.attributes.setOwner(f.attributes.uid.toString());
                         p.attributes.setGroup(f.attributes.gid.toString());
                         p.attributes.setSize(f.attributes.size.doubleValue());
@@ -147,6 +148,7 @@ public class SFTPPath extends Path {
                         }
                         String perm = f.attributes.getOctalPermissions();
                         p.attributes.setPermission(new Permission(Integer.parseInt(perm.substring(perm.length()-3))));
+                        p.status.setSkipped(this.status.isSkipped());
                         childs.add(p);
                     }
                 }

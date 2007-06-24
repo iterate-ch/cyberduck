@@ -135,6 +135,7 @@ public class FTPPath extends Path {
                     }
                     Path p = new FTPPath(session);
                     p.setPath(this.getAbsolute(), f.getName());
+                    p.setParent(this);
                     switch(f.getType()) {
                         case FTPFile.SYMBOLIC_LINK_TYPE:
                             p.setSymbolicLinkPath(this.getAbsolute(), f.getLink());
@@ -158,6 +159,7 @@ public class FTPPath extends Path {
                             }
                     ));
                     p.attributes.setModificationDate(f.getTimestamp().getTimeInMillis());
+                    p.status.setSkipped(this.status.isSkipped());
                     childs.add(p);
                 }
                 session.FTP.finishDir();
@@ -745,7 +747,6 @@ public class FTPPath extends Path {
                 if(attributes.isFile()) {
                     session.check();
                     this.getParent().cwdir();
-                    attributes.setSize(this.getLocal().attributes.getSize());
                     if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                         if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
                             this.uploadASCII(throttle, listener);
@@ -807,18 +808,8 @@ public class FTPPath extends Path {
                             session.FTP.utime(this.getLocal().attributes.getModificationDate(),
                                     this.getLocal().attributes.getCreationDate(), this.getName(), this.getHost().getTimezone());
                         }
-                        catch(FTPException e) {
-                            if(Preferences.instance().getBoolean("queue.upload.preserveDate.fallback")) {
-                                if(!this.getLocal().getParent().equals(NSPathUtilities.temporaryDirectory())) {
-                                    if(-1 == attributes.getModificationDate()) {
-                                        this.readTimestamp();
-                                    }
-                                    if(attributes.getModificationDate() != -1) {
-                                        this.getLocal().writeModificationDate(attributes.getModificationDate()/*,
-                                                this.getHost().getTimezone()*/);
-                                    }
-                                }
-                            }
+                        catch(FTPException ignore) {
+                            log.warn(ignore.getMessage());
                         }
                     }
                 }
