@@ -7,8 +7,8 @@
             CLASS = "ch.cyberduck.ui.cocoa.CDTransferPrompt"; 
             LANGUAGE = Java; 
             OUTLETS = {
+                actionPopup = NSPopUpButton; 
                 browserView = NSTableView; 
-                downloadRadioCell = NSButton; 
                 localModificationField = NSTextField; 
                 localSizeField = NSTextField; 
                 localURLField = NSTextField; 
@@ -16,7 +16,7 @@
                 remoteSizeField = NSTextField; 
                 remoteURLField = NSTextField; 
                 statusIndicator = NSProgressIndicator; 
-                uploadRadioCell = NSButton; 
+                statusLabel = NSTextField; 
                 window = NSWindow; 
             }; 
             SUPERCLASS = NSObject; 
