@@ -84,11 +84,19 @@ public class SyncTransfer extends Transfer {
     }
 
     public double getSize() {
-        return _delegateDownload.getSize() + _delegateUpload.getSize();
+        final double size = _delegateDownload.getSize() + _delegateUpload.getSize();
+        if(0 == size) {
+            return super.getSize();
+        }
+        return size;
     }
 
     public double getTransferred() {
-        return _delegateDownload.getTransferred() + _delegateUpload.getTransferred();
+        final double transferred = _delegateDownload.getTransferred() + _delegateUpload.getTransferred();
+        if(0 == transferred) {
+            return super.getTransferred();
+        }
+        return transferred;
     }
 
     private Action action = ACTION_MIRROR;
