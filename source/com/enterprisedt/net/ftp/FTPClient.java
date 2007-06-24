@@ -741,7 +741,7 @@ public class FTPClient {
                 // and the modification time is set to the value of the second element
                 // Accessed date, modified date, created date
                 int offset = timezone.getRawOffset();
-                this.site("UTIME "+remoteFile+" "+tsFormat.format(new Date(modtime- offset))
+                this.site("UTIME "+remoteFile+" "+tsFormat.format(new Date(modtime-offset))
                         +" "+tsFormat.format(new Date(modtime-offset))
                         +" "+tsFormat.format(new Date(createdtime-offset))
                         +" UTC");
