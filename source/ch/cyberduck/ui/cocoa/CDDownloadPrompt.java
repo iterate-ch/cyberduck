@@ -33,6 +33,11 @@ public class CDDownloadPrompt extends CDTransferPrompt {
         super(parent);
     }
 
+    public void init() {
+        this.browserModel = new CDDownloadPromptModel(this, transfer);
+        super.init();
+    }
+
     public void beginSheet(final boolean blocking) {
         synchronized(NSApplication.sharedApplication()) {
             if(!NSApplication.loadNibNamed("Validator", this)) {
@@ -40,10 +45,5 @@ public class CDDownloadPrompt extends CDTransferPrompt {
             }
         }
         super.beginSheet(blocking);
-    }
-
-    public void setBrowserView(NSOutlineView view) {
-        view.setDataSource(this.browserModel = new CDDownloadPromptModel(this, transfer));
-        super.setBrowserView(view);
     }
 }
