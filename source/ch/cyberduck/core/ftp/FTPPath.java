@@ -505,7 +505,7 @@ public class FTPPath extends Path {
                             if(!session.isConnected()) {
                                 break;
                             }
-                            ((Path) iter.next()).writePermissions(perm, recursive);
+                            ((AbstractPath) iter.next()).writePermissions(perm, recursive);
                         }
                     }
                 }
