@@ -36,13 +36,13 @@
 		</array>
 		<key>11</key>
 		<array>
-			<string>1303</string>
 			<string>1305</string>
+			<string>1303</string>
 		</array>
 		<key>12</key>
 		<array>
-			<string>1308</string>
 			<string>1306</string>
+			<string>1308</string>
 		</array>
 		<key>13</key>
 		<array>
@@ -51,10 +51,10 @@
 		</array>
 		<key>14</key>
 		<array>
-			<string>1391</string>
 			<string>1389</string>
 			<string>1392</string>
 			<string>1393</string>
+			<string>1391</string>
 		</array>
 		<key>4</key>
 		<array>
@@ -63,8 +63,6 @@
 		</array>
 		<key>5</key>
 		<array>
-			<string>1256</string>
-			<string>1260</string>
 			<string>1246</string>
 			<string>1267</string>
 			<string>1263</string>
@@ -75,6 +73,8 @@
 			<string>1255</string>
 			<string>1262</string>
 			<string>1245</string>
+			<string>1256</string>
+			<string>1260</string>
 		</array>
 		<key>6</key>
 		<array>
@@ -83,9 +83,6 @@
 		</array>
 		<key>7</key>
 		<array>
-			<string>1243</string>
-			<string>1249</string>
-			<string>1261</string>
 			<string>1268</string>
 			<string>1241</string>
 			<string>1257</string>
@@ -95,6 +92,9 @@
 			<string>1251</string>
 			<string>1250</string>
 			<string>1266</string>
+			<string>1243</string>
+			<string>1249</string>
+			<string>1261</string>
 		</array>
 		<key>8</key>
 		<array>

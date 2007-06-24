@@ -92,6 +92,7 @@
                 secureDataChannelCheckbox = NSButton; 
                 showHiddenCheckbox = NSButton; 
                 sshTransfersCombobox = NSPopUpButton; 
+                syncIgnoreTimestampCheckbox = NSButton; 
                 tabView = NSTabView; 
                 textFileTypeRegexField = NSTextField; 
                 transferPopup = NSPopUpButton; 
