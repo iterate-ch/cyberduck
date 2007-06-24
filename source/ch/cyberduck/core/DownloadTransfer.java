@@ -24,8 +24,8 @@ import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -53,6 +53,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     protected void init() {
+        log.debug("init");
         bandwidth = new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes"));
     }
@@ -102,21 +103,23 @@ public class DownloadTransfer extends Transfer {
         }
     }
 
-    public List childs(final Path parent) {
+    private final Transfer.TransferFilter childFilter = new TransferFilter() {
+        public boolean accept(AbstractPath child) {
+            if(Preferences.instance().getBoolean("queue.download.skip.enable")
+                    && DOWNLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
+                return false;
+            }
+            ((Path) child).setLocal(new Local(((Path) child.getParent()).getLocal().getAbsolute(), child.getName()));
+            return true;
+        }
+    };
+
+    public AttributedList childs(final Path parent) {
         if(!this.exists(parent)) {
             // Cannot fetch file listing of non existant file
-            return Collections.EMPTY_LIST;
+            return new AttributedList(Collections.EMPTY_LIST);
         }
-        return parent.childs(new NullComparator(), new TransferFilter() {
-            public boolean accept(AbstractPath child) {
-                if(Preferences.instance().getBoolean("queue.download.skip.enable")
-                        && DOWNLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
-                    return false;
-                }
-                ((Path)child).setLocal(new Local(parent.getLocal().getAbsolute(), child.getName()));
-                return true;
-            }
-        });
+        return parent.childs(new NullComparator(), childFilter);
     }
 
     public boolean isCached(Path file) {
@@ -124,12 +127,12 @@ public class DownloadTransfer extends Transfer {
     }
 
     public TransferFilter filter(final TransferAction action) {
-        log.debug("filter:"+action);
+        log.debug("filter:" + action);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             return new DownloadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
                     if(p.attributes.isDirectory()) {
-                        return !exists(((Path)p).getLocal());
+                        return !exists(((Path) p).getLocal());
                     }
                     return true;
                 }
@@ -143,11 +146,11 @@ public class DownloadTransfer extends Transfer {
         if(action.equals(TransferAction.ACTION_RESUME)) {
             return new DownloadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
-                    if(((Path)p).status.isComplete()) {
+                    if(((Path) p).status.isComplete()) {
                         return false;
                     }
                     if(p.attributes.isDirectory()) {
-                        return !exists(((Path)p).getLocal());
+                        return !exists(((Path) p).getLocal());
                     }
                     return true;
                 }
@@ -201,8 +204,8 @@ public class DownloadTransfer extends Transfer {
             };
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
-            for(Iterator iter = roots.iterator(); iter.hasNext(); ) {
-                Path root = (Path)iter.next();
+            for(Iterator iter = roots.iterator(); iter.hasNext();) {
+                Path root = (Path) iter.next();
                 if(exists(root.getLocal())) {
                     if(root.getLocal().attributes.isDirectory()) {
                         if(0 == root.getLocal().childs().size()) {
@@ -222,7 +225,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-        log.debug("action:"+resumeRequested+","+reloadRequested);
+        log.debug("action:" + resumeRequested + "," + reloadRequested);
         if(resumeRequested) {
             // Force resume
             return TransferAction.ACTION_RESUME;

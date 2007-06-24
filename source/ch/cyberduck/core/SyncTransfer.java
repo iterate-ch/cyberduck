@@ -25,9 +25,11 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 /**
@@ -64,6 +66,7 @@ public class SyncTransfer extends Transfer {
     private Transfer _delegateDownload;
 
     protected void init() {
+        log.debug("init");
         _delegateUpload = new UploadTransfer(this.roots);
         _delegateDownload = new DownloadTransfer(this.roots);
     }
@@ -80,34 +83,6 @@ public class SyncTransfer extends Transfer {
         return this.getRoot().getName() + " \u2194 " /*left-right arrow*/ + this.getRoot().getLocal().getName();
     }
 
-    private boolean createLocalFiles = true;
-
-    public boolean shouldCreateLocalFiles() {
-        return createLocalFiles;
-    }
-
-    /**
-     * Download files which only exist on the server
-     * @param create
-     */
-    public void setCreateLocalFiles(boolean create) {
-        createLocalFiles = create;
-    }
-
-    private boolean createRemoteFiles = true;
-
-    public boolean shouldCreateRemoteFiles() {
-        return createRemoteFiles;
-    }
-
-    /**
-     * Upload files which only exist on the localhost
-     * @param create
-     */
-    public void setCreateRemoteFiles(boolean create) {
-        createRemoteFiles = create;
-    }
-
     public double getSize() {
         return _delegateDownload.getSize() + _delegateUpload.getSize();
     }
@@ -116,8 +91,41 @@ public class SyncTransfer extends Transfer {
         return _delegateDownload.getTransferred() + _delegateUpload.getTransferred();
     }
 
+    private Action action = ACTION_MIRROR;
+
+    /**
+     * @param action
+     */
+    public void setAction(Action action) {
+        this.action = action;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Action getAction() {
+        return this.action;
+    }
+
+    /**
+     *
+     */
+    public static class Action {
+        public boolean equals(Object other) {
+            if(null == other) {
+                return false;
+            }
+            return this == other;
+        }
+    }
+
+    public static final Action ACTION_DOWNLOAD = new Action();
+    public static final Action ACTION_UPLOAD = new Action();
+    public static final Action ACTION_MIRROR = new Action();
+
     public TransferFilter filter(final TransferAction action) {
-        log.debug("filter:"+action);
+        log.debug("filter:" + action);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             // When synchronizing, either cancel or overwrite. Resume is not supported
             return new TransferFilter() {
@@ -146,78 +154,65 @@ public class SyncTransfer extends Transfer {
                 }
 
                 public boolean accept(AbstractPath file) {
-                    if(!SyncTransfer.this.shouldCreateLocalFiles() && !exists(((Path)file).getLocal())) {
-                        // Do not attempt to download new files
-                        return false;
-                    }
-                    if(!SyncTransfer.this.shouldCreateRemoteFiles() && !exists(((Path)file))) {
-                        // Do not attempt to upload new files
-                        return false;
-                    }
-                    Comparison compare = compare((Path) file);
+                    Comparison compare = SyncTransfer.this.compare((Path) file);
                     if(!COMPARISON_EQUAL.equals(compare)) {
                         if(compare.equals(COMPARISON_REMOTE_NEWER)) {
+                            if(SyncTransfer.this.action.equals(ACTION_UPLOAD)) {
+                                log.info("Skipping "+file);
+                                return false;
+                            }
                             // Ask the download delegate for inclusion
                             return _delegateFilterDownload.accept(file);
                         }
                         else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
+                            if(SyncTransfer.this.action.equals(ACTION_DOWNLOAD)) {
+                                log.info("Skipping "+file);
+                                return false;
+                            }
                             // Ask the upload delegate for inclusion
                             return _delegateFilterUpload.accept(file);
                         }
                     }
-                    // Do not include equal files
                     return false;
                 }
             };
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
-            for(Iterator iter = roots.iterator(); iter.hasNext(); ) {
-                Path root = (Path)iter.next();
-                if(!COMPARISON_EQUAL.equals(compare(root))) {
-                    TransferAction result = prompt.prompt(this);
-                    return this.filter(result);
-                }
-            }
-            return this.filter(TransferAction.ACTION_CANCEL);
+            TransferAction result = prompt.prompt(this);
+            return this.filter(result);
         }
         return super.filter(action);
     }
 
-    public List childs(final Path parent) {
-        AttributedList childs = new AttributedList();
-        childs.addAll(_delegateDownload.childs(parent));
-        for(Iterator iter = _delegateUpload.childs(parent).iterator(); iter.hasNext(); ) {
-            Path child = (Path)iter.next();
-            if(!childs.contains(child)) {
-                childs.add(child);
-            }
+    private final Cache _cache = new Cache();
+
+    public AttributedList childs(final Path parent) {
+        if(!_cache.containsKey(parent)) {
+            Set childs = new HashSet();
+            childs.addAll(_delegateDownload.childs(parent));
+            childs.addAll(_delegateUpload.childs(parent));
+            _cache.put(parent, new AttributedList(childs));
         }
-        return childs;
+        return _cache.get(parent);
     }
 
     public boolean isCached(Path file) {
-        return _delegateUpload.isCached(file) || _delegateDownload.isCached(file);
+        return _cache.containsKey(file);
     }
 
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-        log.debug("action:"+resumeRequested+","+reloadRequested);
+        log.debug("action:" + resumeRequested + "," + reloadRequested);
         // Always prompt for synchronization
         return TransferAction.ACTION_CALLBACK;
     }
 
     protected void _transferImpl(final Path p) {
-        try {
-            Preferences.instance().setProperty("queue.upload.preserveDate.fallback", true);
-            Comparison compare = this.compare(p);
-            if(compare.equals(COMPARISON_REMOTE_NEWER)) {
-                _delegateDownload._transferImpl(p);
-            }
-            else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
-                _delegateUpload._transferImpl(p);
-            }
+        Comparison compare = this.compare(p);
+        if(compare.equals(COMPARISON_REMOTE_NEWER)) {
+            _delegateDownload._transferImpl(p);
         }
-        finally {
-            Preferences.instance().setProperty("queue.upload.preserveDate.fallback", false);
+        else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
+            _delegateUpload._transferImpl(p);
         }
     }
 
@@ -225,6 +220,7 @@ public class SyncTransfer extends Transfer {
         _comparisons.clear();
         _delegateDownload.clear();
         _delegateUpload.clear();
+        _cache.clear();
         super.clear();
     }
 
@@ -235,6 +231,9 @@ public class SyncTransfer extends Transfer {
 
     private final Map _comparisons = new HashMap();
 
+    /**
+     *
+     */
     public static class Comparison {
         public boolean equals(Object other) {
             if(null == other) {
@@ -244,10 +243,17 @@ public class SyncTransfer extends Transfer {
         }
     }
 
+    /**
+     * Remote file is newer or local file does not exist
+     */
     public static final Comparison COMPARISON_REMOTE_NEWER = new Comparison();
-
+    /**
+     * Local file is newer or remote file does not exist
+     */
     public static final Comparison COMPARISON_LOCAL_NEWER = new Comparison();
-
+    /**
+     * Files are identical or directories
+     */
     public static final Comparison COMPARISON_EQUAL = new Comparison();
 
     /**
@@ -257,16 +263,19 @@ public class SyncTransfer extends Transfer {
      */
     public Comparison compare(Path p) {
         if(!_comparisons.containsKey(p)) {
+            log.debug("compare:" + p);
             Comparison result = null;
             if(exists(p) && exists(p.getLocal())) {
                 if(p.attributes.isDirectory()) {
-                    result = this.compareTimestamp(p);
+                    result = COMPARISON_EQUAL;
                 }
-                else {
+                if(p.attributes.isFile()) {
                     result = this.compareSize(p);
                     if(result.equals(COMPARISON_EQUAL)) {
-                        //both files have a valid size; compare using timestamp
-                        result = this.compareTimestamp(p);
+                        if(!Preferences.instance().getBoolean("queue.sync.timestamp.ignore")) {
+                            //both files have a valid size; compare using timestamp
+                            result = this.compareTimestamp(p);
+                        }
                     }
                 }
             }
@@ -288,11 +297,11 @@ public class SyncTransfer extends Transfer {
     }
 
     /**
-     *
      * @param p
      * @return
      */
     private Comparison compareSize(Path p) {
+        log.debug("compareSize:" + p);
         if(p.attributes.getSize() == -1) {
             p.readSize();
         }
@@ -311,11 +320,11 @@ public class SyncTransfer extends Transfer {
     }
 
     /**
-     *
      * @param p
      * @return
      */
     private Comparison compareTimestamp(Path p) {
+        log.debug("compareTimestamp:" + p);
         if(p.attributes.getModificationDate() == -1) {
             p.readTimestamp();
         }
@@ -338,13 +347,13 @@ public class SyncTransfer extends Transfer {
     }
 
     /**
-     *
      * @param timestamp
      * @param timezone
      * @param precision
      * @return
      */
     private Calendar asCalendar(final long timestamp, final TimeZone timezone, final int precision) {
+        log.debug("asCalendar:" + timestamp);
         Calendar c = Calendar.getInstance(timezone);
         c.setTimeInMillis(timestamp);
         if(precision == Calendar.MILLISECOND) {

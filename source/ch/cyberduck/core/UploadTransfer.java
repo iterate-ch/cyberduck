@@ -52,6 +52,7 @@ public class UploadTransfer extends Transfer {
     }
 
     protected void init() {
+        log.debug("init");
         bandwidth = new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes"));
     }
@@ -92,23 +93,26 @@ public class UploadTransfer extends Transfer {
         }
     }
 
+    private final PathFilter childFilter = new TransferFilter() {
+        public boolean accept(AbstractPath child) {
+            if(Preferences.instance().getBoolean("queue.upload.skip.enable")
+                    && UPLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
+                return false;
+            }
+            return true;
+        }
+    };
+
     private final Cache _cache = new Cache();
 
-    public List childs(final Path parent) {
+    public AttributedList childs(final Path parent) {
         if(!exists(parent)) {
             parent.cache().put(parent, new AttributedList());
         }
         if(!_cache.containsKey(parent)) {
             AttributedList childs = new AttributedList();
-            for(Iterator iter = parent.getLocal().childs(new NullComparator(), new TransferFilter() {
-                public boolean accept(AbstractPath child) {
-                    if(Preferences.instance().getBoolean("queue.upload.skip.enable")
-                            && UPLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
-                        return false;
-                    }
-                    return true;
-                }
-            }).iterator(); iter.hasNext(); ) {
+            for(Iterator iter = parent.getLocal().childs(new NullComparator(),
+                    childFilter).iterator(); iter.hasNext(); ) {
                 Path child = PathFactory.createPath(parent.getSession(),
                         parent.getAbsolute(),
                         new Local(((AbstractPath) iter.next()).getAbsolute()));

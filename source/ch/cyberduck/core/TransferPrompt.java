@@ -18,12 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Transfer;
-import ch.cyberduck.core.TransferAction;
-
 /**
  * @version $Id$
  */
 public interface TransferPrompt {
-    public TransferAction prompt(Transfer transfer);
+    TransferAction prompt(Transfer transfer);
 }

@@ -367,7 +367,7 @@ public abstract class Transfer extends NSObject {
      *
      * @return A list of child items
      */
-    public abstract List childs(final Path parent);
+    public abstract AttributedList childs(final Path parent);
 
     /**
      *
@@ -596,7 +596,7 @@ public abstract class Transfer extends NSObject {
                         }
                     }
                     catch(InterruptedException e) {
-                        ;
+                        log.error(e.getMessage());
                     }
                 }
                 log.info(this.toString() + " released from queue");

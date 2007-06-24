@@ -21,7 +21,13 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSArray;
+import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSMutableRect;
+import com.apple.cocoa.foundation.NSNotification;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
 
@@ -48,15 +54,38 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         super(parent);
     }
 
+    public void init() {
+        this.browserModel.build();
+    }
+
+    public void invalidate() {
+        this.transfer.getSession().removeProgressListener(l);
+        super.invalidate();
+    }
+
+    /**
+     *
+     */
+    private ProgressListener l = new ProgressListener() {
+        public void message(final String msg) {
+            // Update the status label at the bottom of the browser window
+            statusLabel.setAttributedStringValue(new NSAttributedString(msg,
+                    TRUNCATE_MIDDLE_ATTRIBUTES));
+        }
+    };
+
     /**
      *
      */
     protected TransferAction action;
 
+    /**
+     *
+     */
     protected Transfer transfer;
 
     public void callback(final int returncode) {
-        log.debug("callback:"+returncode);
+        log.debug("callback:" + returncode);
         if(returncode == DEFAULT_OPTION) { // Continue
             if(actionPopup.selectedItem().title().equals(ACTION_OVERWRITE)) {
                 action = TransferAction.ACTION_OVERWRITE;
@@ -78,6 +107,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
     public void beginSheet(final boolean blocking) {
         super.beginSheet(blocking);
+        transfer.getSession().addProgressListener(l);
         this.reloadData();
         if(browserView.numberOfRows() > 0) {
             browserView.selectRow(0, false);
@@ -89,54 +119,43 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
      */
     public void reloadData() {
         log.debug("reloadData");
+        statusIndicator.startAnimation(null);
         browserView.reloadData();
+        statusIndicator.stopAnimation(null);
+        // Delay for later invocation to make sure this is displayed as the last status message
+        this.invoke(new Runnable() {
+            public void run() {
+                statusLabel.setAttributedStringValue(new NSAttributedString(
+                        browserView.numberOfRows() + " " + NSBundle.localizedString("files", ""),
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
+                statusLabel.display();
+            }
+        });
     }
 
     protected final Object promptLock = new Object();
 
     /**
-     * 
      * @param transfer
      * @return
      */
-    public TransferAction prompt(Transfer transfer) {
-        log.debug("prompt:"+transfer);
+    public TransferAction prompt(final Transfer transfer) {
+        log.debug("prompt:" + transfer);
         this.transfer = transfer;
+
+        this.init();
 
         parent.invoke(new Runnable() {
             public void run() {
                 beginSheet(false);
             }
         });
-
-        final ConnectionListener l = new ConnectionAdapter() {
-            public void activityStarted() {
-                parent.invoke(new Runnable() {
-                    public void run() {
-                        statusIndicator.startAnimation(null);
-                    }
-                });
-            }
-
-            public void activityStopped() {
-                parent.invoke(new Runnable() {
-                    public void run() {
-                        statusIndicator.stopAnimation(null);
-                    }
-                });
-            }
-        };
-
         synchronized(promptLock) {
-            this.transfer.getSession().addConnectionListener(l);
             try {
                 promptLock.wait();
             }
             catch(InterruptedException e) {
-                ;
-            }
-            finally {
-                this.transfer.getSession().removeConnectionListener(l);
+                log.error(e.getMessage());
             }
         }
 
@@ -158,8 +177,9 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     protected CDTransferPromptModel browserModel;
     protected CDTableDelegate browserViewDelegate;
 
-    public void setBrowserView(NSOutlineView view) {
+    public void setBrowserView(final NSOutlineView view) {
         this.browserView = view;
+        this.browserView.setDataSource(this.browserModel);
         this.browserView.setHeaderView(null);
         this.browserView.setDelegate(this.browserViewDelegate = new CDAbstractTableDelegate() {
 
@@ -189,7 +209,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
             public void selectionDidChange(NSNotification notification) {
                 if(browserView.selectedRow() != -1) {
-                    Path p = (Path)browserView.itemAtRow(browserView.selectedRow());
+                    Path p = (Path) browserView.itemAtRow(browserView.selectedRow());
                     if(p != null) {
                         if(p.getLocal().exists()) {
                             localURLField.setAttributedStringValue(new NSAttributedString(
@@ -376,61 +396,67 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
     private NSTextField remoteURLField; // IBOutlet
 
-    public void setRemoteURLField(NSTextField f) {
+    public void setRemoteURLField(final NSTextField f) {
         this.remoteURLField = f;
         this.remoteURLField.setHidden(true);
     }
 
     private NSTextField remoteSizeField; // IBOutlet
 
-    public void setRemoteSizeField(NSTextField f) {
+    public void setRemoteSizeField(final NSTextField f) {
         this.remoteSizeField = f;
         this.remoteSizeField.setHidden(true);
     }
 
     private NSTextField remoteModificationField; // IBOutlet
 
-    public void setRemoteModificationField(NSTextField f) {
+    public void setRemoteModificationField(final NSTextField f) {
         this.remoteModificationField = f;
         this.remoteModificationField.setHidden(true);
     }
 
     private NSTextField localURLField; // IBOutlet
 
-    public void setLocalURLField(NSTextField f) {
+    public void setLocalURLField(final NSTextField f) {
         this.localURLField = f;
         this.localURLField.setHidden(true);
     }
 
     private NSTextField localSizeField; // IBOutlet
 
-    public void setLocalSizeField(NSTextField f) {
+    public void setLocalSizeField(final NSTextField f) {
         this.localSizeField = f;
         this.localSizeField.setHidden(true);
     }
 
     private NSTextField localModificationField; // IBOutlet
 
-    public void setLocalModificationField(NSTextField f) {
+    public void setLocalModificationField(final NSTextField f) {
         this.localModificationField = f;
         this.localModificationField.setHidden(true);
     }
 
     private NSProgressIndicator statusIndicator; // IBOutlet
 
-    public void setStatusIndicator(NSProgressIndicator f) {
+    public void setStatusIndicator(final NSProgressIndicator f) {
         this.statusIndicator = f;
         this.statusIndicator.setUsesThreadedAnimation(true);
         this.statusIndicator.setDisplayedWhenStopped(false);
+    }
+
+    private NSTextField statusLabel; // IBOutlet
+
+    public void setStatusLabel(final NSTextField f) {
+        this.statusLabel = f;
     }
 
     private static final String ACTION_OVERWRITE = NSBundle.localizedString("Overwrite existing file", "");
     private static final String ACTION_RESUME = NSBundle.localizedString("Try to resume transfer", "");
     private static final String ACTION_SIMILARNAME = NSBundle.localizedString("Use similar name", "");
 
-    private NSPopUpButton actionPopup; // IBOutlet
+    protected NSPopUpButton actionPopup; // IBOutlet
 
-    public void setActionPopup(NSPopUpButton actionPopup) {
+    public void setActionPopup(final NSPopUpButton actionPopup) {
         this.actionPopup = actionPopup;
         this.actionPopup.removeAllItems();
         this.actionPopup.addItemsWithTitles(new NSArray(new String[]{

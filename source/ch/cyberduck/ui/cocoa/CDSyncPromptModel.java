@@ -18,7 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.Status;
+import ch.cyberduck.core.SyncTransfer;
+import ch.cyberduck.core.Transfer;
 
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSOutlineView;
@@ -36,49 +41,68 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
         super(c, transfer);
     }
 
+    /**
+     * Filtering what files are displayed. Used to
+     * decide which files to include in the prompt dialog
+     */
+    private PathFilter filter;
+
     protected PathFilter filter() {
-        return new PromptFilter() {
-            public boolean accept(AbstractPath child) {
-                if(!((SyncTransfer)transfer).shouldCreateLocalFiles() && !transfer.exists(((Path)child).getLocal())) {
-                    // The local file does not exist but no files should be created
-                    return false;
+        if(null == filter) {
+            filter = new PromptFilter() {
+                public boolean accept(AbstractPath child) {
+                    log.debug("accept:" + child);
+                    SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare((Path) child);
+                    if(!SyncTransfer.COMPARISON_EQUAL.equals(compare)) {
+                        if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
+                            if(((SyncTransfer) transfer).getAction().equals(SyncTransfer.ACTION_UPLOAD)) {
+                                return false;
+                            }
+                            return super.accept(child);
+                        }
+                        else if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
+                            if(((SyncTransfer) transfer).getAction().equals(SyncTransfer.ACTION_DOWNLOAD)) {
+                                return false;
+                            }
+                            return super.accept(child);
+                        }
+                    }
+                    return child.attributes.isDirectory();
                 }
-                if(!((SyncTransfer)transfer).shouldCreateRemoteFiles() && !transfer.exists(((Path)child))) {
-                    // The remote file does not exist but no files should be created
-                    return false;
-                }
-                if(!SyncTransfer.COMPARISON_EQUAL.equals(((SyncTransfer)transfer).compare((Path)child))) {
-                    return super.accept(child);
-                }
-                return false;
-            }
-        };
+            };
+        }
+        return filter;
     }
 
-    private List _root = new AttributedList();
+    public void clear() {
+        //Hack to make CDTransferPromptModel#childs filter from scratch
+        filter = null;
+        super.clear();
+    }
 
-    private void _build() {
-        for(Iterator iter = transfer.getRoots().iterator(); iter.hasNext(); ) {
-            _root.addAll(this.childs((Path)iter.next()));
+    public List build() {
+        if(_roots.isEmpty()) {
+            log.debug("build");
+            for(Iterator iter = transfer.getRoots().iterator(); iter.hasNext();) {
+                Path next = (Path) iter.next();
+                if(this.filter().accept(next)) {
+                    _roots.addAll(this.childs(next));
+                }
+            }
         }
+        return _roots;
     }
 
     public int outlineViewNumberOfChildrenOfItem(final NSOutlineView view, Path item) {
-        if (null == item) {
-            if(_root.isEmpty()) {
-                this._build();
-            }
-            return _root.size();
+        if(null == item) {
+            return this.build().size();
         }
         return super.outlineViewNumberOfChildrenOfItem(view, item);
     }
 
     public Path outlineViewChildOfItem(final NSOutlineView outlineView, int index, Path item) {
-        if (null == item) {
-            if(_root.isEmpty()) {
-                this._build();
-            }
-            return (Path)_root.get(index);
+        if(null == item) {
+            return (Path) this.build().get(index);
         }
         return super.outlineViewChildOfItem(outlineView, index, item);
     }
@@ -97,14 +121,14 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
     private static final NSImage PLUS_ICON = NSImage.imageNamed("plus.tiff");
 
     protected Object objectValueForItem(final Path item, final String identifier) {
-        if (identifier.equals(SIZE_COLUMN)) {
-            SyncTransfer.Comparison compare = ((SyncTransfer)transfer).compare(item);
+        if(identifier.equals(SIZE_COLUMN)) {
+            SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
             return new NSAttributedString(Status.getSizeAsString(
                     compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER) ? item.attributes.getSize() : item.getLocal().attributes.getSize()),
                     CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
         }
         if(identifier.equals(SYNC_COLUMN)) {
-            SyncTransfer.Comparison compare = ((SyncTransfer)transfer).compare(item);
+            SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
             if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
                 return ARROW_DOWN_ICON;
             }

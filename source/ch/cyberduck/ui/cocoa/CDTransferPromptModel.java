@@ -23,6 +23,8 @@ import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 
 import com.apple.cocoa.application.NSCell;
@@ -31,7 +33,6 @@ import com.apple.cocoa.application.NSOutlineView;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSObject;
-import com.apple.cocoa.foundation.NSSize;
 
 import org.apache.log4j.Logger;
 
@@ -43,7 +44,7 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class CDTransferPromptModel extends NSObject {
-    private static Logger log = Logger.getLogger(CDTransferPromptModel.class);
+    protected static Logger log = Logger.getLogger(CDTransferPromptModel.class);
 
     /**
      *
@@ -53,13 +54,11 @@ public abstract class CDTransferPromptModel extends NSObject {
     /**
      * The root nodes to be included in the prompt dialog
      */
-    private final Collection roots;
+    protected final List _roots = new Collection();
 
     /**
-     * The filter used to decide which files to include in the prompt dialog
+     * 
      */
-    private final PathFilter filter;
-
     private CDWindowController controller;
 
     /**
@@ -70,20 +69,33 @@ public abstract class CDTransferPromptModel extends NSObject {
     public CDTransferPromptModel(CDWindowController c, final Transfer transfer) {
         this.controller = c;
         this.transfer = transfer;
-        this.roots = new Collection();
-        // Only include the root nodes the user should see in the prompt (need a conflict resolution)
-        this.filter = this.filter();
-        for(Iterator iter = transfer.getRoots().iterator(); iter.hasNext(); ) {
-            AbstractPath next = (AbstractPath) iter.next();
-            if(filter.accept(next)) {
-                roots.add(next);
+    }
+
+    /**
+     * Rebuilt the root nodes inclusion list
+     */
+    public List build() {
+        if(_roots.isEmpty()) {
+            log.debug("build");
+            for(Iterator iter = transfer.getRoots().iterator(); iter.hasNext(); ) {
+                AbstractPath next = (AbstractPath) iter.next();
+                if(this.filter().accept(next)) {
+                    _roots.add(next);
+                }
             }
         }
+        return _roots;
+    }
+
+    /**
+     * Clear the root model. Will be rebuilt if queried next time
+     */
+    public void clear() {
+        _roots.clear();
     }
 
     protected abstract class PromptFilter implements PathFilter {
         public boolean accept(AbstractPath file) {
-            log.debug("accept:"+file);
             if(transfer.exists(file)) {
                 if(file.attributes.getSize() == -1) {
                     ((Path)file).readSize();
@@ -111,7 +123,24 @@ public abstract class CDTransferPromptModel extends NSObject {
     {
         String identifier = (String) tableColumn.identifier();
         if(identifier.equals(INCLUDE_COLUMN)) {
-            item.status.setSkipped(((Number) value).intValue() == NSCell.OffState);
+            this.setSkipped(item, ((Number) value).intValue() == NSCell.OffState);
+            outlineView.setNeedsDisplay(true);
+        }
+    }
+
+    /**
+     * Recursively update the status of all cached child items
+     * @param item
+     * @param skipped True if skipped
+     */
+    private void setSkipped(Path item, final boolean skipped) {
+        item.status.setSkipped(skipped);
+        if(item.attributes.isDirectory()) {
+            if(transfer.isCached(item)) {
+                for(Iterator iter = item.childs().iterator(); iter.hasNext(); ) {
+                    this.setSkipped((Path)iter.next(), skipped);
+                }
+            }
         }
     }
 
@@ -121,6 +150,8 @@ public abstract class CDTransferPromptModel extends NSObject {
      */
     protected abstract PathFilter filter();
 
+    private final Cache cache = new Cache();
+
     /**
      * Container for all paths currently being listed in the background
      */
@@ -129,50 +160,42 @@ public abstract class CDTransferPromptModel extends NSObject {
     /**
      * If no cached listing is available the loading is delayed until the listing is
      * fetched from a background thread
-     * @param parent
+     * @param path
      * @param filter
      * @return The list of child items for the parent folder. The listing is filtered
      * using the standard regex exclusion and the additional passed filter
      */
-    protected List childs(final Path parent) {
+    protected List childs(final Path path) {
         synchronized(isLoadingListingInBackground) {
-            if(!isLoadingListingInBackground.contains(parent)) {
-                if(!transfer.isCached(parent)) {
-                    isLoadingListingInBackground.add(parent);
+            if(!isLoadingListingInBackground.contains(path)) {
+                if(!transfer.isCached(path)) {
+                    isLoadingListingInBackground.add(path);
+
                     controller.background(new BackgroundActionImpl(controller) {
                         public void run() {
-                            try {
-                                log.debug("childs:"+parent);
-                                transfer.childs(parent);
-                            }
-                            finally {
-                                synchronized(isLoadingListingInBackground) {
-                                    isLoadingListingInBackground.remove(parent);
-                                }
-                            }
+                            log.debug("childs#run");
+                            cache.put(path, transfer.childs(path));
+                            //Hack to filter the list first in the background thread
+                            cache.get(path, new NullComparator(), filter());
                         }
 
                         public void cleanup() {
+                            log.debug("childs#cleanup");
                             synchronized(isLoadingListingInBackground) {
-                                if(transfer.isCached(parent) && isLoadingListingInBackground.isEmpty()) {
+                                isLoadingListingInBackground.remove(path);
+                                if(transfer.isCached(path) && isLoadingListingInBackground.isEmpty()) {
                                     ((CDTransferPrompt)controller).reloadData();
                                 }
                             }
                         }
-                    }, isLoadingListingInBackground);
+                    });
                 }
                 else {
-                    final List childs = transfer.childs(parent);
-                    for(Iterator iter = childs.iterator(); iter.hasNext(); ) {
-                        if(!filter.accept((AbstractPath)iter.next())) {
-                            iter.remove();
-                        }
-                    }
-                    return childs;
+                    return cache.get(path, new NullComparator(), filter());
                 }
             }
         }
-        log.warn("No cached listing for " + parent.getName());
+        log.warn("No cached listing for " + path.getName());
         return Collections.EMPTY_LIST;
     }
 
@@ -183,6 +206,14 @@ public abstract class CDTransferPromptModel extends NSObject {
             if(item.status.isSkipped()) {
                 return new Integer(NSCell.OffState);
             }
+//            Path parent = item;
+//            do {
+//                parent = (Path)parent.getParent();
+//                if(parent.status.isSkipped()) {
+//                    return new Integer(NSCell.OffState);
+//                }
+//            }
+//            while(this.build().contains(parent));
             return new Integer(NSCell.OnState);
         }
         if(identifier.equals(FILENAME_COLUMN)) {
@@ -211,7 +242,7 @@ public abstract class CDTransferPromptModel extends NSObject {
      */
     public int outlineViewNumberOfChildrenOfItem(final NSOutlineView view, Path item) {
         if (null == item) {
-            return roots.size();
+            return this.build().size();
         }
         return this.childs(item).size();
     }
@@ -224,7 +255,7 @@ public abstract class CDTransferPromptModel extends NSObject {
      */
     public Path outlineViewChildOfItem(final NSOutlineView outlineView, int index, Path item) {
         if (null == item) {
-            return (Path) roots.get(index);
+            return (Path) this.build().get(index);
         }
         List childs = this.childs(item);
         if (index < childs.size()) {

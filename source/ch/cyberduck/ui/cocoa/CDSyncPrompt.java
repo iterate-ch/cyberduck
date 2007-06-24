@@ -18,10 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.SyncTransfer;
 import ch.cyberduck.core.TransferAction;
+import ch.cyberduck.core.SyncTransfer;
 
-import com.apple.cocoa.application.*;
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSImageCell;
+import com.apple.cocoa.application.NSOutlineView;
+import com.apple.cocoa.application.NSPopUpButton;
+import com.apple.cocoa.application.NSTableColumn;
+import com.apple.cocoa.application.NSText;
 import com.apple.cocoa.foundation.NSSelector;
 
 import org.apache.log4j.Logger;
@@ -36,6 +41,11 @@ public class CDSyncPrompt extends CDTransferPrompt {
         super(parent);
     }
 
+    public void init() {
+        this.browserModel = new CDSyncPromptModel(this, transfer);
+        super.init();
+    }
+
     public void beginSheet(final boolean blocking) {
         synchronized(NSApplication.sharedApplication()) {
             if(!NSApplication.loadNibNamed("Sync", this)) {
@@ -46,7 +56,6 @@ public class CDSyncPrompt extends CDTransferPrompt {
     }
 
     public void setBrowserView(NSOutlineView view) {
-        view.setDataSource(this.browserModel = new CDSyncPromptModel(this, transfer));
         super.setBrowserView(view);
         NSSelector setResizableMaskSelector
                 = new NSSelector("setResizingMask", new Class[]{int.class});
@@ -105,31 +114,41 @@ public class CDSyncPrompt extends CDTransferPrompt {
     // Outlets
     // ----------------------------------------------------------
 
-    protected NSButton downloadRadioCell;
+    private final int INDEX_ACTION_DOWNLOAD = 0;
+    private final int INDEX_ACTION_UPLOAD = 1;
+    private final int INDEX_ACTION_MIRROR = 2;
 
-    public void setDownloadRadioCell(NSButton downloadRadioCell) {
-        this.downloadRadioCell = downloadRadioCell;
-        this.downloadRadioCell.setState(NSCell.OnState);
-        this.downloadRadioCell.setTarget(this);
-        this.downloadRadioCell.setAction(new NSSelector("downloadCellClicked", new Class[]{Object.class}));
+    public void setActionPopup(final NSPopUpButton actionPopup) {
+        this.actionPopup = actionPopup;
+        this.actionPopup.setTarget(this);
+        this.actionPopup.setAction(new NSSelector("actionPopupClicked", new Class[]{NSPopUpButton.class}));
+        this.actionPopup.selectItemAtIndex(INDEX_ACTION_MIRROR);
     }
 
-    public void downloadCellClicked(final Object sender) {
-        ((SyncTransfer)transfer).setCreateLocalFiles(downloadRadioCell.state() == NSCell.OnState);
-        browserView.reloadData();
-    }
-    
-    protected NSButton uploadRadioCell;
-
-    public void setUploadRadioCell(NSButton uploadRadioCell) {
-        this.uploadRadioCell = uploadRadioCell;
-        this.uploadRadioCell.setState(NSCell.OnState);
-        this.uploadRadioCell.setTarget(this);
-        this.uploadRadioCell.setAction(new NSSelector("uploadCellClicked", new Class[]{Object.class}));
-    }
-
-    public void uploadCellClicked(final Object sender) {
-        ((SyncTransfer)transfer).setCreateRemoteFiles(uploadRadioCell.state() == NSCell.OnState);
+    public void actionPopupClicked(NSPopUpButton sender) {
+        SyncTransfer.Action current = ((SyncTransfer)transfer).getAction();
+        if(actionPopup.indexOfSelectedItem() == INDEX_ACTION_DOWNLOAD) {
+            if(current.equals(SyncTransfer.ACTION_DOWNLOAD)) {
+                return;
+            }
+            //Download
+            ((SyncTransfer)transfer).setAction(SyncTransfer.ACTION_DOWNLOAD);
+        }
+        if(actionPopup.indexOfSelectedItem() == INDEX_ACTION_UPLOAD) {
+            if(current.equals(SyncTransfer.ACTION_UPLOAD)) {
+                return;
+            }
+            //Upload
+            ((SyncTransfer)transfer).setAction(SyncTransfer.ACTION_UPLOAD);
+        }
+        if(actionPopup.indexOfSelectedItem() == INDEX_ACTION_MIRROR) {
+            if(current.equals(SyncTransfer.ACTION_MIRROR)) {
+                return;
+            }
+            //Mirror
+            ((SyncTransfer)transfer).setAction(SyncTransfer.ACTION_MIRROR);
+        }
+        browserModel.clear();
         browserView.reloadData();
     }
 }

@@ -35,15 +35,25 @@ public class CDUploadPromptModel extends CDTransferPromptModel {
         super(c, transfer);
     }
 
+    /**
+     * Filtering what files are displayed. Used to
+     * decide which files to include in the prompt dialog
+     */
+    private PathFilter filter;
+
     protected PathFilter filter() {
-        return new PromptFilter() {
-            public boolean accept(AbstractPath child) {
-                if(transfer.exists(child)) {
-                    return super.accept(child);
+        if(null == filter) {
+            filter = new PromptFilter() {
+                public boolean accept(AbstractPath child) {
+                    log.debug("accept:" + child);
+                    if(transfer.exists(child)) {
+                        return super.accept(child);
+                    }
+                    return false;
                 }
-                return false;
-            }
-        };
+            };
+        }
+        return filter;
     }
 
     protected Object objectValueForItem(final Path item, final String identifier) {
