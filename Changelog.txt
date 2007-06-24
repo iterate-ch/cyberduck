@@ -12,11 +12,12 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] Limit available bandwidth for transfers [#48]
 - [Feature] Browse folder hierarchy in overwrite warning dialog [#18]
 - [Feature] Browse folder hierarchy in synchronisation dialog [#18]
-- [Feature] Preference to use small icons in the bookmark drawer [#--]
-- [Feature] Preference to set the default protocol helper application for FTP and SFTP URLs [#1049]
+- [Feature] Use small icons in the bookmark drawer [#--]
+- [Feature] Set the default protocol helper application for FTP and SFTP URLs [#1049]
 - [Feature] Setting default permissions for folders [#77]
 - [Feature] Notes for bookmarks [#67]
-- [Bugfix] Resolve Alias files to upload
+- [Bugfix] Resolve Alias files to upload [#859]
+- [Bugfix] Subsequent type-ahead selection misbehaving [#896] 
 
 2.7.3 [http://trac.cyberduck.ch/query?status=closed&milestone=2.7.3]
 - [Bugfix] Problem parsing PASV response from some servers (FTP) [#779, #869]
