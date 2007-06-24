@@ -295,7 +295,6 @@ public abstract class Preferences {
         defaults.put("queue.upload.permissions.folder.default", String.valueOf(755));
 
         defaults.put("queue.upload.preserveDate", String.valueOf(true));
-        defaults.put("queue.upload.preserveDate.fallback", String.valueOf(false));
 
         defaults.put("queue.upload.skip.enable", String.valueOf(true));
         defaults.put("queue.upload.skip.regex.default",
@@ -329,6 +328,10 @@ public abstract class Preferences {
          * While downloading, update the icon of the downloaded file as a progress indicator
          */
         defaults.put("queue.download.updateIcon", String.valueOf(true));
+        /**
+         * If size is equals, do not compare the timestamp
+         */
+        defaults.put("queue.sync.timestamp.ignore", String.valueOf("true"));
 
         //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");

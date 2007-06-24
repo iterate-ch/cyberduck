@@ -60,6 +60,11 @@ public class AttributedList extends NSObject implements List {
         this.attributes = new Attributes();
     }
 
+    public AttributedList(java.util.Collection collection) {
+        this.attributes = new Attributes();
+        this.addAll(collection);
+    }
+
     /**
      * Container for file listing attributes, such as a sorting comparator and filter
      *

@@ -196,7 +196,7 @@ public class BandwidthThrottle {
                 Thread.sleep(_nextTickTime - now);
             }
             catch(InterruptedException e) {
-                ;
+                log.error(e.getMessage());
             }
         }
     }

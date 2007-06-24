@@ -3983,7 +3983,7 @@ public class CDBrowserController extends CDWindowController
                 TOOLBAR_NEW_FOLDER,
                 TOOLBAR_GET_INFO,
                 TOOLBAR_DISCONNECT,
-                TOOLBAR_GO_TO_FOLDER,
+//                TOOLBAR_GO_TO_FOLDER,
                 NSToolbarItem.CustomizeToolbarItemIdentifier,
                 NSToolbarItem.SpaceItemIdentifier,
                 NSToolbarItem.SeparatorItemIdentifier,
