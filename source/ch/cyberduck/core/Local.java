@@ -48,17 +48,23 @@ public class Local extends AbstractPath {
     {
         attributes = new Attributes() {
             public Permission getPermission() {
-                NSDictionary fileAttributes = NSPathUtilities.fileAttributes(_impl.getAbsolutePath(), true);
-                if(null == fileAttributes) {
-                    log.error("No such file:"+getAbsolute());
-                    return null;
+                try {
+                    NSDictionary fileAttributes = NSPathUtilities.fileAttributes(_impl.getAbsolutePath(), true);
+                    if(null == fileAttributes) {
+                        log.error("No such file:"+getAbsolute());
+                        return null;
+                    }
+                    Object posix = fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions);
+                    if(null == posix) {
+                        log.error("No such file:"+getAbsolute());
+                        return null;
+                    }
+                    String posixString = Integer.toString(((Number)posix).intValue() & 0177777, 8);
+                    return new Permission(Integer.parseInt(posixString.substring(posixString.length()-3)));
                 }
-                Object posix = fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions);
-                if(null == posix) {
-                    log.error("No such file:"+getAbsolute());
-                    return null;
+                catch(NumberFormatException e) {
+                    return Permission.EMPTY;
                 }
-                return new Permission(Integer.parseInt(Integer.toOctalString(((Number) posix).intValue())));
             }
 
             public void setPermission(Permission p) {

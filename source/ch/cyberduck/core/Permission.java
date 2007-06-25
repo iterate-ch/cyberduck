@@ -99,7 +99,8 @@ public class Permission {
      */
     public Permission(String mask) {
         if (mask.length() != 9) {
-            throw new IllegalArgumentException("Must be a nine digit string");
+            log.error("Invalid mask:"+mask);
+            throw new NumberFormatException("Must be a nine digit string");
         }
         this.mask = mask;
         this.owner = this.getOwnerPermissions(mask);
@@ -145,7 +146,8 @@ public class Permission {
 		log.debug("Permission(octalString):"+octalString);
 
         if (octalString.length() != 3) {
-            throw new IllegalArgumentException("Must be a three digit number");
+            log.error("Invalid octal value:"+octal);
+            throw new NumberFormatException("Must be a three digit number");
         }
         switch (Integer.parseInt(octalString.substring(0, 1))) {
             case (0):

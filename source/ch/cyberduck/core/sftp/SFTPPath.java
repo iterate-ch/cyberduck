@@ -346,7 +346,12 @@ public class SFTPPath extends Path {
                     handle = session.sftp().openFileRO(this.getAbsolute());
                     SFTPv3FileAttributes attr = session.sftp().fstat(handle);
                     String perm = attr.getOctalPermissions();
-                    this.attributes.setPermission(new Permission(Integer.parseInt(perm.substring(perm.length()-3))));
+                    try {
+                        this.attributes.setPermission(new Permission(Integer.parseInt(perm.substring(perm.length()-3))));
+                    }
+                    catch(NumberFormatException e) {
+                        this.attributes.setPermission(Permission.EMPTY);
+                    }
                     session.sftp().closeFile(handle);
                 }
                 catch(SFTPException e) {
