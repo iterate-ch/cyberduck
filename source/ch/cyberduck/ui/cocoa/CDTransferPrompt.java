@@ -68,9 +68,14 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
      */
     private ProgressListener l = new ProgressListener() {
         public void message(final String msg) {
-            // Update the status label at the bottom of the browser window
-            statusLabel.setAttributedStringValue(new NSAttributedString(msg,
-                    TRUNCATE_MIDDLE_ATTRIBUTES));
+            invoke(new Runnable() {
+                public void run() {
+                    // Update the status label at the bottom of the browser window
+                    statusLabel.setAttributedStringValue(new NSAttributedString(msg,
+                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                    statusLabel.display();
+                }
+            });
         }
     };
 
