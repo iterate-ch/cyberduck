@@ -17,6 +17,7 @@
                 remoteSizeField = NSTextField; 
                 remoteURLField = NSTextField; 
                 statusIndicator = NSProgressIndicator; 
+                statusLabel = NSTextField; 
                 window = NSWindow; 
             }; 
             SUPERCLASS = NSObject; 
