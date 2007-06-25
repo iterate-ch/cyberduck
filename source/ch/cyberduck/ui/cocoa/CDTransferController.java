@@ -636,6 +636,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 // Upon retry, use resume
                 reload = false;
                 resume = true;
+                TransferCollection.instance().save();
             }
 
             public boolean isCanceled() {
