@@ -269,9 +269,19 @@
 			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
 			   passphrase="">
 		</scp>
+		<scp file="${build}/changelog.rss"
+			   todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
+			   keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
+			   passphrase="">
+		</scp>
 		<scp file="${www.update}/changelog.html"
 			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
 			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${www.update}/changelog.html"
+			   todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
+			   keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
 			   passphrase="">
 		</scp>
 		<scp file="${build}/changelog.rss"
