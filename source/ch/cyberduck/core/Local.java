@@ -403,6 +403,7 @@ public class Local extends AbstractPath {
 
     public void setPath(String name) {
         _impl = new File(Path.normalize(name));
+        this.init();
     }
 
     public void mkdir(boolean recursive) {
