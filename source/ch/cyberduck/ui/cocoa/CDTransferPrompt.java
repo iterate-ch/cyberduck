@@ -56,8 +56,8 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
     public void init() {
         synchronized(NSApplication.sharedApplication()) {
-            if(!NSApplication.loadNibNamed("Validator", this)) {
-                log.fatal("Couldn't load Validator.nib");
+            if(!NSApplication.loadNibNamed("Prompt", this)) {
+                log.fatal("Couldn't load Prompt.nib");
             }
         }
         this.browserModel.build();
