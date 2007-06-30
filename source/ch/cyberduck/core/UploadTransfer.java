@@ -25,6 +25,7 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Collections;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -106,8 +107,9 @@ public class UploadTransfer extends Transfer {
     private final Cache _cache = new Cache();
 
     public AttributedList childs(final Path parent) {
-        if(!UploadTransfer.this.exists(parent)) {
-            parent.cache().put(parent, new AttributedList());
+        if(!this.exists(parent.getLocal())) {
+            // Cannot fetch file listing of non existant file
+            _cache.put(parent, new AttributedList(Collections.EMPTY_LIST));
         }
         if(!_cache.containsKey(parent)) {
             AttributedList childs = new AttributedList();
