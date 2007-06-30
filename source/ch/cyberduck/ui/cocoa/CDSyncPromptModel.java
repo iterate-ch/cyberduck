@@ -86,7 +86,7 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
             for(Iterator iter = transfer.getRoots().iterator(); iter.hasNext();) {
                 Path next = (Path) iter.next();
                 if(this.filter().accept(next)) {
-                    _roots.addAll(this.childs(next));
+                    _roots.addAll(transfer.childs(next));
                 }
             }
         }

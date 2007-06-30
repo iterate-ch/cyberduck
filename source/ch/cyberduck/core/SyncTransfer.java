@@ -229,12 +229,15 @@ public class SyncTransfer extends Transfer {
         _delegateDownload.clear();
         _delegateUpload.clear();
         _cache.clear();
+
         super.clear();
     }
 
     protected void reset() {
         _delegateDownload.reset();
         _delegateUpload.reset();
+
+        super.reset();
     }
 
     private final Map _comparisons = new HashMap();
