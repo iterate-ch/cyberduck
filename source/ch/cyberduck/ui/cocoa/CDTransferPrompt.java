@@ -55,6 +55,11 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     }
 
     public void init() {
+        synchronized(NSApplication.sharedApplication()) {
+            if(!NSApplication.loadNibNamed("Validator", this)) {
+                log.fatal("Couldn't load Validator.nib");
+            }
+        }
         this.browserModel.build();
     }
 
@@ -112,6 +117,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
     public void beginSheet(final boolean blocking) {
         super.beginSheet(blocking);
+
         transfer.getSession().addProgressListener(l);
         this.reloadData();
         if(browserView.numberOfRows() > 0) {
@@ -455,9 +461,9 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         this.statusLabel = f;
     }
 
-    private static final String ACTION_OVERWRITE = NSBundle.localizedString("Overwrite existing file", "");
-    private static final String ACTION_RESUME = NSBundle.localizedString("Try to resume transfer", "");
-    private static final String ACTION_SIMILARNAME = NSBundle.localizedString("Use similar name", "");
+    private static final String ACTION_OVERWRITE = NSBundle.localizedString("Overwrite", "");
+    private static final String ACTION_RESUME = NSBundle.localizedString("Resume", "");
+    private static final String ACTION_SIMILARNAME = NSBundle.localizedString("Rename", "");
 
     protected NSPopUpButton actionPopup; // IBOutlet
 

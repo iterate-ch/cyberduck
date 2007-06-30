@@ -242,6 +242,13 @@ public abstract class CDWindowController extends CDController
     }
 
     /**
+     * @return False if the window has been released
+     */
+    public boolean isShown() {
+        return this.window != null;
+    }
+
+    /**
      * Position this controller's window relative to other open windows
      */
     public void cascade() {

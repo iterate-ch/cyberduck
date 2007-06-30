@@ -17,7 +17,7 @@
 "ASCII" = "ASCII";
 
 /* Default preference when attempting to transfer an existing file */
-"Ask me what to do" = "Tanya apa yang harus dilakukan";
+"Prompt" = "Tanya apa yang harus dilakukan";
 
 /* No comment provided by engineer. */
 "Auto" = "Otomatis";
@@ -193,6 +193,9 @@
 /* No comment provided by engineer. */
 "Mac Line Endings (CR)" = "Akhiran Baris Mac (CR)";
 
+/* Synchronize option */
+"Mirror" = "Mirror";
+
 /* A column in the browser */
 "Modified" = "TelahDirubah";
 
@@ -242,11 +245,11 @@
 /* Toolbar item */
 "Outline" = "Outline";
 
-/* No comment provided by engineer. */
+/* Transfer prompt option. */
 "Overwrite" = "Overwrite";
 
 /* Default preference when attempting to transfer an existing file */
-"Overwrite existing file" = "Timpa file yang sudah ada";
+"Overwrite" = "Timpa file yang sudah ada";
 
 /* A column in the browser */
 "Owner" = "Pemilik";
@@ -372,7 +375,7 @@
 "Trash" = "Trash";
 
 /* Default preference when attempting to transfer an existing file */
-"Try to resume transfer" = "Mencoba untuk melanjutkan transfer";
+"Resume" = "Mencoba untuk melanjutkan transfer";
 
 /* No comment provided by engineer. */
 "Unix Line Endings (LF)" = "Unix Line Endings (LF)";
@@ -393,7 +396,7 @@
 "Upload local file to the remote host" = "Upload file dari lokal ke remote server";
 
 /* Default preference when attempting to transfer an existing file */
-"Use similar name" = "Menggunakan nama yang sama";
+"Rename" = "Menggunakan nama yang sama";
 
 /* Toolbar item */
 "View" = "Lihat";

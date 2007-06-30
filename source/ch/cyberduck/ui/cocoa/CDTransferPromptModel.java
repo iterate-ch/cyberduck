@@ -184,7 +184,9 @@ public abstract class CDTransferPromptModel extends NSObject {
                             synchronized(isLoadingListingInBackground) {
                                 isLoadingListingInBackground.remove(path);
                                 if(transfer.isCached(path) && isLoadingListingInBackground.isEmpty()) {
-                                    ((CDTransferPrompt)controller).reloadData();
+                                    if(controller.isShown()) {
+                                        ((CDTransferPrompt)controller).reloadData();
+                                    }
                                 }
                             }
                         }

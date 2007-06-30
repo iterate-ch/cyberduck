@@ -346,9 +346,6 @@ ca.lproj/Main.strings -text
 ca.lproj/Preferences.nib/keyedobjects.nib -text
 ca.lproj/Preferences.strings -text
 ca.lproj/Status.strings -text
-ca.lproj/Sync.nib/data.dependency -text
-ca.lproj/Sync.nib/keyedobjects.nib -text
-ca.lproj/Sync.strings -text
 ca.lproj/Transfer.nib/classes.nib -text
 ca.lproj/Transfer.nib/info.nib -text
 ca.lproj/Transfer.nib/keyedobjects.nib -text
@@ -402,9 +399,6 @@ cs.lproj/Main.strings -text
 cs.lproj/Preferences.nib/keyedobjects.nib -text
 cs.lproj/Preferences.strings -text
 cs.lproj/Status.strings -text
-cs.lproj/Sync.nib/data.dependency -text
-cs.lproj/Sync.nib/keyedobjects.nib -text
-cs.lproj/Sync.strings -text
 cs.lproj/Transfer.nib/classes.nib -text
 cs.lproj/Transfer.nib/info.nib -text
 cs.lproj/Transfer.nib/keyedobjects.nib -text
@@ -458,9 +452,6 @@ cy.lproj/Main.strings -text
 cy.lproj/Preferences.nib/keyedobjects.nib -text
 cy.lproj/Preferences.strings -text
 cy.lproj/Status.strings -text
-cy.lproj/Sync.nib/data.dependency -text
-cy.lproj/Sync.nib/keyedobjects.nib -text
-cy.lproj/Sync.strings -text
 cy.lproj/Transfer.nib/classes.nib -text
 cy.lproj/Transfer.nib/info.nib -text
 cy.lproj/Transfer.nib/keyedobjects.nib -text
@@ -518,9 +509,6 @@ da.lproj/Main.strings -text
 da.lproj/Preferences.nib/keyedobjects.nib -text
 da.lproj/Preferences.strings -text
 da.lproj/Status.strings -text
-da.lproj/Sync.nib/data.dependency -text
-da.lproj/Sync.nib/keyedobjects.nib -text
-da.lproj/Sync.strings -text
 da.lproj/Transfer.nib/classes.nib -text
 da.lproj/Transfer.nib/info.nib -text
 da.lproj/Transfer.nib/keyedobjects.nib -text
@@ -574,9 +562,6 @@ de.lproj/Main.strings -text
 de.lproj/Preferences.nib/keyedobjects.nib -text
 de.lproj/Preferences.strings -text
 de.lproj/Status.strings -text
-de.lproj/Sync.nib/data.dependency -text
-de.lproj/Sync.nib/keyedobjects.nib -text
-de.lproj/Sync.strings -text
 de.lproj/Transfer.nib/classes.nib -text
 de.lproj/Transfer.nib/info.nib -text
 de.lproj/Transfer.nib/keyedobjects.nib -text
@@ -636,9 +621,6 @@ en.lproj/Security.nib/classes.nib -text
 en.lproj/Security.nib/info.nib -text
 en.lproj/Security.nib/keyedobjects.nib -text
 en.lproj/Status.strings -text
-en.lproj/Sync.nib/data.dependency -text
-en.lproj/Sync.nib/keyedobjects.nib -text
-en.lproj/Sync.strings -text
 en.lproj/Transfer.nib/classes.nib -text
 en.lproj/Transfer.nib/info.nib -text
 en.lproj/Transfer.nib/keyedobjects.nib -text
@@ -692,9 +674,6 @@ es.lproj/Main.strings -text
 es.lproj/Preferences.nib/keyedobjects.nib -text
 es.lproj/Preferences.strings -text
 es.lproj/Status.strings -text
-es.lproj/Sync.nib/data.dependency -text
-es.lproj/Sync.nib/keyedobjects.nib -text
-es.lproj/Sync.strings -text
 es.lproj/Transfer.nib/classes.nib -text
 es.lproj/Transfer.nib/info.nib -text
 es.lproj/Transfer.nib/keyedobjects.nib -text
@@ -748,9 +727,6 @@ fi.lproj/Main.strings -text
 fi.lproj/Preferences.nib/keyedobjects.nib -text
 fi.lproj/Preferences.strings -text
 fi.lproj/Status.strings -text
-fi.lproj/Sync.nib/data.dependency -text
-fi.lproj/Sync.nib/keyedobjects.nib -text
-fi.lproj/Sync.strings -text
 fi.lproj/Transfer.nib/classes.nib -text
 fi.lproj/Transfer.nib/info.nib -text
 fi.lproj/Transfer.nib/keyedobjects.nib -text
@@ -804,9 +780,6 @@ fr.lproj/Main.strings -text
 fr.lproj/Preferences.nib/keyedobjects.nib -text
 fr.lproj/Preferences.strings -text
 fr.lproj/Status.strings -text
-fr.lproj/Sync.nib/data.dependency -text
-fr.lproj/Sync.nib/keyedobjects.nib -text
-fr.lproj/Sync.strings -text
 fr.lproj/Transfer.nib/classes.nib -text
 fr.lproj/Transfer.nib/info.nib -text
 fr.lproj/Transfer.nib/keyedobjects.nib -text
@@ -892,11 +865,6 @@ he.lproj/Preferences.nib/info.nib -text
 he.lproj/Preferences.nib/keyedobjects.nib -text
 he.lproj/Preferences.strings -text
 he.lproj/Status.strings -text
-he.lproj/Sync.nib/classes.nib -text
-he.lproj/Sync.nib/data.dependency -text
-he.lproj/Sync.nib/info.nib -text
-he.lproj/Sync.nib/keyedobjects.nib -text
-he.lproj/Sync.strings -text
 he.lproj/Transfer.nib/classes.nib -text
 he.lproj/Transfer.nib/info.nib -text
 he.lproj/Transfer.nib/keyedobjects.nib -text
@@ -952,9 +920,6 @@ hu.lproj/Main.strings -text
 hu.lproj/Preferences.nib/keyedobjects.nib -text
 hu.lproj/Preferences.strings -text
 hu.lproj/Status.strings -text svneol=unset#application/octet-stream
-hu.lproj/Sync.nib/data.dependency -text
-hu.lproj/Sync.nib/keyedobjects.nib -text
-hu.lproj/Sync.strings -text
 hu.lproj/Transfer.nib/classes.nib -text
 hu.lproj/Transfer.nib/info.nib -text
 hu.lproj/Transfer.nib/keyedobjects.nib -text
@@ -1008,9 +973,6 @@ id.lproj/Main.strings -text
 id.lproj/Preferences.nib/keyedobjects.nib -text
 id.lproj/Preferences.strings -text
 id.lproj/Status.strings -text
-id.lproj/Sync.nib/data.dependency -text
-id.lproj/Sync.nib/keyedobjects.nib -text
-id.lproj/Sync.strings -text
 id.lproj/Transfer.nib/classes.nib -text
 id.lproj/Transfer.nib/info.nib -text
 id.lproj/Transfer.nib/keyedobjects.nib -text
@@ -1165,9 +1127,6 @@ it.lproj/Main.strings -text
 it.lproj/Preferences.nib/keyedobjects.nib -text
 it.lproj/Preferences.strings -text
 it.lproj/Status.strings -text
-it.lproj/Sync.nib/data.dependency -text
-it.lproj/Sync.nib/keyedobjects.nib -text
-it.lproj/Sync.strings -text
 it.lproj/Transfer.nib/classes.nib -text
 it.lproj/Transfer.nib/info.nib -text
 it.lproj/Transfer.nib/keyedobjects.nib -text
@@ -1222,9 +1181,6 @@ ja.lproj/Main.strings -text
 ja.lproj/Preferences.nib/keyedobjects.nib -text
 ja.lproj/Preferences.strings -text
 ja.lproj/Status.strings -text
-ja.lproj/Sync.nib/data.dependency -text
-ja.lproj/Sync.nib/keyedobjects.nib -text
-ja.lproj/Sync.strings -text
 ja.lproj/Transfer.nib/classes.nib -text
 ja.lproj/Transfer.nib/info.nib -text
 ja.lproj/Transfer.nib/keyedobjects.nib -text
@@ -1278,9 +1234,6 @@ ko.lproj/Main.strings -text
 ko.lproj/Preferences.nib/keyedobjects.nib -text
 ko.lproj/Preferences.strings -text
 ko.lproj/Status.strings -text
-ko.lproj/Sync.nib/data.dependency -text
-ko.lproj/Sync.nib/keyedobjects.nib -text
-ko.lproj/Sync.strings -text
 ko.lproj/Transfer.nib/classes.nib -text
 ko.lproj/Transfer.nib/info.nib -text
 ko.lproj/Transfer.nib/keyedobjects.nib -text
@@ -1338,9 +1291,6 @@ nl.lproj/Main.strings -text
 nl.lproj/Preferences.nib/keyedobjects.nib -text
 nl.lproj/Preferences.strings -text
 nl.lproj/Status.strings -text
-nl.lproj/Sync.nib/data.dependency -text
-nl.lproj/Sync.nib/keyedobjects.nib -text
-nl.lproj/Sync.strings -text
 nl.lproj/Transfer.nib/classes.nib -text
 nl.lproj/Transfer.nib/info.nib -text
 nl.lproj/Transfer.nib/keyedobjects.nib -text
@@ -1394,9 +1344,6 @@ no.lproj/Main.strings -text
 no.lproj/Preferences.nib/keyedobjects.nib -text
 no.lproj/Preferences.strings -text
 no.lproj/Status.strings -text
-no.lproj/Sync.nib/data.dependency -text
-no.lproj/Sync.nib/keyedobjects.nib -text
-no.lproj/Sync.strings -text
 no.lproj/Transfer.nib/classes.nib -text
 no.lproj/Transfer.nib/info.nib -text
 no.lproj/Transfer.nib/keyedobjects.nib -text
@@ -1451,9 +1398,6 @@ pl.lproj/Main.strings -text
 pl.lproj/Preferences.nib/keyedobjects.nib -text
 pl.lproj/Preferences.strings -text
 pl.lproj/Status.strings -text
-pl.lproj/Sync.nib/data.dependency -text
-pl.lproj/Sync.nib/keyedobjects.nib -text
-pl.lproj/Sync.strings -text
 pl.lproj/Transfer.nib/classes.nib -text
 pl.lproj/Transfer.nib/info.nib -text
 pl.lproj/Transfer.nib/keyedobjects.nib -text
@@ -1540,11 +1484,6 @@ pt_BR.lproj/Progress.strings -text
 pt_BR.lproj/Queue.strings -text
 pt_BR.lproj/Security.strings -text
 pt_BR.lproj/Status.strings -text
-pt_BR.lproj/Sync.nib/classes.nib -text
-pt_BR.lproj/Sync.nib/data.dependency -text
-pt_BR.lproj/Sync.nib/info.nib -text
-pt_BR.lproj/Sync.nib/keyedobjects.nib -text
-pt_BR.lproj/Sync.strings -text
 pt_BR.lproj/Transfer.nib/classes.nib -text
 pt_BR.lproj/Transfer.nib/info.nib -text
 pt_BR.lproj/Transfer.nib/keyedobjects.nib -text
@@ -1600,9 +1539,6 @@ pt_PT.lproj/Main.strings -text
 pt_PT.lproj/Preferences.nib/keyedobjects.nib -text
 pt_PT.lproj/Preferences.strings -text
 pt_PT.lproj/Status.strings -text
-pt_PT.lproj/Sync.nib/data.dependency -text
-pt_PT.lproj/Sync.nib/keyedobjects.nib -text
-pt_PT.lproj/Sync.strings -text
 pt_PT.lproj/Transfer.nib/classes.nib -text
 pt_PT.lproj/Transfer.nib/info.nib -text
 pt_PT.lproj/Transfer.nib/keyedobjects.nib -text
@@ -1656,9 +1592,6 @@ ru.lproj/Main.strings -text
 ru.lproj/Preferences.nib/keyedobjects.nib -text
 ru.lproj/Preferences.strings -text
 ru.lproj/Status.strings -text
-ru.lproj/Sync.nib/data.dependency -text
-ru.lproj/Sync.nib/keyedobjects.nib -text
-ru.lproj/Sync.strings -text
 ru.lproj/Transfer.nib/classes.nib -text
 ru.lproj/Transfer.nib/info.nib -text
 ru.lproj/Transfer.nib/keyedobjects.nib -text
@@ -1712,9 +1645,6 @@ sk.lproj/Main.strings -text
 sk.lproj/Preferences.nib/keyedobjects.nib -text
 sk.lproj/Preferences.strings -text
 sk.lproj/Status.strings -text
-sk.lproj/Sync.nib/data.dependency -text
-sk.lproj/Sync.nib/keyedobjects.nib -text
-sk.lproj/Sync.strings -text
 sk.lproj/Transfer.nib/classes.nib -text
 sk.lproj/Transfer.nib/info.nib -text
 sk.lproj/Transfer.nib/keyedobjects.nib -text
@@ -1783,9 +1713,6 @@ sv.lproj/Main.strings -text
 sv.lproj/Preferences.nib/keyedobjects.nib -text
 sv.lproj/Preferences.strings -text
 sv.lproj/Status.strings -text
-sv.lproj/Sync.nib/data.dependency -text
-sv.lproj/Sync.nib/keyedobjects.nib -text
-sv.lproj/Sync.strings -text
 sv.lproj/Transfer.nib/classes.nib -text
 sv.lproj/Transfer.nib/info.nib -text
 sv.lproj/Transfer.nib/keyedobjects.nib -text
@@ -1869,11 +1796,6 @@ th.lproj/Preferences.nib/info.nib -text
 th.lproj/Preferences.nib/keyedobjects.nib -text
 th.lproj/Preferences.strings -text
 th.lproj/Status.strings -text
-th.lproj/Sync.nib/classes.nib -text
-th.lproj/Sync.nib/data.dependency -text
-th.lproj/Sync.nib/info.nib -text
-th.lproj/Sync.nib/keyedobjects.nib -text
-th.lproj/Sync.strings -text
 th.lproj/Transfer.nib/classes.nib -text
 th.lproj/Transfer.nib/info.nib -text
 th.lproj/Transfer.nib/keyedobjects.nib -text
@@ -1959,11 +1881,6 @@ tr.lproj/Preferences.nib/info.nib -text
 tr.lproj/Preferences.nib/keyedobjects.nib -text
 tr.lproj/Preferences.strings -text
 tr.lproj/Status.strings -text
-tr.lproj/Sync.nib/classes.nib -text
-tr.lproj/Sync.nib/data.dependency -text
-tr.lproj/Sync.nib/info.nib -text
-tr.lproj/Sync.nib/keyedobjects.nib -text
-tr.lproj/Sync.strings -text
 tr.lproj/Transfer.nib/classes.nib -text
 tr.lproj/Transfer.nib/info.nib -text
 tr.lproj/Transfer.nib/keyedobjects.nib -text
@@ -2127,9 +2044,6 @@ zh_CN.lproj/Main.strings -text
 zh_CN.lproj/Preferences.nib/keyedobjects.nib -text
 zh_CN.lproj/Preferences.strings -text
 zh_CN.lproj/Status.strings -text
-zh_CN.lproj/Sync.nib/data.dependency -text
-zh_CN.lproj/Sync.nib/keyedobjects.nib -text
-zh_CN.lproj/Sync.strings -text
 zh_CN.lproj/Transfer.nib/classes.nib -text
 zh_CN.lproj/Transfer.nib/info.nib -text
 zh_CN.lproj/Transfer.nib/keyedobjects.nib -text
@@ -2183,9 +2097,6 @@ zh_TW.lproj/Main.strings -text
 zh_TW.lproj/Preferences.nib/keyedobjects.nib -text
 zh_TW.lproj/Preferences.strings -text
 zh_TW.lproj/Status.strings -text
-zh_TW.lproj/Sync.nib/data.dependency -text
-zh_TW.lproj/Sync.nib/keyedobjects.nib -text
-zh_TW.lproj/Sync.strings -text
 zh_TW.lproj/Transfer.nib/classes.nib -text
 zh_TW.lproj/Transfer.nib/info.nib -text
 zh_TW.lproj/Transfer.nib/keyedobjects.nib -text

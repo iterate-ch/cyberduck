@@ -37,13 +37,4 @@ public class CDUploadPrompt extends CDTransferPrompt {
         this.browserModel = new CDUploadPromptModel(this, transfer);
         super.init();
     }
-
-    public void beginSheet(final boolean blocking) {
-        synchronized(NSApplication.sharedApplication()) {
-            if(!NSApplication.loadNibNamed("Validator", this)) {
-                log.fatal("Couldn't load Validator.nib");
-            }
-        }
-        super.beginSheet(blocking);
-    }
 }

@@ -17,7 +17,7 @@
 "ASCII" = "ASCII";
 
 /* Default preference when attempting to transfer an existing file */
-"Ask me what to do" = "Kérdezd meg mit csináljak";
+"Prompt" = "Kérdezd meg mit csináljak";
 
 /* No comment provided by engineer. */
 "Auto" = "Auto";
@@ -193,6 +193,9 @@
 /* No comment provided by engineer. */
 "Mac Line Endings (CR)" = "Mac sorvég (CR)";
 
+/* Synchronize option */
+"Mirror" = "Mirror";
+
 /* A column in the browser */
 "Modified" = "Változtatva";
 
@@ -242,11 +245,11 @@
 /* Toolbar item */
 "Outline" = "Outline";
 
-/* No comment provided by engineer. */
+/* Transfer prompt option. */
 "Overwrite" = "Overwrite";
 
 /* Default preference when attempting to transfer an existing file */
-"Overwrite existing file" = "Létező file felülírása";
+"Overwrite" = "Létező file felülírása";
 
 /* A column in the browser */
 "Owner" = "Tulajdonos";
@@ -372,7 +375,7 @@
 "Trash" = "Trash";
 
 /* Default preference when attempting to transfer an existing file */
-"Try to resume transfer" = "Visszalépés később";
+"Resume" = "Visszalépés később";
 
 /* No comment provided by engineer. */
 "Unix Line Endings (LF)" = "Unix sorvég (LF)";
@@ -393,7 +396,7 @@
 "Upload local file to the remote host" = "Lokális file feltöltése a kiszolgálóhoz";
 
 /* Default preference when attempting to transfer an existing file */
-"Use similar name" = "Használjon hasonló nevet";
+"Rename" = "Használjon hasonló nevet";
 
 /* Toolbar item */
 "View" = "View";

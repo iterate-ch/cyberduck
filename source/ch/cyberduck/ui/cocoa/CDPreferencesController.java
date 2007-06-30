@@ -218,11 +218,11 @@ public class CDPreferencesController extends CDWindowController {
     private static final String MAC_LINE_ENDINGS = NSBundle.localizedString("Mac Line Endings (CR)", "");
     private static final String WINDOWS_LINE_ENDINGS = NSBundle.localizedString("Windows Line Endings (CRLF)", "");
 
-    private static final String ASK_ME_WHAT_TO_DO = NSBundle.localizedString("Ask me what to do", "");
-    private static final String OVERWRITE_EXISTING_FILE = NSBundle.localizedString("Overwrite existing file", "");
-    private static final String TRY_TO_RESUME_TRANSFER = NSBundle.localizedString("Try to resume transfer", "");
-    private static final String USE_A_SIMILAR_NAME = NSBundle.localizedString("Use similar name", "");
-    private static final String SKIP_EXISTING_FILE = NSBundle.localizedString("Skip existing file", "");
+    private static final String ASK_ME_WHAT_TO_DO = NSBundle.localizedString("Prompt", "");
+    private static final String OVERWRITE_EXISTING_FILE = NSBundle.localizedString("Overwrite", "");
+    private static final String TRY_TO_RESUME_TRANSFER = NSBundle.localizedString("Resume", "");
+    private static final String USE_A_SIMILAR_NAME = NSBundle.localizedString("Rename", "");
+    private static final String SKIP_EXISTING_FILE = NSBundle.localizedString("Skip", "");
 
     // ----------------------------------------------------------
     // Outlets

@@ -28,6 +28,8 @@ import com.apple.cocoa.application.NSPopUpButton;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSText;
 import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSArray;
 
 import org.apache.log4j.Logger;
 
@@ -44,15 +46,6 @@ public class CDSyncPrompt extends CDTransferPrompt {
     public void init() {
         this.browserModel = new CDSyncPromptModel(this, transfer);
         super.init();
-    }
-
-    public void beginSheet(final boolean blocking) {
-        synchronized(NSApplication.sharedApplication()) {
-            if(!NSApplication.loadNibNamed("Sync", this)) {
-                log.fatal("Couldn't load Sync.nib");
-            }
-        }
-        super.beginSheet(blocking);
     }
 
     public void setBrowserView(NSOutlineView view) {
@@ -118,8 +111,16 @@ public class CDSyncPrompt extends CDTransferPrompt {
     private final int INDEX_ACTION_UPLOAD = 1;
     private final int INDEX_ACTION_MIRROR = 2;
 
+    private static final String ACTION_DOWNLOAD = NSBundle.localizedString("Download", "");
+    private static final String ACTION_UPLOAD = NSBundle.localizedString("Upload", "");
+    private static final String ACTION_MIRROR = NSBundle.localizedString("Mirror", "");
+
     public void setActionPopup(final NSPopUpButton actionPopup) {
         this.actionPopup = actionPopup;
+        this.actionPopup.removeAllItems();
+        this.actionPopup.addItemsWithTitles(new NSArray(new String[]{
+                ACTION_DOWNLOAD, ACTION_UPLOAD, ACTION_MIRROR
+        }));
         this.actionPopup.setTarget(this);
         this.actionPopup.setAction(new NSSelector("actionPopupClicked", new Class[]{NSPopUpButton.class}));
         this.actionPopup.selectItemAtIndex(INDEX_ACTION_MIRROR);

@@ -17,7 +17,7 @@
 "ASCII" = "ASCII";
 
 /* Default preference when attempting to transfer an existing file */
-"Ask me what to do" = "Perguntar-me o que fazer";
+"Prompt" = "Perguntar-me o que fazer";
 
 /* No comment provided by engineer. */
 "Auto" = "Auto";
@@ -193,6 +193,9 @@
 /* No comment provided by engineer. */
 "Mac Line Endings (CR)" = "Terminação de linhas de Mac (CR)";
 
+/* Synchronize option */
+"Mirror" = "Mirror";
+
 /* A column in the browser */
 "Modified" = "Modificado";
 
@@ -242,11 +245,11 @@
 /* Toolbar item */
 "Outline" = "Estrutura";
 
-/* No comment provided by engineer. */
+/* Transfer prompt option. */
 "Overwrite" = "Reescrever";
 
 /* Default preference when attempting to transfer an existing file */
-"Overwrite existing file" = "A reescrever ficheiro existente";
+"Overwrite" = "A reescrever ficheiro existente";
 
 /* A column in the browser */
 "Owner" = "Proprietário";
@@ -378,7 +381,7 @@
 "There are files currently being transferred. Quit anyway?" = "Existem items activos na fila de transferência. Deseja fechar??";
 
 /* Default preference when attempting to transfer an existing file */
-"Try to resume transfer" = "Tentar retomar a transferência";
+"Resume" = "Tentar retomar a transferência";
 
 /* No comment provided by engineer. */
 "Unix Line Endings (LF)" = "Terminação de linhas de Unix (LF)";
@@ -393,7 +396,7 @@
 "Upload local file to the remote host" = "Enviar ficheiro local para servidor remoto";
 
 /* Default preference when attempting to transfer an existing file */
-"Use similar name" = "Utilizar nome semelhante";
+"Rename" = "Utilizar nome semelhante";
 
 /* Toolbar item */
 "View" = "Vista";
