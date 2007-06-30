@@ -374,9 +374,6 @@
 /* Toolbar item */
 "Trash" = "Trash";
 
-/* Default preference when attempting to transfer an existing file */
-"Resume" = "Mencoba untuk melanjutkan transfer";
-
 /* No comment provided by engineer. */
 "Unix Line Endings (LF)" = "Unix Line Endings (LF)";
 
