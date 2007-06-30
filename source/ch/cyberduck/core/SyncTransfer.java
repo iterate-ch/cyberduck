@@ -273,7 +273,7 @@ public class SyncTransfer extends Transfer {
         if(!_comparisons.containsKey(p)) {
             log.debug("compare:" + p);
             Comparison result = null;
-            if(exists(p) && exists(p.getLocal())) {
+            if(SyncTransfer.this.exists(p) && SyncTransfer.this.exists(p.getLocal())) {
                 if(p.attributes.isDirectory()) {
                     result = COMPARISON_EQUAL;
                 }
@@ -287,11 +287,11 @@ public class SyncTransfer extends Transfer {
                     }
                 }
             }
-            else if(exists(p)) {
+            else if(SyncTransfer.this.exists(p)) {
                 // only the remote file exists
                 result = COMPARISON_REMOTE_NEWER;
             }
-            else if(exists(p.getLocal())) {
+            else if(SyncTransfer.this.exists(p.getLocal())) {
                 // only the local file exists
                 result = COMPARISON_LOCAL_NEWER;
             }

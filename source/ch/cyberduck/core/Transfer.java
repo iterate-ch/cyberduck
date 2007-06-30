@@ -311,7 +311,7 @@ public abstract class Transfer extends NSObject {
          */
         public void prepare(Path file) {
             log.debug("prepare:"+file);
-            if(exists(file)) {
+            if(Transfer.this.exists(file)) {
                 if(file.attributes.getSize() == -1) {
                     file.readSize();
                 }

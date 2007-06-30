@@ -62,7 +62,7 @@ public class UploadTransfer extends Transfer {
      */
     private abstract class UploadTransferFilter extends TransferFilter {
         public boolean accept(AbstractPath file) {
-            return exists(((Path) file).getLocal());
+            return UploadTransfer.this.exists(((Path) file).getLocal());
         }
 
         public void prepare(Path file) {
@@ -106,7 +106,7 @@ public class UploadTransfer extends Transfer {
     private final Cache _cache = new Cache();
 
     public AttributedList childs(final Path parent) {
-        if(!exists(parent)) {
+        if(!UploadTransfer.this.exists(parent)) {
             parent.cache().put(parent, new AttributedList());
         }
         if(!_cache.containsKey(parent)) {
@@ -135,7 +135,7 @@ public class UploadTransfer extends Transfer {
                     if(super.accept(p)) {
                         if(p.attributes.isDirectory()) {
                             // Do not attempt to create a directory that already exists
-                            return !exists(p);
+                            return !UploadTransfer.this.exists(p);
                         }
                         return true;
                     }
@@ -159,7 +159,7 @@ public class UploadTransfer extends Transfer {
                             return false;
                         }
                         if(p.attributes.isDirectory()) {
-                            return !exists(p);
+                            return !UploadTransfer.this.exists(p);
                         }
                         return true;
                     }
@@ -169,7 +169,7 @@ public class UploadTransfer extends Transfer {
                 public void prepare(final Path p) {
                     if(p.attributes.isFile()) {
                         // Append to file if size is not zero
-                        p.status.setResume(exists(p) && p.attributes.getSize() > 0);
+                        p.status.setResume(UploadTransfer.this.exists(p) && p.attributes.getSize() > 0);
                     }
 
                     super.prepare(p);
@@ -184,7 +184,7 @@ public class UploadTransfer extends Transfer {
                 }
 
                 public void prepare(final Path p) {
-                    if(exists(p)) {
+                    if(UploadTransfer.this.exists(p)) {
                         final String parent = p.getParent().getAbsolute();
                         final String filename = p.getName();
                         String proposal = filename;
@@ -213,7 +213,7 @@ public class UploadTransfer extends Transfer {
             return new UploadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
                     if(super.accept(p)) {
-                        if(!exists(p)) {
+                        if(!UploadTransfer.this.exists(p)) {
                             return true;
                         }
                     }
@@ -224,7 +224,7 @@ public class UploadTransfer extends Transfer {
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Iterator iter = roots.iterator(); iter.hasNext(); ) {
                 Path root = (Path)iter.next();
-                if(exists(root)) {
+                if(UploadTransfer.this.exists(root)) {
                     // Prompt user to choose a filter
                     TransferAction result = prompt.prompt(this);
                     return this.filter(result); //break out of loop

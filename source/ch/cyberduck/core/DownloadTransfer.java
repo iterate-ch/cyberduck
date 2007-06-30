@@ -67,6 +67,7 @@ public class DownloadTransfer extends Transfer {
 
             // Adjust the download path
             p.setLocal(new Local(p.getLocal().getParent().getAbsolute(), p.getName()));
+
             // Read file size
             if(p.attributes.isFile()) {
                 if(p.attributes.isSymbolicLink()) {
@@ -132,7 +133,7 @@ public class DownloadTransfer extends Transfer {
             return new DownloadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
                     if(p.attributes.isDirectory()) {
-                        return !exists(((Path) p).getLocal());
+                        return !DownloadTransfer.this.exists(((Path) p).getLocal());
                     }
                     return true;
                 }
@@ -150,14 +151,14 @@ public class DownloadTransfer extends Transfer {
                         return false;
                     }
                     if(p.attributes.isDirectory()) {
-                        return !exists(((Path) p).getLocal());
+                        return !DownloadTransfer.this.exists(((Path) p).getLocal());
                     }
                     return true;
                 }
 
                 public void prepare(final Path p) {
                     if(p.attributes.isFile()) {
-                        p.status.setResume(exists(p.getLocal()) && p.getLocal().attributes.getSize() > 0);
+                        p.status.setResume(DownloadTransfer.this.exists(p.getLocal()) && p.getLocal().attributes.getSize() > 0);
                     }
                     super.prepare(p);
                 }
@@ -170,13 +171,17 @@ public class DownloadTransfer extends Transfer {
                 }
 
                 public void prepare(final Path p) {
-                    if(exists(p.getLocal())) {
+                    p.status.setResume(false);
+
+                    super.prepare(p);
+
+                    if(DownloadTransfer.this.exists(p.getLocal())) {
                         final String parent = p.getLocal().getParent().getAbsolute();
                         final String filename = p.getName();
                         String proposal = filename;
                         int no = 0;
                         int index = filename.lastIndexOf(".");
-                        while(exists(p.getLocal())) {
+                        while(p.getLocal().exists()) {
                             no++;
                             if(index != -1 && index != 0) {
                                 proposal = filename.substring(0, index)
@@ -189,24 +194,20 @@ public class DownloadTransfer extends Transfer {
                         }
                         log.info("Changed local name to:" + p.getName());
                     }
-                    p.status.setResume(false);
-
-                    super.prepare(p);
-
                 }
             };
         }
         if(action.equals(TransferAction.ACTION_SKIP)) {
             return new DownloadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
-                    return !exists(((Path) p).getLocal());
+                    return !DownloadTransfer.this.exists(((Path) p).getLocal());
                 }
             };
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Iterator iter = roots.iterator(); iter.hasNext();) {
                 Path root = (Path) iter.next();
-                if(exists(root.getLocal())) {
+                if(DownloadTransfer.this.exists(root.getLocal())) {
                     if(root.getLocal().attributes.isDirectory()) {
                         if(0 == root.getLocal().childs().size()) {
                             // Do not prompt for existing empty directories
