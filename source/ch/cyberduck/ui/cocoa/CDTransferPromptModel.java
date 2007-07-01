@@ -150,6 +150,9 @@ public abstract class CDTransferPromptModel extends NSObject {
      */
     protected abstract PathFilter filter();
 
+    /**
+     * File listing cache for children of the root paths
+     */
     private final Cache cache = new Cache();
 
     /**
@@ -208,14 +211,6 @@ public abstract class CDTransferPromptModel extends NSObject {
             if(item.status.isSkipped()) {
                 return new Integer(NSCell.OffState);
             }
-//            Path parent = item;
-//            do {
-//                parent = (Path)parent.getParent();
-//                if(parent.status.isSkipped()) {
-//                    return new Integer(NSCell.OffState);
-//                }
-//            }
-//            while(this.build().contains(parent));
             return new Integer(NSCell.OnState);
         }
         if(identifier.equals(FILENAME_COLUMN)) {

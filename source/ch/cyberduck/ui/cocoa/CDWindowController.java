@@ -89,8 +89,9 @@ public abstract class CDWindowController extends CDController
     );
 
     /**
-     *
-     * @param runnable
+     * Run the runnable in the background waiting for no lock to acquire
+     * @param runnable The runnable to execute in a secondary Thread
+     * @see java.lang.Thread
      */
     public void background(final BackgroundActionImpl runnable) {
         this.background(runnable, new Object());
@@ -106,7 +107,7 @@ public abstract class CDWindowController extends CDController
      * @see java.lang.Thread
      */
     public void background(final BackgroundActionImpl runnable, final Object lock) {
-        log.debug("background:"+runnable);
+        log.debug("background:"+runnable+","+lock);
         new Thread("Background") {
             public void run() {
                 // Synchronize all background threads to this lock so actions run
