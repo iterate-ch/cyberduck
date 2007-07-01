@@ -162,16 +162,16 @@
 	<target name="nightly">
 		<antcall target="package">
 			<param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
-			<param name="url.changelog" value="http://update.cyberduck.ch/nightly/changelog.html"/>
-			<param name="sparkle.feed" value="http://update.cyberduck.ch/nightly/changelog.rss"/>
+			<param name="url.changelog" value="http://version.cyberduck.ch/nightly/changelog.html"/>
+			<param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
 		</antcall>
 	</target>
 
 	<target name="release">
 		<antcall target="package">
 			<param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
-			<param name="url.changelog" value="http://update.cyberduck.ch/changelog.html"/>
-			<param name="sparkle.feed" value="http://update.cyberduck.ch/changelog.rss"/>
+			<param name="url.changelog" value="http://version.cyberduck.ch/changelog.html"/>
+			<param name="sparkle.feed" value="http://version.cyberduck.ch/changelog.rss"/>
 		</antcall>
 	</target>
 	
