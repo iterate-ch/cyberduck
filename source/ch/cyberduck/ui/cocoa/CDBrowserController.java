@@ -277,25 +277,6 @@ public class CDBrowserController extends CDWindowController
         return null;
     }
 
-    public Object handleSyncScriptCommand(NSScriptCommand command) {
-        log.debug("handleSyncScriptCommand:" + command);
-        if(this.isMounted()) {
-            NSDictionary args = command.evaluatedArguments();
-            final Path path = PathFactory.createPath(this.session,
-                    (String) args.objectForKey("Path"));
-            path.attributes.setType(Path.DIRECTORY_TYPE);
-            Object localObj = args.objectForKey("Local");
-            if(localObj != null) {
-                path.setLocal(new Local((String) localObj));
-            }
-            final Transfer q = new SyncTransfer(path);
-            TransferOptions options = new TransferOptions();
-            options.closeSession = false;
-            q.start(CDTransferPrompt.create(this, q), options);
-        }
-        return null;
-    }
-
     public Object handleDownloadScriptCommand(NSScriptCommand command) {
         log.debug("handleDownloadScriptCommand:" + command);
         if(this.isMounted()) {

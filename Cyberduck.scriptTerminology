@@ -287,30 +287,6 @@
 					</dict>
 				</dict>
 			</dict>
-			<key>Sync</key>
-			<dict>
-				<key>Description</key>
-				<string>Sync folder.</string>
-				<key>Name</key>
-				<string>sync</string>
-				<key>Arguments</key>
-				<dict>
-					<key>Path</key>
-					<dict>
-						<key>Description</key>
-						<string>The remote folder.</string>
-						<key>Name</key>
-						<string>folder</string>
-					</dict>
-					<key>Local</key>
-					<dict>
-						<key>Description</key>
-						<string>The local folder.</string>
-						<key>Name</key>
-						<string>with local folder</string>
-					</dict>
-				</dict>
-			</dict>
 			<key>Goto</key>
 			<dict>
 				<key>Description</key>
