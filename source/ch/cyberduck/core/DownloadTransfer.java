@@ -64,10 +64,6 @@ public class DownloadTransfer extends Transfer {
     private abstract class DownloadTransferFilter extends TransferFilter {
         public void prepare(Path p) {
             super.prepare(p);
-
-            // Adjust the download path
-            p.setLocal(new Local(p.getLocal().getParent().getAbsolute(), p.getName()));
-
             // Read file size
             if(p.attributes.isFile()) {
                 if(p.attributes.isSymbolicLink()) {
@@ -110,7 +106,8 @@ public class DownloadTransfer extends Transfer {
                     && DOWNLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
                 return false;
             }
-            ((Path) child).setLocal(new Local(((Path) child.getParent()).getLocal().getAbsolute(), child.getName()));
+            ((Path) child).setLocal(
+                    new Local(((Path) child.getParent()).getLocal().getAbsolute(), child.getName()));
             return true;
         }
     };
@@ -172,9 +169,6 @@ public class DownloadTransfer extends Transfer {
 
                 public void prepare(final Path p) {
                     p.status.setResume(false);
-
-                    super.prepare(p);
-
                     if(DownloadTransfer.this.exists(p.getLocal())) {
                         final String parent = p.getLocal().getParent().getAbsolute();
                         final String filename = p.getName();
@@ -194,6 +188,7 @@ public class DownloadTransfer extends Transfer {
                         }
                         log.info("Changed local name to:" + p.getName());
                     }
+                    super.prepare(p);
                 }
             };
         }
