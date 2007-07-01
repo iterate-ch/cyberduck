@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  */
 
 import com.enterprisedt.net.ftp.FTPConnectMode;
+import com.ibm.icu.text.IDNA;
+import com.ibm.icu.text.StringPrepParseException;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
@@ -538,7 +540,45 @@ public class Host extends NSObject {
         this.nickname = nickname;
     }
 
+    /**
+     * @return User readable hostname
+     */
     public String getHostname() {
+        return this.getHostname(false);
+    }
+
+    /**
+     * @param punycode Use the ToASCII operation as defined in the IDNA RFC
+     */
+    public String getHostname(boolean punycode) {
+        if(punycode) {
+            if(Preferences.instance().getBoolean("connection.hostname.idn")) {
+                try {
+                    // Convenience function that implements the IDNToASCII operation as defined in
+                    // the IDNA RFC. This operation is done on complete domain names, e.g: "www.example.com".
+                    // It is important to note that this operation can fail. If it fails, then the input
+                    // domain name cannot be used as an Internationalized Domain Name and the application
+                    // should have methods defined to deal with the failure.
+                    // IDNA.DEFAULT Use default options, i.e., do not process unassigned code points
+                    // and do not use STD3 ASCII rules If unassigned code points are found
+                    // the operation fails with ParseException
+                    final String idn = IDNA.convertIDNToASCII(this.hostname, IDNA.DEFAULT).toString();
+                    log.info("IDN hostname:"+idn);
+                    return idn;
+                }
+                catch(StringPrepParseException e) {
+                    log.error("Cannot convert hostname to IDNA:"+e.getMessage());
+                }
+            }
+        }
+        if(Preferences.instance().getBoolean("connection.hostname.idn")) {
+            try {
+                return IDNA.convertIDNToUnicode(this.hostname, IDNA.DEFAULT).toString();
+            }
+            catch(StringPrepParseException e) {
+                log.error("Cannot convert IDN hostname to UNICODE:"+e.getMessage());
+            }
+        }
         return this.hostname;
     }
 
@@ -558,7 +598,7 @@ public class Host extends NSObject {
         this.hostname = hostname;
         if(null == this.login)
             return;
-        this.login.setHostname(hostname);
+        this.login.setHostname(this.hostname);
     }
 
     /**
@@ -712,7 +752,7 @@ public class Host extends NSObject {
      * @return The URL of the remote host including user login hostname and port
      */
     public String getURL() {
-        return this.getProtocol() + "://" + this.getCredentials().getUsername() + "@" + this.getHostname() + ":" + this.getPort();
+        return this.getProtocol() + "://" + this.getCredentials().getUsername() + "@" + this.getHostname(true) + ":" + this.getPort();
     }
 
     public boolean equals(Object other) {

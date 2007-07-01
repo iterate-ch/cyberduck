@@ -225,7 +225,7 @@ public class FTPSession extends Session {
             });
             try {
                 this.FTP.setTimeout(this.timeout());
-                this.FTP.connect(host.getHostname(), host.getPort());
+                this.FTP.connect(host.getHostname(true), host.getPort());
                 if(!this.isConnected()) {
                     return;
                 }

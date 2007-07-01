@@ -141,7 +141,7 @@ public class SFTPSession extends Session {
             }
             this.fireConnectionWillOpenEvent();
             this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getHostname() + "...");
-            SSH = new Connection(this.host.getHostname(), this.host.getPort());
+            SSH = new Connection(this.host.getHostname(true), this.host.getPort());
             try {
                 final int timeout = this.timeout();
                 SSH.connect(verifier, timeout, timeout);

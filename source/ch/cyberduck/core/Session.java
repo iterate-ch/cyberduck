@@ -320,7 +320,7 @@ public abstract class Session extends NSObject {
         else {
             Proxy.clearSOCKS();
         }
-        this.resolver = new Resolver(this.host.getHostname());
+        this.resolver = new Resolver(this.host.getHostname(true));
         this.message(NSBundle.localizedString("Resolving", "Status", "") + " " + host.getHostname() + "...");
         // Try to resolve the hostname first
         this.resolver.resolve();

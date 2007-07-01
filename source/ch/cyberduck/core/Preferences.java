@@ -398,10 +398,12 @@ public abstract class Preferences {
          * Try to resolve the hostname when entered in connection dialog
          */
         defaults.put("connection.hostname.check", String.valueOf(true)); //Check hostname reachability using NSNetworkDiagnostics
+        defaults.put("connection.hostname.idn", String.valueOf(true)); //Convert hostnames to Punycode
         /**
          * Normalize path names
          */
         defaults.put("path.normalize", String.valueOf(true));
+        defaults.put("path.normalize.unicode", String.valueOf(true));
         /**
          * Use the SFTP subsystem or a SCP channel for file transfers over SSH
          */

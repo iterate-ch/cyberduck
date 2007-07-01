@@ -102,7 +102,7 @@ public class FTPSSession extends FTPSession {
             }, this.trustManager);
             try {
                 this.FTP.setTimeout(this.timeout());
-                this.FTP.connect(host.getHostname(), host.getPort());
+                this.FTP.connect(host.getHostname(true), host.getPort());
                 if(!this.isConnected()) {
                     return;
                 }
@@ -111,7 +111,12 @@ public class FTPSSession extends FTPSession {
                 this.message(NSBundle.localizedString("FTP connection opened", "Status", ""));
                 ((FTPSClient) this.FTP).auth();
                 this.login();
-                this.setIdentification(this.FTP.system());
+                try {
+                    this.setIdentification(this.FTP.system());
+                }
+                catch(FTPException e) {
+                    log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
+                }
                 this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.getIdentification());
                 this.fireConnectionDidOpenEvent();
             }
