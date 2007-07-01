@@ -248,9 +248,6 @@
 /* Transfer prompt option. */
 "Overwrite" = "Reescrever";
 
-/* Transfer action for duplicate files */
-"Overwrite" = "A reescrever ficheiro existente";
-
 /* A column in the browser */
 "Owner" = "Proprietário";
 
@@ -393,7 +390,7 @@
 "Upload local file to the remote host" = "Enviar ficheiro local para servidor remoto";
 
 /* Transfer action for duplicate files */
-"Rename" = "Utilizar nome semelhante";
+"Rename" = "Rename";
 
 /* Toolbar item */
 "View" = "Vista";

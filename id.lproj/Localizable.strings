@@ -246,10 +246,7 @@
 "Outline" = "Outline";
 
 /* Transfer prompt option. */
-"Overwrite" = "Overwrite";
-
-/* Transfer action for duplicate files */
-"Overwrite" = "Timpa file yang sudah ada";
+"Overwrite" = "Timpa";
 
 /* A column in the browser */
 "Owner" = "Pemilik";
@@ -393,7 +390,7 @@
 "Upload local file to the remote host" = "Upload file dari lokal ke remote server";
 
 /* Transfer action for duplicate files */
-"Rename" = "Menggunakan nama yang sama";
+"Rename" = "Rename";
 
 /* Toolbar item */
 "View" = "Lihat";

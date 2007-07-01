@@ -246,10 +246,7 @@
 "Outline" = "Outline";
 
 /* Transfer prompt option. */
-"Overwrite" = "Overwrite";
-
-/* Transfer action for duplicate files */
-"Overwrite" = "Létező file felülírása";
+"Overwrite" = "Létező";
 
 /* A column in the browser */
 "Owner" = "Tulajdonos";
@@ -393,7 +390,7 @@
 "Upload local file to the remote host" = "Lokális file feltöltése a kiszolgálóhoz";
 
 /* Transfer action for duplicate files */
-"Rename" = "Használjon hasonló nevet";
+"Rename" = "Rename";
 
 /* Toolbar item */
 "View" = "View";
