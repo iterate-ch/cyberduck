@@ -16,7 +16,7 @@
 /* No comment provided by engineer. */
 "ASCII" = "ASCII";
 
-/* Default preference when attempting to transfer an existing file */
+/* Transfer action for duplicate files */
 "Prompt" = "Perguntar-me o que fazer";
 
 /* No comment provided by engineer. */
@@ -248,7 +248,7 @@
 /* Transfer prompt option. */
 "Overwrite" = "Reescrever";
 
-/* Default preference when attempting to transfer an existing file */
+/* Transfer action for duplicate files */
 "Overwrite" = "A reescrever ficheiro existente";
 
 /* A column in the browser */
@@ -323,8 +323,8 @@
 /* Toolbar item in Transfer Window. */
 "Stop" = "Parar";
 
-/* Default preference when attempting to transfer an existing file */
-"Skip existing file" = "Skip existing file";
+/* Transfer action for duplicate files */
+"Skip" = "Skip";
 
 /* Toolbar item tooltip */
 "Switch Browser View" = "Trocar Vista da janela";
@@ -392,7 +392,7 @@
 /* Toolbar item tooltip */
 "Upload local file to the remote host" = "Enviar ficheiro local para servidor remoto";
 
-/* Default preference when attempting to transfer an existing file */
+/* Transfer action for duplicate files */
 "Rename" = "Utilizar nome semelhante";
 
 /* Toolbar item */
