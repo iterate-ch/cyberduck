@@ -69,12 +69,6 @@
 		"http://trac.cyberduck.ch/newticket/">new ticket</a>
 		describing the missing functionality.</p>
 
-		<p><b>How can I make Cyberduck the default application for
-		FTP URLs?</b><br />
-		You can define Cyberduck as the default protocol handler
-		with <a class="ext-link" href=
-		"http://www.rubicode.com/Software/RCDefaultApp">RCDefaultApp</a>.</p>
-
 		<p><b>How can I access Cyberduck bookmarks with <a class=
 		"ext-link" href=
 		"http://quicksilver.blacktree.com/">Quicksilver</a>?</b><br />
@@ -110,15 +104,9 @@
 		Terminal.app window.)</p>
 
 		<ul>
-			<li>Use small bookmarks in the drawer displaying only the nickname of the bookmark and a 16 pixel sized icon<br />
-			<code>defaults write ch.sudo.cyberduck browser.bookmarkDrawer.smallItems true</code></li>
-			
 			<li>Close bookmark drawer when opening connection<br />
 			<code>defaults write ch.sudo.cyberduck
 			browser.closeDrawer true</code></li>
-
-			<li>When hitting the enter or return key on a file or folder, do not attempt to rename but instead download the file or change the working directory respectively<br />
-			<code>defaults write ch.sudo.cyberduck browser.enterkey.rename false</code></li>
 
 			<li>Don't save bookmarks<br />
 			<code>defaults write ch.sudo.cyberduck favorites.save
@@ -137,6 +125,10 @@
 			<code>defaults write ch.sudo.cyberduck growl.enable
 			false</code></li>
 		</ul>
+
+		<p><b>My preferred editor isn't supported.</b><br />
+		An editor must support the external editor protocol
+		(ODB). It is currently not possible to use an arbitrary editor.</p>
 	</div>
 
 	<div id="footer">
