@@ -62,7 +62,7 @@ public class CDDownloadController extends CDSheetController {
                         PathFactory.createPath(SessionFactory.createSession(host),
                                 host.getDefaultPath())
                 );
-                CDTransferController.instance().startItem(transfer);
+                CDTransferController.instance().startTransfer(transfer);
             }
             catch (MalformedURLException e) {
                 log.error(e.getMessage());

@@ -1,7 +1,5 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.io.BandwidthThrottle;
-
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -19,6 +17,8 @@ import ch.cyberduck.core.io.BandwidthThrottle;
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
+
+import ch.cyberduck.core.io.BandwidthThrottle;
 
 /**
  * @version $Id$

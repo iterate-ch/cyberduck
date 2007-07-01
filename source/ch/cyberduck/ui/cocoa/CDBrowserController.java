@@ -179,8 +179,10 @@ public class CDBrowserController extends CDWindowController
         log.debug("handleGotoScriptCommand:" + command);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
-            CDGotoController c = new CDGotoController(this);
-            c.gotoFolder(this.workdir(), (String) args.objectForKey("Path"));
+            Path path = PathFactory.createPath(this.session,
+                    this.workdir().getAbsolute(),
+                    (String) args.objectForKey("Path"));
+            this.setWorkdir(path);
         }
         return null;
     }
@@ -2605,7 +2607,7 @@ public class CDBrowserController extends CDWindowController
             });
         }
         else {
-            CDTransferController.instance().startItem(transfer);
+            CDTransferController.instance().startTransfer(transfer);
         }
     }
 
@@ -3100,6 +3102,7 @@ public class CDBrowserController extends CDWindowController
                         // Update the status label at the bottom of the browser window
                         statusLabel.setAttributedStringValue(new NSAttributedString(msg,
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
+                        statusLabel.display();
                     }
                 });
             }

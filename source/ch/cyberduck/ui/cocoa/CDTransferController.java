@@ -486,7 +486,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
      *
      * @param transfer
      */
-    public void removeItem(final Transfer transfer) {
+    public void removeTransfer(final Transfer transfer) {
         synchronized(TransferCollection.instance()) {
             TransferCollection.instance().remove(transfer);
             this.reloadData();
@@ -498,7 +498,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
      *
      * @param transfer
      */
-    public void addItem(final Transfer transfer) {
+    public void addTransfer(final Transfer transfer) {
         synchronized(TransferCollection.instance()) {
             TransferCollection.instance().add(transfer);
             final int row = TransferCollection.instance().size()-1;
@@ -511,8 +511,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
     /**
      * @param transfer
      */
-    public void startItem(final Transfer transfer) {
-        this.startItem(transfer, false, false);
+    public void startTransfer(final Transfer transfer) {
+        this.startTransfer(transfer, false, false);
     }
 
     /**
@@ -520,10 +520,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
      * @param resumeRequested
      * @param reloadRequested
      */
-    private void startItem(final Transfer transfer, final boolean resumeRequested, final boolean reloadRequested) {
+    private void startTransfer(final Transfer transfer, final boolean resumeRequested, final boolean reloadRequested) {
         synchronized(TransferCollection.instance()) {
             if(!TransferCollection.instance().contains(transfer)) {
-                this.addItem(transfer);
+                this.addTransfer(transfer);
             }
         }
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
@@ -624,7 +624,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     }
                     if(!hasFailed()) {
                         if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
-                            removeItem(transfer);
+                            removeTransfer(transfer);
                         }
                     }
                     if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
@@ -821,7 +821,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             int i = ((Number) iterator.nextElement()).intValue();
             Transfer transfer = (Transfer) TransferCollection.instance().get(i);
             if(!transfer.isRunning()) {
-                this.startItem(transfer, !transfer.isVirgin(), false);
+                this.startTransfer(transfer, !transfer.isVirgin(), false);
             }
         }
     }
@@ -832,7 +832,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             int i = ((Number) iterator.nextElement()).intValue();
             Transfer transfer = (Transfer) TransferCollection.instance().get(i);
             if(!transfer.isRunning() && !transfer.isQueued()) {
-                this.startItem(transfer, false, true);
+                this.startTransfer(transfer, false, true);
             }
         }
     }

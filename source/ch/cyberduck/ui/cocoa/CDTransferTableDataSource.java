@@ -185,7 +185,7 @@ public class CDTransferTableDataSource extends NSObject {
                         final Transfer q = new DownloadTransfer(
                                 PathFactory.createPath(SessionFactory.createSession(h), file)
                         );
-                        CDTransferController.instance().startItem(q);
+                        CDTransferController.instance().startTransfer(q);
                         return true;
                     }
                 }

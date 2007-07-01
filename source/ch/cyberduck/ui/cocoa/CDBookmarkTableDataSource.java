@@ -209,7 +209,7 @@ public class CDBookmarkTableDataSource extends NSObject {
             final Transfer q = new UploadTransfer(roots);
             // If anything has been added to the queue, then process the queue
             if(q.numberOfRoots() > 0) {
-                CDTransferController.instance().startItem(q);
+                CDTransferController.instance().startTransfer(q);
                 accepted = true;
             }
             return accepted;
