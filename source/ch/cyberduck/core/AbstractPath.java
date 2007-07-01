@@ -1,5 +1,7 @@
 package ch.cyberduck.core;
 
+import com.ibm.icu.text.Normalizer;
+
 import com.apple.cocoa.foundation.NSObject;
 
 import java.io.IOException;
@@ -128,7 +130,7 @@ public abstract class AbstractPath extends NSObject {
     public static String normalize(final String path) {
         String normalized = path;
         if(Preferences.instance().getBoolean("path.normalize")) {
-            while(!normalized.startsWith(DELIMITER)) {
+            while(!normalized.startsWith("\\\\") && !normalized.startsWith(DELIMITER)) {
                 normalized = DELIMITER + normalized;
             }
             while(!normalized.endsWith(DELIMITER)) {
@@ -159,6 +161,9 @@ public abstract class AbstractPath extends NSObject {
                 //Strip any redundant delimiter at the end of the path
                 normalized = normalized.substring(0, normalized.length() - 1);
             }
+        }
+        if(Preferences.instance().getBoolean("path.normalize.unicode")) {
+            normalized = Normalizer.normalize(normalized, Normalizer.NFC);
         }
         // Return the normalized path that we have completed
         return normalized;
