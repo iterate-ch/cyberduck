@@ -30,7 +30,6 @@ import ch.cyberduck.core.LoginCanceledException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Proxy;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 
@@ -83,8 +82,8 @@ public class FTPSession extends Session {
                     features = this.FTP.features();
                 }
             }
-            for(Iterator iter = Arrays.asList(features).iterator(); iter.hasNext(); ) {
-                if("MDTM".equals(((String)iter.next()).trim())) {
+            for(Iterator iter = Arrays.asList(features).iterator(); iter.hasNext();) {
+                if("MDTM".equals(((String) iter.next()).trim())) {
                     return true;
                 }
             }
@@ -102,8 +101,8 @@ public class FTPSession extends Session {
                     features = this.FTP.features();
                 }
             }
-            for(Iterator iter = Arrays.asList(features).iterator(); iter.hasNext(); ) {
-                if("MDTM yyyyMMddHHmmss".equals(((String)iter.next()).trim())) {
+            for(Iterator iter = Arrays.asList(features).iterator(); iter.hasNext();) {
+                if("MDTM yyyyMMddHHmmss".equals(((String) iter.next()).trim())) {
                     return true;
                 }
             }
@@ -121,8 +120,8 @@ public class FTPSession extends Session {
                     features = this.FTP.features();
                 }
             }
-            for(Iterator iter = Arrays.asList(features).iterator(); iter.hasNext(); ) {
-                if("SITE UTIME".equals(((String)iter.next()).trim())) {
+            for(Iterator iter = Arrays.asList(features).iterator(); iter.hasNext();) {
+                if("SITE UTIME".equals(((String) iter.next()).trim())) {
                     return true;
                 }
             }
@@ -139,7 +138,7 @@ public class FTPSession extends Session {
             if(null == syst) {
                 return this.host.getIp();
             }
-            return syst+" ("+this.host.getIp()+")";
+            return syst + " (" + this.host.getIp() + ")";
         }
         catch(UnknownHostException e) {
             return this.host.getHostname();
@@ -226,13 +225,6 @@ public class FTPSession extends Session {
             });
             try {
                 this.FTP.setTimeout(this.timeout());
-                if(Proxy.isSOCKSProxyEnabled()) {
-                    log.info("Using SOCKS Proxy");
-                    FTPClient.initSOCKS(Proxy.getSOCKSProxyPort(), Proxy.getSOCKSProxyHost());
-                }
-                else {
-                    FTPClient.clearSOCKS();
-                }
                 this.FTP.connect(host.getHostname(), host.getPort());
                 if(!this.isConnected()) {
                     return;
@@ -245,7 +237,7 @@ public class FTPSession extends Session {
                     this.setIdentification(this.FTP.system());
                 }
                 catch(FTPException e) {
-                    log.warn(this.host.getHostname()+" does not support the SYST command:"+e.getMessage());
+                    log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
                 }
                 try {
                     this.parser = new FTPParserFactory().createFileEntryParser(this.getIdentification());
@@ -265,7 +257,7 @@ public class FTPSession extends Session {
 
     /**
      * @return The custom encoding specified in the host of this session
-     * or the default encoding if no cusdtom encoding is set
+     *         or the default encoding if no cusdtom encoding is set
      * @see Preferences
      * @see Host
      */

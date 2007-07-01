@@ -22,6 +22,8 @@ import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
+import java.util.Properties;
+
 /**
  * @version $Id$
  */
@@ -49,4 +51,41 @@ public class Proxy {
     public static native int getSOCKSProxyPort();
 
     public static native String getSOCKSProxyUser();
+
+    /**
+     * SOCKS port property name
+     */
+    final private static String SOCKS_PORT = "socksProxyPort";
+
+    /**
+     * SOCKS host property name
+     */
+    final private static String SOCKS_HOST = "socksProxyHost";
+
+    /**
+     * Set up SOCKS v4/v5 proxy settings. This can be used if there
+     * is a SOCKS proxy server in place that must be connected thru.
+     * Note that setting these properties directs <b>all</b> TCP
+     * sockets in this JVM to the SOCKS proxy
+     *
+     * @param port SOCKS proxy port
+     * @param host SOCKS proxy hostname
+     */
+    public static void initSOCKS(int port, String host) {
+        Properties props = System.getProperties();
+        props.put(SOCKS_PORT, ""+port);
+        props.put(SOCKS_HOST, host);
+        System.setProperties(props);
+    }
+
+    /**
+     * Clear SOCKS settings. Note that setting these properties affects
+     * <b>all</b> TCP sockets in this JVM
+     */
+    public static void clearSOCKS() {
+        Properties prop = System.getProperties();
+        prop.remove(SOCKS_HOST);
+        prop.remove(SOCKS_PORT);
+        System.setProperties(prop);
+    }    
 }

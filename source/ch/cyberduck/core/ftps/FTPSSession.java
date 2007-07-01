@@ -18,11 +18,14 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPMessageListener;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCanceledException;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.ftp.FTPSession;
 
 import com.apple.cocoa.foundation.NSBundle;
@@ -99,13 +102,6 @@ public class FTPSSession extends FTPSession {
             }, this.trustManager);
             try {
                 this.FTP.setTimeout(this.timeout());
-                if(Proxy.isSOCKSProxyEnabled()) {
-                    log.info("Using SOCKS Proxy");
-                    FTPClient.initSOCKS(Proxy.getSOCKSProxyPort(), Proxy.getSOCKSProxyHost());
-                }
-                else {
-                    FTPClient.clearSOCKS();
-                }
                 this.FTP.connect(host.getHostname(), host.getPort());
                 if(!this.isConnected()) {
                     return;

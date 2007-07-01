@@ -313,6 +313,13 @@ public abstract class Session extends NSObject {
         for(int i = 0; i < l.length; i++) {
             l[i].connectionWillOpen();
         }
+        if(Proxy.isSOCKSProxyEnabled()) {
+            log.info("Using SOCKS Proxy");
+            Proxy.initSOCKS(Proxy.getSOCKSProxyPort(), Proxy.getSOCKSProxyHost());
+        }
+        else {
+            Proxy.clearSOCKS();
+        }
         this.resolver = new Resolver(this.host.getHostname());
         this.message(NSBundle.localizedString("Resolving", "Status", "") + " " + host.getHostname() + "...");
         // Try to resolve the hostname first
