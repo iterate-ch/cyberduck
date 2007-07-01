@@ -16,7 +16,7 @@
 /* No comment provided by engineer. */
 "ASCII" = "ASCII";
 
-/* Transfer action for duplicate files */
+/* Transfer action for existing files */
 "Prompt" = "Perguntar-me o que fazer";
 
 /* No comment provided by engineer. */
@@ -245,7 +245,7 @@
 /* Toolbar item */
 "Outline" = "Estrutura";
 
-/* Transfer prompt option. */
+/* Transfer action for existing files. */
 "Overwrite" = "Reescrever";
 
 /* A column in the browser */
@@ -287,7 +287,8 @@
 /* Toolbar item in Transfer Window. */
 "Remove" = "Remover";
 
-/* Toolbar item in Transfer Window. */
+/* Toolbar item in Transfer Window.
+   Transfer action for existing files */
 "Resume" = "Continuar";
 
 /* No comment provided by engineer. */
@@ -320,7 +321,7 @@
 /* Toolbar item in Transfer Window. */
 "Stop" = "Parar";
 
-/* Transfer action for duplicate files */
+/* Transfer action for existing files */
 "Skip" = "Skip";
 
 /* Toolbar item tooltip */
@@ -389,7 +390,7 @@
 /* Toolbar item tooltip */
 "Upload local file to the remote host" = "Enviar ficheiro local para servidor remoto";
 
-/* Transfer action for duplicate files */
+/* Transfer action for existing files */
 "Rename" = "Rename";
 
 /* Toolbar item */
