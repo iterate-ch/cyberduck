@@ -202,7 +202,7 @@ public class SCPClient
             if (Character.isDigit(mode.charAt(i)) == false)
                 throw new IllegalArgumentException("Invalid mode.");
 
-        remoteTargetDirectory = remoteTargetDirectory.trim();
+        remoteTargetDirectory = this.escape(remoteTargetDirectory.trim());
         remoteTargetDirectory = (remoteTargetDirectory.length() > 0) ? remoteTargetDirectory : ".";
 
         String cmd = "scp -t -d " + remoteTargetDirectory;
@@ -210,7 +210,7 @@ public class SCPClient
         sess = conn.openSession();
         sess.execCommand(cmd, charsetName);
 
-        return new SCPOutputStream(this, sess, remoteFile, length, mode);
+        return new SCPOutputStream(this, sess, this.escape(remoteFile), length, mode);
     }
 
     /**
