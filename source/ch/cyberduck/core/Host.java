@@ -60,6 +60,10 @@ public class Host extends NSObject {
      */
     private String hostname;
     /**
+     * IDN normalized hostname
+     */
+    private String punycode;
+    /**
      * The given name by the user for the bookmark
      */
     private String nickname;
@@ -551,33 +555,9 @@ public class Host extends NSObject {
      * @param punycode Use the ToASCII operation as defined in the IDNA RFC
      */
     public String getHostname(boolean punycode) {
-        if(punycode) {
-            if(Preferences.instance().getBoolean("connection.hostname.idn")) {
-                try {
-                    // Convenience function that implements the IDNToASCII operation as defined in
-                    // the IDNA RFC. This operation is done on complete domain names, e.g: "www.example.com".
-                    // It is important to note that this operation can fail. If it fails, then the input
-                    // domain name cannot be used as an Internationalized Domain Name and the application
-                    // should have methods defined to deal with the failure.
-                    // IDNA.DEFAULT Use default options, i.e., do not process unassigned code points
-                    // and do not use STD3 ASCII rules If unassigned code points are found
-                    // the operation fails with ParseException
-                    final String idn = IDNA.convertIDNToASCII(this.hostname, IDNA.DEFAULT).toString();
-                    log.info("IDN hostname:"+idn);
-                    return idn;
-                }
-                catch(StringPrepParseException e) {
-                    log.error("Cannot convert hostname to IDNA:"+e.getMessage());
-                }
-            }
-        }
-        if(Preferences.instance().getBoolean("connection.hostname.idn")) {
-            try {
-                return IDNA.convertIDNToUnicode(this.hostname, IDNA.DEFAULT).toString();
-            }
-            catch(StringPrepParseException e) {
-                log.error("Cannot convert IDN hostname to UNICODE:"+e.getMessage());
-            }
+        log.debug("getHostname:"+punycode);
+        if(punycode && Preferences.instance().getBoolean("connection.hostname.idn")) {
+            return this.punycode;
         }
         return this.hostname;
     }
@@ -596,6 +576,23 @@ public class Host extends NSObject {
             }
         }
         this.hostname = hostname;
+        try {
+            // Convenience function that implements the IDNToASCII operation as defined in
+            // the IDNA RFC. This operation is done on complete domain names, e.g: "www.example.com".
+            // It is important to note that this operation can fail. If it fails, then the input
+            // domain name cannot be used as an Internationalized Domain Name and the application
+            // should have methods defined to deal with the failure.
+            // IDNA.DEFAULT Use default options, i.e., do not process unassigned code points
+            // and do not use STD3 ASCII rules If unassigned code points are found
+            // the operation fails with ParseException
+            final String idn = IDNA.convertIDNToASCII(this.hostname, IDNA.DEFAULT).toString();
+            log.info("IDN hostname for "+this.hostname+":"+idn);
+            this.punycode = idn;
+        }
+        catch(StringPrepParseException e) {
+            log.error("Cannot convert hostname to IDNA:"+e.getMessage());
+        }
+
         if(null == this.login)
             return;
         this.login.setHostname(this.hostname);
