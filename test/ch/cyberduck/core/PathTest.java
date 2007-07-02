@@ -35,30 +35,6 @@ public class PathTest extends TestCase {
         super.tearDown();
     }
 
-    public void testClone() throws Exception {
-        ;
-    }
-
-    public void testGetAsDictionary() throws Exception {
-        ;
-    }
-
-    public void testGetParent() throws Exception {
-        ;
-    }
-
-    public void testGetHost() throws Exception {
-        ;
-    }
-
-    public void testGetName() throws Exception {
-        ;
-    }
-
-    public void testGetAbsolute() throws Exception {
-        ;
-    }
-
     public void testNormalize() throws Exception {
         Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")));
         path.setPath("/path/to/remove/..");
@@ -83,20 +59,11 @@ public class PathTest extends TestCase {
         assertEquals( "/path/.to", path.getAbsolute());
     }
 
-    public void testSetGetLocal() throws Exception {
-        ;
-    }
-
-    public void testGetRemote() throws Exception {
-        ;
-    }
-
-    public void testGetExtension() throws Exception {
-        ;
-    }
-
-    public void testGetSession() throws Exception {
-        ;
+    public void test1067() throws Exception {
+        Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")));
+        path.setPath("\\\\directory");
+        assertEquals("\\\\directory", path.getAbsolute());
+        assertEquals("/", path.getParent().getAbsolute());
     }
 
     public static Test suite() {
