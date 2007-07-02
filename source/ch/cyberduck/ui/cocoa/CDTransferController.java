@@ -18,12 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.enterprisedt.net.ftp.FTPTransferType;
+
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
-import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -1066,6 +1069,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     if(!transfer.isRunning() && !transfer.isQueued() && !transfer.isComplete() && !transfer.isVirgin() ) {
                         if(transfer.getSession() instanceof SFTPSession) {
                             return Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP);
+                        }
+                        if(transfer.getSession() instanceof FTPSession) {
+                            return !Preferences.instance().getProperty("ftp.transfermode").equals(
+                                    FTPTransferType.ASCII.toString());
                         }
                         return true;
                     }
