@@ -556,14 +556,18 @@ public class CDBrowserController extends CDWindowController
             // Delay for later invocation to make sure this is displayed as the last status message
             this.invoke(new Runnable() {
                 public void run() {
-                    statusLabel.setAttributedStringValue(new NSAttributedString(
-                            browser.numberOfRows() + " " + NSBundle.localizedString("files", ""),
-                            TRUNCATE_MIDDLE_ATTRIBUTES));
-                    statusLabel.display();
+                    CDBrowserController.this.displayStatus();
                 }
             });
         }
         this.setSelectedPaths(selected);
+    }
+
+    private void displayStatus() {
+        statusLabel.setAttributedStringValue(new NSAttributedString(
+                this.getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", ""),
+                TRUNCATE_MIDDLE_ATTRIBUTES));
+        statusLabel.display();
     }
 
     /**
@@ -2605,7 +2609,7 @@ public class CDBrowserController extends CDWindowController
                 }
 
                 public void cleanup() {
-                    ;
+                    CDBrowserController.this.displayStatus();
                 }
             });
         }
