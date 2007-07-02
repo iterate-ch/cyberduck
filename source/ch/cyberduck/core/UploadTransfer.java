@@ -66,14 +66,18 @@ public class UploadTransfer extends Transfer {
             return UploadTransfer.this.exists(((Path) file).getLocal());
         }
 
-        public void prepare(Path file) {
-            super.prepare(file);
-
-            if(file.attributes.isFile()) {
+        public void prepare(Path p) {
+            super.prepare(p);
+            if(p.attributes.isFile()) {
                 // Read file size
-                size += file.getLocal().attributes.getSize();
-                if(file.status.isResume()) {
-                    transferred += file.attributes.getSize();
+                size += p.getLocal().attributes.getSize();
+                if(p.status.isResume()) {
+                    transferred += p.attributes.getSize();
+                }
+            }
+            if(p.attributes.isDirectory()) {
+                if(!UploadTransfer.this.exists(p)) {
+                    p.cache().put(p, AttributedList.EMPTY_LIST);
                 }
             }
         }
@@ -145,8 +149,9 @@ public class UploadTransfer extends Transfer {
                 }
 
                 public void prepare(final Path p) {
-                    p.status.setResume(false);
-
+                    if(p.attributes.isFile()) {
+                        p.status.setResume(false);
+                    }
                     super.prepare(p);
                 }
 
@@ -173,7 +178,6 @@ public class UploadTransfer extends Transfer {
                         // Append to file if size is not zero
                         p.status.setResume(UploadTransfer.this.exists(p) && p.attributes.getSize() > 0);
                     }
-
                     super.prepare(p);
                 }
             };
@@ -205,8 +209,9 @@ public class UploadTransfer extends Transfer {
                         }
                         log.info("Changed local name to:" + p.getName());
                     }
-                    p.status.setResume(false);
-
+                    if(p.attributes.isFile()) {
+                        p.status.setResume(false);
+                    }
                     super.prepare(p);
                 }
             };

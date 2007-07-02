@@ -144,7 +144,9 @@ public class DownloadTransfer extends Transfer {
                             log.warn("Failed to move " + p.getLocal().getAbsolute() + " to Trash");
                         }
                     }
-                    p.status.setResume(false);
+                    if(p.attributes.isFile()) {
+                        p.status.setResume(false);
+                    }
                     super.prepare(p);
                 }
             };
@@ -176,7 +178,9 @@ public class DownloadTransfer extends Transfer {
                 }
 
                 public void prepare(final Path p) {
-                    p.status.setResume(false);
+                    if(p.attributes.isFile()) {
+                        p.status.setResume(false);
+                    }
                     if(DownloadTransfer.this.exists(p.getLocal())) {
                         final String parent = p.getLocal().getParent().getAbsolute();
                         final String filename = p.getName();
