@@ -1243,7 +1243,7 @@ ko.lproj/Transfer.nib/keyedobjects.nib -text
 ko.lproj/Transfer.strings -text
 lib/commons-net-1.4.1.jar -text
 lib/ext/junit.jar -text
-lib/icu4j_3_6_1.jar -text
+lib/icu4j-3.6.1.jar -text
 lib/jakarta-oro-2.0.8.jar -text
 lib/log4j-1.2.13.jar -text
 nl.lproj/Alert.nib/classes.nib -text
