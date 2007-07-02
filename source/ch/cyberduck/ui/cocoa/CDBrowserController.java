@@ -2579,7 +2579,9 @@ public class CDBrowserController extends CDWindowController
             });
             this.background(new BackgroundAction() {
                 public void run() {
-                    transfer.start(CDTransferPrompt.create(CDBrowserController.this, transfer));
+                    TransferOptions options = new TransferOptions();
+                    options.closeSession = false;
+                    transfer.start(CDTransferPrompt.create(CDBrowserController.this, transfer), options);
                 }
 
                 public void cleanup() {
