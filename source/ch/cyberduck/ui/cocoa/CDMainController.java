@@ -365,9 +365,33 @@ public class CDMainController extends CDController {
      */
     public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
         log.debug("applicationShouldHandleReopen");
-        if(this.orderedBrowsers().count() == 0 && this.orderedTransfers().count() == 0) {
+        // While an application is open, the Dock icon has a symbol below it.
+        // When a user clicks an open application’s icon in the Dock, the application
+        // becomes active and all open unminimized windows are brought to the front;
+        // minimized document windows remain in the Dock. If there are no unminimized
+        // windows when the user clicks the Dock icon, the last minimized window should
+        // be expanded and made active. If no documents are open, the application should
+        // open a new window. (If your application is not document-based, display the
+        // application’s main window.)
+        final NSArray browsers = this.orderedBrowsers();
+        if(browsers.count() == 0 && this.orderedTransfers().count() == 0) {
             this.openDefaultBookmark(this.newDocument());
         }
+        java.util.Enumeration enumerator = browsers.objectEnumerator();
+        NSWindow miniaturized = null;
+        while(enumerator.hasMoreElements()) {
+            CDBrowserController controller = (CDBrowserController) enumerator.nextElement();
+            if(!controller.window().isMiniaturized()) {
+                return false;
+            }
+            if(null == miniaturized) {
+                miniaturized = controller.window();
+            }
+        }
+        if(null == miniaturized) {
+            return false;
+        }
+        miniaturized.deminiaturize(null);
         return false;
     }
 
@@ -644,7 +668,7 @@ public class CDMainController extends CDController {
      */
     public CDBrowserController newDocument(boolean force) {
         log.debug("newDocument");
-        NSArray browsers = this.orderedBrowsers();
+        final NSArray browsers = this.orderedBrowsers();
         if(!force) {
             java.util.Enumeration enumerator = browsers.objectEnumerator();
             while(enumerator.hasMoreElements()) {
@@ -695,11 +719,9 @@ public class CDMainController extends CDController {
         int c = orderedWindows.count();
         NSMutableArray orderedDocs = new NSMutableArray();
         for(int i = 0; i < c; i++) {
-            if(((NSWindow) orderedWindows.objectAtIndex(i)).isVisible()) {
-                Object delegate = ((NSWindow) orderedWindows.objectAtIndex(i)).delegate();
-                if((delegate != null) && (delegate instanceof CDBrowserController)) {
-                    orderedDocs.addObject(delegate);
-                }
+            Object delegate = ((NSWindow) orderedWindows.objectAtIndex(i)).delegate();
+            if((delegate != null) && (delegate instanceof CDBrowserController)) {
+                orderedDocs.addObject(delegate);
             }
         }
         return orderedDocs;
