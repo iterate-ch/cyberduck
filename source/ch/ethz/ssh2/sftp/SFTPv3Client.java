@@ -779,7 +779,7 @@ public class SFTPv3Client
 		}
 	}
 
-	private final byte[] openDirectory(String path) throws IOException
+	public final SFTPv3FileHandle openDirectory(String path) throws IOException
 	{
 		int req_id = generateNextRequestID();
 
@@ -812,8 +812,7 @@ public class SFTPv3Client
 				debug.flush();
 			}
 
-			byte[] handle = tr.readByteString();
-			return handle;
+			return new SFTPv3FileHandle(this, tr.readByteString());
 		}
 
 		if (t != Packet.SSH_FXP_STATUS)
@@ -929,7 +928,7 @@ public class SFTPv3Client
 	 */
 	public Vector ls(String dirName) throws IOException
 	{
-		byte[] handle = openDirectory(dirName);
+		byte[] handle = openDirectory(dirName).fileHandle;
 		Vector result = scanDirectory(handle);
 		closeHandle(handle);
 		return result;
@@ -1014,7 +1013,7 @@ public class SFTPv3Client
 		expectStatusOKMessage(req_id);
 	}
 
-	/**
+    /**
 	 * Open a file for reading.
 	 * 
 	 * @param fileName See the {@link SFTPv3Client comment} for the class for more details.

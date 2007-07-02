@@ -667,24 +667,31 @@ public class SFTPPath extends Path {
                     this.upload(out, in, throttle, listener);
                 }
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    log.info("Updating timestamp");
-                    SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
-                    int t = (int) (this.getLocal().attributes.getModificationDate() / 1000);
-                    // We must both set the accessed and modified time
-                    // See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
-                    attrs.atime = new Integer(t);
-                    attrs.mtime = new Integer(t);
-                    try {
-                        if(null == handle) {
-                            handle = session.sftp().openFileRW(this.getAbsolute());
+                    if(this.attributes.isFile()) {
+                        log.info("Updating timestamp");
+                        SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
+                        int t = (int) (this.getLocal().attributes.getModificationDate() / 1000);
+                        // We must both set the accessed and modified time
+                        // See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
+                        attrs.atime = new Integer(t);
+                        attrs.mtime = new Integer(t);
+                        try {
+                            if(null == handle) {
+                                if(this.attributes.isFile()) {
+                                    handle = session.sftp().openFileRW(this.getAbsolute());
+                                }
+//                            if(this.attributes.isDirectory()) {
+//                                handle = session.sftp().openDirectory(this.getAbsolute());
+//                            }
+                            }
+                            session.sftp().fsetstat(handle, attrs);
                         }
-                        session.sftp().fsetstat(handle, attrs);
-                    }
-                    catch(SFTPException e) {
-                        // We might not be able to change the attributes if we are
-                        // not the owner of the file; but then we still want to proceed as we
-                        // might have group write privileges
-                        log.warn(e.getMessage());
+                        catch(SFTPException e) {
+                            // We might not be able to change the attributes if we are
+                            // not the owner of the file; but then we still want to proceed as we
+                            // might have group write privileges
+                            log.warn(e.getMessage());
+                        }
                     }
                 }
                 this.getParent().invalidate();
