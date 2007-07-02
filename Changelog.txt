@@ -16,6 +16,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] Set the default protocol helper application for FTP and SFTP URLs [#1049]
 - [Feature] Setting default permissions for folders [#77]
 - [Feature] Notes for bookmarks [#67]
+- [Feature] Support for international domain names (IDN) [#1133]
 - [Bugfix] Resolve Alias files to upload [#859]
 - [Bugfix] Subsequent type-ahead selection misbehaving [#896] 
 
