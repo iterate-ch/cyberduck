@@ -287,6 +287,30 @@
 					</dict>
 				</dict>
 			</dict>
+			<key>Sync</key>
+			<dict>
+				<key>Description</key>
+				<string>Sync folder.</string>
+				<key>Name</key>
+				<string>sync</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>Description</key>
+						<string>The remote folder.</string>
+						<key>Name</key>
+						<string>folder</string>
+					</dict>
+					<key>Local</key>
+					<dict>
+						<key>Description</key>
+						<string>The local folder.</string>
+						<key>Name</key>
+						<string>with local folder</string>
+					</dict>
+				</dict>
+			</dict>
 			<key>Goto</key>
 			<dict>
 				<key>Description</key>
@@ -299,6 +323,30 @@
 					<dict>
 						<key>Description</key>
 						<string>The folder.</string>
+						<key>Name</key>
+						<string>to</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>Rename</key>
+			<dict>
+				<key>Description</key>
+				<string>Rename file.</string>
+				<key>Name</key>
+				<string>rename</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>Description</key>
+						<string>The file or folder.</string>
+						<key>Name</key>
+						<string>item</string>
+					</dict>
+					<key>Name</key>
+					<dict>
+						<key>Description</key>
+						<string>The target name.</string>
 						<key>Name</key>
 						<string>to</string>
 					</dict>

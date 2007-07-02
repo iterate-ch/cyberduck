@@ -144,7 +144,7 @@ public class CDBrowserController extends CDWindowController
 
     public Object handleDisconnectScriptCommand(NSScriptCommand command) {
         log.debug("handleDisconnectScriptCommand:" + command);
-        this.disconnectButtonClicked(null);
+        this.disconnect();
         return null;
     }
 
@@ -179,23 +179,21 @@ public class CDBrowserController extends CDWindowController
         log.debug("handleGotoScriptCommand:" + command);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
-            Path path = PathFactory.createPath(this.session,
-                    this.workdir().getAbsolute(),
-                    (String) args.objectForKey("Path"));
-            this.setWorkdir(path);
+            CDGotoController c = new CDGotoController(this);
+            c.gotoFolder(this.workdir(), (String) args.objectForKey("Path"));
         }
         return null;
     }
 
-    public Object handleMoveScriptCommand(NSScriptCommand command) {
-        log.debug("handleMoveScriptCommand:" + command);
+    public Object handleRenameScriptCommand(NSScriptCommand command) {
+        log.debug("handleRenameScriptCommand:" + command);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
-            String from = (String) args.objectForKey("From");
+            String from = (String) args.objectForKey("Path");
             if(!from.startsWith(Path.DELIMITER)) {
                 from = this.workdir().getAbsolute() + Path.DELIMITER + from;
             }
-            String to = (String) args.objectForKey("To");
+            String to = (String) args.objectForKey("Name");
             if(!to.startsWith(Path.DELIMITER)) {
                 to = this.workdir().getAbsolute() + Path.DELIMITER + to;
             }
@@ -277,6 +275,23 @@ public class CDBrowserController extends CDWindowController
         return null;
     }
 
+    public Object handleSyncScriptCommand(NSScriptCommand command) {
+        log.debug("handleSyncScriptCommand:" + command);
+        if(this.isMounted()) {
+            NSDictionary args = command.evaluatedArguments();
+            final Path path = PathFactory.createPath(this.session,
+                    (String) args.objectForKey("Path"));
+            path.attributes.setType(Path.DIRECTORY_TYPE);
+            Object localObj = args.objectForKey("Local");
+            if(localObj != null) {
+                path.setLocal(new Local((String) localObj));
+            }
+            final Transfer q = new SyncTransfer(path);
+            this.transfer(q, true);
+        }
+        return null;
+    }
+
     public Object handleDownloadScriptCommand(NSScriptCommand command) {
         log.debug("handleDownloadScriptCommand:" + command);
         if(this.isMounted()) {
@@ -300,9 +315,7 @@ public class CDBrowserController extends CDWindowController
                 path.setLocal(new Local(path.getLocal().getParent().getAbsolute(), (String) nameObj));
             }
             final Transfer q = new DownloadTransfer(path);
-            TransferOptions options = new TransferOptions();
-            options.closeSession = false;
-            q.start(CDTransferPrompt.create(this, q), options);
+            this.transfer(q, true);
         }
         return null;
     }
@@ -329,9 +342,7 @@ public class CDBrowserController extends CDWindowController
                 path.setPath(this.workdir().getAbsolute(), (String) nameObj);
             }
             final Transfer q = new UploadTransfer(path);
-            TransferOptions options = new TransferOptions();
-            options.closeSession = false;
-            q.start(CDTransferPrompt.create(this, q), options);
+            this.transfer(q, true);
         }
         return null;
     }
@@ -2552,7 +2563,16 @@ public class CDBrowserController extends CDWindowController
      * @see CDTransferController
      */
     protected void transfer(final Transfer transfer) {
-        if(transfer.getSession().getMaxConnections() == 1) {
+        this.transfer(transfer, transfer.getSession().getMaxConnections() == 1);
+    }
+
+    /**
+     * 
+     * @param transfer
+     * @param useBrowserConnection
+     */
+    protected void transfer(final Transfer transfer, boolean useBrowserConnection) {
+        if(useBrowserConnection) {
             final TransferListener l;
             transfer.addListener(l = new TransferAdapter() {
                 public void transferDidEnd() {
@@ -2639,15 +2659,7 @@ public class CDBrowserController extends CDWindowController
             this.interrupt();
         }
         else {
-            this.background(new BackgroundAction() {
-                public void run() {
-                    unmount(false);
-                }
-
-                public void cleanup() {
-                    ;
-                }
-            });
+            this.disconnect();
         }
     }
 
@@ -3302,6 +3314,21 @@ public class CDBrowserController extends CDWindowController
             });
         }
         this.interrupted = true;
+    }
+
+    /**
+     * Unmount this session
+     */
+    public void disconnect() {
+        this.background(new BackgroundAction() {
+            public void run() {
+                unmount(false);
+            }
+
+            public void cleanup() {
+                ;
+            }
+        });
     }
 
     /**

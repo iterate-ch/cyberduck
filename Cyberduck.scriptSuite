@@ -79,6 +79,8 @@
 					<string>handleListScriptCommand:</string>
 					<key>Goto</key>
 					<string>handleGotoScriptCommand:</string>
+					<key>Rename</key>
+					<string>handleRenameScriptCommand:</string>
 					<key>CreateFolder</key>
 					<string>handleCreateFolderScriptCommand:</string>
 					<key>CreateFile</key>
@@ -93,6 +95,8 @@
 					<string>handleDownloadScriptCommand:</string>
 					<key>Upload</key>
 					<string>handleUploadScriptCommand:</string>
+					<key>Sync</key>
+					<string>handleSyncScriptCommand:</string>
 				</dict>
 			</dict>
 		</dict>
@@ -336,6 +340,30 @@
 					</dict>
 				</dict>
 			</dict>
+			<key>Sync</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>SyNc</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PaTh</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+					<key>Local</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>LoAl</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+				</dict>
+			</dict>
 			<key>Refresh</key>
 			<dict>
 				<key>AppleEventCode</key>
@@ -378,6 +406,32 @@
 					<dict>
 						<key>AppleEventCode</key>
 						<string>PaTh</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+				</dict>
+			</dict>
+			<key>Rename</key>
+			<dict>
+				<key>AppleEventCode</key>
+				<string>MoVe</string>
+				<key>CommandClass</key>
+				<string>NSScriptCommand</string>
+				<key>Arguments</key>
+				<dict>
+					<key>Path</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>PaTh</string>
+						<key>Type</key>
+						<string>NSString</string>
+					</dict>
+					<key>Name</key>
+					<dict>
+						<key>AppleEventCode</key>
+						<string>NaMe</string>
+						<key>Optional</key>
+						<string>Yes</string>
 						<key>Type</key>
 						<string>NSString</string>
 					</dict>
