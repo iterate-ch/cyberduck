@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.io.BandwidthThrottle;
 
+import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
@@ -136,6 +138,12 @@ public class DownloadTransfer extends Transfer {
                 }
 
                 public void prepare(final Path p) {
+                    if(DownloadTransfer.this.exists(p.getLocal())) {
+                        if(0 > NSWorkspace.sharedWorkspace().performFileOperation(NSWorkspace.RecycleOperation,
+                                p.getLocal().getParent().getAbsolute(), "", new NSArray(p.getLocal().getName()))) {
+                            log.warn("Failed to move " + p.getLocal().getAbsolute() + " to Trash");
+                        }
+                    }
                     p.status.setResume(false);
                     super.prepare(p);
                 }
