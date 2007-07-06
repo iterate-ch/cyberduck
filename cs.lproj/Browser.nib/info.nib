@@ -9,11 +9,11 @@
 		<key>1058</key>
 		<string>794 665 193 118 0 0 1920 1178 </string>
 		<key>1189</key>
-		<string>447 464 90 66 0 0 1024 746 </string>
+		<string>915 770 90 66 0 0 1920 1178 </string>
 		<key>511</key>
 		<string>620 751 680 103 0 0 1920 1178 </string>
 		<key>896</key>
-		<string>383 200 227 536 0 0 1024 746 </string>
+		<string>846 535 227 536 0 0 1920 1178 </string>
 		<key>953</key>
 		<string>166 713 194 332 0 0 1920 1178 </string>
 	</dict>
@@ -22,6 +22,6 @@
 	<key>IBOldestOS</key>
 	<integer>3</integer>
 	<key>IBSystem Version</key>
-	<string>8P135</string>
+	<string>8R218</string>
 </dict>
 </plist>
