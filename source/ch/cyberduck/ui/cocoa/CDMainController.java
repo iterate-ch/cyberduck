@@ -44,13 +44,6 @@ import java.net.MalformedURLException;
 public class CDMainController extends CDController {
     private static Logger log = Logger.getLogger(CDMainController.class);
 
-    static {
-        BasicConfigurator.configure();
-        Logger.getRootLogger().setLevel(Level.toLevel(
-                Preferences.instance().getProperty("logging")));
-        log.debug("Logger configured.");
-    }
-
     public void awakeFromNib() {
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("applicationShouldSleep", new Class[]{Object.class}),

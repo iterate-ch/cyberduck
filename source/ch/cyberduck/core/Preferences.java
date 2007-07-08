@@ -29,6 +29,8 @@ import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
 
 import java.io.File;
 import java.util.HashMap;
@@ -48,6 +50,9 @@ public abstract class Preferences {
 
     private Map defaults;
 
+    /**
+     * TTL for DNS queries
+     */
     static {
         System.setProperty("networkaddress.cache.ttl", "10");
         System.setProperty("networkaddress.cache.negative.ttl", "5");
@@ -144,6 +149,11 @@ public abstract class Preferences {
          * The logging level (DEBUG, INFO, WARN, ERROR)
          */
         defaults.put("logging", "ERROR");
+
+        BasicConfigurator.configure();
+        Logger.getRootLogger().setLevel(Level.toLevel(
+                this.getProperty("logging")));
+
         /**
          * How many times the application was launched
          */

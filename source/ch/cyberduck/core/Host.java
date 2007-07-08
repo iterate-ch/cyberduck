@@ -555,7 +555,6 @@ public class Host extends NSObject {
      * @param punycode Use the ToASCII operation as defined in the IDNA RFC
      */
     public String getHostname(boolean punycode) {
-        log.debug("getHostname:"+punycode);
         if(punycode && Preferences.instance().getBoolean("connection.hostname.idn")) {
             return this.punycode;
         }
