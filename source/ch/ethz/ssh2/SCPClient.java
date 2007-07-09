@@ -210,7 +210,7 @@ public class SCPClient
         sess = conn.openSession();
         sess.execCommand(cmd, charsetName);
 
-        return new SCPOutputStream(this, sess, this.escape(remoteFile), length, mode);
+        return new SCPOutputStream(this, sess, remoteFile, length, mode);
     }
 
     /**
