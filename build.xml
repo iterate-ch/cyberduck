@@ -272,7 +272,7 @@
 			   keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
 			   passphrase="">
 		</scp>
-		<scp file="${build}/changelog.rss"
+		<scp file="${build}/changelog.html"
 			   todir="dkocher@version.cyberduck.ch:/home/groups/c/cy/cyberduck/htdocs/"
 			   keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
 			   passphrase="">
