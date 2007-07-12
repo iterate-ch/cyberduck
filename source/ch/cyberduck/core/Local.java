@@ -18,16 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import glguerin.io.FileForker;
-import glguerin.io.Pathname;
-import glguerin.io.imp.mac.macosx.MacOSXForker;
-
-import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDate;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSPathUtilities;
-
+import glguerin.io.FileForker;
+import glguerin.io.Pathname;
+import glguerin.io.imp.mac.macosx.MacOSXForker;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -36,7 +33,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Iterator;
 
 /**
