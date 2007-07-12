@@ -303,17 +303,19 @@ public abstract class Path extends AbstractPath {
     public void setLocal(Local file) {
         if(null != file) {
             if(file.attributes.isSymbolicLink()) {
-                /**
-                 * A canonical pathname is both absolute and unique.  The precise
-                 * definition of canonical form is system-dependent.  This method first
-                 * converts this pathname to absolute form if necessary, as if by invoking the
-                 * {@link #getAbsolutePath} method, and then maps it to its unique form in a
-                 * system-dependent way.  This typically involves removing redundant names
-                 * such as <tt>"."</tt> and <tt>".."</tt> from the pathname, resolving
-                 * symbolic links
-                 */
-                this.local = new Local(file.getSymbolicLinkPath());
-                return;
+                if(null != file.getSymbolicLinkPath()) {
+                    /**
+                     * A canonical pathname is both absolute and unique.  The precise
+                     * definition of canonical form is system-dependent.  This method first
+                     * converts this pathname to absolute form if necessary, as if by invoking the
+                     * {@link #getAbsolutePath} method, and then maps it to its unique form in a
+                     * system-dependent way.  This typically involves removing redundant names
+                     * such as <tt>"."</tt> and <tt>".."</tt> from the pathname, resolving
+                     * symbolic links
+                     */
+                    this.local = new Local(file.getSymbolicLinkPath());
+                    return;
+                }
             }
         }
         this.local = file;

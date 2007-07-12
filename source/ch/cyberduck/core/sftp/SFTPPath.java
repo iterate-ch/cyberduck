@@ -127,16 +127,22 @@ public class SFTPPath extends Path {
                         p.attributes.setModificationDate(Long.parseLong(f.attributes.mtime.toString()) * 1000L);
                         p.attributes.setAccessedDate(Long.parseLong(f.attributes.atime.toString()) * 1000L);
                         if(f.attributes.isSymlink()) {
-                            String target = session.sftp().readLink(p.getAbsolute());
-                            if(!target.startsWith("/")) {
-                                target = Path.normalize(this.getAbsolute() + Path.DELIMITER + target);
+                            try {
+                                String target = session.sftp().readLink(p.getAbsolute());
+                                if(!target.startsWith("/")) {
+                                    target = Path.normalize(this.getAbsolute() + Path.DELIMITER + target);
+                                }
+                                p.setSymbolicLinkPath(target);
+                                SFTPv3FileAttributes attr = session.sftp().stat(target);
+                                if(attr.isDirectory()) {
+                                    p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                                }
+                                else if(attr.isRegularFile()) {
+                                    p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                                }
                             }
-                            p.setSymbolicLinkPath(target);
-                            SFTPv3FileAttributes attr = session.sftp().stat(target);
-                            if(attr.isDirectory()) {
-                                p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
-                            }
-                            else if(attr.isRegularFile()) {
+                            catch(IOException e) {
+                                log.warn("Cannot read symbolic link target of "+p.getAbsolute()+":"+e.getMessage());
                                 p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                             }
                         }
