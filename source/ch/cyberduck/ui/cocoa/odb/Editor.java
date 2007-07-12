@@ -22,6 +22,7 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDController;
 import ch.cyberduck.ui.cocoa.growl.Growl;
@@ -155,6 +156,12 @@ public class Editor extends CDController {
             public void cleanup() {
                 if(path.status.isComplete()) {
                     path.getSession().message(NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
+                    Permission permissions = path.getLocal().attributes.getPermission();
+                    if(null != permissions) {
+                        permissions.getOwnerPermissions()[Permission.READ] = true;
+                        permissions.getOwnerPermissions()[Permission.WRITE] = true;
+                        path.getLocal().writePermissions(permissions, false);
+                    }
                     // Important, should always be run on the main thread; otherwise applescript crashes
                     edit(bundleIdentifier);
                 }
