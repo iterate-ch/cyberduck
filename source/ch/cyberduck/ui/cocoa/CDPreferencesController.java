@@ -1627,7 +1627,12 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     private void configureDefaultProtocolHandlerCombobox(NSPopUpButton defaultProtocolHandlerCombobox, String protocol) {
-        String defaultHandler = URLSchemeHandlerConfiguration.instance().getDefaultHandlerForURLScheme(protocol);
+        final String defaultHandler = URLSchemeHandlerConfiguration.instance().getDefaultHandlerForURLScheme(protocol);
+        if(null == defaultHandler) {
+            defaultProtocolHandlerCombobox.addItem(NSBundle.localizedString("Unknown", ""));
+            defaultProtocolHandlerCombobox.setEnabled(false);
+            return;
+        }
         log.debug("Default Protocol Handler for "+protocol+":"+defaultHandler);
         final String[] bundleIdentifiers = URLSchemeHandlerConfiguration.instance().getAllHandlersForURLScheme(protocol);
         for(int i = 0; i < bundleIdentifiers.length; i++) {
@@ -1694,6 +1699,12 @@ public class CDPreferencesController extends CDWindowController {
      */
     public void setDefaultDownloadThrottleCombobox(NSPopUpButton defaultDownloadThrottleCombobox) {
         this.defaultDownloadThrottleCombobox = defaultDownloadThrottleCombobox;
+        NSSelector selectItemWithTagSelector
+                = new NSSelector("selectItemWithTag", new Class[]{int.class});
+        if(!selectItemWithTagSelector.implementedByClass(NSPopUpButton.class)) {
+            this.defaultDownloadThrottleCombobox.setEnabled(false);
+            return;
+        }
         this.defaultDownloadThrottleCombobox.setTarget(this);
         this.defaultDownloadThrottleCombobox.setAction(new NSSelector("defaultDownloadThrottleComboboxClicked", new Class[]{NSPopUpButton.class}));
         float bandwidth = (int)Preferences.instance().getFloat("queue.download.bandwidth.bytes");
@@ -1723,6 +1734,12 @@ public class CDPreferencesController extends CDWindowController {
      */
     public void setDefaultUploadThrottleCombobox(NSPopUpButton defaultUploadThrottleCombobox) {
         this.defaultUploadThrottleCombobox = defaultUploadThrottleCombobox;
+        NSSelector selectItemWithTagSelector
+                = new NSSelector("selectItemWithTag", new Class[]{int.class});
+        if(!selectItemWithTagSelector.implementedByClass(NSPopUpButton.class)) {
+            this.defaultUploadThrottleCombobox.setEnabled(false);
+            return;
+        }
         this.defaultUploadThrottleCombobox.setTarget(this);
         this.defaultUploadThrottleCombobox.setAction(new NSSelector("defaultUploadThrottleComboboxClicked", new Class[]{NSPopUpButton.class}));
         float bandwidth = (int)Preferences.instance().getFloat("queue.upload.bandwidth.bytes");
