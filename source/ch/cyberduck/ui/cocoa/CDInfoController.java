@@ -293,7 +293,7 @@ public class CDInfoController extends CDWindowController {
             this.sizeButton.setEnabled(file.attributes.isDirectory());
             this.updateSize();
             this.initPermissionsCheckbox(false);
-            Permission permission = Permission.EMPTY;
+            Permission permission = null;
             for(Iterator i = files.iterator(); i.hasNext();) {
                 permission = ((AbstractPath) i.next()).attributes.getPermission();
                 log.debug("Permission:" + permission);
