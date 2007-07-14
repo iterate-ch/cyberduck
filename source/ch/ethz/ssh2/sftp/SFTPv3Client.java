@@ -1477,7 +1477,7 @@ public class SFTPv3Client
 		checkHandleValidAndOpen(handle);
 
 		if ((len > 32768) || (len <= 0))
-			throw new IllegalArgumentException("invalid len argument");
+			throw new IOException("invalid len argument");
 
 		int req_id = generateNextRequestID();
 
