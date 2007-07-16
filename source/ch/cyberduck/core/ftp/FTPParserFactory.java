@@ -20,28 +20,22 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.ftp.parser.EPLFFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.NetwareFTPEntryParser;
+import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 
 import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
-import org.apache.commons.net.ftp.parser.CompositeFileEntryParser;
-import org.apache.commons.net.ftp.parser.FTPFileEntryParserFactory;
-import org.apache.commons.net.ftp.parser.MVSFTPEntryParser;
-import org.apache.commons.net.ftp.parser.NTFTPEntryParser;
-import org.apache.commons.net.ftp.parser.OS2FTPEntryParser;
-import org.apache.commons.net.ftp.parser.OS400FTPEntryParser;
-import org.apache.commons.net.ftp.parser.ParserInitializationException;
-import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
+import org.apache.commons.net.ftp.parser.*;
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
 public class FTPParserFactory implements FTPFileEntryParserFactory {
+    private static Logger log = Logger.getLogger(FTPParserFactory.class);
 
     public FTPFileEntryParser createFileEntryParser(String key) throws ParserInitializationException {
-        String ukey = null;
         if(null != key) {
-            ukey = key.toUpperCase();
+            String ukey = key.toUpperCase();
             if(ukey.indexOf("UNIX") >= 0) {
                 return this.createUnixFTPEntryParser();
             }
@@ -65,7 +59,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
             }
         }
         // Defaulting to UNIX parser
-        return new UnixFTPEntryParser();
+        return this.createUnixFTPEntryParser();
     }
 
     public FTPFileEntryParser createFileEntryParser(FTPClientConfig config) throws ParserInitializationException {
@@ -73,21 +67,18 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
     }
 
     private FTPFileEntryParser createUnixFTPEntryParser() {
-        return new UnixFTPEntryParser() {
-            public FTPFile parseFTPEntry(String entry) {
-                if(entry.startsWith("+")) {
-                    return new EPLFFTPEntryParser().parseFTPEntry(entry);
-                }
-                return  super.parseFTPEntry(entry);
-            };
-        };
+        return new CompositeFileEntryParser(new FTPFileEntryParser[]
+                {
+                        new UnixFTPEntryParser(),
+                        new EPLFFTPEntryParser()
+                });
     }
 
     private FTPFileEntryParser createNetwareFTPEntryParser() {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
                         new NetwareFTPEntryParser(),
-                        new UnixFTPEntryParser()
+                        this.createUnixFTPEntryParser()
                 });
     }
 
@@ -95,7 +86,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
                         new NTFTPEntryParser(),
-                        new UnixFTPEntryParser()
+                        this.createUnixFTPEntryParser()
                 });
     }
 
@@ -107,7 +98,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
                         new OS400FTPEntryParser(),
-                        new UnixFTPEntryParser()
+                        this.createUnixFTPEntryParser()
                 });
     }
 

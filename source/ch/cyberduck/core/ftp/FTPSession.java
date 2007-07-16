@@ -32,17 +32,22 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
+import ch.cyberduck.core.ftp.parser.NetwareFTPEntryParser;
 
 import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.parser.ParserInitializationException;
+import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Opens a connection to the remote server via ftp protocol
@@ -75,7 +80,7 @@ public class FTPSession extends Session {
 
     private String[] features = null;
 
-    public boolean isMDTMSupported() {
+    protected boolean isMDTMSupported() {
         try {
             if(null == features) {
                 synchronized(this) {
@@ -94,7 +99,7 @@ public class FTPSession extends Session {
         }
     }
 
-    public boolean isMDTMSetSupported() {
+    protected boolean isMDTMSetSupported() {
         try {
             if(null == features) {
                 synchronized(this) {
@@ -113,7 +118,7 @@ public class FTPSession extends Session {
         }
     }
 
-    public boolean isUTIMESupported() {
+    protected boolean isUTIMESupported() {
         try {
             if(null == features) {
                 synchronized(this) {
@@ -143,6 +148,46 @@ public class FTPSession extends Session {
         catch(UnknownHostException e) {
             return this.host.getHostname();
         }
+    }
+
+    protected FTPFileEntryParser getFileParser() throws IOException {
+        try {
+            if(null == parser) {
+                parser = new FTPParserFactory().createFileEntryParser(this.getIdentification());
+            }
+            return parser;
+        }
+        catch(ParserInitializationException e) {
+            throw new IOException(e.getMessage());
+        }
+    }
+
+    private Map parsers = new HashMap(1);
+
+    /**
+     * @param p
+     * @return True if the parser will read the file permissions
+     */
+    protected boolean isPermissionSupported(final FTPFileEntryParser p) {
+        FTPFileEntryParser delegate;
+        if(p instanceof CompositeFileEntryParser) {
+            // Get the actual parser
+            delegate = ((CompositeFileEntryParser) p).getCachedFtpFileEntryParser();
+            if(null == delegate) {
+                log.warn("Composite FTP parser has no cached delegate yet");
+                return false;
+            }
+        }
+        else {
+            // Not a composite parser
+            delegate = p;
+        }
+        if(null == parsers.get(delegate)) {
+            // Cache the value as it might get queried frequently
+            parsers.put(delegate, Boolean.valueOf(delegate instanceof UnixFTPEntryParser
+                    || delegate instanceof NetwareFTPEntryParser));
+        }
+        return ((Boolean)parsers.get(delegate)).booleanValue();
     }
 
     public boolean isConnected() {
@@ -238,12 +283,6 @@ public class FTPSession extends Session {
                 }
                 catch(FTPException e) {
                     log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
-                }
-                try {
-                    this.parser = new FTPParserFactory().createFileEntryParser(this.getIdentification());
-                }
-                catch(ParserInitializationException e) {
-                    throw new IOException(e.getMessage());
                 }
                 this.fireConnectionDidOpenEvent();
             }

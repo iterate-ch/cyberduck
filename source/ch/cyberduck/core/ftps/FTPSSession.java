@@ -117,7 +117,6 @@ public class FTPSSession extends FTPSession {
                 catch(FTPException e) {
                     log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
                 }
-                this.parser = new DefaultFTPFileEntryParserFactory().createFileEntryParser(this.getIdentification());
                 this.fireConnectionDidOpenEvent();
             }
             catch(SSLHandshakeException e) {

@@ -30,9 +30,9 @@ import ch.cyberduck.core.io.ToNetASCIIOutputStream;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -128,8 +128,9 @@ public class FTPPath extends Path {
                     return childs;
                 }
                 String line = null;
-                while((line = session.parser.readNextEntry(reader)) != null) {
-                    FTPFile f = session.parser.parseFTPEntry(line);
+                FTPFileEntryParser parser = session.getFileParser();
+                while((line = parser.readNextEntry(reader)) != null) {
+                    FTPFile f = parser.parseFTPEntry(line);
                     if(null == f || f.getName().equals(".") || f.getName().equals("..")) {
                         continue;
                     }
@@ -151,13 +152,24 @@ public class FTPPath extends Path {
                     p.attributes.setSize(f.getSize());
                     p.attributes.setOwner(f.getUser());
                     p.attributes.setGroup(f.getGroup());
-                    p.attributes.setPermission(new Permission(
-                            new boolean[][] {
-                                    {f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION), f.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION), f.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION)},
-                                    {f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION), f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION), f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION)},
-                                    {f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION), f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION), f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION)},
-                            }
-                    ));
+                    if(session.isPermissionSupported(parser)) {
+                        p.attributes.setPermission(new Permission(
+                                new boolean[][] {
+                                        {       f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION),
+                                                f.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION),
+                                                f.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION)
+                                        },
+                                        {       f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION),
+                                                f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION),
+                                                f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION)
+                                        },
+                                        {       f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION),
+                                                f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION),
+                                                f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION)
+                                        }
+                                }
+                        ));
+                    }
                     p.attributes.setModificationDate(f.getTimestamp().getTimeInMillis());
                     p.status.setSkipped(this.status.isSkipped());
                     childs.add(p);
