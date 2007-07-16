@@ -14,7 +14,6 @@
 #import <Keychain/Key.h>
 #import <Security/Security.h>
 #import <Keychain/MutableKey.h>
-#import <Keychain/CSSMModule.h>
 
 
 #ifdef __cplusplus
@@ -27,7 +26,7 @@ NSData* cononicalFormOfExecutable(NSString *path);
 }
 #endif
 
-@interface NSData (KeychainFramework)
+@interface NSData (Keychain)
 
 - (NSData*)encryptedDataUsingKey:(Key*)key;
 - (NSData*)decryptedDataUsingKey:(Key*)key;
@@ -46,8 +45,8 @@ NSData* cononicalFormOfExecutable(NSString *path);
 - (BOOL)verifySignature:(NSData*)signature usingKey:(Key*)key digest:(CSSM_ALGORITHMS)algorithm;
 - (BOOL)verifyDigestSignature:(NSData*)signature usingKey:(Key*)key digest:(CSSM_ALGORITHMS)algorithm;
 
-- (MutableKey*)keyForModule:(CSSMModule*)CSPModule;
+- (MutableKey*)key;
 
-- (NSData*)digestUsingAlgorithm:(CSSM_ALGORITHMS)algorithm module:(CSSMModule*)CSPModule;
+- (NSData*)digestUsingAlgorithm:(CSSM_ALGORITHMS)algorithm;
 
 @end

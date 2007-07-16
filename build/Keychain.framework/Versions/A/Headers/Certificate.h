@@ -216,6 +216,9 @@ extern NSString* KEYCHAIN_BUNDLE_IDENTIFIER;
 
 - (BOOL)isEqualToCertificate:(Certificate*)cert;
 
+//- (NSString*)issuer; // figure out the CSSM_X509_NAME data structure
+//- (NSString*)subject; // figure out the CSSM_X509_NAME data structure
+
 /*! @method keychainItem
     @abstract Returns a KeychainItem representing the receiver.
     @discussion As it is presently written, Apple's Security framework actually represents Certificates as subclasses of KeychainItem's, so this simply casts the receiver to a KeychainItem.  Note that the result is a separate instance, however, and should be managed separately from the receiver.
@@ -225,22 +228,17 @@ extern NSString* KEYCHAIN_BUNDLE_IDENTIFIER;
 
 - (KeychainItem*)keychainItem;
 
-/*! @method keychain
-    @abstract Returns the keychain to which the receiver belongs.
-    @discussion All certificates must exist in a keychain under the current API.  Thus, <i>at present</i> this will always return a non-nil result, except in case of error.  This may not, however, be true forever.
-    @result Returns the keychain containing the receiver, or nil if an error occurs. */
-
-- (Keychain*)keychain;
-
 /*- (CertificateBundle*)exportAsBundleOfType:(CSSM_CERT_BUNDLE_TYPE)type withEncoding:(CSSM_CERT_BUNDLE_ENCODING)encoding;
 - (CertificateBundle*)exportAsDefaultBundle;*/
 
-/*! @method CLModule
-    @abstract Returns the CL module by which the receiver is managed.
-    @discussion You should use this whenever you need to work with the receiver's CL, such as when performing additional CL operations on it.
-    @result Returns the CL module associated with the receiver, or nil if an error occurs. */
+/*! @method cryptoHandle
+    @abstract Returns the CDSA CL handle by which the receiver is managed.
+    @discussion This is only provided at the moment because the Certificate class is so limited and incomplete, that you may need to do a lot of stuff using the CDSA directly.  This handle, combined with the SecCertificateRef, should allow for this.
 
-- (CSSMModule*)CLModule;
+                As such, this method may be deprecated in future releases.  Do not use it unless you have to.
+    @result An active handle to the CDSA CL which manages the receiver. */
+
+- (CSSM_CL_HANDLE)cryptoHandle;
 
 /*! @method lastError
     @abstract Returns the last error that occured for the receiver.

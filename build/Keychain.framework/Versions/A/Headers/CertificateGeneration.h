@@ -28,10 +28,9 @@
     @param signingAlgorithm The algorithm you intend to use to sign the certificate.  The signing algorithm includes a hash, so if you're using RSA, this algorithm should be something like SHA1 with RSA.  This parameter is required.
     @param serialNumber The serial number to be given to the certificate.  This parameter is optional.
     @param extensions A list of extensions to be included in the certificate.  This parameter is optional.
-    @param CLModule The CL module to use to generate the certificate.  Pass nil to use the current default CL.
     @result Provided all the parameters are valid and the required ones present, a NSData instance containing the certificate template is returned.  Otherwise, nil is returned. */
 
-NSData* createCertificateTemplate(NameList *subject, NameList *issuer, Validity *validity, Key *publicKey, AlgorithmIdentifier *signingAlgorithm, NSData *serialNumber, ExtensionList *extensions, CSSMModule *CLModule);
+NSData* createCertificateTemplate(NameList *subject, NameList *issuer, Validity *validity, Key *publicKey, AlgorithmIdentifier *signingAlgorithm, NSData *serialNumber, ExtensionList *extensions);
 
 /*! @function signCertificate
     @abstract Signs a certificate template with a given private key.
@@ -39,10 +38,9 @@ NSData* createCertificateTemplate(NameList *subject, NameList *issuer, Validity 
     @param certificate The certificate template to be signed.  A certificate template can be generated using createCertificateTemplate.
     @param privateKey The private key with which to sign the certificate.  This should be the issuer's private key.
     @param signingAlgorithm The algorithm to sign the certificate with.  The signing procedure requires a hash to be performed, so the algorithm should be something like CSSM_ALGID_SHA1WithRSA, not CSSM_ALGID_RSA.  This should match the algorithm passed to createCertificateTemplate - indeed, you can retrieve the appropriate CSSM_ALGORITHMS code using [AlgorithmIdentifier algorithm].
-    @param CLModule The CL module to use to sign the certificate.  This should be the same as that passed to createCertificateTemplate for the given data.
     @result If the certificate template and private key are valid, the signed certificate's data is returned.  Otherwise, nil is returned. */
 
-NSData* signCertificate(NSData *certificate, Key *privateKey, CSSM_ALGORITHMS signingAlgorithm, CSSMModule *CSPModule, CSSMModule *CLModule);
+NSData* signCertificate(NSData *certificate, Key *privateKey, CSSM_ALGORITHMS signingAlgorithm);
 
 /*! @function createCertificate
     @abstract Creates and signs a new certificate.
@@ -55,7 +53,6 @@ NSData* signCertificate(NSData *certificate, Key *privateKey, CSSM_ALGORITHMS si
     @param signingAlgorithm The algorithm you intend to use to sign the certificate.  The signing algorithm includes a hash, so if you're using RSA, this algorithm should be something like SHA1 with RSA.  This parameter is required.
     @param serialNumber The serial number to be given to the certificate.  This parameter is optional - if it is zero, it is ignored.
     @param extensions A list of extensions to be included in the certificate.  This parameter is optional.
-    @param CLModule The CL module to use to generate and sign the certificate.  Pass nil to use the current default CL.
     @result Returns a new Certificate instance, or nil if an error occurs. */
 
-Certificate *createCertificate(NameList *subject, NameList *issuer, Validity *validity, Key *publicKey, Key *privateKey, AlgorithmIdentifier *signingAlgorithm, NSData *serialNumber, ExtensionList *extensions, CSSMModule *CSPModule, CSSMModule *CLModule);
+Certificate *createCertificate(NameList *subject, NameList *issuer, Validity *validity, Key *publicKey, Key *privateKey, AlgorithmIdentifier *signingAlgorithm, NSData *serialNumber, ExtensionList *extensions);

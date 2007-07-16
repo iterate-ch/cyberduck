@@ -15,24 +15,13 @@
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 
+
 @interface Policy : NSCachedObject {
     SecPolicyRef policy;
     int error;
 }
 
-/*! @method policyWithPolicyRef:
-    @abstract Returns a Policy instance for a given SecPolicyRef.
-    @discussion There can only ever be one instance of a Policy for each unique SecPolicyRef.  Thus, this method may return an existing instance.  If no suitable instance already exists, it will be created and returned.
-    @param poli The SecPolicyRef to wrap a Policy instance around.
-    @result Returns the unique Policy instance representing the given SecPolicyRef, or nil if an error occurs. */
-
 + (Policy*)policyWithPolicyRef:(SecPolicyRef)poli;
-
-/*! @method initWithPolicyRef:
-    @abstract Initialises the receiver around a given SecPolicyRef.
-    @discussion Since there can only ever be one Policy instance for each unique SecPolicyRef, this method is not guaranteed to return the receiver; if there already exists a Policy instance for the given SecPolicyRef, the receiver is released and the existing instance returned instead.
-    @param poli The SecPolicyRef to wrap the receiver around.
-    @result Returns the unique Policy instance representing the given SecPolicyRef, which may be the receiver or an existing Policy instance for the given SecPolicyRef, if available. */
 
 - (Policy*)initWithPolicyRef:(SecPolicyRef)poli;
 
@@ -43,18 +32,7 @@
 
 - (Policy*)init;
 
-/*! @method type
-    @abstract Returns the type of policy the receiver is.
-    @discussion Refer to the documentation for the allPolicies method for a list of currently known policy types.
-    @result Returns the OID (as an NSData instance - see UtilitySupport.h for conversion functions between NSData & CSSM_OID (CSSM_DATA)) identifying the type of policy the receiver is (or NULL if an error occurs). */
-
-- (NSData*)type;
-
-/*! @method data
-    @abstract Returns the data contained in the receiver, as an opaque blob.
-    @discussion The format of the receiver's data depends on it's policy type.  At time of writing there is no facility for interpretting this automatically.
-    @result The opaque data of the receiver, or nil if an error occurs. */
-
+- (NSData*)objectIdentifier;
 - (NSData*)data;
 
 /*! @method lastError
@@ -65,33 +43,6 @@
     @result The last error that occured, or zero if the last operation was successful. */
 
 - (int)lastError;
-
-/*! @method policyRef
-    @abstract Returns the underlying SecPolicyRef that Policy instance represents.
-    @discussion While you can manipulate the returned reference to some degree, be wary of how it may effect the Policy instance.  Do not manually release the returned reference.  Conversely, do not use the returned reference beyond the lifetime of the owning Policy instance unless you CFRetain it.
-    @result Returns the SecPolicyRef underlying the receiver. */
-
 - (SecPolicyRef)policyRef;
    
 @end
-
-/*! @function allPolicies
-    @abstract Finds all policies of a particular type that apply to a particular types of certificates.
-    @discussion You can use this function to find Policy instances (at time of writing there is no way to define your own policies).
-    @param certificateType The type of certificate the policies should apply for.
-    @param policyType The type of policies to find.  At time of writing recognised values include:
-
-                        CSSMOID_APPLE_X509_BASIC
-                        CSSMOID_APPLE_TP_SSL
-                        CSSMOID_APPLE_TP_LOCAL_CERT_GEN
-                        CSSMOID_APPLE_TP_CSR_GEN
-                        CSSMOID_APPLE_TP_REVOCATION_CRL
-                        CSSMOID_APPLE_TP_REVOCATION_OCSP
-                        CSSMOID_APPLE_TP_SMIME
-                        CSSMOID_APPLE_TP_EAP
-                        CSSMOID_APPLE_TP_CODE_SIGN
-                        CSSMOID_APPLE_TP_IP_SEC
-                        CSSMOID_APPLE_TP_ICHAT
-    @result Returns an array containing zero or more Policy's, or nil if an error occurs. */
-
-NSArray *allPolicies(CSSM_CERT_TYPE certificateType, const CSSM_OID *policyType);

@@ -3,8 +3,6 @@
 /* The key is the numeric value as defined in cssmtype.h in Apple's Security framework.  Last updated for 10.3.9. */
 /* The value is human-readable name for the algorithm. */
 
-/* Standard algorithms, defined in CDSA spec. */
-
 0 = "None";
 1 = "Custom";
 2 = "DH";
@@ -107,32 +105,6 @@
 99 = "HACAL4";
 100 = "HAVAL5";
 101 = "TIGER";
-102 = "MD5 HMAC";
+102 = ="MD5 HMAC";
 103 = "PKCS5 PBKDF2";
 104 = "Running Counter";
-
-/* Apple's Algorithms */
-
-2147483648 = "Apple Yarrow";
-2147483649 = "AES";
-2147483650 = "FEE Key Generation";
-2147483651 = "MD5 with FEE/ElGamal";
-2147483652 = "SHA1 with FEE/ElGamal";
-2147483653 = "FEED";
-2147483654 = "FEEDEXP";
-2147483655 = "Apple Secure Compression";
-2147483656 = "Legacy SHA1-HMAC";
-2147483657 = "Keychain Key";
-2147483658 = "PKCS12 PBE Encrypt/Decrypt Key";
-2147483659 = "PKCS12 PBE MAC Key";
-2147483660 = "Secure Passphrase (from SecurityServer)";
-2147483661 = "OpenSSL MD5 Key Derivation";
-2147483662 = "SHA2-256";
-2147483663 = "SHA2-384";
-2147483664 = "SHA2-512";
-2147483665 = "Default Entropy Source";
-2147483666 = "SHA2-224";
-2147483667 = "SHA2-224 with RSA";
-2147483668 = "SHA2-256 with RSA";
-2147483669 = "SHA2-384 with RSA";
-2147483670 = "SHA2-512 with RSA";

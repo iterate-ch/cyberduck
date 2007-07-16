@@ -18,10 +18,6 @@
 #import <Keychain/Policy.h>
 
 
-/*! @class Trust
-    @abstract Allows you to evaluate the level of trust of a certificate under a given policy or policies.
-    @discussion You use the Trust class to evaluate the trust given to certificates, under particular policies.  For example, */
-
 @interface Trust : NSCachedObject {
     SecTrustRef trust;
     SecTrustResultType lastEval;
@@ -46,7 +42,7 @@
 
 - (void)makeTrustForKeychains:(NSArray*)chains;
 
-- (void)setAllowExpiredCertificates:(BOOL)allow;
+- (void)allowExpiredCertificates:(BOOL)allow;
 
 - (BOOL)canEvaluate;
 

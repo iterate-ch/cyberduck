@@ -17,28 +17,14 @@
 #import <errno.h>
 
 
-/*! @header UtilitySupport
-    @abstract Provides various basic support functions, primarily for interfacing between the Cocoa world and the CDSA.
-    @discussion The CDSA of course uses all it's preferred basic types, CSSM_GUID's, CSSM_DATA's, CSSM_STRING's, etc... all good and fuzzy, but useless to your average Cocoa coder.  Thus, these functions are provided for performing conversions.
-
-                Make sure to read the documentation for each function carefully before using it.  Improper use of many of these functions can result in corruption, leaks, or worse.  Of particular note are the copyNSDataToDataNoCopy() and NSDataFromDataNoCopy() functions. */
-
-
 /*! @function allocCSSMData
     @abstract Allocates a new CSSM_DATA structure.
     @discussion This convenience function simply allocates and initialises (to an empty state) a CSSM_DATA structure.  You could probably achieve the same effect with a simple call to calloc, but this way is more future compatible by virtue of it's abstraction.  Consequently it should play a key role in maximizing shareholder value for the succeeding quarter looking forward.
 
-                The returned CSSM_DATA is guaranteed to be in the same state as would be returned by a call to clearCSSMData - i.e. it's Data pointer is NULL and it's Length is 0.
+                The returned CSSM_DATA is guaranteed to be in the same state as would be returned by a call to clearCSSMData.
     @result Returns a new empty CSSM_DATA if successful, NULL otherwise (which most likely indicates a memory allocation error). */
 
 CSSM_DATA* allocCSSMData(void);
-
-/*! @function resetCSSMData
-    @abstract 'Resets' a CSSM_DATA structure to an empty state.
-    @discussion Resetting a CSSM_DATA is similar to clearing it (using clearCSSMData), except that any existing values within it are ignored.  Thus, you should use resetCSSMData (and definitely <i>not</i> clearCSSMData) to prepare any CSSM_DATA structure prior to use.
-    @param data The CSSM_DATA to reset.  Should not be NULL. */
-
-void resetCSSMData(CSSM_DATA *data);
 
 /*! @function clearCSSMData
     @abstract Clears a CSSM_DATA structure back to it's default, empty state.
@@ -67,25 +53,7 @@ void freeCSSMData(CSSM_DATA *data);
 
 int copyDataToData(const CSSM_DATA *source, CSSM_DATA *destination);
 
-/*! @function copyNSStringToData
-    @abstract Copies an NSString to a given CSSM_DATA structure.
-    @discussion The actual bytes copied are those returned by NSString's UTF8String method - i.e. the given string as UTF-8 encoded.
-    @param source The source string to copy from.  Should not be nil.
-    @param destination The destination to copy to.  This will be cleared of any existing data using clearCSSMData() - make sure it does not contain a dangling data pointer, or free() will get cranky.  Should not be NULL.
-    @result Returns 0 if successful, a POSIX error code otherwise (from the standard errno.h). */
-
 int copyNSStringToData(NSString *source, CSSM_DATA *destination);
-
-/*! @function copyNSStringToString
-    @abstract Copies an NSString to a CSSM_STRING.
-    @discussion CSSM_STRINGs are some stupid fixed-size buffer the CDSA occasionally uses.  We can only imagine.  If the given source string won't fit into the destination, an error occurs and the destination is not modified.  The string is copied as UTF-8 encoded.
-    @param source The source string to copy from.  Should not be nil.
-
-                Note that if the source string does not entirely fill the destination buffer, any remaining bytes are set to 0.  This is for security reasons, to prevent any data hanging around longer than expected.
-    @param destination The destination CSSM_STRING to copy to.  Should not be NULL.
-    @result Returns 0 if successful, a POSIX error code otherwise (from the standard errno.h). */
-
-int copyNSStringToString(NSString *source, CSSM_STRING *destination);
 
 CSSM_DATA* dataFromNSString(NSString *string);
 
@@ -120,5 +88,3 @@ BOOL OIDsAreEqual(const CSSM_OID *a, const CSSM_OID *b);
     @result nil if the string is not in a valid format, the resulting NSData otherwise. */
 
 NSData* NSDataFromHumanNSString(NSString *string);
-
-// BOOL DBUniqueRecordIDsAreEqual(const CSSM_DB_UNIQUE_RECORD *a, const CSSM_DB_UNIQUE_RECORD *b); // Didn't work from start; can't compare unique records, they're not unique

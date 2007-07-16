@@ -12,8 +12,6 @@
 //  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Keychain/NSCachedObject.h>
-#import <Keychain/CSSMModule.h>
-
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 
@@ -23,47 +21,42 @@
     @discussion A detailed discussion of a key is not really required, given it is such an obvious concept.  Check out any introduction to cryptography for more information on types of keys, their functions, and so forth.  This is more of a requirement than a suggestion - don't go creating and using keys without knowledge of their security, particularly in regards to what algorithms and key sizes are considered 'safe'. */
 
 @interface Key : NSCachedObject {
-    CSSMModule *_CSPModule;
-    SecKeyRef _key;
-    const CSSM_KEY *_CSSMKey;
-    int _error;
+    SecKeyRef key;
+    const CSSM_KEY *CSSMKey;
+    int error;
 }
 
 /*! @method keyWithKeyRef:
     @abstract Creates and returns a Key instance based on a SecKeyRef.
     @discussion The SecKeyRef is retained by the new Key instance for the duration of it's life.  This method caches existing Key instances, such that multiple calls with the same SecKeyRef will return the same unique Key instance.
     @param ke The SecKeyRef.
-    @param CSPModule The CSP module the given key is a member of.  Should not be nil.
     @result If a Key instance already returns for the given SecKeyRef, returns that existing instance.  Otherwise, creates a new instance and returns it.  In case of error, returns nil. */
 
-+ (Key*)keyWithKeyRef:(SecKeyRef)ke module:(CSSMModule*)CSPModule;
++ (Key*)keyWithKeyRef:(SecKeyRef)ke;
 
 /*! @method keyWithCSSMKey:
     @abstract Creates and returns a Key instance based on a CSSM_KEY.
     @discussion The CSSM_KEY provided must not be destroyed while the returned object still exists.  Conversely, the returned object will never destroy the CSSM_KEY itself.
     @param ke The CSSM_KEY.
-    @param CSPModule The CSP module the given key is a member of.  Should not be nil.
     @result If successful, a new Key instance based on the provided CSSM_KEY.  Otherwise, returns nil. */
 
-+ (Key*)keyWithCSSMKey:(const CSSM_KEY *)ke module:(CSSMModule*)CSPModule;
++ (Key*)keyWithCSSMKey:(const CSSM_KEY *)ke;
 
 /*! @method initWithKeyRef:
     @abstract Initiailizes the receiver with a SecKeyRef.
     @discussion The SecKeyRef is retained by the receiver for the duration of it's lifetime.  Changes to the SecKeyRef will reflect on the receiver, and vice versa.  Note that this method caches existing Key instances, such that calling this with a SecKeyRef that has already been used will release the receiver and return the existing instance.
     @param ke The SecKeyRef.
-    @param CSPModule The CSP module the given key is a member of.  Should not be nil.
     @result If SecKeyRef is a valid key, returns the receiver.  Otherwise, releases the receiver and returns nil. */
 
-- (Key*)initWithKeyRef:(SecKeyRef)ke module:(CSSMModule*)CSPModule;
+- (Key*)initWithKeyRef:(SecKeyRef)ke;
 
 /*! @method initWithCSSMKey:
     @abstract Initializes the receiver with a CSSM_KEY
     @discussion The CSSM_KEY provided must not be destroyed while the receiver still exists.  Conversely, the receiver will not automatically destroy the key itself.
     @param ke The CSSM_KEY.
-    @param CSPModule The CSP module the given key is a member of.  Should not be nil.
     @result If successful, returns the receiver.  Otherwise, releases the receiver and returns nil. */
 
-- (Key*)initWithCSSMKey:(const CSSM_KEY *)ke module:(CSSMModule*)CSPModule;
+- (Key*)initWithCSSMKey:(const CSSM_KEY *)ke;
 
 /*! @method version
     @abstract Returns the version of the CDSA used to generate the key.
@@ -78,13 +71,6 @@
     @result This method always releases the receiver and returns nil. */
 
 - (Key*)init;
-
-/*! @method CSPModule
-    @abstract Returns the CSP module in which the key resides.
-    @discussion It is conceivable that keys can exist outside any particular CSP module, in various raw and wrapped forms.  Thus, this method may well return nil.  However, for keys which are just references inside a particular module, this method returns the module in which they exist.
-    @param Returns the CSP module (if any) the key resides within, or nil if there is no CSP module associated with the key or an error occurs. */
-
-- (CSSMModule*)CSPModule;
 
 - (CSSM_HEADERVERSION)version;
 

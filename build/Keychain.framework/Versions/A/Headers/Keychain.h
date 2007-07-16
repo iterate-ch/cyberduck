@@ -39,38 +39,13 @@ extern NSString *KeychainItemAccessedNotification; // Sent on the item accessed
 extern NSString *KeychainListChangedNotification; // Sent on all keychains
 
 
-/*! @function defaultSetOfKeychains
-    @abstract Returns a list of the default keychains for the current user.
-    @discussion These default keychains are the ones that are used when doing a global search.  This may not encompass every keychain belonging to the current user, but may include keychains not belonging to the current user.  As such, it will <b>not</b> always return the same list as keychainsForUser with a nil argument.
-    @result An NSArray containing zero or more Keychain instances, or nil if an error occurs. */
-
-NSArray* defaultSetOfKeychains(void);
-
-/*! @function completeSetOfKeychains
-    @abstract Returns a list of every keychain that can be found on the local machine.
-    @discussion This function does it's best to locate every keychain, for every user and otherwise, on the local machine.  It does this by looking in all the standard locations.  It does not perform a comprehensive search, nor does it maintain any sort of managed list.  It generates the list each time it is called, which may be an expensive operation, so use it sparingly.
-
-                Note that this method is not comprehensive - it will not find keychains on remote volumes, even if the current user's home directory is on a remote volume.  At time of writing there aren't many remote login mechanisms in OS X (10.2.6), so this isn't too much of a problem.  It is rumoured that 10.3 will bring with it many more user management options, and so this function will need to be updated appropriately.
-    @result An NSArray containing zero or more Keychain instances, or nil in case of error. */
-
-NSArray* completeSetOfKeychains(void);
-
-/*! @function keychainsForUser
-    @abstract Returns a list of keychains belonging to a particular user.
-    @discussion This method searches for all the keychains belonging a particular user, and returns them as an array of Keychain instances.  If the specified user has no keychains, an empty array is returned.
-    @param username The short or full username of the user to query.  If this is nil, the current user is used.
-    @result An NSArray of zero or more Keychain instances, or nil in case of error. */
-
-NSArray* keychainsForUser(NSString *username);
-
-
 /*! @class Keychain
     @abstract Represents a collection of keys, certificates, identities, passwords and other such personal items.
     @discussion The keychain is a well known part of MacOS Classic and MacOS X, so I won't rehash the details here.  If you really have no idea what the keychain is, check out Keychain Access in the Utilities folder, and the relevant documentation on <a href="http://developer.apple.com/security/">Apple's Security page</a>. */
 
 @interface Keychain : NSCachedObject {
-    SecKeychainRef _keychain;
-    int _error;
+    SecKeychainRef keychain;
+    int error;
 }
 
 /*! @method keychainManagerVersion
@@ -295,18 +270,16 @@ NSArray* keychainsForUser(NSString *username);
 /*! @method addItem:
     @abstract Adds a KeychainItem to the receiver.
     @discussion This method adds the the KeychainItem given to the receiver.  This does not remove the KeychainItem from any other keychains it may be in.  Indeed, the new entry in the receiver is considered a separate entity.
-    @param item The KeychainItem to add.  If this is already in the receiver, this method has no effect.
-    @result Returns YES if successful, NO otherwise.  You can retrieve a corresponding error code using the lastError method. */
+    @param item The KeychainItem to add.  If this is already in the receiver, this method has no effect. */
 
-- (BOOL)addItem:(KeychainItem*)item;
+- (void)addItem:(KeychainItem*)item;
 //- (void)importCertificateBundle:(CertificateBundle*)bundle;
 
 /*! @method addNewItemWithClass:access:
     @abstract Adds a new KeychainItem to the receiver, with given initial parameters.
     @discussion This method adds a new empty KeychainItem given to the receiver. It is primarily designed to customize authorized applications access. The resulting item has then to be filled with KeychainItem modifiers.
     @param itemClass The class of the news item.
-    @param initialAccess The customized access to the item. Pass nil for giving access to the current application.
-    @result Returns the resulting new KeychainItem, or nil if an error occurs.  You can retrieve a corresponding error code using the lastError method. */
+    @param initialAccess The customized access to the item. Pass nil for giving access to the current application. */
 
 - (KeychainItem*)addNewItemWithClass:(SecItemClass)itemClass access:(Access*)initialAccess;
 
@@ -317,10 +290,9 @@ NSArray* keychainsForUser(NSString *username);
                 Note that if you want immediate access to the new identity, use the identityWithCertificate:privateKey:inKeychain: class constructor for the Identity class.  Note, however, that it uses this method for adding the certificate and private key to the keychain, so there is no performance benefit from using it over this method.
     @param certificate The certificate to be part of the identity.  The subject public key in this certificate should correspond to the private key provided.
     @param privateKey The private key, corresponding to the subject public key in the given certificate.
-    @param name The descriptive name that will be given to the certificate and private key in the receiver.
-    @result Returns an array containing the new KeychainItem's for the certificate and private key (at indexes 0 and 1, respectively), or nil if an error occurs.  You can retrieve a corresponding error code using the lastError method. */
+    @param name The descriptive name that will be given to the certificate and private key in the receiver. */
 
-- (NSArray*)addCertificate:(Certificate*)certificate privateKey:(Key*)privateKey withName:(NSString*)name;
+- (void)addCertificate:(Certificate*)certificate privateKey:(Key*)privateKey withName:(NSString*)name;
 
 /*! @method addKey:withName:permanent:private:publicKeyHash:
     @abstract Adds a key to the receiver.
@@ -329,18 +301,16 @@ NSArray* keychainsForUser(NSString *username);
     @param name The name to be given to the key (it's user-readable description).
     @param isPermanent If YES, the key will be held in the receiver indefinitely.  If NO, it will be removed at some point in future (e.g. when the keychain is closed).
     @param isPrivate If YES the key can only be extracted by the user providing a passphrase.  It's not documented how you specify this passphrase to start with, or whether it simply means they'll be asked for their keychain passphrase.
-    @param publicKeyHash An optional public key hash, if you wish to associate this key with another one.
-    @result Returns the resulting new KeychainItem, or nil if an error occurs.  You can retrieve a corresponding error code using the lastError method. */
+    @param publicKeyHash An optional public key hash, if you wish to associate this key with another one. */
 
-- (KeychainItem*)addKey:(Key*)key withName:(NSString*)name isPermanent:(BOOL)isPermanent isPrivate:(BOOL)isPrivate publicKeyHash:(NSData*)publicKeyHash;
+- (void)addKey:(Key*)key withName:(NSString*)name isPermanent:(BOOL)isPermanent isPrivate:(BOOL)isPrivate publicKeyHash:(NSData*)publicKeyHash;
 
 /*! @method addCertificate:
     @abstract Adds a certificate to the receiver.
     @discussion This method adds the certificate given to the receiver.  If the certificate is already in the receiver, this method has no effect.
-    @param cert The Certificate instance to add.
-    @result Returns the resulting new KeychainItem, or nil if an error occurs.  You can retrieve a corresponding error code using the lastError method. */
+    @param cert The Certificate instance to add. */
 
-- (KeychainItem*)addCertificate:(Certificate*)cert;
+- (void)addCertificate:(Certificate*)cert;
 //- (void)addKey:(Key*)key; // Can't get all the code for this together
 
 /*! @method addGenericPassword:onService:forAccount:replaceExisting:
@@ -349,10 +319,9 @@ NSArray* keychainsForUser(NSString *username);
     @param password The password.
     @param service A string describing the service name.  This is not in any standard format.  Examples include a domain name or IP address, a label indicating the password type (e.g. 'AIM' or 'ICQ'), or some other proprietary format.  You should try to use any existing 'standard' names where possible, in order to make the keychain useful.
     @param account The account for the service specified.  This may be nil.
-    @param replace If YES, the password for an existing item will be replaced, if such an item already exists.  If NO, any existing item will not be changed.
-    @result Returns the resulting new KeychainItem, or nil if an error occurs.  You can retrieve a corresponding error code using the lastError method. */
+    @param replace If YES, the password for an existing item will be replaced, if such an item already exists.  If NO, any existing item will not be changed. */
 
-- (KeychainItem*)addGenericPassword:(NSString*)password onService:(NSString*)service forAccount:(NSString*)account replaceExisting:(BOOL)replace;
+- (void)addGenericPassword:(NSString*)password onService:(NSString*)service forAccount:(NSString*)account replaceExisting:(BOOL)replace;
 
 /*! @method addInternetPassword:onServer:forAccount:port:path:inSecurityDomain:protocol:auth:replaceExisting:
     @abstract Adds a password to the receiver for an internet service with the properties given.
@@ -367,10 +336,9 @@ NSArray* keychainsForUser(NSString *username);
     @param domain The security domain to add this entry in.  This may (and most often will be) nil.
     @param protocol The protocol you are using.  See <a href="file:///System/Library/Frameworks/Security.framework/Headers/SecKeychain.h>SecKeychain.h</a> for predefined types.  This parameter is essentially just a Mac type (i.e. 4 bytes), and can be user-defined.  This parameter is required.
     @param authType The authentication type to be used.  See <a href="file:///System/Library/Frameworks/Security.framework/Headers/SecKeychain.h>SecKeychain.h</a> for predefined types.  You should use kSecAuthenticationTypeDefault if you have no preference or knowledge of the type to be used.  Like the protocol parameter, this a 4-byte code, which may be user defined.
-    @param replace If YES then any existing item will have it's password changed, otherwise this method will fail if an item already exists.
-    @result Returns the resulting new KeychainItem, or nil if an error occurs.  You can retrieve a corresponding error code using the lastError method. */
+    @param replace If YES then any existing item will have it's password changed, otherwise this method will fail if an item already exists. */
 
-- (KeychainItem*)addInternetPassword:(NSString*)password onServer:(NSString*)server forAccount:(NSString*)account port:(UInt16)port path:(NSString*)path inSecurityDomain:(NSString*)domain protocol:(SecProtocolType)protocol auth:(SecAuthenticationType)authType replaceExisting:(BOOL)replace;
+- (void)addInternetPassword:(NSString*)password onServer:(NSString*)server forAccount:(NSString*)account port:(UInt16)port path:(NSString*)path inSecurityDomain:(NSString*)domain protocol:(SecProtocolType)protocol auth:(SecAuthenticationType)authType replaceExisting:(BOOL)replace;
 
 /*! @method items
     @abstract Returns every single item in the keychain, even invisible ones (e.g. keys).
@@ -402,8 +370,8 @@ NSArray* keychainsForUser(NSString *username);
     @param port The port number, which may implicitly define a service type, for the server.  This may be 0, to accept any port number.
     @param path The path of a resource on the server, for which you are interesting in accessing.  This may be nil.
     @param domain The security domain to look in.  This may (and most often will be) nil.
-    @param protocol The protocol you are using.  See <a href="file:///System/Library/Frameworks/Security.framework/Headers/SecKeychain.h>SecKeychain.h</a> for predefined types.  This parameter is essentially just a Mac type (i.e. 4 bytes), and can be user-defined.  This parameter is required.
-    @param authType The authentication type to be used.  See <a href="file:///System/Library/Frameworks/Security.framework/Headers/SecKeychain.h>SecKeychain.h</a> for predefined types.  You should use kSecAuthenticationTypeDefault if you have no preference or knowledge of the type to be used.  Like the protocol parameter, this a 4-byte code, which may be user defined.
+@param protocol The protocol you are using.  See <a href="file:///System/Library/Frameworks/Security.framework/Headers/SecKeychain.h>SecKeychain.h</a> for predefined types.  This parameter is essentially just a Mac type (i.e. 4 bytes), and can be user-defined.  This parameter is required.
+@param authType The authentication type to be used.  See <a href="file:///System/Library/Frameworks/Security.framework/Headers/SecKeychain.h>SecKeychain.h</a> for predefined types.  You should use kSecAuthenticationTypeDefault if you have no preference or knowledge of the type to be used.  Like the protocol parameter, this a 4-byte code, which may be user defined.
     @result If a match is found, it is returned.  Otherwise, or in case of an error, nil is returned. */
 
 - (NSString*)passwordForInternetServer:(NSString*)server forAccount:(NSString*)account port:(UInt16)port path:(NSString*)path inSecurityDomain:(NSString*)domain protocol:(SecProtocolType)protocol auth:(SecAuthenticationType)authType;
@@ -559,20 +527,6 @@ NSArray* keychainsForUser(NSString *username);
 
 - (void)deleteCompletely;
 
-/*! @method CSPModule
-    @abstract Returns the CSP module that operates the receiver.
-    @discussion A CSP and DL module provide the foundation for any particular keychain, performing the cryptographic and data store operations, respectively.  Typically a hybrid CSP/DL module is used which manages all aspects of the keychain in one module.  You can retrieve the DL module using DLModule.
-    @result Returns the CSP module used by the receiver. */
-
-- (CSSMModule*)CSPModule;
-
-/*! @method DLModule
-    @abstract Returns the DL module that operates the receiver.
-    @discussion A CSP and DL module provide the foundation for any particular keychain, performing the cryptographic and data store operations, respectively.  Typically a hybrid CSP/DL module is used which manages all aspects of the keychain in one module.  You can retrieve the CSP module using CSPModule.
-    @result Returns the DL module used by the receiver. */
-
-- (CSSMModule*)DLModule;
-
 /*! @method lastError
     @abstract Returns the last error that occured for the receiver.
     @discussion The set of error codes encompasses those returned by Sec* functions - refer to the Security framework documentation for a list.  At present there are no other error codes defined for Access instances.
@@ -590,3 +544,28 @@ NSArray* keychainsForUser(NSString *username);
 - (SecKeychainRef)keychainRef;
 
 @end
+
+
+/*! @function defaultSetOfKeychains
+    @abstract Returns a list of the default keychains for the current user.
+    @discussion These default keychains are the ones that are used when doing a global search.  This may not encompass every keychain belonging to the current user, but may include keychains not belonging to the current user.  As such, it will not always return the same list as keychainsForUser(nil).
+    @result An NSArray containing zero or more Keychain instances, or nil if an error occurs. */
+
+NSArray* defaultSetOfKeychains(void);
+
+/*! @function completeSetOfKeychains
+    @abstract Returns a list of every keychain that can be found on the local machine.
+    @discussion This function does it's best to locate every keychain, for every user and otherwise, on the local machine.  It does this by looking in all the standard locations.  It does not perform a comprehensive search, nor does it maintain any sort of managed list.  It generates the list each time it is called, which may be an expensive operation, so use it sparingly.
+
+                Note that this method is not comprehensive - it will not find keychains on remote volumes, even if the current user's home directory is on a remote volume.  At time of writing there aren't many remote login mechanisms in OS X (10.2.6), so this isn't too much of a problem.  It is rumoured that 10.3 will bring with it many more user management options, and so this function will need to be updated appropriately.
+    @result An NSArray containing zero or more Keychain instances, or nil in case of error. */
+
+NSArray* completeSetOfKeychains(void);
+
+/*! @function keychainsForUser
+    @abstract Returns a list of keychains belonging to the current user.
+    @discussion This method searches for all the keychains belonging to the current user, and returns them as an array of Keychain instances.  If the current user has no keychains, this returned array has no entries.
+    @param username The short or full username of the user to query.  If this is nil, the current user is used.
+    @result An NSArray of zero or more Keychain instances, or nil in case of error. */
+
+NSArray* keychainsForUser(NSString *username);

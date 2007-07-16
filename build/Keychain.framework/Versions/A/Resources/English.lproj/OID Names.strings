@@ -1,462 +1,191 @@
 /* This file contains the human-readable names of all the various OID tags */
 
-/* The key is the OID value rendered byte by byte, with each value separated by a comma. */
-/* The value is a short, human-readable name for the OID. */
-
-/* "Standard" */
-
-"96, 134, 72, 1, 134, 248, 77" = "Intel";
-"96, 134, 72, 1, 134, 248, 77, 2" = "Intel CDSA Security";
-"96, 134, 72, 1, 134, 248, 77, 2, 1" = "Intel Security Formats";
-"96, 134, 72, 1, 134, 248, 77, 2, 2, 5" = "Intel Security Algorithms";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 4" = "Intel Security Object Bundle";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 4, 1" = "Intel Certificate & Private Key Bundle (v2)";
-
-"85" = "ISO CCITT Directory Service";
-"85, 4" = "Attribute Type";
-"85, 29" = "Extension";
-
-"40" = "ISO Standard";
-"42" = "ISO Member";
-"42, 134, 72" = "U.S.A.";
-
-"43" = "Identified Organisation";
-"43, 4" = "OSINET";
-"43, 5" = "GOSIP";
-"43, 6" = "DOD";
-"43, 14" = "OIW";
-
-"42, 134, 72, 134, 247, 13" = "RSA";
-"42, 134, 72, 134, 247, 13, 2" = "RSA Hash";
-"42, 134, 72, 134, 247, 13, 3" = "RSA Encrypt";
-
-"42, 134, 72, 134, 247, 13, 1" = "PKCS";
-"42, 134, 72, 134, 247, 13, 1, 1" = "PKCS (v1)";
-"42, 134, 72, 134, 247, 13, 1, 2" = "PKCS (v2)";
-"42, 134, 72, 134, 247, 13, 1, 3" = "PKCS (v3)";
-"42, 134, 72, 134, 247, 13, 1, 4" = "PKCS (v4)";
-"42, 134, 72, 134, 247, 13, 1, 5" = "PKCS (v5)";
-"42, 134, 72, 134, 247, 13, 1, 6" = "PKCS (v6)";
-"42, 134, 72, 134, 247, 13, 1, 7" = "PKCS (v7)";
-"42, 134, 72, 134, 247, 13, 1, 8" = "PKCS (v8)";
-"42, 134, 72, 134, 247, 13, 1, 9" = "PKCS (v9)";
-"42, 134, 72, 134, 247, 13, 1, 10" = "PKCS (v10)";
-"42, 134, 72, 134, 247, 13, 1, 11" = "PKCS (v11)";
-"42, 134, 72, 134, 247, 13, 1, 12" = "PKCS (v12)";
-
-"42, 134, 72, 206, 62, 2" = "ANSI X9.42";
-"42, 134, 72, 206, 62, 2, 3" = "ANSI X9.42 Scheme";
-"42, 134, 72, 206, 62, 2, 4" = "ANSI X9.42 Named Scheme";
-
-"43, 6, 1, 5, 5, 7" = "PKIX";
-"43, 6, 1, 5, 5, 7, 1" = "PKIX PE";
-"43, 6, 1, 5, 5, 7, 2" = "PKIX QT";
-"43, 6, 1, 5, 5, 7, 3" = "PKIX KP";
-"43, 6, 1, 5, 5, 7, 48" = "PKIX AD";
-"43, 6, 1, 5, 5, 7, 48, 1" = "PKIX AD OCSP";
-
-"43, 14, 2" = "SECSIG";
-"43, 14, 2, 2" = "SECSIG Algorithm";
-
-"96, 134, 72, 1, 101, 3, 4, 2" = "NIST Hash Algorithm";
-
-/* Apple */
-
-"42, 134, 72, 134, 247, 99" = "Apple";
-"42, 134, 72, 134, 247, 99, 100" = "Apple Data Security";
-"42, 134, 72, 134, 247, 99, 100, 1" = "Apple Trust Policy";
-"42, 134, 72, 134, 247, 99, 100, 2" = "Apple Algorithm";
-"42, 134, 72, 134, 247, 99, 100, 3" = "Apple .Mac Certificate";
-"42, 134, 72, 134, 247, 99, 100, 3, 1" = "Apple .Mac Certificate Request";
-"42, 134, 72, 134, 247, 99, 100, 3, 2" = "Apple .Mac Certificate Extension";
-"42, 134, 72, 134, 247, 99, 100, 3, 3" = "Apple .Mac Certificate Request Values";
-
-"42, 134, 72, 134, 247, 99, 100, 4" = "Apple Extended Key Usage";
-"42, 134, 72, 134, 247, 99, 100, 4, 1" = "Apple EKU Code Signing";
-
-"42, 134, 72, 134, 247, 99, 100, 5" = "Apple Certificate Policies";
-
-/* Netscape */
-
-"96, 134, 72, 1, 134, 248, 66" = "Netscape";
-"96, 134, 72, 1, 134, 248, 66, 1" = "Netscape Certificate Extension";
-
-/* Algorithms */
-
-"42, 134, 72, 134, 247, 13, 2, 2" = "MD2";
-"42, 134, 72, 134, 247, 13, 2, 4" = "MD4";
-"42, 134, 72, 134, 247, 13, 2, 5" = "MD5";
-"42, 134, 72, 134, 247, 13, 1, 1, 1" = "RSA";
-"42, 134, 72, 134, 247, 13, 1, 1, 2" = "MD2 with RSA";
-"42, 134, 72, 134, 247, 13, 1, 1, 3" = "MD4 with RSA";
-"42, 134, 72, 134, 247, 13, 1, 1, 4" = "MD5 with RSA";
-"42, 134, 72, 134, 247, 13, 1, 1, 5" = "SHA1 with RSA";
-"42, 134, 72, 134, 247, 13, 1, 1, 14" = "SHA2-224 with RSA";
-"42, 134, 72, 134, 247, 13, 1, 1, 11" = "SHA2-256 with RSA";
-"42, 134, 72, 134, 247, 13, 1, 1, 12" = "SHA2-384 with RSA";
-"42, 134, 72, 134, 247, 13, 1, 1, 13" = "SHA2-512 with RSA";
-
-"42, 134, 72, 134, 247, 13, 1, 3, 1" = "DH Key Agreement";
-
-"43, 14, 2, 2, 12" = "DSA";
-"43, 14, 2, 2, 27" = "SHA1 with DSA";
-
-"42, 134, 72, 206, 56, 4, 1" = "DSA from CMS";
-"42, 134, 72, 206, 56, 4, 3" = "SHA1 with DSA";
-
-"43, 14, 3, 2, 12" = "JDK 1.1 DSA";
-"43, 14, 3, 2, 13" = "JDK 1.1 SHA1 with DSA";
-
-"43, 14, 2, 2, 26" = "SHA1";
-"43, 14, 2, 2, 29" = "SHA1 with RSA";
-"43, 14, 2, 2, 7" = "DES CBC";
-
-"96, 134, 72, 1, 101, 3, 4, 2, 4" = "SHA2-224";
-"96, 134, 72, 1, 101, 3, 4, 2, 1" = "SHA2-256";
-"96, 134, 72, 1, 101, 3, 4, 2, 2" = "SHA2-384";
-"96, 134, 72, 1, 101, 3, 4, 2, 3" = "SHA2-512";
-
-"42, 134, 72, 206, 62, 2, 1" = "ANSI X9.42 DH Public Number";
-"42, 134, 72, 206, 62, 2, 3, 1" = "ANSI X9.42 DH Static";
-"42, 134, 72, 206, 62, 2, 3, 2" = "ANSI X9.42 DH EPHEM";
-"42, 134, 72, 206, 62, 2, 3, 3" = "ANSI X9.42 DH One Flow";
-"42, 134, 72, 206, 62, 2, 3, 4" = "ANSI X9.42 DH Hybrid 1";
-"42, 134, 72, 206, 62, 2, 3, 5" = "ANSI X9.42 DH Hybrid 2";
-"42, 134, 72, 206, 62, 2, 3, 6" = "ANSI X9.42 DH Hybrid One Flow";
-"42, 134, 72, 206, 62, 2, 3, 7" = "ANSI X9.42 MQV2";
-"42, 134, 72, 206, 62, 2, 3, 8" = "ANSI X9.42 MQV1";
-
-"42, 134, 72, 206, 62, 2, 4, 1" = "ANSI X9.42 SHA1 Static";
-"42, 134, 72, 206, 62, 2, 4, 1" = "ANSI X9.42 SHA1 EPHEM";
-"42, 134, 72, 206, 62, 2, 4, 1" = "ANSI X9.42 SHA1 One Flow";
-"42, 134, 72, 206, 62, 2, 4, 1" = "ANSI X9.42 SHA1 Hybrid 1";
-"42, 134, 72, 206, 62, 2, 4, 1" = "ANSI X9.42 SHA1 Hybrid 2";
-"42, 134, 72, 206, 62, 2, 4, 1" = "ANSI X9.42 SHA1 Hybrid One Flow";
-"42, 134, 72, 206, 62, 2, 4, 1" = "ANSI X9.42 SHA1 MQV2";
-"42, 134, 72, 206, 62, 2, 4, 1" = "ANSI X9.42 SHA1 MQV1";
-
-/* Apple again. */
-
-"42, 134, 72, 134, 247, 99, 100, 1, 1" = "Apple iSign Trust Policy";
-"42, 134, 72, 134, 247, 99, 100, 1, 2" = "Apple X509 Basic Trust Policy";
-"42, 134, 72, 134, 247, 99, 100, 1, 3" = "Apple SSL Trust Policy";
-"42, 134, 72, 134, 247, 99, 100, 1, 4" = "Apple Local Certificate Generation Trust Policy";
-"42, 134, 72, 134, 247, 99, 100, 1, 5" = "Apple CSR Generation Trust Policy";
-"42, 134, 72, 134, 247, 99, 100, 1, 6" = "Apple Revocation CRL Trust Policy";
-"42, 134, 72, 134, 247, 99, 100, 1, 7" = "Apple OCSP-based Revocation Trust Policy";
-"42, 134, 72, 134, 247, 99, 100, 1, 8" = "Apple S/MIME Trust Policy";
-"42, 134, 72, 134, 247, 99, 100, 1, 9" = "Apple EAP Trust Policy";
-"42, 134, 72, 134, 247, 99, 100, 1, 10" = "Apple Code Signing Trust Policy";
-"42, 134, 72, 134, 247, 99, 100, 1, 11" = "Apple IPSec Trust Policy";
-"42, 134, 72, 134, 247, 99, 100, 1, 12" = "Apple iChat Trust Policy";
-
-"42, 134, 72, 134, 247, 99, 100, 2, 1" = "Apple FEE";
-"42, 134, 72, 134, 247, 99, 100, 2, 2" = "Apple ASC";
-"42, 134, 72, 134, 247, 99, 100, 2, 3" = "Apple FEE MD5";
-"42, 134, 72, 134, 247, 99, 100, 2, 4" = "Apple FEE SHA1";
-"42, 134, 72, 134, 247, 99, 100, 2, 5" = "Apple FEED";
-"42, 134, 72, 134, 247, 99, 100, 2, 6" = "Apple FEEDEXP";
-"42, 134, 72, 134, 247, 99, 100, 2, 7" = "Apple ECDSA";
-
-"42, 134, 72, 134, 247, 99, 100, 3, 1, 1" = "Apple .Mac Certificate Request Identity";
-"42, 134, 72, 134, 247, 99, 100, 3, 1, 2" = "Apple .Mac Certificate Request Email Sign";
-"42, 134, 72, 134, 247, 99, 100, 3, 1, 3" = "Apple .Mac Certificate Request Email Encrypt";
-"42, 134, 72, 134, 247, 99, 100, 3, 1, 4" = "Apple .Mac Certificate Request Archive List";
-"42, 134, 72, 134, 247, 99, 100, 3, 1, 5" = "Apple .Mac Certificate Request Archive Store";
-"42, 134, 72, 134, 247, 99, 100, 3, 1, 6" = "Apple .Mac Certificate Request Archive Fetch";
-"42, 134, 72, 134, 247, 99, 100, 3, 1, 7" = "Apple .Mac Certificate Request Archive Remove";
-
-"42, 134, 72, 134, 247, 99, 100, 3, 3, 1" = "Apple .Mac Certificate Request Username";
-"42, 134, 72, 134, 247, 99, 100, 3, 3, 2" = "Apple .Mac Certificate Request Password";
-"42, 134, 72, 134, 247, 99, 100, 3, 3, 3" = "Apple .Mac Certificate Request Hostname";
-"42, 134, 72, 134, 247, 99, 100, 3, 3, 4" = "Apple .Mac Certificate Request Renew";
-"42, 134, 72, 134, 247, 99, 100, 3, 3, 5" = "Apple .Mac Certificate Request Async";
-
-/* PKCS5 Algorithms */
-
-"42, 134, 72, 134, 247, 13, 2, 7" = "SHA1-HMAC";
-"42, 134, 72, 134, 247, 13, 1, 5, 1" = "PBE with MD2 & DES";
-"42, 134, 72, 134, 247, 13, 1, 5, 3" = "PBE with MD5 & DES";
-"42, 134, 72, 134, 247, 13, 1, 5, 4" = "PBE with MD2 & RC2";
-"42, 134, 72, 134, 247, 13, 1, 5, 6" = "PBE with MD5 & RC2";
-"42, 134, 72, 134, 247, 13, 1, 5, 10" = "PBE with SHA1 & DES";
-"42, 134, 72, 134, 247, 13, 1, 5, 11" = "PBE with SHA1 & RC2";
-"42, 134, 72, 134, 247, 13, 1, 5, 12" = "PBKDF2";
-"42, 134, 72, 134, 247, 13, 1, 5, 13" = "PBES2";
-"42, 134, 72, 134, 247, 13, 1, 5, 14" = "PBMAC1";
-
-"42, 134, 72, 134, 247, 13, 3, 2" = "RC2 CBC";
-"42, 134, 72, 134, 247, 13, 3, 7" = "DES EDE3 CBC";
-"42, 134, 72, 134, 247, 13, 3, 9" = "RC5 CBC";
-
-/* PKCS12 Algorithms */
-"42, 134, 72, 134, 247, 13, 1, 12, 1" = "PKCS (v12) PBE IDs";
-"42, 134, 72, 134, 247, 13, 1, 12, 1, 1" = "PBE with SHA1 and 128-bit RC4";
-"42, 134, 72, 134, 247, 13, 1, 12, 1, 2" = "PBE with SHA1 and 40-bit RC4";
-"42, 134, 72, 134, 247, 13, 1, 12, 1, 3" = "PBE with SHA1 and 3-key TripleDES CBC";
-"42, 134, 72, 134, 247, 13, 1, 12, 1, 4" = "PBE with SHA1 and 2-key TripleDES CBC";
-"42, 134, 72, 134, 247, 13, 1, 12, 1, 5" = "PBE with SHA1 and 128-bit RC2 CBC";
-"42, 134, 72, 134, 247, 13, 1, 12, 1, 6" = "PBE with SHA1 and 40-bit RC4 CBC";
-
-
-/* Attributes */
-
-"85, 4, 0" = "Object Class";
-"85, 4, 1" = "Aliased Entry Name";
-"85, 4, 2" = "Knowledge Information";
-"85, 4, 3" = "Common Name";
-"85, 4, 4" = "Surname";
-"85, 4, 5" = "Serial Number";
-"85, 4, 6" = "Country Name";
-"85, 4, 7" = "Locality Name";
-"85, 4, 8" = "State/Province Name";
-"85, 4, 8, 1" = "Collective State/Province Name";
-"85, 4, 9" = "Street Address";
-"85, 4, 9, 1" = "Collective Street Address";
-"85, 4, 10" = "Organisation Name";
-"85, 4, 10, 1" = "Collective Organisation Name";
-"85, 4, 11" = "Organisational Unit Name";
-"85, 4, 11, 1" = "Collective Organisational Unit Name";
-"85, 4, 12" = "Title";
-"85, 4, 13" = "Description";
-"85, 4, 14" = "Search Guide";
-"85, 4, 15" = "Business Category";
-"85, 4, 16" = "Postal Address";
-"85, 4, 16, 1" = "Collective Postal Address";
-"85, 4, 17" = "Postal Code";
-"85, 4, 17, 1" = "Collective Postal Code";
-"85, 4, 18" = "Post Office Box";
-"85, 4, 19" = "Physical Delivery Office Name";
-"85, 4, 19, 1" = "Collective Physical Delivery Office Name";
-"85, 4, 20" = "Telephone Number";
-"85, 4, 20, 1" = "Collective Telephone Number";
-"85, 4, 21" = "Telex Number";
-"85, 4, 21, 1" = "Collective Telex Number";
-"85, 4, 22" = "Telex Terminal ID";
-"85, 4, 22, 1" = "Collective Telex Terminal ID";
-"85, 4, 23" = "Facsimile Telephone Number";
-"85, 4, 23, 1" = "Collective Facsimile Telephone Number";
-"85, 4, 24" = "X.121 Address";
-"85, 4, 25" = "International ISDN Number";
-"85, 4, 25, 1" = "Collective International ISDN Number";
-"85, 4, 26" = "Registered Address";
-"85, 4, 27" = "Destination Indicator";
-"85, 4, 28" = "Preferred Delivery Method";
-"85, 4, 29" = "Presentation Address";
-"85, 4, 30" = "Supported Application Context";
-"85, 4, 31" = "Member";
-"85, 4, 32" = "Owner";
-"85, 4, 33" = "Role Occupant";
-"85, 4, 34" = "See Also";
-"85, 4, 35" = "User Password";
-"85, 4, 36" = "User Certificate";
-"85, 4, 37" = "CA Certificate";
-"85, 4, 38" = "Authority Revocation List";
-"85, 4, 39" = "Certificate Revocation List";
-"85, 4, 40" = "Cross Certificate Pair";
-"85, 4, 41" = "Name";
-"85, 4, 42" = "Given Name";
-"85, 4, 43" = "Initials";
-"85, 4, 44" = "Generation Qualifier";
-"85, 4, 45" = "Unique Identifier";
-"85, 4, 46" = "Distinguished Name Qualifier";
-"85, 4, 47" = "Enhanced Search Guide";
-"85, 4, 48" = "Protocol Information";
-"85, 4, 49" = "Distinguished Name";
-"85, 4, 50" = "Unique Member";
-"85, 4, 51" = "House Identifier";
-
-/* PKCS9 Attributes. */
-
-"42, 134, 72, 134, 247, 13, 1, 9, 1" = "PKCS (v9) Email Address";
-"42, 134, 72, 134, 247, 13, 1, 9, 2" = "PKCS (v9) Unstructured Name";
-"42, 134, 72, 134, 247, 13, 1, 9, 3" = "PKCS (v9) Content Type";
-"42, 134, 72, 134, 247, 13, 1, 9, 4" = "PKCS (v9) Message Digest";
-"42, 134, 72, 134, 247, 13, 1, 9, 5" = "PKCS (v9) Signing Time";
-"42, 134, 72, 134, 247, 13, 1, 9, 6" = "PKCS (v9) Counter Signature";
-"42, 134, 72, 134, 247, 13, 1, 9, 7" = "PKCS (v9) Challenge Password";
-"42, 134, 72, 134, 247, 13, 1, 9, 8" = "PKCS (v9) Unstructured Address";
-"42, 134, 72, 134, 247, 13, 1, 9, 9" = "PKCS (v9) Extended Certificate Attributes";
-
-/* PKIX Stuff. */
-
-"43, 6, 1, 5, 5, 7, 2, 1" = "PKIX QT CPS";
-"43, 6, 1, 5, 5, 7, 2, 2" = "PKIX QT UNotice";
-"43, 6, 1, 5, 5, 7, 48, 2" = "PKIX AD CA Issuers";
-"43, 6, 1, 5, 5, 7, 48, 3" = "PKIX AD Time Stamping";
-"43, 6, 1, 5, 5, 7, 48, 5" = "PKIX AD CA Repository";
-
-/* More PKCS stuff. */
-
-"42, 134, 72, 134, 247, 13, 1, 12, 10, 1" = "PKCS (v12) Bag Types";
-"42, 134, 72, 134, 247, 13, 1, 12, 10, 1, 1" = "PKCS (v12) Key Bag";
-"42, 134, 72, 134, 247, 13, 1, 12, 10, 1, 2" = "PKCS (v12) Shrouded Key Bag";
-"42, 134, 72, 134, 247, 13, 1, 12, 10, 1, 3" = "PKCS (v12) Certificate Bag";
-"42, 134, 72, 134, 247, 13, 1, 12, 10, 1, 4" = "PKCS (v12) CRL Bag";
-"42, 134, 72, 134, 247, 13, 1, 12, 10, 1, 5" = "PKCS (v12) Secret Bag";
-"42, 134, 72, 134, 247, 13, 1, 12, 10, 1, 6" = "PKCS (v12) Safe Contents Bag";
-
-"42, 134, 72, 134, 247, 13, 1, 9, 22" = "PKCS (v9) Certificate Types";
-"42, 134, 72, 134, 247, 13, 1, 9, 23" = "PKCS (v9) CRL Types";
-
-"42, 134, 72, 134, 247, 13, 1, 7, 1" = "PKCS (v7) Data";
-"42, 134, 72, 134, 247, 13, 1, 7, 2" = "PKCS (v7) Signed Data";
-"42, 134, 72, 134, 247, 13, 1, 7, 3" = "PKCS (v7) Enveloped Data";
-"42, 134, 72, 134, 247, 13, 1, 7, 4" = "PKCS (v7) Signed & Enveloped Data";
-"42, 134, 72, 134, 247, 13, 1, 7, 5" = "PKCS (v7) Digested Data";
-"42, 134, 72, 134, 247, 13, 1, 7, 6" = "PKCS (v7) Encrypted Data";
-"42, 134, 72, 134, 247, 13, 1, 7, 7" = "PKCS (v7) Data with Attributes";
-"42, 134, 72, 134, 247, 13, 1, 7, 8" = "PKCS (v7) Encrypted Private Key Info";
-
-"42, 134, 72, 134, 247, 13, 1, 9, 20" = "PKCS (v9) Friendly Name";
-"42, 134, 72, 134, 247, 13, 1, 9, 21" = "PKCS (v9) Local Key ID";
-
-"42, 134, 72, 134, 247, 13, 1, 9, 22, 1" = "PKCS (v9) X509 Certificate";
-"42, 134, 72, 134, 247, 13, 1, 9, 22, 2" = "PKCS (v9) SDSI Certificate";
-
-"42, 134, 72, 134, 247, 13, 1, 9, 23, 1" = "PKCS (v9) X509 CRL";
-
-/* X509 Certificates. */
-
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1" = "Intel X509v3 Certificate Attributes";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 50" = "Intel X509v3 Certificate Private Extensions";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 3, 2" = "Intel X509v3 Signature Attributes";
-
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 0" = "Intel X509v3 Signed Certificate";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 0, 1" = "Intel X509v3 Signed Certificate (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 1" = "Intel X509v3 Certificate";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 1, 1" = "Intel X509v3 Certificate (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 2" = "Intel X509v1 Version";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 3" = "Intel X509v1 Serial Number";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 5" = "Intel X509v1 Issuer Name";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 5, 1" = "Intel X509v1 Issuer Name (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 5, 2" = "Intel X509v1 Issuer Name (LDAP)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 6" = "Intel X509v1 Validity Not Before";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 7" = "Intel X509v1 Validity Not After";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 8" = "Intel X509v1 Subject Name";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 8, 1" = "Intel X509v1 Subject Name (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 8, 2" = "Intel X509v1 Subject Name (LDAP)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 9" = "Intel X509v1 Subject Public Key Algorithm";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 10" = "Intel X509v1 Subject Public Key";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 11" = "Intel X509v1 Certificate Issuer Unique ID";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 12" = "Intel X509v1 Certificate Subject Unique ID";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 13" = "Intel X509v3 Certificate Extension Struct";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 13, 1" = "Intel X509v3 Certificate Extension Struct (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 14" = "Intel X509v3 Number of Extensions";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 15" = "Intel X509v3 Certificate Extension ID";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 16" = "Intel X509v3 Certificate Extension Critical";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 17" = "Intel X509v3 Certificate Extension Value";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 18" = "Intel X509v1 Subject Public Key Algorithm Parameters";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 19" = "Intel X509v3 Certificate Extension Type";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 20" = "Intel X509v3 Subject Public Key Struct";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 20, 1" = "Intel X509v3 Subject Public Key Struct (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 21" = "Intel X509v3 Certificate Extensions Struct";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 21, 1" = "Intel X509v3 Certificate Extensions Struct (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 22" = "Intel X509v1 Subject Name [Standard]";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 23" = "Intel X509v3 Issuer Name [Standard]";
-
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 3, 2, 0" = "Intel X509v1 Signature Struct";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 3, 2, 0, 1" = "Intel X509v1 Signature Struct (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 3, 2, 1" = "Intel X509v1 Signature Algorithm";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 3, 2, 10" = "Intel X509v1 Signature Algorithm (To Be Signed)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 3, 2, 3" = "Intel X509v1 Signature Algorithm Parameters";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 3, 2, 2" = "Intel X509v1 Signature";
-
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 50, 1" = "Intel X509v3 Subject Signature Bitmap";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 50, 2" = "Intel X509v3 Subject Picture";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 50, 3" = "Intel X509v3 Subject Email Address";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 1, 1, 50, 4" = "Intel X509v3 Use Exemptions";
-    
-/* Apple Certificate Stuff. */
-
-"85, 29, 9" = "Subject Directory Attributes";
-"85, 29, 14" = "Subject Key Identifier";
-"85, 29, 15" = "Key Usage";
-"85, 29, 16" = "Private Key Usage Period";
-"85, 29, 17" = "Subject Alternate Name";
-"85, 29, 18" = "Issuer Alternate Name";
-"85, 29, 19" = "Basic Constraints";
-"85, 29, 20" = "CRL Number";
-"85, 29, 21" = "CRL Reason";
-"85, 29, 23" = "Hold Instruction Code";
-"85, 29, 24" = "Invalidity Date";
-"85, 29, 27" = "Delta CRL Indicator";
-"85, 29, 28" = "Issuing Distribution Point";
-"85, 29, 29" = "Certificate Issuer";
-"85, 29, 30" = "Name Constraints";
-"85, 29, 31" = "CRL Distribution Points";
-"85, 29, 32" = "Certificate Policies";
-"85, 29, 33" = "Policy Mappings";
-"85, 29, 35" = "Authority Key Identifier";
-"85, 29, 36" = "Policy Constraints";
-"85, 29, 37" = "Extended Key Usage";
-"85, 29, 37, 0" = "Extended Key Usage Any";
-
-"43, 6, 1, 5, 5, 7, 1, 1" = "PKIX Authority Info Access";
-"43, 6, 1, 5, 5, 7, 1, 11" = "PKIX Subject Info Access";
-
-"43, 6, 1, 5, 5, 7, 3, 1" = "PKIX Server Authentication";
-"43, 6, 1, 5, 5, 7, 3, 2" = "PKIX Client Authentication";
-"43, 6, 1, 5, 5, 7, 3, 3" = "PKIX Extended Use Code Signing";
-"43, 6, 1, 5, 5, 7, 3, 4" = "PKIX Email Protection";
-"43, 6, 1, 5, 5, 7, 3, 8" = "PKIX Time Stamping";
-"43, 6, 1, 5, 5, 7, 3, 9" = "PKIX OCSP Signing";
-
-"42, 134, 72, 134, 247, 99, 100, 3, 2, 1" = "Apple .Mac Certificate Identity";
-"42, 134, 72, 134, 247, 99, 100, 3, 2, 2" = "Apple .Mac Email Sign";
-"42, 134, 72, 134, 247, 99, 100, 3, 2, 3" = "Apple .Mac Email Encrypt";
-
-"42, 134, 72, 134, 247, 99, 100, 4, 1, 1" = "Apple EKU Code Signing Dev";
-
-"42, 134, 72, 134, 247, 99, 100, 4, 2" = "Apple EKU iChat Signing";
-"42, 134, 72, 134, 247, 99, 100, 4, 3" = "Apple EKU iChat Encryption";
-
-"42, 134, 72, 134, 247, 99, 100, 5, 1" = "Apple Certificate Policy";
-"42, 134, 72, 134, 247, 99, 100, 5, 2" = "Apple .Mac Certificate Policy";
-
-
-/* Intel X509 CRL Stuff. */
-
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1" = "Intel X509 CRL Attributes";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 0" = "Intel X509v2 Signed CRL Struct";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 0, 1" = "Intel X509v2 Signed CRL Struct (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 1" = "Intel X509v2 TBS Certificate Struct";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 1, 1" = "Intel X509v2 TBS Certificate Struct (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 2" = "Intel X509v2 CRL Version";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 3" = "Intel X509v1 CRL Issuers Struct";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 3, 1" = "Intel X509v1 CRL Issuers Struct (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 3, 2" = "Intel X509v1 CRL Issuers Struct (LDAP)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 4" = "Intel X509v1 CRL This Update";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 5" = "Intel X509v1 CRL Next Update";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 6" = "Intel X509v1 CRL Number of Revoked Entries";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 7" = "Intel X509v1 CRL Revoked Certificates Struct";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 7, 1" = "Intel X509v1 CRL Revoked Certificates Struct (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 8" = "Intel X509v2 CRL All Extensions Struct";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 8, 1" = "Intel X509v2 CRL All Extensions Struct (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 9" = "Intel X509v2 CRL Single Extension Struct";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 9, 1" = "Intel X509v2 CRL Single Extension Struct (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 10" = "Intel X509v2 CRL Number of Extensions";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 11" = "Intel X509v2 CRL Extension ID";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 12" = "Intel X509v2 CRL Extension Critical";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 13" = "Intel X509v2 CRL Extension Type";    
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 15" = "Intel X509v1 CRL Revoked Entry Struct";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 15, 1" = "Intel X509v1 CRL Revoked Entry Struct (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 16" = "Intel X509v1 CRL Revoked Entry Serial Number";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 17" = "Intel X509v1 CRL Revoked Entry Revocation Date";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 18" = "Intel X509v2 CRL Revoked Entry All Extensions Struct";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 18, 1" = "Intel X509v2 CRL Revoked Entry All Extensions Struct (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 19" = "Intel X509v2 CRL Revoked Entry Single Extension Struct";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 19, 1" = "Intel X509v2 CRL Revoked Entry Single Extension Struct (C Struct)";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 20" = "Intel X509v2 CRL Revoked Entry Number of Extensions";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 21" = "Intel X509v2 CRL Revoked Entry Extension ID";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 22" = "Intel X509v2 CRL Revoked Entry Extension Critical";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 23" = "Intel X509v2 CRL Revoked Entry Extension Type";
-"96, 134, 72, 1, 134, 248, 77, 2, 1, 2, 1, 24" = "Intel X509v2 CRL Revoked Entry Extension Value";
-	
-"43, 6, 1, 5, 5, 7, 48, 1, 1" = "PKIX OCSP Basic";
-"43, 6, 1, 5, 5, 7, 48, 1, 2" = "PKIX OCSP Nonce";
-"43, 6, 1, 5, 5, 7, 48, 1, 3" = "PKIX OCSP CRL";
-"43, 6, 1, 5, 5, 7, 48, 1, 4" = "PKIX OCSP Response";
-"43, 6, 1, 5, 5, 7, 48, 1, 5" = "PKIX OCSP No Check";
-"43, 6, 1, 5, 5, 7, 48, 1, 6" = "PKIX OCSP Archive Cutoff";
-"43, 6, 1, 5, 5, 7, 48, 1, 7" = "PKIX OCSP Service Locator";
+/* The key is the OID name as defined in various header files. */
+/* The value should be a short name for the OID. */
+
+CSSMOID_MD2 = "MD2";
+CSSMOID_MD4 = "MD4";
+CSSMOID_MD5 = "MD5";
+CSSMOID_RSA = "RSA";
+CSSMOID_MD2WithRSA = "MD2 with RSA";
+CSSMOID_MD4WithRSA = "MD4 with RSA";
+CSSMOID_MD5WithRSA = "MD5 with RSA";
+CSSMOID_SHA1WithRSA = "SHA1 with RSA";
+CSSMOID_DH = "DH";
+CSSMOID_DSA = "DSA";
+CSSMOID_SHA1WithDSA = "SHA1 with DSA";
+CSSMOID_SHA1 = "SHA1";
+CSSMOID_APPLE_ISIGN = "Apple iSign";
+CSSMOID_APPLE_X509_BASIC = "Apple x509 Basic";
+CSSMOID_APPLE_TP_SSL = "Apple TP SSL";
+CSSMOID_APPLE_TP_LOCAL_CERT_GEN = "Apple TP Local Cert Gen";
+CSSMOID_APPLE_TP_CSR_GEN = "AppleTP CSR Gen";
+CSSMOID_APPLE_FEE = "Apple FEE";
+CSSMOID_APPLE_ASC = "Apple ASC";
+CSSMOID_APPLE_FEE_MD5 = "Apple FEE MD5";
+CSSMOID_APPLE_FEE_SHA1 = "Apple FEE SHA1";
+CSSMOID_APPLE_FEED = "FEED";
+CSSMOID_APPLE_FEEDEXP = "FEEDEXP";
+CSSMOID_APPLE_ECDSA = "ECDSA";
+
+CSSMOID_ObjectClass = "Object Class";
+CSSMOID_AliasedEntryName = "Aliased Entry Name";
+CSSMOID_KnowledgeInformation = "Knowledge Information";
+CSSMOID_CommonName = "Common Name";
+CSSMOID_Surname = "Surname";
+CSSMOID_SerialNumber = "Serial Number";
+CSSMOID_CountryName = "Country";
+CSSMOID_LocalityName = "Locality";
+CSSMOID_StateProvinceName = "State/Province";
+CSSMOID_CollectiveStateProvinceName = "Collective State/Province";
+CSSMOID_StreetAddress = "Street Address";
+CSSMOID_CollectiveStreetAddress = "Collective Street Address";
+CSSMOID_OrganizationName = "Organization";
+CSSMOID_CollectiveOrganizationName = "Collective Organization";
+CSSMOID_OrganizationalUnitName = "Organizational Unit";
+CSSMOID_CollectiveOrganizationalUnitName = "Collective Organizational Unit";
+CSSMOID_Title = "Title";
+CSSMOID_Description = "Description";
+CSSMOID_SearchGuide = "Search Guide";
+CSSMOID_BusinessCategory = "Business Category";
+CSSMOID_PostalAddress = "Postal Address";
+CSSMOID_CollectivePostalAddress = "Collective Postal Address";
+CSSMOID_PostalCode = "Postcode";
+CSSMOID_CollectivePostalCode = "Collective Postcode";
+CSSMOID_PostOfficeBox = "P.O. Box";
+CSSMOID_CollectivePostOfficeBox = "Collective P.O. Box";
+CSSMOID_PhysicalDeliveryOfficeName = "Physical Delivery Office Name";
+CSSMOID_CollectivePhysicalDeliveryOfficeName = "Collective Physical Delivery Office Name";
+CSSMOID_TelephoneNumber = "Telephone";
+CSSMOID_CollectiveTelephoneNumber = "Collective Telephone";
+CSSMOID_TelexNumber = "Telex Number";
+CSSMOID_CollectiveTelexNumber = "Collective Telex Number";
+CSSMOID_TelexTerminalIdentifier = "Telex Terminal ID";
+CSSMOID_CollectiveTelexTerminalIdentifier = "Collective Telex Terminal ID";
+CSSMOID_FacsimileTelephoneNumber = "Fax";
+CSSMOID_CollectiveFacsimileTelephoneNumber = "Collective Fax";
+CSSMOID_X_121Address = "X121 Address";
+CSSMOID_InternationalISDNNumber = "International ISDN Number";
+CSSMOID_CollectiveInternationalISDNNumber = "Collective International ISDN Number";
+CSSMOID_RegisteredAddress = "Registered Address";
+CSSMOID_DestinationIndicator = "Destination Indicator";
+CSSMOID_PreferredDeliveryMethod = "Preferred Delivery Method";
+CSSMOID_PresentationAddress = "Presentation Address";
+CSSMOID_SupportedApplicationContext = "Supported Application Context";
+CSSMOID_Member = "Member";
+CSSMOID_Owner = "Owner";
+CSSMOID_RoleOccupant = "Occupant Role";
+CSSMOID_SeeAlso = "See Also";
+CSSMOID_UserPassword = "User Password";
+CSSMOID_UserCertificate = "User Certificate";
+CSSMOID_CACertificate = "CA Certificate";
+CSSMOID_AuthorityRevocationList = "Authority Revocation List";
+CSSMOID_CertificateRevocationList = "Certificate Revocation List";
+CSSMOID_CrossCertificatePair = "Cross Certificate Pair";
+CSSMOID_Name = "Name";
+CSSMOID_GivenName = "Given Name";
+CSSMOID_Initials = "Initials";
+CSSMOID_GenerationQualifier = "Generation Qualifier";
+CSSMOID_UniqueIdentifier = "Unique ID";
+CSSMOID_DNQualifier = "DN Qualifier";
+CSSMOID_EnhancedSearchGuide = "Enhanced Search Guide";
+CSSMOID_ProtocolInformation = "Protocol Information";
+CSSMOID_DistinguishedName = "Distinguished Name";
+CSSMOID_UniqueMember = "Unique Member";
+CSSMOID_HouseIdentifier = "House Identifier";
+CSSMOID_EmailAddress = "Email";
+CSSMOID_UnstructuredName = "Unstructured Name";
+CSSMOID_ContentType = "Content Type";
+CSSMOID_MessageDigest = "Message Digest";
+CSSMOID_SigningTime = "Signing Time";
+CSSMOID_CounterSignature = "Counter Signature";
+CSSMOID_ChallengePassword = "Challenge Password";
+CSSMOID_UnstructuredAddress = "Unstructured Address";
+CSSMOID_ExtendedCertificateAttributes = "Extended Certificate Attributes";
+CSSMOID_QT_CPS = "QT CPS";
+CSSMOID_QT_UNOTICE = "QT Unotice";
+CSSMOID_SubjectDirectoryAttributes = "Subject Directory Attributes";
+CSSMOID_SubjectKeyIdentifier = "Subject Key ID";
+CSSMOID_KeyUsage = "Key Usage";
+CSSMOID_PrivateKeyUsagePeriod = "Private Key Usage Period";
+CSSMOID_SubjectAltName = "Subject Alternate Name";
+CSSMOID_IssuerAltName = "Issuer Alternate Name";
+CSSMOID_BasicConstraints = "Basic Constraints";
+CSSMOID_CrlNumber = "CRL Number";
+CSSMOID_CrlReason = "CRL Reason";
+CSSMOID_HoldInstructionCode = "Hold Instruction Code";
+CSSMOID_InvalidityDate = "Invalidity Date";
+CSSMOID_DeltaCrlIndicator = "Delta CRL Indicator";
+CSSMOID_IssuingDistributionPoints = "Issuing Distribution Points";
+CSSMOID_NameConstraints = "Name Constraints";
+CSSMOID_CrlDistributionPoints = "CRL Distribution Points";
+CSSMOID_CertificatePolicies = "Certificate Policies";
+CSSMOID_PolicyMappings = "Policy Mappings";
+CSSMOID_PolicyConstraints = "Policy Constraints";
+CSSMOID_AuthorityKeyIdentifier = "Authority Key ID";
+CSSMOID_ExtendedKeyUsage = "Extended Key Usage";
+CSSMOID_ExtendedUseCodeSigning = "Extended Use Code Signing";
+CSSMOID_NetscapeCertType = "Netscape Certificate Type";
+
+CSSMOID_X509V3SignedCertificate = "Signed Certificate (BER encoded)";
+CSSMOID_X509V3SignedCertificateCStruct = "Signed Certificate (C Struct)";
+CSSMOID_X509V3Certificate = "Certificate (BER encoded)";
+CSSMOID_X509V3CertificateCStruct = "Certificate (C Struct)";
+CSSMOID_X509V1Version = "Version";
+CSSMOID_X509V1SerialNumber = "Serial Number";
+CSSMOID_X509V1IssuerName = "Issuer Name (BER encoded)";
+CSSMOID_X509V1IssuerNameCStruct = "Issuer Name (C Struct)";
+CSSMOID_X509V1IssuerNameLDAP = "Issuer Name (LDAP)";
+CSSMOID_X509V1ValidityNotBefore = "Not Valid Before";
+CSSMOID_X509V1ValidityNotAfter = "Not Valid After";
+CSSMOID_X509V1SubjectName = "Subject Name (BER encoded)";
+CSSMOID_X509V1SubjectNameCStruct = "Subject Name (C Struct)";
+CSSMOID_X509V1SubjectNameLDAP = "Subject Name (LDAP)";
+CSSMOID_CSSMKeyStruct = "Key (C Struct)";
+CSSMOID_X509V1SubjectPublicKeyCStruct = "Subject Public Key (C Struct)";
+CSSMOID_X509V1SubjectPublicKeyAlgorithm = "Subject Public Key Algorithm";
+CSSMOID_X509V1SubjectPublicKeyAlgorithmParameters = "Subject Public Key Algorithm Parameters (BER encoded)";
+CSSMOID_X509V1SubjectPublicKey = "Subject Public Key";
+CSSMOID_X509V1CertificateIssuerUniqueId = "Certificate Issuer ID";
+CSSMOID_X509V1CertificateSubjectUniqueId = "Certificate Subject ID";
+CSSMOID_X509V3CertificateExtensionsStruct = "Certificate Extensions (BER encoded C Struct)";
+CSSMOID_X509V3CertificateExtensionsCStruct = "Certificate Extensions (C Struct)";
+CSSMOID_X509V3CertificateNumberOfExtensions = "Certificate Number of Extensions";
+CSSMOID_X509V3CertificateExtensionStruct = "Certificate Extension (BER encoded C Struct)";
+CSSMOID_X509V3CertificateExtensionCStruct = "Certificate Extension (C Struct)";
+CSSMOID_X509V3CertificateExtensionId = "Certificate Extension ID";
+CSSMOID_X509V3CertificateExtensionCritical = "Certificate Extension Critical";
+CSSMOID_X509V3CertificateExtensionType = "Certificate Extension Type";
+CSSMOID_X509V3CertificateExtensionValue = "Certificate Extension Value";
+CSSMOID_X509V1SignatureStruct = "Signature (BER encoded C Struct)";
+CSSMOID_X509V1SignatureCStruct = "Signature (C Struct)";
+CSSMOID_X509V1SignatureAlgorithm = "Signature Algorithm";
+CSSMOID_X509V1SignatureAlgorithmTBS = "Signature Algorithm TBS";
+CSSMOID_X509V1SignatureAlgorithmParameters = "Signature Algorithm Parameters (BER encoded)";
+CSSMOID_X509V1Signature = "Signature";
+CSSMOID_SubjectSignatureBitmap = "Subject Signature Bitmap";
+CSSMOID_SubjectPicture = "Subject Picture";
+CSSMOID_SubjectEmailAddress = "Subject Email Address";
+CSSMOID_UseExemptions = "Use Exemptions";
+CSSMOID_SubjectDirectoryAttributes = "Subject Directory Attributes";
+CSSMOID_SubjectKeyIdentifier = "Subject Key Identifier";
+CSSMOID_KeyUsage = "Key Usage";
+CSSMOID_PrivateKeyUsagePeriod = "Private Key Usage Period";
+CSSMOID_SubjectAltName = "Subject Alternate Name";
+CSSMOID_IssuerAltName = "Issuer Alternate Name";
+CSSMOID_BasicConstraints = "Basic Constraints";
+CSSMOID_CrlNumber = "CRL Number";
+CSSMOID_CrlReason = "CRL Reason";
+CSSMOID_HoldInstructionCode = "Hold Instruction Code";
+CSSMOID_InvalidityDate = "Invalidity Date";
+CSSMOID_DeltaCrlIndicator = "Delta CRL Indicator";
+CSSMOID_IssuingDistributionPoints = "Issuing Distribution Points";
+CSSMOID_NameConstraints = "Name Constraints";
+CSSMOID_CrlDistributionPoints = "CRL Distribution Points";
+CSSMOID_CertificatePolicies = "Certificate Policies";
+CSSMOID_PolicyMappings = "Policy Mappings";
+CSSMOID_PolicyConstraints = "Policy Constraints";
+CSSMOID_AuthorityKeyIdentifier = "Authority Key Identifier";
+CSSMOID_ExtendedKeyUsage = "Extended Key Usage";
+CSSMOID_ExtendedUseCodeSigning = "Extended Use Code Signing";
+"Generic Extension" = "Generic Extension";

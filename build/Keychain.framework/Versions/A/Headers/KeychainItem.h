@@ -206,6 +206,7 @@
 - (NSString*)domain;
 - (NSString*)server;
 - (SecAuthenticationType)authenticationType;
+- (NSString*)authenticationTypeString;
 - (UInt16)port;
 - (NSString*)path;
 - (NSString*)appleShareVolume;
@@ -213,10 +214,13 @@
 - (SecAFPServerSignature*)appleShareSignature;
 - (NSData*)appleShareSignatureData;
 - (SecProtocolType)protocol;
+- (NSString*)protocolString;
 - (CSSM_CERT_TYPE)certificateType;
 - (CSSM_CERT_ENCODING)certificateEncoding;
 - (CSSM_CRL_TYPE)CRLtype;
+- (NSString*)CRLtypeString;
 - (CSSM_CRL_ENCODING)CRLencoding;
+- (NSString*)CRLencodingString;
 - (BOOL)isAlias;
 
 - (void)setAccess:(Access*)acc;

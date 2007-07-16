@@ -23,7 +23,7 @@ extern NSString* const kABCertificateRefProperty;              // Certificate re
         extern NSString* const kABCertificatePortableLabel;    // Portable certificate
 
 
-@interface ABPerson (KeychainFramework)
+@interface ABPerson (ABPersonCertificateAdditions)
 
 /*! @method primaryCertificates
     @abstract Returns the certificate(s) designated as primary for the receiver.

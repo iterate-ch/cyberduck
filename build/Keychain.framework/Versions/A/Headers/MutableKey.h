@@ -16,18 +16,18 @@
 
 
 @interface MutableKey : Key {
-    CSSM_KEY *_MutableCSSMKey;
-    BOOL _freeWhenDone;
+    CSSM_KEY *MutableCSSMKey;
+    BOOL freeWhenDone;
 }
 
-+ (MutableKey*)generateKey:(CSSM_ALGORITHMS)algorithm size:(uint32)keySizeInBits validFrom:(NSCalendarDate*)validFrom validTo:(NSCalendarDate*)validTo usage:(uint32)keyUsage mutable:(BOOL)keyIsMutable extractable:(BOOL)keyIsExtractable sensitive:(BOOL)keyIsSensitive label:(NSString*)label module:(CSSMModule*)CSPModule;
++ (MutableKey*)generateKey:(CSSM_ALGORITHMS)algorithm size:(uint32)keySizeInBits validFrom:(NSCalendarDate*)validFrom validTo:(NSCalendarDate*)validTo usage:(uint32)keyUsage mutable:(BOOL)keyIsMutable extractable:(BOOL)keyIsExtractable sensitive:(BOOL)keyIsSensitive label:(NSString*)label;
 
-+ (MutableKey*)keyWithKeyRef:(SecKeyRef)ke module:(CSSMModule*)CSPModule;
-+ (MutableKey*)keyWithCSSMKey:(CSSM_KEY*)ke module:(CSSMModule*)CSPModule;
-+ (MutableKey*)keyWithCSSMKey:(CSSM_KEY*)ke freeWhenDone:(BOOL)freeWhenDo module:(CSSMModule*)CSPModule;
++ (MutableKey*)keyWithKeyRef:(SecKeyRef)ke;
++ (MutableKey*)keyWithCSSMKey:(CSSM_KEY*)ke;
++ (MutableKey*)keyWithCSSMKey:(CSSM_KEY*)ke freeWhenDone:(BOOL)freeWhenDo;
 
-- (MutableKey*)initWithKeyRef:(SecKeyRef)ke module:(CSSMModule*)CSPModule;
-- (MutableKey*)initWithCSSMKey:(CSSM_KEY*)ke freeWhenDone:(BOOL)freeWhenDo module:(CSSMModule*)CSPModule;
+- (MutableKey*)initWithKeyRef:(SecKeyRef)ke;
+- (MutableKey*)initWithCSSMKey:(CSSM_KEY*)ke freeWhenDone:(BOOL)freeWhenDo;
 
 /*! @method init
     @abstract Reject initialiser.
@@ -58,4 +58,4 @@
 
 @end
 
-NSArray* generateKeyPair(CSSM_ALGORITHMS algorithm, uint32 keySizeInBits, NSCalendarDate *validFrom, NSCalendarDate *validTo, uint32 publicKeyUsage, uint32 privateKeyUsage, NSString *publicKeyLabel, NSString *privateKeyLabel, CSSMModule *CSPModule);
+NSArray* generateKeyPair(CSSM_ALGORITHMS algorithm, uint32 keySizeInBits, NSCalendarDate *validFrom, NSCalendarDate *validTo, uint32 publicKeyUsage, uint32 privateKeyUsage, NSString *publicKeyLabel, NSString *privateKeyLabel);

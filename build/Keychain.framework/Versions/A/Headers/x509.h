@@ -483,7 +483,7 @@
 - (Time*)to;
 
 - (BOOL)isCurrentlyValid;
-- (BOOL)isValidAtDate:(NSCalendarDate*)date;
+- (BOOL)isValidAtDate:(NSDate*)date;
 
 - (NSString*)description;
 

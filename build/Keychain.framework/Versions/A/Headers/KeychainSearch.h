@@ -27,12 +27,6 @@
 NSArray* FindCertificatesMatchingPublicKeyHash(NSData *hash);
 
 
-/*! @class SearchAttribute
-    @abstract A simple class representing a single search attribute.
-    @discussion You use this class to specify attributes of interest in a KeychainSearch.  This class is itself very straightforward; refer to the documentation for KeychainSearch for the details of searching.
-
-                At present this class is used only internally within the KeychainSearch class.  An API for specifying it manually may be provided, on KeychainSearch, at a later date. */
-
 @interface SearchAttribute : NSObject {
     SecKeychainAttribute attribute;
     BOOL freeWhenDone;
@@ -57,14 +51,10 @@ NSArray* FindCertificatesMatchingPublicKeyHash(NSData *hash);
 
 
 
-/*! @class KeychainSearch
-    @abstract Provides a mechanism for searching through a group of keychains for items with particular attributes.
-    @discussion This is your general search mechanism for keychain items.  You can specify all manner of attributes to search by.  By default each new KeychainSearch instance has no parameters set, and will thus match all items in the searched keychains.  After you create the instance, you'll probably want to use the appropriate methods to define what attributes you're looking for.  When you're ready to collect your results, use any of the methods for acquiring results. */
-
 @interface KeychainSearch : NSObject {
-    NSArray *_keychainList;
-    NSMutableArray *_attributes;
-    int _error;
+    NSArray *keychainList;
+    NSMutableArray *attributes;
+    int error;
 }
 
 + (KeychainSearch*)keychainSearchWithKeychains:(NSArray*)keychains;
@@ -78,8 +68,8 @@ NSArray* FindCertificatesMatchingPublicKeyHash(NSData *hash);
 
 - (KeychainSearch*)init;
 
-- (void)setCreationDate:(NSCalendarDate*)date;
-- (void)setModificationDate:(NSCalendarDate*)date;
+- (void)setCreationDate:(NSDate*)date;
+- (void)setModificationDate:(NSDate*)date;
 - (void)setDescription:(NSString*)desc;
 - (void)setComment:(NSString*)comment;
 - (void)setCreator:(NSString*)creator;
