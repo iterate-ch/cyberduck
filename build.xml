@@ -257,12 +257,12 @@
 			   passphrase="">
 		</scp>
 		<scp file="${build}/${app.name}-${svn.revision}.tar.gz"
-			   todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
+			   todir="dkocher@www.icu.uzh.ch:./public_html/cyberduck/"
 			   keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
 			   passphrase="">
 		</scp>
 		<scp file="${build}/${app.name}-${svn.revision}.tar.gz.md5"
-			   todir="dkocher@icu.unizh.ch:./public_html/cyberduck/"
+			   todir="dkocher@www.icu.uzh.ch:./public_html/cyberduck/"
 			   keyfile="${user.home}/.ssh/icu.unizh.ch-rsa"
 			   passphrase="">
 		</scp>
