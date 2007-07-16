@@ -63,7 +63,7 @@ public class EditMenuDelegate extends MenuDelegate {
                 new String[Editor.INSTALLED_EDITORS.size()])[index];
         item.setTitle(editor);
         if(editor.equals(Preferences.instance().getProperty("editor.name"))) {
-            item.setKeyEquivalent("j");
+            item.setKeyEquivalent("k");
             item.setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
         }
         else {
