@@ -1,11 +1,12 @@
 package ch.cyberduck.core.ftp.parser;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,124 +17,159 @@ package ch.cyberduck.core.ftp.parser;
  * limitations under the License.
  */
 
-import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.ftp.parser.RegexFTPFileEntryParserImpl;
+import java.text.ParseException;
 
-import java.util.Calendar;
+import org.apache.commons.net.ftp.FTPClientConfig;
+import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.parser.ConfigurableFTPFileEntryParserImpl;
 
 /**
- * @author <a href="mailto:dkocher@cyberduck.ch">David Kocher</a>
+ * Implementation of FTPFileEntryParser and FTPFileListParser for Netware Systems. Note that some of the proprietary
+ * extensions for Novell-specific operations are not supported. See
+ * <a href="http://www.novell.com/documentation/nw65/index.html?page=/documentation/nw65/ftp_enu/data/fbhbgcfa.html">http://www.novell.com/documentation/nw65/index.html?page=/documentation/nw65/ftp_enu/data/fbhbgcfa.html</a>
+ * for more details.
+ *
+ * @author <a href="rwinston@apache.org">Rory Winston</a>
+ * @see org.apache.commons.net.ftp.FTPFileEntryParser FTPFileEntryParser (for usage instructions)
  * @version $Id$
  */
-public class NetwareFTPEntryParser extends RegexFTPFileEntryParserImpl {
+public class NetwareFTPEntryParser extends ConfigurableFTPFileEntryParserImpl {
 
-    /**
-     * months abbreviations looked for by this parser.  Also used
-     * to determine which month is matched by the parser
-     */
-    private static final String MONTHS =
-            "(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)";
+	/**
+	 * Default date format is e.g. Feb 22 2006
+	 */
+	private static final String DEFAULT_DATE_FORMAT = "MMM dd yyyy";
 
-    /**
-     * - [RWCEAFMS]          0                       1593 Feb 18 16:36 00README
-     * - [RWCEAFMS]          0                       1445 Apr 28  1994 ANON.DAT
-     * - [RWCEAFMS] anonymous                           0 Jan 11 16:11 DSNS_B~1
-     * - [RWCEAFMS] Labspace                           91 Oct 13 07:42 LABSPACE.SUM
-     * - [RWCEAFMS]          0                      27945 Sep 05  1994 WHATIS.MSC
-     * d [RWCEAFMS]          0                        512 Jan 22 20:44 MAINT
-     * d [RWCEAFMS]          0                        512 Dec 29  2003 MISC
-     */
-    private static final String REGEX =
-            "([-d])\\s+" //file type
-                    + "(\\S+)\\s+"//"(\\\[(R|-)(W|-)(C|-)(E|-)(A|-)(F|-)(M|-)(S|-)\\\])\\s+"
-                    + "(\\d+|\\S+)\\s+" //owner
-                    + "(\\d+)\\s+" //size
-                    + MONTHS + "\\s+" //month
-                    + "(\\d{2})\\s+" //day
-                    + "((([0-2][0-9]):([0-5][0-9]))|(\\d{4}))\\s+" // hour:minutes | year
-                    + "(\\S.*)";
+	/**
+	 * Default recent date format is e.g. Feb 22 17:32
+	 */
+	private static final String DEFAULT_RECENT_DATE_FORMAT = "MMM dd HH:mm";
 
+	/**
+	 * this is the regular expression used by this parser.
+	 * Example: d [-W---F--] SCION_VOL2                        512 Apr 13 23:12 VOL2
+	 */
+	private static final String REGEX = "(d|-){1}\\s+"	// Directory/file flag
+			+ "\\[(.*)\\]\\s+"			// Attributes
+			+ "(\\S+)\\s+" + "(\\d+)\\s+"		// Owner and size
+			+ "(\\S+\\s+\\S+\\s+((\\d+:\\d+)|(\\d{4})))" // Long/short date format
+			+ "\\s+(.*)";				// Filename (incl. spaces)
 
-    public NetwareFTPEntryParser() {
-        super(REGEX);
-    }
+	/**
+	 * The default constructor for a NetwareFTPEntryParser object.
+	 *
+	 * @exception IllegalArgumentException
+	 * Thrown if the regular expression is unparseable.  Should not be seen
+	 * under normal conditions.  It it is seen, this is a sign that
+	 * <code>REGEX</code> is  not a valid regular expression.
+	 */
+	public NetwareFTPEntryParser() {
+		this(null);
+	}
 
-    /**
-     * @param entry A line of text from the file listing
-     * @return An FTPFile instance corresponding to the supplied entry
-     */
-    public FTPFile parseFTPEntry(String entry) {
-        FTPFile file = new FTPFile();
-        file.setRawListing(entry);
-        if(matches(entry)) {
-            String typeStr = group(1);
-            String user = group(3);
-            String filesize = group(4);
-            String mo = group(5);
-            String da = group(6);
-            String hr = group(9);
-            String min = group(10);
-            String yr = group(11);
-            String name = group(12);
-            if(null == name || name.equals("") || name.equals(".") || name.equals("..")) {
-                return null;
-            }
-            int type;
-            switch(typeStr.charAt(0)) {
-                case'd':
-                    type = FTPFile.DIRECTORY_TYPE;
-                    break;
-                default:
-                    type = FTPFile.FILE_TYPE;
-            }
+	/**
+	 * This constructor allows the creation of an NetwareFTPEntryParser object
+	 * with something other than the default configuration.
+	 *
+	 * @param config The {@link FTPClientConfig configuration} object used to
+	 * configure this parser.
+	 * @exception IllegalArgumentException
+	 * Thrown if the regular expression is unparseable.  Should not be seen
+	 * under normal conditions.  It it is seen, this is a sign that
+	 * <code>REGEX</code> is  not a valid regular expression.
+	 * @since 1.4
+	 */
+	public NetwareFTPEntryParser(FTPClientConfig config) {
+		super(REGEX);
+		configure(config);
+	}
 
-            file.setType(type);
-            file.setUser(user);
+	/**
+	 * Parses a line of an NetwareFTP server file listing and converts it into a
+	 * usable format in the form of an <code> FTPFile </code> instance.  If the
+	 * file listing line doesn't describe a file, <code> null </code> is
+	 * returned, otherwise a <code> FTPFile </code> instance representing the
+	 * files in the directory is returned.
+	 * <p>
+	 * <p>
+	 * Netware file permissions are in the following format:  RWCEAFMS, and are explained as follows:
+	 * <ul>
+	 * <li><b>S</b> - Supervisor; All rights.
+	 * <li><b>R</b> - Read; Right to open and read or execute.
+	 * <li><b>W</b> - Write; Right to open and modify.
+	 * <li><b>C</b> - Create; Right to create; when assigned to a file, allows a deleted file to be recovered.
+	 * <li><b>E</b> - Erase; Right to delete.
+	 * <li><b>M</b> - Modify; Right to rename a file and to change attributes.
+	 * <li><b>F</b> - File Scan; Right to see directory or file listings.
+	 * <li><b>A</b> - Access Control; Right to modify trustee assignments and the Inherited Rights Mask.
+	 * </ul>
+	 *
+	 * See <a href="http://www.novell.com/documentation/nfap10/index.html?page=/documentation/nfap10/nfaubook/data/abxraws.html">here</a>
+	 * for more details
+	 *
+	 * @param entry A line of text from the file listing
+	 * @return An FTPFile instance corresponding to the supplied entry
+	 */
+	public FTPFile parseFTPEntry(String entry) {
 
-            try {
-                file.setSize(Long.parseLong(filesize));
-            }
-            catch(NumberFormatException e) {
-                // intentionally do nothing
-            }
+		FTPFile f = new FTPFile();
+		if (matches(entry)) {
+			String dirString = group(1);
+			String attrib = group(2);
+			String user = group(3);
+			String size = group(4);
+			String datestr = group(5);
+			String name = group(9);
 
-            Calendar cal = Calendar.getInstance();
+			try {
+				f.setTimestamp(super.parseTimestamp(datestr));
+			} catch (ParseException e) {
+				return null; // this is a parsing failure too.
+			}
 
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.HOUR_OF_DAY, 0);
+			//is it a DIR or a file
+			if (dirString.trim().equals("d")) {
+				f.setType(FTPFile.DIRECTORY_TYPE);
+			} else // Should be "-"
+			{
+				f.setType(FTPFile.FILE_TYPE);
+			}
 
-            try {
-                int pos = MONTHS.indexOf(mo);
-                int month = pos / 4;
+			f.setUser(user);
 
-                if(null != yr) {
-                    // it's a year
-                    cal.set(Calendar.YEAR, Integer.parseInt(yr));
-                }
-                else {
-                    // it must be  hour/minute or we wouldn't have matched
-                    int year = cal.get(Calendar.YEAR);
-                    // if the month we're reading is greater than now, it must
-                    // be last year
-                    if(cal.get(Calendar.MONTH) < month) {
-                        year--;
-                    }
-                    cal.set(Calendar.YEAR, year);
-                    cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hr));
-                    cal.set(Calendar.MINUTE, Integer.parseInt(min));
-                }
-                cal.set(Calendar.MONTH, month);
+			//set the name
+			f.setName(name.trim());
 
-                cal.set(Calendar.DATE, Integer.parseInt(da));
-                file.setTimestamp(cal);
-            }
-            catch(NumberFormatException e) {
-                // do nothing, date will be uninitialized
-            }
-            file.setName(name);
-            return file;
-        }
-        return null;
-    }
+			//set the size
+			f.setSize(Long.parseLong(size.trim()));
+
+			// Now set the permissions (or at least a subset thereof - full permissions would probably require
+			// subclassing FTPFile and adding extra metainformation there)
+			if (attrib.indexOf("R") != -1) {
+				f.setPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION,
+						true);
+			}
+			if (attrib.indexOf("W") != -1) {
+				f.setPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION,
+						true);
+			}
+
+			return (f);
+		}
+		return null;
+
+	}
+
+	/**
+	 * Defines a default configuration to be used when this class is
+	 * instantiated without a {@link  FTPClientConfig  FTPClientConfig}
+	 * parameter being specified.
+	 * @return the default configuration for this parser.
+	 */
+	protected FTPClientConfig getDefaultConfiguration() {
+		return new FTPClientConfig("NETWARE",
+				DEFAULT_DATE_FORMAT, DEFAULT_RECENT_DATE_FORMAT, null, null,
+				null);
+	}
+
 }
