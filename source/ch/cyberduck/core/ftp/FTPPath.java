@@ -130,6 +130,7 @@ public class FTPPath extends Path {
                 String line = null;
                 FTPFileEntryParser parser = session.getFileParser();
                 while((line = parser.readNextEntry(reader)) != null) {
+                    log.info(line);
                     FTPFile f = parser.parseFTPEntry(line);
                     if(null == f || f.getName().equals(".") || f.getName().equals("..")) {
                         continue;
