@@ -171,7 +171,7 @@ public class DownloadTransfer extends Transfer {
                 }
             };
         }
-        if(action.equals(TransferAction.ACTION_SIMILARNAME)) {
+        if(action.equals(TransferAction.ACTION_RENAME)) {
             return new DownloadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
                     return true;

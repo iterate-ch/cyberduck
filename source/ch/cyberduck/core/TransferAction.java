@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSBundle;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +43,8 @@ public abstract class TransferAction {
         return this.toString().equals(other.toString());
     }
 
+    public abstract String getLocalizableString();
+
     public static TransferAction forName(String name) {
         return (TransferAction)actions.get(name);
     }
@@ -52,6 +56,10 @@ public abstract class TransferAction {
         public String toString() {
             return "overwrite";
         }
+
+        public String getLocalizableString() {
+            return NSBundle.localizedString("Overwrite", "");
+        }
     };
 
     /**
@@ -61,6 +69,10 @@ public abstract class TransferAction {
         public String toString() {
             return "resume";
         }
+
+        public String getLocalizableString() {
+            return NSBundle.localizedString("Resume", "");
+        }
     };
 
     /**
@@ -69,9 +81,13 @@ public abstract class TransferAction {
      * @see DownloadTransfer#adjustFilename(ch.cyberduck.core.Path)
      * @see UploadTransfer#adjustFilename(ch.cyberduck.core.Path)
      */
-    public static final TransferAction ACTION_SIMILARNAME = new TransferAction() {
+    public static final TransferAction ACTION_RENAME = new TransferAction() {
         public String toString() {
             return "similar";
+        }
+
+        public String getLocalizableString() {
+            return NSBundle.localizedString("Rename", "");
         }
     };
 
@@ -82,6 +98,10 @@ public abstract class TransferAction {
         public String toString() {
             return "skip";
         }
+
+        public String getLocalizableString() {
+            return NSBundle.localizedString("Skip", "");
+        }
     };
 
     /**
@@ -91,11 +111,19 @@ public abstract class TransferAction {
         public String toString() {
             return "ask";
         }
+
+        public String getLocalizableString() {
+            return NSBundle.localizedString("Prompt", "");
+        }
     };
 
     public static final TransferAction ACTION_CANCEL = new TransferAction() {
         public String toString() {
             return "cancel";
+        }
+
+        public String getLocalizableString() {
+            return NSBundle.localizedString("Cancel", "");
         }
     };
 }

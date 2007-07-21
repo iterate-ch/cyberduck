@@ -104,7 +104,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 action = TransferAction.ACTION_RESUME;
             }
             else if(actionPopup.selectedItem().title().equals(ACTION_SIMILARNAME)) {
-                action = TransferAction.ACTION_SIMILARNAME;
+                action = TransferAction.ACTION_RENAME;
             }
         }
         if(returncode == CANCEL_OPTION) { // Abort

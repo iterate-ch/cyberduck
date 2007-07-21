@@ -182,7 +182,7 @@ public class UploadTransfer extends Transfer {
                 }
             };
         }
-        if(action.equals(TransferAction.ACTION_SIMILARNAME)) {
+        if(action.equals(TransferAction.ACTION_RENAME)) {
             return new UploadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
                     // Rename every file
