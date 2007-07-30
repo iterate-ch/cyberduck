@@ -33,18 +33,35 @@ public class NTFTPEntryParserTest extends TestCase
 
     private static final String[] samples =
             {
-            "05-26-95  10:57AM               143712 $LDR$",
-            "05-20-97  03:31PM                  681 .bash_history",
-            "12-05-96  05:03PM       <DIR>          absoft2",
-            "11-14-97  04:21PM                  953 AUDITOR3.INI",
-            "05-22-97  08:08AM                  828 AUTOEXEC.BAK",
-            "01-22-98  01:52PM                  795 AUTOEXEC.BAT",
-            "05-13-97  01:46PM                  828 AUTOEXEC.DOS",
-            "12-03-96  06:38AM                  403 AUTOTOOL.LOG",
-            "12-03-96  06:38AM       <DIR>          123xyz",
-            "01-20-97  03:48PM       <DIR>          bin",
-            "05-26-1995  10:57AM               143712 $LDR$",
-            };
+                    "05-26-95  10:57AM               143712 $LDR$",
+                    "05-20-97  03:31PM                  681 .bash_history",
+                    "12-05-96  05:03PM       <DIR>          absoft2",
+                    "11-14-97  04:21PM                  953 AUDITOR3.INI",
+                    "05-22-97  08:08AM                  828 AUTOEXEC.BAK",
+                    "01-22-98  01:52PM                  795 AUTOEXEC.BAT",
+                    "05-13-97  01:46PM                  828 AUTOEXEC.DOS",
+                    "12-03-96  06:38AM                  403 AUTOTOOL.LOG",
+                    "12-03-96  06:38AM       <DIR>          123xyz",
+                    "01-20-97  03:48PM       <DIR>          bin",
+                    "05-26-1995  10:57AM               143712 $LDR$",
+                    "07-10-07  07:32PM                69610 Algemene Leveringsvoorwaarden *******.pdf",
+                    "07-11-07  12:52AM       <DIR>          aspnet_client",
+                    "07-10-07  07:30PM       <DIR>          auth",
+                    "07-03-07  01:55PM       <DIR>          cgi-bin",
+                    "07-10-07  07:32PM                  428 global.asa",
+                    "07-03-07  01:55PM       <DIR>          icon",
+                    "07-10-07  07:29PM       <DIR>          img",
+                    "07-10-07  07:32PM       <DIR>          include",
+                    "07-10-07  07:32PM                 3384 index.html",
+                    "07-10-07  07:32PM       <DIR>          js",
+                    "07-10-07  07:37PM       <DIR>          kandidaten",
+                    "07-10-07  07:32PM       <DIR>          lib",
+                    "07-10-07  07:37PM       <DIR>          opdrachtgevers",
+                    "07-10-07  07:32PM                 1309 stijl1.css",
+                    "07-10-07  07:32PM       <DIR>          style",
+                    "07-15-07  02:40PM       <DIR>          temp",
+                    "07-10-07  07:32PM       <DIR>          vacatures"
+    };
 
     /**
      * @see junit.framework.TestCase#TestCase(String)
