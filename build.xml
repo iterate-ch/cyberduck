@@ -223,12 +223,12 @@
 	<target name="mirror.nightly" depends="revision">
 		<scp file="${build}/${app.name}-${svn.revision}.tar.gz"
 			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
-			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
 			   passphrase="">
 		</scp>
 		<scp file="${build}/${app.name}-${svn.revision}.tar.gz.md5"
 			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
-			   keyfile="${user.home}/.ssh/82.195.231.218-rsa"
+			   keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
 			   passphrase="">
 		</scp>
 		<!-- Changelog Nightly - version.cyberduck.ch -->
