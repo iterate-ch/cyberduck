@@ -221,6 +221,12 @@ public class DownloadTransfer extends Transfer {
                             continue;
                         }
                     }
+//                    if(root.getLocal().attributes.isFile()) {
+//                        if(root.getLocal().attributes.getSize() == 0) {
+//                            // Do not prompt for zero sized files
+//                            continue;
+//                        }
+//                    }
                     // Prompt user to choose a filter
                     TransferAction result = prompt.prompt(this);
                     return this.filter(result); //break out of loop
