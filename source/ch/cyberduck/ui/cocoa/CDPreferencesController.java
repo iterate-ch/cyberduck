@@ -406,6 +406,10 @@ public class CDPreferencesController extends CDWindowController {
         if(sender.selectedItem().tag() == 1) {
             p = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
         }
+        if(null == p) {
+            log.error("No selected item for:"+sender);
+            return;
+        }
         boolean[] ownerPerm = p.getOwnerPermissions();
         boolean[] groupPerm = p.getGroupPermissions();
         boolean[] otherPerm = p.getOtherPermissions();
@@ -440,6 +444,10 @@ public class CDPreferencesController extends CDWindowController {
         }
         if(sender.selectedItem().tag() == 1) {
             p = new Permission(Preferences.instance().getInteger("queue.download.permissions.folder.default"));
+        }
+        if(null == p) {
+            log.error("No selected item for:"+sender);
+            return;
         }
         boolean[] ownerPerm = p.getOwnerPermissions();
         boolean[] groupPerm = p.getGroupPermissions();
