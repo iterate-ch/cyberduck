@@ -372,10 +372,10 @@ public class ChannelManager implements MessageHandler
 				while (true)
 				{
 					if (c.state == Channel.STATE_CLOSED)
-						throw new IOException("SSH channel is closed. (" + c.getReasonClosed() + ")");
+						throw new ChannelClosedException("SSH channel is closed. (" + c.getReasonClosed() + ")");
 
 					if (c.state != Channel.STATE_OPEN)
-						throw new IOException("SSH channel in strange state. (" + c.state + ")");
+						throw new ChannelClosedException("SSH channel in strange state. (" + c.state + ")");
 
 					if (c.remoteWindow != 0)
 						break;
@@ -425,7 +425,7 @@ public class ChannelManager implements MessageHandler
 			synchronized (c.channelSendLock)
 			{
 				if (c.closeMessageSent == true)
-					throw new IOException("SSH channel is closed. (" + c.getReasonClosed() + ")");
+                    throw new ChannelClosedException("SSH channel is closed. (" + c.getReasonClosed() + ")");
 
 				tm.sendMessage(msg);
 			}

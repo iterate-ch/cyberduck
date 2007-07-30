@@ -18,24 +18,22 @@ package ch.cyberduck.core.sftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.ethz.ssh2.Connection;
-import ch.ethz.ssh2.ConnectionInfo;
-import ch.ethz.ssh2.InteractiveCallback;
-import ch.ethz.ssh2.SCPClient;
-import ch.ethz.ssh2.ServerHostKeyVerifier;
-import ch.ethz.ssh2.crypto.PEMDecoder;
-import ch.ethz.ssh2.sftp.SFTPv3Client;
+import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.Session;
 
-import com.apple.cocoa.foundation.NSBundle;
+import java.io.CharArrayWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
-import java.io.CharArrayWriter;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.File;
+import ch.ethz.ssh2.*;
+import ch.ethz.ssh2.channel.ChannelClosedException;
+import ch.ethz.ssh2.crypto.PEMDecoder;
+import ch.ethz.ssh2.sftp.SFTPv3Client;
 
 /**
  * @version $Id$
@@ -69,17 +67,17 @@ public class SFTPSession extends Session {
     public String getSecurityInformation() {
         StringBuffer info = new StringBuffer();
         if(SFTP != null) {
-            info.append("SFTP Protocol version: " + SFTP.getProtocolVersion()+"\n");
+            info.append("SFTP Protocol version: " + SFTP.getProtocolVersion() + "\n");
         }
         try {
             final ConnectionInfo i = SSH.getConnectionInfo();
-            info.append("Key Exchange (KEX) Algorithm: "+i.keyExchangeAlgorithm+"\n");
-            info.append("Number of key exchanges performed on this connection so far: "+i.keyExchangeCounter+"\n");
-            info.append("Host Key Algorithm: "+i.serverHostKeyAlgorithm+"\n");
-            info.append("Server to Client Crypto Algorithm: "+i.serverToClientCryptoAlgorithm+"\n");
-            info.append("Client to Server Crypto Algorithm: "+i.clientToServerCryptoAlgorithm+"\n");
-            info.append("Server to Client MAC Algorithm: "+i.serverToClientMACAlgorithm+"\n");
-            info.append("Client to Server MAC Algorithm: "+i.clientToServerMACAlgorithm+"\n");
+            info.append("Key Exchange (KEX) Algorithm: " + i.keyExchangeAlgorithm + "\n");
+            info.append("Number of key exchanges performed on this connection so far: " + i.keyExchangeCounter + "\n");
+            info.append("Host Key Algorithm: " + i.serverHostKeyAlgorithm + "\n");
+            info.append("Server to Client Crypto Algorithm: " + i.serverToClientCryptoAlgorithm + "\n");
+            info.append("Client to Server Crypto Algorithm: " + i.clientToServerCryptoAlgorithm + "\n");
+            info.append("Server to Client MAC Algorithm: " + i.serverToClientMACAlgorithm + "\n");
+            info.append("Client to Server MAC Algorithm: " + i.clientToServerMACAlgorithm + "\n");
         }
         catch(IOException e) {
             log.error(e.getMessage());
@@ -98,6 +96,7 @@ public class SFTPSession extends Session {
     /**
      * If never called before opens a new SFTP subsystem. If called before, the cached
      * SFTP subsystem is returned. May not be used concurrently.
+     *
      * @throws IOException
      */
     protected SFTPv3Client sftp() throws IOException {
@@ -118,6 +117,7 @@ public class SFTPSession extends Session {
 
     /**
      * Opens a new, dedicated SCP channel for this SSH session
+     *
      * @throws IOException
      */
     protected SCPClient openScp() throws IOException {
@@ -131,7 +131,7 @@ public class SFTPSession extends Session {
         final SCPClient client = new SCPClient(SSH);
 //        this.message(NSBundle.localizedString("SCP subsystem ready", "Status", ""));
         client.setCharset(this.getEncoding());
-        return  client;
+        return client;
     }
 
     protected void connect() throws IOException, ConnectionCanceledException, LoginCanceledException {
@@ -197,7 +197,7 @@ public class SFTPSession extends Session {
     }
 
     private boolean loginUsingPublicKeyAuthentication(final Login credentials) throws IOException {
-        log.debug("loginUsingPublicKeyAuthentication:"+credentials);
+        log.debug("loginUsingPublicKeyAuthentication:" + credentials);
         if(SSH.isAuthMethodAvailable(host.getCredentials().getUsername(), "publickey")) {
             Local key = new Local(credentials.getPrivateKeyFile());
             if(key.exists()) {
@@ -205,9 +205,9 @@ public class SFTPSession extends Session {
                 char[] buff = new char[256];
                 CharArrayWriter cw = new CharArrayWriter();
                 FileReader fr = new FileReader(new File(key.getAbsolute()));
-                while (true) {
+                while(true) {
                     int len = fr.read(buff);
-                    if (len < 0)
+                    if(len < 0)
                         break;
                     cw.write(buff, 0, len);
                 }
@@ -241,7 +241,7 @@ public class SFTPSession extends Session {
     }
 
     private boolean loginUsingPasswordAuthentication(final Login credentials) throws IOException {
-        log.debug("loginUsingPasswordAuthentication:"+credentials);
+        log.debug("loginUsingPasswordAuthentication:" + credentials);
         if(SSH.isAuthMethodAvailable(host.getCredentials().getUsername(), "password")) {
             return SSH.authenticateWithPassword(credentials.getUsername(), credentials.getPassword());
         }
@@ -250,7 +250,7 @@ public class SFTPSession extends Session {
 
     private boolean loginUsingKBIAuthentication(final Login credentials) throws IOException {
         log.debug("loginUsingKBIAuthentication" +
-                "make:"+credentials);
+                "make:" + credentials);
         if(SSH.isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
             InteractiveLogic il = new InteractiveLogic(credentials);
             return SSH.authenticateWithKeyboardInteractive(credentials.getUsername(), il);
@@ -330,6 +330,16 @@ public class SFTPSession extends Session {
         }
     }
 
+    public void check() throws IOException {
+        try {
+            super.check();
+        }
+        catch(ChannelClosedException e) {
+            this.interrupt();
+            this.connect();
+        }
+    }
+
     protected Path workdir() throws IOException {
         synchronized(this) {
             if(!this.isConnected()) {
@@ -365,13 +375,14 @@ public class SFTPSession extends Session {
             return false;
         }
         try {
-            SSH.getConnectionInfo(); return true;
+            SSH.getConnectionInfo();
+            return true;
         }
         catch(IllegalStateException e) {
             return false;
         }
         catch(IOException e) {
-            log.debug("isConnected:"+e.getMessage());
+            log.debug("isConnected:" + e.getMessage());
         }
         return false;
     }
