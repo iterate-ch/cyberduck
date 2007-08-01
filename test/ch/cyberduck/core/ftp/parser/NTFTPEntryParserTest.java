@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.commons.net.ftp.parser;
+package ch.cyberduck.core.ftp.parser;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

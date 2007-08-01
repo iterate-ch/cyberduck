@@ -1,7 +1,7 @@
 // An extension to the UnixFTPEntryParser, making it understand EPLF,
 // as described in http://cr.yp.to/ftp/list/eplf.html .
 
-package org.apache.commons.net.ftp.parser;
+package ch.cyberduck.core.ftp.parser;
 
 import ch.cyberduck.core.ftp.FTPParserFactory;
 

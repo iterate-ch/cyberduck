@@ -1,4 +1,4 @@
-package org.apache.commons.net.ftp.parser;
+package ch.cyberduck.core.ftp.parser;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -162,20 +162,6 @@ public class UnixFTPEntryParserTest extends TestCase
         assertEquals(parsed.getGroup(), "molvis");
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.JULY);
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 12);
-    }
-
-    public void testStingray() throws Exception {
-        FTPFile parsed = null;
-
-        //#1198
-        parsed = parser.parseFTPEntry(
-                "dr--r--r--                folder          0 Aug  1 10:18 TestCyberduck"
-        );
-        assertNotNull(parsed);
-        assertEquals(parsed.getName(), "TestCyberduck");
-        assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.AUGUST);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 1);
     }
 
     public static Test suite()
