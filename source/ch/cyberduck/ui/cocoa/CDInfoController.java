@@ -253,6 +253,8 @@ public class CDInfoController extends CDWindowController {
     }
 
     private void init() {
+        this.applyButton.setEnabled(controller.isConnected());
+
         if(this.numberOfFiles() > 0) {
             Path file = (Path) this.files.get(0);
             this.filenameField.setStringValue(this.numberOfFiles() > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
@@ -341,7 +343,6 @@ public class CDInfoController extends CDWindowController {
             }
             this.iconImageView.setImage(fileIcon);
         }
-        this.applyButton.setEnabled(controller.isConnected());
     }
 
     private void initPermissionsCheckbox(boolean enabled) {
@@ -363,6 +364,9 @@ public class CDInfoController extends CDWindowController {
         otherw.setState(NSCell.OffState);
         otherx.setEnabled(enabled);
         otherx.setState(NSCell.OffState);
+
+        applyButton.setEnabled(enabled);
+        recursiveCheckbox.setEnabled(enabled);
     }
 
     private void updatePermisssionsCheckbox(NSButton checkbox, boolean condition) {
