@@ -1650,10 +1650,11 @@ public class CDPreferencesController extends CDWindowController {
                 defaultProtocolHandlerCombobox.addItem(app.infoDictionary().objectForKey("CFBundleName").toString());
                 final NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
                 icon.setSize(new NSSize(16f, 16f));
-                defaultProtocolHandlerCombobox.lastItem().setImage(icon);
-                defaultProtocolHandlerCombobox.lastItem().setRepresentedObject(bundleIdentifiers[i]);
+                final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
+                item.setImage(icon);
+                item.setRepresentedObject(bundleIdentifiers[i]);
                 if(bundleIdentifiers[i].equals(defaultHandler)) {
-                    defaultProtocolHandlerCombobox.selectItemAtIndex(i);
+                     defaultProtocolHandlerCombobox.selectItem(item);
                 }
             }
         }
