@@ -47,12 +47,12 @@ public class CDDownloadPromptModel extends CDTransferPromptModel {
                 public boolean accept(AbstractPath child) {
                     log.debug("accept:" + child);
                     if(transfer.exists(((Path) child).getLocal())) {
-//                        if(((Path) child).attributes.isFile()) {
-//                            if(((Path) child).getLocal().attributes.getSize() == 0) {
-//                                // Do not prompt for zero sized files
-//                                return false;
-//                            }
-//                        }
+                        if(((Path) child).attributes.isFile()) {
+                            if(((Path) child).getLocal().attributes.getSize() == 0) {
+                                // Do not prompt for zero sized files
+                                return false;
+                            }
+                        }
                         return super.accept(child);
                     }
                     return false;
