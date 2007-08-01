@@ -164,6 +164,20 @@ public class UnixFTPEntryParserTest extends TestCase
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 12);
     }
 
+    public void testStingray() throws Exception {
+        FTPFile parsed = null;
+
+        //#1198
+        parsed = parser.parseFTPEntry(
+                "dr--r--r--                folder          0 Aug  1 10:18 TestCyberduck"
+        );
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), "TestCyberduck");
+        assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
+        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.AUGUST);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 1);
+    }
+
     public static Test suite()
     {
         return new TestSuite(UnixFTPEntryParserTest.class);
