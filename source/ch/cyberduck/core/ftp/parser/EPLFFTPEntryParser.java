@@ -25,6 +25,9 @@ import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
 import java.util.Calendar;
 import java.util.Hashtable;
 
+/**
+ * @version $Id$
+ */
 public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
 
     public FTPFile parseFTPEntry(String entry) {

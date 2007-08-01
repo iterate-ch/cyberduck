@@ -21,6 +21,7 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.ftp.parser.EPLFFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.NetwareFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
+import ch.cyberduck.core.ftp.parser.StingrayFTPEntryParser;
 
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
@@ -56,6 +57,9 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
             }
             else if(ukey.indexOf("MVS") >= 0) {
                 return this.createMVSEntryParser();
+            }
+            else if(ukey.indexOf("MACOS") >= 0) {
+                return this.createStingrayFTPEntryParser();
             }
         }
         // Defaulting to UNIX parser
@@ -104,5 +108,13 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
 
     private FTPFileEntryParser createMVSEntryParser() {
         return new MVSFTPEntryParser();
+    }
+
+    private FTPFileEntryParser createStingrayFTPEntryParser() {
+        return new CompositeFileEntryParser(new FTPFileEntryParser[]
+                {
+                        new UnixFTPEntryParser(),
+                        new StingrayFTPEntryParser()
+                });
     }
 }

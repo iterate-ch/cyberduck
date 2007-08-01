@@ -34,6 +34,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.NetwareFTPEntryParser;
+import ch.cyberduck.core.ftp.parser.StingrayFTPEntryParser;
 
 import com.apple.cocoa.foundation.NSBundle;
 
@@ -185,7 +186,9 @@ public class FTPSession extends Session {
         if(null == parsers.get(delegate)) {
             // Cache the value as it might get queried frequently
             parsers.put(delegate, Boolean.valueOf(delegate instanceof UnixFTPEntryParser
-                    || delegate instanceof NetwareFTPEntryParser));
+                    || delegate instanceof NetwareFTPEntryParser
+                    || delegate instanceof StingrayFTPEntryParser)
+            );
         }
         return ((Boolean)parsers.get(delegate)).booleanValue();
     }
