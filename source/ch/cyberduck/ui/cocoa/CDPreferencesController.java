@@ -679,10 +679,10 @@ public class CDPreferencesController extends CDWindowController {
 
         Permission permission = new Permission(p);
         if(chmodUploadTypePopup.selectedItem().tag() == 0) {
-            Preferences.instance().setProperty("queue.download.permissions.file.default", permission.getOctalString());
+            Preferences.instance().setProperty("queue.upload.permissions.file.default", permission.getOctalString());
         }
         if(chmodUploadTypePopup.selectedItem().tag() == 1) {
-            Preferences.instance().setProperty("queue.download.permissions.folder.default", permission.getOctalString());
+            Preferences.instance().setProperty("queue.upload.permissions.folder.default", permission.getOctalString());
         }
     }
 
