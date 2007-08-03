@@ -301,6 +301,8 @@ public class CDInfoController extends CDWindowController {
                 log.debug("Permission:" + permission);
                 if(null == permission) {
                     this.initPermissionsCheckbox(false);
+                    applyButton.setEnabled(false);
+                    recursiveCheckbox.setEnabled(false);
                     break;
                 }
                 else {
@@ -364,9 +366,6 @@ public class CDInfoController extends CDWindowController {
         otherw.setState(NSCell.OffState);
         otherx.setEnabled(enabled);
         otherx.setState(NSCell.OffState);
-
-        applyButton.setEnabled(enabled);
-        recursiveCheckbox.setEnabled(enabled);
     }
 
     private void updatePermisssionsCheckbox(NSButton checkbox, boolean condition) {
