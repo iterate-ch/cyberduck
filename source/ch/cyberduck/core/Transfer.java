@@ -246,7 +246,7 @@ public abstract class Transfer extends NSObject {
 
     /**
      *
-     * @param bytes
+     * @param bytesPerSecond
      */
     public void setBandwidth(float bytesPerSecond) {
         log.debug("setBandwidth:"+bytesPerSecond);
@@ -305,24 +305,10 @@ public abstract class Transfer extends NSObject {
          * such as calculating its size.
          * Must only be called exactly once for each file.
          * Must only be called if #accept for the file returns true
-         * @param file
-         * @see ch.cyberduck.core.Status#isPrepared()
+         * @param p
          * @see PathFilter#accept(AbstractPath)
          */
-        public void prepare(Path file) {
-            log.debug("prepare:"+file);
-            if(Transfer.this.exists(file)) {
-                if(file.attributes.getSize() == -1) {
-                    file.readSize();
-                }
-                if(file.attributes.getModificationDate() == -1) {
-                    file.readTimestamp();
-                }
-                if(file.attributes.getPermission() == null) {
-                    file.readPermission();
-                }
-            }
-        }
+        public abstract void prepare(Path p);
     }
 
     /**
@@ -431,8 +417,8 @@ public abstract class Transfer extends NSObject {
     protected abstract void _transferImpl(final Path p);
 
     /**
-     * @param resumeRequested
-     * @param reloadRequested
+     *
+     * @param options
      */
     private void transfer(final TransferOptions options) {
         final Session session = this.getSession();

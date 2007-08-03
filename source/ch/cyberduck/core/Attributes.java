@@ -78,13 +78,13 @@ public abstract class Attributes {
     public abstract boolean isSymbolicLink();
 
     /**
-     * @see Path.FILE_TYPE
-     * @see Path.DIRECTORY_TYPE
-     * @see Path.SYMBOLIC_LINK_TYPE
+     * @param i
+     * @see AbstractPath.FILE_TYPE
+     * @see AbstractPath.DIRECTORY_TYPE
+     * @see AbstractPath.SYMBOLIC_LINK_TYPE
      * @see #isDirectory()
      * @see #isFile()
      * @see #isSymbolicLink()
-     * @param i
      */
     public abstract void setType(int i);
 
@@ -99,12 +99,11 @@ public abstract class Attributes {
     public abstract String getGroup();
 
     /**
-     *
      * @return true if executable for user, group and world
      */
     public boolean isExecutable() {
         Permission perm = this.getPermission();
-        if(null == perm) {
+        if (null == perm) {
             log.warn("Unknown permissions");
             return true;
         }
@@ -114,12 +113,11 @@ public abstract class Attributes {
     }
 
     /**
-     *
      * @return true if readable for user, group and world
      */
     public boolean isReadable() {
         Permission perm = this.getPermission();
-        if(null == perm) {
+        if (null == perm) {
             log.warn("Unknown permissions");
             return true;
         }
@@ -129,12 +127,11 @@ public abstract class Attributes {
     }
 
     /**
-     *
      * @return true if writable for user, group and world
      */
     public boolean isWritable() {
         Permission perm = this.getPermission();
-        if(null == perm) {
+        if (null == perm) {
             log.warn("Unknown permissions");
             return true;
         }

@@ -149,36 +149,46 @@ public class SyncTransfer extends Transfer {
                 private TransferFilter _delegateFilterUpload
                         = _delegateUpload.filter(TransferAction.ACTION_OVERWRITE);
 
-                public void prepare(Path file) {
-                    super.prepare(file);
+                public void prepare(Path p) {
+                    if(SyncTransfer.this.exists(p)) {
+                        if(p.attributes.getSize() == -1) {
+                            p.readSize();
+                        }
+                        if(p.attributes.getModificationDate() == -1) {
+                            p.readTimestamp();
+                        }
+                        if(p.attributes.getPermission() == null) {
+                            p.readPermission();
+                        }
+                    }
 
-                    Comparison compare = compare(file);
+                    Comparison compare = compare(p);
                     if(compare.equals(COMPARISON_REMOTE_NEWER)) {
-                        _delegateFilterDownload.prepare(file);
+                        _delegateFilterDownload.prepare(p);
                     }
                     else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
-                        _delegateFilterUpload.prepare(file);
+                        _delegateFilterUpload.prepare(p);
                     }
                 }
 
-                public boolean accept(AbstractPath file) {
-                    Comparison compare = SyncTransfer.this.compare((Path) file);
+                public boolean accept(AbstractPath p) {
+                    Comparison compare = SyncTransfer.this.compare((Path) p);
                     if(!COMPARISON_EQUAL.equals(compare)) {
                         if(compare.equals(COMPARISON_REMOTE_NEWER)) {
                             if(SyncTransfer.this.action.equals(ACTION_UPLOAD)) {
-                                log.info("Skipping "+file);
+                                log.info("Skipping "+p);
                                 return false;
                             }
                             // Ask the download delegate for inclusion
-                            return _delegateFilterDownload.accept(file);
+                            return _delegateFilterDownload.accept(p);
                         }
                         else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
                             if(SyncTransfer.this.action.equals(ACTION_DOWNLOAD)) {
-                                log.info("Skipping "+file);
+                                log.info("Skipping "+p);
                                 return false;
                             }
                             // Ask the upload delegate for inclusion
-                            return _delegateFilterUpload.accept(file);
+                            return _delegateFilterUpload.accept(p);
                         }
                     }
                     return false;

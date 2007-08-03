@@ -616,27 +616,27 @@ public class SFTPPath extends Path {
                     // We do set the permissions here as otherwise we might have an empty mask for
                     // interrupted file transfers
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        if(null == attributes.getPermission()) {
+                        Permission p = attributes.getPermission();
+                        if(null == p) {
                             if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
                                 if(this.attributes.isFile()) {
-                                    attributes.setPermission(new Permission(
-                                            Preferences.instance().getInteger("queue.upload.permissions.file.default"))
-                                    );
+                                    p = new Permission(
+                                            Preferences.instance().getInteger("queue.upload.permissions.file.default"));
                                 }
                                 if(this.attributes.isDirectory()) {
-                                    attributes.setPermission(new Permission(
-                                            Preferences.instance().getInteger("queue.upload.permissions.folder.default"))
-                                    );
+                                    p = new Permission(
+                                            Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
                                 }
                             }
                             else {
-                                attributes.setPermission(this.getLocal().attributes.getPermission());
+                                p = this.getLocal().attributes.getPermission();
                             }
                         }
                         if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
                             try {
+                                log.info("Updating permissions:"+p.getOctalString());
                                 SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-                                attr.permissions = new Integer(attributes.getPermission().getOctalNumber());
+                                attr.permissions = new Integer(p.getOctalNumber());
                                 session.sftp().fsetstat(handle, attr);
                             }
                             catch(SFTPException e) {

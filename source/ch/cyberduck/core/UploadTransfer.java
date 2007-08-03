@@ -67,7 +67,6 @@ public class UploadTransfer extends Transfer {
         }
 
         public void prepare(Path p) {
-            super.prepare(p);
             if(p.attributes.isFile()) {
                 // Read file size
                 size += p.getLocal().attributes.getSize();
@@ -98,7 +97,7 @@ public class UploadTransfer extends Transfer {
         }
     }
 
-    private final PathFilter childFilter = new TransferFilter() {
+    private final PathFilter childFilter = new PathFilter() {
         public boolean accept(AbstractPath child) {
             if(Preferences.instance().getBoolean("queue.upload.skip.enable")
                     && UPLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
@@ -174,6 +173,17 @@ public class UploadTransfer extends Transfer {
                 }
 
                 public void prepare(final Path p) {
+                    if(UploadTransfer.this.exists(p)) {
+                        if(p.attributes.getSize() == -1) {
+                            p.readSize();
+                        }
+                        if(p.attributes.getModificationDate() == -1) {
+                            p.readTimestamp();
+                        }
+                        if(p.attributes.getPermission() == null) {
+                            p.readPermission();
+                        }
+                    }
                     if(p.attributes.isFile()) {
                         // Append to file if size is not zero
                         p.status.setResume(UploadTransfer.this.exists(p) && p.attributes.getSize() > 0);

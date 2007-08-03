@@ -65,7 +65,17 @@ public class DownloadTransfer extends Transfer {
      */
     private abstract class DownloadTransferFilter extends TransferFilter {
         public void prepare(Path p) {
-            super.prepare(p);
+            if(DownloadTransfer.this.exists(p)) {
+                if(p.attributes.getSize() == -1) {
+                    p.readSize();
+                }
+                if(p.attributes.getModificationDate() == -1) {
+                    p.readTimestamp();
+                }
+                if(p.attributes.getPermission() == null) {
+                    p.readPermission();
+                }
+            }
             // Read file size
             if(p.attributes.isFile()) {
                 if(p.attributes.isSymbolicLink()) {
@@ -106,7 +116,7 @@ public class DownloadTransfer extends Transfer {
         }
     }
 
-    private final Transfer.TransferFilter childFilter = new TransferFilter() {
+    private final PathFilter childFilter = new PathFilter() {
         public boolean accept(AbstractPath child) {
             if(Preferences.instance().getBoolean("queue.download.skip.enable")
                     && DOWNLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {

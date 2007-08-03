@@ -786,29 +786,26 @@ public class FTPPath extends Path {
                 }
                 if(session.isConnected()) {
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        log.info("Updating permissions");
-                        if(null == attributes.getPermission()) {
+                        Permission p = attributes.getPermission();
+                        if(null == p) {
                             if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
                                 if(attributes.isFile()) {
-                                    attributes.setPermission(new Permission(
-                                            Preferences.instance().getInteger("queue.upload.permissions.file.default"))
-                                    );
+                                    p = new Permission(
+                                            Preferences.instance().getInteger("queue.upload.permissions.file.default"));
                                 }
                                 if(attributes.isDirectory()) {
-                                    attributes.setPermission(new Permission(
-                                            Preferences.instance().getInteger("queue.upload.permissions.folder.default"))
-                                    );
+                                    p = new Permission(
+                                            Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
                                 }
                             }
                             else {
-                                attributes.setPermission(this.getLocal().attributes.getPermission());
+                                p = this.getLocal().attributes.getPermission();
                             }
                         }
                         try {
-                            if(null != attributes.getPermission()) {
-                                session.FTP.setPermissions(attributes.getPermission().getOctalString(),
-                                        this.getName());
-                            }
+                            log.info("Updating permissions:"+p.getOctalString());
+                            session.FTP.setPermissions(p.getOctalString(),
+                                    this.getName());
                         }
                         catch(FTPException ignore) {
                             //CHMOD not supported; ignore
