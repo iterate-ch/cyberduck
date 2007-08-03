@@ -2544,7 +2544,9 @@ public class CDBrowserController extends CDWindowController
                     if(!transfer.isCanceled()) {
                         invoke(new Runnable() {
                             public void run() {
-                                reloadData(true);
+                                if(isConnected()) {
+                                    reloadData(true);
+                                }
                             }
                         });
                     }

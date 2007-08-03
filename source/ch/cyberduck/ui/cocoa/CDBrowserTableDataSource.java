@@ -104,7 +104,9 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                             synchronized(isLoadingListingInBackground) {
                                 isLoadingListingInBackground.remove(path);
                                 if(path.isCached() && isLoadingListingInBackground.isEmpty()) {
-                                    controller.reloadData(true);
+                                    if(controller.isConnected()) {
+                                        controller.reloadData(true);
+                                    }
                                 }
                             }
                         }
