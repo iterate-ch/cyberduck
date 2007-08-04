@@ -1645,17 +1645,21 @@ public class CDPreferencesController extends CDWindowController {
         final String[] bundleIdentifiers = URLSchemeHandlerConfiguration.instance().getAllHandlersForURLScheme(protocol);
         for(int i = 0; i < bundleIdentifiers.length; i++) {
             String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifiers[i]);
+            if(null == path) {
+                continue;
+            }
             NSBundle app = NSBundle.bundleWithPath(path);
-            if(path != null) {
-                defaultProtocolHandlerCombobox.addItem(app.infoDictionary().objectForKey("CFBundleName").toString());
-                final NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
-                icon.setSize(new NSSize(16f, 16f));
-                final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
-                item.setImage(icon);
-                item.setRepresentedObject(bundleIdentifiers[i]);
-                if(bundleIdentifiers[i].equals(defaultHandler)) {
-                     defaultProtocolHandlerCombobox.selectItem(item);
-                }
+            if(null == app) {
+                continue;
+            }
+            defaultProtocolHandlerCombobox.addItem(app.infoDictionary().objectForKey("CFBundleName").toString());
+            final NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
+            icon.setSize(new NSSize(16f, 16f));
+            final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
+            item.setImage(icon);
+            item.setRepresentedObject(bundleIdentifiers[i]);
+            if(bundleIdentifiers[i].equals(defaultHandler)) {
+                defaultProtocolHandlerCombobox.selectItem(item);
             }
         }
     }
