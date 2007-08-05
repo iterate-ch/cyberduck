@@ -92,4 +92,20 @@ public class LoginTest extends TestCase {
 		}
 		catch(java.lang.UnsatisfiedLinkError e) {}
 	}
+
+    /**
+     * http://trac.cyberduck.ch/ticket/1204
+     */
+    public void testLogin1204() {
+        try {
+            Login login = new Login("example.net", "ftp",
+                                    "cyberduck.login",
+                                    "1seCret");
+            assertTrue(login.hasReasonableValues());
+            assertEquals("cyberduck.login", login.getUsername());
+            assertEquals("1seCret", login.getPassword());
+
+        }
+        catch(java.lang.UnsatisfiedLinkError e) {}
+    }
 }
