@@ -103,7 +103,7 @@ public class Login {
      */
     public String getPassword(boolean encrypted) {
         if(!encrypted) {
-        return this.pass;
+            return this.pass;
         }
         MessageDigest md = null;
         try {
