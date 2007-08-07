@@ -77,9 +77,6 @@ public abstract class TransferAction {
 
     /**
      * Create a new file with a similar name
-     *
-     * @see DownloadTransfer#adjustFilename(ch.cyberduck.core.Path)
-     * @see UploadTransfer#adjustFilename(ch.cyberduck.core.Path)
      */
     public static final TransferAction ACTION_RENAME = new TransferAction() {
         public String toString() {

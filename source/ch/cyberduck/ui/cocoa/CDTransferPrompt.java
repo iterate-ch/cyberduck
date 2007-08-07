@@ -293,12 +293,20 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             /**
              * @see NSOutlineView.Delegate
              */
-            public void outlineViewWillDisplayCell(NSOutlineView outlineView, Object cell,
+            public void outlineViewWillDisplayCell(NSOutlineView outlineView, NSCell cell,
                                                    NSTableColumn tableColumn, Path item) {
                 String identifier = (String) tableColumn.identifier();
                 if(item != null) {
                     if(identifier.equals(CDTransferPromptModel.FILENAME_COLUMN)) {
                         ((CDOutlineCell) cell).setIcon(CDIconCache.instance().iconForPath(item));
+                    }
+                    if(cell instanceof NSTextFieldCell) {
+                        if(item.status.isSkipped()) {
+                            ((NSTextFieldCell) cell).setTextColor(NSColor.disabledControlTextColor());
+                        }
+                        else {
+                            ((NSTextFieldCell) cell).setTextColor(NSColor.controlTextColor());
+                        }
                     }
                 }
             }

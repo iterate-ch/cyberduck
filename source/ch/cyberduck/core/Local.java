@@ -323,6 +323,13 @@ public class Local extends AbstractPath {
         return f.delete();
     }
 
+    /**
+     * @return Always return false
+     */
+    public boolean isCached() {
+        return false;
+    }
+
     private Cache cache = new Cache();
 
     public Cache cache() {

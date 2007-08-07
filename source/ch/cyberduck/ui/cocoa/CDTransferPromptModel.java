@@ -164,7 +164,6 @@ public abstract class CDTransferPromptModel extends NSObject {
      * If no cached listing is available the loading is delayed until the listing is
      * fetched from a background thread
      * @param path
-     * @param filter
      * @return The list of child items for the parent folder. The listing is filtered
      * using the standard regex exclusion and the additional passed filter
      */
@@ -179,7 +178,7 @@ public abstract class CDTransferPromptModel extends NSObject {
                             log.debug("childs#run");
                             cache.put(path, transfer.childs(path));
                             //Hack to filter the list first in the background thread
-                            cache.get(path, new NullComparator(), filter());
+                            cache.get(path, new NullComparator(), CDTransferPromptModel.this.filter());
                         }
 
                         public void cleanup() {

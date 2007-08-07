@@ -462,10 +462,9 @@ public abstract class Transfer extends NSObject {
             for(Iterator iter = roots.iterator(); iter.hasNext();) {
                 this.transfer((Path) iter.next(), filter);
             }
-
-            this.clear();
         }
         finally {
+            this.clear();
             if(options.closeSession) {
                 session.close();
             }

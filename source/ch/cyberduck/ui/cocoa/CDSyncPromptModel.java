@@ -56,18 +56,19 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
                     if(!SyncTransfer.COMPARISON_EQUAL.equals(compare)) {
                         if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
                             if(((SyncTransfer) transfer).getAction().equals(SyncTransfer.ACTION_UPLOAD)) {
-                                return false;
+                                ((Path)child).status.setSkipped(true);
                             }
-                            return super.accept(child);
                         }
                         else if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
                             if(((SyncTransfer) transfer).getAction().equals(SyncTransfer.ACTION_DOWNLOAD)) {
-                                return false;
+                                ((Path)child).status.setSkipped(true);
                             }
-                            return super.accept(child);
                         }
                     }
-                    return child.attributes.isDirectory();
+                    else {
+                        ((Path)child).status.setSkipped(child.attributes.isFile());
+                    }
+                    return super.accept(child);
                 }
             };
         }
@@ -86,7 +87,12 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
             for(Iterator iter = transfer.getRoots().iterator(); iter.hasNext();) {
                 Path next = (Path) iter.next();
                 if(this.filter().accept(next)) {
-                    _roots.addAll(transfer.childs(next));
+                    for(Iterator childs = transfer.childs(next).iterator(); childs.hasNext(); ) {
+                        Path child = (Path)childs.next();
+                        if(this.filter().accept(child)) {
+                            _roots.add(child);
+                        }
+                    }
                 }
             }
         }
