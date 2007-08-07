@@ -919,7 +919,7 @@ public class CDBrowserController extends CDWindowController
             /**
              * @see NSOutlineView.Delegate
              */
-            public void outlineViewWillDisplayCell(NSOutlineView outlineView, Object cell,
+            public void outlineViewWillDisplayCell(NSOutlineView outlineView, NSCell cell,
                                                    NSTableColumn tableColumn, Path item) {
                 String identifier = (String) tableColumn.identifier();
                 if(item != null) {
@@ -1047,7 +1047,7 @@ public class CDBrowserController extends CDWindowController
                 }
             }
 
-            public void tableViewWillDisplayCell(NSTableView view, Object cell, NSTableColumn tableColumn, int row) {
+            public void tableViewWillDisplayCell(NSTableView view, NSCell cell, NSTableColumn tableColumn, int row) {
                 if(cell instanceof NSTextFieldCell) {
                     if(!CDBrowserController.this.isConnected()) {// || CDBrowserController.this.activityRunning) {
                         ((NSTextFieldCell) cell).setTextColor(NSColor.disabledControlTextColor());
