@@ -1652,6 +1652,9 @@ public class CDPreferencesController extends CDWindowController {
             if(null == app) {
                 continue;
             }
+            if(null == app.infoDictionary().objectForKey("CFBundleName")) {
+                continue;
+            }
             defaultProtocolHandlerCombobox.addItem(app.infoDictionary().objectForKey("CFBundleName").toString());
             final NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
             icon.setSize(new NSSize(16f, 16f));
