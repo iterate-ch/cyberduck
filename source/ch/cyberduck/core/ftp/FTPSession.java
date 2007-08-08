@@ -246,10 +246,12 @@ public class FTPSession extends Session {
             super.check();
         }
         catch(FTPException e) {
+            log.debug(e.getMessage());
             this.interrupt();
             this.connect();
         }
         catch(FTPNullReplyException e) {
+            log.debug(e.getMessage());
             this.interrupt();
             this.connect();
         }
@@ -275,7 +277,7 @@ public class FTPSession extends Session {
                 this.FTP.setTimeout(this.timeout());
                 this.FTP.connect(host.getHostname(true), host.getPort());
                 if(!this.isConnected()) {
-                    return;
+                    throw new ConnectionCanceledException();
                 }
                 this.FTP.setStrictReturnCodes(true);
                 this.FTP.setConnectMode(this.getConnectMode());

@@ -57,7 +57,7 @@ public class ChannelManager implements MessageHandler
 		tm.registerMessageHandler(this, 80, 100);
 	}
 
-	private Channel getChannel(int id)
+    private Channel getChannel(int id)
 	{
 		synchronized (channels)
 		{

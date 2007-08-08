@@ -36,9 +36,9 @@ public class Channel
 	 * 
 	 */
 
-	static final int STATE_OPENING = 1;
-	static final int STATE_OPEN = 2;
-	static final int STATE_CLOSED = 4;
+	public static final int STATE_OPENING = 1;
+	public static final int STATE_OPEN = 2;
+	public static final int STATE_CLOSED = 4;
 
 //	static final int CHANNEL_BUFFER_SIZE = 30000;
     static final int CHANNEL_BUFFER_SIZE = 30000;
@@ -144,7 +144,7 @@ public class Channel
 	private final Object reasonClosedLock = new Object();
 	private String reasonClosed = null;
 
-	public Channel(ChannelManager cm)
+    public Channel(ChannelManager cm)
 	{
 		this.cm = cm;
 
@@ -213,4 +213,8 @@ public class Channel
 				this.reasonClosed = reasonClosed;
 		}
 	}
+
+    public int getState() {
+        return this.state;
+    }
 }

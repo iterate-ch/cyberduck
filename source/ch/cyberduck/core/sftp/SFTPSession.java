@@ -146,7 +146,7 @@ public class SFTPSession extends Session {
                 final int timeout = this.timeout();
                 SSH.connect(verifier, timeout, timeout);
                 if(!this.isConnected()) {
-                    return;
+                    throw new ConnectionCanceledException();
                 }
                 this.message(NSBundle.localizedString("SSH connection opened", "Status", ""));
                 this.login();
@@ -331,18 +331,29 @@ public class SFTPSession extends Session {
     }
 
     public void check() throws IOException {
+        this.check(true);
+    }
+
+    public void check(final boolean sftp) throws IOException {
         try {
             super.check();
         }
         catch(ChannelClosedException e) {
+            log.debug(e.getMessage());
             this.interrupt();
             this.connect();
+        }
+        if(sftp) {
+            if(!this.sftp().isConnected()) {
+                this.interrupt();
+                this.connect();
+            }
         }
     }
 
     protected Path workdir() throws IOException {
         synchronized(this) {
-            if(!this.isConnected()) {
+            if(!SFTP.isConnected()) {
                 throw new ConnectionCanceledException();
             }
             if(null == workdir) {
@@ -376,14 +387,15 @@ public class SFTPSession extends Session {
         }
         try {
             SSH.getConnectionInfo();
-            return true;
         }
         catch(IllegalStateException e) {
+            log.debug("isConnected:" + e.getMessage());
             return false;
         }
         catch(IOException e) {
             log.debug("isConnected:" + e.getMessage());
+            return false;
         }
-        return false;
+        return true;
     }
 }

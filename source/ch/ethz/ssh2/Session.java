@@ -308,7 +308,11 @@ public class Session
 		cm.requestSubSystem(cn, name);
 	}
 
-	public InputStream getStdout()
+    public int getState() {
+        return cn.getState();
+    }
+
+    public InputStream getStdout()
 	{
 		return cn.getStdoutStream();
 	}

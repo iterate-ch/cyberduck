@@ -509,7 +509,9 @@ public class SFTPPath extends Path {
                     status.setComplete(true);
                 }
                 if(this.attributes.isFile()) {
-                    session.check();
+                    session.check(
+                            Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)
+                    );
                     out = new Local.OutputStream(this.getLocal(), status.isResume());
                     this.getLocal().touch();
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
@@ -603,7 +605,9 @@ public class SFTPPath extends Path {
                     status.setComplete(true);
                 }
                 if(attributes.isFile()) {
-                    session.check();
+                    session.check(
+                            Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)
+                    );
                     in = new Local.InputStream(this.getLocal());
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
                         if(status.isResume() && this.exists()) {

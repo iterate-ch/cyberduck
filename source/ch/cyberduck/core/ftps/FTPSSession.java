@@ -104,7 +104,7 @@ public class FTPSSession extends FTPSession {
                 this.FTP.setTimeout(this.timeout());
                 this.FTP.connect(host.getHostname(true), host.getPort());
                 if(!this.isConnected()) {
-                    return;
+                    throw new ConnectionCanceledException();
                 }
                 this.FTP.setStrictReturnCodes(true);
                 this.FTP.setConnectMode(this.getConnectMode());

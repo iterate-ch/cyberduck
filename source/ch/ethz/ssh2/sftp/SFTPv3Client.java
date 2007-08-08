@@ -3,6 +3,7 @@ package ch.ethz.ssh2.sftp;
 
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.Session;
+import ch.ethz.ssh2.channel.Channel;
 import ch.ethz.ssh2.packets.TypesReader;
 import ch.ethz.ssh2.packets.TypesWriter;
 
@@ -103,7 +104,7 @@ public class SFTPv3Client
 		sess = conn.openSession();
 		sess.startSubSystem("sftp");
 
-		is = sess.getStdout();
+        is = sess.getStdout();
 		os = new BufferedOutputStream(sess.getStdin(), 2048);
 
 		if ((is == null) || (os == null))
@@ -905,7 +906,11 @@ public class SFTPv3Client
 		return protocol_version;
 	}
 
-	/**
+    public boolean isConnected() {
+        return sess.getState() == Channel.STATE_OPEN;
+    }
+
+    /**
 	 * Close this SFTP session. NEVER forget to call this method to free up
 	 * resources - even if you got an exception from one of the other methods.
 	 * Sometimes these other methods may throw an exception, saying that the
