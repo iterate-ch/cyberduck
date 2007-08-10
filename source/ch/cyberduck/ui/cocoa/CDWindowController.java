@@ -133,6 +133,7 @@ public abstract class CDWindowController extends CDController
                         runnable.run();
                     }
                     catch(NullPointerException e) {
+                        log.error(e.getMessage());
                         StackTraceElement[] stacktrace = e.getStackTrace();
                         for(int i = 0; i < stacktrace.length; i++) {
                             log.error(stacktrace[i].toString());
