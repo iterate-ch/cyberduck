@@ -619,8 +619,8 @@ public class SFTPPath extends Path {
                     }
                     // We do set the permissions here as otherwise we might have an empty mask for
                     // interrupted file transfers
+                    Permission p = attributes.getPermission();
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        Permission p = attributes.getPermission();
                         if(null == p) {
                             if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
                                 if(this.attributes.isFile()) {
@@ -672,35 +672,37 @@ public class SFTPPath extends Path {
                         scp.setCharset(session.getEncoding());
                         out = scp.put(this.getName(), (long)this.getLocal().attributes.getSize(),
                                 this.getParent().getAbsolute(),
-                                "0"+attributes.getPermission().getOctalString());
+                                "0"+p.getOctalString());
                     }
                     this.upload(out, in, throttle, listener);
                 }
-                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    if(this.attributes.isFile()) {
-                        log.info("Updating timestamp");
-                        SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
-                        int t = (int) (this.getLocal().attributes.getModificationDate() / 1000);
-                        // We must both set the accessed and modified time
-                        // See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
-                        attrs.atime = new Integer(t);
-                        attrs.mtime = new Integer(t);
-                        try {
-                            if(null == handle) {
-                                if(this.attributes.isFile()) {
-                                    handle = session.sftp().openFileRW(this.getAbsolute());
-                                }
+                if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
+                    if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                        if(this.attributes.isFile()) {
+                            log.info("Updating timestamp");
+                            SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
+                            int t = (int) (this.getLocal().attributes.getModificationDate() / 1000);
+                            // We must both set the accessed and modified time
+                            // See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
+                            attrs.atime = new Integer(t);
+                            attrs.mtime = new Integer(t);
+                            try {
+                                if(null == handle) {
+                                    if(this.attributes.isFile()) {
+                                        handle = session.sftp().openFileRW(this.getAbsolute());
+                                    }
 //                            if(this.attributes.isDirectory()) {
 //                                handle = session.sftp().openDirectory(this.getAbsolute());
 //                            }
+                                }
+                                session.sftp().fsetstat(handle, attrs);
                             }
-                            session.sftp().fsetstat(handle, attrs);
-                        }
-                        catch(SFTPException e) {
-                            // We might not be able to change the attributes if we are
-                            // not the owner of the file; but then we still want to proceed as we
-                            // might have group write privileges
-                            log.warn(e.getMessage());
+                            catch(SFTPException e) {
+                                // We might not be able to change the attributes if we are
+                                // not the owner of the file; but then we still want to proceed as we
+                                // might have group write privileges
+                                log.warn(e.getMessage());
+                            }
                         }
                     }
                 }
