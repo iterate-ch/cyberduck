@@ -50,6 +50,9 @@ public class CDHostKeyController implements ServerHostKeyVerifier {
     public CDHostKeyController(final CDWindowController windowController) {
         this.parent = windowController;
         Local f = new Local(Preferences.instance().getProperty("ssh.knownhosts"));
+        if(!f.exists()) {
+            f.getParent().mkdir(true); f.touch();
+        }
         if(f.isReadable()) {
             try {
                 this.database = new KnownHosts(f.getAbsolute());
