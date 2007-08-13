@@ -11,14 +11,25 @@
 	<div>
 		<strong><a href=
 		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=2.8">
-		2.8b1</a></strong> <em>Aug-12-2007</em> (Build $Revision$)<br />
+		2.8b1</a></strong> <em>Aug-13-2007</em> (Build $Revision$)<br />
 		
 		<ul>
+			<li>[Feature] Use system setting for connect mode (FTP)</li>
+			<li>[Bugfix] Don't use SOCKS proxy if hostname is excluded in system preferences</li>
+		</ul>
+	</div>
+
+	<div>
+		<strong><a href=
+		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=2.8">
+		2.8b1</a></strong> <em>Aug-12-2007</em> (Build 3212)<br />
+		
+		<ul>
+			<li>[Feature] Create known hosts file if missing (SFTP)</li>
 			<li>[Bugfix] Crash opening Preferences [<a href="http://trac.cyberduck.ch/ticket/1145">#1145</a>]</li>
 			<li>[Bugfix] Improvements to the synchronization dialog [<a href="http://trac.cyberduck.ch/ticket/1189">#1189</a>]</li>
 			<li>[Bugfix] Uploading zero sized files [<a href="http://trac.cyberduck.ch/ticket/1207">#1207</a>]</li>
 			<li>[Bugfix] Listing directories for Stingray server (FTP) [<a href="http://trac.cyberduck.ch/ticket/1198">#1198</a>]</li>
-			<li>[Feature] Create known hosts file if missing (SFTP)</li>
 		</ul>
 	</div>
 
@@ -57,89 +68,6 @@
 			<li>[Feature] Move files to Trash before overwriting locally [<a href="http://trac.cyberduck.ch/ticket/936">#936</a>]</li>
 			<li>[Bugfix] Resolve Alias files to upload [<a href="http://trac.cyberduck.ch/ticket/859">#859</a>]</li>
 			<li>[Bugfix] Subsequent type-ahead selection misbehaving [<a href="http://trac.cyberduck.ch/ticket/896">#896</a>]</li>
-		</ul>
-	</div>
-
-	<div>
-		<strong><a href=
-		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=2.7.3">
-		2.7.3</a></strong> <em>Feb-12-2007</em> (Build 2838)<br />
-
-		<ul>
-			<li>[Bugfix] Problem parsing PASV response from some servers (FTP) [<a href="http://trac.cyberduck.ch/ticket/779">#779</a>, [<a href="http://trac.cyberduck.ch/ticket/86">#869</a>]</li> 
-			<li>[Bugfix] Stalls when connection is interrupted during DNS lookup [<a href="http://trac.cyberduck.ch/ticket/960">#960</a>]</li>
-			<li>[Bugfix] Improved sorting in 'Kind' browser column [<a href="http://trac.cyberduck.ch/ticket/993">#993</a>]</li>
-			<li>[Bugfix] Renaming files using Info panel causes repeated renaming [<a href="http://trac.cyberduck.ch/ticket/1005">#1005</a>]</li>
-			<li>[Bugfix] Uploading folders interrupts file transfer (SFTP) [<a href="http://trac.cyberduck.ch/ticket/1001">#1001</a>]</li>
-			<li>[Bugfix] Preference for auto-open delay for spring-loaded folders not saved [<a href="http://trac.cyberduck.ch/ticket/633">#633</a>]</li>
-			<li>[Bugfix] Preference to open new browser window on launch not used [<a href="http://trac.cyberduck.ch/ticket/997">#997</a>]</li>
-			<li>[Bugfix] Symbolic links on local filesystem not handled properly [<a href="http://trac.cyberduck.ch/ticket/995">#995</a>]</li>
-			<li>[Bugfix] Send creation time of file with UTIME [#--]</li>
-			<li>[Feature] Clear command in History menu [<a href="http://trac.cyberduck.ch/ticket/648">#648</a>]</li>
-			<li>[Feature] Preference to exclude files from transfers using regular expression [<a href="http://trac.cyberduck.ch/ticket/511">#511</a>]</li>
-		</ul>
-	</div>
-
-	<div>
-		<strong><a href=
-		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=2.7.2">
-		2.7.2</a></strong> <em>Jan-15-2007</em> (Build 2750)<br />
-
-		<ul>
-			<li>[Feature] Option to use single connection for browser and transfers [<a href="http://trac.cyberduck.ch/ticket/57">#57</a>]</li>
-			<li>[Feature] Option to remember open browser windows and reconnect upon relaunching the application [<a href="http://trac.cyberduck.ch/ticket/59">#59</a>]</li>
-			<li>[Feature] Delay for spring-loaded folders can be set [<a href="http://trac.cyberduck.ch/ticket/633">#633</a>]</li>
-			<li>[Feature] Calculate size of directory [<a href="http://trac.cyberduck.ch/ticket/5">#5</a>]</li>
-			<li>[Feature] Duplicate files using option-drag [<a href="http://trac.cyberduck.ch/ticket/150">#150</a>]</li>
-			<li>[Feature] Per bookmark setting for download folder [<a href="http://trac.cyberduck.ch/ticket/158">#158</a>]</li>
-			<li>[Feature] Per bookmark setting to use single connection for browser and transfers [#--]</li>
-			<li>[Feature] Kind column in browser describing file type [<a href="http://trac.cyberduck.ch/ticket/46">#46</a>]</li>
-			<li>[Feature] Advanced settings in connection and bookmark window in disclosable view</li>
-			<li>[Feature] Added PageSpinner to the list of supported editors (http://www.optima-system.com/pagespinner) [#205]</li>
-			<li>[Bugfix] Disconnecting in the background not blocking the user interface [#--]</li>
-			<li>[Bugfix] Folders marked as inaccessible after timeouts and cannot be opened after reconnecting [<a href="http://trac.cyberduck.ch/ticket/611">#611</a>]</li>
-			<li>[Bugfix] Applescript/Dashboard should not use seperate session for transfers [#--]</li>
-			<li>[Bugfix] Cannot write to group writable files (SFTP) [<a href="http://trac.cyberduck.ch/ticket/173">#173</a>]</li>
-			<li>[Bugfix] File length is set to zero if updating permission fails (SFTP) [<a href="http://trac.cyberduck.ch/ticket/974">#974</a>]</li>
-			<li>[Bugfix] Directory listing is not refreshed when upload is completed after "Try Again" [<a href="http://trac.cyberduck.ch/ticket/982">#982</a>]</li>
-		</ul>
-	</div>
-
-	<div>
-		<strong><a href=
-		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=2.7.1">
-		2.7.1</a></strong> <em>Nov-29-2006</em> (Build 2608)<br />
-
-		<ul>
-			<li>[Localize] Portuguese Localization</li>
-			<li>[Bugfix] Reporting error about failed to set permissions whereas it actually succeeded [#--]</li>
-			<li>[Bugfix] Fail gracefully on uploading when server doesn't support changing permissions [#--]</li>
-			<li>[Bugfix] Disconnecting from server could crash application shortly thereafter [#--]</li>
-			<li>[Bugfix] Outline view not updated after dragged files have been uploaded [#--]</li>
-			<li>[Bugfix] Synchronisation not awaiting selection from user [#--]</li>
-		</ul>
-	</div>
-
-	<div>
-		<strong><a href=
-		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=2.7">
-		2.7</a></strong> <em>Nov-25-2006</em> (Build 2594)<br />
-
-		<ul>
-			<li>[Feature] Don't block user interface when working in browser. All potentially lengthy operations are now performed in the background [<a href="http://trac.cyberduck.ch/ticket/921">#921</a>]</li>
-			<li>[Feature] All (possibly stalled) operations in progress can be interrupted [<a href="http://trac.cyberduck.ch/ticket/943">#943</a>]</li>
-			<li>[Feature] Improved error handling [#--]</li>
-			<li>[Feature] Failed network operations can be repeated [#--]</li>
-			<li>[Feature] A default bookmark can be configured [<a href="http://trac.cyberduck.ch/ticket/915">#915</a>]</li>
-			<li>[Feature] Option to disable spring-loaded folders [<a href="http://trac.cyberduck.ch/ticket/98">#98</a>]</li>
-			<li>[Feature] Individual settings how to treat duplicate files on uploads and downloads [<a href="http://trac.cyberduck.ch/ticket/500">#500</a>]</li>
-			<li>[Feature] Callback to alternate connect mode upon failure (FTP) [<a href="http://trac.cyberduck.ch/ticket/83">#83</a>]</li>
-			<li>[Feature] Add 'Download To...' menu option to download multiple files into designated, non-default directory [<a href="http://trac.cyberduck.ch/ticket/909">#909</a>]</li>
-			<li>[Feature] The bottom of the browser window shows the security status [<a href="http://trac.cyberduck.ch/ticket/9">#9</a>]</li>
-			<li>[Feature] Improvements to the AppleScript dictionary [<a href="http://trac.cyberduck.ch/ticket/737">#737</a>], [<a href="http://trac.cyberduck.ch/ticket/918">#918</a>], [<a href="http://trac.cyberduck.ch/ticket/878">#878</a>], [<a href="http://trac.cyberduck.ch/ticket/922">#922</a>]</li>
-			<li>[Feature] When duplicating files, propose a filename containing the current date and time [<a href="http://trac.cyberduck.ch/ticket/912">#912</a>]</li>
-			<li>[Feature] Added JarInspector to the list of supported editors (http://www.cgerdes.com) [#--</a>]</li>
-			<li>[Bugfix] Honor the existing permissions when replacing files [#--</a>]</li>
 		</ul>
 	</div>
 </body>
