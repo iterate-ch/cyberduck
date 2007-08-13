@@ -40,7 +40,6 @@
                 chmodUploadDefaultCheckbox = NSButton; 
                 chmodUploadTypePopup = NSPopUpButton; 
                 confirmDisconnectCheckbox = NSButton; 
-                connectmodeCombobox = NSPopUpButton; 
                 defaultBookmarkCombobox = NSPopUpButton; 
                 defaultDownloadThrottleCombobox = NSPopUpButton; 
                 defaultFTPHandlerCombobox = NSPopUpButton; 

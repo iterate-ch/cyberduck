@@ -206,9 +206,6 @@ public class CDPreferencesController extends CDWindowController {
         tabView.tabViewItemAtIndex(8).setView(panelUpdate);
     }
 
-    private static final String CONNECTMODE_ACTIVE = NSBundle.localizedString("Active", "");
-    private static final String CONNECTMODE_PASSIVE = NSBundle.localizedString("Passive", "");
-
     private static final String TRANSFERMODE_AUTO = NSBundle.localizedString("Auto", "");
     private static final String TRANSFERMODE_BINARY = NSBundle.localizedString("Binary", "");
     private static final String TRANSFERMODE_ASCII = NSBundle.localizedString("ASCII", "");

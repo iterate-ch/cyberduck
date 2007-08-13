@@ -7,13 +7,13 @@
 	<key>IBEditorPositions</key>
 	<dict>
 		<key>1032</key>
-		<string>696 531 527 544 0 0 1920 1178 </string>
+		<string>696 622 527 459 0 0 1920 1178 </string>
 		<key>1033</key>
 		<string>696 697 527 212 0 0 1920 1178 </string>
 		<key>1034</key>
 		<string>696 663 527 279 0 0 1920 1178 </string>
 		<key>1035</key>
-		<string>696 685 527 235 0 0 1920 1178 </string>
+		<string>696 683 527 235 0 0 1920 1178 </string>
 		<key>1374</key>
 		<string>696 699 527 207 0 0 1920 1178 </string>
 		<key>1664</key>
@@ -21,9 +21,9 @@
 		<key>848</key>
 		<string>696 523 527 560 0 0 1920 1178 </string>
 		<key>874</key>
-		<string>696 514 527 578 0 0 1920 1178 </string>
+		<string>696 513 527 579 0 0 1920 1178 </string>
 		<key>906</key>
-		<string>696 597 527 412 0 0 1920 1178 </string>
+		<string>696 593 527 420 0 0 1920 1178 </string>
 	</dict>
 	<key>IBFramework Version</key>
 	<string>446.1</string>
@@ -31,23 +31,23 @@
 	<dict>
 		<key>10</key>
 		<array>
-			<string>1300</string>
 			<string>1302</string>
+			<string>1300</string>
 		</array>
 		<key>11</key>
 		<array>
-			<string>1305</string>
 			<string>1303</string>
+			<string>1305</string>
 		</array>
 		<key>12</key>
 		<array>
-			<string>1306</string>
 			<string>1308</string>
+			<string>1306</string>
 		</array>
 		<key>13</key>
 		<array>
-			<string>1311</string>
 			<string>1309</string>
+			<string>1311</string>
 		</array>
 		<key>14</key>
 		<array>
@@ -63,38 +63,38 @@
 		</array>
 		<key>5</key>
 		<array>
-			<string>1244</string>
+			<string>1260</string>
+			<string>1246</string>
 			<string>1253</string>
+			<string>1267</string>
 			<string>1242</string>
+			<string>1263</string>
+			<string>1244</string>
 			<string>1252</string>
 			<string>1255</string>
 			<string>1262</string>
 			<string>1245</string>
 			<string>1256</string>
-			<string>1260</string>
-			<string>1246</string>
-			<string>1267</string>
-			<string>1263</string>
 		</array>
 		<key>6</key>
 		<array>
-			<string>1265</string>
 			<string>1254</string>
+			<string>1265</string>
 		</array>
 		<key>7</key>
 		<array>
-			<string>1241</string>
-			<string>1257</string>
-			<string>1258</string>
-			<string>1248</string>
-			<string>1269</string>
-			<string>1251</string>
-			<string>1250</string>
-			<string>1266</string>
-			<string>1243</string>
 			<string>1249</string>
 			<string>1261</string>
 			<string>1268</string>
+			<string>1241</string>
+			<string>1257</string>
+			<string>1248</string>
+			<string>1258</string>
+			<string>1243</string>
+			<string>1269</string>
+			<string>1250</string>
+			<string>1266</string>
+			<string>1251</string>
 		</array>
 		<key>8</key>
 		<array>
@@ -103,15 +103,19 @@
 		</array>
 		<key>9</key>
 		<array>
-			<string>1281</string>
 			<string>1283</string>
+			<string>1281</string>
 		</array>
 	</dict>
 	<key>IBLastGroupID</key>
 	<string>0</string>
 	<key>IBOldestOS</key>
 	<integer>3</integer>
+	<key>IBOpenObjects</key>
+	<array>
+		<integer>1032</integer>
+	</array>
 	<key>IBSystem Version</key>
-	<string>8R218</string>
+	<string>8R2232</string>
 </dict>
 </plist>
