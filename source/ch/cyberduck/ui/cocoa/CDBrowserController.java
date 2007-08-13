@@ -1516,7 +1516,7 @@ public class CDBrowserController extends CDWindowController
     public void connectBookmarkButtonClicked(final Object sender) {
         if(bookmarkTable.numberOfSelectedRows() == 1) {
             final Host selected = (Host) HostCollection.instance().get(bookmarkTable.selectedRow());
-            CDBrowserController.this.mount(selected);
+            this.mount(selected);
             if(Preferences.instance().getBoolean("browser.closeDrawer")) {
                 bookmarkDrawer.close();
             }
@@ -2926,9 +2926,13 @@ public class CDBrowserController extends CDWindowController
                 // Delete this history bookmark if there was any error connecting
                 bookmark.delete();
             }
-            this.window.setTitle(
-                    (String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
-            this.window.setRepresentedFilename(""); //can't send null
+            this.invoke(new Runnable() {
+                public void run() {
+                    window.setTitle(
+                            (String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
+                    window.setRepresentedFilename(""); //can't send null
+                }
+            });
             return;
         }
         if(!this.hasSession()) {
