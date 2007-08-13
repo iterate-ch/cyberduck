@@ -20,17 +20,15 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.ui.LoginController;
 import ch.cyberduck.ui.cocoa.threading.BackgroundException;
-
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSObject;
-
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
-import java.net.UnknownHostException;
 
 /**
  * @version $Id$
@@ -313,13 +311,8 @@ public abstract class Session extends NSObject {
         for(int i = 0; i < l.length; i++) {
             l[i].connectionWillOpen();
         }
-        if(Proxy.isSOCKSProxyEnabled() && !Proxy.isHostExcluded(this.host.getHostname())) {
-            log.info("Using SOCKS Proxy");
-            Proxy.initSOCKS(Proxy.getSOCKSProxyPort(), Proxy.getSOCKSProxyHost());
-        }
-        else {
-            Proxy.clearSOCKS();
-        }
+        // Configuring proxy if any
+        Proxy.configure(this.host.getHostname());
         this.resolver = new Resolver(this.host.getHostname(true));
         this.message(NSBundle.localizedString("Resolving", "Status", "") + " " + host.getHostname() + "...");
         // Try to resolve the hostname first

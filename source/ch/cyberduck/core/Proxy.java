@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  */
 
 import com.apple.cocoa.foundation.NSBundle;
-
 import org.apache.log4j.Logger;
 
 import java.util.Properties;
@@ -44,6 +43,41 @@ public class Proxy {
         }
     }
 
+    public static void configure(final String hostname) {
+//        ProxySelector.setDefault(new ProxySelector() {
+//            public List select(URI uri) {
+//                log.debug("select:"+uri);
+//                final List proxies = new ArrayList();
+//                if(!Proxy.isHostExcluded(uri.getHost())) {
+//                    if(Proxy.isSOCKSProxyEnabled()) {
+//                        proxies.add(new java.net.Proxy(java.net.Proxy.Type.SOCKS,
+//                                new InetSocketAddress(Proxy.getSOCKSProxyHost(), Proxy.getSOCKSProxyPort())));
+//                }
+//                if(proxies.isEmpty()) {
+//                    proxies.add(java.net.Proxy.NO_PROXY);
+//                }
+//                if(log.isInfoEnabled()) {
+//                    log.info("Proxy configuration for "+uri.toString());
+//                    for(Iterator iter = proxies.iterator(); iter.hasNext(); ) {
+//                        log.info(iter.next());
+//                    }
+//                }
+//                return proxies;
+//            }
+//
+//            public void connectFailed(URI uri, SocketAddress socketAddress, IOException e) {
+//                log.error("Connect to proxy "+socketAddress.toString()+" failed:"+e.getMessage());
+//            }
+//        });
+        if(Proxy.isSOCKSProxyEnabled() && !Proxy.isHostExcluded(hostname)) {
+            log.info("Using SOCKS Proxy");
+            Proxy.initSOCKS(Proxy.getSOCKSProxyPort(), Proxy.getSOCKSProxyHost());
+        }
+        else {
+            Proxy.clearSOCKS();
+        }
+    }
+
     /**
      * SOCKS port property name
      */
@@ -63,7 +97,7 @@ public class Proxy {
      * @param port SOCKS proxy port
      * @param host SOCKS proxy hostname
      */
-    public static void initSOCKS(int port, String host) {
+    private static void initSOCKS(int port, String host) {
         Properties props = System.getProperties();
         // Indicates the name of the SOCKS proxy server and the port number
         // that will be used by the SOCKS protocol layer. If socksProxyHost
@@ -71,7 +105,7 @@ public class Proxy {
         // to establish a connection or accept one. The SOCKS proxy server
         // can either be a SOCKS v4 or v5 server and it has to allow for
         // unauthenticated connections.
-        props.put(SOCKS_PORT, ""+port);
+        props.put(SOCKS_PORT, Integer.toString(port));
         props.put(SOCKS_HOST, host);
         System.setProperties(props);
     }
@@ -80,7 +114,7 @@ public class Proxy {
      * Clear SOCKS settings. Note that setting these properties affects
      * <b>all</b> TCP sockets in this JVM
      */
-    public static void clearSOCKS() {
+    private static void clearSOCKS() {
         Properties prop = System.getProperties();
         prop.remove(SOCKS_HOST);
         prop.remove(SOCKS_PORT);

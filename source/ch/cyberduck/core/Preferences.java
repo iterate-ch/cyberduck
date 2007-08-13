@@ -54,36 +54,6 @@ public abstract class Preferences {
     static {
         System.setProperty("networkaddress.cache.ttl", "10");
         System.setProperty("networkaddress.cache.negative.ttl", "5");
-//        ProxySelector.setDefault(new ProxySelector() {
-//            public List select(URI uri) {
-//                log.debug("select:"+uri);
-//                final List proxies = new ArrayList();
-//                if(!Proxy.isHostExcluded(uri.getHost())) {
-//                    if(Proxy.isSOCKSProxyEnabled()) {
-//                        proxies.add(new java.net.Proxy(java.net.Proxy.Type.SOCKS,
-//                                new InetSocketAddress(Proxy.getSOCKSProxyHost(), Proxy.getSOCKSProxyPort())));
-//                    }
-//                    if(Proxy.isHTTPProxyEnabled()) {
-//                        proxies.add(new java.net.Proxy(java.net.Proxy.Type.HTTP,
-//                                new InetSocketAddress(Proxy.getHTTPProxyHost(), Proxy.getHTTPProxyPort())));
-//                    }
-//                }
-//                if(proxies.isEmpty()) {
-//                    proxies.add(java.net.Proxy.NO_PROXY);
-//                }
-//                if(log.isInfoEnabled()) {
-//                    log.info("Proxy configuration for "+uri.toString());
-//                    for(Iterator iter = proxies.iterator(); iter.hasNext(); ) {
-//                        log.info(iter.next());
-//                    }
-//                }
-//                return proxies;
-//            }
-//
-//            public void connectFailed(URI uri, SocketAddress socketAddress, IOException e) {
-//                log.error("Connect to proxy "+socketAddress.toString()+" failed:"+e.getMessage());
-//            }
-//        });
     }
 
     private static final Object lock = new Object();
