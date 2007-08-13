@@ -27,10 +27,10 @@ import com.apple.cocoa.foundation.NSObject;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
+import java.net.UnknownHostException;
 
 /**
  * @version $Id$
@@ -304,7 +304,7 @@ public abstract class Session extends NSObject {
      * Notifies all connection listeners that an attempt is made to open this session
      * @see ConnectionListener
      * @throws ResolveCanceledException If the name resolution has been canceled by the user
-     * @throws UnknownHostException If the name resolution failed
+     * @throws java.net.UnknownHostException If the name resolution failed
      */
     protected void fireConnectionWillOpenEvent() throws ResolveCanceledException, UnknownHostException {
         log.debug("connectionWillOpen");
@@ -313,7 +313,7 @@ public abstract class Session extends NSObject {
         for(int i = 0; i < l.length; i++) {
             l[i].connectionWillOpen();
         }
-        if(Proxy.isSOCKSProxyEnabled()) {
+        if(Proxy.isSOCKSProxyEnabled() && !Proxy.isHostExcluded(this.host.getHostname())) {
             log.info("Using SOCKS Proxy");
             Proxy.initSOCKS(Proxy.getSOCKSProxyPort(), Proxy.getSOCKSProxyHost());
         }
