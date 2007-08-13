@@ -69,9 +69,9 @@
 	</path>
 
 	<path id="build.bootclasspath">
-		<pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.4/Classes/classes.jar"/>
-		<pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.4/Classes/jce.jar"/>
-		<pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.4/Classes/jsse.jar"/>
+		<pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Classes/classes.jar"/>
+		<pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Classes/jce.jar"/>
+		<pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Classes/jsse.jar"/>
 	</path>
 
 	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
