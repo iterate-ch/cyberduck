@@ -26,10 +26,20 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+    JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Proxy_usePassiveFTP(JNIEnv *env, jobject this);
+    JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Proxy_isHostExcluded(JNIEnv *env, jobject this, jstring hostname);
+
 	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Proxy_isSOCKSProxyEnabled(JNIEnv *, jobject);
 	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getSOCKSProxyHost(JNIEnv *, jobject);
 	JNIEXPORT jint JNICALL Java_ch_cyberduck_core_Proxy_getSOCKSProxyPort(JNIEnv *, jobject);
-	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getSOCKSProxyUser(JNIEnv *, jobject);
+
+	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Proxy_isHTTPProxyEnabled(JNIEnv *, jobject);
+	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getHTTPProxyHost(JNIEnv *, jobject);
+	JNIEXPORT jint JNICALL Java_ch_cyberduck_core_Proxy_getHTTPProxyPort(JNIEnv *, jobject);
+
+	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Proxy_isHTTPSProxyEnabled(JNIEnv *, jobject);
+	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getHTTPSProxyHost(JNIEnv *, jobject);
+	JNIEXPORT jint JNICALL Java_ch_cyberduck_core_Proxy_getHTTPSProxyPort(JNIEnv *, jobject);
 #ifdef __cplusplus
 }
 #endif
@@ -44,7 +54,9 @@ extern "C" {
 	
 }
 
-//+ (BOOL)usePassiveFTP;
++ (BOOL)usePassiveFTP;
+
++ (BOOL)isHostExcluded:(NSString *)hostname;
 
 + (BOOL)isSOCKSProxyEnabled;
 
@@ -52,6 +64,16 @@ extern "C" {
 
 + (NSNumber *)getSOCKSProxyPort;
 
-+ (NSString *)getSOCKSProxyUser;
++ (BOOL)isHTTPProxyEnabled;
+
++ (NSString *)getHTTPProxyHost;
+
++ (NSNumber *)getHTTPProxyPort;
+
++ (BOOL)isHTTPSProxyEnabled;
+
++ (NSString *)getHTTPSProxyHost;
+
++ (NSNumber *)getHTTPSProxyPort;
 
 @end
