@@ -2926,13 +2926,6 @@ public class CDBrowserController extends CDWindowController
                 // Delete this history bookmark if there was any error connecting
                 bookmark.delete();
             }
-            this.invoke(new Runnable() {
-                public void run() {
-                    window.setTitle(
-                            (String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
-                    window.setRepresentedFilename(""); //can't send null
-                }
-            });
             return;
         }
         if(!this.hasSession()) {
@@ -3093,13 +3086,6 @@ public class CDBrowserController extends CDWindowController
         this.session.setLoginController(new CDLoginController(this));
         this.setWorkdir(null);
         this.setEncoding(this.session.getEncoding());
-        this.window.setTitle(host.getProtocol() + ":" + host.getHostname());
-        ((CDMainController) NSApplication.sharedApplication().delegate()).exportBookmark(host,
-                this.getRepresentedFile());
-        if(this.getRepresentedFile().exists()) {
-            // Set the window title
-            this.window.setRepresentedFilename(this.getRepresentedFile().getAbsolute());
-        }
         this.session.addProgressListener(new ProgressListener() {
             public void message(final String msg) {
                 invoke(new Runnable() {
@@ -3113,12 +3099,25 @@ public class CDBrowserController extends CDWindowController
             }
         });
         session.addConnectionListener(listener = new ConnectionAdapter() {
-            public void connectionDidOpen() {
-                getSelectedBrowserView().setNeedsDisplay();
+            public void connectionWillOpen() {
                 CDBrowserController.this.invoke(new Runnable() {
                     public void run() {
                         window.setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername()
                                 + "@" + host.getHostname());
+                    }
+                });
+            }
+
+            public void connectionDidOpen() {
+                getSelectedBrowserView().setNeedsDisplay();
+                CDBrowserController.this.invoke(new Runnable() {
+                    public void run() {
+                        ((CDMainController) NSApplication.sharedApplication().delegate()).exportBookmark(host,
+                                CDBrowserController.this.getRepresentedFile());
+                        if(CDBrowserController.this.getRepresentedFile().exists()) {
+                            // Set the window title
+                            window.setRepresentedFilename(CDBrowserController.this.getRepresentedFile().getAbsolute());
+                        }
                         if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                             window.setDocumentEdited(true);
                         }
@@ -3138,6 +3137,9 @@ public class CDBrowserController extends CDWindowController
                 getSelectedBrowserView().setNeedsDisplay();
                 CDBrowserController.this.invoke(new Runnable() {
                     public void run() {
+                        window.setTitle(
+                                (String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
+                        window.setRepresentedFilename(""); //can't send null
                         window.setDocumentEdited(false);
                         securityLabel.setImage(NSImage.imageNamed("unlocked.tiff"));
                         securityLabel.setEnabled(false);
