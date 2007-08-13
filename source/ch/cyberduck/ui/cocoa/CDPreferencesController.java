@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.enterprisedt.net.ftp.FTPTransferType;
 
 import ch.cyberduck.core.*;
@@ -1470,31 +1469,6 @@ public class CDPreferencesController extends CDWindowController {
             Preferences.instance().setProperty("ftp.transfermode", FTPTransferType.AUTO.toString());
             this.lineEndingCombobox.setEnabled(true);
             this.textFileTypeRegexField.setEnabled(true);
-        }
-    }
-
-    private NSPopUpButton connectmodeCombobox; //IBOutlet
-
-    public void setConnectmodeCombobox(NSPopUpButton connectmodeCombobox) {
-        this.connectmodeCombobox = connectmodeCombobox;
-        this.connectmodeCombobox.setTarget(this);
-        this.connectmodeCombobox.setAction(new NSSelector("connectmodeComboboxClicked", new Class[]{NSPopUpButton.class}));
-        this.connectmodeCombobox.removeAllItems();
-        this.connectmodeCombobox.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
-        if (Preferences.instance().getProperty("ftp.connectmode").equals("passive")) {
-            this.connectmodeCombobox.selectItemWithTitle(CONNECTMODE_PASSIVE);
-        }
-        else {
-            this.connectmodeCombobox.selectItemWithTitle(CONNECTMODE_ACTIVE);
-        }
-    }
-
-    public void connectmodeComboboxClicked(NSPopUpButton sender) {
-        if (sender.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
-            Preferences.instance().setProperty("ftp.connectmode", FTPConnectMode.ACTIVE.toString());
-        }
-        else if (sender.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
-            Preferences.instance().setProperty("ftp.connectmode", FTPConnectMode.PASV.toString());
         }
     }
 

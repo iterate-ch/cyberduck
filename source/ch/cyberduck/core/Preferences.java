@@ -18,9 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPConnectMode;
-import com.enterprisedt.net.ftp.FTPTransferType;
-
 import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
 import ch.cyberduck.ui.cocoa.CDPortablePreferencesImpl;
 import ch.cyberduck.ui.cocoa.CDPreferencesImpl;
@@ -33,8 +30,9 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
+import java.net.*;
 
 /**
  * Holding all application preferences. Default values get overwritten when loading
@@ -56,6 +54,36 @@ public abstract class Preferences {
     static {
         System.setProperty("networkaddress.cache.ttl", "10");
         System.setProperty("networkaddress.cache.negative.ttl", "5");
+//        ProxySelector.setDefault(new ProxySelector() {
+//            public List select(URI uri) {
+//                log.debug("select:"+uri);
+//                final List proxies = new ArrayList();
+//                if(!Proxy.isHostExcluded(uri.getHost())) {
+//                    if(Proxy.isSOCKSProxyEnabled()) {
+//                        proxies.add(new java.net.Proxy(java.net.Proxy.Type.SOCKS,
+//                                new InetSocketAddress(Proxy.getSOCKSProxyHost(), Proxy.getSOCKSProxyPort())));
+//                    }
+//                    if(Proxy.isHTTPProxyEnabled()) {
+//                        proxies.add(new java.net.Proxy(java.net.Proxy.Type.HTTP,
+//                                new InetSocketAddress(Proxy.getHTTPProxyHost(), Proxy.getHTTPProxyPort())));
+//                    }
+//                }
+//                if(proxies.isEmpty()) {
+//                    proxies.add(java.net.Proxy.NO_PROXY);
+//                }
+//                if(log.isInfoEnabled()) {
+//                    log.info("Proxy configuration for "+uri.toString());
+//                    for(Iterator iter = proxies.iterator(); iter.hasNext(); ) {
+//                        log.info(iter.next());
+//                    }
+//                }
+//                return proxies;
+//            }
+//
+//            public void connectFailed(URI uri, SocketAddress socketAddress, IOException e) {
+//                log.error("Connect to proxy "+socketAddress.toString()+" failed:"+e.getMessage());
+//            }
+//        });
     }
 
     private static final Object lock = new Object();
@@ -346,8 +374,7 @@ public abstract class Preferences {
         defaults.put("ftp.anonymous.name", "anonymous");
         defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
 
-        defaults.put("ftp.connectmode", FTPConnectMode.PASV.toString());
-        defaults.put("ftp.transfermode", FTPTransferType.BINARY.toString());
+        defaults.put("ftp.transfermode", com.enterprisedt.net.ftp.FTPTransferType.BINARY.toString());
 
         /**
          * Line seperator to use for ASCII transfers

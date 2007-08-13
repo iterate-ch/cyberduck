@@ -24,14 +24,7 @@ import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPMessageListener;
 import com.enterprisedt.net.ftp.FTPNullReplyException;
 
-import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginCanceledException;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.NetwareFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.StingrayFTPEntryParser;
@@ -307,10 +300,10 @@ public class FTPSession extends Session {
      */
     protected FTPConnectMode getConnectMode() {
         if(null == this.host.getFTPConnectMode()) {
-            if(Preferences.instance().getProperty("ftp.connectmode").equals(FTPConnectMode.ACTIVE.toString()))
-                return FTPConnectMode.ACTIVE;
-            if(Preferences.instance().getProperty("ftp.connectmode").equals(FTPConnectMode.PASV.toString()))
+            if(Proxy.usePassiveFTP()) {
                 return FTPConnectMode.PASV;
+            }
+            return FTPConnectMode.ACTIVE;
         }
         return this.host.getFTPConnectMode();
 
