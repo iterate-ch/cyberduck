@@ -384,9 +384,6 @@ public abstract class Preferences {
          */
         defaults.put("connection.login.useKeychain", String.valueOf(true));
 
-        defaults.put("connection.buffer", String.valueOf(32768)); //in bytes
-        defaults.put("connection.buffer.default", String.valueOf(32768));
-
         defaults.put("connection.port.default", String.valueOf(21));
         defaults.put("connection.protocol.default", "ftp");
 

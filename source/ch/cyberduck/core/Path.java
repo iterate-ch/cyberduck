@@ -493,7 +493,7 @@ public abstract class Path extends AbstractPath {
      * @throws IOException
      */
     private void transfer(InputStream in, OutputStream out, StreamListener listener) throws IOException {
-        final int chunksize = Preferences.instance().getInteger("connection.buffer");
+        final int chunksize = 32768;
         byte[] chunk = new byte[chunksize];
         long bytesTransferred = status.getCurrent();
         while(!status.isCanceled()) {
