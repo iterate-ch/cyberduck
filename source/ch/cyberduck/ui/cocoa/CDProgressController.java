@@ -275,7 +275,7 @@ public class CDProgressController extends CDController {
             }
         }
         if(progressText != null) {
-            b.append(" — ");
+            b.append(" \u2013 ");
             b.append(progressText);
         }
         progressField.setAttributedStringValue(new NSAttributedString(
