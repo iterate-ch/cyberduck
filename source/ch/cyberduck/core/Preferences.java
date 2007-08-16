@@ -338,7 +338,8 @@ public abstract class Preferences {
         /**
          * If size is equals, do not compare the timestamp
          */
-        defaults.put("queue.sync.timestamp.ignore", String.valueOf("true"));
+        defaults.put("queue.sync.timestamp.ignore", String.valueOf(true));
+        defaults.put("queue.sync.action.default", SyncTransfer.ACTION_UPLOAD.toString());
 
         //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");

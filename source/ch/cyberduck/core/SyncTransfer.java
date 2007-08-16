@@ -91,13 +91,16 @@ public class SyncTransfer extends Transfer {
         return transferred;
     }
 
-    private Action action = ACTION_MIRROR;
+    private Action action = Action.forString(
+            Preferences.instance().getProperty("queue.sync.action.default")
+    );
 
     /**
      * @param action
      */
     public void setAction(Action action) {
         this.action = action;
+        this._comparisons.clear();
     }
 
     /**
@@ -117,11 +120,33 @@ public class SyncTransfer extends Transfer {
             }
             return this == other;
         }
+
+        public static Action forString(String s) {
+            if(s.equals(ACTION_DOWNLOAD.toString())) {
+                return ACTION_DOWNLOAD;
+            }
+            if(s.equals(ACTION_UPLOAD.toString())) {
+                return ACTION_UPLOAD;
+            }
+            return ACTION_MIRROR;
+        }
     }
 
-    public static final Action ACTION_DOWNLOAD = new Action();
-    public static final Action ACTION_UPLOAD = new Action();
-    public static final Action ACTION_MIRROR = new Action();
+    public static final Action ACTION_DOWNLOAD = new Action() {
+        public String toString() {
+            return "download";
+        }
+    };
+    public static final Action ACTION_UPLOAD = new Action() {
+        public String toString() {
+            return "upload";
+        }
+    };
+    public static final Action ACTION_MIRROR = new Action() {
+        public String toString() {
+            return "mirror";
+        }
+    };
 
     public TransferFilter filter(final TransferAction action) {
         log.debug("filter:" + action);
@@ -213,8 +238,10 @@ public class SyncTransfer extends Transfer {
 
     protected void clear() {
         _comparisons.clear();
+
         _delegateDownload.clear();
         _delegateUpload.clear();
+
         _cache.clear();
 
         super.clear();
@@ -253,11 +280,14 @@ public class SyncTransfer extends Transfer {
      * Files are identical or directories
      */
     public static final Comparison COMPARISON_EQUAL = new Comparison();
+    /**
+     * Files differ in size
+     */
+    public static final Comparison COMPARISON_UNEQUAL = new Comparison();
 
     /**
-     * @return > 0 if the remote path exists and is newer than
-     *         the local file; < 0 if the local path exists and is newer than
-     *         the remote file; 0 if both files don't exist or have an equal timestamp
+     * @param p The path to compare
+     * @return COMPARISON_REMOTE_NEWER, COMPARISON_LOCAL_NEWER or COMPARISON_EQUAL
      */
     public Comparison compare(Path p) {
         if (!_comparisons.containsKey(p)) {
@@ -269,9 +299,20 @@ public class SyncTransfer extends Transfer {
                 }
                 if (p.attributes.isFile()) {
                     result = this.compareSize(p);
-                    if (result.equals(COMPARISON_EQUAL)) {
-                        if (!Preferences.instance().getBoolean("queue.sync.timestamp.ignore")) {
-                            //both files have a valid size; compare using timestamp
+                    if (result.equals(COMPARISON_UNEQUAL)) {
+                        if (Preferences.instance().getBoolean("queue.sync.timestamp.ignore")) {
+                            if(this.getAction().equals(ACTION_DOWNLOAD)) {
+                                result = COMPARISON_REMOTE_NEWER;
+                            }
+                            else if(this.getAction().equals(ACTION_UPLOAD)) {
+                                result = COMPARISON_LOCAL_NEWER;
+                            }
+                            else if(this.getAction().equals(ACTION_MIRROR)) {
+                                result = this.compareTimestamp(p);
+                            }
+                        }
+                        else {
+                            //both files have a different size; compare using timestamp
                             result = this.compareTimestamp(p);
                         }
                     }
@@ -311,7 +352,7 @@ public class SyncTransfer extends Transfer {
             return COMPARISON_REMOTE_NEWER;
         }
         //different file size - further comparison check
-        return COMPARISON_EQUAL;
+        return COMPARISON_UNEQUAL;
     }
 
     /**
