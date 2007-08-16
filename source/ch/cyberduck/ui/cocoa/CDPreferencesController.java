@@ -720,8 +720,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     public void syncIgnoreTimestampCheckboxClicked(final NSButton sender) {
-        boolean enabled = sender.state() == NSCell.OnState;
-        Preferences.instance().setProperty("queue.sync.timestamp.ignore", enabled);
+        Preferences.instance().setProperty("queue.sync.timestamp.ignore", sender.state() == NSCell.OffState);
     }
 
     private NSButton horizontalLinesCheckbox; //IBOutlet
