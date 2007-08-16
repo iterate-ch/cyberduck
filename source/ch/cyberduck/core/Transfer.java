@@ -363,6 +363,24 @@ public abstract class Transfer extends NSObject {
     public abstract boolean isCached(Path file);
 
     /**
+     *
+     * @param item
+     * @return True if the path is not skipped when transferring
+     */
+    public boolean isIncluded(Path item) {
+        return !item.status.isSkipped();
+    }
+
+    /**
+     * If the path can be selected for inclusion
+     * @param item
+     * @return True if selectable
+     */
+    public boolean isSelectable(Path item) {
+        return true;
+    }
+
+    /**
      * The current path being transferred
      */
     private Path _current = null;
@@ -372,7 +390,7 @@ public abstract class Transfer extends NSObject {
      * @param filter
      */
     private void transfer(final Path p, final TransferFilter filter) {
-        if(p.status.isSkipped()) {
+        if(!this.isIncluded(p)) {
             return;
         }
 
@@ -483,7 +501,7 @@ public abstract class Transfer extends NSObject {
             return;
         }
 
-        if(p.status.isSkipped()) {
+        if(!this.isIncluded(p)) {
             return;
         }
 

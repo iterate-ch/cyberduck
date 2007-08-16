@@ -297,11 +297,14 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                                                    NSTableColumn tableColumn, Path item) {
                 String identifier = (String) tableColumn.identifier();
                 if(item != null) {
+                    if(identifier.equals(CDTransferPromptModel.INCLUDE_COLUMN)) {
+                        cell.setEnabled(transfer.isSelectable(item));
+                    }
                     if(identifier.equals(CDTransferPromptModel.FILENAME_COLUMN)) {
                         ((CDOutlineCell) cell).setIcon(CDIconCache.instance().iconForPath(item));
                     }
                     if(cell instanceof NSTextFieldCell) {
-                        if(item.status.isSkipped()) {
+                        if(!transfer.isIncluded(item)) {
                             ((NSTextFieldCell) cell).setTextColor(NSColor.disabledControlTextColor());
                         }
                         else {

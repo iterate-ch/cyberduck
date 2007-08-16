@@ -221,6 +221,10 @@ public class SyncTransfer extends Transfer {
         return _cache.containsKey(file);
     }
 
+    public boolean isSelectable(Path item) {
+        return !this.compare(item).equals(COMPARISON_EQUAL);
+    }
+
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
         log.debug("action:" + resumeRequested + "," + reloadRequested);
         // Always prompt for synchronization

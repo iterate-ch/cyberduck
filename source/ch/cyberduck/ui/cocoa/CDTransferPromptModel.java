@@ -207,10 +207,7 @@ public abstract class CDTransferPromptModel extends NSObject {
 
     protected Object objectValueForItem(final Path item, final String identifier) {
         if(identifier.equals(INCLUDE_COLUMN)) {
-            if(item.status.isSkipped()) {
-                return new Integer(NSCell.OffState);
-            }
-            return new Integer(NSCell.OnState);
+            return transfer.isIncluded(item) ? new Integer(NSCell.OnState) : new Integer(NSCell.OffState);
         }
         if(identifier.equals(FILENAME_COLUMN)) {
             return new NSAttributedString(item.getName(),

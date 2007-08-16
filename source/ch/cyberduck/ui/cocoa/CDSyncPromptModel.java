@@ -128,13 +128,6 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
     private static final NSImage PLUS_ICON = NSImage.imageNamed("plus.tiff");
 
     protected Object objectValueForItem(final Path item, final String identifier) {
-        if(identifier.equals(INCLUDE_COLUMN)) {
-            SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
-            if(compare.equals(SyncTransfer.COMPARISON_EQUAL)) {
-                return null; //The item cannot be included
-            }
-            return super.objectValueForItem(item, identifier);
-        }
         if(identifier.equals(SIZE_COLUMN)) {
             SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
             return new NSAttributedString(Status.getSizeAsString(
