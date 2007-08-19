@@ -26,8 +26,6 @@ import ch.cyberduck.ui.cocoa.growl.Growl;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -43,18 +41,6 @@ import java.net.MalformedURLException;
  */
 public class CDMainController extends CDController {
     private static Logger log = Logger.getLogger(CDMainController.class);
-
-    public void awakeFromNib() {
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("applicationShouldSleep", new Class[]{Object.class}),
-                NSWorkspace.WorkspaceWillSleepNotification,
-                null);
-
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("applicationShouldWake", new Class[]{Object.class}),
-                NSWorkspace.WorkspaceDidWakeNotification,
-                null);
-    }
 
     /**
      * Reference to the main graphical user interface thread.
@@ -430,9 +416,13 @@ public class CDMainController extends CDController {
             this.showTransferQueueClicked(null);
         }
         Rendezvous.instance().addListener(new RendezvousListener() {
-            public void serviceResolved(String identifier, String hostname) {
-                Growl.instance().notifyWithImage("Bonjour", Rendezvous.instance().getDisplayedName(identifier),
-                        "rendezvous.icns");
+            public void serviceResolved(final String identifier, final String hostname) {
+                invoke(new Runnable() {
+                    public void run() {
+                        Growl.instance().notifyWithImage("Bonjour", Rendezvous.instance().getDisplayedName(identifier),
+                                "rendezvous.icns");
+                    }
+                });
             }
 
             public void serviceLost(String servicename) {
@@ -479,36 +469,18 @@ public class CDMainController extends CDController {
                 }
             }
         }
-    }
-
-    /**
-     * Posted before the machine goes to sleep. An observer of this message
-     * can delay sleep for up to 30 seconds while handling this notification.
-     *
-     * @param o
-     */
-    public void applicationShouldSleep(Object o) {
-        log.debug("applicationShouldSleep");
-        //Stopping rendezvous service discovery
-        if(Preferences.instance().getBoolean("rendezvous.enable")) {
-            Rendezvous.instance().quit();
-        }
-        //halt all transfers
-        CDTransferController.instance().stopAllButtonClicked(null);
-        //close all browsing connections
-        NSArray windows = NSApplication.sharedApplication().windows();
-        int count = windows.count();
-        // Determine if there are any open connections
-        while(0 != count--) {
-            NSWindow window = (NSWindow) windows.objectAtIndex(count);
-            CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-            if(null != controller) {
-                if(controller.isBusy()) {
-                    controller.interrupt();
-                }
-                controller.unmount(false);
-            }
-        }
+        // NSWorkspace notifications are posted to a notification center provided by
+        // the NSWorkspace object, instead of going through the application’s default
+        // notification center as most notifications do. To receive NSWorkspace notifications,
+        // your application must register an observer with the NSWorkspace notification center.
+        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this,
+                new NSSelector("workspaceWillPowerOff", new Class[]{NSNotification.class}),
+                NSWorkspace.WorkspaceWillPowerOffNotification,
+                null);
+        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this,
+                new NSSelector("workspaceWillLogout", new Class[]{NSNotification.class}),
+                NSWorkspace.WorkspaceSessionDidResignActiveNotification,
+                null);
     }
 
     /**
@@ -646,6 +618,26 @@ public class CDMainController extends CDController {
         Preferences.instance().save();
     }
 
+    /**
+     * Posted when the user has requested a logout or that the machine be powered off.
+     * @param notification
+     */
+    public void workspaceWillPowerOff(NSNotification notification) {
+        log.debug("workspaceWillPowerOff");
+        donationBoxDisplayed = true;
+    }
+
+    /**
+     * Posted before a user session is switched out. This allows an application to
+     * disable some processing when its user session is switched out, and reenable when that
+     * session gets switched back in, for example.
+     * @param notification
+     */
+    public void workspaceWillLogout(NSNotification notification) {
+        log.debug("workspaceWillLogout");
+        donationBoxDisplayed = true;
+    }
+    
     /**
      * Makes a unmounted browser window the key window and brings it to the front
      * @return A reference to a browser window
