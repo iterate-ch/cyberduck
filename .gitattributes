@@ -1739,6 +1739,7 @@ sv.lproj/Transfer.nib/info.nib -text
 sv.lproj/Transfer.nib/keyedobjects.nib -text
 sv.lproj/Transfer.strings -text svneol=unset#text/utf-16
 test/ch/cyberduck/core/ftp/parser/StingrayFTPEntryParserTest.java -text
+test/ch/cyberduck/core/ftp/parser/TrellixFTPEntryParserTest.java -text
 th.lproj/Alert.nib/classes.nib -text
 th.lproj/Alert.nib/data.dependency -text
 th.lproj/Alert.nib/info.nib -text
