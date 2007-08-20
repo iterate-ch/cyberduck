@@ -18,20 +18,14 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPClient;
-import com.enterprisedt.net.ftp.FTPConnectMode;
-import com.enterprisedt.net.ftp.FTPException;
-import com.enterprisedt.net.ftp.FTPMessageListener;
-import com.enterprisedt.net.ftp.FTPNullReplyException;
+import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
-import ch.cyberduck.core.ftp.parser.NetwareFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.StingrayFTPEntryParser;
 
-import com.apple.cocoa.foundation.NSBundle;
-
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.apache.commons.net.ftp.parser.NetwareFTPEntryParser;
 import org.apache.commons.net.ftp.parser.ParserInitializationException;
 import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
 import org.apache.log4j.Logger;
@@ -39,9 +33,11 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.HashMap;
+
+import com.enterprisedt.net.ftp.*;
 
 /**
  * Opens a connection to the remote server via ftp protocol
@@ -171,8 +167,7 @@ public class FTPSession extends Session {
                 log.warn("Composite FTP parser has no cached delegate yet");
                 return false;
             }
-        }
-        else {
+        } else {
             // Not a composite parser
             delegate = p;
         }
@@ -183,7 +178,7 @@ public class FTPSession extends Session {
                     || delegate instanceof StingrayFTPEntryParser)
             );
         }
-        return ((Boolean)parsers.get(delegate)).booleanValue();
+        return ((Boolean) parsers.get(delegate)).booleanValue();
     }
 
     public boolean isConnected() {
@@ -331,8 +326,7 @@ public class FTPSession extends Session {
                 }
                 this.login();
             }
-        }
-        else {
+        } else {
             throw new LoginCanceledException();
         }
     }

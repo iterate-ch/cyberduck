@@ -19,7 +19,6 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.ftp.parser.EPLFFTPEntryParser;
-import ch.cyberduck.core.ftp.parser.NetwareFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.StingrayFTPEntryParser;
 

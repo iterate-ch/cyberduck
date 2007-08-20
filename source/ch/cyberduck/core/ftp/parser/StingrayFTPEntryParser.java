@@ -18,44 +18,15 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.commons.net.ftp.FTPFile;
+
 import java.text.ParseException;
 
-import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.ftp.parser.ConfigurableFTPFileEntryParserImpl;
-
 /**
- * @see org.apache.commons.net.ftp.parser.UnixFTPEntryParser
  * @version $Id: StingrayFTPEntryParser.java 3171 2007-07-16 10:30:28Z dkocher $
+ * @see org.apache.commons.net.ftp.parser.UnixFTPEntryParser
  */
-public class StingrayFTPEntryParser extends ConfigurableFTPFileEntryParserImpl {
-
-    static final String DEFAULT_DATE_FORMAT
-            = "MMM d yyyy"; //Nov 9 2001
-
-    static final String DEFAULT_RECENT_DATE_FORMAT
-            = "MMM d HH:mm"; //Nov 9 20:06
-
-    static final String NUMERIC_DATE_FORMAT
-            = "yyyy-MM-dd HH:mm"; //2001-11-09 20:06
-
-    /**
-     * Some Linux distributions are now shipping an FTP server which formats
-     * file listing dates in an all-numeric format:
-     * <code>"yyyy-MM-dd HH:mm</code>.
-     * This is a very welcome development,  and hopefully it will soon become
-     * the standard.  However, since it is so new, for now, and possibly
-     * forever, we merely accomodate it, but do not make it the default.
-     * <p/>
-     * For now end users may specify this format only via
-     * <code>UnixFTPEntryParser(FTPClientConfig)</code>.
-     * Steve Cohen - 2005-04-17
-     */
-    public static final FTPClientConfig NUMERIC_DATE_CONFIG =
-            new FTPClientConfig(
-                    FTPClientConfig.SYST_UNIX,
-                    NUMERIC_DATE_FORMAT,
-                    null, null, null, null);
+public class StingrayFTPEntryParser extends CommonUnixFTPEntryParser {
 
     /**
      * this is the regular expression used by this parser.
@@ -83,18 +54,10 @@ public class StingrayFTPEntryParser extends ConfigurableFTPFileEntryParserImpl {
                     + "(\\d+)?\\s+"
                     + "(\\S+)\\s+"
                     + "(\\d+)\\s+"
-
-                    /*
-                      numeric or standard format date
-                    */
+                    /* numeric or standard format date*/
                     + "((?:\\d+[-/]\\d+[-/]\\d+)|(?:\\S+\\s+\\S+))\\s+"
-
-                    /*
-                year (for non-recent standard format)
-                or time (for numeric or recent standard format
-             */
+                    /* year (for non-recent standard format) or time (for numeric or recent standard format*/
                     + "(\\d+(?::\\d+)?)\\s+"
-
                     + "(\\S*)(\\s*.*)";
 
     /**
@@ -105,25 +68,8 @@ public class StingrayFTPEntryParser extends ConfigurableFTPFileEntryParserImpl {
      *                                  <code>REGEX</code> is  not a valid regular expression.
      */
     public StingrayFTPEntryParser() {
-        this(null);
-    }
-
-    /**
-     * This constructor allows the creation of a UnixFTPEntryParser object with
-     * something other than the default configuration.
-     *
-     * @param config The {@link FTPClientConfig configuration} object used to
-     *               configure this parser.
-     * @throws IllegalArgumentException Thrown if the regular expression is unparseable.  Should not be seen
-     *                                  under normal conditions.  It it is seen, this is a sign that
-     *                                  <code>REGEX</code> is  not a valid regular expression.
-     * @since 1.4
-     */
-    public StingrayFTPEntryParser(FTPClientConfig config) {
         super(REGEX);
-        configure(config);
     }
-
 
     /**
      * Parses a line of a unix (standard) FTP server file listing and converts
@@ -225,20 +171,5 @@ public class StingrayFTPEntryParser extends ConfigurableFTPFileEntryParserImpl {
             return file;
         }
         return null;
-    }
-
-    /**
-     * Defines a default configuration to be used when this class is
-     * instantiated without a {@link  FTPClientConfig  FTPClientConfig}
-     * parameter being specified.
-     *
-     * @return the default configuration for this parser.
-     */
-    protected FTPClientConfig getDefaultConfiguration() {
-        return new FTPClientConfig(
-                FTPClientConfig.SYST_UNIX,
-                DEFAULT_DATE_FORMAT,
-                DEFAULT_RECENT_DATE_FORMAT,
-                null, null, null);
     }
 }
