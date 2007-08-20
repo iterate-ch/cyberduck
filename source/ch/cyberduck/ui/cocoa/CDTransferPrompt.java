@@ -222,11 +222,10 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 if(browserView.selectedRow() != -1) {
                     Path p = (Path) browserView.itemAtRow(browserView.selectedRow());
                     if(p != null) {
+                        localURLField.setAttributedStringValue(new NSAttributedString(
+                                p.getLocal().getAbsolute(),
+                                TRUNCATE_MIDDLE_ATTRIBUTES));
                         if(p.getLocal().exists()) {
-                            localURLField.setAttributedStringValue(new NSAttributedString(
-                                    p.getLocal().getAbsolute(),
-                                    TRUNCATE_MIDDLE_ATTRIBUTES));
-
                             if(p.getLocal().attributes.getSize() == -1) {
                                 localSizeField.setAttributedStringValue(UNKNOWN_STRING);
                             }
@@ -245,12 +244,12 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                                         TRUNCATE_MIDDLE_ATTRIBUTES));
                             }
                         }
-                        hideLocalDetails(!p.getLocal().exists());
-                        if(p.exists()) {
-                            remoteURLField.setAttributedStringValue(new NSAttributedString(
-                                    p.getHost().getURL() + p.getAbsolute(),
-                                    TRUNCATE_MIDDLE_ATTRIBUTES));
+                        hideLocalDetails(false);
 
+                        remoteURLField.setAttributedStringValue(new NSAttributedString(
+                                p.getHost().getURL() + p.getAbsolute(),
+                                TRUNCATE_MIDDLE_ATTRIBUTES));
+                        if(p.exists()) {
                             if(p.attributes.getSize() == -1) {
                                 remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
                             }
@@ -269,12 +268,12 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                                         TRUNCATE_MIDDLE_ATTRIBUTES));
                             }
                         }
-                        hideRemoteDetails(!p.exists());
+                        hideRemoteDetails(false);
                     }
                 }
                 else {
-                    hideRemoteDetails(true);
                     hideLocalDetails(true);
+                    hideRemoteDetails(true);
                 }
             }
 
