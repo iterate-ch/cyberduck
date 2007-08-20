@@ -86,10 +86,6 @@ public abstract class Preferences {
         ;
     }
 
-//    public abstract void addObserver(String property, PreferencesObserver observer);
-//
-//    public abstract void removeObserver(PreferencesObserver observer);
-
     /**
      * @param property The name of the property to overwrite
      * @param value    The new vlaue

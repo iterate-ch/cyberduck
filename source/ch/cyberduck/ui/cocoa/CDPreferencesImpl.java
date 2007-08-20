@@ -44,10 +44,6 @@ public class CDPreferencesImpl extends Preferences {
         return value;
     }
 
-//    public native void addObserver(final String property, final PreferencesObserver observer);
-//
-//    public native void removeObserver(final PreferencesObserver observer);
-
     public void setProperty(final String property, final Object value) {
         log.info("setProperty:"+property+","+value);
         // Sets the value of the default identified by defaultName in the standard application domain.
