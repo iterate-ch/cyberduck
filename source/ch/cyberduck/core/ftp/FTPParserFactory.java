@@ -36,25 +36,25 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
     public FTPFileEntryParser createFileEntryParser(String key) throws ParserInitializationException {
         if(null != key) {
             String ukey = key.toUpperCase();
-            if(ukey.indexOf("UNIX") >= 0) {
+            if(ukey.indexOf(FTPClientConfig.SYST_UNIX) >= 0) {
                 return this.createUnixFTPEntryParser();
             }
-            else if(ukey.indexOf("VMS") >= 0) {
+            else if(ukey.indexOf(FTPClientConfig.SYST_VMS) >= 0) {
                 throw new ParserInitializationException("\"" + key + "\" is not currently a supported system.");
             }
-            else if(ukey.indexOf("NETWARE") >= 0) {
+            else if(ukey.indexOf(FTPClientConfig.SYST_NETWARE) >= 0) {
                 return this.createNetwareFTPEntryParser();
             }
-            else if(ukey.indexOf("WINDOWS") >= 0) {
+            else if(ukey.indexOf(FTPClientConfig.SYST_NT) >= 0) {
                 return this.createNTFTPEntryParser();
             }
-            else if(ukey.indexOf("OS/2") >= 0) {
+            else if(ukey.indexOf(FTPClientConfig.SYST_OS2) >= 0) {
                 return this.createOS2FTPEntryParser();
             }
-            else if(ukey.indexOf("OS/400") >= 0) {
+            else if(ukey.indexOf(FTPClientConfig.SYST_OS400) >= 0) {
                 return this.createOS400FTPEntryParser();
             }
-            else if(ukey.indexOf("MVS") >= 0) {
+            else if(ukey.indexOf(FTPClientConfig.SYST_MVS) >= 0) {
                 return this.createMVSEntryParser();
             }
             else if(ukey.indexOf("MACOS") >= 0) {
@@ -72,7 +72,13 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
     private FTPFileEntryParser createUnixFTPEntryParser() {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
-                        new UnixFTPEntryParser(),
+                        new UnixFTPEntryParser() {
+                            protected FTPClientConfig getDefaultConfiguration() {
+                                FTPClientConfig config = super.getDefaultConfiguration();
+                                config.setLenientFutureDates(true);
+                                return config;
+                            }
+                        },
                         new EPLFFTPEntryParser()
                 });
     }
@@ -112,7 +118,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
     private FTPFileEntryParser createStingrayFTPEntryParser() {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
-                        new UnixFTPEntryParser(),
+                        this.createUnixFTPEntryParser(),
                         new StingrayFTPEntryParser()
                 });
     }
