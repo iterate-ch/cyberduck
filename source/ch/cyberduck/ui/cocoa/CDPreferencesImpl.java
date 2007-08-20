@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 
 /**
  * Concrete subclass using the Cocoa Preferences classes.
+ * Warning: User defaults are not thread safe. 
  *
  * @version $Id$
  * @see com.apple.cocoa.foundation.NSUserDefaults
@@ -34,19 +35,6 @@ public class CDPreferencesImpl extends Preferences {
     private static Logger log = Logger.getLogger(Preferences.class);
 
     private NSUserDefaults props;
-
-    public CDPreferencesImpl() {
-//        try {
-//            NSBundle bundle = NSBundle.mainBundle();
-//            String lib = bundle.resourcePath() + "/Java/" + "libPreferences.dylib";
-//            log.info("Locating libPreferences.dylib at '" + lib + "'");
-//            System.load(lib);
-//            log.info("libPreferences.dylib loaded");
-//        }
-//        catch(UnsatisfiedLinkError e) {
-//            log.error("Could not load the libPreferences.dylib library:" + e.getMessage());
-//        }
-    }
 
     public Object getObject(final String property) {
         Object value = props.objectForKey(property);
