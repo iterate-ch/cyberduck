@@ -120,10 +120,10 @@ public class CDProgressController extends CDController {
             public void transferPaused() {
                 CDProgressController.this.invoke(new Runnable() {
                     public void run() {
+                        Growl.instance().notify("Transfer queued", transfer.getHost().getHostname());
                         statusIconView.setImage(YELLOW_ICON);
                     }
                 });
-                Growl.instance().notify("Transfer queued", transfer.getHost().getHostname());
             }
 
             public void transferResumed() {

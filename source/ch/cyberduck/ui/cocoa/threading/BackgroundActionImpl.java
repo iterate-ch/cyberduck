@@ -79,9 +79,13 @@ public abstract class BackgroundActionImpl
                 return;
             }
         }
-        Growl.instance().notify(exception.getMessage(),
-                null == exception.getPath() ? exception.getSession().getHost().getHostname()
-                        : exception.getPath().getName());
+        controller.invoke(new Runnable() {
+            public void run() {
+                Growl.instance().notify(exception.getMessage(),
+                        null == exception.getPath() ? exception.getSession().getHost().getHostname()
+                                : exception.getPath().getName());
+            }
+        });
         exceptions.add(exception);
     }
 

@@ -713,11 +713,11 @@ public class CDBrowserController extends CDWindowController
     public void setBookmarkDrawer(NSDrawer bookmarkDrawer) {
         this.bookmarkDrawer = bookmarkDrawer;
         NSNotificationCenter.defaultCenter().addObserver(bookmarkDrawerNotifications,
-                new NSSelector("drawerDidOpen", new Class[]{Object.class}),
+                new NSSelector("drawerDidOpen", new Class[]{NSNotification.class}),
                 NSDrawer.DrawerDidOpenNotification,
                 this.bookmarkDrawer);
         NSNotificationCenter.defaultCenter().addObserver(bookmarkDrawerNotifications,
-                new NSSelector("drawerDidClose", new Class[]{Object.class}),
+                new NSSelector("drawerDidClose", new Class[]{NSNotification.class}),
                 NSDrawer.DrawerDidCloseNotification,
                 this.bookmarkDrawer);
     }
@@ -1492,7 +1492,7 @@ public class CDBrowserController extends CDWindowController
     public void setSearchField(NSTextField searchField) {
         this.searchField = searchField;
         NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("searchFieldTextDidChange", new Class[]{Object.class}),
+                new NSSelector("searchFieldTextDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.searchField);
     }
@@ -2583,18 +2583,22 @@ public class CDBrowserController extends CDWindowController
             transfer.addListener(l = new TransferAdapter() {
                 public void transferDidEnd() {
                     if(transfer.isComplete() && !transfer.isCanceled()) {
-                        if(transfer instanceof DownloadTransfer) {
-                            Growl.instance().notify("Download complete", transfer.getName());
-                            if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
-                                NSWorkspace.sharedWorkspace().openFile(transfer.getRoot().getLocal().toString());
+                        invoke(new Runnable() {
+                            public void run() {
+                                if(transfer instanceof DownloadTransfer) {
+                                    Growl.instance().notify("Download complete", transfer.getName());
+                                    if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
+                                        NSWorkspace.sharedWorkspace().openFile(transfer.getRoot().getLocal().toString());
+                                    }
+                                }
+                                else if(transfer instanceof UploadTransfer) {
+                                    Growl.instance().notify("Upload complete", transfer.getName());
+                                }
+                                else if(transfer instanceof SyncTransfer) {
+                                    Growl.instance().notify("Synchronization complete", transfer.getName());
+                                }
                             }
-                        }
-                        if(transfer instanceof UploadTransfer) {
-                            Growl.instance().notify("Upload complete", transfer.getName());
-                        }
-                        if(transfer instanceof SyncTransfer) {
-                            Growl.instance().notify("Synchronization complete", transfer.getName());
-                        }
+                        });
                     }
                 }
             });
@@ -3112,6 +3116,7 @@ public class CDBrowserController extends CDWindowController
                 getSelectedBrowserView().setNeedsDisplay();
                 CDBrowserController.this.invoke(new Runnable() {
                     public void run() {
+                        Growl.instance().notify("Connection opened", host.getHostname());
                         ((CDMainController) NSApplication.sharedApplication().delegate()).exportBookmark(host,
                                 CDBrowserController.this.getRepresentedFile());
                         if(CDBrowserController.this.getRepresentedFile().exists()) {
@@ -3126,7 +3131,6 @@ public class CDBrowserController extends CDWindowController
                         securityLabel.setEnabled(true);
                     }
                 });
-                Growl.instance().notify("Connection opened", host.getHostname());
             }
 
             public void connectionWillClose() {
