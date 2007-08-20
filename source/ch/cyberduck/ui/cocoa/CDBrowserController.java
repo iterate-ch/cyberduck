@@ -837,7 +837,9 @@ public class CDBrowserController extends CDWindowController
                 this.setSortedAscending(!this.isSortedAscending());
             }
             else {
+                // Remove sorting indicator on previously selected column
                 this.setBrowserColumnSortingIndicator(null, this.selectedColumnIdentifier());
+                // Set the newly selected column
                 this.setSelectedColumn(tableColumn);
             }
             this.setBrowserColumnSortingIndicator(
@@ -845,13 +847,7 @@ public class CDBrowserController extends CDWindowController
                             NSImage.imageNamed("NSAscendingSortIndicator") :
                             NSImage.imageNamed("NSDescendingSortIndicator"),
                     tableColumn.identifier().toString());
-            view.deselectAll(null);
-            view.reloadData();
-            for(Iterator i = selected.iterator(); i.hasNext();) {
-                view.selectRowIndexes(new NSIndexSet(
-                        CDBrowserController.this.getSelectedBrowserModel().indexOf(view, (Path) i.next())),
-                        true);
-            }
+            reloadData(selected);
         }
 
         public void selectionDidChange(NSNotification notification) {
