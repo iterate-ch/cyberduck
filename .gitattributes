@@ -1257,7 +1257,7 @@ ko.lproj/Transfer.nib/classes.nib -text
 ko.lproj/Transfer.nib/info.nib -text
 ko.lproj/Transfer.nib/keyedobjects.nib -text
 ko.lproj/Transfer.strings -text svneol=unset#text/utf-16
-lib/commons-net-1.4.1.jar -text
+lib/commons-net-20070730.jar -text
 lib/ext/junit.jar -text
 lib/icu4j-3.6.1.jar -text
 lib/jakarta-oro-2.0.8.jar -text
