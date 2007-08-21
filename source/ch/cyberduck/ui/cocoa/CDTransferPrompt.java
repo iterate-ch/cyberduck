@@ -97,15 +97,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     public void callback(final int returncode) {
         log.debug("callback:" + returncode);
         if(returncode == DEFAULT_OPTION) { // Continue
-            if(actionPopup.selectedItem().title().equals(ACTION_OVERWRITE)) {
-                action = TransferAction.ACTION_OVERWRITE;
-            }
-            else if(actionPopup.selectedItem().title().equals(ACTION_RESUME)) {
-                action = TransferAction.ACTION_RESUME;
-            }
-            else if(actionPopup.selectedItem().title().equals(ACTION_SIMILARNAME)) {
-                action = TransferAction.ACTION_RENAME;
-            }
+            ;
         }
         if(returncode == CANCEL_OPTION) { // Abort
             action = TransferAction.ACTION_CANCEL;
@@ -483,5 +475,19 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         this.actionPopup.addItemsWithTitles(new NSArray(new String[]{
                 ACTION_OVERWRITE, ACTION_RESUME, ACTION_SIMILARNAME
         }));
+        this.actionPopup.setTarget(this);
+        this.actionPopup.setAction(new NSSelector("actionPopupClicked", new Class[]{NSPopUpButton.class}));
+    }
+
+    public void actionPopupClicked(NSPopUpButton sender) {
+        if(sender.selectedItem().title().equals(ACTION_OVERWRITE)) {
+            action = TransferAction.ACTION_OVERWRITE;
+        }
+        else if(sender.selectedItem().title().equals(ACTION_RESUME)) {
+            action = TransferAction.ACTION_RESUME;
+        }
+        else if(sender.selectedItem().title().equals(ACTION_SIMILARNAME)) {
+            action = TransferAction.ACTION_RENAME;
+        }
     }
 }

@@ -381,6 +381,22 @@ public abstract class Transfer extends NSObject {
     }
 
     /**
+     * Recursively update the status of all cached child items
+     * @param item
+     * @param skipped True if skipped
+     */
+    public void setSkipped(Path item, final boolean skipped) {
+        item.status.setSkipped(skipped);
+        if(item.attributes.isDirectory()) {
+            if(this.isCached(item)) {
+                for(Iterator iter = this.childs(item).iterator(); iter.hasNext(); ) {
+                    this.setSkipped((Path)iter.next(), skipped);
+                }
+            }
+        }
+    }
+
+    /**
      * The current path being transferred
      */
     private Path _current = null;

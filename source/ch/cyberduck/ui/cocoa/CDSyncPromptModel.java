@@ -53,22 +53,6 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
             filter = new PromptFilter() {
                 public boolean accept(AbstractPath child) {
                     log.debug("accept:" + child);
-                    SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare((Path) child);
-                    if(!SyncTransfer.COMPARISON_EQUAL.equals(compare)) {
-                        if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
-                            if(((SyncTransfer) transfer).getAction().equals(SyncTransfer.ACTION_UPLOAD)) {
-                                ((Path)child).status.setSkipped(true);
-                            }
-                        }
-                        else if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
-                            if(((SyncTransfer) transfer).getAction().equals(SyncTransfer.ACTION_DOWNLOAD)) {
-                                ((Path)child).status.setSkipped(true);
-                            }
-                        }
-                    }
-                    else {
-                        ((Path)child).status.setSkipped(child.attributes.isFile());
-                    }
                     return super.accept(child);
                 }
             };

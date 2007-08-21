@@ -155,7 +155,6 @@ public class CDSyncPrompt extends CDTransferPrompt {
             //Mirror
             ((SyncTransfer)transfer).setAction(SyncTransfer.ACTION_MIRROR);
         }
-        browserModel.clear();
         browserView.reloadData();
     }
 }

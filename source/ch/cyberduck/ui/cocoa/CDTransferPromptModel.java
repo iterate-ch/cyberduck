@@ -123,23 +123,9 @@ public abstract class CDTransferPromptModel extends NSObject {
     {
         String identifier = (String) tableColumn.identifier();
         if(identifier.equals(INCLUDE_COLUMN)) {
-            this.setSkipped(item, ((Number) value).intValue() == NSCell.OffState);
-            outlineView.setNeedsDisplay(true);
-        }
-    }
-
-    /**
-     * Recursively update the status of all cached child items
-     * @param item
-     * @param skipped True if skipped
-     */
-    private void setSkipped(Path item, final boolean skipped) {
-        item.status.setSkipped(skipped);
-        if(item.attributes.isDirectory()) {
-            if(transfer.isCached(item)) {
-                for(Iterator iter = item.childs().iterator(); iter.hasNext(); ) {
-                    this.setSkipped((Path)iter.next(), skipped);
-                }
+            transfer.setSkipped(item, ((Number) value).intValue() == NSCell.OffState);
+            if(item.attributes.isDirectory()) {
+                outlineView.setNeedsDisplay(true);
             }
         }
     }

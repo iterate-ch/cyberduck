@@ -275,19 +275,35 @@ public class SyncTransfer extends Transfer {
     /**
      * Remote file is newer or local file does not exist
      */
-    public static final Comparison COMPARISON_REMOTE_NEWER = new Comparison();
+    public static final Comparison COMPARISON_REMOTE_NEWER = new Comparison() {
+        public String toString() {
+            return "COMPARISON_REMOTE_NEWER";
+        }
+    };
     /**
      * Local file is newer or remote file does not exist
      */
-    public static final Comparison COMPARISON_LOCAL_NEWER = new Comparison();
+    public static final Comparison COMPARISON_LOCAL_NEWER = new Comparison() {
+        public String toString() {
+            return "COMPARISON_LOCAL_NEWER";
+        }
+    };
     /**
      * Files are identical or directories
      */
-    public static final Comparison COMPARISON_EQUAL = new Comparison();
+    public static final Comparison COMPARISON_EQUAL = new Comparison() {
+        public String toString() {
+            return "COMPARISON_EQUAL";
+        }
+    };
     /**
      * Files differ in size
      */
-    public static final Comparison COMPARISON_UNEQUAL = new Comparison();
+    public static final Comparison COMPARISON_UNEQUAL = new Comparison() {
+        public String toString() {
+            return "COMPARISON_UNEQUAL";
+        }
+    };
 
     /**
      * @param p The path to compare
@@ -296,11 +312,8 @@ public class SyncTransfer extends Transfer {
     public Comparison compare(Path p) {
         if (!_comparisons.containsKey(p)) {
             log.debug("compare:" + p);
-            Comparison result = null;
+            Comparison result = COMPARISON_EQUAL;
             if (SyncTransfer.this.exists(p) && SyncTransfer.this.exists(p.getLocal())) {
-                if (p.attributes.isDirectory()) {
-                    result = COMPARISON_EQUAL;
-                }
                 if (p.attributes.isFile()) {
                     result = this.compareSize(p);
                     if (result.equals(COMPARISON_UNEQUAL)) {
@@ -321,16 +334,29 @@ public class SyncTransfer extends Transfer {
                         }
                     }
                 }
-            } else if (SyncTransfer.this.exists(p)) {
+            }
+            else if (SyncTransfer.this.exists(p)) {
                 // only the remote file exists
                 result = COMPARISON_REMOTE_NEWER;
-            } else if (SyncTransfer.this.exists(p.getLocal())) {
+            }
+            else if (SyncTransfer.this.exists(p.getLocal())) {
                 // only the local file exists
                 result = COMPARISON_LOCAL_NEWER;
-            } else {
-                // both files don't exist yet
-                result = COMPARISON_EQUAL;
             }
+
+            // Updating default inclusion settings
+            if(COMPARISON_EQUAL.equals(result)) {
+                this.setSkipped(p, p.attributes.isFile());
+            }
+            else {
+                if(result.equals(COMPARISON_REMOTE_NEWER)) {
+                    this.setSkipped(p, this.getAction().equals(ACTION_UPLOAD));
+                }
+                else if(result.equals(COMPARISON_LOCAL_NEWER)) {
+                    this.setSkipped(p, this.getAction().equals(ACTION_DOWNLOAD));
+                }
+            }
+            
             _comparisons.put(p, result);
         }
         return (Comparison) _comparisons.get(p);
@@ -354,6 +380,9 @@ public class SyncTransfer extends Transfer {
         }
         if (p.getLocal().attributes.getSize() == 0) {
             return COMPARISON_REMOTE_NEWER;
+        }
+        if (p.attributes.getSize() == p.getLocal().attributes.getSize()) {
+            return COMPARISON_EQUAL;
         }
         //different file size - further comparison check
         return COMPARISON_UNEQUAL;
