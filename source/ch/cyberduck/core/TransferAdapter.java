@@ -28,6 +28,9 @@ public class TransferAdapter implements TransferListener {
     public void transferWillStart() {
     }
 
+    public void transferQueued() {
+    }
+
     public void transferPaused() {
     }
 

@@ -66,24 +66,6 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
         super.clear();
     }
 
-    public List build() {
-        if(_roots.isEmpty()) {
-            log.debug("build");
-            for(Iterator iter = transfer.getRoots().iterator(); iter.hasNext();) {
-                Path next = (Path) iter.next();
-                if(this.filter().accept(next)) {
-                    for(Iterator childs = transfer.childs(next).iterator(); childs.hasNext(); ) {
-                        Path child = (Path)childs.next();
-                        if(this.filter().accept(child)) {
-                            _roots.add(child);
-                        }
-                    }
-                }
-            }
-        }
-        return _roots;
-    }
-
     public int outlineViewNumberOfChildrenOfItem(final NSOutlineView view, Path item) {
         if(null == item) {
             return this.build().size();

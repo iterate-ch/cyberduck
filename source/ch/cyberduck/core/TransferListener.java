@@ -34,6 +34,11 @@ public interface TransferListener {
     /**
      * The transfer is paused and waits for other transfers to finish first
      */
+    public abstract void transferQueued();
+
+    /**
+     * 
+     */
     public abstract void transferPaused();
 
     /**

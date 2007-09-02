@@ -96,7 +96,7 @@ public abstract class CDTransferPromptModel extends NSObject {
 
     protected abstract class PromptFilter implements PathFilter {
         public boolean accept(AbstractPath file) {
-            if(transfer.exists(file)) {
+            if(transfer.exists((Path)file)) {
                 if(file.attributes.getSize() == -1) {
                     ((Path)file).readSize();
                 }

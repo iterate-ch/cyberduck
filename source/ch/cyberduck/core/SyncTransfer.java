@@ -33,10 +33,6 @@ public class SyncTransfer extends Transfer {
         super(root);
     }
 
-    public SyncTransfer(Collection roots) {
-        super(roots);
-    }
-
     public SyncTransfer(NSDictionary dict, Session s) {
         super(dict, s);
     }
@@ -59,8 +55,8 @@ public class SyncTransfer extends Transfer {
 
     protected void init() {
         log.debug("init");
-        _delegateUpload = new UploadTransfer(this.roots);
-        _delegateDownload = new DownloadTransfer(this.roots);
+        _delegateUpload = new UploadTransfer(this.getRoots());
+        _delegateDownload = new DownloadTransfer(this.getRoots());
     }
 
     public void setBandwidth(float bytesPerSecond) {
@@ -148,55 +144,49 @@ public class SyncTransfer extends Transfer {
         }
     };
 
+    private TransferFilter ACTION_OVERWRITE = new TransferFilter() {
+        /**
+         * Download delegate filter
+         */
+        private TransferFilter _delegateFilterDownload
+                = _delegateDownload.filter(TransferAction.ACTION_OVERWRITE);
+
+        /**
+         * Upload delegate filter
+         */
+        private TransferFilter _delegateFilterUpload
+                = _delegateUpload.filter(TransferAction.ACTION_OVERWRITE);
+
+        public void prepare(Path p) {
+            final Comparison compare = SyncTransfer.this.compare(p);
+            if (compare.equals(COMPARISON_REMOTE_NEWER)) {
+                _delegateFilterDownload.prepare(p);
+            } else if (compare.equals(COMPARISON_LOCAL_NEWER)) {
+                _delegateFilterUpload.prepare(p);
+            }
+        }
+
+        public boolean accept(AbstractPath p) {
+            final Comparison compare = SyncTransfer.this.compare((Path) p);
+            if (!COMPARISON_EQUAL.equals(compare)) {
+                if (compare.equals(COMPARISON_REMOTE_NEWER)) {
+                    // Ask the download delegate for inclusion
+                    return _delegateFilterDownload.accept(p);
+                }
+                else if (compare.equals(COMPARISON_LOCAL_NEWER)) {
+                    // Ask the upload delegate for inclusion
+                    return _delegateFilterUpload.accept(p);
+                }
+            }
+            return false;
+        }
+    };
+
     public TransferFilter filter(final TransferAction action) {
         log.debug("filter:" + action);
         if (action.equals(TransferAction.ACTION_OVERWRITE)) {
             // When synchronizing, either cancel or overwrite. Resume is not supported
-            return new TransferFilter() {
-                /**
-                 * Download delegate filter
-                 */
-                private TransferFilter _delegateFilterDownload
-                        = _delegateDownload.filter(TransferAction.ACTION_OVERWRITE);
-
-                /**
-                 * Upload delegate filter
-                 */
-                private TransferFilter _delegateFilterUpload
-                        = _delegateUpload.filter(TransferAction.ACTION_OVERWRITE);
-
-                public void prepare(Path p) {
-                    final Comparison compare = SyncTransfer.this.compare(p);
-                    if (compare.equals(COMPARISON_REMOTE_NEWER)) {
-                        _delegateFilterDownload.prepare(p);
-                    } else if (compare.equals(COMPARISON_LOCAL_NEWER)) {
-                        _delegateFilterUpload.prepare(p);
-                    }
-                }
-
-                public boolean accept(AbstractPath p) {
-                    final Comparison compare = SyncTransfer.this.compare((Path) p);
-                    if (!COMPARISON_EQUAL.equals(compare)) {
-                        if (compare.equals(COMPARISON_REMOTE_NEWER)) {
-                            if (SyncTransfer.this.action.equals(ACTION_UPLOAD)) {
-                                log.info("Skipping " + p);
-                                return false;
-                            }
-                            // Ask the download delegate for inclusion
-                            return _delegateFilterDownload.accept(p);
-                        }
-                        else if (compare.equals(COMPARISON_LOCAL_NEWER)) {
-                            if (SyncTransfer.this.action.equals(ACTION_DOWNLOAD)) {
-                                log.info("Skipping " + p);
-                                return false;
-                            }
-                            // Ask the upload delegate for inclusion
-                            return _delegateFilterUpload.accept(p);
-                        }
-                    }
-                    return false;
-                }
-            };
+            return ACTION_OVERWRITE;
         }
         if (action.equals(TransferAction.ACTION_CALLBACK)) {
             TransferAction result = prompt.prompt(this);
@@ -313,7 +303,7 @@ public class SyncTransfer extends Transfer {
         if (!_comparisons.containsKey(p)) {
             log.debug("compare:" + p);
             Comparison result = COMPARISON_EQUAL;
-            if (SyncTransfer.this.exists(p) && SyncTransfer.this.exists(p.getLocal())) {
+            if (SyncTransfer.this.exists(p.getLocal()) && SyncTransfer.this.exists(p)) {
                 if (p.attributes.isFile()) {
                     result = this.compareSize(p);
                     if (result.equals(COMPARISON_UNEQUAL)) {

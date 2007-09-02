@@ -54,7 +54,7 @@ public class UploadTransfer extends Transfer {
 
     protected void init() {
         log.debug("init");
-        bandwidth = new BandwidthThrottle(
+        this.bandwidth = new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes"));
     }
 
@@ -140,7 +140,7 @@ public class UploadTransfer extends Transfer {
                     if(super.accept(p)) {
                         if(p.attributes.isDirectory()) {
                             // Do not attempt to create a directory that already exists
-                            return !UploadTransfer.this.exists(p);
+                            return !UploadTransfer.this.exists((Path)p);
                         }
                         return true;
                     }
@@ -165,7 +165,7 @@ public class UploadTransfer extends Transfer {
                             return false;
                         }
                         if(p.attributes.isDirectory()) {
-                            return !UploadTransfer.this.exists(p);
+                            return !UploadTransfer.this.exists((Path)p);
                         }
                         return true;
                     }
@@ -230,7 +230,7 @@ public class UploadTransfer extends Transfer {
             return new UploadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
                     if(super.accept(p)) {
-                        if(!UploadTransfer.this.exists(p)) {
+                        if(!UploadTransfer.this.exists((Path)p)) {
                             return true;
                         }
                     }
@@ -239,7 +239,7 @@ public class UploadTransfer extends Transfer {
             };
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
-            for(Iterator iter = roots.iterator(); iter.hasNext(); ) {
+            for(Iterator iter = this.getRoots().iterator(); iter.hasNext(); ) {
                 Path root = (Path)iter.next();
                 if(UploadTransfer.this.exists(root)) {
                     // Prompt user to choose a filter

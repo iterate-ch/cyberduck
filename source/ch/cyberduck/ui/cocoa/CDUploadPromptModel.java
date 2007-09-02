@@ -46,7 +46,7 @@ public class CDUploadPromptModel extends CDTransferPromptModel {
             filter = new PromptFilter() {
                 public boolean accept(AbstractPath child) {
                     log.debug("accept:" + child);
-                    if(transfer.exists(child)) {
+                    if(transfer.exists((Path)child)) {
                         return super.accept(child);
                     }
                     return false;

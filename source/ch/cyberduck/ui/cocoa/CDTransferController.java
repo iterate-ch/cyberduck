@@ -542,7 +542,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 transfer.getSession().addErrorListener(this);
                 transfer.getSession().addTranscriptListener(this);
                 transfer.addListener(tl = new TransferAdapter() {
-                    public void transferPaused() {
+                    public void transferQueued() {
                         invoke(new Runnable() {
                             public void run() {
                                 window.toolbar().validateVisibleItems();

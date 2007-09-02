@@ -184,8 +184,16 @@ public abstract class Transfer extends NSObject {
         }
     }
 
-    public void fireTransferPaused() {
+    public void fireTransferQueued() {
         queued = true;
+        TransferListener[] l = (TransferListener[]) listeners.toArray(
+                new TransferListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].transferQueued();
+        }
+    }
+
+    public void fireTransferPaused() {
         TransferListener[] l = (TransferListener[]) listeners.toArray(
                 new TransferListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
@@ -317,12 +325,34 @@ public abstract class Transfer extends NSObject {
     private Map _existing = new HashMap();
 
     /**
-     * To be used to check for file existance. Returns cached version if possible for better performance
+     * Looks for the file in the parent directory listing. Returns cached version if possible for better performance
      * @param file
      * @return True if the file exists
      * @see ch.cyberduck.core.AbstractPath#exists()
      */
-    public boolean exists(AbstractPath file) {
+    public boolean exists(Path file) {
+        if(!_existing.containsKey(file)) {
+            log.debug("exists:"+file);
+            if(roots.contains(file)) {
+                _existing.put(file, Boolean.valueOf(true));
+            }
+            else if(!this.exists((Path)file.getParent())) {
+                _existing.put(file, Boolean.valueOf(false));
+            }
+            else {
+                _existing.put(file, Boolean.valueOf(file.exists()));
+            }
+        }
+        return ((Boolean)_existing.get(file)).booleanValue();
+    }
+
+    /**
+     * Looks for the file in the parent directory listing. Returns cached version if possible for better performance
+     * @param file
+     * @return True if the file exists
+     * @see ch.cyberduck.core.AbstractPath#exists()
+     */
+    public boolean exists(Local file) {
         if(!_existing.containsKey(file)) {
             log.debug("exists:"+file);
             _existing.put(file, Boolean.valueOf(file.exists()));
@@ -607,7 +637,7 @@ public abstract class Transfer extends NSObject {
                         // Wait for transfer slot
                         if(!this.queued) {
                             // Notify if not queued already before
-                            this.fireTransferPaused();
+                            this.fireTransferQueued();
                             this.getSession().message(NSBundle.localizedString("Maximum allowed connections exceeded. Waiting...", "Status", ""));
                         }
                         synchronized(lock) {

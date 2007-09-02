@@ -97,7 +97,15 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     public void callback(final int returncode) {
         log.debug("callback:" + returncode);
         if(returncode == DEFAULT_OPTION) { // Continue
-            ;
+            if(actionPopup.selectedItem().title().equals(ACTION_OVERWRITE)) {
+                action = TransferAction.ACTION_OVERWRITE;
+            }
+            else if(actionPopup.selectedItem().title().equals(ACTION_RESUME)) {
+                action = TransferAction.ACTION_RESUME;
+            }
+            else if(actionPopup.selectedItem().title().equals(ACTION_SIMILARNAME)) {
+                action = TransferAction.ACTION_RENAME;
+            }
         }
         if(returncode == CANCEL_OPTION) { // Abort
             action = TransferAction.ACTION_CANCEL;
@@ -148,6 +156,8 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
         this.init();
 
+        this.transfer.fireTransferPaused();
+
         parent.invoke(new Runnable() {
             public void run() {
                 beginSheet(false);
@@ -161,6 +171,8 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 log.error(e.getMessage());
             }
         }
+
+        this.transfer.fireTransferResumed();
 
         return action;
     }
@@ -213,54 +225,66 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             public void selectionDidChange(NSNotification notification) {
                 if(browserView.selectedRow() != -1) {
                     Path p = (Path) browserView.itemAtRow(browserView.selectedRow());
-                    if(p != null) {
-                        localURLField.setAttributedStringValue(new NSAttributedString(
-                                p.getLocal().getAbsolute(),
-                                TRUNCATE_MIDDLE_ATTRIBUTES));
-                        if(p.getLocal().exists()) {
-                            if(p.getLocal().attributes.getSize() == -1) {
-                                localSizeField.setAttributedStringValue(UNKNOWN_STRING);
-                            }
-                            else {
-                                localSizeField.setAttributedStringValue(new NSAttributedString(
-                                        Status.getSizeAsString(p.getLocal().attributes.getSize()),
-                                        TRUNCATE_MIDDLE_ATTRIBUTES));
-                            }
-                            if(p.getLocal().attributes.getModificationDate() == -1) {
-                                localModificationField.setAttributedStringValue(UNKNOWN_STRING);
-                            }
-                            else {
-                                localModificationField.setAttributedStringValue(new NSAttributedString(
-                                        CDDateFormatter.getLongFormat(p.getLocal().attributes.getModificationDate(),
-                                                p.getHost().getTimezone()),
-                                        TRUNCATE_MIDDLE_ATTRIBUTES));
-                            }
-                        }
-                        hideLocalDetails(false);
+                    localURLField.setAttributedStringValue(new NSAttributedString(
+                            p.getLocal().getAbsolute(),
+                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                    localURLField.setHidden(false);
 
-                        remoteURLField.setAttributedStringValue(new NSAttributedString(
-                                p.getHost().getURL() + p.getAbsolute(),
-                                TRUNCATE_MIDDLE_ATTRIBUTES));
-                        if(p.exists()) {
-                            if(p.attributes.getSize() == -1) {
-                                remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
-                            }
-                            else {
-                                remoteSizeField.setAttributedStringValue(new NSAttributedString(
-                                        Status.getSizeAsString(p.attributes.getSize()),
-                                        TRUNCATE_MIDDLE_ATTRIBUTES));
-                            }
-                            if(p.attributes.getModificationDate() == -1) {
-                                remoteModificationField.setAttributedStringValue(UNKNOWN_STRING);
-                            }
-                            else {
-                                remoteModificationField.setAttributedStringValue(new NSAttributedString(
-                                        CDDateFormatter.getLongFormat(p.attributes.getModificationDate(),
-                                                p.getHost().getTimezone()),
-                                        TRUNCATE_MIDDLE_ATTRIBUTES));
-                            }
+                    if(transfer.exists(p.getLocal())) {
+                        if(p.getLocal().attributes.getSize() == -1) {
+                            localSizeField.setAttributedStringValue(UNKNOWN_STRING);
                         }
-                        hideRemoteDetails(false);
+                        else {
+                            localSizeField.setAttributedStringValue(new NSAttributedString(
+                                    Status.getSizeAsString(p.getLocal().attributes.getSize()),
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
+                        }
+                        localSizeField.setHidden(false);
+                        if(p.getLocal().attributes.getModificationDate() == -1) {
+                            localModificationField.setAttributedStringValue(UNKNOWN_STRING);
+                        }
+                        else {
+                            localModificationField.setAttributedStringValue(new NSAttributedString(
+                                    CDDateFormatter.getLongFormat(p.getLocal().attributes.getModificationDate(),
+                                            p.getHost().getTimezone()),
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
+                        }
+                        localModificationField.setHidden(false);
+                    }
+                    else {
+                        localSizeField.setHidden(true);
+                        localModificationField.setHidden(true);
+                    }
+
+                    remoteURLField.setAttributedStringValue(new NSAttributedString(
+                            p.getHost().getURL() + p.getAbsolute(),
+                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                    remoteURLField.setHidden(false);
+
+                    if(transfer.exists(p)) {
+                        if(p.attributes.getSize() == -1) {
+                            remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
+                        }
+                        else {
+                            remoteSizeField.setAttributedStringValue(new NSAttributedString(
+                                    Status.getSizeAsString(p.attributes.getSize()),
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
+                        }
+                        remoteSizeField.setHidden(false);
+                        if(p.attributes.getModificationDate() == -1) {
+                            remoteModificationField.setAttributedStringValue(UNKNOWN_STRING);
+                        }
+                        else {
+                            remoteModificationField.setAttributedStringValue(new NSAttributedString(
+                                    CDDateFormatter.getLongFormat(p.attributes.getModificationDate(),
+                                            p.getHost().getTimezone()),
+                                    TRUNCATE_MIDDLE_ATTRIBUTES));
+                        }
+                        remoteModificationField.setHidden(false);
+                    }
+                    else {
+                        remoteSizeField.setHidden(true);
+                        remoteModificationField.setHidden(true);
                     }
                 }
                 else {
@@ -475,19 +499,5 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         this.actionPopup.addItemsWithTitles(new NSArray(new String[]{
                 ACTION_OVERWRITE, ACTION_RESUME, ACTION_SIMILARNAME
         }));
-        this.actionPopup.setTarget(this);
-        this.actionPopup.setAction(new NSSelector("actionPopupClicked", new Class[]{NSPopUpButton.class}));
     }
-
-    public void actionPopupClicked(NSPopUpButton sender) {
-        if(sender.selectedItem().title().equals(ACTION_OVERWRITE)) {
-            action = TransferAction.ACTION_OVERWRITE;
         }
-        else if(sender.selectedItem().title().equals(ACTION_RESUME)) {
-            action = TransferAction.ACTION_RESUME;
-        }
-        else if(sender.selectedItem().title().equals(ACTION_SIMILARNAME)) {
-            action = TransferAction.ACTION_RENAME;
-        }
-    }
-}
