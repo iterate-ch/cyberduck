@@ -194,6 +194,7 @@ public abstract class Transfer extends NSObject {
     }
 
     public void fireTransferPaused() {
+        queued = true;
         TransferListener[] l = (TransferListener[]) listeners.toArray(
                 new TransferListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {

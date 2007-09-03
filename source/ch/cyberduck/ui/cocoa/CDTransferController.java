@@ -550,6 +550,14 @@ public class CDTransferController extends CDWindowController implements NSToolba
                         });
                     }
 
+                    public void transferPaused() {
+                        invoke(new Runnable() {
+                            public void run() {
+                                window.toolbar().validateVisibleItems();
+                            }
+                        });
+                    }
+
                     public void transferResumed() {
                         invoke(new Runnable() {
                             public void run() {
