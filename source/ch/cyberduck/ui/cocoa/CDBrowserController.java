@@ -1398,6 +1398,7 @@ public class CDBrowserController extends CDWindowController
         if(null == input || input.length() == 0) {
             return;
         }
+        input = input.trim();
         try {
             // First look for equivalent bookmarks
             for(Iterator iter = HostCollection.instance().iterator(); iter.hasNext();) {
