@@ -620,7 +620,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
 
             public void cleanup() {
-                if(transfer.isComplete() && !transfer.isCanceled()) {
+                if(transfer.isComplete() && !transfer.isCanceled() && !this.hasFailed()) {
                     if(transfer instanceof DownloadTransfer) {
                         Growl.instance().notify("Download complete", transfer.getName());
                         if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {

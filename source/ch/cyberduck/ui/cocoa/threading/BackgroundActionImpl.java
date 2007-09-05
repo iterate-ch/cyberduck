@@ -345,6 +345,7 @@ public abstract class BackgroundActionImpl
             }
 
             public boolean cancel() {
+                session().message(NSBundle.localizedString("Transfer incomplete", "Status", ""));
                 synchronized(lock) {
                     lock.notify();
                 }
