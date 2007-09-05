@@ -230,6 +230,16 @@ public class SyncTransfer extends Transfer {
         }
     }
 
+    public boolean exists(Path file) {
+        if(roots.contains(file)) {
+            return true;
+        }
+        else if(!this.exists((Path)file.getParent())) {
+            return false;
+        }
+        return super.exists(file);
+    }
+
     protected void clear() {
         _comparisons.clear();
 

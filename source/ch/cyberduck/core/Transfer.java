@@ -334,15 +334,7 @@ public abstract class Transfer extends NSObject {
     public boolean exists(Path file) {
         if(!_existing.containsKey(file)) {
             log.debug("exists:"+file);
-            if(roots.contains(file)) {
-                _existing.put(file, Boolean.valueOf(true));
-            }
-            else if(!this.exists((Path)file.getParent())) {
-                _existing.put(file, Boolean.valueOf(false));
-            }
-            else {
-                _existing.put(file, Boolean.valueOf(file.exists()));
-            }
+            _existing.put(file, Boolean.valueOf(file.exists()));
         }
         return ((Boolean)_existing.get(file)).booleanValue();
     }
