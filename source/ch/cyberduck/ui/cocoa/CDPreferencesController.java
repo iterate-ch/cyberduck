@@ -710,19 +710,6 @@ public class CDPreferencesController extends CDWindowController {
         Preferences.instance().setProperty("queue.upload.preserveDate", enabled);
     }
 
-    private NSButton syncIgnoreTimestampCheckbox; //IBOutlet
-
-    public void setSyncIgnoreTimestampCheckbox(NSButton syncIgnoreTimestampCheckbox) {
-        this.syncIgnoreTimestampCheckbox = syncIgnoreTimestampCheckbox;
-        this.syncIgnoreTimestampCheckbox.setTarget(this);
-        this.syncIgnoreTimestampCheckbox.setAction(new NSSelector("syncIgnoreTimestampCheckboxClicked", new Class[]{NSButton.class}));
-        this.syncIgnoreTimestampCheckbox.setState(Preferences.instance().getBoolean("queue.sync.timestamp.ignore") ? NSCell.OffState : NSCell.OnState);
-    }
-
-    public void syncIgnoreTimestampCheckboxClicked(final NSButton sender) {
-        Preferences.instance().setProperty("queue.sync.timestamp.ignore", sender.state() == NSCell.OffState);
-    }
-
     private NSButton horizontalLinesCheckbox; //IBOutlet
 
     public void setHorizontalLinesCheckbox(NSButton horizontalLinesCheckbox) {

@@ -317,19 +317,13 @@ public class SyncTransfer extends Transfer {
                 if (p.attributes.isFile()) {
                     result = this.compareSize(p);
                     if (result.equals(COMPARISON_UNEQUAL)) {
-                        if (Preferences.instance().getBoolean("queue.sync.timestamp.ignore")) {
-                            if(this.getAction().equals(ACTION_DOWNLOAD)) {
-                                result = COMPARISON_REMOTE_NEWER;
-                            }
-                            else if(this.getAction().equals(ACTION_UPLOAD)) {
-                                result = COMPARISON_LOCAL_NEWER;
-                            }
-                            else if(this.getAction().equals(ACTION_MIRROR)) {
-                                result = this.compareTimestamp(p);
-                            }
+                        if(this.getAction().equals(ACTION_DOWNLOAD)) {
+                            result = COMPARISON_REMOTE_NEWER;
                         }
-                        else {
-                            //both files have a different size; compare using timestamp
+                        else if(this.getAction().equals(ACTION_UPLOAD)) {
+                            result = COMPARISON_LOCAL_NEWER;
+                        }
+                        else if(this.getAction().equals(ACTION_MIRROR)) {
                             result = this.compareTimestamp(p);
                         }
                     }

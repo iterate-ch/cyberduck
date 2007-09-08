@@ -331,10 +331,10 @@ public abstract class Preferences {
          * While downloading, update the icon of the downloaded file as a progress indicator
          */
         defaults.put("queue.download.updateIcon", String.valueOf(true));
+
         /**
-         * If size is equals, do not compare the timestamp
+         * Default synchronize action selected in the sync dialog
          */
-        defaults.put("queue.sync.timestamp.ignore", String.valueOf(true));
         defaults.put("queue.sync.action.default", SyncTransfer.ACTION_UPLOAD.toString());
 
         //ftp properties
