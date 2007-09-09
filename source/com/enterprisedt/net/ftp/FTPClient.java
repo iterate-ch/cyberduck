@@ -30,13 +30,9 @@ import ch.cyberduck.core.Preferences;
 
 import org.apache.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetAddress;
+import java.nio.charset.Charset;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -541,7 +537,9 @@ public class FTPClient {
         String replyCode = lastValidReply.getReplyCode();
         if(!replyCode.equals("450") && !replyCode.equals("550")) {
             // get a character input stream to read data from .
-            return new LineNumberReader(new InputStreamReader(data.getInputStream(), encoding));
+            return new LineNumberReader(new InputStreamReader(data.getInputStream(), 
+                    Charset.forName(encoding)
+            ));
         }
         // 450 or 550 - still need to close data socket
         this.closeDataSocket(); return null;
