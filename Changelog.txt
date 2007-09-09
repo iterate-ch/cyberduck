@@ -19,6 +19,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] Support for international domain names (IDN) [#1133]
 - [Feature] Move files to Trash before overwriting locally [#936]
 - [Feature] Use system setting for connect mode (FTP)
+- [Feature] Added WriteRoom to the list of supported editors (http://hogbaysoftware.com/projects/writeroom)
 - [Bugfix] Don't use SOCKS proxy if hostname is excluded in system preferences
 - [Bugfix] Resolve Alias files to upload [#859]
 - [Bugfix] Subsequent type-ahead selection misbehaving [#896] 
