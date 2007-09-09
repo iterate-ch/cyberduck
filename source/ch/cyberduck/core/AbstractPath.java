@@ -163,7 +163,9 @@ public abstract class AbstractPath extends NSObject {
             }
         }
         if(Preferences.instance().getBoolean("path.normalize.unicode")) {
-            normalized = Normalizer.normalize(normalized, Normalizer.NFC);
+            if(!Normalizer.isNormalized(normalized, Normalizer.NFC, Normalizer.UNICODE_3_2)) {
+                normalized = Normalizer.normalize(normalized, Normalizer.NFC, Normalizer.UNICODE_3_2);
+            }
         }
         // Return the normalized path that we have completed
         return normalized;

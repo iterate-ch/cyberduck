@@ -208,26 +208,22 @@ public class Local extends AbstractPath {
 
     public Local(Local parent, String name) {
         // See trac #933
-        _impl = new File(NSPathUtilities.stringByExpandingTildeInPath(parent.getAbsolute()),
+        this.setPath(NSPathUtilities.stringByExpandingTildeInPath(parent.getAbsolute()),
                 name.replace('/', ':'));
-        this.init();
     }
 
     public Local(String parent, String name) {
         // See trac #933
-        _impl = new File(NSPathUtilities.stringByExpandingTildeInPath(parent),
+        this.setPath(NSPathUtilities.stringByExpandingTildeInPath(parent),
                 name.replace('/', ':'));
-        this.init();
     }
 
     public Local(String path) {
-        _impl = new File(NSPathUtilities.stringByExpandingTildeInPath(path));
-        this.init();
+        this.setPath(NSPathUtilities.stringByExpandingTildeInPath(path));
     }
 
     public Local(File path) {
-        _impl = new File(NSPathUtilities.stringByExpandingTildeInPath(path.getAbsolutePath()));
-        this.init();
+        this.setPath(NSPathUtilities.stringByExpandingTildeInPath(path.getAbsolutePath()));
     }
 
     private void init() {
@@ -238,7 +234,7 @@ public class Local extends AbstractPath {
         forker.usePathname(new Pathname(_impl.getAbsoluteFile()));
         if(forker.isAlias()) {
             try {
-                _impl = new File(forker.makeResolved().getPath());
+                this.setPath(forker.makeResolved().getPath());
             }
             catch(IOException e) {
                 log.error("Error resolving alias:"+e.getMessage());
@@ -443,7 +439,7 @@ public class Local extends AbstractPath {
         ;
     }
 
-    private final static Object lock = new Object();
+    private static final Object lock = new Object();
 
     /**
      * Update the custom icon for the file in the Finder
