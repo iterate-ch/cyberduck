@@ -802,14 +802,16 @@ public class FTPPath extends Path {
                                 p = this.getLocal().attributes.getPermission();
                             }
                         }
-                        try {
-                            log.info("Updating permissions:"+p.getOctalString());
-                            session.FTP.setPermissions(p.getOctalString(),
-                                    this.getName());
-                        }
-                        catch(FTPException ignore) {
-                            //CHMOD not supported; ignore
-                            log.warn(ignore.getMessage());
+                        if(null != p) {
+                            try {
+                                log.info("Updating permissions:"+p.getOctalString());
+                                session.FTP.setPermissions(p.getOctalString(),
+                                        this.getName());
+                            }
+                            catch(FTPException ignore) {
+                                //CHMOD not supported; ignore
+                                log.warn(ignore.getMessage());
+                            }
                         }
                     }
                     if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {

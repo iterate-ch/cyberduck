@@ -636,18 +636,20 @@ public class SFTPPath extends Path {
                                 p = this.getLocal().attributes.getPermission();
                             }
                         }
-                        if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
-                            try {
-                                log.info("Updating permissions:"+p.getOctalString());
-                                SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-                                attr.permissions = new Integer(p.getOctalNumber());
-                                session.sftp().fsetstat(handle, attr);
-                            }
-                            catch(SFTPException e) {
-                                // We might not be able to change the attributes if we are
-                                // not the owner of the file; but then we still want to proceed as we
-                                // might have group write privileges
-                                log.warn(e.getMessage());
+                        if(null != p) {
+                            if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
+                                try {
+                                    log.info("Updating permissions:"+p.getOctalString());
+                                    SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
+                                    attr.permissions = new Integer(p.getOctalNumber());
+                                    session.sftp().fsetstat(handle, attr);
+                                }
+                                catch(SFTPException e) {
+                                    // We might not be able to change the attributes if we are
+                                    // not the owner of the file; but then we still want to proceed as we
+                                    // might have group write privileges
+                                    log.warn(e.getMessage());
+                                }
                             }
                         }
                     }
