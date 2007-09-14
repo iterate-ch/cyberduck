@@ -121,11 +121,21 @@ public class SFTPPath extends Path {
                     if(!f.filename.equals(".") && !f.filename.equals("..")) {
                         Path p = PathFactory.createPath(session, this.getAbsolute(), f.filename);
                         p.setParent(this);
-                        p.attributes.setOwner(f.attributes.uid.toString());
-                        p.attributes.setGroup(f.attributes.gid.toString());
-                        p.attributes.setSize(f.attributes.size.doubleValue());
-                        p.attributes.setModificationDate(Long.parseLong(f.attributes.mtime.toString()) * 1000L);
-                        p.attributes.setAccessedDate(Long.parseLong(f.attributes.atime.toString()) * 1000L);
+                        if(null != f.attributes.uid) {
+                            p.attributes.setOwner(f.attributes.uid.toString());
+                        }
+                        if(null != f.attributes.gid) {
+                            p.attributes.setGroup(f.attributes.gid.toString());
+                        }
+                        if(null != f.attributes.size) {
+                            p.attributes.setSize(f.attributes.size.doubleValue());
+                        }
+                        if(null != f.attributes.mtime) {
+                            p.attributes.setModificationDate(Long.parseLong(f.attributes.mtime.toString()) * 1000L);
+                        }
+                        if(null != f.attributes.atime) {
+                            p.attributes.setAccessedDate(Long.parseLong(f.attributes.atime.toString()) * 1000L);
+                        }
                         if(f.attributes.isSymlink()) {
                             try {
                                 String target = session.sftp().readLink(p.getAbsolute());
@@ -153,7 +163,9 @@ public class SFTPPath extends Path {
                             p.attributes.setType(Path.FILE_TYPE);
                         }
                         String perm = f.attributes.getOctalPermissions();
-                        p.attributes.setPermission(new Permission(Integer.parseInt(perm.substring(perm.length()-3))));
+                        if(null != perm) {
+                            p.attributes.setPermission(new Permission(Integer.parseInt(perm.substring(perm.length()-3))));
+                        }
                         p.status.setSkipped(this.status.isSkipped());
                         childs.add(p);
                     }
