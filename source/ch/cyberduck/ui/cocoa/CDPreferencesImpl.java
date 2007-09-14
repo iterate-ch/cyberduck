@@ -66,9 +66,7 @@ public class CDPreferencesImpl extends Preferences {
         this.props = NSUserDefaults.standardUserDefaults();
     }
 
-    protected void setDefaults() {
-        super.setDefaults();
-        
+    protected void legacy() {
         _init("browser.view.autoexpand.useDelay");
         _init("browser.view.autoexpand.delay");
 

@@ -20,6 +20,8 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.*;
 
+import ch.cyberduck.core.Preferences;
+
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -27,13 +29,13 @@ import java.io.File;
 /**
  * @version $Id$
  */
-public class CDPortablePreferencesImpl extends CDPreferencesImpl {
+public class CDPortablePreferencesImpl extends Preferences {
     private static Logger log = Logger.getLogger(CDPortablePreferencesImpl.class);
 
-    private NSMutableDictionary props;
+    private NSMutableDictionary dict;
 
     public Object getObject(String property) {
-        Object value = this.props.objectForKey(property);
+        Object value = dict.objectForKey(property);
         if (null == value) {
             return super.getObject(property);
         }
@@ -41,14 +43,13 @@ public class CDPortablePreferencesImpl extends CDPreferencesImpl {
     }
 
     public void setProperty(String property, Object value) {
-        if (log.isDebugEnabled()) {
-            log.debug("setProperty(" + property + ", " + value + ")");
-        }
-        this.props.setObjectForKey(value.toString(), property);
+        log.info("setProperty:"+property+","+value);
+        this.dict.setObjectForKey(value.toString(), property);
     }
 
     public void deleteProperty(String property) {
-        this.props.removeObjectForKey(property);
+        this.dict.removeObjectForKey(property);
+        this.save();
     }
 
     protected void load() {
@@ -67,11 +68,11 @@ public class CDPortablePreferencesImpl extends CDPreferencesImpl {
                 log.error("Problem reading preferences file: " + errorString[0]);
             }
             if (propertyListFromXMLData instanceof NSDictionary) {
-                this.props = (NSMutableDictionary)propertyListFromXMLData;
+                this.dict = (NSMutableDictionary)propertyListFromXMLData;
             }
         }
         else {
-            this.props = new NSMutableDictionary();
+            this.dict = new NSMutableDictionary();
         }
     }
 
@@ -80,7 +81,7 @@ public class CDPortablePreferencesImpl extends CDPreferencesImpl {
             NSMutableData collection = new NSMutableData();
             String[] errorString = new String[]{null};
             collection.appendData(NSPropertyListSerialization.dataFromPropertyList(
-                    this.props,
+                    this.dict,
                     NSPropertyListSerialization.PropertyListXMLFormat,
                     errorString));
             if (errorString[0] != null) {
