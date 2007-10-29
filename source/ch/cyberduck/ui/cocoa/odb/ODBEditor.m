@@ -173,6 +173,7 @@ static ODBEditor	*_sharedODBEditor;
 	[self _launchExternalEditor];
 	
 	// add the file
+	fileName = [fileName stringByResolvingSymlinksInPath];
 	
 	[appleEvent setParamDescriptor: [NSAppleEventDescriptor descriptorWithFilePath: fileName] forKeyword: keyDirectObject];
 	
@@ -228,7 +229,7 @@ static ODBEditor	*_sharedODBEditor;
 		NSLog(@"handleModifiedFileEvent: No URL given.");
 		return;
 	}
-	NSString *fileName = [[NSURL URLWithString: urlString] path];
+	NSString *fileName = [[[NSURL URLWithString: urlString] path] stringByResolvingSymlinksInPath];
 	NSDictionary *dictionary = nil;
 	dictionary = [_filesBeingEdited objectForKey: fileName];
 	if (nil == dictionary)
@@ -249,7 +250,7 @@ static ODBEditor	*_sharedODBEditor;
 		NSLog(@"handleClosedFileEvent: No URL given.");
 		return;
 	}
-	NSString *fileName = [[NSURL URLWithString: urlString] path];
+	NSString *fileName = [[[NSURL URLWithString: urlString] path] stringByResolvingSymlinksInPath];
 	NSDictionary *dictionary = nil;
 	dictionary = [_filesBeingEdited objectForKey: fileName];
 	if (nil == dictionary)
