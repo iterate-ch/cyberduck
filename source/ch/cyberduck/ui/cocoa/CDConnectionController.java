@@ -450,6 +450,7 @@ public class CDConnectionController extends CDSheetController {
 
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
+            this.window().endEditingForObject(null);
             Host host = null;
             if(protocolPopup.selectedItem().representedObject().equals(Session.SFTP)) {
                 // SFTP has been selected as the protocol to connect with
