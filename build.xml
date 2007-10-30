@@ -322,7 +322,7 @@
 		<javac
 			debug="${debug}"
 			encoding="utf-8"
-			deprecation="on"
+			deprecation="off"
 			srcdir="${source}"
 			source="1.4"
 			target="1.4"
@@ -407,7 +407,7 @@
 		<javac
 			debug="${debug}"
 			encoding="utf-8"
-			deprecation="on"
+			deprecation="off"
 			srcdir="${unittests}"
 			destdir="${build.unittests}"
 			includes="**/*.java">
