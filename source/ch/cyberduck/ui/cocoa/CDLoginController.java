@@ -89,6 +89,7 @@ public class CDLoginController implements LoginController
                 if (returncode == DEFAULT_OPTION) {
                     log.info("Update login credentials...");
                     login.setTryAgain(true);
+                    this.window().endEditingForObject(null);
                     login.setUsername((String) userField.objectValue());
                     login.setPassword((String) passField.objectValue());
                     login.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
