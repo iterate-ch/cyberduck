@@ -525,7 +525,12 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     public void portInputDidEndEditing(final NSNotification sender) {
-        this.host.setPort(Integer.parseInt(portField.stringValue()));
+        try {
+            this.host.setPort(Integer.parseInt(portField.stringValue()));
+        }
+        catch(NumberFormatException e) {
+            this.host.setPort(-1);
+        }
         this.itemChanged();
     }
 
