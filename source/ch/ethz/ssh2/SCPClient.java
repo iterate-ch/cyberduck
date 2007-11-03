@@ -256,7 +256,7 @@ public class SCPClient
         // '\' becomes '\\'. This is a mess because '\' is the escape character for Java itself
         path = path.replaceAll("\\\\", "\\\\\\\\");
         // Escape all whitespace. ' ' becomes '\ '.
-        path = path.replaceAll("\\s+", "\\\\ ");
+        path = path.replaceAll("\\s", "\\\\ ");
         path = path.replaceAll("\\|", "\\\\|");
         path = path.replaceAll("&", "\\\\&");
         path = path.replaceAll(";", "\\\\;");
