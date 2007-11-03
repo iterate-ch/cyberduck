@@ -52,11 +52,13 @@ public abstract class CDController extends NSObject {
      * @param delay Number of seconds to delay the execution
      */
     protected void invoke(Runnable thread, float delay) {
-        CDMainController.mainRunLoop.addTimerForMode(new NSTimer(delay, this,
+        NSTimer timer = new NSTimer(delay, this,
                 new NSSelector("post", new Class[]{NSTimer.class}),
                 thread,
                 false //automatically invalidate
-        ),
+        );
+        instances.addObject(timer);
+        CDMainController.mainRunLoop.addTimerForMode(timer,
                 NSRunLoop.DefaultRunLoopMode);
     }
 
@@ -69,6 +71,7 @@ public abstract class CDController extends NSObject {
         if (info instanceof Runnable) {
             ((Runnable) info).run();
         }
+        instances.removeObject(timer);
     }
 
     /**
