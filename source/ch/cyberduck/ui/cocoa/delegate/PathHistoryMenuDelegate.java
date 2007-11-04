@@ -18,19 +18,16 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.ui.cocoa.CDBrowserController;
-
-import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSMenu;
 import com.apple.cocoa.application.NSMenuItem;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSSize;
+
+import ch.cyberduck.core.Path;
+import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.ui.cocoa.CDIconCache;
 
 import org.apache.log4j.Logger;
-
-import java.io.Serializable;
 
 /**
  * @version $Id$
@@ -42,14 +39,6 @@ public class PathHistoryMenuDelegate /*extends MenuDelegate */{
 
     public PathHistoryMenuDelegate(CDBrowserController controller) {
         this.controller = controller;
-    }
-
-    private final NSImage FOLDER_ICON_SMALL;
-
-    {
-        FOLDER_ICON_SMALL = NSImage.imageNamed("folder16.tiff");
-        FOLDER_ICON_SMALL.setScalesWhenResized(true);
-        FOLDER_ICON_SMALL.setSize(new NSSize(16f, 16f));
     }
 
     /**
@@ -77,7 +66,7 @@ public class PathHistoryMenuDelegate /*extends MenuDelegate */{
             path.setRepresentedObject(item);
             path.setTarget(this);
             path.setEnabled(true);
-            path.setImage(FOLDER_ICON_SMALL);
+            path.setImage(CDIconCache.FOLDER_ICON);
             path.setAction(new NSSelector("pathMenuItemClicked", new Class[]{NSMenuItem.class}));
             menu.insertItemAtIndex(path, index);
             return !shouldCancel;
