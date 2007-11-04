@@ -18,13 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSSize;
 
+import ch.cyberduck.core.Path;
+
+import java.net.URL;
 import java.util.HashMap;
 
 /**
@@ -52,11 +52,12 @@ public class CDIconCache extends HashMap {
         return img;
     }
 
-    protected static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
-    protected static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
-    protected static final NSImage FOLDER_NOACCESS_ICON = NSImage.imageNamed("folder_noaccess.tiff");
-    protected static final NSImage FOLDER_WRITEONLY_ICON = NSImage.imageNamed("folder_writeonly.tiff");
-    protected static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
+    public static final NSImage DISK_ICON = NSImage.imageNamed("disk.tiff");
+    public static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
+    public static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
+    public static final NSImage FOLDER_NOACCESS_ICON = NSImage.imageNamed("folder_noaccess.tiff");
+    public static final NSImage FOLDER_WRITEONLY_ICON = NSImage.imageNamed("folder_writeonly.tiff");
+    public static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
 
     static {
         SYMLINK_ICON.setSize(new NSSize(16f, 16f));

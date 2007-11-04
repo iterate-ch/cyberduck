@@ -2369,7 +2369,7 @@ public class CDBrowserController extends CDWindowController
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
             final Session session = this.getTransferSession();
             final List roots = new Collection();
-            for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
+            for(Iterator i = this.checkHierarchy(this.getSelectedPaths()).iterator(); i.hasNext();) {
                 Path path = (Path) ((Path) i.next()).clone(session);
                 path.setLocal(new Local(sheet.filename(), path.getLocal().getName()));
                 roots.add(path);
@@ -2384,7 +2384,7 @@ public class CDBrowserController extends CDWindowController
 
     public void downloadAsButtonClicked(final Object sender) {
         final Session session = this.getTransferSession();
-        for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
+        for(Iterator i = this.checkHierarchy(this.getSelectedPaths()).iterator(); i.hasNext();) {
             Path path = (Path) ((Path) i.next()).clone(session);
             NSSavePanel panel = NSSavePanel.savePanel();
             panel.setMessage(NSBundle.localizedString("Download the selected file to...", ""));
@@ -2462,7 +2462,7 @@ public class CDBrowserController extends CDWindowController
     public void downloadButtonClicked(final Object sender) {
         final Session session = this.getTransferSession();
         final List roots = new Collection();
-        for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
+        for(Iterator i = this.checkHierarchy(this.getSelectedPaths()).iterator(); i.hasNext();) {
             Path path = (Path) ((Path) i.next()).clone(session);
             roots.add(path);
         }
@@ -2886,9 +2886,6 @@ public class CDBrowserController extends CDWindowController
         }, backgroundLock);
     }
 
-    private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
-    private static final NSImage DISK_ICON = NSImage.imageNamed("disk.tiff");
-
     /**
      * Accessor to the working directory
      *
@@ -2958,10 +2955,10 @@ public class CDBrowserController extends CDWindowController
                         pathPopupButton.addItem(p.getAbsolute());
                         pathPopupButton.lastItem().setRepresentedObject(p);
                         if(p.isRoot()) {
-                            pathPopupButton.lastItem().setImage(DISK_ICON);
+                            pathPopupButton.lastItem().setImage(CDIconCache.DISK_ICON);
                             break;
                         }
-                        pathPopupButton.lastItem().setImage(FOLDER_ICON);
+                        pathPopupButton.lastItem().setImage(CDIconCache.FOLDER_ICON);
                         p = (Path) p.getParent();
                     }
                 }
