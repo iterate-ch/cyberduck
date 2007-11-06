@@ -16,6 +16,7 @@
 
 #!/bin/bash
 
+nibtool="/Xcode2.5/usr/bin/nibtool"
 base_language="en.lproj"
 
 usage() {
@@ -41,7 +42,7 @@ init() {
 		nib=`basename $nibfile .nib`
 		cp -R $base_language/$nibfile $language/$nibfile
 		rm -rf $language/$nibfile/.svn
-		nibtool --localizable-strings $language/$nibfile > $language/$nib.strings
+		$nibtool --localizable-strings $language/$nibfile > $language/$nib.strings
 	}
 	done
 	cp $base_language/Localizable.strings $language/
@@ -125,13 +126,13 @@ updateNibFromStrings() {
 	{
 		# force update
 		echo "*** Updating $nib... (force) in $language..."
-		nibtool --write $language/$nibfile --dictionary $language/$nib.strings $base_language/$nibfile
+		$nibtool --write $language/$nibfile --dictionary $language/$nib.strings $base_language/$nibfile
 	}
 	else
 	{
 		# incremental update
 		echo "*** Updating $nib... (incremental) in $language..."
-		nibtool --write $language/$nibfile \
+		$nibtool --write $language/$nibfile \
 				--incremental $language/$nibfile.bak \
 				--dictionary $language/$nib.strings $base_language/$nibfile
 	}
@@ -142,7 +143,7 @@ updateNibFromStrings() {
 
 udpateStringsFromNib() {
 	echo "*** Updating $nib.strings in $language..."
-	nibtool --previous $base_language/$nibfile \
+	$nibtool --previous $base_language/$nibfile \
 			--incremental $language/$nibfile \
 			--localizable-strings $base_language/$nibfile > $language/$nib.strings
 }
@@ -160,13 +161,13 @@ update() {
 					echo "*** Updating all NIBs...";
 					for nibfile in `ls $language | grep .nib | grep -v ~.nib | grep -v .bak`; do
 						nib=`basename $nibfile .nib`
-						nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
+						$nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
 						nib;
 					done;
 				fi;
 				if [ "$nibfile" != "all" ] ; then
 						nib=`basename $nibfile .nib`
-						nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
+						$nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
 						nib;
 				fi;
 			}
@@ -180,14 +181,14 @@ update() {
 			echo "*** Updating all NIBs...";
 			for nibfile in `ls $language | grep .nib | grep -v ~.nib | grep -v .bak`; do
 				nib=`basename $nibfile .nib`;
-				nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
+				$nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
 				nib;
 			done;
 		fi;
 		if [ "$nibfile" != "all" ] ; then
 		{
 			nib=`basename $nibfile .nib`;
-			nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
+			$nibtool --localizable-strings $base_language/$nibfile > $base_language/$nib.strings
 			nib;
 		}
 		fi;
