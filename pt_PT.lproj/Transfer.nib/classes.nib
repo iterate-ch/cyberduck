@@ -1,37 +1,53 @@
 {
-    IBClasses = (
-        {CLASS = AIAutoScrollView; LANGUAGE = ObjC; SUPERCLASS = NSScrollView; }, 
-        {CLASS = CDBottomView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
-        {CLASS = CDListView; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
-        {
-            ACTIONS = {
-                "" = id; 
-                reloadButtonClicked = id; 
-                removeButtonClicked = id; 
-                resumeButtonClicked = id; 
-                revealButtonClicked = id; 
-                stopButtonClicked = id; 
-            }; 
-            CLASS = FirstResponder; 
-            LANGUAGE = ObjC; 
-            SUPERCLASS = NSObject; 
-        }, 
-        {CLASS = NSDatePicker; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
-        {
-            CLASS = "ch.cyberduck.core.CDQueueController"; 
-            LANGUAGE = Java; 
-            OUTLETS = {
-                bandwidthPopup = NSPopUpButton; 
-                filterField = NSSearchField; 
-                iconView = NSImageView; 
-                localField = NSTextField; 
-                queueSizeStepper = NSStepper; 
-                queueTable = NSTableView; 
-                urlField = NSTextField; 
-                window = NSWindow; 
-            }; 
-            SUPERCLASS = NSObject; 
+    IBClasses =     (
+                {
+            CLASS = AIAutoScrollView;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSScrollView;
+        },
+                {
+            CLASS = CDBottomView;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSView;
+        },
+                {
+            CLASS = CDListView;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSTableView;
+        },
+                {
+            ACTIONS =             {
+                "" = id;
+                reloadButtonClicked = id;
+                removeButtonClicked = id;
+                resumeButtonClicked = id;
+                revealButtonClicked = id;
+                stopButtonClicked = id;
+            };
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = NSDatePicker;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSControl;
+        },
+                {
+            CLASS = "ch.cyberduck.core.CDQueueController";
+            LANGUAGE = Java;
+            OUTLETS =             {
+                bandwidthPopup = NSPopUpButton;
+                filterField = NSSearchField;
+                iconView = NSImageView;
+                localField = NSTextField;
+                queueSizeStepper = NSStepper;
+                queueTable = NSTableView;
+                urlField = NSTextField;
+                window = NSWindow;
+            };
+            SUPERCLASS = NSObject;
         }
-    ); 
-    IBVersion = 1; 
+    );
+    IBVersion = 1;
 }
