@@ -207,15 +207,15 @@ public class Local extends AbstractPath {
     protected File _impl;
 
     public Local(Local parent, String name) {
-        // See trac #933
-        this.setPath(NSPathUtilities.stringByExpandingTildeInPath(parent.getAbsolute()),
-                name.replace('/', ':'));
+        this(parent.getAbsolute(), name);
     }
 
     public Local(String parent, String name) {
+        if(!Path.DELIMITER.equals(name)) {
+            name = name.replace('/', ':');
+        }
         // See trac #933
-        this.setPath(NSPathUtilities.stringByExpandingTildeInPath(parent),
-                name.replace('/', ':'));
+        this.setPath(NSPathUtilities.stringByExpandingTildeInPath(parent), name);
     }
 
     public Local(String path) {
