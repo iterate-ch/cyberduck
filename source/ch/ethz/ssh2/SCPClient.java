@@ -202,7 +202,6 @@ public class SCPClient
             if (Character.isDigit(mode.charAt(i)) == false)
                 throw new IllegalArgumentException("Invalid mode.");
 
-        remoteTargetDirectory = this.escape(remoteTargetDirectory.trim());
         remoteTargetDirectory = (remoteTargetDirectory.length() > 0) ? remoteTargetDirectory : ".";
 
         String cmd = "scp -t -d " + remoteTargetDirectory;
@@ -227,43 +226,15 @@ public class SCPClient
         if (null == remoteFile)
             throw new IllegalArgumentException("Null argument.");
 
-        String escapedRemoteFile = this.escape(remoteFile.trim());
-
-        if (escapedRemoteFile.length() == 0)
+        if (remoteFile.length() == 0)
             throw new IllegalArgumentException("Cannot accept empty filename.");
 
         String cmd = "scp -f";
-        cmd += (" " + escapedRemoteFile);
+        cmd += (" " + remoteFile);
 
         sess = conn.openSession();
         sess.execCommand(cmd, charsetName);
 
         return new SCPInputStream(this, sess);
-    }
-
-    /**
-     * Escapes metacharacters used in a typical shell
-     *
-     * metacharacter
-     *        A character that, when unquoted, separates words.   One  of  the
-     *        following:
-     *        |  & ; ( ) < > space tab
-     * @param path
-     * @return
-     */
-    private String escape(String path) {
-        // Escape the 'escape' character in the filname first.
-        // '\' becomes '\\'. This is a mess because '\' is the escape character for Java itself
-        path = path.replaceAll("\\\\", "\\\\\\\\");
-        // Escape all whitespace. ' ' becomes '\ '.
-        path = path.replaceAll("\\s", "\\\\ ");
-        path = path.replaceAll("\\|", "\\\\|");
-        path = path.replaceAll("&", "\\\\&");
-        path = path.replaceAll(";", "\\\\;");
-        path = path.replaceAll("\\(", "\\\\(");
-        path = path.replaceAll("\\)", "\\\\)");
-        path = path.replaceAll("<", "\\\\<");
-        path = path.replaceAll(">", "\\\\>");
-        return path;
     }
 }

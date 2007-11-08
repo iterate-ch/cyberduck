@@ -541,7 +541,7 @@ public class SFTPPath extends Path {
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SCP)) {
                         SCPClient scp = session.openScp();
                         scp.setCharset(session.getEncoding());
-                        in = scp.get(this.getAbsolute());
+                        in = scp.get(this.escape(this.getAbsolute()));
                     }
                     this.download(in, out, throttle, listener);
                 }
@@ -685,7 +685,7 @@ public class SFTPPath extends Path {
                         SCPClient scp = session.openScp();
                         scp.setCharset(session.getEncoding());
                         out = scp.put(this.getName(), (long)this.getLocal().attributes.getSize(),
-                                this.getParent().getAbsolute(),
+                                this.escape(this.getParent().getAbsolute()),
                                 "0"+p.getOctalString());
                     }
                     this.upload(out, in, throttle, listener);
@@ -751,5 +751,32 @@ public class SFTPPath extends Path {
                 }
             }
         }
+    }
+
+    /**
+     * Escapes metacharacters used in a typical shell
+     *
+     * metacharacter
+     *        A character that, when unquoted, separates words.   One  of  the
+     *        following:
+     *        |  & ; ( ) < > space tab
+     * @param path
+     * @return
+     */
+    private String escape(String path) {
+        // Escape the 'escape' character in the filname first.
+        // '\' becomes '\\'. This is a mess because '\' is the escape character for Java itself
+        path = path.replaceAll("\\\\", "\\\\\\\\");
+        // Escape all whitespace. ' ' becomes '\ '.
+        path = path.replaceAll("\\s", "\\\\ ");
+        path = path.replaceAll("\\|", "\\\\|");
+        path = path.replaceAll("&", "\\\\&");
+        path = path.replaceAll(";", "\\\\;");
+        path = path.replaceAll("'", "\\\\'");
+        path = path.replaceAll("\\(", "\\\\(");
+        path = path.replaceAll("\\)", "\\\\)");
+        path = path.replaceAll("<", "\\\\<");
+        path = path.replaceAll(">", "\\\\>");
+        return path;
     }
 }
