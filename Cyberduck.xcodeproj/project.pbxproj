@@ -2022,6 +2022,7 @@
 			buildPhases = (
 				471D2C0D05A2505500675163 /* Headers */,
 				471D2C0E05A2505500675163 /* Resources */,
+				4735940F0CE76EE50085DEAC /* Prune NIBs */,
 				471D2C4F05A2505500675163 /* Sources */,
 				471D2C5105A2505500675163 /* Frameworks */,
 				4749573207EDEC4E00B34D53 /* CopyFiles */,
@@ -2221,6 +2222,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 47D286ED0855740D008142CF /* Build configuration list for PBXProject "Cyberduck" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				en,
@@ -2486,6 +2488,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXRezBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4735940F0CE76EE50085DEAC /* Prune NIBs */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Prune NIBs";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "find \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name info.nib \\) -type f -delete\nfind \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name classes.nib \\) -type f -delete\nfind \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}.app/Contents/Resources\" \\( -name data.dependency \\) -type f -delete\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4716D8AF0877533B00938886 /* Sources */ = {
@@ -3946,7 +3965,13 @@
 				JAVA_COMPILER_TARGET_VM_VERSION = 1.4;
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "-lz";
+				OTHER_LDFLAGS = (
+					"-lz",
+					"-sectcreate",
+					__TEXT,
+					__info_plist,
+					Info.plist,
+				);
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = Cyberduck;
 				SECTORDER_FLAGS = "";
