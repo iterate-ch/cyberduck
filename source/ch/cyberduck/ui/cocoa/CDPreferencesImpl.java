@@ -78,7 +78,8 @@ public class CDPreferencesImpl extends Preferences {
 
         if(this.getBoolean("update.check")) {
             // Will override SUCheckAtStartup
-            this.props.setObjectForKey("SUScheduledCheckInterval", super.getProperty("update.check.interval"));
+            this.props.setIntegerForKey(Integer.parseInt(super.getProperty("update.check.interval")),
+                    "SUScheduledCheckInterval");
         }
     }
 
