@@ -4,14 +4,8 @@ package ch.ethz.ssh2;
 import ch.ethz.ssh2.io.SCPInputStream;
 import ch.ethz.ssh2.io.SCPOutputStream;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 
@@ -204,7 +198,7 @@ public class SCPClient
 
         remoteTargetDirectory = (remoteTargetDirectory.length() > 0) ? remoteTargetDirectory : ".";
 
-        String cmd = "scp -t -d " + remoteTargetDirectory;
+        String cmd = "scp -t -d \"" + remoteTargetDirectory + "\"";
 
         sess = conn.openSession();
         sess.execCommand(cmd, charsetName);
@@ -230,7 +224,7 @@ public class SCPClient
             throw new IllegalArgumentException("Cannot accept empty filename.");
 
         String cmd = "scp -f";
-        cmd += (" " + remoteFile);
+        cmd += (" \"" + remoteFile + "\"");
 
         sess = conn.openSession();
         sess.execCommand(cmd, charsetName);
