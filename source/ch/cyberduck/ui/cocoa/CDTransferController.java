@@ -372,7 +372,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
         synchronized(TransferCollection.instance()) {
             boolean key = window().isKeyWindow();
             for(int i = 0; i < TransferCollection.instance().size(); i++) {
-                transferModel.setHighlighted((Transfer)TransferCollection.instance().get(i), transferTable.isRowSelected(i) && key);
+                transferModel.setHighlighted((Transfer)TransferCollection.instance().get(i),
+                        transferTable.isRowSelected(i) && key);
             }
         }
     }

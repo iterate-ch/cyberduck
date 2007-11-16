@@ -18,15 +18,15 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
-import ch.cyberduck.ui.cocoa.CDIconCache;
-
+import com.apple.cocoa.application.NSCell;
 import com.apple.cocoa.application.NSMenu;
 import com.apple.cocoa.application.NSMenuItem;
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSSelector;
+
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.ui.cocoa.CDIconCache;
 
 import org.apache.log4j.Logger;
 
@@ -39,7 +39,7 @@ public class TransferMenuDelegate extends MenuDelegate {
     private static Logger log = Logger.getLogger(TransferMenuDelegate.class);
 
     /**
-     * 
+     *
      */
     private List roots;
 
@@ -58,22 +58,22 @@ public class TransferMenuDelegate extends MenuDelegate {
             item.setEnabled(true);
             item.setTarget(this);
             item.setAction(new NSSelector("reveal", new Class[]{NSMenuItem.class}));
-        }
-        else {
+        } else {
             item.setEnabled(false);
             item.setTarget(null);
         }
+        item.setState(NSCell.OffState);
         item.setRepresentedObject(path);
         item.setImage(CDIconCache.instance().iconForPath(path));
         return !shouldCancel;
     }
 
     public void reveal(final NSMenuItem sender) {
-        Local l = ((Path)sender.representedObject()).getLocal();
+        Local l = ((Path) sender.representedObject()).getLocal();
         // If a second path argument is specified, a new file viewer is opened. If you specify an
         // empty string (@"") for this parameter, the file is selected in the main viewer.
         if(!NSWorkspace.sharedWorkspace().selectFile(l.getAbsolute(), l.getParent().getAbsolute())) {
-            log.error("reveal:"+l.getAbsolute());
+            log.error("reveal:" + l.getAbsolute());
         }
     }
 }

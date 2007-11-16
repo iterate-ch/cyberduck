@@ -316,7 +316,7 @@ public class CDProgressController extends CDController {
             progressField.setTextColor(NSColor.whiteColor());
         }
         else {
-            statusField.setTextColor(NSColor.darkGrayColor());
+            statusField.setTextColor(NSColor.textColor());
             progressField.setTextColor(NSColor.darkGrayColor());
         }
     }
