@@ -62,7 +62,7 @@ public class TransferMenuDelegate extends MenuDelegate {
             item.setEnabled(false);
             item.setTarget(null);
         }
-        item.setState(NSCell.OffState);
+        item.setState(path.getLocal().exists() ? NSCell.OnState : NSCell.OffState);
         item.setRepresentedObject(path);
         item.setImage(CDIconCache.instance().iconForPath(path));
         return !shouldCancel;
