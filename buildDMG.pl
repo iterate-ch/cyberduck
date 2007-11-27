@@ -136,8 +136,8 @@ if ($debug) {
 # Now we start our work...
 
 # create the dmg
-print "> hdiutil create \"$buildDir/$dmgName\" -ov -megabytes $volSize -fs HFS+ -volname \"$volName\"\n" if $debug;
-$output = `hdiutil create \"$buildDir/$dmgName\" -ov -megabytes $volSize -fs HFS+ -volname \"$volName\"`;
+print "> hdiutil create \"$buildDir/$dmgName\" -layout SPUD -ov -megabytes $volSize -fs HFS+ -volname \"$volName\"\n" if $debug;
+$output = `hdiutil create \"$buildDir/$dmgName\" -layout SPUD -ov -megabytes $volSize -fs HFS+ -volname \"$volName\"`;
 die "FATAL: Couldn't create dmg $dmgName (Error: $?)\nIs it possibly mounted?\n" if $?;
 
 ($dmgName) = ($output =~ /created\s*:\s*(?:.*?$buildDir\/)?(.+?)\s*$/m);
@@ -150,7 +150,7 @@ print "> hdiutil attach \"$buildDir/$dmgName\"\n" if $debug;
 $output = `hdiutil attach \"$buildDir/$dmgName\"`;
 die "FATAL: Couldn't mount DMG $dmgName (Error: $?)\n" if $?;
 
-my ($dev)  = ($output =~ /(\/dev\/.+?)\s*GUID_partition_scheme/im);
+my ($dev)  = ($output =~ /(\/dev\/.+?)\s*Apple_partition_scheme/im);
 my ($dest) = ($output =~ /Apple_HFS\s+(.+?)\s*$/im);
 
 # copy the files onto the dmg
