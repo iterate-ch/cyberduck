@@ -237,12 +237,12 @@
 		</scp>
 		<!-- Changelog Nightly - version.cyberduck.ch -->
 		<scp file="${build}/changelog.rss"
-			   todir="dkocher@version.cyberduck.ch:/home/groups/c/cy/cyberduck/htdocs/nightly/"
+			   todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/nightly/"
 			   keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
 			   passphrase="">
 		</scp>
 		<scp file="${www.update}/changelog.html"
-			   todir="dkocher@version.cyberduck.ch:/home/groups/c/cy/cyberduck/htdocs/nightly/"
+			   todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/nightly/"
 			   keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
 			   passphrase="">
 		</scp>
@@ -272,23 +272,23 @@
 		</scp>
 		<!-- Changelog Release - version.cyberduck.ch -->
 		<scp file="${build}/changelog.rss"
-			   todir="dkocher@version.cyberduck.ch:/home/groups/c/cy/cyberduck/htdocs/"
+			   todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/"
 			   keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
 			   passphrase="">
 		</scp>
 		<scp file="${www.update}/changelog.html"
-			   todir="dkocher@version.cyberduck.ch:/home/groups/c/cy/cyberduck/htdocs/"
+			   todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/"
 			   keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
 			   passphrase="">
 		</scp>
 		<!-- Changelog Nightly - version.cyberduck.ch -->
 		<scp file="${build}/changelog.rss"
-			   todir="dkocher@version.cyberduck.ch:/home/groups/c/cy/cyberduck/htdocs/nightly/"
+			   todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/nightly/"
 			   keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
 			   passphrase="">
 		</scp>
 		<scp file="${www.update}/changelog.html"
-			   todir="dkocher@version.cyberduck.ch:/home/groups/c/cy/cyberduck/htdocs/nightly/"
+			   todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/nightly/"
 			   keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
 			   passphrase="">
 		</scp>
