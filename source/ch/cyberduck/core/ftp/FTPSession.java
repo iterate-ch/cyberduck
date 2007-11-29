@@ -308,13 +308,14 @@ public class FTPSession extends Session {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
-        if(host.getCredentials().check(loginController)) {
+        if(host.getCredentials().check(this.loginController, host.getProtocol(), host.getHostname())) {
             try {
                 this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " "
                         + host.getCredentials().getUsername() + "...");
                 this.FTP.login(host.getCredentials().getUsername(), host.getCredentials().getPassword());
-                host.getCredentials().addInternetPasswordToKeychain();
                 this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
+                host.getCredentials().addInternetPasswordToKeychain(host.getProtocol(),
+                        host.getHostname(), host.getPort());
             }
             catch(FTPException e) {
                 this.message(NSBundle.localizedString("Login failed", "Credentials", ""));

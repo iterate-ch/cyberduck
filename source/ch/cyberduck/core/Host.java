@@ -482,7 +482,7 @@ public class Host extends NSObject {
      * @param addToKeychain
      */
     public void setCredentials(String username, String password, boolean addToKeychain) {
-        this.setCredentials(new Login(this.getHostname(), this.getProtocol(), username, password, addToKeychain));
+        this.setCredentials(new Login(username, password, addToKeychain));
     }
 
     public Login getCredentials() {
@@ -503,7 +503,6 @@ public class Host extends NSObject {
         if(null == this.login) {
             return;
         }
-        this.login.setProtocol(this.protocol);
     }
 
     /**
@@ -591,10 +590,6 @@ public class Host extends NSObject {
         catch(StringPrepParseException e) {
             log.error("Cannot convert hostname to IDNA:"+e.getMessage());
         }
-
-        if(null == this.login)
-            return;
-        this.login.setHostname(this.hostname);
     }
 
     /**

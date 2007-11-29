@@ -167,7 +167,7 @@ public class SFTPSession extends Session {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
-        if(!host.getCredentials().check(this.loginController)) {
+        if(!host.getCredentials().check(this.loginController, host.getProtocol(), host.getHostname())) {
             throw new LoginCanceledException();
         }
         this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " '"
@@ -182,7 +182,8 @@ public class SFTPSession extends Session {
             if(this.loginUsingPasswordAuthentication(host.getCredentials()) ||
                     this.loginUsingKBIAuthentication(host.getCredentials())) {
                 this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
-                host.getCredentials().addInternetPasswordToKeychain();
+                host.getCredentials().addInternetPasswordToKeychain(host.getProtocol(),
+                        host.getHostname(), host.getPort());
                 return;
             }
         }

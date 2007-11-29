@@ -38,20 +38,11 @@ public class Login {
     private static Logger log = Logger.getLogger(Login.class);
 
     public Object clone() {
-        Login l = new Login(this.hostname, this.protocol,
-                this.getUsername(), this.getPassword());
+        Login l = new Login(this.getUsername(), this.getPassword());
         l.setPrivateKeyFile(this.privateKeyFile);
         return l;
     }
 
-    /**
-     * Used as an identifier to store the credentials in the Keychain
-     */
-    private String hostname;
-    /**
-     * Used as an identifier to store the credentials in the Keychain
-     */
-    private String protocol;
     /**
      * The login name
      */
@@ -75,14 +66,6 @@ public class Login {
     private static final String kSecProtocolTypeFTP = "ftp ";
 	private static final String kSecProtocolTypeFTPS = "ftps";
 	private static final String kSecProtocolTypeSSH = "ssh ";
-
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
-
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
-    }
 
     public String getUsername() {
         return this.user;
@@ -151,11 +134,11 @@ public class Login {
      * @param protocol
      * @return The protocol code as defined in SecKeychain.h
      */
-    private String getKSecProtocolType(String protocol) {
-		if(this.protocol.equals(Session.SFTP)) {
+    private String getKSecProtocolType(final String protocol) {
+		if(protocol.equals(Session.SFTP)) {
 			return kSecProtocolTypeSSH;
 		}
-		if(this.protocol.equals(Session.FTP_TLS)) {
+		if(protocol.equals(Session.FTP_TLS)) {
 			return kSecProtocolTypeFTPS;
 		}
 		return kSecProtocolTypeFTP;
@@ -165,14 +148,14 @@ public class Login {
      *
      * @return the password fetched from the keychain or null if it was not found
      */
-    public String getInternetPasswordFromKeychain() {
+    public String getInternetPasswordFromKeychain(String protocol, String hostname) {
         log.info("Fetching password from Keychain for:" + this.getUsername());
-        String password = Keychain.instance().getInternetPasswordFromKeychain(this.getKSecProtocolType(this.protocol),
-                this.hostname, this.getUsername());
+        String password = Keychain.instance().getInternetPasswordFromKeychain(this.getKSecProtocolType(protocol),
+                hostname, this.getUsername());
         if(null == password || password.equals("")) {
             // legacy support because previously we saved the passwords using the wrong protocol identifier
-            password = Keychain.instance().getInternetPasswordFromKeychain(this.protocol,
-                this.hostname, this.getUsername());
+            password = Keychain.instance().getInternetPasswordFromKeychain(protocol,
+                hostname, this.getUsername());
         }
         return password;
     }
@@ -180,40 +163,28 @@ public class Login {
     /**
      * Adds the password to the system keychain
      */
-    public void addInternetPasswordToKeychain() {
+    public void addInternetPasswordToKeychain(String protocol, String hostname, int port) {
         if (this.shouldBeAddedToKeychain && !this.isAnonymousLogin() && this.hasReasonableValues()) {
-            Keychain.instance().addInternetPasswordToKeychain(this.getKSecProtocolType(this.protocol),
-                    this.hostname, this.getUsername(), this.getPassword());
+            log.debug("addInternetPasswordToKeychain:"+hostname);
+            Keychain.instance().addInternetPasswordToKeychain(this.getKSecProtocolType(protocol), port,
+                    hostname, this.getUsername(), this.getPassword());
         }
     }
 
     /**
-     *
-     * @return the password fetched from the system keychain or null if it was not found
-     * @deprecated
-     */
-    public String getPasswordFromKeychain() {
-        return Keychain.instance().getPasswordFromKeychain(this.hostname, this.getUsername());
-    }
-
-    /**
-     * @param hostname The service to use when looking up the password in the keychain
      * @param user     Login with this username
      * @param pass     Passphrase
      */
-    public Login(String hostname, String protocol, String user, String pass) {
-        this(hostname, protocol, user, pass, false);
+    public Login(String user, String pass) {
+        this(user, pass, false);
     }
 
     /**
-     * @param hostname                The hostname to use when looking up the password in the keychain
      * @param user                    Login with this username
      * @param pass                    Passphrase
      * @param shouldBeAddedToKeychain if the credential should be added to the keychain uppon successful login
      */
-    public Login(String hostname, String protocol, String user, String pass, boolean shouldBeAddedToKeychain) {
-        this.hostname = hostname;
-        this.protocol = protocol;
+    public Login(String user, String pass, boolean shouldBeAddedToKeychain) {
         this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
         this.init(user, pass);
     }
@@ -224,12 +195,7 @@ public class Login {
      */
     private void init(String u, String p) {
         if (null == u || u.equals("")) {
-			if(this.protocol.equals(Session.FTP)) {
-            	this.user = Preferences.instance().getProperty("ftp.anonymous.name");
-			}
-			else {
-            	this.user = Preferences.instance().getProperty("connection.login.name");
-			}
+            this.user = Preferences.instance().getProperty("connection.login.name");
         }
         else {
 			this.user = u;
@@ -263,7 +229,7 @@ public class Login {
      * @see #setPrivateKeyFile
      */
     public boolean usesPublicKeyAuthentication() {
-        return this.privateKeyFile != null && this.protocol.equals(Session.SFTP);
+        return this.privateKeyFile != null;
     }
 
     /**
@@ -311,14 +277,11 @@ public class Login {
      * @return true if reasonable values have been found localy or in the keychain or the user
      * was prompted to for the credentials and new values got entered.
      */
-    public boolean check(LoginController controller) {
+    public boolean check(LoginController controller, String protocol, String hostname) {
         if (!this.hasReasonableValues()) {
             if (Preferences.instance().getBoolean("connection.login.useKeychain")) {
                 log.info("Searching keychain for password...");
-                String passFromKeychain = this.getInternetPasswordFromKeychain();
-                if (null == passFromKeychain || passFromKeychain.equals("")) {
-                    passFromKeychain = this.getPasswordFromKeychain(); //legacy support
-                }
+                String passFromKeychain = this.getInternetPasswordFromKeychain(protocol, hostname);
                 if (null == passFromKeychain || passFromKeychain.equals("")) {
 					if(null == controller) {
 						throw new IllegalArgumentException("No login controller given");
