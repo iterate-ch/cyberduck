@@ -414,11 +414,8 @@ public class CDConnectionController extends CDSheetController {
                 else if(protocolPopup.selectedItem().representedObject().equals(Session.FTP_TLS)) {
                     protocol = Session.FTP_TLS;
                 }
-                Login l = new Login(hostField.stringValue(), protocol, usernameField.stringValue(), null);
-                String passFromKeychain = l.getInternetPasswordFromKeychain();
-                if(null == passFromKeychain || passFromKeychain.equals("")) {
-                    passFromKeychain = l.getPasswordFromKeychain(); //legacy support
-                }
+                Login l = new Login(usernameField.stringValue(), null);
+                String passFromKeychain = l.getInternetPasswordFromKeychain(hostField.stringValue(), protocol);
                 if(passFromKeychain != null && !passFromKeychain.equals("")) {
                     log.info("Password for " + usernameField.stringValue() + " found in Keychain");
                     this.passField.setStringValue(passFromKeychain);
