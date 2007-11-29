@@ -40,7 +40,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addPasswordToKeychain
  * Signature: (Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addInternetPasswordToKeychain
-  (JNIEnv *, jobject, jstring, jstring, jstring, jstring);
+  (JNIEnv *, jobject, jstring, jint, jstring, jstring, jstring);
 
 /*
  * Class:     ch_cyberduck_core_Keychain

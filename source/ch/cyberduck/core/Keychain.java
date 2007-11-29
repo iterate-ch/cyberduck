@@ -92,7 +92,7 @@ public class Keychain {
      * @param user
      * @param password
      */
-    public native void addInternetPasswordToKeychain(String protocol, String serviceName, String user, String password);
+    public native void addInternetPasswordToKeychain(String protocol, int port, String serviceName, String user, String password);
 
     /**
      *

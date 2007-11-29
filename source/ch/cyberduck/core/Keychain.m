@@ -37,40 +37,62 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
     return converted;
 }
 
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getInternetPasswordFromKeychain(JNIEnv *env, jobject this, jstring jProtocol, jstring jService,jstring jAccount) {
-
-    SecProtocolType protocol;
-    const char *protocolString = (*env)->GetStringUTFChars(env, jProtocol, JNI_FALSE);
-    memcpy(&protocol, protocolString, 4);
-    
-    NSString *password = [[Keychain defaultKeychain] passwordForInternetServer:convertToNSString(env, jService) forAccount:convertToNSString(env, jAccount) port:0 path:@"" inSecurityDomain:@"" protocol:protocol auth:kSecAuthenticationTypeDefault];
-
-    return (*env)->NewStringUTF(env, [password UTF8String]);
-}
-
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getPasswordFromKeychain(JNIEnv *env, jobject this, jstring jService, jstring jAccount) 
+SecProtocolType convertToSecProtocolType(JNIEnv *env, jstring jProtocol)
 {
-    NSString *password = [[Keychain defaultKeychain] passwordForGenericService:convertToNSString(env, jService) forAccount:convertToNSString(env, jAccount)]; 
+    SecProtocolType protocol;
+    if([convertToNSString(env, jProtocol) isEqualTo: @"ftps"]) {
+        protocol = kSecProtocolTypeFTPS;
+    }
+    else if([convertToNSString(env, jProtocol) isEqualTo: @"ssh"]) {
+        protocol = kSecProtocolTypeSSH;
+    }
+    else {
+        protocol = kSecProtocolTypeFTP;
+    }
+    return protocol;
+}
+
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getInternetPasswordFromKeychain(JNIEnv *env, jobject this, jstring jProtocol, jstring jService,jstring jAccount)
+{
+    NSString *password = [[Keychain defaultKeychain] passwordForInternetServer:convertToNSString(env, jService)
+                                                                    forAccount:convertToNSString(env, jAccount)
+                                                                          port:0
+                                                                          path:@""
+                                                              inSecurityDomain:@""
+                                                                      protocol:convertToSecProtocolType(env, jProtocol)
+                                                                          auth:kSecAuthenticationTypeDefault];
 
     return (*env)->NewStringUTF(env, [password UTF8String]);
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addInternetPasswordToKeychain(JNIEnv *env, jobject this, jstring jProtocol,jstring jService,jstring jUsername, jstring jPassword
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getPasswordFromKeychain(JNIEnv *env, jobject this, jstring jService, jstring jAccount)
+{
+    NSString *password = [[Keychain defaultKeychain] passwordForGenericService:convertToNSString(env, jService)
+                                                                    forAccount:convertToNSString(env, jAccount)];
+
+    return (*env)->NewStringUTF(env, [password UTF8String]);
+}
+
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addInternetPasswordToKeychain(JNIEnv *env, jobject this, jstring jProtocol, jint port, jstring jService, jstring jUsername, jstring jPassword
                                                                                   ) 
 {
-    SecProtocolType protocol;
-    const char *protocolString = (*env)->GetStringUTFChars(env, jProtocol, JNI_FALSE);
-    memcpy(&protocol, protocolString, 4);
-
-    [[Keychain defaultKeychain] addInternetPassword:convertToNSString(env, jPassword) onServer:convertToNSString(env, jService) forAccount:convertToNSString(env, jUsername) port:0 path:@"" inSecurityDomain:@"" protocol:protocol auth:kSecAuthenticationTypeDefault replaceExisting:YES];
+    [[Keychain defaultKeychain] addInternetPassword:convertToNSString(env, jPassword)
+                                           onServer:convertToNSString(env, jService)
+                                         forAccount:convertToNSString(env, jUsername)
+                                               port:port
+                                               path:@""
+                                   inSecurityDomain:@""
+                                           protocol:convertToSecProtocolType(env, jProtocol)
+                                               auth:kSecAuthenticationTypeDefault
+                                    replaceExisting:YES];
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addPasswordToKeychain(JNIEnv *env, jobject this, jstring jService, jstring jUsername, jstring jPass) 
 {
-    [[Keychain defaultKeychain] addGenericPassword:convertToNSString(env, jPass) onService:convertToNSString(env, jService) forAccount:convertToNSString(env, jUsername) replaceExisting:YES]; 
+    [[Keychain defaultKeychain] addGenericPassword:convertToNSString(env, jPass) onService:convertToNSString(env, jService) forAccount:convertToNSString(env, jUsername) replaceExisting:YES];
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addCertificateToKeychain(JNIEnv *env, jobject this, jbyteArray jCertificate) 
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addCertificateToKeychain(JNIEnv *env, jobject this, jbyteArray jCertificate)
 {
     jbyte *certByte = (*env)->GetByteArrayElements(env, jCertificate, NULL);
     
