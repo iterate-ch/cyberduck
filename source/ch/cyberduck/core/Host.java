@@ -674,11 +674,11 @@ public class Host extends NSObject {
      *
      * @return
      */
-    public String getDownloadFolder() {
+    public Local getDownloadFolder() {
         if(null == this.downloadFolder) {
-            return Preferences.instance().getProperty("queue.download.folder");
+            return new Local(Preferences.instance().getProperty("queue.download.folder"));
         }
-        return this.downloadFolder;
+        return new Local(this.downloadFolder);
     }
 
     /**
