@@ -20,11 +20,15 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.foundation.NSPathUtilities;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSRect;
 import com.apple.cocoa.foundation.NSSize;
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 
-import java.net.URL;
 import java.util.HashMap;
 
 /**
@@ -34,7 +38,7 @@ public class CDIconCache extends HashMap {
     private static CDIconCache instance;
 
     public static CDIconCache instance() {
-        if (null == instance) {
+        if(null == instance) {
             instance = new CDIconCache();
         }
         return instance;
@@ -46,43 +50,135 @@ public class CDIconCache extends HashMap {
 
     public NSImage get(String key) {
         NSImage img = (NSImage) super.get(key);
-        if (null == img) {
+        if(null == img) {
             this.put(key, img = NSWorkspace.sharedWorkspace().iconForFileType(key));
         }
         return img;
     }
 
-    public static final NSImage DISK_ICON = NSImage.imageNamed("disk.tiff");
-    public static final NSImage SYMLINK_ICON = NSImage.imageNamed("symlink.tiff");
-    public static final NSImage FOLDER_ICON = NSImage.imageNamed("folder16.tiff");
-    public static final NSImage FOLDER_NOACCESS_ICON = NSImage.imageNamed("folder_noaccess.tiff");
-    public static final NSImage FOLDER_WRITEONLY_ICON = NSImage.imageNamed("folder_writeonly.tiff");
-    public static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
+    private static String FOLDER_PATH
+            = Preferences.instance().getProperty("application.support.path");
+
+    public static final NSImage FOLDER_NEW;
 
     static {
-        SYMLINK_ICON.setSize(new NSSize(16f, 16f));
-        FOLDER_ICON.setSize(new NSSize(16f, 16f));
-        FOLDER_NOACCESS_ICON.setSize(new NSSize(16f, 16f));
-        FOLDER_WRITEONLY_ICON.setSize(new NSSize(16f, 16f));
-        NOT_FOUND_ICON.setSize(new NSSize(16f, 16f));
+        {
+            FOLDER_NEW = new NSImage(new NSSize(128, 128));
+            FOLDER_NEW.lockFocus();
+            NSImage f = NSWorkspace.sharedWorkspace().iconForFile(
+                    NSPathUtilities.stringByExpandingTildeInPath(FOLDER_PATH));
+            f.drawInRect(new NSRect(new NSPoint(0, 0), FOLDER_NEW.size()),
+                    NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
+            NSImage o = NSImage.imageNamed("NewFolderBadgeIcon.icns");
+            o.drawInRect(new NSRect(new NSPoint(0, 0), FOLDER_NEW.size()),
+                    NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
+            FOLDER_NEW.unlockFocus();
+        }
     }
 
-    public NSImage iconForPath(final Path item) {
-        final String extension = item.getExtension();
-        NSImage icon = null;
-        if(item.attributes.isSymbolicLink()) {
-            icon = SYMLINK_ICON;
-        }
-        else if(item.attributes.isDirectory()) {
-            icon = FOLDER_ICON;
-        }
-        else if(item.attributes.isFile()) {
-            icon = this.get(extension);
+    public NSImage iconForPath(final Local item, int size) {
+        final NSImage icon;
+        if(item.exists()) {
+            icon = NSWorkspace.sharedWorkspace().iconForFile(item.getAbsolute());
         }
         else {
-            icon = NOT_FOUND_ICON;
+            icon = NSImage.imageNamed("notfound.tiff");
         }
-        icon.setSize(new NSSize(16f, 16f));
+        icon.setCacheMode(NSImage.ImageCacheBySize);
+        icon.setScalesWhenResized(true);
+        icon.setSize(new NSSize(size, size));
+        return icon;
+    }
+
+    private static final NSImage FOLDER_ICON = NSWorkspace.sharedWorkspace().iconForFile(
+            NSPathUtilities.stringByExpandingTildeInPath(FOLDER_PATH));
+
+    public NSImage iconForPath(final Path item, int size) {
+        if(item.attributes.isSymbolicLink()) {
+            if(item.attributes.isDirectory()) {
+                NSImage folder = new NSImage(new NSSize(size, size));
+                folder.lockFocus();
+                NSImage f = NSWorkspace.sharedWorkspace().iconForFile(
+                        NSPathUtilities.stringByExpandingTildeInPath(FOLDER_PATH));
+                f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
+                        NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
+                NSImage o = NSImage.imageNamed("AliasBadgeIcon.icns");
+                o.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
+                        NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
+                folder.unlockFocus();
+                return this.convert(folder, size);
+            }
+            NSImage symlink = new NSImage(new NSSize(size, size));
+            symlink.lockFocus();
+            NSImage f = this.get(item.getExtension());
+            f.drawInRect(new NSRect(new NSPoint(0, 0), symlink.size()),
+                    NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
+            NSImage o = NSImage.imageNamed("AliasBadgeIcon.icns");
+            o.drawInRect(new NSRect(new NSPoint(0, 0), symlink.size()),
+                    NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
+            symlink.unlockFocus();
+            return this.convert(symlink, size);
+        }
+        if(item.attributes.isFile()) {
+            return this.convert(this.get(item.getExtension()), size);
+        }
+        if(item.attributes.isDirectory()) {
+            if(item.isRoot()) {
+                return this.convert(NSImage.imageNamed("disk.icns"), size);
+            }
+            if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")) {
+                if(!item.attributes.isExecutable()
+                        || (item.isCached() && !item.childs().attributes().isReadable())) {
+                    NSImage folder = new NSImage(new NSSize(size, size));
+                    folder.lockFocus();
+                    NSImage f = NSWorkspace.sharedWorkspace().iconForFile(
+                            NSPathUtilities.stringByExpandingTildeInPath(FOLDER_PATH));
+                    f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
+                            NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
+                    NSImage o = NSImage.imageNamed("PrivateFolderBadgeIcon.icns");
+                    o.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
+                            NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
+                    folder.unlockFocus();
+                    return this.convert(folder, size);
+                }
+                if(!item.attributes.isReadable()) {
+                    if(item.attributes.isWritable()) {
+                        NSImage folder = new NSImage(new NSSize(size, size));
+                        folder.lockFocus();
+                        NSImage f = NSWorkspace.sharedWorkspace().iconForFile(
+                                NSPathUtilities.stringByExpandingTildeInPath(FOLDER_PATH));
+                        f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
+                                NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
+                        NSImage o = NSImage.imageNamed("DropFolderBadgeIcon.icns");
+                        o.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
+                                NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
+                        folder.unlockFocus();
+                        return this.convert(folder, size);
+                    }
+                }
+                if(!item.attributes.isWritable()) {
+                    NSImage folder = new NSImage(new NSSize(size, size));
+                    folder.lockFocus();
+                    NSImage f = NSWorkspace.sharedWorkspace().iconForFile(
+                            NSPathUtilities.stringByExpandingTildeInPath(FOLDER_PATH));
+                    f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
+                            NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
+                    NSImage o = NSImage.imageNamed("ReadOnlyFolderBadgeIcon.icns");
+                    o.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
+                            NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
+                    folder.unlockFocus();
+                    return this.convert(folder, size);
+                }
+            }
+            return this.convert(FOLDER_ICON, size);
+        }
+        return this.convert(NSImage.imageNamed("notfound.tiff"), size);
+    }
+
+    private NSImage convert(NSImage icon, int size) {
+        icon.setCacheMode(NSImage.ImageCacheBySize);
+        icon.setScalesWhenResized(true);
+        icon.setSize(new NSSize(size, size));
         return icon;
     }
 }

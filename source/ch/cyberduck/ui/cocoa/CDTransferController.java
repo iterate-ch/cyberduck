@@ -417,24 +417,20 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private void updateIcon() {
         log.debug("updateIcon:");
         final int selected = transferTable.numberOfSelectedRows();
-        if(0 == selected) {
+        if(1 != selected) {
             iconView.setImage(null);
             return;
         }
-        NSImage icon = CDIconCache.NOT_FOUND_ICON;
-        if(1 == selected) {
-            final Transfer transfer = (Transfer) TransferCollection.instance().get(transferTable.selectedRow());
-            // Draw file type icon
-            if(transfer.getRoot().getLocal().exists()) {
-                if(transfer.numberOfRoots() == 1) {
-                    icon = CDIconCache.instance().iconForPath(transfer.getRoot().getLocal(), 32);
-                }
-                else {
-                    icon = CDIconCache.MULTIPLE_DOCUMENTS_ICON;
-                }
+        final Transfer transfer = (Transfer) TransferCollection.instance().get(transferTable.selectedRow());
+        // Draw file type icon
+        if(transfer.getRoot().getLocal().exists()) {
+            if(transfer.numberOfRoots() == 1) {
+                iconView.setImage(CDIconCache.instance().iconForPath(transfer.getRoot().getLocal(), 32));
+            }
+            else {
+                iconView.setImage(NSImage.imageNamed("multipleDocuments32.tiff"));
             }
         }
-        iconView.setImage(icon);
     }
 
     /**

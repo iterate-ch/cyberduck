@@ -996,6 +996,10 @@ id.lproj/Transfer.nib/classes.nib -text
 id.lproj/Transfer.nib/info.nib -text
 id.lproj/Transfer.nib/keyedobjects.nib -text
 id.lproj/Transfer.strings -text svneol=unset#text/utf-16
+img/AliasBadgeIcon.icns -text
+img/NewFolderBadgeIcon.icns -text
+img/PrivateFolderBadgeIcon.icns -text
+img/ReadOnlyFolderBadgeIcon.icns -text
 img/SNDisclosureArrowDown.tiff -text svneol=unset#image/tiff
 img/SNDisclosureArrowRight.tiff -text svneol=unset#image/tiff
 img/add.tiff -text svneol=unset#image/tiff
@@ -1031,7 +1035,7 @@ img/command.tiff -text svneol=unset#image/tiff
 img/connect.tiff -text svneol=unset#image/tiff
 img/connection.tiff -text svneol=unset#image/tiff
 img/deleteFile.tiff -text svneol=unset#image/tiff
-img/disk.tiff -text svneol=unset#image/tiff
+img/disk.icns -text
 img/download0.icns -text
 img/download1.icns -text
 img/download10.icns -text
@@ -1049,12 +1053,6 @@ img/drawerPressed.tiff -text svneol=unset#image/tiff
 img/edit.tiff -text svneol=unset#image/tiff
 img/editPressed.tiff -text svneol=unset#image/tiff
 img/eject.tiff -text svneol=unset#image/tiff
-img/folder.tiff -text svneol=unset#image/tiff
-img/folder16.tiff -text svneol=unset#image/tiff
-img/folder32.tiff -text svneol=unset#image/tiff
-img/folder_new.tiff -text svneol=unset#image/tiff
-img/folder_noaccess.tiff -text svneol=unset#image/tiff
-img/folder_writeonly.tiff -text svneol=unset#image/tiff
 img/ftp-tls.tiff -text svneol=unset#image/tiff
 img/ftp.tiff -text svneol=unset#image/tiff
 img/gear.tiff -text svneol=unset#image/tiff
@@ -1089,7 +1087,6 @@ img/statusRed.tiff -text svneol=unset#image/tiff
 img/statusYellow.tiff -text svneol=unset#image/tiff
 img/stop.tiff -text svneol=unset#image/tiff
 img/stop16.tiff -text svneol=unset#image/tiff
-img/symlink.tiff -text svneol=unset#image/tiff
 img/sync32.tiff -text svneol=unset#image/tiff
 img/transparent.tiff -text svneol=unset#image/tiff
 img/trash.tiff -text svneol=unset#image/tiff

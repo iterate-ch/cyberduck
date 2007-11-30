@@ -2954,11 +2954,10 @@ public class CDBrowserController extends CDWindowController
                     while(true) {
                         pathPopupButton.addItem(p.getAbsolute());
                         pathPopupButton.lastItem().setRepresentedObject(p);
+                        pathPopupButton.lastItem().setImage(CDIconCache.instance().iconForPath(p, 16));
                         if(p.isRoot()) {
-                            pathPopupButton.lastItem().setImage(CDIconCache.DISK_ICON);
                             break;
                         }
-                        pathPopupButton.lastItem().setImage(CDIconCache.instance().iconForPath(p, 16));
                         p = (Path) p.getParent();
                     }
                 }
