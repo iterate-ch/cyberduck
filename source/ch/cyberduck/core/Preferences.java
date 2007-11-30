@@ -280,7 +280,13 @@ public abstract class Preferences {
         defaults.put("queue.orderFrontOnStart", String.valueOf(true));
         defaults.put("queue.orderBackOnStop", String.valueOf(false));
 
-        defaults.put("queue.download.folder", "~/Desktop");
+        if(new File(NSPathUtilities.stringByExpandingTildeInPath("~/Downloads")).exists()) {
+            // For 10.5 this usually exists and should be preferrred
+            defaults.put("queue.download.folder", "~/Downloads");
+        }
+        else {
+            defaults.put("queue.download.folder", "~/Desktop");
+        }
         /**
          * Action when duplicate file exists
          */
