@@ -997,6 +997,7 @@ id.lproj/Transfer.nib/info.nib -text
 id.lproj/Transfer.nib/keyedobjects.nib -text
 id.lproj/Transfer.strings -text svneol=unset#text/utf-16
 img/AliasBadgeIcon.icns -text
+img/DropFolderBadgeIcon.icns -text
 img/NewFolderBadgeIcon.icns -text
 img/PrivateFolderBadgeIcon.icns -text
 img/ReadOnlyFolderBadgeIcon.icns -text
