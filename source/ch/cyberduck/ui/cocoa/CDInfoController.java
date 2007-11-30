@@ -18,11 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
-
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+
+import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import org.apache.log4j.Logger;
 
@@ -335,13 +335,7 @@ public class CDInfoController extends CDWindowController {
                 fileIcon = NSImage.imageNamed("multipleDocuments32.tiff");
             }
             else {
-                if(file.attributes.isFile()) {
-                    fileIcon = NSWorkspace.sharedWorkspace().iconForFileType(file.getExtension());
-                    fileIcon.setSize(new NSSize(32f, 32f));
-                }
-                if(file.attributes.isDirectory()) {
-                    fileIcon = NSImage.imageNamed("folder32.tiff");
-                }
+                fileIcon = CDIconCache.instance().iconForPath(file, 32);
             }
             this.iconImageView.setImage(fileIcon);
         }

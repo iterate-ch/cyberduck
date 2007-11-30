@@ -66,7 +66,7 @@ public class PathHistoryMenuDelegate /*extends MenuDelegate */{
             path.setRepresentedObject(item);
             path.setTarget(this);
             path.setEnabled(true);
-            path.setImage(CDIconCache.FOLDER_ICON);
+            path.setImage(CDIconCache.instance().iconForPath(item, 16));
             path.setAction(new NSSelector("pathMenuItemClicked", new Class[]{NSMenuItem.class}));
             menu.insertItemAtIndex(path, index);
             return !shouldCancel;

@@ -2958,7 +2958,7 @@ public class CDBrowserController extends CDWindowController
                             pathPopupButton.lastItem().setImage(CDIconCache.DISK_ICON);
                             break;
                         }
-                        pathPopupButton.lastItem().setImage(CDIconCache.FOLDER_ICON);
+                        pathPopupButton.lastItem().setImage(CDIconCache.instance().iconForPath(p, 16));
                         p = (Path) p.getParent();
                     }
                 }
@@ -3935,7 +3935,7 @@ public class CDBrowserController extends CDWindowController
             item.setLabel(NSBundle.localizedString(TOOLBAR_NEW_FOLDER, "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_NEW_FOLDER, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Create New Folder", "Toolbar item tooltip"));
-            item.setImage(NSImage.imageNamed("folder_new.tiff"));
+            item.setImage(CDIconCache.FOLDER_NEW);
             item.setTarget(this);
             item.setAction(new NSSelector("createFolderButtonClicked", new Class[]{Object.class}));
             return item;

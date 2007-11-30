@@ -18,13 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSImageView;
+
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
-
-import com.apple.cocoa.application.NSApplication;
 
 import org.apache.log4j.Logger;
 
@@ -33,6 +34,13 @@ import org.apache.log4j.Logger;
  */
 public class CDFolderController extends CDFileController {
     private static Logger log = Logger.getLogger(CDFolderController.class);
+
+    protected NSImageView iconView; //IBOutlet
+
+    public void setIconView(NSImageView iconView) {
+        this.iconView = iconView;
+        this.iconView.setImage(CDIconCache.FOLDER_NEW);
+    }
 
     public CDFolderController(final CDWindowController parent) {
         super(parent);
@@ -50,7 +58,7 @@ public class CDFolderController extends CDFileController {
     }
 
     protected void createFolder(final Path workdir, final String filename) {
-        final CDBrowserController c = (CDBrowserController)parent;
+        final CDBrowserController c = (CDBrowserController) parent;
         c.background(new BackgroundAction() {
             final Path folder
                     = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);

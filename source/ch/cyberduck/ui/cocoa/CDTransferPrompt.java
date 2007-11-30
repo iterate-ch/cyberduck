@@ -21,13 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSMutableRect;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSPoint;
-import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -316,7 +310,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                         cell.setEnabled(transfer.isSelectable(item));
                     }
                     if(identifier.equals(CDTransferPromptModel.FILENAME_COLUMN)) {
-                        ((CDOutlineCell) cell).setIcon(CDIconCache.instance().iconForPath(item));
+                        ((CDOutlineCell) cell).setIcon(CDIconCache.instance().iconForPath(item, 16));
                     }
                     if(cell instanceof NSTextFieldCell) {
                         if(!transfer.isIncluded(item)) {

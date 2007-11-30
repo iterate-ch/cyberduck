@@ -47,14 +47,6 @@ import java.util.Map;
 public abstract class CDBrowserTableDataSource extends NSObject {
     protected static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 
-    protected static final NSImage FOLDER_NOACCESS_ICON = NSImage.imageNamed("folder_noaccess.tiff");
-    protected static final NSImage FOLDER_WRITEONLY_ICON = NSImage.imageNamed("folder_writeonly.tiff");
-
-    static {
-        FOLDER_NOACCESS_ICON.setSize(new NSSize(16f, 16f));
-        FOLDER_WRITEONLY_ICON.setSize(new NSSize(16f, 16f));
-    }
-
     public static final String ICON_COLUMN = "ICON";
     public static final String FILENAME_COLUMN = "FILENAME";
     public static final String SIZE_COLUMN = "SIZE";
@@ -141,24 +133,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
     }
 
     protected NSImage iconForPath(final Path item) {
-        NSImage icon = null;
-        if(item.attributes.isDirectory()) {
-            if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")) {
-                if(!item.attributes.isExecutable()
-                        || (item.isCached() && !this.childs(item).attributes().isReadable())) {
-                    icon = FOLDER_NOACCESS_ICON;
-                }
-                else if(!item.attributes.isReadable()) {
-                    if(item.attributes.isWritable()) {
-                        icon = FOLDER_WRITEONLY_ICON;
-                    }
-                }
-            }
-        }
-        if(null == icon) {
-            icon = CDIconCache.instance().iconForPath(item);
-        }
-        return icon;
+        return CDIconCache.instance().iconForPath(item, 16);
     }
 
     private static final NSAttributedString UNKNOWN_STRING = new NSAttributedString(

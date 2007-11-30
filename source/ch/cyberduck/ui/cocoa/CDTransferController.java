@@ -360,10 +360,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
         this.transferTable.sizeToFit();
     }
 
-    private static final NSImage MULTIPLE_DOCUMENTS_ICON = NSImage.imageNamed("multipleDocuments32.tiff");
-    private static final NSImage FOLDER_ICON = NSImage.imageNamed("folder32.tiff");
-    private static final NSImage NOT_FOUND_ICON = NSImage.imageNamed("notfound.tiff");
-
     /**
      *
      */
@@ -425,24 +421,20 @@ public class CDTransferController extends CDWindowController implements NSToolba
             iconView.setImage(null);
             return;
         }
-        NSImage fileIcon = NOT_FOUND_ICON;
+        NSImage icon = CDIconCache.NOT_FOUND_ICON;
         if(1 == selected) {
             final Transfer transfer = (Transfer) TransferCollection.instance().get(transferTable.selectedRow());
             // Draw file type icon
             if(transfer.getRoot().getLocal().exists()) {
                 if(transfer.numberOfRoots() == 1) {
-                    fileIcon = transfer.getRoot().getLocal().attributes.isFile() ? NSWorkspace.sharedWorkspace().iconForFile(
-                            transfer.getRoot().getLocal().getAbsolute()) : FOLDER_ICON;
-//                    fileIcon = transfer.getRoot().getLocal().attributes.isFile() ? CDIconCache.instance().iconForPath(
-//                            transfer.getRoot()) : FOLDER_ICON;
+                    icon = CDIconCache.instance().iconForPath(transfer.getRoot().getLocal(), 32);
                 }
                 else {
-                    fileIcon = MULTIPLE_DOCUMENTS_ICON;
+                    icon = CDIconCache.MULTIPLE_DOCUMENTS_ICON;
                 }
             }
         }
-        fileIcon.setSize(new NSSize(32f, 32f));
-        iconView.setImage(fileIcon);
+        iconView.setImage(icon);
     }
 
     /**

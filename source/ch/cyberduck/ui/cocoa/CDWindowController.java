@@ -38,22 +38,6 @@ public abstract class CDWindowController extends CDController
 
     protected static final String DEFAULT = NSBundle.localizedString("Default", "");
 
-    protected static final NSImage DESKTOP_ICON = NSWorkspace.sharedWorkspace().iconForFile(
-            NSPathUtilities.stringByExpandingTildeInPath("~/Desktop")
-    );
-
-    static {
-        DESKTOP_ICON.setSize(new NSSize(16f, 16f));
-    }
-
-    protected static final NSImage HOME_ICON = NSWorkspace.sharedWorkspace().iconForFile(
-            NSPathUtilities.stringByExpandingTildeInPath("~")
-    );
-
-    static {
-        HOME_ICON.setSize(new NSSize(16f, 16f));
-    }
-
     public CDWindowController() {
         super();
     }
