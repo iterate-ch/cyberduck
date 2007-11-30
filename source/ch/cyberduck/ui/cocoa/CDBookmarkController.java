@@ -18,17 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPConnectMode;
-
-import ch.cyberduck.core.CollectionListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostCollection;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
-
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+
+import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 
 import org.apache.log4j.Logger;
 
@@ -36,6 +30,8 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
+
+import com.enterprisedt.net.ftp.FTPConnectMode;
 
 /**
  * @version $Id$
@@ -309,45 +305,38 @@ public class CDBookmarkController extends CDWindowController {
         final NSSelector action = new NSSelector("downloadPathPopupClicked", new Class[]{NSPopUpButton.class});
         this.downloadPathPopup.setAction(action);
         this.downloadPathPopup.removeAllItems();
-        // The currently set download folder
-        final String CUSTOM = host.getDownloadFolder();
-        this.downloadPathPopup.menu().addItem(NSPathUtilities.displayNameAtPath(
-                NSPathUtilities.stringByExpandingTildeInPath(CUSTOM)
-        ), action, "");
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setTarget(this);
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setImage(NSImage.imageNamed("folder16.tiff"));
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setRepresentedObject(
-                NSPathUtilities.stringByExpandingTildeInPath(CUSTOM)
-        );
+
+        // Default download folder
+        this.addDownloadPath(action, host.getDownloadFolder());
         this.downloadPathPopup.menu().addItem(new NSMenuItem().separatorItem());
         // Shortcut to the Desktop
-        final String DESKTOP = "~/Desktop";
-        this.downloadPathPopup.menu().addItem(NSPathUtilities.displayNameAtPath(
-                NSPathUtilities.stringByExpandingTildeInPath(DESKTOP)
-        ), action, "");
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setTarget(this);
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setImage(DESKTOP_ICON);
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setRepresentedObject(
-                NSPathUtilities.stringByExpandingTildeInPath(DESKTOP));
-        if(CUSTOM.equals(DESKTOP)) {
-            this.downloadPathPopup.selectItemAtIndex(this.downloadPathPopup.numberOfItems()-1);
-        }
+        this.addDownloadPath(action, new Local("~/Desktop"));
         // Shortcut to user home
-        final String HOME = "~";
-        this.downloadPathPopup.menu().addItem(NSPathUtilities.displayNameAtPath(
-                NSPathUtilities.stringByExpandingTildeInPath(HOME)
-        ), action, "");
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setTarget(this);
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setImage(HOME_ICON);
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setRepresentedObject(
-                NSPathUtilities.stringByExpandingTildeInPath(HOME));
-        if(CUSTOM.equals(HOME)) {
-            this.downloadPathPopup.selectItemAtIndex(this.downloadPathPopup.numberOfItems()-1);
-        }
+        this.addDownloadPath(action, new Local("~"));
+        // Shortcut to user downloads for 10.5
+        this.addDownloadPath(action, new Local("~/Downloads"));
+        // Choose another folder
+
         // Choose another folder
         this.downloadPathPopup.menu().addItem(new NSMenuItem().separatorItem());
         this.downloadPathPopup.menu().addItem(CHOOSE, action, "");
         this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setTarget(this);
+    }
+
+    private void addDownloadPath(NSSelector action, Local f) {
+        if(f.exists()) {
+            this.downloadPathPopup.menu().addItem(NSPathUtilities.displayNameAtPath(
+                    f.getAbsolute()), action, "");
+            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setTarget(this);
+            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setImage(
+                    CDIconCache.instance().iconForPath(f, 16)
+            );
+            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setRepresentedObject(
+                    f.getAbsolute());
+            if(host.getDownloadFolder().equals(f)) {
+                this.downloadPathPopup.selectItemAtIndex(this.downloadPathPopup.numberOfItems()-1);
+            }
+        }
     }
 
     private NSOpenPanel downloadPathPanel;
@@ -379,14 +368,15 @@ public class CDBookmarkController extends CDWindowController {
         else {
             host.setDownloadFolder(null);
         }
-        String custom = NSPathUtilities.stringByExpandingTildeInPath(host.getDownloadFolder());
-        this.downloadPathPopup.itemAtIndex(0).setTitle(NSPathUtilities.displayNameAtPath(custom));
-        this.downloadPathPopup.itemAtIndex(0).setRepresentedObject(custom);
+        this.downloadPathPopup.itemAtIndex(0).setTitle(NSPathUtilities.displayNameAtPath(
+                host.getDownloadFolder().getAbsolute()));
+        this.downloadPathPopup.itemAtIndex(0).setRepresentedObject(
+                host.getDownloadFolder().getAbsolute());
+        this.downloadPathPopup.itemAtIndex(0).setImage(
+                CDIconCache.instance().iconForPath(host.getDownloadFolder(), 16));
         this.downloadPathPopup.selectItemAtIndex(0);
         this.downloadPathPanel = null;
     }
-
-    private Host host;
 
     /**
      *
@@ -408,6 +398,11 @@ public class CDBookmarkController extends CDWindowController {
             return c;
         }
     }
+
+    /**
+     * The bookmark
+     */
+    private Host host;
 
     /**
      * @param host The bookmark to edit

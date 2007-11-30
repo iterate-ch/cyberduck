@@ -773,51 +773,44 @@ public class CDPreferencesController extends CDWindowController {
 
     private static final String CHOOSE = NSBundle.localizedString("Choose", "")+"...";
 
+    // The currently set download folder
+    private final Local DEFAULT_DOWNLOAD_FOLDER = new Local(Preferences.instance().getProperty("queue.download.folder"));
+
     public void setDownloadPathPopup(NSPopUpButton downloadPathPopup) {
         this.downloadPathPopup = downloadPathPopup;
         this.downloadPathPopup.setTarget(this);
         final NSSelector action = new NSSelector("downloadPathPopupClicked", new Class[]{NSPopUpButton.class});
         this.downloadPathPopup.setAction(action);
         this.downloadPathPopup.removeAllItems();
-        // The currently set download folder
-        final String CUSTOM = Preferences.instance().getProperty("queue.download.folder");
-        this.downloadPathPopup.menu().addItem(NSPathUtilities.displayNameAtPath(
-                NSPathUtilities.stringByExpandingTildeInPath(CUSTOM)
-        ), action, "");
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setTarget(this);
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setImage(NSImage.imageNamed("folder16.tiff"));
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setRepresentedObject(
-                NSPathUtilities.stringByExpandingTildeInPath(CUSTOM)
-        );
+        // Default download folder
+        this.addDownloadPath(action, DEFAULT_DOWNLOAD_FOLDER);
         this.downloadPathPopup.menu().addItem(new NSMenuItem().separatorItem());
         // Shortcut to the Desktop
-        final String DESKTOP = "~/Desktop";
-        this.downloadPathPopup.menu().addItem(NSPathUtilities.displayNameAtPath(
-                NSPathUtilities.stringByExpandingTildeInPath(DESKTOP)
-        ), action, "");
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setTarget(this);
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setImage(DESKTOP_ICON);
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setRepresentedObject(
-                NSPathUtilities.stringByExpandingTildeInPath(DESKTOP));
-        if(CUSTOM.equals(DESKTOP)) {
-            this.downloadPathPopup.selectItemAtIndex(this.downloadPathPopup.numberOfItems()-1);
-        }
+        this.addDownloadPath(action, new Local("~/Desktop"));
         // Shortcut to user home
-        final String HOME = "~";
-        this.downloadPathPopup.menu().addItem(NSPathUtilities.displayNameAtPath(
-                NSPathUtilities.stringByExpandingTildeInPath(HOME)
-        ), action, "");
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setTarget(this);
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setImage(HOME_ICON);
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setRepresentedObject(
-                NSPathUtilities.stringByExpandingTildeInPath(HOME));
-        if(CUSTOM.equals(HOME)) {
-            this.downloadPathPopup.selectItemAtIndex(this.downloadPathPopup.numberOfItems()-1);
-        }
+        this.addDownloadPath(action, new Local("~"));
+        // Shortcut to user downloads for 10.5
+        this.addDownloadPath(action, new Local("~/Downloads"));
         // Choose another folder
         this.downloadPathPopup.menu().addItem(new NSMenuItem().separatorItem());
         this.downloadPathPopup.menu().addItem(CHOOSE, action, "");
         this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setTarget(this);
+    }
+
+    private void addDownloadPath(NSSelector action, Local f) {
+        if(f.exists()) {
+            this.downloadPathPopup.menu().addItem(NSPathUtilities.displayNameAtPath(
+                    f.getAbsolute()), action, "");
+            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setTarget(this);
+            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setImage(
+                    CDIconCache.instance().iconForPath(f, 16)
+            );
+            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setRepresentedObject(
+                    f.getAbsolute());
+            if(DEFAULT_DOWNLOAD_FOLDER.equals(f)) {
+                this.downloadPathPopup.selectItemAtIndex(this.downloadPathPopup.numberOfItems()-1);
+            }
+        }
     }
 
     private NSOpenPanel downloadPathPanel;
@@ -846,10 +839,10 @@ public class CDPreferencesController extends CDWindowController {
                         NSPathUtilities.stringByAbbreviatingWithTildeInPath(filename));
             }
         }
-        String custom = NSPathUtilities.stringByExpandingTildeInPath(
-                Preferences.instance().getProperty("queue.download.folder"));
-        this.downloadPathPopup.itemAtIndex(0).setTitle(NSPathUtilities.displayNameAtPath(custom));
-        this.downloadPathPopup.itemAtIndex(0).setRepresentedObject(custom);
+        Local custom = new Local(Preferences.instance().getProperty("queue.download.folder"));
+        this.downloadPathPopup.itemAtIndex(0).setTitle(NSPathUtilities.displayNameAtPath(custom.getAbsolute()));
+        this.downloadPathPopup.itemAtIndex(0).setRepresentedObject(custom.getAbsolute());
+        this.downloadPathPopup.itemAtIndex(0).setImage(CDIconCache.instance().iconForPath(custom, 16));
         this.downloadPathPopup.selectItemAtIndex(0);
         this.downloadPathPanel = null;
     }
