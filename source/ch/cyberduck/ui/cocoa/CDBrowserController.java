@@ -696,6 +696,10 @@ public class CDBrowserController extends CDWindowController
 
     private NSDrawer.Notifications bookmarkDrawerNotifications = new NSDrawer.Notifications() {
         public void drawerWillOpen(NSNotification notification) {
+            bookmarkDrawer.setContentSize(new NSSize(
+                    Preferences.instance().getFloat("browser.bookmarkDrawer.size.width"),
+                    bookmarkDrawer.contentSize().height()
+            ));
         }
 
         public void drawerDidOpen(NSNotification notification) {
@@ -703,6 +707,8 @@ public class CDBrowserController extends CDWindowController
         }
 
         public void drawerWillClose(NSNotification notification) {
+            Preferences.instance().setProperty("browser.bookmarkDrawer.size.width",
+                    bookmarkDrawer.contentSize().width());
         }
 
         public void drawerDidClose(NSNotification notification) {
@@ -713,8 +719,16 @@ public class CDBrowserController extends CDWindowController
     public void setBookmarkDrawer(NSDrawer bookmarkDrawer) {
         this.bookmarkDrawer = bookmarkDrawer;
         NSNotificationCenter.defaultCenter().addObserver(bookmarkDrawerNotifications,
+                new NSSelector("drawerWillOpen", new Class[]{NSNotification.class}),
+                NSDrawer.DrawerWillOpenNotification,
+                this.bookmarkDrawer);
+        NSNotificationCenter.defaultCenter().addObserver(bookmarkDrawerNotifications,
                 new NSSelector("drawerDidOpen", new Class[]{NSNotification.class}),
                 NSDrawer.DrawerDidOpenNotification,
+                this.bookmarkDrawer);
+        NSNotificationCenter.defaultCenter().addObserver(bookmarkDrawerNotifications,
+                new NSSelector("drawerWillClose", new Class[]{NSNotification.class}),
+                NSDrawer.DrawerWillCloseNotification,
                 this.bookmarkDrawer);
         NSNotificationCenter.defaultCenter().addObserver(bookmarkDrawerNotifications,
                 new NSSelector("drawerDidClose", new Class[]{NSNotification.class}),

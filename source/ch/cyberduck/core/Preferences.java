@@ -233,6 +233,7 @@ public abstract class Preferences {
          */
         defaults.put("browser.bookmarkDrawer.isOpen", String.valueOf(false));
         defaults.put("browser.bookmarkDrawer.smallItems", String.valueOf(false));
+        defaults.put("browser.bookmarkDrawer.size.width", String.valueOf(200));
         /**
          * Close bookmark drawer upon opening a connection
          */
