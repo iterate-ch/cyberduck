@@ -158,6 +158,7 @@ public class CDInfoController extends CDWindowController {
     }
 
     public void windowWillClose(NSNotification notification) {
+        this.window().endEditingForObject(null);
         if(Preferences.instance().getBoolean("browser.info.isInspector")) {
             //Do not mark this controller as invalid if it should be used again 
             return;
