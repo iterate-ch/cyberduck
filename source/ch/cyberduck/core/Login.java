@@ -60,13 +60,6 @@ public class Login {
      */
     private boolean shouldBeAddedToKeychain;
 
-    /**
-     * ProtocolTypeConstants as defined in SecKeychain.h; see #708
-     */
-    private static final String kSecProtocolTypeFTP = "ftp ";
-	private static final String kSecProtocolTypeFTPS = "ftps";
-	private static final String kSecProtocolTypeSSH = "ssh ";
-
     public String getUsername() {
         return this.user;
     }
@@ -130,34 +123,13 @@ public class Login {
     }
 
     /**
-     * 
-     * @param protocol
-     * @return The protocol code as defined in SecKeychain.h
-     */
-    private String getKSecProtocolType(final String protocol) {
-		if(protocol.equals(Session.SFTP)) {
-			return kSecProtocolTypeSSH;
-		}
-		if(protocol.equals(Session.FTP_TLS)) {
-			return kSecProtocolTypeFTPS;
-		}
-		return kSecProtocolTypeFTP;
-	}
-
-    /**
      *
      * @return the password fetched from the keychain or null if it was not found
      */
     public String getInternetPasswordFromKeychain(String protocol, String hostname) {
         log.info("Fetching password from Keychain for:" + this.getUsername());
-        String password = Keychain.instance().getInternetPasswordFromKeychain(this.getKSecProtocolType(protocol),
+        return Keychain.instance().getInternetPasswordFromKeychain(protocol,
                 hostname, this.getUsername());
-        if(null == password || password.equals("")) {
-            // legacy support because previously we saved the passwords using the wrong protocol identifier
-            password = Keychain.instance().getInternetPasswordFromKeychain(protocol,
-                hostname, this.getUsername());
-        }
-        return password;
     }
 
     /**
@@ -166,7 +138,7 @@ public class Login {
     public void addInternetPasswordToKeychain(String protocol, String hostname, int port) {
         if (this.shouldBeAddedToKeychain && !this.isAnonymousLogin() && this.hasReasonableValues()) {
             log.debug("addInternetPasswordToKeychain:"+hostname);
-            Keychain.instance().addInternetPasswordToKeychain(this.getKSecProtocolType(protocol), port,
+            Keychain.instance().addInternetPasswordToKeychain(protocol, port,
                     hostname, this.getUsername(), this.getPassword());
         }
     }

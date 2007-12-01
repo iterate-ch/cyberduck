@@ -43,7 +43,7 @@ SecProtocolType convertToSecProtocolType(JNIEnv *env, jstring jProtocol)
     if([convertToNSString(env, jProtocol) isEqualTo: @"ftps"]) {
         protocol = kSecProtocolTypeFTPS;
     }
-    else if([convertToNSString(env, jProtocol) isEqualTo: @"ssh"]) {
+    else if([convertToNSString(env, jProtocol) isEqualTo: @"sftp"]) {
         protocol = kSecProtocolTypeSSH;
     }
     else {
