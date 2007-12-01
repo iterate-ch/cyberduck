@@ -58,6 +58,11 @@ public class CDProgressController extends CDController {
     private Transfer transfer;
 
     /**
+     * Keeping track of the current transfer rate
+     */
+    private Speedometer meter;
+    
+    /**
      * The current connection status message
      * @see ch.cyberduck.core.ProgressListener#message(String) 
      */
@@ -65,6 +70,7 @@ public class CDProgressController extends CDController {
 
     public CDProgressController(final Transfer transfer) {
         this.transfer = transfer;
+        this.meter = new Speedometer(transfer);
         TransferCollection.instance().addListener(new AbstractCollectionListener() {
             public void collectionItemRemoved(Object item) {
                 if(item.equals(CDProgressController.this)) {
@@ -175,7 +181,6 @@ public class CDProgressController extends CDController {
             }
         };
         this.transfer.addListener(tl);
-        this.meter = new Speedometer(this.transfer);
     }
 
     /**
@@ -203,11 +208,6 @@ public class CDProgressController extends CDController {
             progressBar.setIndeterminate(true);
         }
     }
-
-    /**
-     * Keeping track of the current transfer rate
-     */
-    private Speedometer meter;
 
     private void setProgressText() {
         StringBuffer b = new StringBuffer(meter.getProgress());
