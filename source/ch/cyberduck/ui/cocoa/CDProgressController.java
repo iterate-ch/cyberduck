@@ -18,13 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Status;
-import ch.cyberduck.core.Transfer;
-import ch.cyberduck.core.TransferCollection;
-import ch.cyberduck.core.TransferListener;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.Speedometer;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
@@ -180,7 +175,7 @@ public class CDProgressController extends CDController {
             }
         };
         this.transfer.addListener(tl);
-        this.meter = new Speedometer();
+        this.meter = new Speedometer(this.transfer);
     }
 
     /**
@@ -197,7 +192,7 @@ public class CDProgressController extends CDController {
      * @param t
      */
     public void update(final NSTimer t) {
-        setProgressText();
+        this.setProgressText();
         if(!transfer.isVirgin()) {
             progressBar.setIndeterminate(false);
             progressBar.setMinValue(0);
@@ -214,76 +209,8 @@ public class CDProgressController extends CDController {
      */
     private Speedometer meter;
 
-    private class Speedometer {
-        //the time to start counting bytes transfered
-        private long timestamp;
-        //initial data already transfered
-        private double initialBytesTransfered;
-        private double bytesTransferred;
-
-        public Speedometer() {
-            this.reset();
-        }
-
-        /**
-         * Returns the data transfer rate. The rate should depend on the transfer
-         * rate timestamp.
-         *
-         * @return The bytes being processed per second
-         */
-        public float getSpeed() {
-            bytesTransferred = transfer.getTransferred();
-            if(bytesTransferred > initialBytesTransfered) {
-                if(0 == initialBytesTransfered) {
-                    initialBytesTransfered = bytesTransferred;
-                    return -1;
-                }
-                // number of seconds data was actually transferred
-                double elapsedSeconds = (System.currentTimeMillis() - timestamp) / 1000;
-                if(elapsedSeconds > 1) {
-                    // bytes per second
-                    return (float) ((bytesTransferred - initialBytesTransfered) / (elapsedSeconds));
-                }
-            }
-            return -1;
-        }
-
-        public double getBytesTransfered() {
-            return bytesTransferred;
-        }
-
-        /**
-         * Reset this meter
-         */
-        public void reset() {
-            this.timestamp = System.currentTimeMillis();
-            this.initialBytesTransfered = transfer.getTransferred();
-            this.bytesTransferred = 0;
-        }
-    }
-
     private void setProgressText() {
-        StringBuffer b = new StringBuffer();
-        b.append(Status.getSizeAsString(transfer.getTransferred()));
-        b.append(" ");
-        b.append(NSBundle.localizedString("of", "1.2MB of 3.4MB"));
-        b.append(" ");
-        b.append(Status.getSizeAsString(transfer.getSize()));
-        if(transfer.isRunning()) {
-            float speed = meter.getSpeed();
-            if(speed > 0) {
-                b.append(" (");
-                b.append(Status.getSizeAsString(speed));
-                b.append("/sec");
-                if(transfer.getSize() > 0) {
-                    b.append(", ");
-                    // remaining time in seconds
-                    double remaining = ((transfer.getSize() - meter.getBytesTransfered()) / speed);
-                    b.append(Status.getRemainingAsString(remaining));
-                }
-                b.append(")");
-            }
-        }
+        StringBuffer b = new StringBuffer(meter.getProgress());
         if(progressText != null) {
             b.append(" \u2013 ");
             b.append(progressText);

@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import com.enterprisedt.net.ftp.FTPConnectMode;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.ftps.FTPSSession;
 import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate;
@@ -1831,6 +1832,19 @@ public class CDBrowserController extends CDWindowController
         this.statusLabel = statusLabel;
     }
 
+    public void updateStatusLabel() {
+        StringBuffer b = new StringBuffer(statusText);
+        if(meterText != null) {
+            b.append(" \u2013 ");
+            b.append(meterText);
+        }
+        // Update the status label at the bottom of the browser window
+        statusLabel.setAttributedStringValue(new NSAttributedString(
+                b.toString(),
+                TRUNCATE_MIDDLE_ATTRIBUTES));
+        statusLabel.display();
+    }
+
     private NSButton securityLabel; // IBOutlet
 
     public void setSecurityLabel(NSButton securityLabel) {
@@ -2588,10 +2602,16 @@ public class CDBrowserController extends CDWindowController
      * @param transfer
      * @param useBrowserConnection
      */
-    protected void transfer(final Transfer transfer, boolean useBrowserConnection) {
+    protected void transfer(final Transfer transfer, final boolean useBrowserConnection) {
         if(useBrowserConnection) {
+            final Speedometer meter = new Speedometer(transfer);
             final TransferListener l;
             transfer.addListener(l = new TransferAdapter() {
+                /**
+                 * Timer to update the progress indicator
+                 */
+                private NSTimer progressTimer;
+
                 public void transferDidEnd() {
                     if(transfer.isComplete() && !transfer.isCanceled()) {
                         invoke(new Runnable() {
@@ -2611,6 +2631,31 @@ public class CDBrowserController extends CDWindowController
                             }
                         });
                     }
+                }
+
+                public void willTransferPath(Path path) {
+                    meter.reset();
+                    progressTimer = new NSTimer(0.1, //seconds
+                            this, //target
+                            new NSSelector("updateProgress", new Class[]{NSTimer.class}),
+                            transfer, //userInfo
+                            true); //repeating
+                    CDMainController.mainRunLoop.addTimerForMode(progressTimer,
+                            NSRunLoop.DefaultRunLoopMode);
+                }
+
+                public void didTransferPath(Path path) {
+                    progressTimer.invalidate();
+                    meter.reset();
+                }
+
+                public void bandwidthChanged(BandwidthThrottle bandwidth) {
+                    meter.reset();
+                }
+
+                public void updateProgress(final NSTimer t) {
+                    meterText = meter.getProgress();
+                    updateStatusLabel();
                 }
             });
             this.addListener(new CDWindowListener() {
@@ -3073,6 +3118,13 @@ public class CDBrowserController extends CDWindowController
      */
     private ConnectionListener listener = null;
 
+    private String statusText;
+
+    /**
+     * Transfer progress for browser session transfers
+     */
+    private String meterText;
+
     /**
      * Initializes a session for the passed host. Setting up the listeners and adding any callback
      * controllers needed for login, trust management and hostkey verification.
@@ -3098,13 +3150,11 @@ public class CDBrowserController extends CDWindowController
         this.setWorkdir(null);
         this.setEncoding(this.session.getEncoding());
         this.session.addProgressListener(new ProgressListener() {
-            public void message(final String msg) {
+            public void message(final String message) {
+                statusText = message;
                 invoke(new Runnable() {
                     public void run() {
-                        // Update the status label at the bottom of the browser window
-                        statusLabel.setAttributedStringValue(new NSAttributedString(msg,
-                                TRUNCATE_MIDDLE_ATTRIBUTES));
-                        statusLabel.display();
+                        updateStatusLabel();
                     }
                 });
             }

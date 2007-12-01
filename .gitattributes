@@ -1669,6 +1669,7 @@ sk.lproj/Transfer.nib/keyedobjects.nib -text
 sk.lproj/Transfer.strings -text svneol=unset#text/utf-16
 source/ch/cyberduck/core/CollectionListener.java -text
 source/ch/cyberduck/core/Host.m -text
+source/ch/cyberduck/core/Speedometer.java -text
 source/ch/cyberduck/core/forker/NSString+CarbonFSRefCreation.m -text
 source/ch/cyberduck/core/ftp/parser/CommonUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/StingrayFTPEntryParser.java -text
