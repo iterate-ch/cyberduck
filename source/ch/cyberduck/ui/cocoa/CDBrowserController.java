@@ -952,6 +952,23 @@ public class CDBrowserController extends CDWindowController
              * @see NSOutlineView.Delegate
              */
             public boolean outlineViewShouldExpandItem(final NSOutlineView view, final Path item) {
+                log.debug("outlineViewShouldExpandItem:"+item);
+                NSEvent event = NSApplication.sharedApplication().currentEvent();
+                if (event != null) {
+                    if(NSEvent.LeftMouseDragged == event.type()) {
+                        final int draggingColumn = view.columnAtPoint(view.convertPointFromView(event.locationInWindow(), null));
+                        if(draggingColumn != 0) {
+                            log.debug("Returning false to #outlineViewShouldExpandItem for column:"+draggingColumn);
+                            // See ticket #60
+                            return false;
+                        }
+                        if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
+                            log.debug("Returning false to #outlineViewShouldExpandItem:"+item.getName()+" while dragging because browser.view.autoexpand == false");
+                            // See tickets #98 and #633
+                            return false;
+                        }
+                    }
+                }
                 return true;
             }
 
@@ -2598,7 +2615,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
-     * 
+     *
      * @param transfer
      * @param useBrowserConnection
      */

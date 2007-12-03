@@ -18,42 +18,24 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.NSArray;
+
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSDraggingInfo;
-import com.apple.cocoa.application.NSEvent;
-import com.apple.cocoa.application.NSOutlineView;
-import com.apple.cocoa.application.NSPasteboard;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSView;
-import com.apple.cocoa.foundation.NSArray;
+import org.apache.log4j.Logger;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
  * @version $Id$
  */
 public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
+    protected static Logger log = Logger.getLogger(CDBrowserOutlineViewModel.class);
 
     public CDBrowserOutlineViewModel(CDBrowserController controller) {
         super(controller);
-    }
-
-    protected AttributedList childs(final Path path) {
-        NSEvent event = NSApplication.sharedApplication().currentEvent();
-        if (event != null) {
-            if(NSEvent.LeftMouseDragged == event.type()) {
-                if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
-                    log.debug("Returning Collections.EMPTY_LIST to #childs:"+path.getName()+" while dragging because browser.view.autoexpand == true");
-                    return AttributedList.EMPTY_LIST;
-                }
-            }
-        }
-        return super.childs(path);
     }
 
     public int indexOf(NSView tableView, Path p) {
@@ -70,32 +52,38 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
      * @see NSOutlineView.DataSource
      */
     public boolean outlineViewIsItemExpandable(final NSOutlineView view, final Path item) {
+        log.debug("outlineViewIsItemExpandable:"+item);
         if (null == item) {
             return false;
         }
-        if(item.attributes.isDirectory()) {
-            NSEvent event = NSApplication.sharedApplication().currentEvent();
-            if (event != null) {
-                if(NSEvent.LeftMouseDragged == event.type()) {
-                    if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
-                        log.debug("Returning false to #outlineViewIsItemExpandable:"+item.getName()+" while dragging because browser.view.autoexpand == true");
-                        // See tickets #98 and #633
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        return false;
+        return item.attributes.isDirectory();
     }
 
     /**
      * @see NSOutlineView.DataSource
      */
     public int outlineViewNumberOfChildrenOfItem(final NSOutlineView view, Path item) {
+        log.debug("outlineViewNumberOfChildrenOfItem:"+item);
         if (controller.isMounted()) {
             if (null == item) {
-                item = controller.workdir();
+                return this.childs(controller.workdir()).size();
+            }
+            NSEvent event = NSApplication.sharedApplication().currentEvent();
+            if (event != null) {
+                log.debug("Event:"+event.type());
+                if(NSEvent.LeftMouseDragged == event.type()) {
+                    final int draggingColumn = view.columnAtPoint(view.convertPointFromView(event.locationInWindow(), null));
+                    if(draggingColumn != 0) {
+                        log.debug("Returning 0 to #outlineViewNumberOfChildrenOfItem for column:"+draggingColumn);
+                        // See ticket #60
+                        return 0;
+                    }
+                    if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
+                        log.debug("Returning 0 to #outlineViewNumberOfChildrenOfItem:"+item.getName()+" while dragging because browser.view.autoexpand == false");
+                        // See tickets #98 and #633
+                        return 0;
+                    }
+                }
             }
             return this.childs(item).size();
         }
@@ -139,12 +127,15 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
      * @see NSOutlineView.DataSource
      */
     public int outlineViewValidateDrop(final NSOutlineView outlineView, final NSDraggingInfo info, Path destination, int row) {
-        outlineView.setDropItemAndDropChildIndex(destination, NSOutlineView.DropOnItemIndex);
         if (controller.isMounted()) {
             if (null == destination) {
                 destination = controller.workdir();
             }
-            return super.validateDrop(outlineView, destination, row, info);
+            final int result = super.validateDrop(outlineView, destination, row, info);
+            if(result != NSDraggingInfo.DragOperationNone) {
+                outlineView.setDropItemAndDropChildIndex(destination, NSOutlineView.DropOnItemIndex);
+            }
+            return result;
         }
         return NSDraggingInfo.DragOperationNone;
     }

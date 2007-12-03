@@ -76,37 +76,38 @@ public abstract class CDBrowserTableDataSource extends NSObject {
      * @pre Call from the main thread
      */
     protected AttributedList childs(final Path path) {
+        log.debug("childs:"+path);
         // Check first if it hasn't been already requested so we don't spawn
         // a multitude of unecessary threads
         synchronized(isLoadingListingInBackground) {
             if(!isLoadingListingInBackground.contains(path)) {
-                if(!path.isCached() || path.cache().get(path).attributes().isDirty()) {
+        if(!path.isCached() || path.cache().get(path).attributes().isDirty()) {
                     isLoadingListingInBackground.add(path);
-                    // Reloading a workdir that is not cached yet would cause the interface to freeze;
-                    // Delay until path is cached in the background
-                    
-                    controller.background(new BackgroundAction() {
-                        public void run() {
-                            log.debug("childs#run");
-                            path.childs();
-                        }
+            // Reloading a workdir that is not cached yet would cause the interface to freeze;
+            // Delay until path is cached in the background
 
-                        public void cleanup() {
-                            log.debug("childs#cleanup");
+            controller.background(new BackgroundAction() {
+                public void run() {
+                    log.debug("childs#run");
+                    path.childs();
+                }
+
+                public void cleanup() {
+                    log.debug("childs#cleanup");
                             synchronized(isLoadingListingInBackground) {
                                 isLoadingListingInBackground.remove(path);
                                 if(path.isCached() && isLoadingListingInBackground.isEmpty()) {
                                     if(controller.isConnected()) {
                                         controller.reloadData(true);
-                                    }
+                }
                                 }
                             }
                         }
-                    });
-                }
-                else {
-                    return path.childs(controller.getComparator(), controller.getFileFilter());
-                }
+            });
+        }
+        else {
+            return path.childs(controller.getComparator(), controller.getFileFilter());
+        }
             }
         }
         log.warn("No cached listing for " + path.getName());
@@ -280,13 +281,14 @@ public abstract class CDBrowserTableDataSource extends NSObject {
 
     public int validateDrop(NSTableView view, Path destination, int row, NSDraggingInfo info) {
         if(controller.isMounted()) {
+            final int draggingColumn = view.columnAtPoint(info.draggingLocation());
+            if(draggingColumn != 0) {
+                log.debug("Drag operation none over column:"+draggingColumn);
+                return NSDraggingInfo.DragOperationNone;
+            }
             if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-                if(destination.equals(controller.workdir())) {
-                    view.setDropRowAndDropOperation(-1, NSTableView.DropOn);
-                    return NSDraggingInfo.DragOperationCopy;
-                }
                 if(destination.attributes.isDirectory()) {
-                    view.setDropRowAndDropOperation(row, NSTableView.DropOn);
+                    this.setDropRowAndDropOperation(view, destination, row);
                     return NSDraggingInfo.DragOperationCopy;
                 }
             }
@@ -320,15 +322,8 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                         }
                     }
                     log.debug("Operation Mask:" + info.draggingSourceOperationMask());
-                    if(destination.equals(controller.workdir())) {
-                        view.setDropRowAndDropOperation(-1, NSTableView.DropOn);
-                        if(info.draggingSourceOperationMask() == NSDraggingInfo.DragOperationCopy) {
-                            return NSDraggingInfo.DragOperationCopy;
-                        }
-                        return NSDraggingInfo.DragOperationMove;
-                    }
                     if(destination.attributes.isDirectory()) {
-                        view.setDropRowAndDropOperation(row, NSTableView.DropOn);
+                        this.setDropRowAndDropOperation(view, destination, row);
                         if(info.draggingSourceOperationMask() == NSDraggingInfo.DragOperationCopy) {
                             return NSDraggingInfo.DragOperationCopy;
                         }
@@ -338,6 +333,17 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             }
         }
         return NSDraggingInfo.DragOperationNone;
+    }
+
+    private void setDropRowAndDropOperation(NSTableView view, Path destination, int row) {
+        if(destination.equals(controller.workdir())) {
+            log.debug("setDropRowAndDropOperation:-1");
+            view.setDropRowAndDropOperation(-1, NSTableView.DropOn);
+        }
+        else if(destination.attributes.isDirectory()) {
+            log.debug("setDropRowAndDropOperation:"+row);
+            view.setDropRowAndDropOperation(row, NSTableView.DropOn);
+        }
     }
 
     /**
