@@ -23,7 +23,6 @@ import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.util.List;
@@ -166,6 +165,7 @@ public abstract class CDWindowController extends CDController
 
     protected void post(NSTimer timer) {
         if(null == this.window) {
+            log.warn("Suppressed timer "+timer+" for invalid window");
             //We override this because until the the timer fires in the event queue, the window may have become invalid
             return;
         }
