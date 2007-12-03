@@ -29,14 +29,13 @@ public abstract class CDController extends NSObject {
     private static Logger log = Logger.getLogger(CDController.class);
 
     public CDController() {
-        if(null == instances) {
-            instances = new NSMutableArray();
-        }
-        //Add this object to the array to safe weak references from being garbage collected (#hack)
+        // Add this object to the array to safe weak references 
+        // from being garbage collected (#hack)
         instances.addObject(this);
     }
 
-    protected static NSMutableArray instances;
+    protected static final NSMutableArray instances
+            = new NSMutableArray();
 
     /**
      * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
@@ -57,9 +56,11 @@ public abstract class CDController extends NSObject {
                 thread,
                 false //automatically invalidate
         );
-        instances.addObject(timer);
-        CDMainController.mainRunLoop.addTimerForMode(timer,
-                NSRunLoop.DefaultRunLoopMode);
+        synchronized(instances) {
+            instances.addObject(timer);
+            CDMainController.mainRunLoop.addTimerForMode(timer,
+                    NSRunLoop.DefaultRunLoopMode);
+        }
     }
 
     /**
@@ -71,7 +72,9 @@ public abstract class CDController extends NSObject {
         if (info instanceof Runnable) {
             ((Runnable) info).run();
         }
-        instances.removeObject(timer);
+        synchronized(instances) {
+            instances.removeObject(timer);
+        }
     }
 
     /**
