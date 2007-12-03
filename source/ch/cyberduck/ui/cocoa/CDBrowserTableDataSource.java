@@ -281,11 +281,6 @@ public abstract class CDBrowserTableDataSource extends NSObject {
 
     public int validateDrop(NSTableView view, Path destination, int row, NSDraggingInfo info) {
         if(controller.isMounted()) {
-            final int draggingColumn = view.columnAtPoint(info.draggingLocation());
-            if(draggingColumn != 0) {
-                log.debug("Drag operation none over column:"+draggingColumn);
-                return NSDraggingInfo.DragOperationNone;
-            }
             if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
                 if(destination.attributes.isDirectory()) {
                     this.setDropRowAndDropOperation(view, destination, row);
