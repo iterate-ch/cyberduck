@@ -57,6 +57,10 @@ public class PathTest extends TestCase {
         assertEquals( "/.path/to", path.getAbsolute());
         path.setPath("/path/.to");
         assertEquals( "/path/.to", path.getAbsolute());
+        path.setPath("/path//to");
+        assertEquals( "/path/to", path.getAbsolute());
+        path.setPath("/path///to////");
+        assertEquals( "/path/to", path.getAbsolute());
     }
 
     public void test1067() throws Exception {

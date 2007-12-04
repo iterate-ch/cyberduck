@@ -36,6 +36,11 @@ public abstract class AbstractPath extends NSObject {
     public static final String DELIMITER = "/";
 
     /**
+     * Shortcut for the home directory
+     */
+    public static final String HOME = "~";
+
+    /**
      * Attributes denoting this path
      */
     public Attributes attributes;
@@ -157,6 +162,21 @@ public abstract class AbstractPath extends NSObject {
                 normalized = normalized.substring(0, normalized.lastIndexOf('/', index - 1)) +
                         normalized.substring(index + 3);
             }
+            StringBuffer n = new StringBuffer();
+            if(normalized.startsWith("//")) {
+                // see #972
+                n.append(DELIMITER);
+            }
+            // Remove duplicated delimiters
+            String[] segments = normalized.split(Path.DELIMITER);
+            for(int i = 0; i < segments.length; i++) {
+                if(segments[i].equals("")) {
+                    continue;
+                }
+                n.append(DELIMITER);
+                n.append(segments[i]);
+            }
+            normalized = n.toString();
             while(normalized.endsWith(DELIMITER) && normalized.length() > 1) {
                 //Strip any redundant delimiter at the end of the path
                 normalized = normalized.substring(0, normalized.length() - 1);
