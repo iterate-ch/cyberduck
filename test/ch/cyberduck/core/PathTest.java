@@ -61,6 +61,11 @@ public class PathTest extends TestCase {
         assertEquals( "/path/to", path.getAbsolute());
         path.setPath("/path///to////");
         assertEquals( "/path/to", path.getAbsolute());
+
+
+        assertEquals(Path.normalize("relative/path", false), "relative/path");
+        assertEquals(Path.normalize("/absolute/path", true), "/absolute/path");
+        assertEquals(Path.normalize("/absolute/path", false), "/absolute/path");
     }
 
     public void test1067() throws Exception {
@@ -68,6 +73,10 @@ public class PathTest extends TestCase {
         path.setPath("\\\\directory");
         assertEquals("\\\\directory", path.getAbsolute());
         assertEquals("/", path.getParent().getAbsolute());
+    }
+
+    public void test972() throws Exception {
+        assertEquals("//home/path", Path.normalize("//home/path"));
     }
 
     public static Test suite() {
