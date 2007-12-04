@@ -21,19 +21,19 @@
 #include <jni.h>
 /* Header for class ch_cyberduck_ui_cocoa_odb_Editor */
 
-#ifndef _Included_ch_cyberduck_ui_cocoa_odb_Editor
-#define _Included_ch_cyberduck_ui_cocoa_odb_Editor
+#ifndef _Included_ch_cyberduck_ui_cocoa_odb_ODBEditor
+#define _Included_ch_cyberduck_ui_cocoa_odb_ODBEditor
 #ifdef __cplusplus
 extern "C" {
 #endif
 /* Inaccessible static: log */
 /* Inaccessible static: class_00024ch_00024cyberduck_00024ui_00024cocoa_00024odb_00024Editor */
 /*
- * Class:     ch_cyberduck_ui_cocoa_odb_Editor
+ * Class:     ch_cyberduck_ui_cocoa_odb_ODBEditor
  * Method:    edit
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_Editor_edit
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_ODBEditor_edit
   (JNIEnv *, jobject, jstring, jstring);
 
 #ifdef __cplusplus

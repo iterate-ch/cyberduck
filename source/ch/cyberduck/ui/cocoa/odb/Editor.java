@@ -18,185 +18,130 @@ package ch.cyberduck.ui.cocoa.odb;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSPathUtilities;
+
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDController;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
-import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSPathUtilities;
-
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.Enumeration;
 
 /**
  * @version $Id$
  */
-public class Editor extends CDController {
-
+public abstract class Editor extends CDController {
     private static Logger log = Logger.getLogger(Editor.class);
 
-    public static final Map SUPPORTED_EDITORS = new HashMap();
-    public static final Map INSTALLED_EDITORS = new HashMap();
-
-    static {
-        SUPPORTED_EDITORS.put("SubEthaEdit", "de.codingmonkeys.SubEthaEdit");
-        SUPPORTED_EDITORS.put("BBEdit", "com.barebones.bbedit");
-        SUPPORTED_EDITORS.put("TextWrangler", "com.barebones.textwrangler");
-        SUPPORTED_EDITORS.put("TextMate", "com.macromates.textmate");
-        SUPPORTED_EDITORS.put("Tex-Edit Plus", "com.transtex.texeditplus");
-        SUPPORTED_EDITORS.put("Jedit X", "jp.co.artman21.JeditX");
-        SUPPORTED_EDITORS.put("mi", "mi");
-        SUPPORTED_EDITORS.put("Smultron", "org.smultron.Smultron");
-        SUPPORTED_EDITORS.put("CotEditor", "com.aynimac.CotEditor");
-        SUPPORTED_EDITORS.put("CSSEdit", "com.macrabbit.cssedit");
-        SUPPORTED_EDITORS.put("Tag", "com.talacia.Tag");
-        SUPPORTED_EDITORS.put("skEdit", "org.skti.skEdit");
-        SUPPORTED_EDITORS.put("JarInspector", "com.cgerdes.ji");
-        SUPPORTED_EDITORS.put("PageSpinner", "com.optima.PageSpinner");
-        SUPPORTED_EDITORS.put("WriteRoom", "com.hogbaysoftware.WriteRoom");
-
-        Iterator editorNames = SUPPORTED_EDITORS.keySet().iterator();
-        Iterator editorIdentifiers = SUPPORTED_EDITORS.values().iterator();
-        while(editorNames.hasNext()) {
-            String editor = (String) editorNames.next();
-            String identifier = (String) editorIdentifiers.next();
-            if(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier) != null) {
-                INSTALLED_EDITORS.put(editor, identifier);
-            }
-        }
-    }
-
-    private static boolean JNI_LOADED = false;
-
-    private static final Object lock = new Object();
-
-    private static boolean jni_load() {
-        if(!JNI_LOADED) {
-            try {
-                synchronized(lock) {
-                    NSBundle bundle = NSBundle.mainBundle();
-                    String lib = bundle.resourcePath() + "/Java/" + "libODBEdit.dylib";
-                    log.info("Locating libODBEdit.dylib at '" + lib + "'");
-                    System.load(lib);
-                    JNI_LOADED = true;
-                    log.info("libODBEdit.dylib loaded");
-                }
-            }
-            catch(UnsatisfiedLinkError e) {
-                log.error("Could not load the libODBEdit.dylib library:" + e.getMessage());
-            }
-        }
-        return JNI_LOADED;
-    }
+    /**
+     *
+     */
+    public static Local TEMPORARY_DIRECTORY = new Local(NSPathUtilities.temporaryDirectory());
 
     private CDBrowserController controller;
 
     /**
-     * @param controller
+     * The edited path
      */
-    public Editor(CDBrowserController controller) {
-        this.controller = controller;
-    }
-
-    private Path path;
-
-    public void open(Path f) {
-        this.open(f, Preferences.instance().getProperty("editor.bundleIdentifier"));
-    }
+    protected Path edited;
 
     /**
-     * @param bundleIdentifier The bundle identifier of the external editor to use
-     *                         or null if the default application for this file type should be opened
+     * The editor application
      */
-    public void open(Path f, final String bundleIdentifier) {
-        path = (Path) f.clone();
-        open(bundleIdentifier);
+    protected String bundleIdentifier;
+
+    /**
+     * @param controller
+     * @param bundleIdentifier
+     */
+    public Editor(CDBrowserController controller, String bundleIdentifier) {
+        this.controller = controller;
+        this.bundleIdentifier = bundleIdentifier;
     }
 
     /**
      *
      */
-    private static Local TEMPORARY_DIRECTORY = new Local(NSPathUtilities.temporaryDirectory());
+    public void open(Path path) {
+        edited = (Path) path.clone();
 
-    private void open(final String bundleIdentifier) {
-        Local folder = new Local(new File(TEMPORARY_DIRECTORY.getAbsolute(), path.getParent().getAbsolute()));
+        Local folder = new Local(Editor.TEMPORARY_DIRECTORY.getAbsolute(),
+                edited.getParent().getAbsolute());
         folder.mkdir(true);
-        
-        String filename = path.getName();
+
+        String filename = edited.getName();
         String proposal = filename;
         int no = 0;
         int index = filename.lastIndexOf(".");
         do {
-            path.setLocal(new Local(folder, proposal));
+            edited.setLocal(new Local(folder, proposal));
             no++;
             if(index != -1 && index != 0) {
                 proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
-            }
-            else {
+            } else {
                 proposal = filename + "-" + no;
             }
         }
-        while(path.getLocal().exists());
+        while(edited.getLocal().exists());
 
         controller.background(new BackgroundAction() {
             public void run() {
-                path.download();
+                edited.download();
             }
 
             public void cleanup() {
-                if(path.status.isComplete()) {
-                    path.getSession().message(NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
-                    Permission permissions = path.getLocal().attributes.getPermission();
+                if(edited.status.isComplete()) {
+                    edited.getSession().message(NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
+                    final Permission permissions = edited.getLocal().attributes.getPermission();
                     if(null != permissions) {
                         permissions.getOwnerPermissions()[Permission.READ] = true;
                         permissions.getOwnerPermissions()[Permission.WRITE] = true;
-                        path.getLocal().writePermissions(permissions, false);
+                        edited.getLocal().writePermissions(permissions, false);
                     }
                     // Important, should always be run on the main thread; otherwise applescript crashes
-                    edit(bundleIdentifier);
+                    Editor.this.edit();
                 }
             }
         });
     }
 
-    private void edit(final String bundleIdentifier) {
-        if(!Editor.jni_load()) {
-            return;
+    /**
+     * @return True if the editor is open
+     */
+    public boolean isOpen() {
+        final Enumeration apps = NSWorkspace.sharedWorkspace().launchedApplications().objectEnumerator();
+        while(apps.hasMoreElements()) {
+            NSDictionary app = (NSDictionary) apps.nextElement();
+            final Object identifier = app.objectForKey("NSApplicationBundleIdentifier");
+            if(identifier.equals(bundleIdentifier)) {
+                return true;
+            }
         }
-        this.edit(path.getLocal().getAbsolute(), bundleIdentifier);
+        return false;
     }
 
     /**
-     * Open the file using the ODB external editor protocol
+     *
      */
-    private native void edit(final String path, final String bundleIdentifier);
+    protected abstract void edit();
 
     /**
-     * Called by the native editor when the file has been closed
+     *
      */
-    public void didCloseFile() {
-        if(!path.status.isComplete()) {
-            deferredDelete = true;
-        }
-        else {
-            this.delete();
-        }
-    }
-
-    private void delete() {
-        path.getLocal().delete();
-        for(AbstractPath parent = path.getLocal().getParent(); !parent.equals(TEMPORARY_DIRECTORY); parent = parent.getParent()) {
+    protected void delete() {
+        log.debug("delete");
+        edited.getLocal().delete();
+        for(AbstractPath parent = edited.getLocal().getParent(); !parent.equals(TEMPORARY_DIRECTORY); parent = parent.getParent())
+        {
             if(parent.isEmpty()) {
                 parent.delete();
             }
@@ -207,20 +152,21 @@ public class Editor extends CDController {
     /**
      * The file has been closed in the editor while the upload was in progress
      */
-    private boolean deferredDelete;
+    protected boolean deferredDelete;
 
     /**
-     * called by the native editor when the file has been saved
+     * Upload the edited file to the server
      */
-    public void didModifyFile() {
+    protected void save() {
+        log.debug("save");
         controller.background(new BackgroundAction() {
             public void run() {
-                path.upload();
+                edited.upload();
             }
 
             public void cleanup() {
-                if(path.status.isComplete()) {
-                    Growl.instance().notify("Upload complete", path.getName());
+                if(edited.status.isComplete()) {
+                    Growl.instance().notify("Upload complete", edited.getName());
                     if(deferredDelete) {
                         delete();
                     }

@@ -22,18 +22,19 @@ import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDate;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSPathUtilities;
+
+import ch.cyberduck.core.io.FileWatcher;
+import ch.cyberduck.core.io.FileWatcherListener;
+
+import org.apache.log4j.Logger;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.util.Iterator;
+
 import glguerin.io.FileForker;
 import glguerin.io.Pathname;
 import glguerin.io.imp.mac.macosx.MacOSXForker;
-import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Iterator;
 
 /**
  * @version $Id$
@@ -242,18 +243,18 @@ public class Local extends AbstractPath {
         }
     }
 
-//    private FileWatcher uk;
-//
-//    /**
-//     *
-//     * @param listener
-//     */
-//    public void watch(FileWatcherListener listener) {
-//        if(null == uk) {
-//            uk = FileWatcher.instance(this);
-//        }
-//        uk.watch(listener);
-//    }
+    private FileWatcher uk;
+
+    /**
+     *
+     * @param listener
+     */
+    public void watch(FileWatcherListener listener) {
+        if(null == uk) {
+            uk = FileWatcher.instance(this);
+        }
+        uk.watch(listener);
+    }
 
     public boolean isReadable() {
         return _impl.canRead();

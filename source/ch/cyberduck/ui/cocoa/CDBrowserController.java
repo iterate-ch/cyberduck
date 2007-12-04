@@ -18,20 +18,20 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPConnectMode;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.ftps.FTPSSession;
+import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
+import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
-
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -40,12 +40,9 @@ import java.io.IOException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import com.enterprisedt.net.ftp.FTPConnectMode;
 
 /**
  * @version $Id$
@@ -242,7 +239,7 @@ public class CDBrowserController extends CDWindowController
             Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"));
-            Editor editor = new Editor(this);
+            Editor editor = EditorFactory.createEditor(this);
             editor.open(path);
         }
         return null;
@@ -2037,7 +2034,7 @@ public class CDBrowserController extends CDWindowController
                 for(Iterator iter = normalized.values().iterator(); iter.hasNext();) {
                     Path duplicate = (Path) iter.next();
                     if(edit) {
-                        Editor editor = new Editor(CDBrowserController.this);
+                        Editor editor = EditorFactory.createEditor(CDBrowserController.this);
                         editor.open(duplicate);
                     }
                     if(duplicate.getName().charAt(0) == '.') {
@@ -2341,12 +2338,10 @@ public class CDBrowserController extends CDWindowController
     public void editMenuClicked(final NSMenuItem sender) {
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
             final Path selected = (Path) i.next();
-            if(this.isEditable(selected)) {
-                Object identifier = Editor.SUPPORTED_EDITORS.get(sender.title());
-                if(identifier != null) {
-                    Editor editor = new Editor(this);
-                    editor.open(selected, (String) identifier);
-                }
+            Object identifier = EditorFactory.SUPPORTED_ODB_EDITORS.get(sender.title());
+            if(identifier != null) {
+                Editor editor = EditorFactory.createEditor(this, identifier.toString());
+                editor.open(selected);
             }
         }
     }
@@ -2354,10 +2349,8 @@ public class CDBrowserController extends CDWindowController
     public void editButtonClicked(final Object sender) {
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
             final Path selected = (Path) i.next();
-            if(this.isEditable(selected)) {
-                Editor editor = new Editor(this);
-                editor.open(selected);
-            }
+            Editor editor = EditorFactory.createEditor(this);
+            editor.open(selected);
         }
     }
 
@@ -3648,10 +3641,12 @@ public class CDBrowserController extends CDWindowController
                 String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                         Preferences.instance().getProperty("editor.bundleIdentifier"));
                 if(editorPath != null) {
-                    for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
-                        final Path selected = (Path) i.next();
-                        if(!this.isEditable(selected)) {
-                            return false;
+                    if(!Preferences.instance().getBoolean("editor.kqueue.enable")) {
+                        for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
+                            final Path selected = (Path) i.next();
+                            if(!this.isEditable(selected)) {
+                                return false;
+                            }
                         }
                     }
                     return true;
@@ -3984,11 +3979,6 @@ public class CDBrowserController extends CDWindowController
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_EDIT, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Edit file in external editor", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("pencil.tiff"));
-            String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                    Preferences.instance().getProperty("editor.bundleIdentifier"));
-            if(editorPath != null) {
-                item.setImage(NSWorkspace.sharedWorkspace().iconForFile(editorPath));
-            }
             item.setTarget(this);
             item.setAction(new NSSelector("editButtonClicked", new Class[]{Object.class}));
             // Add a menu representation for text mode of toolbar

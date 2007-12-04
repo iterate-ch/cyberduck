@@ -18,20 +18,20 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPTransferType;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
-import ch.cyberduck.ui.cocoa.odb.Editor;
-
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
 import org.apache.log4j.Logger;
 
 import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import com.enterprisedt.net.ftp.FTPTransferType;
 
 /**
  * @version $Id$
@@ -224,7 +224,7 @@ public class CDPreferencesController extends CDWindowController {
         this.editorCombobox = editorCombobox;
         this.editorCombobox.setAutoenablesItems(false);
         this.editorCombobox.removeAllItems();
-        java.util.Map editors = Editor.SUPPORTED_EDITORS;
+        java.util.Map editors = EditorFactory.SUPPORTED_ODB_EDITORS;
         java.util.Iterator editorNames = editors.keySet().iterator();
         java.util.Iterator editorIdentifiers = editors.values().iterator();
         while (editorNames.hasNext()) {
@@ -249,7 +249,7 @@ public class CDPreferencesController extends CDWindowController {
 
     public void editorComboboxClicked(NSPopUpButton sender) {
         Preferences.instance().setProperty("editor.name", sender.titleOfSelectedItem());
-        Preferences.instance().setProperty("editor.bundleIdentifier", (String) Editor.SUPPORTED_EDITORS.get(sender.titleOfSelectedItem()));
+        Preferences.instance().setProperty("editor.bundleIdentifier", (String) EditorFactory.SUPPORTED_ODB_EDITORS.get(sender.titleOfSelectedItem()));
         CDBrowserController.validateToolbarItems();
     }
 

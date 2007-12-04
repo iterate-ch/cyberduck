@@ -18,16 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.foundation.NSPathUtilities;
+
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.odb.Editor;
+import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
-
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.foundation.NSPathUtilities;
 
 import java.util.Collections;
 
@@ -79,7 +78,7 @@ public class CDCreateFileController extends CDFileController {
                 file.getLocal().delete();
                 if(file.exists()) {
                     if(edit) {
-                        Editor editor = new Editor(c);
+                        Editor editor = EditorFactory.createEditor(c);
                         editor.open(file);
                     }
                 }

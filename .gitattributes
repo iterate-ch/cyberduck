@@ -1673,6 +1673,7 @@ source/ch/cyberduck/core/Speedometer.java -text
 source/ch/cyberduck/core/forker/NSString+CarbonFSRefCreation.m -text
 source/ch/cyberduck/core/ftp/parser/CommonUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/StingrayFTPEntryParser.java -text
+source/ch/cyberduck/core/io/AbstractFileWatcherListener.java -text
 source/ch/cyberduck/core/io/FileWatcher.m -text
 source/ch/cyberduck/core/io/UKKQueue.m -text
 source/ch/cyberduck/core/io/UKMainThreadProxy.m -text
@@ -1681,6 +1682,9 @@ source/ch/cyberduck/ui/cocoa/CDBottomView.m -text
 source/ch/cyberduck/ui/cocoa/CDNavigationView.m -text
 source/ch/cyberduck/ui/cocoa/CDPreferencesImpl.m -text
 source/ch/cyberduck/ui/cocoa/growl/GrowlNative.java -text
+source/ch/cyberduck/ui/cocoa/odb/EditorFactory.java -text
+source/ch/cyberduck/ui/cocoa/odb/ODBEditor.java -text
+source/ch/cyberduck/ui/cocoa/odb/WatchEditor.java -text
 source/ch/cyberduck/ui/cocoa/threading/BackgroundActionImpl.java -text
 source/com/snoize/SNDisclosableView.m -text
 source/com/snoize/SNDisclosureButton.m -text
