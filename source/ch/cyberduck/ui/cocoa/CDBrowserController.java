@@ -2981,10 +2981,6 @@ public class CDBrowserController extends CDWindowController
                 public void run() {
 //                    navigationPopup.setStringValue("");
                     pathPopupButton.removeAllItems();
-                }
-            });
-            this.invoke(new Runnable() {
-                public void run() {
                     reloadData(false);
                 }
             });
