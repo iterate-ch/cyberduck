@@ -186,7 +186,19 @@ public abstract class Session extends NSObject {
                 }
                 Path home;
                 if(host.hasReasonableDefaultPath()) {
-                    home = PathFactory.createPath(this, host.getDefaultPath());
+                    if(host.getDefaultPath().startsWith(Path.DELIMITER)) {
+                        home = PathFactory.createPath(this, host.getDefaultPath());
+                    }
+                    else if(host.getDefaultPath().startsWith(Path.HOME)) {
+                        // relative path to the home directory
+                        home = PathFactory.createPath(this,
+                                this.workdir().getAbsolute(), host.getDefaultPath().substring(1));
+                    }
+                    else {
+                        // relative path
+                        home = PathFactory.createPath(this,
+                                this.workdir().getAbsolute(), host.getDefaultPath());
+                    }
                     home.attributes.setType(Path.DIRECTORY_TYPE);
                     if(!home.childs().attributes().isReadable()) {
                         // the default path does not exist or is not readable due to permission issues

@@ -162,7 +162,7 @@ public class CDConnectionController extends CDSheetController {
         if(null == pathField.stringValue() || "".equals(pathField.stringValue())) {
             return;
         }
-        this.pathField.setStringValue(Path.normalize(pathField.stringValue()));
+        this.pathField.setStringValue(Path.normalize(pathField.stringValue(), false));
         this.updateURLLabel(sender);
     }
 
@@ -441,7 +441,7 @@ public class CDConnectionController extends CDSheetController {
         }
         urlLabel.setStringValue(protocol + usernameField.stringValue()
                 + "@" + hostField.stringValue() + ":" + portField.stringValue()
-                + pathField.stringValue());
+                + Path.normalize(pathField.stringValue()));
         }
     }
 

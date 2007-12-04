@@ -558,7 +558,7 @@ public class CDBookmarkController extends CDWindowController {
      */
     private void itemChanged() {
         this.window.setTitle(this.host.getNickname());
-        this.urlField.setStringValue(this.host.getURL() + this.host.getDefaultPath());
+        this.urlField.setStringValue(this.host.getURL() + Path.normalize(this.host.getDefaultPath()));
         HostCollection.instance().collectionItemChanged(this.host);
     }
 

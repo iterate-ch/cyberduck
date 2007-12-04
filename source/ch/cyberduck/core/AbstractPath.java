@@ -1,12 +1,5 @@
 package ch.cyberduck.core;
 
-import com.ibm.icu.text.Normalizer;
-
-import com.apple.cocoa.foundation.NSObject;
-
-import java.io.IOException;
-import java.util.Comparator;
-
 /*
  *  Copyright (c) 2007 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -24,6 +17,13 @@ import java.util.Comparator;
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
+
+import com.ibm.icu.text.Normalizer;
+
+import com.apple.cocoa.foundation.NSObject;
+
+import java.io.IOException;
+import java.util.Comparator;
 
 /**
  * @version $Id$
@@ -122,6 +122,10 @@ public abstract class AbstractPath extends NSObject {
 
     public abstract boolean exists();
 
+    public static String normalize(final String path) {
+        return normalize(path, true);
+    }
+
     /**
      * Return a context-relative path, beginning with a "/", that represents
      * the canonical version of the specified path after ".." and "." elements
@@ -132,11 +136,13 @@ public abstract class AbstractPath extends NSObject {
      * @author Adapted from org.apache.webdav
      * @license http://www.apache.org/licenses/LICENSE-2.0
      */
-    public static String normalize(final String path) {
+    public static String normalize(final String path, final boolean absolute) {
         String normalized = path;
         if(Preferences.instance().getBoolean("path.normalize")) {
-            while(!normalized.startsWith("\\\\") && !normalized.startsWith(DELIMITER)) {
-                normalized = DELIMITER + normalized;
+            if(absolute) {
+                while(!normalized.startsWith("\\\\") && !normalized.startsWith(DELIMITER)) {
+                    normalized = DELIMITER + normalized;
+                }
             }
             while(!normalized.endsWith(DELIMITER)) {
                 normalized += DELIMITER;
@@ -164,7 +170,19 @@ public abstract class AbstractPath extends NSObject {
             }
             StringBuffer n = new StringBuffer();
             if(normalized.startsWith("//")) {
-                // see #972
+                // see #972. Omit leading delimiter
+                n.append(DELIMITER);
+                n.append(DELIMITER);
+            }
+            else if(normalized.startsWith("\\\\")) {
+                ;
+            }
+            else if(absolute) {
+                // convert to absolute path
+                n.append(DELIMITER);
+            }
+            else if(normalized.startsWith(DELIMITER)) {
+                // Keep absolute path
                 n.append(DELIMITER);
             }
             // Remove duplicated delimiters
@@ -173,8 +191,8 @@ public abstract class AbstractPath extends NSObject {
                 if(segments[i].equals("")) {
                     continue;
                 }
-                n.append(DELIMITER);
                 n.append(segments[i]);
+                n.append(DELIMITER);
             }
             normalized = n.toString();
             while(normalized.endsWith(DELIMITER) && normalized.length() > 1) {

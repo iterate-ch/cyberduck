@@ -392,7 +392,7 @@ public class Host extends NSObject {
             this.defaultpath = null;
         }
         else {
-            this.defaultpath = Path.normalize(defaultpath);
+            this.defaultpath = Path.normalize(defaultpath, false);
         }
     }
 
