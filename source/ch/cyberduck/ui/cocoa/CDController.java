@@ -39,21 +39,23 @@ public abstract class CDController extends NSObject {
 
     /**
      * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
-     * @param thread The <code>Runnable</code> to run
+     *
+     * @param runnable The <code>Runnable</code> to run
      */
-    public void invoke(Runnable thread) {
-        this.invoke(thread, 0f);
+    public void invoke(Runnable runnable) {
+        this.invoke(runnable, 0f);
     }
 
     /**
      * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
-     * @param thread The <code>Runnable</code> to run
-     * @param delay Number of seconds to delay the execution
+     *
+     * @param runnable The <code>Runnable</code> to run
+     * @param delay    Number of seconds to delay the execution
      */
-    protected void invoke(Runnable thread, float delay) {
+    protected void invoke(Runnable runnable, float delay) {
         NSTimer timer = new NSTimer(delay, this,
                 new NSSelector("post", new Class[]{NSTimer.class}),
-                thread,
+                runnable,
                 false //automatically invalidate
         );
         synchronized(instances) {
@@ -65,11 +67,13 @@ public abstract class CDController extends NSObject {
 
     /**
      * Called by the timer to invoke the passed method in the main thread
+     *
      * @param timer holds the <code>Runnable</code> object in #userInfo
      */
     protected void post(NSTimer timer) {
+        log.debug("post:" + timer);
         Object info = timer.userInfo();
-        if (info instanceof Runnable) {
+        if(info instanceof Runnable) {
             ((Runnable) info).run();
         }
         synchronized(instances) {
@@ -82,14 +86,14 @@ public abstract class CDController extends NSObject {
      * marks this controller to be garbage collected as soon as needed
      */
     protected void invalidate() {
-        log.debug("invalidate:"+this.toString());
+        log.debug("invalidate:" + this.toString());
         NSNotificationCenter.defaultCenter().removeObserver(this);
         instances.removeObject(this);
         System.gc();
     }
 
     protected void finalize() throws java.lang.Throwable {
-        log.debug("finalize:"+this.toString());
+        log.debug("finalize:" + this.toString());
         super.finalize();
     }
 }
