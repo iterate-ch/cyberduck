@@ -10,9 +10,10 @@
     
 	AUTHORS:	M. Uli Kusterer - UK
     
-    LICENSES:   GPL, Modified BSD
+    LICENSES:   MIT Licenseâ
 
 	REVISIONS:
+		2006-03-13	UK	Clarified license.
 		2004-10-14	UK	Created.
    ========================================================================== */
 
@@ -33,6 +34,19 @@
 	
 	return self;
 }
+
+
+// -----------------------------------------------------------------------------
+//	Introspection overrides:
+// -----------------------------------------------------------------------------
+
+-(BOOL)	respondsToSelector: (SEL)itemAction
+{
+	BOOL	does = [super respondsToSelector: itemAction];
+	
+	return( does || [target respondsToSelector: itemAction] );
+}
+
 
 -(id)	performSelector: (SEL)itemAction
 {
@@ -69,13 +83,6 @@
 	return nil;
 }
 
--(BOOL)	respondsToSelector: (SEL)itemAction
-{
-	BOOL	does = [super respondsToSelector: itemAction];
-	
-	return( does || [target respondsToSelector: itemAction] );
-}
-
 
 // -----------------------------------------------------------------------------
 //	Forwarding unknown methods to the target:
@@ -107,6 +114,10 @@
 }
 
 
+// -----------------------------------------------------------------------------
+//	Safety net:
+// -----------------------------------------------------------------------------
+
 -(id)	mainThreadProxy     // Just in case someone accidentally sends this message to a main thread proxy.
 {
 	return self;
@@ -119,6 +130,10 @@
 
 @end
 
+
+// -----------------------------------------------------------------------------
+//	Shorthand notation for getting a main thread proxy:
+// -----------------------------------------------------------------------------
 
 @implementation NSObject (UKMainThreadProxy)
 

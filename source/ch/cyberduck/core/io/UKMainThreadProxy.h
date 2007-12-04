@@ -10,9 +10,10 @@
     
 	AUTHORS:	M. Uli Kusterer - UK
     
-    LICENSES:   GPL, Modified BSD
+    LICENSES:   MIT License
 
 	REVISIONS:
+		2006-03-13	UK	Clarified license.
 		2004-10-14	UK	Created.
    ========================================================================== */
 

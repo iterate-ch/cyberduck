@@ -43,7 +43,7 @@ public class FileWatcher extends NSObject {
     /**
      *
      */
-    private final static Map instances = new HashMap();
+    private static final Map instances = new HashMap();
 
     static {
         // Ensure native odb library is loaded

@@ -1675,6 +1675,8 @@ source/ch/cyberduck/core/ftp/parser/CommonUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/StingrayFTPEntryParser.java -text
 source/ch/cyberduck/core/io/AbstractFileWatcherListener.java -text
 source/ch/cyberduck/core/io/FileWatcher.m -text
+source/ch/cyberduck/core/io/UKFileWatcher.h -text
+source/ch/cyberduck/core/io/UKFileWatcher.m -text
 source/ch/cyberduck/core/io/UKKQueue.m -text
 source/ch/cyberduck/core/io/UKMainThreadProxy.m -text
 source/ch/cyberduck/core/util/URLSchemeHandlerConfiguration.m -text
