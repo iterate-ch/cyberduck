@@ -65,6 +65,9 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_util_URLSchemeHandlerConfigurat
     if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_3) {
         bundleIdentifier = (NSString *)LSCopyDefaultHandlerForURLScheme((CFStringRef)convertToNSString(env, scheme));
     }
+    if(nil == bundleIdentifier) {
+        return NULL;
+    }
     jstring result = (*env)->NewStringUTF(env, [bundleIdentifier UTF8String]);
     if(bundleIdentifier) {
         [bundleIdentifier release];
