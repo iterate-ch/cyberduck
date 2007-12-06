@@ -54,6 +54,7 @@ public class EditorFactory {
         SUPPORTED_ODB_EDITORS.put("JarInspector", "com.cgerdes.ji");
         SUPPORTED_ODB_EDITORS.put("PageSpinner", "com.optima.PageSpinner");
         SUPPORTED_ODB_EDITORS.put("WriteRoom", "com.hogbaysoftware.WriteRoom");
+        SUPPORTED_ODB_EDITORS.put("MacVim", "org.slashpunt.vim");
 
         Iterator editorNames = SUPPORTED_ODB_EDITORS.keySet().iterator();
         Iterator editorIdentifiers = SUPPORTED_ODB_EDITORS.values().iterator();
@@ -67,12 +68,14 @@ public class EditorFactory {
     }
 
     /**
-     * Open the file using the default application for this file type
+     *
+     * @param c
+     * @return
      */
     public static Editor createEditor(CDBrowserController c) {
-        if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
-            return createEditor(c, null);
-        }
+//        if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
+//            return createEditor(c, null);
+//        }
         return createEditor(c, Preferences.instance().getProperty("editor.bundleIdentifier"));
     }
 
@@ -82,16 +85,17 @@ public class EditorFactory {
      * @return
      */
     public static Editor createEditor(CDBrowserController c, String bundleIdentifier) {
-        if(null == bundleIdentifier) {
-            return new WatchEditor(c);
-        }
-        if(INSTALLED_ODB_EDITORS.containsValue(bundleIdentifier)) {
-            return new ODBEditor(c, bundleIdentifier);
-        }
-        if(!Preferences.instance().getBoolean("editor.kqueue.enable")) {
-            log.error("Support for non ODB editors must be enabled first");
-            return null;
-        }
-        return new WatchEditor(c, bundleIdentifier);
+        return new ODBEditor(c, bundleIdentifier);
+//        if(null == bundleIdentifier) {
+//            return new WatchEditor(c);
+//        }
+//        if(INSTALLED_ODB_EDITORS.containsValue(bundleIdentifier)) {
+//            return new ODBEditor(c, bundleIdentifier);
+//        }
+//        if(!Preferences.instance().getBoolean("editor.kqueue.enable")) {
+//            log.error("Support for non ODB editors must be enabled first");
+//            return null;
+//        }
+//        return new WatchEditor(c, bundleIdentifier);
     }
 }
