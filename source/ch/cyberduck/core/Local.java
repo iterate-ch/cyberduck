@@ -23,9 +23,6 @@ import com.apple.cocoa.foundation.NSDate;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
-import ch.cyberduck.core.io.FileWatcher;
-import ch.cyberduck.core.io.FileWatcherListener;
-
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -48,16 +45,16 @@ public class Local extends AbstractPath {
                 try {
                     NSDictionary fileAttributes = NSPathUtilities.fileAttributes(_impl.getAbsolutePath(), true);
                     if(null == fileAttributes) {
-                        log.error("No such file:"+getAbsolute());
+                        log.error("No such file:" + getAbsolute());
                         return null;
                     }
                     Object posix = fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions);
                     if(null == posix) {
-                        log.error("No such file:"+getAbsolute());
+                        log.error("No such file:" + getAbsolute());
                         return null;
                     }
-                    String posixString = Integer.toString(((Number)posix).intValue() & 0177777, 8);
-                    return new Permission(Integer.parseInt(posixString.substring(posixString.length()-3)));
+                    String posixString = Integer.toString(((Number) posix).intValue() & 0177777, 8);
+                    return new Permission(Integer.parseInt(posixString.substring(posixString.length() - 3)));
                 }
                 catch(NumberFormatException e) {
                     return Permission.EMPTY;
@@ -138,16 +135,16 @@ public class Local extends AbstractPath {
                 // if the link points to a nonexistent file, this method returns null. If flag is false,
                 // the attributes of the symbolic link are returned.
                 if(null == fileAttributes) {
-                    log.error("No such file:"+getAbsolute());
+                    log.error("No such file:" + getAbsolute());
                     return -1;
                 }
                 Object date = fileAttributes.objectForKey(NSPathUtilities.FileCreationDate);
                 if(null == date) {
                     // Returns an entry’s value given its key, or null if no value is associated with key.
-                    log.error("No such file:"+getAbsolute());
+                    log.error("No such file:" + getAbsolute());
                     return -1;
                 }
-                return NSDate.timeIntervalToMilliseconds(((NSDate)date).timeIntervalSinceDate(NSDate.DateFor1970));
+                return NSDate.timeIntervalToMilliseconds(((NSDate) date).timeIntervalSinceDate(NSDate.DateFor1970));
             }
 
             public void setCreationDate(long millis) {
@@ -155,7 +152,7 @@ public class Local extends AbstractPath {
                         new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis), NSDate.DateFor1970),
                                 NSPathUtilities.FileCreationDate));
                 if(!success) {
-                    log.error("File attribute changed failed:"+getAbsolute());
+                    log.error("File attribute changed failed:" + getAbsolute());
                 }
             }
 
@@ -238,23 +235,23 @@ public class Local extends AbstractPath {
                 this.setPath(forker.makeResolved().getPath());
             }
             catch(IOException e) {
-                log.error("Error resolving alias:"+e.getMessage());
+                log.error("Error resolving alias:" + e.getMessage());
             }
         }
     }
 
-    private FileWatcher uk;
-
-    /**
-     *
-     * @param listener
-     */
-    public void watch(FileWatcherListener listener) {
-        if(null == uk) {
-            uk = FileWatcher.instance(this);
-        }
-        uk.watch(listener);
-    }
+//    private FileWatcher uk;
+//
+//    /**
+//     *
+//     * @param listener
+//     */
+//    public void watch(FileWatcherListener listener) {
+//        if(null == uk) {
+//            uk = FileWatcher.instance(this);
+//        }
+//        uk.watch(listener);
+//    }
 
     public boolean isReadable() {
         return _impl.canRead();
@@ -266,6 +263,7 @@ public class Local extends AbstractPath {
 
     /**
      * Creates a new file and sets its resource fork to feature a custom progress icon
+     *
      * @return
      */
     public boolean touch() {
@@ -295,8 +293,8 @@ public class Local extends AbstractPath {
 
     /**
      * @param recursively If true, descend into directories and delete recursively
-     * @return  <code>true</code> if and only if the file or directory is
-     *          successfully deleted; <code>false</code> otherwise
+     * @return <code>true</code> if and only if the file or directory is
+     *         successfully deleted; <code>false</code> otherwise
      */
     public boolean delete(boolean recursively) {
         if(!recursively) {
@@ -307,8 +305,9 @@ public class Local extends AbstractPath {
 
     /**
      * Recursively deletes this file
-     * @return  <code>true</code> if and only if the file or directory is
-     *          successfully deleted; <code>false</code> otherwise
+     *
+     * @return <code>true</code> if and only if the file or directory is
+     *         successfully deleted; <code>false</code> otherwise
      */
     private boolean deleteImpl(File f) {
         if(f.isDirectory()) {
@@ -401,7 +400,8 @@ public class Local extends AbstractPath {
     }
 
     public void mkdir(boolean recursive) {
-        if(recursive) _impl.mkdirs(); else _impl.mkdir();
+        if(recursive) _impl.mkdirs();
+        else _impl.mkdir();
     }
 
     public void writePermissions(Permission perm, boolean recursive) {
@@ -409,11 +409,11 @@ public class Local extends AbstractPath {
                 new NSDictionary(new Integer(perm.getOctalNumber()),
                         NSPathUtilities.FilePosixPermissions));
         if(!success) {
-            log.error("File attribute changed failed:"+getAbsolute());
+            log.error("File attribute changed failed:" + getAbsolute());
         }
         if(this.attributes.isDirectory() && recursive) {
-            for(Iterator iter = this.childs().iterator(); iter.hasNext(); ) {
-                Local child = (Local)iter.next();
+            for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
+                Local child = (Local) iter.next();
                 child.writePermissions(perm, recursive);
             }
         }
@@ -424,7 +424,7 @@ public class Local extends AbstractPath {
                 new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis), NSDate.DateFor1970),
                         NSPathUtilities.FileModificationDate));
         if(!success) {
-            log.error("File attribute changed failed:"+getAbsolute());
+            log.error("File attribute changed failed:" + getAbsolute());
         }
     }
 
@@ -444,12 +444,13 @@ public class Local extends AbstractPath {
 
     /**
      * Update the custom icon for the file in the Finder
+     *
      * @param progress An integer from -1 and 9. If -1 is passed,
-     * the resource fork with the custom icon is removed from the file.
+     *                 the resource fork with the custom icon is removed from the file.
      */
     public void setIcon(int progress) {
         if(progress > 9 || progress < -1) {
-            log.warn("Local#setIcon:"+progress);
+            log.warn("Local#setIcon:" + progress);
             return;
         }
         if(Preferences.instance().getBoolean("queue.download.updateIcon")) {
@@ -459,8 +460,7 @@ public class Local extends AbstractPath {
                 }
                 if(-1 == progress) {
                     this.removeResourceFork();
-                }
-                else {
+                } else {
                     this.setIconFromFile(this.getAbsolute(), "download" + progress + ".icns");
                 }
             }

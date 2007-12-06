@@ -54,24 +54,24 @@ public class WatchEditor extends Editor {
      * Edit and watch the file for changes
      */
     public void edit() {
-        edited.getLocal().watch(new AbstractFileWatcherListener() {
-            public void fileWritten(Local file) {
-                log.debug("fileWritten:" + file);
-                save();
-                if(!isOpen()) {
-                    delete();
-                }
-            }
-        });
-        if(null == bundleIdentifier) {
-            NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute());
-        }
-        else {
-            NSWorkspace.sharedWorkspace().openFile(
-                    edited.getLocal().getAbsolute(),
-                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier)
-            );
-        }
+//        edited.getLocal().watch(new AbstractFileWatcherListener() {
+//            public void fileWritten(Local file) {
+//                log.debug("fileWritten:" + file);
+//                save();
+//                if(!isOpen()) {
+//                    delete();
+//                }
+//            }
+//        });
+//        if(null == bundleIdentifier) {
+//            NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute());
+//        }
+//        else {
+//            NSWorkspace.sharedWorkspace().openFile(
+//                    edited.getLocal().getAbsolute(),
+//                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier)
+//            );
+//        }
     }
 
     public boolean isOpen() {
