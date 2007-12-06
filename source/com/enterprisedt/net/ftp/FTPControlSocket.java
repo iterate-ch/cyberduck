@@ -31,10 +31,10 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.ConnectException;
 import java.util.Vector;
 
 /**
@@ -361,13 +361,18 @@ public class FTPControlSocket {
         // assemble the port number
         int port = (parts[4] << 8) + parts[5];
 
-        if(InetAddress.getByName(ipAddress).isSiteLocalAddress()) {
-            // Do not trust a local address; may be a misconfigured router
-            return new FTPPassiveDataSocket(new Socket(controlSock.getInetAddress(), port));
+        try {
+            if(InetAddress.getByName(ipAddress).isSiteLocalAddress()) {
+                // Do not trust a local address; may be a misconfigured router
+                return new FTPPassiveDataSocket(new Socket(controlSock.getInetAddress(), port));
+            }
+            return new FTPPassiveDataSocket(new Socket(ipAddress, port));
         }
-
-        // create the socket
-        return new FTPPassiveDataSocket(new Socket(ipAddress, port));
+        catch (ConnectException e) {
+            // See #15353
+            throw new FTPException(e.getMessage());
+		}
+        
     }
 
     protected int[] parsePASVResponse(String reply) throws FTPException {
