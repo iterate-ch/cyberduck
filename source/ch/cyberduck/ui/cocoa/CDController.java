@@ -37,6 +37,9 @@ public abstract class CDController extends NSObject {
     protected static final NSMutableArray instances
             = new NSMutableArray();
 
+    private final NSMutableArray timers
+            = new NSMutableArray();
+
     /**
      * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
      *
@@ -58,8 +61,8 @@ public abstract class CDController extends NSObject {
                 runnable,
                 false //automatically invalidate
         );
-        synchronized(instances) {
-            instances.addObject(timer);
+        synchronized(timers) {
+            timers.addObject(timer);
             CDMainController.mainRunLoop.addTimerForMode(timer,
                     NSRunLoop.DefaultRunLoopMode);
         }
@@ -72,12 +75,17 @@ public abstract class CDController extends NSObject {
      */
     protected void post(NSTimer timer) {
         log.debug("post:" + timer);
-        Object info = timer.userInfo();
-        if(info instanceof Runnable) {
-            ((Runnable) info).run();
+        try {
+            Object info = timer.userInfo();
+            if(info instanceof Runnable) {
+                ((Runnable) info).run();
+            }
+            synchronized(timers) {
+                timers.removeObject(timer);
+            }
         }
-        synchronized(instances) {
-            instances.removeObject(timer);
+        finally {
+            timer.invalidate();
         }
     }
 
@@ -87,6 +95,11 @@ public abstract class CDController extends NSObject {
      */
     protected void invalidate() {
         log.debug("invalidate:" + this.toString());
+        for(int i = 0; i < timers.count(); i++) {
+            NSTimer timer = (NSTimer) timers.objectAtIndex(i);
+            timer.invalidate();
+        }
+        timers.removeAllObjects();
         NSNotificationCenter.defaultCenter().removeObserver(this);
         instances.removeObject(this);
         System.gc();
