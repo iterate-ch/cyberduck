@@ -32,10 +32,10 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class PathHistoryMenuDelegate /*extends MenuDelegate */{
+public abstract class PathHistoryMenuDelegate extends MenuDelegate {
     private static Logger log = Logger.getLogger(PathHistoryMenuDelegate.class);
 
-    private CDBrowserController controller;
+    protected CDBrowserController controller;
 
     public PathHistoryMenuDelegate(CDBrowserController controller) {
         this.controller = controller;
@@ -45,19 +45,23 @@ public class PathHistoryMenuDelegate /*extends MenuDelegate */{
      * @see com.apple.cocoa.application.NSMenu.Delegate
      */
     public int numberOfItemsInMenu(NSMenu menu) {
-        if(controller.getFullHistory().length > 0) {
+        final Path[] history = this.getHistory();
+        if(history.length > 0) {
             // The number of history plus a delimiter and the 'Clear' menu
-            return controller.getFullHistory().length + 2;
+            return history.length + 2;
         }
         return 0;
     }
+
+    public abstract Path[] getHistory();
 
     /**
      * @see com.apple.cocoa.application.NSMenu.Delegate
      */
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
-        if(index < controller.getFullHistory().length) {
-            Path item = (Path) controller.getFullHistory()[index];
+        final Path[] history = this.getHistory();
+        if(index < history.length) {
+            Path item = (Path) history[index];
             // This is a hack. We insert a new NSMenuItem as NSMenu has
             // a bug caching old entries since we introduced the separator item below
             menu.removeItemAtIndex(index);
@@ -71,7 +75,7 @@ public class PathHistoryMenuDelegate /*extends MenuDelegate */{
             menu.insertItemAtIndex(path, index);
             return !shouldCancel;
         }
-        if(index == controller.getFullHistory().length) {
+        if(index == history.length) {
             menu.removeItemAtIndex(index);
             // There is no way in this wonderful API to add a separator item
             // without creating a new NSMenuItem first
@@ -79,7 +83,7 @@ public class PathHistoryMenuDelegate /*extends MenuDelegate */{
             menu.insertItemAtIndex(separator, index);
             return !shouldCancel;
         }
-        if(index == controller.getFullHistory().length + 1) {
+        if(index == history.length + 1) {
             menu.removeItemAtIndex(index);
             NSMenuItem clear = new NSMenuItem();
             clear.setTitle(NSBundle.localizedString("Clear Menu", ""));
@@ -93,10 +97,8 @@ public class PathHistoryMenuDelegate /*extends MenuDelegate */{
     }
 
     public void pathMenuItemClicked(NSMenuItem sender) {
-        controller.setWorkdir((Path)sender.representedObject());
+        controller.setWorkdir((Path) sender.representedObject());
     }
 
-    public void clearMenuItemClicked(NSMenuItem sender) {
-        controller.getSession().cache().clear();
-    }
+    public abstract void clearMenuItemClicked(NSMenuItem sender);
 }

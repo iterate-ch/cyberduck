@@ -25,8 +25,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.ftps.FTPSSession;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
-import ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
@@ -1645,10 +1644,23 @@ public class CDBrowserController extends CDWindowController
 
     private NSSegmentedControl navigationButton; // IBOutlet
 
+    private NSMenu navigationBackMenu;
+    private MenuDelegate navigationBackMenuDelegate;
+    private NSMenu navigationForwardMenu;
+    private MenuDelegate navigationForwardMenuDelegate;
+
     public void setNavigationButton(NSSegmentedControl navigationButton) {
         this.navigationButton = navigationButton;
         this.navigationButton.setTarget(this);
         this.navigationButton.setAction(new NSSelector("navigationButtonClicked", new Class[]{Object.class}));
+
+        navigationBackMenu = new NSMenu();
+        navigationBackMenu.setDelegate(navigationBackMenuDelegate = new BackPathHistoryMenuDelegate(this));
+        this.navigationButton.setMenu(navigationBackMenu, NAVIGATION_LEFT_SEGMENT_BUTTON);
+
+        navigationForwardMenu = new NSMenu();
+        navigationForwardMenu.setDelegate(navigationForwardMenuDelegate = new ForwardPathHistoryMenuDelegate(this));
+        this.navigationButton.setMenu(navigationForwardMenu, NAVIGATION_RIGHT_SEGMENT_BUTTON);
     }
 
     public void navigationButtonClicked(NSSegmentedControl sender) {
@@ -3106,6 +3118,13 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
+     * Remove all entries from the back path history
+     */
+    public void clearBackHistory() {
+        backHistory.clear();
+    }
+
+    /**
      * @return The ordered array of prevoiusly visited directories
      */
     public Path[] getForwardHistory() {
@@ -3113,10 +3132,10 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
-     * @return
+     * Remove all entries from the forward path history
      */
-    public Path[] getFullHistory() {
-        return (Path[]) session.cache().keys();
+    public void clearForwardHistory() {
+        forwardHistory.clear();
     }
 
     /**

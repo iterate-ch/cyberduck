@@ -1683,6 +1683,8 @@ source/ch/cyberduck/core/util/URLSchemeHandlerConfiguration.m -text
 source/ch/cyberduck/ui/cocoa/CDBottomView.m -text
 source/ch/cyberduck/ui/cocoa/CDNavigationView.m -text
 source/ch/cyberduck/ui/cocoa/CDPreferencesImpl.m -text
+source/ch/cyberduck/ui/cocoa/delegate/BackPathHistoryMenuDelegate.java -text
+source/ch/cyberduck/ui/cocoa/delegate/ForwardPathHistoryMenuDelegate.java -text
 source/ch/cyberduck/ui/cocoa/growl/GrowlNative.java -text
 source/ch/cyberduck/ui/cocoa/odb/EditorFactory.java -text
 source/ch/cyberduck/ui/cocoa/odb/ODBEditor.java -text
