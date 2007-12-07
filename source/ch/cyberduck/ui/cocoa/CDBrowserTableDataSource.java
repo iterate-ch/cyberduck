@@ -440,7 +440,7 @@ public abstract class CDBrowserTableDataSource extends NSObject {
             for(int i = 0; i < promisedDragPaths.length; i++) {
                 roots.add(promisedDragPaths[i]);
             }
-            final Transfer q = new DownloadTransfer(roots);
+            final Transfer q = new DownloadTransfer(controller.checkHierarchy(roots));
             if(q.numberOfRoots() > 0) {
                 controller.transfer(q);
             }

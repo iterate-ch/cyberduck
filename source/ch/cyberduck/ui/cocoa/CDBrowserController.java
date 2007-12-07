@@ -2215,7 +2215,7 @@ public class CDBrowserController extends CDWindowController
      * Prunes the list of selected files. Files which are a child of an already included directory
      * are removed from the returned list.
      */
-    private List checkHierarchy(final List selected) {
+    protected List checkHierarchy(final List selected) {
         final List normalized = new Collection();
         for(Iterator iter = selected.iterator(); iter.hasNext();) {
             Path f = (Path) iter.next();
