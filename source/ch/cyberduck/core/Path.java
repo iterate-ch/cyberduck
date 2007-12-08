@@ -327,7 +327,7 @@ public abstract class Path extends AbstractPath {
     public Local getLocal() {
         //default value if not set explicitly, i.e. with drag and drop
         if(null == this.local) {
-            return new Local(this.getHost().getDownloadFolder(), this.getName());
+            this.local = new Local(this.getHost().getDownloadFolder(), this.getName());
         }
         return this.local;
     }

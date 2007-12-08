@@ -213,15 +213,15 @@ public class Local extends AbstractPath {
             name = name.replace('/', ':');
         }
         // See trac #933
-        this.setPath(NSPathUtilities.stringByExpandingTildeInPath(parent), name);
+        this.setPath(parent, name);
     }
 
     public Local(String path) {
-        this.setPath(NSPathUtilities.stringByExpandingTildeInPath(path));
+        this.setPath(path);
     }
 
     public Local(File path) {
-        this.setPath(NSPathUtilities.stringByExpandingTildeInPath(path.getAbsolutePath()));
+        this.setPath(path.getAbsolutePath());
     }
 
     private void init() {
@@ -395,7 +395,7 @@ public class Local extends AbstractPath {
     }
 
     public void setPath(String name) {
-        _impl = new File(Path.normalize(name));
+        _impl = new File(Path.normalize(NSPathUtilities.stringByExpandingTildeInPath(name)));
         this.init();
     }
 

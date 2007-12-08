@@ -281,7 +281,7 @@ public class CDBrowserController extends CDWindowController
             path.attributes.setType(Path.DIRECTORY_TYPE);
             Object localObj = args.objectForKey("Local");
             if(localObj != null) {
-                path.setLocal(new Local((String) localObj));
+                path.getLocal().setPath((String) localObj);
             }
             final Transfer q = new SyncTransfer(path);
             this.transfer(q, true);
@@ -305,11 +305,11 @@ public class CDBrowserController extends CDWindowController
             }
             Object localObj = args.objectForKey("Local");
             if(localObj != null) {
-                path.setLocal(new Local((String) localObj, path.getName()));
+                path.getLocal().setPath((String) localObj, path.getName());
             }
             Object nameObj = args.objectForKey("Name");
             if(nameObj != null) {
-                path.setLocal(new Local(path.getLocal().getParent().getAbsolute(), (String) nameObj));
+                path.getLocal().setPath(path.getLocal().getParent().getAbsolute(), (String) nameObj);
             }
             final Transfer q = new DownloadTransfer(path);
             this.transfer(q, true);
@@ -1368,22 +1368,6 @@ public class CDBrowserController extends CDWindowController
         this.actionPopupButton.itemAtIndex(0).setImage(NSImage.imageNamed("gear.tiff"));
     }
 
-//    private NSPopUpButton historyPopupButton;
-//
-//    private NSMenu historyPopupButtonMenu;
-//
-//    private Object historyPopupButtonMenuDelegate;
-//
-//    public void setHistoryPopupButton(NSPopUpButton historyPopupButton) {
-//        this.historyPopupButton = historyPopupButton;
-//        this.historyPopupButton.setPullsDown(true);
-//        this.historyPopupButton.setAutoenablesItems(true);
-//        this.historyPopupButton.setEnabled(false);
-//        this.historyPopupButton.setImage(NSImage.imageNamed("history.tiff"));
-//        this.historyPopupButton.setMenu(historyPopupButtonMenu = new NSMenu());
-//        this.historyPopupButton.menu().setDelegate(historyPopupButtonMenuDelegate = new PathHistoryMenuDelegate(this));
-//    }
-
     private NSComboBox quickConnectPopup; // IBOutlet
 
     private NSObject quickConnectPopupModel;
@@ -2419,9 +2403,9 @@ public class CDBrowserController extends CDWindowController
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
             final Session session = this.getTransferSession();
             final List roots = new Collection();
-            for(Iterator i = this.checkHierarchy(this.getSelectedPaths()).iterator(); i.hasNext();) {
+            for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
                 Path path = (Path) ((Path) i.next()).clone(session);
-                path.setLocal(new Local(sheet.filename(), path.getLocal().getName()));
+                path.getLocal().setPath(sheet.filename(), path.getLocal().getName());
                 roots.add(path);
             }
             final Transfer q = new DownloadTransfer(roots);
@@ -2434,7 +2418,7 @@ public class CDBrowserController extends CDWindowController
 
     public void downloadAsButtonClicked(final Object sender) {
         final Session session = this.getTransferSession();
-        for(Iterator i = this.checkHierarchy(this.getSelectedPaths()).iterator(); i.hasNext();) {
+        for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
             Path path = (Path) ((Path) i.next()).clone(session);
             NSSavePanel panel = NSSavePanel.savePanel();
             panel.setMessage(NSBundle.localizedString("Download the selected file to...", ""));
@@ -2457,7 +2441,7 @@ public class CDBrowserController extends CDWindowController
             String filename;
             if((filename = sheet.filename()) != null) {
                 Path path = (Path) contextInfo;
-                path.setLocal(new Local(filename));
+                path.getLocal().setPath(filename);
                 final Transfer q = new DownloadTransfer(path);
                 this.transfer(q);
             }
@@ -2501,7 +2485,7 @@ public class CDBrowserController extends CDWindowController
             final Path selection = (Path) contextInfo;
             if(sheet.filenames().count() > 0) {
                 Path root = (Path) selection.clone(this.getTransferSession());
-                root.setLocal(new Local((String) sheet.filenames().lastObject()));
+                root.getLocal().setPath((String) sheet.filenames().lastObject());
                 final Transfer q = new SyncTransfer(root);
                 this.transfer(q, selection);
             }
@@ -2512,7 +2496,7 @@ public class CDBrowserController extends CDWindowController
     public void downloadButtonClicked(final Object sender) {
         final Session session = this.getTransferSession();
         final List roots = new Collection();
-        for(Iterator i = this.checkHierarchy(this.getSelectedPaths()).iterator(); i.hasNext();) {
+        for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
             Path path = (Path) ((Path) i.next()).clone(session);
             roots.add(path);
         }
@@ -3875,21 +3859,6 @@ public class CDBrowserController extends CDWindowController
             item.setMaxSize(this.actionPopupButton.frame().size());
             return item;
         }
-//        if(itemIdentifier.equals(TOOLBAR_HISTORY)) {
-//            item.setLabel(NSBundle.localizedString("History", "Toolbar item"));
-//            item.setPaletteLabel(NSBundle.localizedString("History", "Toolbar item"));
-//            item.setView(this.historyPopupButton);
-//            // Add a menu representation for text mode of toolbar
-//            NSMenuItem menu = new NSMenuItem();
-//            menu.setTitle(NSBundle.localizedString("History", "Toolbar item"));
-//            NSMenu historyMenu = new NSMenu();
-//            historyMenu.setDelegate(historyPopupButtonMenuDelegate);
-//            menu.setSubmenu(historyMenu);
-//            item.setMenuFormRepresentation(menu);
-//            item.setMinSize(this.historyPopupButton.frame().size());
-//            item.setMaxSize(this.historyPopupButton.frame().size());
-//            return item;
-//        }
         if(itemIdentifier.equals(TOOLBAR_QUICK_CONNECT)) {
             item.setLabel(NSBundle.localizedString(TOOLBAR_QUICK_CONNECT, "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_QUICK_CONNECT, "Toolbar item"));
@@ -4123,7 +4092,6 @@ public class CDBrowserController extends CDWindowController
         this.editBookmarkButton.setTarget(null);
 
         this.actionPopupButton.setTarget(null);
-//        this.historyPopupButton.setTarget(null);
 
         this.navigationButton.setTarget(null);
         this.upButton.setTarget(null);

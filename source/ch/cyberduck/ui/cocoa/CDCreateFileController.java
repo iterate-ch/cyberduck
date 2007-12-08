@@ -71,7 +71,7 @@ public class CDCreateFileController extends CDFileController {
                     else {
                         proposal = filename + "-" + no;
                     }
-                    file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
+                    file.getLocal().setPath(NSPathUtilities.temporaryDirectory(), proposal);
                 }
                 file.getLocal().touch();
                 file.upload();

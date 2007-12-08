@@ -18,24 +18,14 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.io.BandwidthThrottle;
+import com.apple.cocoa.foundation.*;
 
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSMutableDictionary;
-import com.apple.cocoa.foundation.NSObject;
+import ch.cyberduck.core.io.BandwidthThrottle;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -108,7 +98,7 @@ public abstract class Transfer extends NSObject {
      * @param roots
      */
     public Transfer(List roots) {
-        this.roots = roots;
+        this.setRoots(roots);
         this.init();
     }
 
@@ -149,10 +139,10 @@ public abstract class Transfer extends NSObject {
             r.addObject(((Path) iter.next()).getAsDictionary());
         }
         dict.setObjectForKey(r, "Roots");
-        dict.setObjectForKey(""+this.getSize(), "Size");
-        dict.setObjectForKey(""+this.getTransferred(), "Current");
+        dict.setObjectForKey("" + this.getSize(), "Size");
+        dict.setObjectForKey("" + this.getTransferred(), "Current");
         if(bandwidth != null) {
-            dict.setObjectForKey(""+bandwidth.getRate(), "Bandwidth");
+            dict.setObjectForKey("" + bandwidth.getRate(), "Bandwidth");
         }
         return dict;
     }
@@ -254,17 +244,15 @@ public abstract class Transfer extends NSObject {
     protected BandwidthThrottle bandwidth;
 
     /**
-     *
      * @param bytesPerSecond
      */
     public void setBandwidth(float bytesPerSecond) {
-        log.debug("setBandwidth:"+bytesPerSecond);
+        log.debug("setBandwidth:" + bytesPerSecond);
         bandwidth.setRate(bytesPerSecond);
         this.fireBandwidthChanged(bandwidth);
     }
 
     /**
-     *
      * @return Rate in bytes per second allowed for this transfer
      */
     public float getBandwidth() {
@@ -283,6 +271,10 @@ public abstract class Transfer extends NSObject {
      */
     public List getRoots() {
         return this.roots;
+    }
+
+    protected void setRoots(List roots) {
+        this.roots = roots;
     }
 
     public Session getSession() {
@@ -314,6 +306,7 @@ public abstract class Transfer extends NSObject {
          * such as calculating its size.
          * Must only be called exactly once for each file.
          * Must only be called if #accept for the file returns true
+         *
          * @param p
          * @see PathFilter#accept(AbstractPath)
          */
@@ -327,30 +320,32 @@ public abstract class Transfer extends NSObject {
 
     /**
      * Looks for the file in the parent directory listing. Returns cached version if possible for better performance
+     *
      * @param file
      * @return True if the file exists
      * @see ch.cyberduck.core.AbstractPath#exists()
      */
     public boolean exists(Path file) {
         if(!_existing.containsKey(file)) {
-            log.debug("exists:"+file);
+            log.debug("exists:" + file);
             _existing.put(file, Boolean.valueOf(file.exists()));
         }
-        return ((Boolean)_existing.get(file)).booleanValue();
+        return ((Boolean) _existing.get(file)).booleanValue();
     }
 
     /**
      * Looks for the file in the parent directory listing. Returns cached version if possible for better performance
+     *
      * @param file
      * @return True if the file exists
      * @see ch.cyberduck.core.AbstractPath#exists()
      */
     public boolean exists(Local file) {
         if(!_existing.containsKey(file)) {
-            log.debug("exists:"+file);
+            log.debug("exists:" + file);
             _existing.put(file, Boolean.valueOf(file.exists()));
         }
-        return ((Boolean)_existing.get(file)).booleanValue();
+        return ((Boolean) _existing.get(file)).booleanValue();
     }
 
     /**
@@ -361,7 +356,7 @@ public abstract class Transfer extends NSObject {
         if(action.equals(TransferAction.ACTION_CANCEL)) {
             return null;
         }
-        throw new IllegalArgumentException("Unknown transfer action:"+action);       
+        throw new IllegalArgumentException("Unknown transfer action:" + action);
     }
 
     /**
@@ -379,14 +374,12 @@ public abstract class Transfer extends NSObject {
     public abstract AttributedList childs(final Path parent);
 
     /**
-     *
      * @param file
      * @return True if its child items are cached
      */
     public abstract boolean isCached(Path file);
 
     /**
-     *
      * @param item
      * @return True if the path is not skipped when transferring
      */
@@ -396,6 +389,7 @@ public abstract class Transfer extends NSObject {
 
     /**
      * If the path can be selected for inclusion
+     *
      * @param item
      * @return True if selectable
      */
@@ -405,6 +399,7 @@ public abstract class Transfer extends NSObject {
 
     /**
      * Recursively update the status of all cached child items
+     *
      * @param item
      * @param skipped True if skipped
      */
@@ -412,8 +407,8 @@ public abstract class Transfer extends NSObject {
         item.status.setSkipped(skipped);
         if(item.attributes.isDirectory()) {
             if(this.isCached(item)) {
-                for(Iterator iter = this.childs(item).iterator(); iter.hasNext(); ) {
-                    this.setSkipped((Path)iter.next(), skipped);
+                for(Iterator iter = this.childs(item).iterator(); iter.hasNext();) {
+                    this.setSkipped((Path) iter.next(), skipped);
                 }
             }
         }
@@ -467,6 +462,7 @@ public abstract class Transfer extends NSObject {
 
     /**
      * The actual transfer implementation
+     *
      * @param p
      * @see ch.cyberduck.core.Path#download()
      * @see ch.cyberduck.core.Path#upload()
@@ -474,7 +470,6 @@ public abstract class Transfer extends NSObject {
     protected abstract void _transferImpl(final Path p);
 
     /**
-     *
      * @param options
      */
     private void transfer(final TransferOptions options) {
@@ -495,7 +490,8 @@ public abstract class Transfer extends NSObject {
             // Determine the filter to match files against
             final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
             if(action.equals(TransferAction.ACTION_CANCEL)) {
-                this.cancel(); return;
+                this.cancel();
+                return;
             }
 
             this.clear();
@@ -504,7 +500,8 @@ public abstract class Transfer extends NSObject {
             final TransferFilter filter = this.filter(action);
             if(null == filter) {
                 // The user has canceled choosing a transfer filter
-                this.cancel(); return;
+                this.cancel();
+                return;
             }
 
             // Reset the cached size of the transfer and progress value
@@ -531,11 +528,12 @@ public abstract class Transfer extends NSObject {
 
     /**
      * To be called before any file is actually transferred
+     *
      * @param p
      * @param filter
      */
     private void prepare(Path p, final TransferFilter filter) {
-        log.debug("prepare:"+p);
+        log.debug("prepare:" + p);
         if(!this.check()) {
             return;
         }
@@ -552,15 +550,14 @@ public abstract class Transfer extends NSObject {
         if(p.attributes.isDirectory()) {
             for(Iterator iter = this.childs(p).iterator(); iter.hasNext();) {
                 // Call recursively for all childs
-                this.prepare((Path)iter.next(), filter);
+                this.prepare((Path) iter.next(), filter);
             }
         }
     }
 
     /**
-     *
      * @return False if the transfer has been canceled or the socket is
-     * no longer connected
+     *         no longer connected
      */
     private boolean check() {
         log.debug("check:");
@@ -582,6 +579,7 @@ public abstract class Transfer extends NSObject {
 
     /**
      * Calls #start with TransferOptions.DEFAULT
+     *
      * @param prompt
      */
     public void start(TransferPrompt prompt) {
@@ -590,6 +588,7 @@ public abstract class Transfer extends NSObject {
 
     /**
      * Calls #start with queueing off
+     *
      * @param prompt
      * @param options
      */
@@ -608,14 +607,13 @@ public abstract class Transfer extends NSObject {
     private static final Object lock = Queue.instance();
 
     /**
-     *
      * @param prompt
      * @param options
      * @param queued
      */
     public void start(TransferPrompt prompt, final TransferOptions options,
                       final boolean queued) {
-        log.debug("start:"+prompt);
+        log.debug("start:" + prompt);
         try {
             this.fireTransferWillStart();
             if(queued) {
@@ -674,8 +672,7 @@ public abstract class Transfer extends NSObject {
         if(this.isCanceled()) {
             // Called prevously; now force
             this.interrupt();
-        }
-        else {
+        } else {
             if(_current != null) {
                 _current.status.setCanceled();
             }
