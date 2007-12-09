@@ -28,6 +28,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.ConnectException;
 
 /**
  * @version $Id$
@@ -120,15 +121,21 @@ public class FTPSControlSocket extends FTPControlSocket {
             // assemble the port number
             int port = (parts[4] << 8) + parts[5];
 
-            if(InetAddress.getByName(ipAddress).isSiteLocalAddress()) {
-                // Do not trust a local address; may be a misconfigured router
-                return new FTPPassiveDataSocket(
-                        new SSLProtocolSocketFactory(trustManager).createSocket(controlSock.getInetAddress().getHostAddress(), port));
-            }
+            try {
+                if(InetAddress.getByName(ipAddress).isSiteLocalAddress()) {
+                    // Do not trust a local address; may be a misconfigured router
+                    return new FTPPassiveDataSocket(
+                            new SSLProtocolSocketFactory(trustManager).createSocket(controlSock.getInetAddress().getHostAddress(), port));
+                }
 
-            // create the socket
-            return new FTPPassiveDataSocket(
-                    new SSLProtocolSocketFactory(trustManager).createSocket(ipAddress, port));
+                // create the socket
+                return new FTPPassiveDataSocket(
+                        new SSLProtocolSocketFactory(trustManager).createSocket(ipAddress, port));
+            }
+            catch (ConnectException e) {
+                // See #15353
+                throw new FTPException(e.getMessage());
+            }
         }
         return super.createDataSocketPASV();
     }
