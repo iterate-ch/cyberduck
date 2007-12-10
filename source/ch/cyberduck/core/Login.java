@@ -18,11 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import sun.misc.BASE64Encoder;
+import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.ui.LoginController;
-
-import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
@@ -30,8 +28,11 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import sun.misc.BASE64Encoder;
+
 /**
  * Stores the login credentials
+ *
  * @version $Id$
  */
 public class Login {
@@ -73,7 +74,6 @@ public class Login {
     }
 
     /**
-     *
      * @param encrypted
      * @return
      */
@@ -108,14 +108,13 @@ public class Login {
      * Use this to define if passwords should be added to the keychain
      *
      * @param shouldBeAddedToKeychain If true, the password of the login is added to the keychain uppon
-     * successfull login
+     *                                successfull login
      */
     public void setUseKeychain(boolean shouldBeAddedToKeychain) {
         this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
     }
 
     /**
-     *
      * @return true if the password will be added to the system keychain when logged in successfully
      */
     public boolean usesKeychain() {
@@ -123,29 +122,36 @@ public class Login {
     }
 
     /**
-     *
      * @return the password fetched from the keychain or null if it was not found
      */
     public String getInternetPasswordFromKeychain(String protocol, String hostname) {
-        log.info("Fetching password from Keychain for:" + this.getUsername());
-        return Keychain.instance().getInternetPasswordFromKeychain(protocol,
+        if(log.isInfoEnabled()) {
+            log.info("Fetching password from Keychain for:" + protocol + "," + hostname + "," + this.getUsername());
+        }
+        final String p = Keychain.instance().getInternetPasswordFromKeychain(protocol,
                 hostname, this.getUsername());
+        if(null == p) {
+            log.info("Password for " + hostname + " not found in Keychain");
+        }
+        return p;
     }
 
     /**
      * Adds the password to the system keychain
      */
     public void addInternetPasswordToKeychain(String protocol, String hostname, int port) {
-        if (this.shouldBeAddedToKeychain && !this.isAnonymousLogin() && this.hasReasonableValues()) {
-            log.debug("addInternetPasswordToKeychain:"+hostname);
+        if(this.shouldBeAddedToKeychain && !this.isAnonymousLogin() && this.hasReasonableValues()) {
+            if(log.isInfoEnabled()) {
+                log.debug("addInternetPasswordToKeychain:" + protocol + "," + hostname + "," + this.getUsername());
+            }
             Keychain.instance().addInternetPasswordToKeychain(protocol, port,
                     hostname, this.getUsername(), this.getPassword());
         }
     }
 
     /**
-     * @param user     Login with this username
-     * @param pass     Passphrase
+     * @param user Login with this username
+     * @param pass Passphrase
      */
     public Login(String user, String pass) {
         this(user, pass, false);
@@ -166,27 +172,23 @@ public class Login {
      * @param p The password to use or null if anonymous
      */
     private void init(String u, String p) {
-        if (null == u || u.equals("")) {
+        if(null == u || u.equals("")) {
             this.user = Preferences.instance().getProperty("connection.login.name");
+        } else {
+            this.user = u;
         }
-        else {
-			this.user = u;
-        }
-        if (null == p || p.equals("")) {
-            if (this.isAnonymousLogin()) {
+        if(null == p || p.equals("")) {
+            if(this.isAnonymousLogin()) {
                 this.pass = Preferences.instance().getProperty("ftp.anonymous.pass");
-            }
-            else {
+            } else {
                 this.pass = p;
             }
-        }
-        else {
+        } else {
             this.pass = p;
         }
     }
 
     /**
-     *
      * @return true if the username is anononymous
      */
     public boolean isAnonymousLogin() {
@@ -206,6 +208,7 @@ public class Login {
 
     /**
      * The path for the private key file to use for public key authentication; e.g. ~/.ssh/id_rsa
+     *
      * @param file
      */
     public void setPrivateKeyFile(String file) {
@@ -213,7 +216,6 @@ public class Login {
     }
 
     /**
-     *
      * @return The path to the private key file to use for public key authentication
      */
     public String getPrivateKeyFile() {
@@ -222,56 +224,56 @@ public class Login {
 
     /**
      * Checks if both username and password qualify for a possible reasonable login attempt
+     *
      * @return true if both username and password could be valid
      */
     public boolean hasReasonableValues() {
-        if (this.usesPublicKeyAuthentication()) {
+        if(this.usesPublicKeyAuthentication()) {
             return true;
         }
-        if (this.getUsername() != null && this.getPassword() != null) {
+        if(this.getUsername() != null && this.getPassword() != null) {
             // anonymous login is ok
-            if (Preferences.instance().getProperty("ftp.anonymous.name").equals(this.getUsername()) &&
+            if(Preferences.instance().getProperty("ftp.anonymous.name").equals(this.getUsername()) &&
                     Preferences.instance().getProperty("ftp.anonymous.pass").equals(this.getPassword())) {
                 return true;
             }
             // if both name and pass are custom it is ok
-            if (!(Preferences.instance().getProperty("ftp.anonymous.name").equals(this.getUsername())) &&
+            if(!(Preferences.instance().getProperty("ftp.anonymous.name").equals(this.getUsername())) &&
                     !(Preferences.instance().getProperty("ftp.anonymous.pass").equals(this.getPassword()))) {
                 return true;
             }
         }
-		return false;
+        return false;
     }
 
     /**
      * Try to the password from the user or the Keychain
+     *
      * @param controller
      * @return true if reasonable values have been found localy or in the keychain or the user
-     * was prompted to for the credentials and new values got entered.
+     *         was prompted to for the credentials and new values got entered.
      */
     public boolean check(LoginController controller, String protocol, String hostname) {
-        if (!this.hasReasonableValues()) {
-            if (Preferences.instance().getBoolean("connection.login.useKeychain")) {
+        if(!this.hasReasonableValues()) {
+            if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
                 log.info("Searching keychain for password...");
                 String passFromKeychain = this.getInternetPasswordFromKeychain(protocol, hostname);
-                if (null == passFromKeychain || passFromKeychain.equals("")) {
-					if(null == controller) {
-						throw new IllegalArgumentException("No login controller given");
-					}
+                if(null == passFromKeychain || passFromKeychain.equals("")) {
+                    if(null == controller) {
+                        throw new IllegalArgumentException("No login controller given");
+                    }
                     controller.promptUser(this,
                             NSBundle.localizedString("Login with username and password", "Credentials", ""),
                             NSBundle.localizedString("No login credentials could be found in the Keychain", "Credentials", ""));
                     return this.tryAgain();
-                }
-                else {
+                } else {
                     this.pass = passFromKeychain;
                     return true;
                 }
-            }
-            else {
-				if(null == controller) {
-					throw new IllegalArgumentException("No login controller given");
-				}
+            } else {
+                if(null == controller) {
+                    throw new IllegalArgumentException("No login controller given");
+                }
                 controller.promptUser(this,
                         NSBundle.localizedString("Login with username and password", "Credentials", ""),
                         NSBundle.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials", ""));
@@ -284,7 +286,6 @@ public class Login {
     private boolean tryAgain;
 
     /**
-     *
      * @return true if the user decided to try login again with new credentials
      */
     public boolean tryAgain() {
@@ -292,7 +293,6 @@ public class Login {
     }
 
     /**
-     *
      * @param v
      */
     public void setTryAgain(boolean v) {
