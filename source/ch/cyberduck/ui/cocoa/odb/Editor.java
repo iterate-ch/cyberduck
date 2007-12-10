@@ -21,12 +21,8 @@ package ch.cyberduck.ui.cocoa.odb;
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSPathUtilities;
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDController;
 import ch.cyberduck.ui.cocoa.growl.Growl;
@@ -45,7 +41,8 @@ public abstract class Editor extends CDController {
     /**
      *
      */
-    public static Local TEMPORARY_DIRECTORY = new Local(NSPathUtilities.temporaryDirectory());
+    private Local TEMPORARY_DIRECTORY
+            = new Local(Preferences.instance().getProperty("editor.tmp.directory"));
 
     private CDBrowserController controller;
 
@@ -74,7 +71,8 @@ public abstract class Editor extends CDController {
     public void open(Path path) {
         edited = (Path) path.clone();
 
-        Local folder = new Local(Editor.TEMPORARY_DIRECTORY.getAbsolute(),
+        Local folder = new Local(
+                TEMPORARY_DIRECTORY,
                 edited.getParent().getAbsolute());
         folder.mkdir(true);
 

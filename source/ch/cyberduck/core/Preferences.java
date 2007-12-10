@@ -249,6 +249,7 @@ public abstract class Preferences {
         defaults.put("editor.name", "TextMate");
         defaults.put("editor.bundleIdentifier", "com.macromates.textmate");
         defaults.put("editor.kqueue.enable", "false");
+        defaults.put("editor.tmp.directory", NSPathUtilities.temporaryDirectory());
 
         defaults.put("filetype.text.regex",
                 ".*\\.txt|.*\\.cgi|.*\\.htm|.*\\.html|.*\\.shtml|.*\\.xml|.*\\.xsl|.*\\.php|.*\\.php3|" +
