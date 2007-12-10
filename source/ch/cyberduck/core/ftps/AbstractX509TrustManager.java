@@ -37,7 +37,7 @@ import java.security.cert.X509Certificate;
 public abstract class AbstractX509TrustManager implements X509TrustManager {
     private static Logger log = Logger.getLogger(AbstractX509TrustManager.class);
 
-    private X509TrustManager standardTrustManager = null;
+    private X509TrustManager standardTrustManager;
 
     protected void init(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
         TrustManagerFactory factory = TrustManagerFactory.getInstance("SunX509");

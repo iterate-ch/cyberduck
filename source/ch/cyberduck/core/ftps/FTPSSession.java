@@ -74,15 +74,22 @@ public class FTPSSession extends FTPSession {
         return info.toString();
     }
 
+    /**
+     * A trust manager accepting any certificate by default
+     */
+    private X509TrustManager trustManager
+            = new IgnoreX509TrustManager();
+
     public X509TrustManager getTrustManager() {
         return trustManager;
     }
 
+    /**
+     * Override the default ignoring trust manager
+     */
     public void setTrustManager(X509TrustManager trustManager) {
         this.trustManager = trustManager;
     }
-
-    private X509TrustManager trustManager = new IgnoreX509TrustManager();
 
     protected void connect() throws IOException, FTPException, ConnectionCanceledException, LoginCanceledException {
         synchronized(this) {
