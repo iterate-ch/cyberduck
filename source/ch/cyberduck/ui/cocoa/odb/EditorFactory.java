@@ -54,7 +54,7 @@ public class EditorFactory {
         SUPPORTED_ODB_EDITORS.put("JarInspector", "com.cgerdes.ji");
         SUPPORTED_ODB_EDITORS.put("PageSpinner", "com.optima.PageSpinner");
         SUPPORTED_ODB_EDITORS.put("WriteRoom", "com.hogbaysoftware.WriteRoom");
-        SUPPORTED_ODB_EDITORS.put("MacVim", "org.slashpunt.vim");
+//        SUPPORTED_ODB_EDITORS.put("MacVim", "org.vim.MacVim");
 
         Iterator editorNames = SUPPORTED_ODB_EDITORS.keySet().iterator();
         Iterator editorIdentifiers = SUPPORTED_ODB_EDITORS.values().iterator();
