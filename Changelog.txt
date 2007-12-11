@@ -9,9 +9,12 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] Accept relative paths in bookmark setting [#1167]
 - [Feature] Added MacVim to the list of supported editors (http://slashpunt.org/vim/) [#1322]
 - [Feature] Ugly folder icons rendered (10.5)
+- [Feature] Back and forward history menu for browser navigation buttons [#1080]
 - [Bugfix] Writing corrupted entries to the Keychain [#1354]
 - [Bugfix] Cannot drag files to working directory when there is no space left [#60]
 - [Bugfix] Bookmarks drawer remembers width [#371]
+- [Bugfix] Crashes after application launch (10.3.9) [#1339]
+- [Bugfix] Downloading multiple files with same name in outline hierarchy [#1400]
 
 2.8.1 [http://trac.cyberduck.ch/query?status=closed&milestone=2.8.1]
 - [Feature] Application code is signed (10.5)
