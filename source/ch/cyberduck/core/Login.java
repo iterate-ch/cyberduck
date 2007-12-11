@@ -131,7 +131,7 @@ public class Login {
         final String p = Keychain.instance().getInternetPasswordFromKeychain(protocol,
                 hostname, this.getUsername());
         if(null == p) {
-            log.info("Password for " + hostname + " not found in Keychain");
+            log.info("Password for " + protocol + "," + hostname + "," + this.getUsername() + " not found in Keychain");
         }
         return p;
     }
