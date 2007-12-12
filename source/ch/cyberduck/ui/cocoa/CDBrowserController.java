@@ -3273,8 +3273,20 @@ public class CDBrowserController extends CDWindowController
         log.debug("mount:" + host);
         if(this.isMounted()) {
             if(this.session.getHost().getURL().equals(host.getURL())) {
-                setWorkdir(session.mount());
-                return session;
+                // The host is already mounted
+                if(host.hasReasonableDefaultPath()) {
+                    // Change to its default path
+                    this.background(new BackgroundAction() {
+                        public void run() {
+                            setWorkdir(session.mount(host.getDefaultPath()));
+                        }
+
+                        public void cleanup() {
+                            ;
+                        }
+                    });
+                    return session;
+                }
             }
         }
         if(this.unmount(new CDSheetCallback() {

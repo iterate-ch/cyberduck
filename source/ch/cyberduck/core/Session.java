@@ -18,10 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.LoginController;
-import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSObject;
+
+import ch.cyberduck.ui.LoginController;
+import ch.cyberduck.ui.cocoa.threading.BackgroundException;
+
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -105,8 +107,7 @@ public abstract class Session extends NSObject {
         if(!this.isConnected()) {
             // If not connected anymore, reconnect the session
             this.connect();
-        }
-        else {
+        } else {
             // The session is still supposed to be connected
             try {
                 // Send a 'no operation command' to make sure the session is alive
@@ -131,7 +132,7 @@ public abstract class Session extends NSObject {
      * @return The timeout in milliseconds
      */
     protected int timeout() {
-        return (int)Preferences.instance().getDouble("connection.timeout.seconds")*1000;
+        return (int) Preferences.instance().getDouble("connection.timeout.seconds") * 1000;
     }
 
     /**
@@ -140,13 +141,13 @@ public abstract class Session extends NSObject {
     public abstract boolean isSecure();
 
     /**
-     *
      * @return
      */
     public abstract String getSecurityInformation();
 
     /**
      * Opens the TCP connection to the server
+     *
      * @throws IOException
      * @throws LoginCanceledException
      */
@@ -156,6 +157,7 @@ public abstract class Session extends NSObject {
 
     /**
      * Sets the callback to ask for login credentials
+     *
      * @param loginController
      * @see #login
      */
@@ -165,18 +167,26 @@ public abstract class Session extends NSObject {
 
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
-     * @see #connect
+     *
      * @throws IOException
      * @throws LoginCanceledException
+     * @see #connect
      */
     protected abstract void login() throws IOException, ConnectionCanceledException, LoginCanceledException;
+
+    public Path mount() {
+        if(host.hasReasonableDefaultPath()) {
+            return this.mount(host.getDefaultPath());
+        }
+        return this.mount(null);
+    }
 
     /**
      * Connect to the remote host and mount the home directory
      *
      * @return null if we fail, the mounted working directory if we succeed
      */
-    public Path mount() {
+    public Path mount(String workdir) {
         synchronized(this) {
             this.message(NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname() + "...");
             try {
@@ -185,19 +195,19 @@ public abstract class Session extends NSObject {
                     return null;
                 }
                 Path home;
-                if(host.hasReasonableDefaultPath()) {
-                    if(host.getDefaultPath().startsWith(Path.DELIMITER)) {
-                        home = PathFactory.createPath(this, host.getDefaultPath());
+                if(workdir != null) {
+                    if(workdir.startsWith(Path.DELIMITER)) {
+                        home = PathFactory.createPath(this, workdir);
                     }
-                    else if(host.getDefaultPath().startsWith(Path.HOME)) {
+                    else if(workdir.startsWith(Path.HOME)) {
                         // relative path to the home directory
                         home = PathFactory.createPath(this,
-                                this.workdir().getAbsolute(), host.getDefaultPath().substring(1));
+                                this.workdir().getAbsolute(), workdir.substring(1));
                     }
                     else {
                         // relative path
                         home = PathFactory.createPath(this,
-                                this.workdir().getAbsolute(), host.getDefaultPath());
+                                this.workdir().getAbsolute(), workdir);
                     }
                     home.attributes.setType(Path.DIRECTORY_TYPE);
                     if(!home.childs().attributes().isReadable()) {
@@ -234,9 +244,8 @@ public abstract class Session extends NSObject {
     }
 
     /**
-     *
      * @return The custom character encoding specified by the host
-     * of this session or the default encoding if not specified
+     *         of this session or the default encoding if not specified
      * @see Preferences
      * @see Host
      */
@@ -248,7 +257,6 @@ public abstract class Session extends NSObject {
     }
 
     /**
-     *
      * @return The maximum number of concurrent connections allowed or -1 if no limit is set
      */
     public int getMaxConnections() {
@@ -268,6 +276,7 @@ public abstract class Session extends NSObject {
 
     /**
      * Send a 'no operation' command
+     *
      * @throws IOException
      */
     protected abstract void noop() throws IOException;
@@ -286,6 +295,7 @@ public abstract class Session extends NSObject {
 
     /**
      * Sends an arbitrary command to the server
+     *
      * @param command
      */
     public abstract void sendCommand(String command) throws IOException;
@@ -312,9 +322,10 @@ public abstract class Session extends NSObject {
 
     /**
      * Notifies all connection listeners that an attempt is made to open this session
-     * @see ConnectionListener
-     * @throws ResolveCanceledException If the name resolution has been canceled by the user
+     *
+     * @throws ResolveCanceledException      If the name resolution has been canceled by the user
      * @throws java.net.UnknownHostException If the name resolution failed
+     * @see ConnectionListener
      */
     protected void fireConnectionWillOpenEvent() throws ResolveCanceledException, UnknownHostException {
         log.debug("connectionWillOpen");
@@ -335,6 +346,7 @@ public abstract class Session extends NSObject {
     /**
      * Starts the <code>KeepAliveTask</code> if <code>connection.keepalive</code> is true
      * Notifies all connection listeners that the connection has been opened successfully
+     *
      * @see ConnectionListener
      */
     protected void fireConnectionDidOpenEvent() {
@@ -355,6 +367,7 @@ public abstract class Session extends NSObject {
 
     /**
      * Notifes all connection listeners that a connection is about to be closed
+     *
      * @see ConnectionListener
      */
     protected void fireConnectionWillCloseEvent() {
@@ -369,6 +382,7 @@ public abstract class Session extends NSObject {
 
     /**
      * Notifes all connection listeners that a connection has been closed
+     *
      * @see ConnectionListener
      */
     protected void fireConnectionDidCloseEvent() {
@@ -387,6 +401,7 @@ public abstract class Session extends NSObject {
 
     /**
      * The caller must call #fireActivityStoppedEvent before
+     *
      * @see ConnectionListener#activityStarted
      */
     public void fireActivityStartedEvent() {
@@ -400,6 +415,7 @@ public abstract class Session extends NSObject {
 
     /**
      * The caller must call #fireActivityStartedEvent before
+     *
      * @see ConnectionListener#activityStopped
      */
     public void fireActivityStoppedEvent() {
@@ -423,8 +439,9 @@ public abstract class Session extends NSObject {
 
     /**
      * Log the message to all subscribed transcript listeners
-     * @see TranscriptListener
+     *
      * @param message
+     * @see TranscriptListener
      */
     protected void log(final String message) {
         log.info(message);
@@ -447,6 +464,7 @@ public abstract class Session extends NSObject {
 
     /**
      * Notifies all progress listeners
+     *
      * @param message The message to be displayed in a status field
      * @see ProgressListener
      */
@@ -471,9 +489,10 @@ public abstract class Session extends NSObject {
 
     /**
      * Notifies all error listeners of this error without sending this error to Growl
-     * @param path The path related to this error
+     *
+     * @param path    The path related to this error
      * @param message The error message to be displayed in the alert sheet
-     * @param e The cause of the error
+     * @param e       The cause of the error
      */
     public void error(Path path, String message, Throwable e) {
         log.info(e.getMessage());
@@ -508,7 +527,6 @@ public abstract class Session extends NSObject {
     private Cache cache = new Cache();
 
     /**
-     *
      * @return The directory listing cache
      */
     public Cache cache() {
@@ -516,17 +534,16 @@ public abstract class Session extends NSObject {
     }
 
     /**
-     *
      * @param other
      * @return true if the other session denotes the same hostname and protocol
      */
     public boolean equals(Object other) {
-        if (null == other) {
+        if(null == other) {
             return false;
         }
-        if (other instanceof Session) {
-            return this.getHost().getHostname().equals(((Session)other).getHost().getHostname())
-                    && this.getHost().getProtocol().equals(((Session)other).getHost().getProtocol());
+        if(other instanceof Session) {
+            return this.getHost().getHostname().equals(((Session) other).getHost().getHostname())
+                    && this.getHost().getProtocol().equals(((Session) other).getHost().getProtocol());
         }
         return false;
     }
