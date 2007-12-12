@@ -69,6 +69,9 @@ public class CDBookmarkController extends CDWindowController {
         }
         this.portField.setStringValue("" + this.host.getPort());
         this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Session.SFTP));
+        if(!this.host.getProtocol().equals(Session.SFTP)) {
+            this.pkCheckbox.setState(NSCell.OffState);
+        }
         this.itemChanged();
     }
 

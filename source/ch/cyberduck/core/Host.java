@@ -460,13 +460,6 @@ public class Host extends NSObject {
     // ----------------------------------------------------------
 
     /**
-     * @param login
-     */
-    public void setCredentials(Login login) {
-        this.login = login;
-    }
-
-    /**
      * @param username
      * @param password
      */
@@ -485,6 +478,13 @@ public class Host extends NSObject {
         this.setCredentials(new Login(username, password, addToKeychain));
     }
 
+    /**
+     * @param login
+     */
+    public void setCredentials(Login login) {
+        this.login = login;
+    }
+
     public Login getCredentials() {
         return this.login;
     }
@@ -499,9 +499,13 @@ public class Host extends NSObject {
                 this.setNickname(null);
             }
         }
-        this.protocol = protocol != null ? protocol : Preferences.instance().getProperty("connection.protocol.default");
-        if(null == this.login) {
-            return;
+        this.protocol = protocol != null ? protocol :
+                Preferences.instance().getProperty("connection.protocol.default");
+
+        if(!this.protocol.equals(Session.SFTP)) {
+            if(this.getCredentials() != null) {
+                this.getCredentials().setPrivateKeyFile(null);
+            }
         }
     }
 
