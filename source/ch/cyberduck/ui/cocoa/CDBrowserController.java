@@ -3364,7 +3364,15 @@ public class CDBrowserController extends CDWindowController
             if(this.isBusy()) {
                 this.interrupt();
             }
-            this.unmount(true);
+            this.background(new BackgroundAction() {
+                public void run() {
+                    unmount(true);
+                }
+
+                public void cleanup() {
+                    ;
+                }
+            });
         }
         // Unmount succeeded
         return true;

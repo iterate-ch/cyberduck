@@ -22,6 +22,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate;
 import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -556,7 +557,7 @@ public class CDMainController extends CDController {
         // Determine if there are any open connections
         while(0 != count--) {
             NSWindow window = (NSWindow) windows.objectAtIndex(count);
-            CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+            final CDBrowserController controller = CDBrowserController.controllerForWindow(window);
             if(null != controller) {
                 if(Preferences.instance().getBoolean("browser.serialize")) {
                     if(controller.isMounted()) {
@@ -596,7 +597,15 @@ public class CDMainController extends CDController {
                             // Close the socket to interrupt the current operation in progress
                             controller.interrupt();
                         }
-                        controller.unmount(true);
+                        controller.background(new BackgroundAction() {
+                            public void run() {
+                                controller.unmount(true);
+                            }
+
+                            public void cleanup() {
+                                ;
+                            }
+                        });
                     }
                 }
             }
