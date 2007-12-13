@@ -572,6 +572,12 @@ public class CDTransferController extends CDWindowController implements NSToolba
                             }
                         });
                     }
+
+                    public void didTransferPath(final Path path) {
+                        if(!hasFailed()) {
+                            clearTranscript();
+                        }
+                    }
                 });
                 if(transfer.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
                     ((ch.cyberduck.core.sftp.SFTPSession) transfer.getSession()).setHostKeyVerificationController(

@@ -100,7 +100,13 @@ public abstract class BackgroundActionImpl
      * @param message
      */
     public void log(String message) {
-        transcript.append(message + "\n");
+        transcript.append(message).append("\n");
+    }
+    
+    public void clearTranscript() {
+        if(transcript.length() > 0) {
+            transcript.delete(0, transcript.length()-1);
+        }
     }
 
     /**
@@ -118,9 +124,7 @@ public abstract class BackgroundActionImpl
      * Clear the transcript and exceptions
      */
     public void init() {
-        if(transcript.length() > 0) {
-            transcript.delete(0, transcript.length()-1);
-        }
+        this.clearTranscript();
         exceptions.clear();
     }
 
