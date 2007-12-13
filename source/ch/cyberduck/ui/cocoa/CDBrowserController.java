@@ -3046,9 +3046,6 @@ public class CDBrowserController extends CDWindowController
      * @param p
      */
     public void addPathToHistory(Path p) {
-//        if(!fullHistory.contains(p)) {
-//            fullHistory.add(p);
-//        }
         if(backHistory.size() > 0) {
             // Do not add if this was a reload
             if(p.equals(backHistory.get(backHistory.size() - 1))) {
@@ -3097,8 +3094,8 @@ public class CDBrowserController extends CDWindowController
     /**
      * @return The ordered array of prevoiusly visited directories
      */
-    public Path[] getBackHistory() {
-        return (Path[]) backHistory.toArray(new Path[backHistory.size()]);
+    public List getBackHistory() {
+        return backHistory;
     }
 
     /**
@@ -3111,8 +3108,8 @@ public class CDBrowserController extends CDWindowController
     /**
      * @return The ordered array of prevoiusly visited directories
      */
-    public Path[] getForwardHistory() {
-        return (Path[]) forwardHistory.toArray(new Path[forwardHistory.size()]);
+    public List getForwardHistory() {
+        return forwardHistory;
     }
 
     /**
@@ -3479,9 +3476,9 @@ public class CDBrowserController extends CDWindowController
     }
 
     private void validateNavigationButtons() {
-        this.navigationButton.setEnabled(this.isMounted() && this.getBackHistory().length > 1,
+        this.navigationButton.setEnabled(this.isMounted() && this.getBackHistory().size() > 1,
                 NAVIGATION_LEFT_SEGMENT_BUTTON);
-        this.navigationButton.setEnabled(this.isMounted() && this.getForwardHistory().length > 0,
+        this.navigationButton.setEnabled(this.isMounted() && this.getForwardHistory().size() > 0,
                 NAVIGATION_RIGHT_SEGMENT_BUTTON);
         this.upButton.setEnabled(this.isMounted() && !this.workdir().isRoot(),
                 NAVIGATION_UP_SEGMENT_BUTTON);
@@ -3711,10 +3708,10 @@ public class CDBrowserController extends CDWindowController
             return this.isMounted() && !this.workdir().isRoot();
         }
         if(identifier.equals("backButtonClicked:")) {
-            return this.isMounted() && this.getBackHistory().length > 1;
+            return this.isMounted() && this.getBackHistory().size() > 1;
         }
         if(identifier.equals("forwardButtonClicked:")) {
-            return this.isMounted() && this.getForwardHistory().length > 0;
+            return this.isMounted() && this.getForwardHistory().size() > 0;
         }
         if(identifier.equals("copyURLButtonClicked:")) {
             return this.isMounted();

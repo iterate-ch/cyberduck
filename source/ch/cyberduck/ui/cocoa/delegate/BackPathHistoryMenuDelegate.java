@@ -20,8 +20,9 @@ package ch.cyberduck.ui.cocoa.delegate;
 
 import com.apple.cocoa.application.NSMenuItem;
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
+
+import java.util.List;
 
 /**
  * @version $Id:$
@@ -32,7 +33,7 @@ public class BackPathHistoryMenuDelegate extends PathHistoryMenuDelegate {
         super(controller);
     }
 
-    public Path[] getHistory() {
+    public List getHistory() {
         return controller.getBackHistory();
     }
 

@@ -29,6 +29,8 @@ import ch.cyberduck.ui.cocoa.CDIconCache;
 
 import org.apache.log4j.Logger;
 
+import java.util.List;
+
 /**
  * @version $Id$
  */
@@ -45,23 +47,24 @@ public abstract class PathHistoryMenuDelegate extends MenuDelegate {
      * @see com.apple.cocoa.application.NSMenu.Delegate
      */
     public int numberOfItemsInMenu(NSMenu menu) {
-        final Path[] history = this.getHistory();
-        if(history.length > 0) {
+        final List history = this.getHistory();
+        if(history.size() > 0) {
             // The number of history plus a delimiter and the 'Clear' menu
-            return history.length + 2;
+            return history.size() + 2;
         }
         return 0;
     }
 
-    public abstract Path[] getHistory();
+    public abstract List getHistory();
 
     /**
      * @see com.apple.cocoa.application.NSMenu.Delegate
      */
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
-        final Path[] history = this.getHistory();
-        if(index < history.length) {
-            Path item = (Path) history[index];
+        final List history = this.getHistory();
+        final int length = history.size();
+        if(index < length) {
+            Path item = (Path) history.get(index);
             // This is a hack. We insert a new NSMenuItem as NSMenu has
             // a bug caching old entries since we introduced the separator item below
             menu.removeItemAtIndex(index);
@@ -75,7 +78,7 @@ public abstract class PathHistoryMenuDelegate extends MenuDelegate {
             menu.insertItemAtIndex(path, index);
             return !shouldCancel;
         }
-        if(index == history.length) {
+        if(index == length) {
             menu.removeItemAtIndex(index);
             // There is no way in this wonderful API to add a separator item
             // without creating a new NSMenuItem first
@@ -83,7 +86,7 @@ public abstract class PathHistoryMenuDelegate extends MenuDelegate {
             menu.insertItemAtIndex(separator, index);
             return !shouldCancel;
         }
-        if(index == history.length + 1) {
+        if(index == length + 1) {
             menu.removeItemAtIndex(index);
             NSMenuItem clear = new NSMenuItem();
             clear.setTitle(NSBundle.localizedString("Clear Menu", ""));
