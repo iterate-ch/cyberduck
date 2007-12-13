@@ -195,9 +195,11 @@ public class DownloadTransfer extends Transfer {
 
         public void prepare(final Path p) {
             if(DownloadTransfer.this.exists(p.getLocal())) {
-                if(0 > NSWorkspace.sharedWorkspace().performFileOperation(NSWorkspace.RecycleOperation,
-                        p.getLocal().getParent().getAbsolute(), "", new NSArray(p.getLocal().getName()))) {
-                    log.warn("Failed to move " + p.getLocal().getAbsolute() + " to Trash");
+                if(p.getLocal().attributes.getSize() > 0) {
+                    if(0 > NSWorkspace.sharedWorkspace().performFileOperation(NSWorkspace.RecycleOperation,
+                            p.getLocal().getParent().getAbsolute(), "", new NSArray(p.getLocal().getName()))) {
+                        log.warn("Failed to move " + p.getLocal().getAbsolute() + " to Trash");
+                    }
                 }
             }
             if(p.attributes.isFile()) {
