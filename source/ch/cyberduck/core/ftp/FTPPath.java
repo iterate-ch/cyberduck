@@ -176,17 +176,22 @@ public class FTPPath extends Path {
                     childs.add(p);
                 }
                 session.FTP.finishDir();
+                boolean dirChanged = false;
                 for(Iterator iter = childs.iterator(); iter.hasNext(); ) {
                     Path p = (Path)iter.next();
                     if(p.attributes.getType() == Path.SYMBOLIC_LINK_TYPE) {
                         try {
                             p.cwdir();
                             p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                            dirChanged = true;
                         }
                         catch(FTPException e) {
                             p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                         }
                     }
+                }
+                if(dirChanged) {
+                    this.cwdir();
                 }
             }
             catch(FTPException e) {
