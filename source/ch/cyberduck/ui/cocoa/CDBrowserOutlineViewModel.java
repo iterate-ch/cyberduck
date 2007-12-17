@@ -52,8 +52,10 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
      * @see NSOutlineView.DataSource
      */
     public boolean outlineViewIsItemExpandable(final NSOutlineView view, final Path item) {
-        log.debug("outlineViewIsItemExpandable:"+item);
-        if (null == item) {
+        if(log.isDebugEnabled()) {
+            log.debug("outlineViewIsItemExpandable:" + item);
+        }
+        if(null == item) {
             return false;
         }
         return item.attributes.isDirectory();
@@ -63,23 +65,25 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
      * @see NSOutlineView.DataSource
      */
     public int outlineViewNumberOfChildrenOfItem(final NSOutlineView view, Path item) {
-        log.debug("outlineViewNumberOfChildrenOfItem:"+item);
-        if (controller.isMounted()) {
-            if (null == item) {
+        if(log.isDebugEnabled()) {
+            log.debug("outlineViewNumberOfChildrenOfItem:" + item);
+        }
+        if(controller.isMounted()) {
+            if(null == item) {
                 return this.childs(controller.workdir()).size();
             }
             NSEvent event = NSApplication.sharedApplication().currentEvent();
-            if (event != null) {
-                log.debug("Event:"+event.type());
+            if(event != null) {
+                log.debug("Event:" + event.type());
                 if(NSEvent.LeftMouseDragged == event.type()) {
                     final int draggingColumn = view.columnAtPoint(view.convertPointFromView(event.locationInWindow(), null));
                     if(draggingColumn != 0) {
-                        log.debug("Returning 0 to #outlineViewNumberOfChildrenOfItem for column:"+draggingColumn);
+                        log.debug("Returning 0 to #outlineViewNumberOfChildrenOfItem for column:" + draggingColumn);
                         // See ticket #60
                         return 0;
                     }
                     if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
-                        log.debug("Returning 0 to #outlineViewNumberOfChildrenOfItem:"+item.getName()+" while dragging because browser.view.autoexpand == false");
+                        log.debug("Returning 0 to #outlineViewNumberOfChildrenOfItem:" + item.getName() + " while dragging because browser.view.autoexpand == false");
                         // See tickets #98 and #633
                         return 0;
                     }
@@ -92,19 +96,19 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
 
     /**
      * @see NSOutlineView.DataSource
-     * Invoked by outlineView, and returns the child item at the specified index. Children
-     * of a given parent item are accessed sequentially. If item is null, this method should
-     * return the appropriate child item of the root object
+     *      Invoked by outlineView, and returns the child item at the specified index. Children
+     *      of a given parent item are accessed sequentially. If item is null, this method should
+     *      return the appropriate child item of the root object
      */
     public Path outlineViewChildOfItem(final NSOutlineView outlineView, int index, Path item) {
-        if (null == item) {
+        if(null == item) {
             item = controller.workdir();
         }
         List childs = this.childs(item);
-        if (index < childs.size()) {
+        if(index < childs.size()) {
             return (Path) childs.get(index);
         }
-        log.warn("outlineViewChildOfItem: Index "+index+" out of bounds for "+item);
+        log.warn("outlineViewChildOfItem: Index " + index + " out of bounds for " + item);
         return null;
     }
 
@@ -127,11 +131,13 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
      * @see NSOutlineView.DataSource
      */
     public int outlineViewValidateDrop(final NSOutlineView outlineView, final NSDraggingInfo info, Path destination, int row) {
-        if (controller.isMounted()) {
+        if(controller.isMounted()) {
             if(null != destination) {
                 final int draggingColumn = outlineView.columnAtPoint(info.draggingLocation());
                 if(draggingColumn != 0) {
-                    log.debug("Drag operation none over column:"+draggingColumn);
+                    if(log.isDebugEnabled()) {
+                        log.debug("Drag operation none over column:" + draggingColumn);
+                    }
                     return NSDraggingInfo.DragOperationNone;
                 }
                 if(destination.attributes.isDirectory()) {
@@ -151,8 +157,8 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
      * @see NSOutlineView.DataSource
      */
     public boolean outlineViewAcceptDrop(final NSOutlineView outlineView, final NSDraggingInfo info, Path destination, int row) {
-        if (controller.isMounted()) {
-            if (null == destination) {
+        if(controller.isMounted()) {
+            if(null == destination) {
                 destination = controller.workdir();
             }
             return super.acceptDrop(outlineView, destination, info);

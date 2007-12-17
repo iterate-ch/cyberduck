@@ -18,28 +18,18 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
-
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSDraggingInfo;
-import com.apple.cocoa.application.NSDraggingSource;
-import com.apple.cocoa.application.NSEvent;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSPasteboard;
-import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.application.NSView;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import org.apache.log4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -76,38 +66,39 @@ public abstract class CDBrowserTableDataSource extends NSObject {
      * @pre Call from the main thread
      */
     protected AttributedList childs(final Path path) {
-        log.debug("childs:"+path);
+        if(log.isDebugEnabled()) {
+            log.debug("childs:" + path);
+        }
         // Check first if it hasn't been already requested so we don't spawn
         // a multitude of unecessary threads
         synchronized(isLoadingListingInBackground) {
             if(!isLoadingListingInBackground.contains(path)) {
-        if(!path.isCached() || path.cache().get(path).attributes().isDirty()) {
+                if(!path.isCached() || path.cache().get(path).attributes().isDirty()) {
                     isLoadingListingInBackground.add(path);
-            // Reloading a workdir that is not cached yet would cause the interface to freeze;
-            // Delay until path is cached in the background
+                    // Reloading a workdir that is not cached yet would cause the interface to freeze;
+                    // Delay until path is cached in the background
 
-            controller.background(new BackgroundAction() {
-                public void run() {
-                    log.debug("childs#run");
-                    path.childs();
-                }
+                    controller.background(new BackgroundAction() {
+                        public void run() {
+                            log.debug("childs#run");
+                            path.childs();
+                        }
 
-                public void cleanup() {
-                    log.debug("childs#cleanup");
+                        public void cleanup() {
+                            log.debug("childs#cleanup");
                             synchronized(isLoadingListingInBackground) {
                                 isLoadingListingInBackground.remove(path);
                                 if(path.isCached() && isLoadingListingInBackground.isEmpty()) {
                                     if(controller.isConnected()) {
                                         controller.reloadData(true);
-                }
+                                    }
                                 }
                             }
                         }
-            });
-        }
-        else {
-            return path.childs(controller.getComparator(), controller.getFileFilter());
-        }
+                    });
+                } else {
+                    return path.childs(controller.getComparator(), controller.getFileFilter());
+                }
             }
         }
         log.warn("No cached listing for " + path.getName());
@@ -334,9 +325,8 @@ public abstract class CDBrowserTableDataSource extends NSObject {
         if(destination.equals(controller.workdir())) {
             log.debug("setDropRowAndDropOperation:-1");
             view.setDropRowAndDropOperation(-1, NSTableView.DropOn);
-        }
-        else if(destination.attributes.isDirectory()) {
-            log.debug("setDropRowAndDropOperation:"+row);
+        } else if(destination.attributes.isDirectory()) {
+            log.debug("setDropRowAndDropOperation:" + row);
             view.setDropRowAndDropOperation(row, NSTableView.DropOn);
         }
     }
@@ -362,15 +352,12 @@ public abstract class CDBrowserTableDataSource extends NSObject {
                     if(promisedDragPaths[i].attributes.isFile()) {
                         if(promisedDragPaths[i].getExtension() != null) {
                             fileTypes.addObject(promisedDragPaths[i].getExtension());
-                        }
-                        else {
+                        } else {
                             fileTypes.addObject(NSPathUtilities.FileTypeRegular);
                         }
-                    }
-                    else if(promisedDragPaths[i].attributes.isDirectory()) {
+                    } else if(promisedDragPaths[i].attributes.isDirectory()) {
                         fileTypes.addObject("'fldr'");
-                    }
-                    else {
+                    } else {
                         fileTypes.addObject(NSPathUtilities.FileTypeUnknown);
                     }
                     roots.add(promisedDragPaths[i]);
