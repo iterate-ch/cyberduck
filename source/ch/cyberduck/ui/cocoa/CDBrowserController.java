@@ -1638,13 +1638,13 @@ public class CDBrowserController extends CDWindowController
         this.navigationButton.setTarget(this);
         this.navigationButton.setAction(new NSSelector("navigationButtonClicked", new Class[]{Object.class}));
 
-        navigationBackMenu = new NSMenu();
-        navigationBackMenu.setDelegate(navigationBackMenuDelegate = new BackPathHistoryMenuDelegate(this));
-        this.navigationButton.setMenu(navigationBackMenu, NAVIGATION_LEFT_SEGMENT_BUTTON);
+        this.navigationBackMenu = new NSMenu();
+        this.navigationBackMenu.setDelegate(this.navigationBackMenuDelegate = new BackPathHistoryMenuDelegate(this));
+        this.navigationButton.setMenu(this.navigationBackMenu, NAVIGATION_LEFT_SEGMENT_BUTTON);
 
-        navigationForwardMenu = new NSMenu();
-        navigationForwardMenu.setDelegate(navigationForwardMenuDelegate = new ForwardPathHistoryMenuDelegate(this));
-        this.navigationButton.setMenu(navigationForwardMenu, NAVIGATION_RIGHT_SEGMENT_BUTTON);
+        this.navigationForwardMenu = new NSMenu();
+        this.navigationForwardMenu.setDelegate(this.navigationForwardMenuDelegate = new ForwardPathHistoryMenuDelegate(this));
+        this.navigationButton.setMenu(this.navigationForwardMenu, NAVIGATION_RIGHT_SEGMENT_BUTTON);
     }
 
     public void navigationButtonClicked(NSSegmentedControl sender) {
@@ -3271,19 +3271,17 @@ public class CDBrowserController extends CDWindowController
         if(this.isMounted()) {
             if(this.session.getHost().getURL().equals(host.getURL())) {
                 // The host is already mounted
-                if(host.hasReasonableDefaultPath()) {
-                    // Change to its default path
-                    this.background(new BackgroundAction() {
-                        public void run() {
-                            setWorkdir(session.mount(host.getDefaultPath()));
-                        }
+                this.background(new BackgroundAction() {
+                    public void run() {
+                        // Change to its default path
+                        setWorkdir(session.mount(host.getDefaultPath()));
+                    }
 
-                        public void cleanup() {
-                            ;
-                        }
-                    });
+                    public void cleanup() {
+                        ;
+                    }
+                });
                     return session;
-                }
             }
         }
         if(this.unmount(new CDSheetCallback() {
@@ -3364,15 +3362,7 @@ public class CDBrowserController extends CDWindowController
             if(this.isBusy()) {
                 this.interrupt();
             }
-            this.background(new BackgroundAction() {
-                public void run() {
-                    unmount(true);
-                }
-
-                public void cleanup() {
-                    ;
-                }
-            });
+            unmount(true);
         }
         // Unmount succeeded
         return true;
