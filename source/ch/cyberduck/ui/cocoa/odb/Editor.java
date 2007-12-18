@@ -31,6 +31,7 @@ import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import org.apache.log4j.Logger;
 
 import java.util.Enumeration;
+import java.io.File;
 
 /**
  * @version $Id$
@@ -71,9 +72,8 @@ public abstract class Editor extends CDController {
     public void open(Path path) {
         edited = (Path) path.clone();
 
-        Local folder = new Local(
-                TEMPORARY_DIRECTORY,
-                edited.getParent().getAbsolute());
+        Local folder = new Local(new File(TEMPORARY_DIRECTORY.getAbsolute(),
+                edited.getParent().getAbsolute()));
         folder.mkdir(true);
 
         String filename = edited.getName();
