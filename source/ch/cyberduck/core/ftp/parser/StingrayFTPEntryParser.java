@@ -83,92 +83,13 @@ public class StingrayFTPEntryParser extends CommonUnixFTPEntryParser {
      * @return An FTPFile instance corresponding to the supplied entry
      */
     public FTPFile parseFTPEntry(String entry) {
-        FTPFile file = new FTPFile();
-        file.setRawListing(entry);
-        int type;
-        boolean isDevice = false;
-
         if (matches(entry)) {
             String typeStr = group(1);
             String filesize = group(18);
             String datestr = group(19) + " " + group(20);
             String name = group(21);
             String endtoken = group(22);
-
-            try {
-                file.setTimestamp(super.parseTimestamp(datestr));
-            }
-            catch (ParseException e) {
-                return null;  // this is a parsing failure too.
-            }
-
-            // bcdlfmpSs-
-            switch (typeStr.charAt(0)) {
-                case 'd':
-                    type = FTPFile.DIRECTORY_TYPE;
-                    break;
-                case 'l':
-                    type = FTPFile.SYMBOLIC_LINK_TYPE;
-                    break;
-                case 'b':
-                case 'c':
-                    isDevice = true;
-                    // break; - fall through
-                case 'f':
-                case '-':
-                    type = FTPFile.FILE_TYPE;
-                    break;
-                default:
-                    type = FTPFile.UNKNOWN_TYPE;
-            }
-
-            file.setType(type);
-
-            int g = 4;
-            for (int access = 0; access < 3; access++, g += 4) {
-                // Use != '-' to avoid having to check for suid and sticky bits
-                file.setPermission(access, FTPFile.READ_PERMISSION,
-                        (!group(g).equals("-")));
-                file.setPermission(access, FTPFile.WRITE_PERMISSION,
-                        (!group(g + 1).equals("-")));
-
-                String execPerm = group(g + 2);
-                if (!execPerm.equals("-") && !Character.isUpperCase(execPerm.charAt(0))) {
-                    file.setPermission(access, FTPFile.EXECUTE_PERMISSION, true);
-                } else {
-                    file.setPermission(access, FTPFile.EXECUTE_PERMISSION, false);
-                }
-            }
-
-            try {
-                file.setSize(Long.parseLong(filesize));
-            }
-            catch (NumberFormatException e) {
-                // intentionally do nothing
-            }
-
-            if (null == endtoken) {
-                file.setName(name);
-            } else {
-                // oddball cases like symbolic links, file names
-                // with spaces in them.
-                name += endtoken;
-                if (type == FTPFile.SYMBOLIC_LINK_TYPE) {
-
-                    int end = name.indexOf(" -> ");
-                    // Give up if no link indicator is present
-                    if (end == -1) {
-                        file.setName(name);
-                    } else {
-                        file.setName(name.substring(0, end));
-                        file.setLink(name.substring(end + 4));
-                    }
-
-                } else {
-                    file.setName(name);
-                }
-            }
-            return file;
+            return parseFTPEntry(typeStr, null, null, filesize, datestr, name, endtoken);
         }
         return null;
     }

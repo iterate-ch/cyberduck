@@ -1673,6 +1673,7 @@ source/ch/cyberduck/core/Speedometer.java -text
 source/ch/cyberduck/core/forker/NSString+CarbonFSRefCreation.m -text
 source/ch/cyberduck/core/ftp/parser/CommonUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/StingrayFTPEntryParser.java -text
+source/ch/cyberduck/core/ftp/parser/TrellixFTPEntryParser.java -text
 source/ch/cyberduck/core/io/AbstractFileWatcherListener.java -text
 source/ch/cyberduck/core/io/FileWatcher.m -text
 source/ch/cyberduck/core/io/UKFileWatcher.h -text
