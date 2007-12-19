@@ -20,7 +20,8 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.ftp.parser.EPLFFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
-import ch.cyberduck.core.ftp.parser.StingrayFTPEntryParser;
+import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
+import ch.cyberduck.core.ftp.parser.TrellixFTPEntryParser;
 
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
@@ -36,7 +37,10 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
     public FTPFileEntryParser createFileEntryParser(String key) throws ParserInitializationException {
         if(null != key) {
             String ukey = key.toUpperCase();
-            if(ukey.indexOf(FTPClientConfig.SYST_UNIX) >= 0) {
+            if(ukey.indexOf("TRELLIX") >= 0) {
+                return createTrellixFTPEntryParser();
+            }
+            else if(ukey.indexOf(FTPClientConfig.SYST_UNIX) >= 0) {
                 return this.createUnixFTPEntryParser();
             }
             else if(ukey.indexOf(FTPClientConfig.SYST_VMS) >= 0) {
@@ -58,11 +62,22 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
                 return this.createMVSEntryParser();
             }
             else if(ukey.indexOf("MACOS") >= 0) {
-                return this.createStingrayFTPEntryParser();
+                return this.createRumpusFTPEntryParser();
+            }
+            else if(ukey.indexOf("OSWALD") >= 0) {
+                return this.createRumpusFTPEntryParser();
             }
         }
         // Defaulting to UNIX parser
         return this.createUnixFTPEntryParser();
+    }
+
+    private FTPFileEntryParser createTrellixFTPEntryParser() {
+        return new CompositeFileEntryParser(new FTPFileEntryParser[]
+                {
+                        new TrellixFTPEntryParser(),
+                        this.createUnixFTPEntryParser()
+                });
     }
 
     public FTPFileEntryParser createFileEntryParser(FTPClientConfig config) throws ParserInitializationException {
@@ -115,11 +130,11 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
         return new MVSFTPEntryParser();
     }
 
-    private FTPFileEntryParser createStingrayFTPEntryParser() {
+    private FTPFileEntryParser createRumpusFTPEntryParser() {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
                         this.createUnixFTPEntryParser(),
-                        new StingrayFTPEntryParser()
+                        new RumpusFTPEntryParser()
                 });
     }
 }

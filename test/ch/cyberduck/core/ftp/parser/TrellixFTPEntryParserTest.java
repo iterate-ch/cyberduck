@@ -47,7 +47,7 @@ public class TrellixFTPEntryParserTest extends TestCase {
         super.tearDown();
     }
 
-    public void testTrellix() throws Exception {
+    public void testParse() throws Exception {
         FTPFile parsed = null;
 
         //#1213
@@ -60,9 +60,18 @@ public class TrellixFTPEntryParserTest extends TestCase {
         assertEquals(10439, parsed.getSize());
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.APRIL);
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 20);
+        assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION));
+        assertTrue(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION));
+        assertTrue(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION));
+        assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION));
+        assertFalse(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION));
+        assertFalse(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION));
+        assertFalse(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION));
+        assertFalse(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION));
+        assertFalse(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION));
     }
 
     public static Test suite() {
-        return new TestSuite(UnixFTPEntryParserTest.class);
+        return new TestSuite(TrellixFTPEntryParserTest.class);
     }
 }

@@ -22,7 +22,7 @@ import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
-import ch.cyberduck.core.ftp.parser.StingrayFTPEntryParser;
+import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.parser.NetwareFTPEntryParser;
@@ -175,7 +175,7 @@ public class FTPSession extends Session {
             // Cache the value as it might get queried frequently
             parsers.put(delegate, Boolean.valueOf(delegate instanceof UnixFTPEntryParser
                     || delegate instanceof NetwareFTPEntryParser
-                    || delegate instanceof StingrayFTPEntryParser)
+                    || delegate instanceof RumpusFTPEntryParser)
             );
         }
         return ((Boolean) parsers.get(delegate)).booleanValue();

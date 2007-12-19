@@ -18,21 +18,23 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
-import junit.framework.TestCase;
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import ch.cyberduck.core.ftp.FTPParserFactory;
+
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.FTPFile;
-import ch.cyberduck.core.ftp.FTPParserFactory;
 
 import java.util.Calendar;
 
-/**
- * @version $Id: StingrayFTPEntryParserTest.java 2042 2006-04-23 01:39:32Z dkocher $
- */
-public class StingrayFTPEntryParserTest extends TestCase {
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import junit.framework.TestCase;
 
-    public StingrayFTPEntryParserTest(String name) {
+/**
+ * @version $Id:$
+ */
+public class RumpusFTPEntryParserTest extends TestCase {
+
+    public RumpusFTPEntryParserTest(String name) {
         super(name);
     }
 
@@ -50,37 +52,54 @@ public class StingrayFTPEntryParserTest extends TestCase {
     public void testParse() throws Exception {
         FTPFile parsed = null;
 
-        //#1198
         parsed = parser.parseFTPEntry(
-                "dr--r--r--                folder          0 Aug  1 10:18 TestCyberduck"
+                "drwxr-xr-x               folder        0 Oct 18 13:02 Akrilik"
         );
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "TestCyberduck");
+        assertEquals(parsed.getName(), "Akrilik");
         assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.AUGUST);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 1);
+        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.OCTOBER);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 18);
         assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION));
-        assertFalse(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION));
+        assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION));
         assertFalse(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION));
         assertFalse(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION));
-        assertFalse(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION));
-        assertFalse(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION));
-        assertFalse(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION));
+        assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION));
+        assertTrue(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION));
+        assertTrue(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION));
 
         parsed = parser.parseFTPEntry(
-                "-r--r--r--          0     165100     165100 Aug  1 10:24 grau2.tif"
+                "drwxrwxrwx               folder        0 Oct 11 14:53 Uploads"
         );
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "grau2.tif");
-        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.AUGUST);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 1);
+        assertEquals(parsed.getName(), "Uploads");
+        assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
+        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.OCTOBER);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 11);
         assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION));
-        assertFalse(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION));
+        assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION));
+        assertTrue(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION));
+        assertTrue(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION));
+        assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION));
+        assertTrue(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION));
+        assertTrue(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION));
+
+        parsed = parser.parseFTPEntry(
+                "-rw-r--r--        0      589878   589878 Oct 15 13:03 WebDAV SS.bmp"
+        );
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), "WebDAV SS.bmp");
+        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
+        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.OCTOBER);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 15);
+        assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION));
+        assertTrue(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION));
+        assertTrue(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION));
+        assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION));
         assertFalse(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION));
         assertFalse(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION));
         assertFalse(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION));
@@ -89,6 +108,6 @@ public class StingrayFTPEntryParserTest extends TestCase {
     }
 
     public static Test suite() {
-        return new TestSuite(StingrayFTPEntryParserTest.class);
+        return new TestSuite(RumpusFTPEntryParserTest.class);
     }
 }

@@ -26,7 +26,7 @@ import java.text.ParseException;
  * @version $Id: StingrayFTPEntryParser.java 3171 2007-07-16 10:30:28Z dkocher $
  * @see org.apache.commons.net.ftp.parser.UnixFTPEntryParser
  */
-public class StingrayFTPEntryParser extends CommonUnixFTPEntryParser {
+public class RumpusFTPEntryParser extends CommonUnixFTPEntryParser {
 
     /**
      * this is the regular expression used by this parser.
@@ -67,7 +67,7 @@ public class StingrayFTPEntryParser extends CommonUnixFTPEntryParser {
      *                                  under normal conditions.  It it is seen, this is a sign that
      *                                  <code>REGEX</code> is  not a valid regular expression.
      */
-    public StingrayFTPEntryParser() {
+    public RumpusFTPEntryParser() {
         super(REGEX);
     }
 
