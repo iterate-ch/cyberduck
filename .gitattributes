@@ -1751,6 +1751,7 @@ test/ch/cyberduck/core/ftp/parser/FreeboxFTPEntryParserTest.java -text
 test/ch/cyberduck/core/ftp/parser/RumpusFTPEntryParserTest.java -text
 test/ch/cyberduck/core/ftp/parser/StingrayFTPEntryParserTest.java -text
 test/ch/cyberduck/core/ftp/parser/TrellixFTPEntryParserTest.java -text
+test/ch/cyberduck/core/ftp/parser/WebstarFTPEntryParserTest.java -text
 th.lproj/Alert.nib/classes.nib -text
 th.lproj/Alert.nib/data.dependency -text
 th.lproj/Alert.nib/info.nib -text

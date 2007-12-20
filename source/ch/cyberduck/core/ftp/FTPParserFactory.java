@@ -133,8 +133,8 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
     private FTPFileEntryParser createRumpusFTPEntryParser() {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
-                        this.createUnixFTPEntryParser(),
-                        new RumpusFTPEntryParser()
+                        new RumpusFTPEntryParser(),
+                        this.createUnixFTPEntryParser()
                 });
     }
 }
