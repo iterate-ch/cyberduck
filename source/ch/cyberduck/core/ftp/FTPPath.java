@@ -41,6 +41,7 @@ import java.io.OutputStream;
 import java.io.BufferedReader;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Calendar;
 
 /**
  * @version $Id$
@@ -171,7 +172,10 @@ public class FTPPath extends Path {
                                 }
                         ));
                     }
-                    p.attributes.setModificationDate(f.getTimestamp().getTimeInMillis());
+                    final Calendar timestamp = f.getTimestamp();
+                    if(timestamp != null) {
+                        p.attributes.setModificationDate(timestamp.getTimeInMillis());
+                    }
                     p.status.setSkipped(this.status.isSkipped());
                     childs.add(p);
                 }
