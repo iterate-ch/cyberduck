@@ -4,10 +4,14 @@ http://cyberduck.ch/
 Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
+2.8.3 [http://trac.cyberduck.ch/query?status=closed&milestone=2.8.3]
+- [Feature] Added MacVim to the list of supported editors (http://code.google.com/p/macvim/) [#1322]
+- [Bugfix] Directory parser compatibility (FTP) [#1412, #1270, #1302, #1076, #1172, #1213, #1253, #1258, #1284, #1331]
+- [Bugfix] Does not change to correct directory when using a bookmark to the same server [#1411]
+
 2.8.2 [http://trac.cyberduck.ch/query?status=closed&milestone=2.8.2]
 - [Feature] Show transfer progress when using browser session [#1313]
 - [Feature] Accept relative paths in bookmark setting [#1167]
-- [Feature] Added MacVim to the list of supported editors (http://slashpunt.org/vim/) [#1322]
 - [Feature] Ugly folder icons rendered (10.5)
 - [Feature] Back and forward history menu for browser navigation buttons [#1080]
 - [Bugfix] Writing corrupted entries to the Keychain [#1354]
