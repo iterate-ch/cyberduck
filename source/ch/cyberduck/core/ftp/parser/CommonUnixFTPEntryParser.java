@@ -18,9 +18,10 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.commons.net.ftp.parser.ConfigurableFTPFileEntryParserImpl;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.parser.ConfigurableFTPFileEntryParserImpl;
+import org.apache.log4j.Logger;
 
 import java.text.ParseException;
 
@@ -28,6 +29,7 @@ import java.text.ParseException;
  * @version $Id:$
  */
 public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryParserImpl {
+    private static Logger log = Logger.getLogger(CommonUnixFTPEntryParser.class);
 
     static final String DEFAULT_DATE_FORMAT
             = "MMM d yyyy"; //Nov 9 2001
@@ -57,7 +59,6 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
                     null, null, null, null);
 
     /**
-     *
      * @param REGEX
      */
     public CommonUnixFTPEntryParser(String REGEX) {
@@ -72,26 +73,38 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
      * @return the default configuration for this parser.
      */
     protected FTPClientConfig getDefaultConfiguration() {
-        return new FTPClientConfig(
+        final FTPClientConfig config = new FTPClientConfig(
                 FTPClientConfig.SYST_UNIX,
                 DEFAULT_DATE_FORMAT,
                 DEFAULT_RECENT_DATE_FORMAT,
                 null, null, null);
+        config.setLenientFutureDates(true);
+        return config;
     }
 
     protected FTPFile parseFTPEntry(String typeStr, String usr, String grp, String filesize, String datestr, String name, String endtoken) {
+        try {
+            return this.parseFTPEntry(typeStr, usr, grp, Long.parseLong(filesize), datestr, name, endtoken);
+        }
+        catch(NumberFormatException e) {
+            // intentionally do nothing
+        }
+        return this.parseFTPEntry(typeStr, usr, grp, -1, datestr, name, endtoken);
+    }
+
+    protected FTPFile parseFTPEntry(String typeStr, String usr, String grp, long filesize, String datestr, String name, String endtoken) {
         FTPFile file = new FTPFile();
         int type;
         boolean isDevice;
         try {
             file.setTimestamp(super.parseTimestamp(datestr));
         }
-        catch (ParseException e) {
-            return null;  // this is a parsing failure too.
+        catch(ParseException e) {
+            log.warn(e.getMessage());
         }
 
         // bcdlfmpSs-
-        switch (typeStr.charAt(0)) {
+        switch(typeStr.charAt(0)) {
             case 'd':
                 type = FTPFile.DIRECTORY_TYPE;
                 break;
@@ -115,7 +128,7 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
         file.setGroup(grp);
 
         int g = 4;
-        for (int access = 0; access < 3; access++, g += 4) {
+        for(int access = 0; access < 3; access++, g += 4) {
             // Use != '-' to avoid having to check for suid and sticky bits
             file.setPermission(access, FTPFile.READ_PERMISSION,
                     (!group(g).equals("-")));
@@ -123,31 +136,26 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
                     (!group(g + 1).equals("-")));
 
             String execPerm = group(g + 2);
-            if (!execPerm.equals("-") && !Character.isUpperCase(execPerm.charAt(0))) {
+            if(!execPerm.equals("-") && !Character.isUpperCase(execPerm.charAt(0))) {
                 file.setPermission(access, FTPFile.EXECUTE_PERMISSION, true);
             } else {
                 file.setPermission(access, FTPFile.EXECUTE_PERMISSION, false);
             }
         }
 
-        try {
-            file.setSize(Long.parseLong(filesize));
-        }
-        catch (NumberFormatException e) {
-            // intentionally do nothing
-        }
+        file.setSize(filesize);
 
-        if (null == endtoken) {
+        if(null == endtoken) {
             file.setName(name);
         } else {
             // oddball cases like symbolic links, file names
             // with spaces in them.
             name += endtoken;
-            if (type == FTPFile.SYMBOLIC_LINK_TYPE) {
+            if(type == FTPFile.SYMBOLIC_LINK_TYPE) {
 
                 int end = name.indexOf(" -> ");
                 // Give up if no link indicator is present
-                if (end == -1) {
+                if(end == -1) {
                     file.setName(name);
                 } else {
                     file.setName(name.substring(0, end));

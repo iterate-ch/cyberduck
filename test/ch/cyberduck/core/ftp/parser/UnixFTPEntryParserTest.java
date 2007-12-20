@@ -18,10 +18,6 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import ch.cyberduck.core.ftp.FTPParserFactory;
 
 import org.apache.commons.net.ftp.FTPFile;
@@ -29,32 +25,31 @@ import org.apache.commons.net.ftp.FTPFileEntryParser;
 
 import java.util.Calendar;
 
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
 /**
  * @version $Id$
  */
-public class UnixFTPEntryParserTest extends TestCase
-{
+public class UnixFTPEntryParserTest extends TestCase {
 
-    public UnixFTPEntryParserTest(String name)
-    {
+    public UnixFTPEntryParserTest(String name) {
         super(name);
     }
 
-    private FTPFileEntryParser parser;
 
+    public void setUp() throws Exception {
 
-    public void setUp() throws Exception
-    {
-        this.parser = new FTPParserFactory().createFileEntryParser("UNIX");
     }
 
-    public void tearDown() throws Exception
-    {
+    public void tearDown() throws Exception {
         super.tearDown();
     }
 
-    public void testParseFTPEntryExpected() throws Exception
-    {
+    public void testParseFTPEntryExpected() throws Exception {
+        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+
         FTPFile parsed = null;
 
         parsed = parser.parseFTPEntry(
@@ -75,6 +70,8 @@ public class UnixFTPEntryParserTest extends TestCase
      * http://trac.cyberduck.ch/ticket/1066
      */
     public void testParseNameWithBeginningWhitespace() {
+        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+
         FTPFile parsed = null;
 
         parsed = parser.parseFTPEntry(
@@ -87,6 +84,8 @@ public class UnixFTPEntryParserTest extends TestCase
      * http://trac.cyberduck.ch/ticket/1118
      */
     public void testParseNameWithEndingWhitespace() {
+        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+
         FTPFile parsed = null;
 
         parsed = parser.parseFTPEntry(
@@ -97,19 +96,49 @@ public class UnixFTPEntryParserTest extends TestCase
 
     /**
      * http://trac.cyberduck.ch/ticket/1076
+     *
      * @throws Exception
      */
     public void testSizeWithIndicator() throws Exception {
+        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+
         FTPFile parsed = null;
 
         parsed = parser.parseFTPEntry(
-                "-rw-rw-rw- 1 ftp operator 9.0M Mar 22 17:44 Cyberduck-2.7.3.dmg");
+                "-rw-rw-rw- 1 ftp operator 9.0M Mar 22 17:44 Cyberduck-2.7.3.dmg"
+        );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "Cyberduck-2.7.3.dmg");
-        assertTrue(parsed.getSize() == 9.0*(2^20));
+        assertTrue(parsed.getSize() == (long)(9.0 * 1048576));
+        assertEquals(parsed.getUser(), "ftp");
+        assertEquals(parsed.getGroup(), "operator");
+        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MARCH);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 22);
+
+        parsed = parser.parseFTPEntry(
+                "-rw-rw-rw- 1 ftp operator 61.8M Mar 7 18:42 GC Wayfinding pics.zip "
+        );
+        assertNotNull(parsed);
+        assertTrue(parsed.getSize() == (long)(61.8 * 1048576));
+        assertEquals(parsed.getUser(), "ftp");
+        assertEquals(parsed.getGroup(), "operator");
+        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MARCH);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 7);
+
+        parsed = parser.parseFTPEntry(
+                "-rw-rw-rw- 1 ftp operator 172.4k Mar 7 16:01 HEALY071.TXT "
+        );
+        assertNotNull(parsed);
+        assertTrue(parsed.getSize() == (long)(172.4 * 1024));
+        assertEquals(parsed.getUser(), "ftp");
+        assertEquals(parsed.getGroup(), "operator");
+        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MARCH);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 7);
     }
 
     public void testDoubleWhitespace() throws Exception {
+        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+
         FTPFile parsed = null;
 
         parsed = parser.parseFTPEntry(
@@ -122,8 +151,10 @@ public class UnixFTPEntryParserTest extends TestCase
     }
 
     public void testLowerCaseMonths() throws Exception {
+        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+
         FTPFile parsed = null;
-        
+
         parsed = parser.parseFTPEntry(
                 "drwxrwxrwx    41 spinkb  spinkb      1394 jan 21 20:57 Desktop");
         assertNotNull(parsed);
@@ -136,6 +167,8 @@ public class UnixFTPEntryParserTest extends TestCase
     }
 
     public void testUpperCaseMonths() throws Exception {
+        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+
         FTPFile parsed = null;
 
         parsed = parser.parseFTPEntry(
@@ -150,6 +183,8 @@ public class UnixFTPEntryParserTest extends TestCase
     }
 
     public void testSolarisAcl() throws Exception {
+        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+
         FTPFile parsed = null;
 
         //#215
@@ -164,8 +199,27 @@ public class UnixFTPEntryParserTest extends TestCase
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 12);
     }
 
-    public static Test suite()
-    {
+    public void testUnknownTimestampFormat() throws Exception {
+        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+
+        FTPFile parsed = null;
+
+        parsed = parser.parseFTPEntry(
+                "-rw-rw-rw- 1 hoerspiel hoerspiel  3722053 19. Sep 13:24 Offenbarung 23 - Menschenopfer - 02.mp3"
+        );
+        assertNotNull(parsed);
+
+        parsed = parser.parseFTPEntry(
+                "-rw-rw-rw- 1 hoerspiel hoerspiel 10128531 19. Sep 13:24 Offenbarung 23 - Menschenopfer - 01.mp3"
+        );
+        assertNotNull(parsed);
+        parsed = parser.parseFTPEntry(
+                "-rw-rw-rw- 1 hoerspiel hoerspiel 11714687 19. Sep 13:25 Offenbarung 23 - Menschenopfer - 08.mp3"
+        );
+        assertNotNull(parsed);
+    }
+
+    public static Test suite() {
         return new TestSuite(UnixFTPEntryParserTest.class);
     }
 }

@@ -42,7 +42,7 @@ public class FreeboxFTPEntryParserTest extends TestCase {
 
 
     public void setUp() throws Exception {
-        this.parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        this.parser = new FTPParserFactory().createFileEntryParser("MACOS");
     }
 
     public void tearDown() throws Exception {
@@ -51,6 +51,19 @@ public class FreeboxFTPEntryParserTest extends TestCase {
 
     public void testParse() throws Exception {
         FTPFile parsed = null;
+
+
+        parsed = parser.parseFTPEntry(
+                "-rw-r--r--   1  freebox  freebox 2064965868 Apr 15 21:17 M6 - Capital 15-04-2007 21h37 1h40m.ts"
+        );
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), "M6 - Capital 15-04-2007 21h37 1h40m.ts");
+        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
+        assertEquals("freebox", parsed.getUser());
+        assertEquals("freebox", parsed.getGroup());
+        assertEquals(2064965868, parsed.getSize());
+        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.APRIL);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 15);
 
         parsed = parser.parseFTPEntry(
                 "-rw-r--r--   1  freebox  freebox 75906880 Sep 08 06:33 Direct 8 - Gym direct - 08-09-2007 08h30 1h08m.ts"
@@ -74,16 +87,10 @@ public class FreeboxFTPEntryParserTest extends TestCase {
         assertFalse(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION));
 
         parsed = parser.parseFTPEntry(
-                "-rw-r--r--   1  freebox  freebox 2064965868 Apr 15 21:17 M6 - Capital 15-04-2007 21h37 1h40m.ts"
+                "-rw-r--r--   1  freebox  freebox 1171138668 May 19 17:20 France 3 national - 19-05-2007 18h15 1h05m.ts"
         );
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "M6 - Capital 15-04-2007 21h37 1h40m.ts");
-        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
-        assertEquals("freebox", parsed.getUser());
-        assertEquals("freebox", parsed.getGroup());
-        assertEquals(75906880, parsed.getSize());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.SEPTEMBER);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 8);
+        assertEquals(parsed.getName(), "France 3 national - 19-05-2007 18h15 1h05m.ts");
     }
 
     public static Test suite() {

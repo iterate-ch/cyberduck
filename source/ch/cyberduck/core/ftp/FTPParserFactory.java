@@ -18,10 +18,8 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ftp.parser.EPLFFTPEntryParser;
+import ch.cyberduck.core.ftp.parser.*;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
-import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
-import ch.cyberduck.core.ftp.parser.TrellixFTPEntryParser;
 
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
@@ -87,13 +85,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
     private FTPFileEntryParser createUnixFTPEntryParser() {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
-                        new UnixFTPEntryParser() {
-                            protected FTPClientConfig getDefaultConfiguration() {
-                                FTPClientConfig config = super.getDefaultConfiguration();
-                                config.setLenientFutureDates(true);
-                                return config;
-                            }
-                        },
+                        new LaxUnixFTPEntryParser(),
                         new EPLFFTPEntryParser()
                 });
     }
