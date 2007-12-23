@@ -2908,6 +2908,9 @@ public class CDBrowserController extends CDWindowController
                 log.error(result.valueForKey(errors.nextElement().toString()));
             }
         }
+        NSWorkspace.sharedWorkspace().launchApplication(
+                NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.Terminal")
+        );
     }
 
     /**
