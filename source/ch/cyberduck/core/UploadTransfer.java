@@ -18,14 +18,15 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.io.BandwidthThrottle;
-
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.ui.cocoa.growl.Growl;
+
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Collections;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -282,4 +283,9 @@ public class UploadTransfer extends Transfer {
             }
         });
     }
+
+    protected void fireTransferDidEnd() {
+        Growl.instance().notify("Upload complete", this.getName());
+        super.fireTransferDidEnd();
+    }    
 }

@@ -24,6 +24,7 @@ import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -330,4 +331,12 @@ public class DownloadTransfer extends Transfer {
             }
         });
     }
+
+    protected void fireTransferDidEnd() {
+        Growl.instance().notify("Download complete", this.getName());
+        if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
+            NSWorkspace.sharedWorkspace().openFile(this.getRoot().getLocal().toString());
+        }
+        super.fireTransferDidEnd();
+    }    
 }

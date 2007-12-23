@@ -19,8 +19,11 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.ui.cocoa.growl.Growl;
+
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
+import com.apple.cocoa.application.NSWorkspace;
 
 import java.util.*;
 
@@ -229,6 +232,11 @@ public class SyncTransfer extends Transfer {
             _delegateUpload._transferImpl(p);
         }
     }
+
+    protected void fireTransferDidEnd() {
+        Growl.instance().notify("Synchronization complete", this.getName());
+        super.fireTransferDidEnd();
+    }    
 
     public boolean exists(Path file) {
         if(roots.contains(file)) {

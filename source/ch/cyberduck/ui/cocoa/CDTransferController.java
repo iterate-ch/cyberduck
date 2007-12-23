@@ -616,18 +616,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
             public void cleanup() {
                 if(transfer.isComplete() && !transfer.isCanceled() && !this.hasFailed()) {
-                    if(transfer instanceof DownloadTransfer) {
-                        Growl.instance().notify("Download complete", transfer.getName());
-                        if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
-                            NSWorkspace.sharedWorkspace().openFile(transfer.getRoot().getLocal().toString());
-                        }
-                    }
-                    if(transfer instanceof UploadTransfer) {
-                        Growl.instance().notify("Upload complete", transfer.getName());
-                    }
-                    if(transfer instanceof SyncTransfer) {
-                        Growl.instance().notify("Synchronization complete", transfer.getName());
-                    }
                     if(!hasFailed()) {
                         if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
                             removeTransfer(transfer);

@@ -2620,24 +2620,7 @@ public class CDBrowserController extends CDWindowController
                 private NSTimer progressTimer;
 
                 public void transferDidEnd() {
-                    if(transfer.isComplete() && !transfer.isCanceled()) {
-                        invoke(new Runnable() {
-                            public void run() {
-                                if(transfer instanceof DownloadTransfer) {
-                                    Growl.instance().notify("Download complete", transfer.getName());
-                                    if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
-                                        NSWorkspace.sharedWorkspace().openFile(transfer.getRoot().getLocal().toString());
-                                    }
-                                }
-                                else if(transfer instanceof UploadTransfer) {
-                                    Growl.instance().notify("Upload complete", transfer.getName());
-                                }
-                                else if(transfer instanceof SyncTransfer) {
-                                    Growl.instance().notify("Synchronization complete", transfer.getName());
-                                }
-                            }
-                        });
-                    }
+                    stop(progressTimer);
                 }
 
                 public void willTransferPath(Path path) {
@@ -2647,11 +2630,11 @@ public class CDBrowserController extends CDWindowController
                             meterText = meter.getProgress();
                             updateStatusLabel();
                         }
-                    }, 0.1, true);
+                    }, 0.1);
                 }
 
                 public void didTransferPath(Path path) {
-                    progressTimer.invalidate();
+                    stop(progressTimer);
                     meter.reset();
                 }
 
@@ -3234,12 +3217,14 @@ public class CDBrowserController extends CDWindowController
                 getSelectedBrowserView().setNeedsDisplay();
                 CDBrowserController.this.invoke(new Runnable() {
                     public void run() {
-                        window.setTitle(
-                                (String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
-                        window.setRepresentedFilename(""); //can't send null
-                        window.setDocumentEdited(false);
-                        securityLabel.setImage(NSImage.imageNamed("unlocked.tiff"));
-                        securityLabel.setEnabled(false);
+                        if(isShown()) {
+                            window.setTitle(
+                                    (String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
+                            window.setRepresentedFilename(""); //can't send null
+                            window.setDocumentEdited(false);
+                            securityLabel.setImage(NSImage.imageNamed("unlocked.tiff"));
+                            securityLabel.setEnabled(false);
+                        }
                     }
                 });
             }
@@ -3247,8 +3232,10 @@ public class CDBrowserController extends CDWindowController
             public void activityStarted() {
                 CDBrowserController.this.invoke(new Runnable() {
                     public void run() {
-                        statusLabel.display();
-                        window.toolbar().validateVisibleItems();
+                        if(isShown()) {
+                            statusLabel.display();
+                            window.toolbar().validateVisibleItems();
+                        }
                     }
                 });
             }
@@ -3256,8 +3243,10 @@ public class CDBrowserController extends CDWindowController
             public void activityStopped() {
                 CDBrowserController.this.invoke(new Runnable() {
                     public void run() {
-                        statusLabel.display();
-                        window.toolbar().validateVisibleItems();
+                        if(isShown()) {
+                            statusLabel.display();
+                            window.toolbar().validateVisibleItems();
+                        }
                     }
                 });
             }
