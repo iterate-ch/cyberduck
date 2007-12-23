@@ -160,19 +160,27 @@ public class CDProgressController extends CDController {
                 });
             }
 
+
             public void willTransferPath(final Path path) {
                 meter.reset();
-                progressTimer = new NSTimer(0.1, //seconds
-                        CDProgressController.this, //target
-                        new NSSelector("update", new Class[]{NSTimer.class}),
-                        transfer, //userInfo
-                        true); //repeating
-                CDMainController.mainRunLoop.addTimerForMode(progressTimer,
-                        NSRunLoop.DefaultRunLoopMode);
+                progressTimer = invoke(new Runnable() {
+                    public void run() {
+                        setProgressText();
+                        if(!transfer.isVirgin()) {
+                            progressBar.setIndeterminate(false);
+                            progressBar.setMinValue(0);
+                            progressBar.setMaxValue(transfer.getSize());
+                            progressBar.setDoubleValue(transfer.getTransferred());
+                        }
+                        else if(transfer.isRunning()) {
+                            progressBar.setIndeterminate(true);
+                        }
+                    }
+                }, 0.1, true);
             }
 
             public void didTransferPath(final Path path) {
-                progressTimer.invalidate();
+                stop(progressTimer);
                 meter.reset();
             }
 
@@ -189,24 +197,6 @@ public class CDProgressController extends CDController {
     public void awakeFromNib() {
         this.setProgressText();
         this.setStatusText();
-    }
-
-    /**
-     * Called from the main run loop using a NSTimer #progressTimer
-     *
-     * @param t
-     */
-    public void update(final NSTimer t) {
-        this.setProgressText();
-        if(!transfer.isVirgin()) {
-            progressBar.setIndeterminate(false);
-            progressBar.setMinValue(0);
-            progressBar.setMaxValue(transfer.getSize());
-            progressBar.setDoubleValue(transfer.getTransferred());
-        }
-        else if(transfer.isRunning()) {
-            progressBar.setIndeterminate(true);
-        }
     }
 
     private void setProgressText() {

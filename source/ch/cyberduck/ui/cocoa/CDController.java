@@ -34,7 +34,7 @@ public abstract class CDController extends NSObject {
         instances.addObject(this);
     }
 
-    protected static final NSMutableArray instances
+    private static final NSMutableArray instances
             = new NSMutableArray();
 
     private final NSMutableArray timers
@@ -45,26 +45,38 @@ public abstract class CDController extends NSObject {
      *
      * @param runnable The <code>Runnable</code> to run
      */
-    public void invoke(Runnable runnable) {
-        this.invoke(runnable, 0f);
+    public NSTimer invoke(final Runnable runnable) {
+        return this.invoke(runnable, false);
+    }
+
+
+    public NSTimer invoke(final Runnable runnable, final boolean repeating) {
+        return this.invoke(runnable, 0, repeating);
     }
 
     /**
      * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
      *
      * @param runnable The <code>Runnable</code> to run
-     * @param delay    Number of seconds to delay the execution
      */
-    protected void invoke(Runnable runnable, float delay) {
-        NSTimer timer = new NSTimer(delay, this,
+    protected NSTimer invoke(final Runnable runnable, final double interval, final boolean repeating) {
+        final NSTimer timer = new NSTimer(interval, this,
                 new NSSelector("post", new Class[]{NSTimer.class}),
                 runnable,
-                false //automatically invalidate
+                repeating //automatically invalidate
         );
         synchronized(timers) {
             timers.addObject(timer);
             CDMainController.mainRunLoop.addTimerForMode(timer,
                     NSRunLoop.DefaultRunLoopMode);
+        }
+        return timer;
+    }
+
+    protected void stop(final NSTimer timer) {
+        timer.invalidate();
+        synchronized(timers) {
+            timers.removeObject(timer);
         }
     }
 
@@ -80,12 +92,11 @@ public abstract class CDController extends NSObject {
             if(info instanceof Runnable) {
                 ((Runnable) info).run();
             }
-            synchronized(timers) {
-                timers.removeObject(timer);
-            }
         }
         finally {
-            timer.invalidate();
+            if(timer.timeInterval() == 0) {
+                this.stop(timer);
+            }
         }
     }
 

@@ -23,6 +23,7 @@ import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ftps.FTPSSession;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.cocoa.delegate.*;
@@ -2641,13 +2642,12 @@ public class CDBrowserController extends CDWindowController
 
                 public void willTransferPath(Path path) {
                     meter.reset();
-                    progressTimer = new NSTimer(0.1, //seconds
-                            this, //target
-                            new NSSelector("updateProgress", new Class[]{NSTimer.class}),
-                            transfer, //userInfo
-                            true); //repeating
-                    CDMainController.mainRunLoop.addTimerForMode(progressTimer,
-                            NSRunLoop.DefaultRunLoopMode);
+                    progressTimer = invoke(new Runnable() {
+                        public void run() {
+                            meterText = meter.getProgress();
+                            updateStatusLabel();
+                        }
+                    }, 0.1, true);
                 }
 
                 public void didTransferPath(Path path) {
@@ -2657,11 +2657,6 @@ public class CDBrowserController extends CDWindowController
 
                 public void bandwidthChanged(BandwidthThrottle bandwidth) {
                     meter.reset();
-                }
-
-                public void updateProgress(final NSTimer t) {
-                    meterText = meter.getProgress();
-                    updateStatusLabel();
                 }
             });
             this.addListener(new CDWindowListener() {
@@ -2880,6 +2875,38 @@ public class CDBrowserController extends CDWindowController
         pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
         if(!pboard.setStringForType(url, NSPasteboard.StringPboardType)) {
             log.error("Error writing URL to NSPasteboard.StringPboardType.");
+        }
+    }
+
+    public void openTerminalButtonClicked(final Object sender) {
+        final boolean identity = this.getSession().getHost().getCredentials().usesPublicKeyAuthentication();
+        final String workdir;
+        if(this.getSelectionCount() == 1) {
+            workdir = this.getSelectedPath().getAbsolute();
+        }
+        else {
+            workdir = this.getWorkingDirectory();
+        }
+        final String command
+                = "tell application \"Terminal\"\n"
+                + "do script \"ssh -t "
+                + (identity ? "-i " + new Local(this.getSession().getHost().getCredentials().getPrivateKeyFile()).getAbsolute() : "")
+                + " "
+                + this.getSession().getHost().getCredentials().getUsername()
+                + "@"
+                + this.getSession().getHost().getHostname()
+                + " "
+                + "\\\"cd "+ workdir +" && exec \\\\$SHELL\\\"\""
+                + "\n"
+                + "end tell";
+        NSAppleScript as = new NSAppleScript(command);
+        final NSMutableDictionary result = new NSMutableDictionary();
+        as.execute(result);
+        if(!(result.count() == 0)) {
+            final Enumeration errors = result.keyEnumerator();
+            while(errors.hasMoreElements()) {
+                log.error(result.valueForKey(errors.nextElement().toString()));
+            }
         }
     }
 
@@ -3729,6 +3756,9 @@ public class CDBrowserController extends CDWindowController
         if(identifier.equals("gotofolderButtonClicked:")) {
             return this.isMounted();
         }
+        if(identifier.equals("openTerminalButtonClicked:")) {
+            return this.isMounted() && this.getSession() instanceof SFTPSession;
+        }
         this.validateNavigationButtons();
         return true; // by default everything is enabled
     }
@@ -3787,6 +3817,7 @@ public class CDBrowserController extends CDWindowController
     private static final String TOOLBAR_DISCONNECT = "Disconnect";
     private static final String TOOLBAR_INTERRUPT = "Stop";
     private static final String TOOLBAR_GO_TO_FOLDER = "Go to Folder";
+    private static final String TOOLBAR_TERMINAL = "Terminal";
 
     /**
      *
@@ -4004,6 +4035,15 @@ public class CDBrowserController extends CDWindowController
             item.setAction(new NSSelector("gotoButtonClicked", new Class[]{Object.class}));
             return item;
         }
+        if(itemIdentifier.equals(TOOLBAR_TERMINAL)) {
+            final String t = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.Terminal");
+            item.setLabel(NSPathUtilities.displayNameAtPath(t));
+            item.setPaletteLabel(NSPathUtilities.displayNameAtPath(t));
+            item.setImage(CDIconCache.instance().iconForPath(new Local(t), 128));
+            item.setTarget(this);
+            item.setAction(new NSSelector("openTerminalButtonClicked", new Class[]{Object.class}));
+            return item;
+        }
         // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
         // Returning null will inform the toolbar this kind of item is not supported.
         return null;
@@ -4051,6 +4091,7 @@ public class CDBrowserController extends CDWindowController
                 TOOLBAR_DELETE,
                 TOOLBAR_NEW_FOLDER,
                 TOOLBAR_GET_INFO,
+                TOOLBAR_TERMINAL,
                 TOOLBAR_DISCONNECT,
 //                TOOLBAR_GO_TO_FOLDER,
                 NSToolbarItem.CustomizeToolbarItemIdentifier,
