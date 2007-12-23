@@ -21,11 +21,15 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.ftp.FTPSession;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.*;
+
+import com.enterprisedt.net.ftp.FTPTransferType;
 
 /**
  * @version $Id$
@@ -83,6 +87,20 @@ public abstract class Transfer extends NSObject {
      * The transfer has been reset
      */
     private boolean reset;
+
+    public boolean isResumable() {
+        if(!this.isRunning() && !this.isQueued() && !this.isComplete() && !this.isVirgin() ) {
+            if(this.getSession() instanceof SFTPSession) {
+                return Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP);
+            }
+            if(this.getSession() instanceof FTPSession) {
+                return !Preferences.instance().getProperty("ftp.transfermode").equals(
+                        FTPTransferType.ASCII.toString());
+            }
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Create a transfer with a single root which can

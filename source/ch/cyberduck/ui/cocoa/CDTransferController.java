@@ -1069,17 +1069,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         if(identifier.equals("resumeButtonClicked:")) {
             return this.validate(new TransferToolbarValidator() {
                 public boolean validate(Transfer transfer) {
-                    if(!transfer.isRunning() && !transfer.isQueued() && !transfer.isComplete() && !transfer.isVirgin() ) {
-                        if(transfer.getSession() instanceof SFTPSession) {
-                            return Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP);
-                        }
-                        if(transfer.getSession() instanceof FTPSession) {
-                            return !Preferences.instance().getProperty("ftp.transfermode").equals(
-                                    FTPTransferType.ASCII.toString());
-                        }
-                        return true;
-                    }
-                    return false;
+                    return transfer.isResumable();
                 }
             });
         }

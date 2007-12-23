@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
-
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
+
+import ch.cyberduck.core.*;
 
 import org.apache.log4j.Logger;
 
@@ -93,11 +93,9 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         if(returncode == DEFAULT_OPTION) { // Continue
             if(actionPopup.selectedItem().title().equals(ACTION_OVERWRITE)) {
                 action = TransferAction.ACTION_OVERWRITE;
-            }
-            else if(actionPopup.selectedItem().title().equals(ACTION_RESUME)) {
+            } else if(actionPopup.selectedItem().title().equals(ACTION_RESUME)) {
                 action = TransferAction.ACTION_RESUME;
-            }
-            else if(actionPopup.selectedItem().title().equals(ACTION_SIMILARNAME)) {
+            } else if(actionPopup.selectedItem().title().equals(ACTION_SIMILARNAME)) {
                 action = TransferAction.ACTION_RENAME;
             }
         }
@@ -227,8 +225,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                     if(transfer.exists(p.getLocal())) {
                         if(p.getLocal().attributes.getSize() == -1) {
                             localSizeField.setAttributedStringValue(UNKNOWN_STRING);
-                        }
-                        else {
+                        } else {
                             localSizeField.setAttributedStringValue(new NSAttributedString(
                                     Status.getSizeAsString(p.getLocal().attributes.getSize()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
@@ -236,16 +233,14 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                         localSizeField.setHidden(false);
                         if(p.getLocal().attributes.getModificationDate() == -1) {
                             localModificationField.setAttributedStringValue(UNKNOWN_STRING);
-                        }
-                        else {
+                        } else {
                             localModificationField.setAttributedStringValue(new NSAttributedString(
                                     CDDateFormatter.getLongFormat(p.getLocal().attributes.getModificationDate(),
                                             p.getHost().getTimezone()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
                         localModificationField.setHidden(false);
-                    }
-                    else {
+                    } else {
                         localSizeField.setHidden(true);
                         localModificationField.setHidden(true);
                     }
@@ -258,8 +253,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                     if(transfer.exists(p)) {
                         if(p.attributes.getSize() == -1) {
                             remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
-                        }
-                        else {
+                        } else {
                             remoteSizeField.setAttributedStringValue(new NSAttributedString(
                                     Status.getSizeAsString(p.attributes.getSize()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
@@ -267,21 +261,18 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                         remoteSizeField.setHidden(false);
                         if(p.attributes.getModificationDate() == -1) {
                             remoteModificationField.setAttributedStringValue(UNKNOWN_STRING);
-                        }
-                        else {
+                        } else {
                             remoteModificationField.setAttributedStringValue(new NSAttributedString(
                                     CDDateFormatter.getLongFormat(p.attributes.getModificationDate(),
                                             p.getHost().getTimezone()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
                         remoteModificationField.setHidden(false);
-                    }
-                    else {
+                    } else {
                         remoteSizeField.setHidden(true);
                         remoteModificationField.setHidden(true);
                     }
-                }
-                else {
+                } else {
                     hideLocalDetails(true);
                     hideRemoteDetails(true);
                 }
@@ -315,8 +306,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                     if(cell instanceof NSTextFieldCell) {
                         if(!transfer.isIncluded(item)) {
                             ((NSTextFieldCell) cell).setTextColor(NSColor.disabledControlTextColor());
-                        }
-                        else {
+                        } else {
                             ((NSTextFieldCell) cell).setTextColor(NSColor.controlTextColor());
                         }
                     }
@@ -333,14 +323,11 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         this.browserView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
         if(Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
             this.browserView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
-        }
-        else if(Preferences.instance().getBoolean("browser.verticalLines")) {
+        } else if(Preferences.instance().getBoolean("browser.verticalLines")) {
             this.browserView.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
-        }
-        else if(Preferences.instance().getBoolean("browser.horizontalLines")) {
+        } else if(Preferences.instance().getBoolean("browser.horizontalLines")) {
             this.browserView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
-        }
-        else {
+        } else {
             this.browserView.setGridStyleMask(NSTableView.GridNone);
         }
         NSSelector setResizableMaskSelector
@@ -354,8 +341,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             c.setMaxWidth(800f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
-            }
-            else {
+            } else {
                 c.setResizable(true);
             }
             c.setEditable(false);
@@ -372,8 +358,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             c.setMaxWidth(100f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
-            }
-            else {
+            } else {
                 c.setResizable(true);
             }
             c.setEditable(false);
@@ -389,8 +374,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             c.setMaxWidth(20f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
-            }
-            else {
+            } else {
                 c.setResizable(true);
             }
             c.setEditable(false);
@@ -407,8 +391,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             c.setMaxWidth(20f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
-            }
-            else {
+            } else {
                 c.setResizable(true);
             }
             c.setEditable(false);
@@ -490,8 +473,15 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     public void setActionPopup(final NSPopUpButton actionPopup) {
         this.actionPopup = actionPopup;
         this.actionPopup.removeAllItems();
-        this.actionPopup.addItemsWithTitles(new NSArray(new String[]{
-                ACTION_OVERWRITE, ACTION_RESUME, ACTION_SIMILARNAME
-        }));
-    }
+        if(transfer.isResumable()) {
+            this.actionPopup.addItemsWithTitles(new NSArray(new String[]{
+                    ACTION_OVERWRITE, ACTION_RESUME, ACTION_SIMILARNAME
+            }));
         }
+        else {
+            this.actionPopup.addItemsWithTitles(new NSArray(new String[]{
+                    ACTION_OVERWRITE, ACTION_SIMILARNAME
+            }));
+        }
+    }
+}
