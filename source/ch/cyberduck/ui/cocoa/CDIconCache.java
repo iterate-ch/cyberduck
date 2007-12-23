@@ -128,7 +128,7 @@ public class CDIconCache extends HashMap {
             }
             if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")) {
                 if(!item.attributes.isExecutable()
-                        || (item.isCached() && !item.childs().attributes().isReadable())) {
+                        || (item.isCached() && !item.cache().get(item).attributes().isReadable())) {
                     NSImage folder = new NSImage(new NSSize(size, size));
                     folder.lockFocus();
                     NSImage f = NSWorkspace.sharedWorkspace().iconForFile(
