@@ -285,7 +285,9 @@ public class UploadTransfer extends Transfer {
     }
 
     protected void fireTransferDidEnd() {
-        Growl.instance().notify("Upload complete", this.getName());
+        if(this.isComplete() && !this.isCanceled()) {
+            Growl.instance().notify("Upload complete", this.getName());
+        }
         super.fireTransferDidEnd();
     }    
 }

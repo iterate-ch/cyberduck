@@ -333,9 +333,11 @@ public class DownloadTransfer extends Transfer {
     }
 
     protected void fireTransferDidEnd() {
-        Growl.instance().notify("Download complete", this.getName());
-        if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
-            NSWorkspace.sharedWorkspace().openFile(this.getRoot().getLocal().toString());
+        if(this.isComplete() && !this.isCanceled()) {
+            Growl.instance().notify("Download complete", this.getName());
+            if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
+                NSWorkspace.sharedWorkspace().openFile(this.getRoot().getLocal().toString());
+            }
         }
         super.fireTransferDidEnd();
     }    

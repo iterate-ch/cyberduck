@@ -234,7 +234,9 @@ public class SyncTransfer extends Transfer {
     }
 
     protected void fireTransferDidEnd() {
-        Growl.instance().notify("Synchronization complete", this.getName());
+        if(this.isComplete() && !this.isCanceled()) {
+            Growl.instance().notify("Synchronization complete", this.getName());
+        }
         super.fireTransferDidEnd();
     }    
 
