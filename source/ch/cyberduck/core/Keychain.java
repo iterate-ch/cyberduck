@@ -67,7 +67,7 @@ public class Keychain {
      * @param user
      * @return
      */
-    public native String getInternetPasswordFromKeychain(String protocol, String serviceName, String user);
+    public native synchronized String getInternetPasswordFromKeychain(String protocol, String serviceName, String user);
 
     /**
      *
@@ -75,7 +75,7 @@ public class Keychain {
      * @param user
      * @return
      */
-    public native String getPasswordFromKeychain(String serviceName, String user);
+    public native synchronized String getPasswordFromKeychain(String serviceName, String user);
 
     /**
      *
@@ -83,7 +83,7 @@ public class Keychain {
      * @param user
      * @param password
      */
-    public native void addPasswordToKeychain(String serviceName, String user, String password);
+    public native synchronized void addPasswordToKeychain(String serviceName, String user, String password);
 
     /**
      *
@@ -92,18 +92,18 @@ public class Keychain {
      * @param user
      * @param password
      */
-    public native void addInternetPasswordToKeychain(String protocol, int port, String serviceName, String user, String password);
+    public native synchronized void addInternetPasswordToKeychain(String protocol, int port, String serviceName, String user, String password);
 
     /**
      *
      * @param certificate
      * @return
      */
-    public native boolean hasCertificate(byte[] certificate);
+    public native synchronized boolean hasCertificate(byte[] certificate);
 
     /**
      *
      * @param certificate
      */
-    public native void addCertificateToKeychain(byte[] certificate);
+    public native synchronized void addCertificateToKeychain(byte[] certificate);
 }
