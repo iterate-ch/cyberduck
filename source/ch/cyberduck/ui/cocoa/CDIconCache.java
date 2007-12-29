@@ -59,21 +59,26 @@ public class CDIconCache extends HashMap {
     private static String FOLDER_PATH
             = Preferences.instance().getProperty("application.support.path");
 
-    public static final NSImage FOLDER_NEW;
+    public static final NSImage FOLDER_NEW_ICON;
 
     static {
-        {
-            FOLDER_NEW = new NSImage(new NSSize(128, 128));
-            FOLDER_NEW.lockFocus();
-            NSImage f = NSWorkspace.sharedWorkspace().iconForFile(
-                    NSPathUtilities.stringByExpandingTildeInPath(FOLDER_PATH));
-            f.drawInRect(new NSRect(new NSPoint(0, 0), FOLDER_NEW.size()),
-                    NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
-            NSImage o = NSImage.imageNamed("NewFolderBadgeIcon.icns");
-            o.drawInRect(new NSRect(new NSPoint(0, 0), FOLDER_NEW.size()),
-                    NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
-            FOLDER_NEW.unlockFocus();
-        }
+        FOLDER_NEW_ICON = new NSImage(new NSSize(128, 128));
+        FOLDER_NEW_ICON.lockFocus();
+        NSImage f = NSWorkspace.sharedWorkspace().iconForFile(
+                NSPathUtilities.stringByExpandingTildeInPath(FOLDER_PATH));
+        f.drawInRect(new NSRect(new NSPoint(0, 0), FOLDER_NEW_ICON.size()),
+                NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
+        NSImage o = NSImage.imageNamed("NewFolderBadgeIcon.icns");
+        o.drawInRect(new NSRect(new NSPoint(0, 0), FOLDER_NEW_ICON.size()),
+                NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
+        FOLDER_NEW_ICON.unlockFocus();
+    }
+
+    public static final NSImage FOLDER_ICON = NSWorkspace.sharedWorkspace().iconForFile(
+            NSPathUtilities.stringByExpandingTildeInPath(FOLDER_PATH));
+
+    static {
+        FOLDER_ICON.setSize(new NSSize(128, 128));
     }
 
     public NSImage iconForPath(final Local item, int size) {
@@ -89,9 +94,6 @@ public class CDIconCache extends HashMap {
         icon.setSize(new NSSize(size, size));
         return icon;
     }
-
-    private static final NSImage FOLDER_ICON = NSWorkspace.sharedWorkspace().iconForFile(
-            NSPathUtilities.stringByExpandingTildeInPath(FOLDER_PATH));
 
     public NSImage iconForPath(final Path item, int size) {
         if(item.attributes.isSymbolicLink()) {
@@ -170,7 +172,8 @@ public class CDIconCache extends HashMap {
                     return this.convert(folder, size);
                 }
             }
-            return this.convert(FOLDER_ICON, size);
+            return this.convert(NSWorkspace.sharedWorkspace().iconForFile(
+                    NSPathUtilities.stringByExpandingTildeInPath(FOLDER_PATH)), size);
         }
         return this.convert(NSImage.imageNamed("notfound.tiff"), size);
     }

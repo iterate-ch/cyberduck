@@ -26,6 +26,7 @@ import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSComboBox;
+import com.apple.cocoa.application.NSImageView;
 import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
@@ -38,6 +39,13 @@ import java.util.List;
  */
 public class CDGotoController extends CDSheetController{
     private static Logger log = Logger.getLogger(CDGotoController.class);
+
+    protected NSImageView iconView; //IBOutlet
+
+    public void setIconView(NSImageView iconView) {
+        this.iconView = iconView;
+        this.iconView.setImage(CDIconCache.FOLDER_ICON);
+    }
 
     private NSComboBox folderCombobox; // IBOutlet
     private NSObject folderComboboxModel;
