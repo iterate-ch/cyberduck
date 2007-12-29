@@ -229,25 +229,9 @@ public class CDProgressController extends CDController {
                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
     }
 
-    /**
-     * The item is selected
-     */
-    private boolean highlighted;
-
     public void setHighlighted(final boolean highlighted) {
-        this.highlighted = highlighted;
-        if(highlighted) {
-            statusField.setTextColor(NSColor.whiteColor());
-            progressField.setTextColor(NSColor.whiteColor());
-        }
-        else {
-            statusField.setTextColor(NSColor.textColor());
-            progressField.setTextColor(NSColor.darkGrayColor());
-        }
-    }
-
-    public boolean isHighlighted() {
-        return this.highlighted;
+        statusField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.textColor());
+        progressField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.darkGrayColor());
     }
 
     // ----------------------------------------------------------
