@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa.threading;
 
 /*
- *  Copyright (c) 2006 David Kocher. All rights reserved.
+ *  Copyright (c) 2007 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,19 +18,20 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.CDWindowController;
+
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public interface BackgroundAction extends Runnable {
+public abstract class WindowMainAction implements MainAction {
 
-    /**
-     * Called form a worker thread not blocking the user interface
-     */
-    abstract void run();
+    private CDWindowController controller;
 
-    /**
-     * To be called from the main interface thread after the #run
-     * has finished to allow calls to non-threadable view classes
-     */
-    abstract void cleanup();
+    public WindowMainAction(CDWindowController c) {
+        this.controller = c;
+    }
+
+    public boolean isValid() {
+        return controller.isShown();
+    }
 }

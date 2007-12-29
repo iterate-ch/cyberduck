@@ -22,6 +22,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
 
@@ -67,7 +68,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
      */
     private ProgressListener l = new ProgressListener() {
         public void message(final String msg) {
-            invoke(new Runnable() {
+            CDMainApplication.invoke(new WindowMainAction(CDTransferPrompt.this) {
                 public void run() {
                     // Update the status label at the bottom of the browser window
                     statusLabel.setAttributedStringValue(new NSAttributedString(msg,
@@ -126,7 +127,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         browserView.reloadData();
         statusIndicator.stopAnimation(null);
         // Delay for later invocation to make sure this is displayed as the last status message
-        this.invoke(new Runnable() {
+        CDMainApplication.invoke(new WindowMainAction(this) {
             public void run() {
                 statusLabel.setAttributedStringValue(new NSAttributedString(
                         browserView.numberOfRows() + " " + NSBundle.localizedString("files", ""),
@@ -150,7 +151,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
         this.transfer.fireTransferPaused();
 
-        parent.invoke(new Runnable() {
+        CDMainApplication.invoke(new WindowMainAction(this) {
             public void run() {
                 beginSheet(false);
             }

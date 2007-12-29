@@ -1,7 +1,6 @@
 package ch.cyberduck.ui.cocoa.threading;
-
 /*
- *  Copyright (c) 2006 David Kocher. All rights reserved.
+ *  Copyright (c) 2007 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -19,18 +18,13 @@ package ch.cyberduck.ui.cocoa.threading;
  */
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public interface BackgroundAction extends Runnable {
+public abstract class DefaultMainAction implements MainAction {
 
-    /**
-     * Called form a worker thread not blocking the user interface
-     */
-    abstract void run();
+    public abstract void run();
 
-    /**
-     * To be called from the main interface thread after the #run
-     * has finished to allow calls to non-threadable view classes
-     */
-    abstract void cleanup();
+    public boolean isValid() {
+        return true;
+    }
 }

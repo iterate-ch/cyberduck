@@ -18,22 +18,22 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.Speedometer;
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
-import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
-import ch.cyberduck.ui.cocoa.growl.Growl;
-
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSRunLoop;
-import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSTimer;
+
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
+import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @version $Id$
@@ -90,7 +90,7 @@ public class CDProgressController extends CDController {
         final ProgressListener pl = new ProgressListener() {
             public void message(final String message) {
                 progressText = message;
-                CDProgressController.this.invoke(new Runnable() {
+                CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
                         setProgressText();
                     }
@@ -102,10 +102,13 @@ public class CDProgressController extends CDController {
             /**
              * Timer to update the progress indicator
              */
-            private NSTimer progressTimer;
+            private Timer progressTimer;
+
+            final long delay = 0;
+            final long period = 100; //in milliseconds
 
             public void transferWillStart() {
-                CDProgressController.this.invoke(new Runnable() {
+                CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
                         progressBar.setHidden(false);
                         progressBar.setIndeterminate(true);
@@ -119,7 +122,7 @@ public class CDProgressController extends CDController {
             }
 
             public void transferPaused() {
-                CDProgressController.this.invoke(new Runnable() {
+                CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
                         statusIconView.setImage(YELLOW_ICON);
                         progressBar.stopAnimation(null);
@@ -129,7 +132,7 @@ public class CDProgressController extends CDController {
 
             public void transferQueued() {
                 this.transferPaused();
-                CDProgressController.this.invoke(new Runnable() {
+                CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
                         Growl.instance().notify("Transfer queued", transfer.getHost().getHostname());
                     }
@@ -137,7 +140,7 @@ public class CDProgressController extends CDController {
             }
 
             public void transferResumed() {
-                CDProgressController.this.invoke(new Runnable() {
+                CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
                         statusIconView.setImage(RED_ICON);
                         progressBar.startAnimation(null);
@@ -146,7 +149,7 @@ public class CDProgressController extends CDController {
             }
 
             public void transferDidEnd() {
-                CDProgressController.this.invoke(new Runnable() {
+                CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
                         // Do not display any progress text when transfer is stopped
                         progressText = null;
@@ -163,24 +166,29 @@ public class CDProgressController extends CDController {
 
             public void willTransferPath(final Path path) {
                 meter.reset();
-                progressTimer = invoke(new Runnable() {
+                progressTimer = new Timer();
+                progressTimer.scheduleAtFixedRate(new TimerTask() {
                     public void run() {
-                        setProgressText();
-                        if(!transfer.isVirgin()) {
-                            progressBar.setIndeterminate(false);
-                            progressBar.setMinValue(0);
-                            progressBar.setMaxValue(transfer.getSize());
-                            progressBar.setDoubleValue(transfer.getTransferred());
-                        }
-                        else if(transfer.isRunning()) {
-                            progressBar.setIndeterminate(true);
-                        }
+                        CDMainApplication.invoke(new DefaultMainAction() {
+                            public void run() {
+                                CDProgressController.this.setProgressText();
+                                if(!transfer.isVirgin()) {
+                                    progressBar.setIndeterminate(false);
+                                    progressBar.setMinValue(0);
+                                    progressBar.setMaxValue(transfer.getSize());
+                                    progressBar.setDoubleValue(transfer.getTransferred());
+                                }
+                                else if(transfer.isRunning()) {
+                                    progressBar.setIndeterminate(true);
+                                }
+                            }
+                        });
                     }
-                }, 0.1, true);
+                }, delay, period);
             }
 
             public void didTransferPath(final Path path) {
-                stop(progressTimer);
+                progressTimer.cancel();
                 meter.reset();
             }
 

@@ -23,6 +23,7 @@ import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -42,12 +43,6 @@ import java.net.MalformedURLException;
  */
 public class CDMainController extends CDController {
     private static Logger log = Logger.getLogger(CDMainController.class);
-
-    /**
-     * Reference to the main graphical user interface thread.
-     * Assuming this is always called from the main thread #currentRunLoop will return the main run loop
-     */
-    protected static NSRunLoop mainRunLoop = NSRunLoop.currentRunLoop();
 
     // ----------------------------------------------------------
     // Outlets
@@ -418,7 +413,7 @@ public class CDMainController extends CDController {
         }
         Rendezvous.instance().addListener(new RendezvousListener() {
             public void serviceResolved(final String identifier, final String hostname) {
-                invoke(new Runnable() {
+                CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
                         Growl.instance().notifyWithImage("Bonjour", Rendezvous.instance().getDisplayedName(identifier),
                                 "rendezvous.icns");

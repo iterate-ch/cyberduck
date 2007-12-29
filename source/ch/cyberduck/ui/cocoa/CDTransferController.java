@@ -18,15 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPTransferType;
-
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
-import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
+import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -532,7 +528,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 transfer.getSession().addTranscriptListener(this);
                 transfer.addListener(tl = new TransferAdapter() {
                     public void transferQueued() {
-                        invoke(new Runnable() {
+                        CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
                             public void run() {
                                 window.toolbar().validateVisibleItems();
                             }
@@ -540,7 +536,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     }
 
                     public void transferPaused() {
-                        invoke(new Runnable() {
+                        CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
                             public void run() {
                                 window.toolbar().validateVisibleItems();
                             }
@@ -548,7 +544,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     }
 
                     public void transferResumed() {
-                        invoke(new Runnable() {
+                        CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
                             public void run() {
                                 window.toolbar().validateVisibleItems();
                             }
@@ -556,7 +552,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     }
 
                     public void transferWillStart() {
-                        invoke(new Runnable() {
+                        CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
                             public void run() {
                                 window.toolbar().validateVisibleItems();
                                 updateIcon();
@@ -565,7 +561,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     }
 
                     public void transferDidEnd() {
-                        invoke(new Runnable() {
+                        CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
                             public void run() {
                                 window.toolbar().validateVisibleItems();
                                 updateIcon();
@@ -1057,6 +1053,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
         if(identifier.equals("resumeButtonClicked:")) {
             return this.validate(new TransferToolbarValidator() {
                 public boolean validate(Transfer transfer) {
+                    if(transfer.isRunning() || transfer.isQueued()) {
+                        return false;
+                    }
                     return transfer.isResumable();
                 }
             });

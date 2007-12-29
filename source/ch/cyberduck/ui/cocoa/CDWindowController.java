@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
+import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -128,12 +129,9 @@ public abstract class CDWindowController extends CDController
                     finally {
                         // Increase the run counter
                         runnable.finish();
-                        // Indicates that you are finished using the
-                        // NSAutoreleasePool identified by pool.
-                        NSAutoreleasePool.pop(pool);
                         // Invoke the cleanup on the main thread to let the action
                         // synchronize the user interface
-                        CDWindowController.this.invoke(new Runnable() {
+                        CDMainApplication.invoke(new WindowMainAction(CDWindowController.this) {
                             public void run() {
                                 runnable.cleanup();
                                 // If there was any failure, display the summary now
@@ -150,6 +148,9 @@ public abstract class CDWindowController extends CDController
                                 }
                             }
                         });
+                        // Indicates that you are finished using the
+                        // NSAutoreleasePool identified by pool.
+                        NSAutoreleasePool.pop(pool);
                     }
                     log.debug("Releasing lock for background runnable:"+runnable);
                 }
@@ -162,15 +163,6 @@ public abstract class CDWindowController extends CDController
      * The window this controller is owner of
      */
     protected NSWindow window; // IBOutlet
-
-    protected void post(NSTimer timer) {
-        if(null == this.window) {
-            log.warn("Suppressed timer "+timer+" for invalid window");
-            //We override this because until the the timer fires in the event queue, the window may have become invalid
-            return;
-        }
-        super.post(timer);
-    }
 
     private List listeners = new Vector();
 

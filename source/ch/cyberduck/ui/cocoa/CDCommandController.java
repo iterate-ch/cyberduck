@@ -22,6 +22,7 @@ import com.enterprisedt.net.ftp.FTPException;
 
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
@@ -87,7 +88,7 @@ public class CDCommandController extends CDSheetController implements Transcript
     }
 
     public void log(final String message) {
-        this.invoke(new Runnable() {
+        CDMainApplication.invoke(new WindowMainAction(this) {
             public void run() {
                 responseField.textStorage().replaceCharactersInRange(new NSRange(responseField.textStorage().length(), 0),
                         new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));

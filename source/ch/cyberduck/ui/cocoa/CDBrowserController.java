@@ -32,6 +32,7 @@ import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
+import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
 
@@ -552,7 +553,7 @@ public class CDBrowserController extends CDWindowController
         browser.reloadData();
         if(this.isMounted()) {
             // Delay for later invocation to make sure this is displayed as the last status message
-            this.invoke(new Runnable() {
+            CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                 public void run() {
                     CDBrowserController.this.displayStatus();
                 }
@@ -2574,7 +2575,7 @@ public class CDBrowserController extends CDWindowController
                 if(isMounted()) {
                     workdir.invalidate();
                     if(!transfer.isCanceled()) {
-                        invoke(new Runnable() {
+                        CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                             public void run() {
                                 if(isConnected()) {
                                     reloadData(true);
@@ -2613,28 +2614,31 @@ public class CDBrowserController extends CDWindowController
         if(useBrowserConnection) {
             final Speedometer meter = new Speedometer(transfer);
             final TransferListener l;
+            final long delay = 0;
+            final long period = 100; //in milliseconds
             transfer.addListener(l = new TransferAdapter() {
                 /**
                  * Timer to update the progress indicator
                  */
-                private NSTimer progressTimer;
-
-                public void transferDidEnd() {
-                    stop(progressTimer);
-                }
+                private Timer progressTimer;
 
                 public void willTransferPath(Path path) {
                     meter.reset();
-                    progressTimer = invoke(new Runnable() {
+                    progressTimer = new Timer();
+                    progressTimer.scheduleAtFixedRate(new TimerTask() {
                         public void run() {
                             meterText = meter.getProgress();
-                            updateStatusLabel();
+                            CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
+                                public void run() {
+                                    CDBrowserController.this.updateStatusLabel();
+                                }
+                            });
                         }
-                    }, 0.1);
+                    }, delay, period);
                 }
 
                 public void didTransferPath(Path path) {
-                    stop(progressTimer);
+                    progressTimer.cancel();
                     meter.reset();
                 }
 
@@ -2986,7 +2990,7 @@ public class CDBrowserController extends CDWindowController
         if(null == path) {
             // Clear the browser view if no working directory is given
             this.workdir = null;
-            this.invoke(new Runnable() {
+            CDMainApplication.invoke(new WindowMainAction(this) {
                 public void run() {
 //                    navigationPopup.setStringValue("");
                     pathPopupButton.removeAllItems();
@@ -3018,7 +3022,7 @@ public class CDBrowserController extends CDWindowController
         this.setFileFilter(null);
         // Update the current working directory
         this.addPathToHistory(this.workdir = path);
-        this.invoke(new Runnable() {
+        CDMainApplication.invoke(new WindowMainAction(this) {
             public void run() {
 //                navigationPopup.setStringValue(workdir().getAbsolute());
                 pathPopupButton.removeAllItems();
@@ -3037,7 +3041,7 @@ public class CDBrowserController extends CDWindowController
                 }
             }
         });
-        this.invoke(new Runnable() {
+        CDMainApplication.invoke(new WindowMainAction(this) {
             public void run() {
                 // Mark the browser data source as dirty
                 reloadData(false);
@@ -3171,7 +3175,7 @@ public class CDBrowserController extends CDWindowController
         this.session.addProgressListener(new ProgressListener() {
             public void message(final String message) {
                 statusText = message;
-                invoke(new Runnable() {
+                CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
                         updateStatusLabel();
                     }
@@ -3180,7 +3184,7 @@ public class CDBrowserController extends CDWindowController
         });
         session.addConnectionListener(listener = new ConnectionAdapter() {
             public void connectionWillOpen() {
-                CDBrowserController.this.invoke(new Runnable() {
+                CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
                         window.setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername()
                                 + "@" + host.getHostname());
@@ -3190,7 +3194,7 @@ public class CDBrowserController extends CDWindowController
 
             public void connectionDidOpen() {
                 getSelectedBrowserView().setNeedsDisplay();
-                CDBrowserController.this.invoke(new Runnable() {
+                CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
                         Growl.instance().notify("Connection opened", host.getHostname());
                         ((CDMainController) NSApplication.sharedApplication().delegate()).exportBookmark(host,
@@ -3215,38 +3219,32 @@ public class CDBrowserController extends CDWindowController
 
             public void connectionDidClose() {
                 getSelectedBrowserView().setNeedsDisplay();
-                CDBrowserController.this.invoke(new Runnable() {
+                CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
-                        if(isShown()) {
-                            window.setTitle(
-                                    (String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
-                            window.setRepresentedFilename(""); //can't send null
-                            window.setDocumentEdited(false);
-                            securityLabel.setImage(NSImage.imageNamed("unlocked.tiff"));
-                            securityLabel.setEnabled(false);
-                        }
+                        window.setTitle(
+                                (String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
+                        window.setRepresentedFilename(""); //can't send null
+                        window.setDocumentEdited(false);
+                        securityLabel.setImage(NSImage.imageNamed("unlocked.tiff"));
+                        securityLabel.setEnabled(false);
                     }
                 });
             }
 
             public void activityStarted() {
-                CDBrowserController.this.invoke(new Runnable() {
+                CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
-                        if(isShown()) {
-                            statusLabel.display();
-                            window.toolbar().validateVisibleItems();
-                        }
+                        statusLabel.display();
+                        window.toolbar().validateVisibleItems();
                     }
                 });
             }
 
             public void activityStopped() {
-                CDBrowserController.this.invoke(new Runnable() {
+                CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
-                        if(isShown()) {
-                            statusLabel.display();
-                            window.toolbar().validateVisibleItems();
-                        }
+                        statusLabel.display();
+                        window.toolbar().validateVisibleItems();
                     }
                 });
             }
@@ -4004,7 +4002,7 @@ public class CDBrowserController extends CDWindowController
             item.setLabel(NSBundle.localizedString(TOOLBAR_NEW_FOLDER, "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_NEW_FOLDER, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Create New Folder", "Toolbar item tooltip"));
-            item.setImage(CDIconCache.FOLDER_NEW);
+            item.setImage(CDIconCache.FOLDER_NEW_ICON);
             item.setTarget(this);
             item.setAction(new NSSelector("createFolderButtonClicked", new Class[]{Object.class}));
             return item;

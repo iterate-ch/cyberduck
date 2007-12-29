@@ -1,0 +1,84 @@
+package ch.cyberduck.ui.cocoa;
+
+/*
+ *  Copyright (c) 2007 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  Bug fixes, suggestions and comments should be sent to:
+ *  dkocher@cyberduck.ch
+ */
+
+import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSEvent;
+import com.apple.cocoa.foundation.NSMutableDictionary;
+import com.apple.cocoa.foundation.NSPoint;
+
+import ch.cyberduck.ui.cocoa.threading.MainAction;
+
+import org.apache.log4j.Logger;
+
+/**
+ * @version $Id:$
+ */
+public class CDMainApplication extends NSApplication {
+    private static Logger log = Logger.getLogger(CDMainApplication.class);
+
+    public void sendEvent(final NSEvent event) {
+        if(event.type() == NSEvent.ApplicationDefined) {
+            try {
+                final MainAction runnable;
+                synchronized(events) {
+                    runnable = (MainAction) events.valueForKey(String.valueOf(event.subtype()));
+                }
+                if(null == runnable) {
+                    log.error("Event for unknown runnable:" + event.subtype());
+                    return;
+                }
+                if(runnable.isValid()) {
+                    runnable.run();
+                } else {
+                    log.warn("Received outdated event:" + event.subtype());
+                }
+            }
+            finally {
+                events.removeObjectForKey(String.valueOf(event.subtype()));
+            }
+            return;
+        }
+        super.sendEvent(event);
+    }
+
+    private final NSMutableDictionary events
+            = new NSMutableDictionary();
+
+    public void put(Object key, Runnable runnable) {
+        synchronized(events) {
+            events.setObjectForKey(runnable, String.valueOf(key));
+        }
+    }
+
+    /**
+     * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
+     *
+     * @param runnable The <code>Runnable</code> to run
+     */
+    public static void invoke(final MainAction runnable) {
+        NSEvent event = NSEvent.otherEvent(NSEvent.ApplicationDefined,
+            new NSPoint(0, 0), 0, System.currentTimeMillis() / 1000.0, 0,
+            null, (short)runnable.hashCode(), -1, -1);
+        ((CDMainApplication) sharedApplication()).put(String.valueOf((short)runnable.hashCode()), runnable);
+        // This method can also be called in subthreads. Events posted
+        // in subthreads bubble up in the main thread event queue.
+        sharedApplication().postEvent(event, false);
+    }
+}

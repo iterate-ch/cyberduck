@@ -24,6 +24,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.CDErrorCell;
 import ch.cyberduck.ui.cocoa.CDSheetController;
 import ch.cyberduck.ui.cocoa.CDWindowController;
+import ch.cyberduck.ui.cocoa.CDMainApplication;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.application.*;
@@ -79,7 +80,7 @@ public abstract class BackgroundActionImpl
                 return;
             }
         }
-        controller.invoke(new Runnable() {
+        CDMainApplication.invoke(new DefaultMainAction() {
             public void run() {
                 Growl.instance().notify(exception.getMessage(),
                         null == exception.getPath() ? exception.getSession().getHost().getHostname()

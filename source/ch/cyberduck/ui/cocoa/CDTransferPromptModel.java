@@ -158,7 +158,6 @@ public abstract class CDTransferPromptModel extends NSObject {
             if(!isLoadingListingInBackground.contains(path)) {
                 if(!transfer.isCached(path)) {
                     isLoadingListingInBackground.add(path);
-
                     controller.background(new BackgroundActionImpl(controller) {
                         public void run() {
                             log.debug("childs#run");
@@ -172,9 +171,7 @@ public abstract class CDTransferPromptModel extends NSObject {
                             synchronized(isLoadingListingInBackground) {
                                 isLoadingListingInBackground.remove(path);
                                 if(transfer.isCached(path) && isLoadingListingInBackground.isEmpty()) {
-                                    if(controller.isShown()) {
-                                        ((CDTransferPrompt)controller).reloadData();
-                                    }
+                                    ((CDTransferPrompt)controller).reloadData();
                                 }
                             }
                         }

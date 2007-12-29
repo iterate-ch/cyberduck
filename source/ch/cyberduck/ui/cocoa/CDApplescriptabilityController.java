@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.foundation.NSScriptCommand;
@@ -65,7 +66,7 @@ public class CDApplescriptabilityController extends NSScriptCommand {
                     // We have to add this to the end of the main thread; there is some obscure
                     // concurrency issue with the rendezvous initialization
                     // running in CDMainController.applicationDidFinishLaunching, see ticket #????
-                    ((CDController) NSApplication.sharedApplication().delegate()).invoke(new Runnable() {
+                    CDMainApplication.invoke(new DefaultMainAction() {
                         public void run() {
                             CDTransferController.instance().startTransfer(new DownloadTransfer(p));
                         }

@@ -85,7 +85,7 @@
 	<key>NSMainNibFile</key>
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
+	<string>ch.cyberduck.ui.cocoa.CDMainApplication</string>
 	<key>SUFeedURL</key>
 	<string>_SPARKLEFEED_</string>
 	<key>SUCheckAtStartup</key>

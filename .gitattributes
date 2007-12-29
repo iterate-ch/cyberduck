@@ -1683,6 +1683,7 @@ source/ch/cyberduck/core/io/UKKQueue.m -text
 source/ch/cyberduck/core/io/UKMainThreadProxy.m -text
 source/ch/cyberduck/core/util/URLSchemeHandlerConfiguration.m -text
 source/ch/cyberduck/ui/cocoa/CDBottomView.m -text
+source/ch/cyberduck/ui/cocoa/CDMainApplication.java -text
 source/ch/cyberduck/ui/cocoa/CDNavigationView.m -text
 source/ch/cyberduck/ui/cocoa/CDPreferencesImpl.m -text
 source/ch/cyberduck/ui/cocoa/delegate/BackPathHistoryMenuDelegate.java -text
@@ -1692,6 +1693,9 @@ source/ch/cyberduck/ui/cocoa/odb/EditorFactory.java -text
 source/ch/cyberduck/ui/cocoa/odb/ODBEditor.java -text
 source/ch/cyberduck/ui/cocoa/odb/WatchEditor.java -text
 source/ch/cyberduck/ui/cocoa/threading/BackgroundActionImpl.java -text
+source/ch/cyberduck/ui/cocoa/threading/DefaultMainAction.java -text
+source/ch/cyberduck/ui/cocoa/threading/MainAction.java -text
+source/ch/cyberduck/ui/cocoa/threading/WindowMainAction.java -text
 source/com/snoize/SNDisclosableView.m -text
 source/com/snoize/SNDisclosureButton.m -text
 source/de/zathras/UKCrashReporter.m -text
