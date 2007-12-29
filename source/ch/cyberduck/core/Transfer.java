@@ -89,7 +89,7 @@ public abstract class Transfer extends NSObject {
     private boolean reset;
 
     public boolean isResumable() {
-        if(!this.isRunning() && !this.isQueued() && !this.isComplete() && !this.isVirgin() ) {
+        if(!this.isComplete() && !this.isVirgin() ) {
             if(this.getSession() instanceof SFTPSession) {
                 return Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP);
             }
