@@ -46,8 +46,9 @@ public class CDMainApplication extends NSApplication {
                 }
                 if(runnable.isValid()) {
                     runnable.run();
-                } else {
-                    log.warn("Received outdated event:" + event.subtype());
+                }
+                else {
+                    log.warn("Received outdated event:" + runnable);
                 }
             }
             finally {
