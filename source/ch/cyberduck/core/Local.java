@@ -23,6 +23,9 @@ import com.apple.cocoa.foundation.NSDate;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
+import ch.cyberduck.ui.cocoa.CDMainApplication;
+import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
+
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -448,7 +451,7 @@ public class Local extends AbstractPath {
      * @param progress An integer from -1 and 9. If -1 is passed,
      *                 the resource fork with the custom icon is removed from the file.
      */
-    public void setIcon(int progress) {
+    public void setIcon(final int progress) {
         if(progress > 9 || progress < -1) {
             log.warn("Local#setIcon:" + progress);
             return;
@@ -461,7 +464,13 @@ public class Local extends AbstractPath {
                 if(-1 == progress) {
                     this.removeResourceFork();
                 } else {
-                    this.setIconFromFile(this.getAbsolute(), "download" + progress + ".icns");
+                    final String icon = "download" + progress + ".icns";
+                    final String path =  this.getAbsolute();
+                    CDMainApplication.invoke(new DefaultMainAction() {
+                        public void run() {
+                            setIconFromFile(path, icon);
+                        }
+                    });
                 }
             }
         }
