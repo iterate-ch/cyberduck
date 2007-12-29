@@ -188,6 +188,7 @@
 		47905BF80AE3E10000F9E193 /* Security.nib in Resources */ = {isa = PBXBuildFile; fileRef = 47905BF60AE3E10000F9E193 /* Security.nib */; };
 		47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
 		479734DB077B735A0027370F /* arrowLeftBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479734D9077B735A0027370F /* arrowLeftBlack16.tiff */; };
+		479982820D26DA8200DB5353 /* executable.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479982810D26DA8200DB5353 /* executable.tiff */; };
 		4799CE110A29EEF700AA4E59 /* bottom.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4799CE100A29EEF700AA4E59 /* bottom.tiff */; };
 		4799CE260A29EF5600AA4E59 /* CDBottomView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4799CE240A29EF5600AA4E59 /* CDBottomView.h */; };
 		4799CE270A29EF5600AA4E59 /* CDBottomView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4799CE250A29EF5600AA4E59 /* CDBottomView.m */; };
@@ -1023,6 +1024,7 @@
 		4798373F072AD66D00FA3CDB /* Keychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Keychain.m; sourceTree = "<group>"; };
 		47983749072AD67800FA3CDB /* Keychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Keychain.h; sourceTree = "<group>"; };
 		47983764072AD73700FA3CDB /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
+		479982810D26DA8200DB5353 /* executable.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = executable.tiff; sourceTree = "<group>"; };
 		479982AF05F54B1600F81519 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		4799CE100A29EEF700AA4E59 /* bottom.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = bottom.tiff; sourceTree = "<group>"; };
 		4799CE240A29EF5600AA4E59 /* CDBottomView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDBottomView.h; sourceTree = "<group>"; };
@@ -1649,6 +1651,7 @@
 			isa = PBXGroup;
 			children = (
 				479F9DFF0C0E210100610A91 /* goto.tiff */,
+				479982810D26DA8200DB5353 /* executable.tiff */,
 				478B871D0BDE013D0040E559 /* turtle.tiff */,
 				4719A6030BD964780068CCFD /* connection.tiff */,
 				4719A59D0BD95D2C0068CCFD /* bandwidth.tiff */,
@@ -2417,6 +2420,7 @@
 				47D3F2FC0CF227E400A78764 /* DropFolderBadgeIcon.icns in Resources */,
 				47D3F2FD0CF227E400A78764 /* NewFolderBadgeIcon.icns in Resources */,
 				47A0C83E0CFF6C9F00AA8DB2 /* AliasBadgeIcon.icns in Resources */,
+				479982820D26DA8200DB5353 /* executable.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

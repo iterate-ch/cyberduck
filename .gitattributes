@@ -1054,6 +1054,7 @@ img/drawerPressed.tiff -text svneol=unset#image/tiff
 img/edit.tiff -text svneol=unset#image/tiff
 img/editPressed.tiff -text svneol=unset#image/tiff
 img/eject.tiff -text svneol=unset#image/tiff
+img/executable.tiff -text
 img/ftp-tls.tiff -text svneol=unset#image/tiff
 img/ftp.tiff -text svneol=unset#image/tiff
 img/gear.tiff -text svneol=unset#image/tiff

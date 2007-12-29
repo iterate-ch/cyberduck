@@ -122,6 +122,11 @@ public class CDIconCache extends HashMap {
             return this.convert(symlink, size);
         }
         if(item.attributes.isFile()) {
+            if(null == item.getExtension()) {
+                if(item.attributes.isExecutable()) {
+                    return this.convert(NSImage.imageNamed("executable.tiff"), size);
+                }
+            }
             return this.convert(this.get(item.getExtension()), size);
         }
         if(item.attributes.isDirectory()) {
