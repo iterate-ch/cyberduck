@@ -2935,19 +2935,18 @@ public class CDBrowserController extends CDWindowController
             public void prepare() {
                 activityRunning = true;
                 interrupted = false;
-                spinner.startAnimation(this);
                 session.addErrorListener(this);
                 session.addTranscriptListener(this);
                 super.prepare();
             }
 
             public void run() {
+                spinner.startAnimation(this);
                 runnable.run();
             }
 
             public void finish() {
                 activityRunning = false;
-                spinner.stopAnimation(this);
                 if(hasSession()) {
                     // It is important _not_ to do this in #cleanup as otherwise
                     // the listeners are still registered when the next BackgroundAction
@@ -2959,6 +2958,7 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void cleanup() {
+                spinner.stopAnimation(this);
                 runnable.cleanup();
             }
 
