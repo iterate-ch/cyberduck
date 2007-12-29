@@ -133,22 +133,23 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
     public int outlineViewValidateDrop(final NSOutlineView outlineView, final NSDraggingInfo info, Path destination, int row) {
         if(controller.isMounted()) {
             if(null != destination) {
+                // Dragging over file or folder
                 final int draggingColumn = outlineView.columnAtPoint(info.draggingLocation());
-                if(draggingColumn != 0) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Drag operation none over column:" + draggingColumn);
-                    }
-                    return NSDraggingInfo.DragOperationNone;
-                }
-                if(destination.attributes.isDirectory()) {
+                if(0 == draggingColumn && destination.attributes.isDirectory()) {
+                    // Drop target is directory
                     outlineView.setDropItemAndDropChildIndex(destination, NSOutlineView.DropOnItemIndex);
+                    return super.validateDrop(outlineView, destination, row, info);
+                }
+                else {
+                    outlineView.setDropItemAndDropChildIndex(null, NSOutlineView.DropOnItemIndex);
+                    return super.validateDrop(outlineView, controller.workdir(), row, info);
                 }
             }
-            if(null == destination) {
-                destination = controller.workdir();
+            else {
+                // Dragging over empty rows
                 outlineView.setDropItemAndDropChildIndex(null, NSOutlineView.DropOnItemIndex);
+                return super.validateDrop(outlineView, controller.workdir(), row, info);
             }
-            return super.validateDrop(outlineView, destination, row, info);
         }
         return NSDraggingInfo.DragOperationNone;
     }
