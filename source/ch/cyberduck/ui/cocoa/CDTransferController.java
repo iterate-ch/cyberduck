@@ -60,14 +60,14 @@ public class CDTransferController extends CDWindowController implements NSToolba
      * @param notification
      */
     public void windowDidBecomeKey(NSNotification notification) {
-        updateHighlight();
+        this.updateHighlight();
     }
 
     /**
      * @param notification
      */
     public void windowDidResignKey(NSNotification notification) {
-        updateHighlight();
+        this.updateHighlight();
     }
 
     /**
@@ -362,7 +362,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private void updateHighlight() {
         log.debug("updateHighlight");
         synchronized(TransferCollection.instance()) {
-            boolean key = window().isKeyWindow();
+            boolean key = window().isMainWindow();
             for(int i = 0; i < TransferCollection.instance().size(); i++) {
                 transferModel.setHighlighted((Transfer)TransferCollection.instance().get(i),
                         transferTable.isRowSelected(i) && key);
