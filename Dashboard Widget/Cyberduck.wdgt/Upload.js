@@ -376,5 +376,5 @@ function transfer(file)
 String.prototype.toPosixPath = function()
 {
 	var tmp = unescape(this.substr(this.indexOf("localhost") + 9));
-	return tmp.replace(/ /g, "\\ ");
+	return tmp.replace(/([ \[\]\(\)\$&%:=\?\!])/g, "\\$1");
 }
