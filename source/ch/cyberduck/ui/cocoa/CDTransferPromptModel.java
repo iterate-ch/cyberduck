@@ -147,6 +147,11 @@ public abstract class CDTransferPromptModel extends NSObject {
     private final List isLoadingListingInBackground = new Collection();
 
     /**
+     * A lock to make sure that actions are not run in parallel
+     */
+    private final Object backgroundLock = new Object();
+
+    /**
      * If no cached listing is available the loading is delayed until the listing is
      * fetched from a background thread
      * @param path
@@ -175,7 +180,7 @@ public abstract class CDTransferPromptModel extends NSObject {
                                 }
                             }
                         }
-                    });
+                    }, backgroundLock);
                 }
                 else {
                     return cache.get(path, new NullComparator(), filter());
