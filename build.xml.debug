@@ -69,9 +69,9 @@
 	</path>
 
 	<path id="build.bootclasspath">
-		<pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.4/Classes/classes.jar"/>
-		<pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.4/Classes/jce.jar"/>
-		<pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.4/Classes/jsse.jar"/>
+		<pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Classes/classes.jar"/>
+		<pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Classes/jce.jar"/>
+		<pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Classes/jsse.jar"/>
 	</path>
 
 	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
@@ -105,7 +105,7 @@
 		<mkdir dir="${build.unittests.reports}"/>
 		<mkdir dir="${build.unittests.reports}/html"/>
 	</target>
-	
+
 	<target name="timestamp">
 		<tstamp>
 			<format property="touch.time"
@@ -123,7 +123,7 @@
 		<property name="svn.revision" value="${svn.revision}"/>
 		<echo message="_REVISION_=${svn.revision}" />
 	</target>
-		
+
 	<target name="build" depends="archive" description="Compile, jar and copy to application bundle">
 		<copy todir="${app.java}">
 			<fileset dir="${build}">
@@ -156,7 +156,7 @@
 		<javac
 			debug="${debug}"
 			encoding="utf-8"
-			deprecation="on"
+			deprecation="off"
 			srcdir="${source}"
 			source="1.4"
 			target="1.4"
@@ -214,7 +214,7 @@
 			<classpath refid="build.classpath"/>
 		</javadoc>
 	</target>
-	
+
 	<target name="clean" description="Delete compiled classes, jar files, jni libraries and application bundle">
 		<delete dir="${build.classes}"/>
 		<delete dir="${build}/Cyberduck.build"/>
@@ -241,7 +241,7 @@
 		<javac
 			debug="${debug}"
 			encoding="utf-8"
-			deprecation="on"
+			deprecation="off"
 			srcdir="${unittests}"
 			destdir="${build.unittests}"
 			includes="**/*.java">
