@@ -337,7 +337,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
             c.setIdentifier(CDTransferTableDataSource.PROGRESS_COLUMN);
             c.setMinWidth(80f);
             c.setWidth(300f);
-            c.setMaxWidth(1000f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
@@ -362,10 +361,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private void updateHighlight() {
         log.debug("updateHighlight");
         synchronized(TransferCollection.instance()) {
-            boolean key = window().isMainWindow();
+            boolean isKeyWindow = window().isKeyWindow();
+            log.debug("isKeyWindow:"+isKeyWindow);
             for(int i = 0; i < TransferCollection.instance().size(); i++) {
                 transferModel.setHighlighted((Transfer)TransferCollection.instance().get(i),
-                        transferTable.isRowSelected(i) && key);
+                        transferTable.isRowSelected(i) && isKeyWindow);
             }
         }
     }
