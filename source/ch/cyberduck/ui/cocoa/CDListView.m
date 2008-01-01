@@ -127,10 +127,10 @@
 		}
 		if([[self delegate] respondsToSelector:@selector(tableView:shouldSelectRow:)]) {
 			if([[self delegate] tableView:self shouldSelectRow:row])
-				[self selectRow:row byExtendingSelection:YES];
+				[self selectRow:row byExtendingSelection:[self isRowSelected:row]];
 		} 
 		else {
-			[self selectRow:row byExtendingSelection:YES];
+			[self selectRow:row byExtendingSelection:[self isRowSelected:row]];
 		}
 		return [self menu];
 	}
