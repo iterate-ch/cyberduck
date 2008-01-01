@@ -5,9 +5,14 @@ Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
 2.8.3 [http://trac.cyberduck.ch/query?status=closed&milestone=2.8.3]
+- [Feature] Toolbar button to open Terminal.app SSH session in current working directory (SFTP) [#1508]
 - [Feature] Added MacVim to the list of supported editors (http://code.google.com/p/macvim/) [#1322]
-- [Bugfix] Directory parser compatibility (FTP) [#1412, #1270, #1302, #1076, #1172, #1213, #1253, #1258, #1284, #1331]
+- [Feature] Custom icon for executable files [#945]
+- [Bugfix] Frequent crashes [#1401, #1409]
 - [Bugfix] Does not change to correct directory when using a bookmark to the same server [#1411]
+- [Bugfix] Directory parser compatibility with Webstar Server (FTP) [#1302]
+- [Bugfix] Directory parser compatibility with Freebox Server (FTP) [#1258]
+- [Bugfix] Directory parser compatibility with Trellix Server (FTP) [#1213]
 
 2.8.2 [http://trac.cyberduck.ch/query?status=closed&milestone=2.8.2]
 - [Feature] Show transfer progress when using browser session [#1313]
