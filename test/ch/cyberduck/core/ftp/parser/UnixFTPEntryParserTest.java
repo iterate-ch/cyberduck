@@ -136,18 +136,36 @@ public class UnixFTPEntryParserTest extends TestCase {
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 7);
     }
 
-    public void testDoubleWhitespace() throws Exception {
+    /**
+     * http://trac.cyberduck.ch/ticket/143
+     * @throws Exception
+     */
+    public void testLeadingWhitespace() throws Exception {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPFile parsed = null;
 
         parsed = parser.parseFTPEntry(
-                "-rwxrwxrwx   1 root     system         9960 Dec 29 2005  dispus");
+                "-rw-r--r--   1 20708    205             194 Oct 17 14:40 D3I0_805.fixlist");
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "dispus");
-        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
-        assertEquals(parsed.getUser(), "root");
-        assertEquals(parsed.getGroup(), "system");
+        assertEquals(parsed.getName(), "D3I0_805.fixlist");
+        assertEquals(parsed.getUser(), "20708");
+        assertEquals(parsed.getGroup(), "205");
+        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.OCTOBER);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 17);
+        assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == 2007);
+        assertTrue(parsed.getTimestamp().get(Calendar.HOUR_OF_DAY) == 14);
+        assertTrue(parsed.getTimestamp().get(Calendar.MINUTE) == 40);
+
+        parsed = parser.parseFTPEntry(
+                "-rw-r--r--   1 20708    205         3553312 Feb 18 2005  D3I0_515.fmr");
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), "D3I0_515.fmr");
+        assertEquals(parsed.getUser(), "20708");
+        assertEquals(parsed.getGroup(), "205");
+        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.FEBRUARY);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 18);
+        assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == 2005);
     }
 
     public void testLowerCaseMonths() throws Exception {
@@ -208,15 +226,36 @@ public class UnixFTPEntryParserTest extends TestCase {
                 "-rw-rw-rw- 1 hoerspiel hoerspiel  3722053 19. Sep 13:24 Offenbarung 23 - Menschenopfer - 02.mp3"
         );
         assertNotNull(parsed);
+        assertEquals(parsed.getName(), "Offenbarung 23 - Menschenopfer - 02.mp3");
 
         parsed = parser.parseFTPEntry(
                 "-rw-rw-rw- 1 hoerspiel hoerspiel 10128531 19. Sep 13:24 Offenbarung 23 - Menschenopfer - 01.mp3"
         );
         assertNotNull(parsed);
+        assertEquals(parsed.getName(), "Offenbarung 23 - Menschenopfer - 01.mp3");
         parsed = parser.parseFTPEntry(
                 "-rw-rw-rw- 1 hoerspiel hoerspiel 11714687 19. Sep 13:25 Offenbarung 23 - Menschenopfer - 08.mp3"
         );
         assertNotNull(parsed);
+        assertEquals(parsed.getName(), "Offenbarung 23 - Menschenopfer - 08.mp3");
+
+        parsed = parser.parseFTPEntry(
+                "-rw-r--r--   1 www-data www-data      10089849 Dec 20 09:30 Stone Catalog"
+        );
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), "Stone Catalog");
+        assertEquals(parsed.getUser(), "www-data");
+        assertEquals(parsed.getGroup(), "www-data");
+        assertEquals(parsed.getSize(), 10089849);
+
+        parsed = parser.parseFTPEntry(
+                "-rw-r--r--   1 www-data www-data      34524204 Dec 20 13:41 Winter 2008 Newsletter.sit"
+        );
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), "Winter 2008 Newsletter.sit");
+        assertEquals(parsed.getUser(), "www-data");
+        assertEquals(parsed.getGroup(), "www-data");
+        assertEquals(parsed.getSize(), 34524204);
     }
 
     public static Test suite() {

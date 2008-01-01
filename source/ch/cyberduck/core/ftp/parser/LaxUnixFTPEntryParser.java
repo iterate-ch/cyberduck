@@ -29,8 +29,17 @@ public class LaxUnixFTPEntryParser extends CommonUnixFTPEntryParser {
     private static final String REGEX =
             "([bcdlfmpSs-])"
                     + "(((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-])))\\+?\\s+"
+                    /**
+                     * hard link count
+                     */
                     + "(\\d+)\\s+"
+                    /**
+                     * user
+                     */
                     + "(\\S+)\\s+"
+                    /**
+                     * group, maybe missing
+                     */
                     + "(?:(\\S+)\\s+)?"
                     /**
                      * file size
@@ -40,17 +49,19 @@ public class LaxUnixFTPEntryParser extends CommonUnixFTPEntryParser {
                      * file size maybe given in human readable format eg 15.6k
                      */
                     + "(\\.?\\d?)(\\w?)\\s+"
-                    /*
+                    /**
                       numeric or standard format date
                     */
                     + "((?:\\d+[-/]\\d+[-/]\\d+)|(?:\\S+\\s+\\S+))\\s+"
-                    /*
+                    /**
                        year (for non-recent standard format)
                        or time (for numeric or recent standard format
                     */
                     + "(\\d+(?::\\d+)?)\\s+"
 
                     + "(\\S*)(\\s*.*)";
+                    //    + "(\\d+(?::\\d+)?)\\s"
+                    //    + "(\\s*\\S+)(\\s*.*)";
 
     public LaxUnixFTPEntryParser() {
         super(REGEX);
