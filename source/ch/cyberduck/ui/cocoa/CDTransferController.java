@@ -954,7 +954,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 TOOLBAR_CLEAN_UP,
                 NSToolbarItem.FlexibleSpaceItemIdentifier,
                 TOOLBAR_OPEN,
-                TOOLBAR_SHOW
+                TOOLBAR_SHOW,
+                TOOLBAR_FILTER
         });
     }
 
