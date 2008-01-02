@@ -77,7 +77,8 @@ public class CDLoginController implements LoginController
 
             public void setKeychainCheckbox(NSButton keychainCheckbox) {
                 this.keychainCheckbox = keychainCheckbox;
-                if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
+                if(Preferences.instance().getBoolean("connection.login.useKeychain")
+                        && Preferences.instance().getBoolean("connection.login.addKeychain")) {
                     this.keychainCheckbox.setState(NSCell.OnState);
                 }
                 else {
