@@ -130,7 +130,7 @@ public class CDTransferTableDataSource extends NSObject {
                     return (Transfer) this.filter(TransferCollection.instance()).get(row);
                 }
                 if (identifier.equals(PROGRESS_COLUMN)) {
-                    return ((CDProgressController)controllers.get(this.filter(TransferCollection.instance()).get(row))).view();
+                    return ((CDProgressController)controllers.get(this.filter(TransferCollection.instance()).get(row)));
                 }
                 if (identifier.equals(TYPEAHEAD_COLUMN)) {
                     return ((Transfer) this.filter(TransferCollection.instance()).get(row)).getName();

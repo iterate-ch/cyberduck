@@ -30,17 +30,17 @@ public class CDProgressCell extends CDTableCell {
         super();
     }
 
-    private NSView subview;
+    private CDProgressController controller;
 
-    public void setObjectValue(Object subview) {
-        this.subview = (NSView) subview;
+    public void setObjectValue(Object c) {
+        this.controller = (CDProgressController) c;
     }
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
-        if (this.subview != null) {
-            this.subview.setFrame(cellFrame);
-            if (this.subview.superview() != controlView) {
-                controlView.addSubview(this.subview);
+        if (this.controller != null) {
+            this.controller.view().setFrame(cellFrame);
+            if (this.controller.view().superview() != controlView) {
+                controlView.addSubview(this.controller.view());
             }
         }
     }
