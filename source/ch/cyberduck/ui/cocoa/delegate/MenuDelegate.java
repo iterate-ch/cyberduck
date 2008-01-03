@@ -20,12 +20,13 @@ package ch.cyberduck.ui.cocoa.delegate;
 
 import com.apple.cocoa.application.NSMenu;
 import com.apple.cocoa.application.NSMenuItem;
-import com.apple.cocoa.foundation.NSObject;
+
+import ch.cyberduck.ui.cocoa.CDController;
 
 /**
  * @version $Id$
  */
-public abstract class MenuDelegate extends NSObject {
+public abstract class MenuDelegate extends CDController {
 
     public abstract int numberOfItemsInMenu(NSMenu menu);
 
