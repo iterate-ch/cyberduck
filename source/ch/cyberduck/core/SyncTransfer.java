@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.CDMainApplication;
+import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
@@ -235,7 +237,11 @@ public class SyncTransfer extends Transfer {
 
     protected void fireTransferDidEnd() {
         if(this.isComplete() && !this.isCanceled()) {
-            Growl.instance().notify("Synchronization complete", this.getName());
+            CDMainApplication.invoke(new DefaultMainAction() {
+                public void run() {
+                    Growl.instance().notify("Synchronization complete", getName());
+                }
+            });
         }
         super.fireTransferDidEnd();
     }    

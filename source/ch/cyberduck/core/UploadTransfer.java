@@ -23,6 +23,8 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.CDMainApplication;
+import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -286,7 +288,11 @@ public class UploadTransfer extends Transfer {
 
     protected void fireTransferDidEnd() {
         if(this.isComplete() && !this.isCanceled()) {
-            Growl.instance().notify("Upload complete", this.getName());
+            CDMainApplication.invoke(new DefaultMainAction() {
+                public void run() {
+                    Growl.instance().notify("Upload complete", getName());
+                }
+            });
         }
         super.fireTransferDidEnd();
     }    
