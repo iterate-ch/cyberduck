@@ -465,6 +465,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
             transferTable.reloadData();
         }
+        this.updateHighlight();
     }
 
     /**
