@@ -23,16 +23,24 @@ package ch.cyberduck.ui.cocoa.threading;
  *
  * @version $Id:$
  */
-public interface MainAction extends Runnable {
+public abstract class MainAction implements Runnable {
 
     /**
      * To be run on the main thread
      */
-    abstract void run();
+    public abstract void run();
 
     /**
      * @return False if the action should not be run anymore because the parent container has
      * been invalidated in the mean time.
      */
-    abstract boolean isValid();
+    public abstract boolean isValid();
+
+    private static short ACTION_COUNTER = Short.MIN_VALUE;
+
+    private short id = ACTION_COUNTER++;
+
+    public short id() {
+        return id;
+    }
 }

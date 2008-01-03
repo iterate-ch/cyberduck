@@ -41,7 +41,7 @@ public class CDMainApplication extends NSApplication {
                     runnable = (MainAction) events.valueForKey(String.valueOf(event.subtype()));
                 }
                 if(null == runnable) {
-                    log.error("Event for unknown runnable:" + event.subtype());
+                    log.fatal("Event for unknown runnable:" + event.subtype());
                     return;
                 }
                 if(runnable.isValid()) {
@@ -52,7 +52,12 @@ public class CDMainApplication extends NSApplication {
                 }
             }
             finally {
-                events.removeObjectForKey(String.valueOf(event.subtype()));
+                synchronized(events) {
+                    events.removeObjectForKey(String.valueOf(event.subtype()));
+                    if(log.isDebugEnabled()) {
+                        log.debug("Event Queue Size:"+events.count());
+                    }
+                }
             }
             return;
         }
@@ -62,7 +67,7 @@ public class CDMainApplication extends NSApplication {
     private final NSMutableDictionary events
             = new NSMutableDictionary();
 
-    public void put(Object key, Runnable runnable) {
+    private void put(Object key, MainAction runnable) {
         synchronized(events) {
             events.setObjectForKey(runnable, String.valueOf(key));
         }
@@ -74,10 +79,11 @@ public class CDMainApplication extends NSApplication {
      * @param runnable The <code>Runnable</code> to run
      */
     public static void invoke(final MainAction runnable) {
+        final short key = runnable.id();
         NSEvent event = NSEvent.otherEvent(NSEvent.ApplicationDefined,
             new NSPoint(0, 0), 0, System.currentTimeMillis() / 1000.0, 0,
-            null, (short)runnable.hashCode(), -1, -1);
-        ((CDMainApplication) sharedApplication()).put(String.valueOf((short)runnable.hashCode()), runnable);
+            null, key, -1, -1);
+        ((CDMainApplication) sharedApplication()).put(String.valueOf(key), runnable);
         // This method can also be called in subthreads. Events posted
         // in subthreads bubble up in the main thread event queue.
         sharedApplication().postEvent(event, false);

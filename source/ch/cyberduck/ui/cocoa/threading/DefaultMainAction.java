@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.threading;
 /**
  * @version $Id:$
  */
-public abstract class DefaultMainAction implements MainAction {
+public abstract class DefaultMainAction extends MainAction {
 
     public abstract void run();
 

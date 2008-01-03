@@ -23,7 +23,7 @@ import ch.cyberduck.ui.cocoa.CDWindowController;
 /**
  * @version $Id:$
  */
-public abstract class WindowMainAction implements MainAction {
+public abstract class WindowMainAction extends MainAction {
 
     private CDWindowController controller;
 
