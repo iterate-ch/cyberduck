@@ -2615,7 +2615,7 @@ public class CDBrowserController extends CDWindowController
             final Speedometer meter = new Speedometer(transfer);
             final TransferListener l;
             final long delay = 0;
-            final long period = 100; //in milliseconds
+            final long period = 500; //in milliseconds
             transfer.addListener(l = new TransferAdapter() {
                 /**
                  * Timer to update the progress indicator

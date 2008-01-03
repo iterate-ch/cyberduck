@@ -105,7 +105,7 @@ public class CDProgressController extends CDController {
             private Timer progressTimer;
 
             final long delay = 0;
-            final long period = 1000; //in milliseconds
+            final long period = 500; //in milliseconds
 
             public void transferWillStart() {
                 CDMainApplication.invoke(new DefaultMainAction() {
