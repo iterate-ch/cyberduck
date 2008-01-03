@@ -359,10 +359,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
      *
      */
     private void updateHighlight() {
-        log.debug("updateHighlight");
         synchronized(TransferCollection.instance()) {
             boolean isKeyWindow = window().isKeyWindow();
-            log.debug("isKeyWindow:"+isKeyWindow);
             for(int i = 0; i < TransferCollection.instance().size(); i++) {
                 transferModel.setHighlighted((Transfer)TransferCollection.instance().get(i),
                         transferTable.isRowSelected(i) && isKeyWindow);
@@ -467,7 +465,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
             transferTable.reloadData();
         }
-        this.updateHighlight();
     }
 
     /**

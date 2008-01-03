@@ -99,7 +99,7 @@ public class CDTableCell extends NSCell {
         }
     }
 
-    protected static NSDictionary ALERT_FONT = new NSDictionary(
+    public static NSDictionary ALERT_FONT = new NSDictionary(
             new Object[]{
                     NSFont.systemFontOfSize(10.0f),
                     NSColor.redColor(),
@@ -109,7 +109,7 @@ public class CDTableCell extends NSCell {
                     NSAttributedString.ForegroundColorAttributeName,
                     NSAttributedString.ParagraphStyleAttributeName});
 
-    protected static final NSDictionary FIXED_FONT = new NSDictionary(
+    public static final NSDictionary FIXED_FONT = new NSDictionary(
             new Object[]{
                     NSFont.userFixedPitchFontOfSize(9.0f),
                     PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE},
@@ -118,7 +118,7 @@ public class CDTableCell extends NSCell {
                     NSAttributedString.ParagraphStyleAttributeName}
     );
 
-    static protected NSDictionary BOLD_FONT = new NSDictionary(new Object[]{
+    public static NSDictionary BOLD_FONT = new NSDictionary(new Object[]{
             NSFont.boldSystemFontOfSize(11.0f),
             //								   NSColor.darkGrayColor(),
             PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
@@ -128,9 +128,9 @@ public class CDTableCell extends NSCell {
                     NSAttributedString.ParagraphStyleAttributeName} //keys
     );
 
-    static protected NSDictionary NORMAL_FONT = new NSDictionary(
+    public static NSDictionary NORMAL_FONT = new NSDictionary(
             new Object[]{
-                    NSFont.systemFontOfSize(10.0f),
+                    NSFont.systemFontOfSize(11.0f),
                     //								   NSColor.darkGrayColor(),
                     PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
             new Object[]{
@@ -139,7 +139,7 @@ public class CDTableCell extends NSCell {
                     NSAttributedString.ParagraphStyleAttributeName} //keys
     );
 
-    static protected NSDictionary TINY_FONT = new NSDictionary(
+    public static NSDictionary TINY_FONT = new NSDictionary(
             new Object[]{
                     NSFont.systemFontOfSize(10.0f),
                     NSColor.darkGrayColor(),
@@ -149,7 +149,7 @@ public class CDTableCell extends NSCell {
                     NSAttributedString.ForegroundColorAttributeName,
                     NSAttributedString.ParagraphStyleAttributeName});
 
-    static protected NSDictionary TINY_FONT_RIGHT = new NSDictionary(
+    public static NSDictionary TINY_FONT_RIGHT = new NSDictionary(
             new Object[]{
                     NSFont.systemFontOfSize(10.0f),
                     NSColor.darkGrayColor(),
@@ -159,7 +159,7 @@ public class CDTableCell extends NSCell {
                     NSAttributedString.ForegroundColorAttributeName,
                     NSAttributedString.ParagraphStyleAttributeName});
 
-    protected static NSDictionary ALERT_FONT_HIGHLIGHTED = new NSDictionary(
+    public static NSDictionary ALERT_FONT_HIGHLIGHTED = new NSDictionary(
             new Object[]{
                     NSFont.systemFontOfSize(10.0f),
                     NSColor.redColor(),
@@ -169,7 +169,7 @@ public class CDTableCell extends NSCell {
                     NSAttributedString.ForegroundColorAttributeName,
                     NSAttributedString.ParagraphStyleAttributeName});
 
-    protected static final NSDictionary FIXED_FONT_HIGHLIGHTED = new NSDictionary(
+    public static final NSDictionary FIXED_FONT_HIGHLIGHTED = new NSDictionary(
             new Object[]{
                     NSFont.userFixedPitchFontOfSize(9.0f),
                     NSColor.whiteColor(),
@@ -180,7 +180,7 @@ public class CDTableCell extends NSCell {
                     NSAttributedString.ParagraphStyleAttributeName}
     );
 
-    static protected NSDictionary BOLD_FONT_HIGHLIGHTED = new NSDictionary(
+    public static NSDictionary BOLD_FONT_HIGHLIGHTED = new NSDictionary(
             new Object[]{
                     NSFont.boldSystemFontOfSize(11.0f),
                     NSColor.whiteColor(),
@@ -191,9 +191,9 @@ public class CDTableCell extends NSCell {
                     NSAttributedString.ParagraphStyleAttributeName} //keys
     );
 
-    static protected NSDictionary NORMAL_FONT_HIGHLIGHTED = new NSDictionary(
+    public static NSDictionary NORMAL_FONT_HIGHLIGHTED = new NSDictionary(
             new Object[]{
-                    NSFont.systemFontOfSize(10.0f),
+                    NSFont.systemFontOfSize(11.0f),
                     NSColor.whiteColor(),
                     PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
             new Object[]{
@@ -202,7 +202,7 @@ public class CDTableCell extends NSCell {
                     NSAttributedString.ParagraphStyleAttributeName} //keys
     );
 
-    static protected NSDictionary TINY_FONT_HIGHLIGHTED = new NSDictionary(
+    public static NSDictionary TINY_FONT_HIGHLIGHTED = new NSDictionary(
             new Object[]{
                     NSFont.systemFontOfSize(10.0f),
                     NSColor.whiteColor(),
@@ -215,7 +215,7 @@ public class CDTableCell extends NSCell {
 
     );
 
-    static protected NSDictionary TINY_FONT_HIGHLIGHTED_RIGHT = new NSDictionary(
+    public static NSDictionary TINY_FONT_HIGHLIGHTED_RIGHT = new NSDictionary(
             new Object[]{
                     NSFont.systemFontOfSize(10.0f),
                     NSColor.whiteColor(),

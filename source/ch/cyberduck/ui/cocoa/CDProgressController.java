@@ -105,7 +105,7 @@ public class CDProgressController extends CDController {
             private Timer progressTimer;
 
             final long delay = 0;
-            final long period = 100; //in milliseconds
+            final long period = 1000; //in milliseconds
 
             public void transferWillStart() {
                 CDMainApplication.invoke(new DefaultMainAction() {
@@ -171,7 +171,7 @@ public class CDProgressController extends CDController {
                     public void run() {
                         CDMainApplication.invoke(new DefaultMainAction() {
                             public void run() {
-                                CDProgressController.this.setProgressText();
+                                setProgressText();
                                 if(!transfer.isVirgin()) {
                                     progressBar.setIndeterminate(false);
                                     progressBar.setMinValue(0);
@@ -232,6 +232,12 @@ public class CDProgressController extends CDController {
     public void setHighlighted(final boolean highlighted) {
         statusField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.textColor());
         progressField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.darkGrayColor());
+        if(filesPopupMenu.numberOfItems() > 0) {
+            filesPopupMenu.itemAtIndex(0).setAttributedTitle(
+                    new NSAttributedString(filesPopupMenu.itemAtIndex(0).title(),
+                            highlighted ? CDTableCell.NORMAL_FONT_HIGHLIGHTED : CDTableCell.NORMAL_FONT)
+            );
+        }
     }
 
     // ----------------------------------------------------------
