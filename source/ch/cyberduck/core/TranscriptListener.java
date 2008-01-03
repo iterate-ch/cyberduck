@@ -27,5 +27,5 @@ public interface TranscriptListener {
      *
      * @param message
      */
-    public abstract  void log(String message);
+    abstract void log(String message);
 }
