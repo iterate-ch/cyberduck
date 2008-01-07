@@ -41,6 +41,7 @@
                 filterField = NSSearchField;
                 iconView = NSImageView;
                 localField = NSTextField;
+                logDrawer = NSDrawer;
                 queueSizeStepper = NSStepper;
                 queueTable = NSTableView;
                 urlField = NSTextField;

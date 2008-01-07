@@ -24,6 +24,7 @@
                 insideButtonClicked = id;
                 interruptButtonClicked = id;
                 myAction = id;
+                myAction1 = id;
                 pasteFromFinder = id;
                 reloadButtonClicked = id;
                 renameFileButtonClicked = id;
