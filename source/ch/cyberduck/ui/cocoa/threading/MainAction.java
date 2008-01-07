@@ -1,5 +1,7 @@
 package ch.cyberduck.ui.cocoa.threading;
 
+import ch.cyberduck.ui.cocoa.CDController;
+
 /*
  *  Copyright (c) 2007 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -23,7 +25,7 @@ package ch.cyberduck.ui.cocoa.threading;
  *
  * @version $Id:$
  */
-public abstract class MainAction implements Runnable {
+public abstract class MainAction extends CDController implements Runnable {
 
     /**
      * To be run on the main thread

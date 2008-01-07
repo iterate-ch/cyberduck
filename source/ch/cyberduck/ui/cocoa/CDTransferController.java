@@ -135,6 +135,58 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
     }
 
+    private CDTranscriptController transcript;
+    
+    private NSDrawer logDrawer;
+
+    private NSDrawer.Notifications logDrawerNotifications = new NSDrawer.Notifications() {
+        public void drawerWillOpen(NSNotification notification) {
+            logDrawer.setContentSize(new NSSize(
+                    Preferences.instance().getFloat("queue.logDrawer.size.width"),
+                    logDrawer.contentSize().height()
+            ));
+        }
+
+        public void drawerDidOpen(NSNotification notification) {
+            Preferences.instance().setProperty("queue.logDrawer.isOpen", true);
+        }
+
+        public void drawerWillClose(NSNotification notification) {
+            Preferences.instance().setProperty("queue.logDrawer.size.width",
+                    logDrawer.contentSize().width());
+        }
+
+        public void drawerDidClose(NSNotification notification) {
+            Preferences.instance().setProperty("queue.logDrawer.isOpen", false);
+        }
+    };
+
+    public void setLogDrawer(NSDrawer logDrawer) {
+        this.logDrawer = logDrawer;
+        this.transcript = new CDTranscriptController();
+        this.logDrawer.setContentView(this.transcript.getLogView());
+        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications,
+                new NSSelector("drawerWillOpen", new Class[]{NSNotification.class}),
+                NSDrawer.DrawerWillOpenNotification,
+                this.logDrawer);
+        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications,
+                new NSSelector("drawerDidOpen", new Class[]{NSNotification.class}),
+                NSDrawer.DrawerDidOpenNotification,
+                this.logDrawer);
+        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications,
+                new NSSelector("drawerWillClose", new Class[]{NSNotification.class}),
+                NSDrawer.DrawerWillCloseNotification,
+                this.logDrawer);
+        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications,
+                new NSSelector("drawerDidClose", new Class[]{NSNotification.class}),
+                NSDrawer.DrawerDidCloseNotification,
+                this.logDrawer);
+    }
+
+    public void toggleLogDrawer(final Object sender) {
+        this.logDrawer.toggle(this);
+    }
+
     private NSPopUpButton bandwidthPopup;
 
     private MenuDelegate bandwidthPopupDelegate;
@@ -202,19 +254,20 @@ public class CDTransferController extends CDWindowController implements NSToolba
     }
 
     private CDTransferController() {
-        ;
+        this.loadBundle();
     }
 
     public static CDTransferController instance() {
         synchronized(NSApplication.sharedApplication()) {
             if(null == instance) {
                 instance = new CDTransferController();
-                if(!NSApplication.loadNibNamed("Transfer", instance)) {
-                    log.fatal("Couldn't load Transfer.nib");
-                }
             }
             return instance;
         }
+    }
+
+    protected String getBundleName() {
+        return "Transfer";
     }
 
     /*
@@ -289,15 +342,31 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 }
             }
 
+//            float tableViewHeightOfRow(NSTableView view, int row) {
+//                synchronized(TransferCollection.instance()) {
+//                    if(row < TransferCollection.instance().size()) {
+//                        Transfer item = (Transfer) TransferCollection.instance().get(row);
+//                        if(item.isRunning()) {
+//                            log.debug("tableViewHeightOfRow:" + row +" :"+67);
+//                            return 67f;
+//                        }
+//                    }
+//                    log.debug("tableViewHeightOfRow:" + row +" :"+50);
+//                    return 50f;
+//                }
+//            }
+
             public String tableViewToolTipForCell(NSTableView view, NSCell cell, NSMutableRect rect,
                                                   NSTableColumn tc, int row, NSPoint mouseLocation) {
-                if(row < TransferCollection.instance().size()) {
-                    TransferCollection.instance().get(row).toString();
+                synchronized(TransferCollection.instance()) {
+                    if(row < TransferCollection.instance().size()) {
+                        TransferCollection.instance().get(row).toString();
+                    }
                 }
                 return null;
             }
 
-            public void tableViewSelectionIsChanging(NSNotification aNotification) {
+            public void selectionIsChanging(NSNotification notification) {
                 updateHighlight();
             }
 
@@ -410,7 +479,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
      *
      */
     private void updateIcon() {
-        log.debug("updateIcon:");
+        log.debug("updateIcon");
         final int selected = transferTable.numberOfSelectedRows();
         if(1 != selected) {
             iconView.setImage(null);
@@ -418,13 +487,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
         final Transfer transfer = (Transfer) TransferCollection.instance().get(transferTable.selectedRow());
         // Draw file type icon
-        if(transfer.getRoot().getLocal().exists()) {
-            if(transfer.numberOfRoots() == 1) {
-                iconView.setImage(CDIconCache.instance().iconForPath(transfer.getRoot().getLocal(), 32));
-            }
-            else {
-                iconView.setImage(NSImage.imageNamed("multipleDocuments32.tiff"));
-            }
+        if(transfer.numberOfRoots() == 1) {
+            iconView.setImage(CDIconCache.instance().iconForPath(transfer.getRoot().getLocal(), 32));
+        }
+        else {
+            iconView.setImage(NSImage.imageNamed("multipleDocuments32.tiff"));
         }
     }
 
@@ -522,6 +589,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
             private TransferListener tl;
 
+            final TransferPrompt prompt
+                    = CDTransferPrompt.create(CDTransferController.this, transfer);
+
             public void prepare() {
                 transfer.getSession().addErrorListener(this);
                 transfer.getSession().addTranscriptListener(this);
@@ -553,6 +623,12 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     public void transferWillStart() {
                         CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
                             public void run() {
+//                                synchronized(TransferCollection.instance()) {
+//                                    transferTable.noteHeightOfRowsWithIndexesChanged(
+//                                            new NSIndexSet(new NSRange(TransferCollection.instance().indexOf(transfer),
+//                                                    TransferCollection.instance().size() - 1))
+//                                    );
+//                                }
                                 window.toolbar().validateVisibleItems();
                                 updateIcon();
                             }
@@ -562,6 +638,12 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     public void transferDidEnd() {
                         CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
                             public void run() {
+//                                synchronized(TransferCollection.instance()) {
+//                                    transferTable.noteHeightOfRowsWithIndexesChanged(
+//                                            new NSIndexSet(new NSRange(TransferCollection.instance().indexOf(transfer),
+//                                                    TransferCollection.instance().size() - 1))
+//                                    );
+//                                }
                                 window.toolbar().validateVisibleItems();
                                 updateIcon();
                             }
@@ -590,7 +672,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 TransferOptions options = new TransferOptions();
                 options.reloadRequested = reload;
                 options.resumeRequested = resume;
-                transfer.start(CDTransferPrompt.create(CDTransferController.this, transfer), options ,true);
+                transfer.start(prompt, options ,true);
             }
 
             public void finish() {
@@ -643,6 +725,15 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 transfer.fireTransferPaused();
                 super.pause(lock);
                 transfer.fireTransferResumed();
+            }
+
+            public void log(final String message) {
+                CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
+                    public void run() {
+                        transcript.write(message);
+                    }
+                });
+                super.log(message);
             }
         }, new Object());
     }
@@ -949,7 +1040,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 TOOLBAR_RELOAD,
                 TOOLBAR_STOP,
                 TOOLBAR_REMOVE,
-                TOOLBAR_CLEAN_UP,
                 NSToolbarItem.FlexibleSpaceItemIdentifier,
                 TOOLBAR_OPEN,
                 TOOLBAR_SHOW,

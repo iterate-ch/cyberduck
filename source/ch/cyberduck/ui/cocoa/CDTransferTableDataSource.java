@@ -26,7 +26,6 @@ import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
@@ -37,7 +36,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class CDTransferTableDataSource extends NSObject {
+public class CDTransferTableDataSource extends CDController {
     private static Logger log = Logger.getLogger(CDTransferTableDataSource.class);
 
     public static final String ICON_COLUMN = "ICON";

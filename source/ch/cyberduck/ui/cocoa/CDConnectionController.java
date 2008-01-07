@@ -332,16 +332,18 @@ public class CDConnectionController extends CDSheetController {
                 Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP));
     }
 
-    private final static Map controllers = new HashMap();
+    private static final Map controllers = new HashMap();
 
     public static CDConnectionController instance(final CDWindowController parent) {
         if(!controllers.containsKey(parent)) {
-            controllers.put(parent, new CDConnectionController(parent) {
+            final CDConnectionController controller = new CDConnectionController(parent) {
                 protected void invalidate() {
                     controllers.remove(parent);
                     super.invalidate();
                 }
-            });
+            };
+            controller.loadBundle("Connection");
+            controllers.put(parent, controller);
         }
         return (CDConnectionController) controllers.get(parent);
     }
@@ -356,11 +358,10 @@ public class CDConnectionController extends CDSheetController {
      */
     private CDConnectionController(final CDWindowController parent) {
         super(parent);
-        synchronized(NSApplication.sharedApplication()) {
-            if(!NSApplication.loadNibNamed("Connection", this)) {
-                log.fatal("Couldn't load Connection.nib");
-            }
-        }
+    }
+
+    protected String getBundleName() {
+        return null;
     }
 
     public void awakeFromNib() {
@@ -394,6 +395,7 @@ public class CDConnectionController extends CDSheetController {
             this.protocolPopup.selectItemWithTitle(Session.SFTP_STRING);
             this.portField.setIntValue(Session.SSH_PORT);
         }
+        super.awakeFromNib();
     }
 
     /**

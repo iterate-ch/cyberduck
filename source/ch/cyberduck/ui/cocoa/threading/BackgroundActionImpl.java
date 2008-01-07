@@ -21,10 +21,7 @@ package ch.cyberduck.ui.cocoa.threading;
 import com.enterprisedt.net.ftp.FTPNullReplyException;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.CDErrorCell;
-import ch.cyberduck.ui.cocoa.CDSheetController;
-import ch.cyberduck.ui.cocoa.CDWindowController;
-import ch.cyberduck.ui.cocoa.CDMainApplication;
+import ch.cyberduck.ui.cocoa.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import com.apple.cocoa.application.*;
@@ -45,7 +42,7 @@ import java.util.TimerTask;
 /**
  * @version $Id: BackgroundActionImpl.java 2524 2006-10-26 13:14:03Z dkocher $
  */
-public abstract class BackgroundActionImpl
+public abstract class BackgroundActionImpl extends CDController
         implements BackgroundAction, ErrorListener, TranscriptListener {
 
 
@@ -214,6 +211,9 @@ public abstract class BackgroundActionImpl
      */
     public void alert(final Object lock) {
         CDSheetController c = new CDSheetController(controller) {
+            protected String getBundleName() {
+                return "Alert";
+            }
 
             public void awakeFromNib() {
                 boolean enabled = transcript.length() > 0;
@@ -316,12 +316,7 @@ public abstract class BackgroundActionImpl
                 return false;
             }
         };
-        synchronized(NSApplication.sharedApplication()) {
-            if(!NSApplication.loadNibNamed("Alert", c)) {
-                log.fatal("Couldn't load Alert.nib");
-            }
-        }
-        c.beginSheet(false);
+        c.beginSheet();
     }
 
     /**

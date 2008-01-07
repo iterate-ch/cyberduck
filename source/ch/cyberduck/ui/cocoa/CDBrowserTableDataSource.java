@@ -34,7 +34,7 @@ import java.util.*;
 /**
  * @version $Id$
  */
-public abstract class CDBrowserTableDataSource extends NSObject {
+public abstract class CDBrowserTableDataSource extends CDController {
     protected static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 
     public static final String ICON_COLUMN = "ICON";

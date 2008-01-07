@@ -32,7 +32,6 @@ import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSOutlineView;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
@@ -43,7 +42,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class CDTransferPromptModel extends NSObject {
+public abstract class CDTransferPromptModel extends CDController {
     protected static Logger log = Logger.getLogger(CDTransferPromptModel.class);
 
     /**

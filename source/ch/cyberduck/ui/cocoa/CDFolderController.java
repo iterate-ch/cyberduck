@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSImageView;
 
 import ch.cyberduck.core.Path;
@@ -44,11 +43,10 @@ public class CDFolderController extends CDFileController {
 
     public CDFolderController(final CDWindowController parent) {
         super(parent);
-        synchronized(NSApplication.sharedApplication()) {
-            if(!NSApplication.loadNibNamed("Folder", this)) {
-                log.fatal("Couldn't load Folder.nib");
-            }
-        }
+    }
+
+    protected String getBundleName() {
+        return "Folder";
     }
 
     public void callback(int returncode) {

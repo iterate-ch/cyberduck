@@ -39,7 +39,7 @@ import java.util.Locale;
 /**
  * @version $Id$
  */
-public abstract class CDAbstractTableDelegate extends NSObject implements CDTableDelegate {
+public abstract class CDAbstractTableDelegate extends CDController implements CDTableDelegate {
     private static Logger log = Logger.getLogger(CDAbstractTableDelegate.class);
 
     private NSTableColumn selectedColumn;
@@ -149,6 +149,11 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         this.selectionDidChange(notification);
     }
 
+
+    public void tableViewSelectionIsChanging(NSNotification notification) {
+        this.selectionIsChanging(notification);
+    }
+
     /**
      * @see NSOutlineView.Notifications
      */
@@ -156,8 +161,19 @@ public abstract class CDAbstractTableDelegate extends NSObject implements CDTabl
         this.selectionDidChange(notification);
     }
 
+    /**
+     * @see NSOutlineView.Notifications
+     */
+    public void outlineViewSelectionIsChanging(NSNotification notification) {
+        this.selectionIsChanging(notification);
+    }
+
     public abstract void selectionDidChange(NSNotification notification);
 
+    public void selectionIsChanging(NSNotification notification) {
+        ;
+    }
+    
     // ----------------------------------------------------------
     // Sorting
     // ----------------------------------------------------------

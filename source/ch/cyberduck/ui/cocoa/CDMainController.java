@@ -193,12 +193,13 @@ public class CDMainController extends CDController {
 
     public void preferencesMenuClicked(final Object sender) {
         CDPreferencesController controller = CDPreferencesController.instance();
+        controller.loadBundle();
         controller.window().makeKeyAndOrderFront(null);
     }
 
     public void newDownloadMenuClicked(final Object sender) {
         CDSheetController c = new CDDownloadController(CDTransferController.instance());
-        c.beginSheet(false);
+        c.beginSheet();
     }
 
     public void newBrowserMenuClicked(final Object sender) {
@@ -504,6 +505,10 @@ public class CDMainController extends CDController {
                 // not to show it again in the future
                 final int uses = Preferences.instance().getInteger("uses");
                 CDWindowController c = new CDWindowController() {
+                    protected String getBundleName() {
+                        return "Donate";
+                    }
+
                     private NSButton neverShowDonationCheckbox;
 
                     public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
@@ -537,11 +542,6 @@ public class CDMainController extends CDController {
                         NSApplication.sharedApplication().terminate(null);
                     }
                 };
-                synchronized(NSApplication.sharedApplication()) {
-                    if(!NSApplication.loadNibNamed("Donate", c)) {
-                        log.fatal("Couldn't load Donate.nib");
-                    }
-                }
                 donationBoxDisplayed = true;
                 // Cancel application termination. Dismissing the donation dialog will attempt to quit again.
                 return NSApplication.TerminateCancel;

@@ -351,11 +351,11 @@ public class CDBrowserController extends CDWindowController
     // ----------------------------------------------------------
 
     public CDBrowserController() {
-        synchronized(NSApplication.sharedApplication()) {
-            if(!NSApplication.loadNibNamed("Browser", this)) {
-                log.fatal("Couldn't load Browser.nib");
-            }
-        }
+        this.loadBundle();
+    }
+
+    protected String getBundleName() {
+        return "Browser";
     }
 
     public static CDBrowserController controllerForWindow(NSWindow window) {
@@ -430,6 +430,9 @@ public class CDBrowserController extends CDWindowController
                 NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName").toString());
         if(Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen")) {
             this.bookmarkDrawer.open();
+        }
+        if(Preferences.instance().getBoolean("browser.logDrawer.isOpen")) {
+            this.logDrawer.open();
         }
         // Configure Toolbar
         this.toolbar = new NSToolbar("Cyberduck Toolbar");
@@ -733,6 +736,54 @@ public class CDBrowserController extends CDWindowController
                 new NSSelector("drawerDidClose", new Class[]{NSNotification.class}),
                 NSDrawer.DrawerDidCloseNotification,
                 this.bookmarkDrawer);
+    }
+
+    private CDTranscriptController transcript;
+
+    private NSDrawer logDrawer;
+
+    private NSDrawer.Notifications logDrawerNotifications = new NSDrawer.Notifications() {
+        public void drawerWillOpen(NSNotification notification) {
+            logDrawer.setContentSize(new NSSize(
+                    Preferences.instance().getFloat("browser.logDrawer.size.width"),
+                    logDrawer.contentSize().height()
+            ));
+        }
+
+        public void drawerDidOpen(NSNotification notification) {
+            Preferences.instance().setProperty("browser.logDrawer.isOpen", true);
+        }
+
+        public void drawerWillClose(NSNotification notification) {
+            Preferences.instance().setProperty("browser.logDrawer.size.width",
+                    logDrawer.contentSize().width());
+        }
+
+        public void drawerDidClose(NSNotification notification) {
+            Preferences.instance().setProperty("browser.logDrawer.isOpen", false);
+        }
+    };
+
+    public void setLogDrawer(NSDrawer logDrawer) {
+        this.logDrawer = logDrawer;
+        this.transcript = new CDTranscriptController();
+        this.logDrawer.setContentView(this.transcript.getLogView());
+        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications,
+                new NSSelector("drawerWillOpen", new Class[]{NSNotification.class}),
+                NSDrawer.DrawerWillOpenNotification,
+                this.logDrawer);
+        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications,
+                new NSSelector("drawerDidOpen", new Class[]{NSNotification.class}),
+                NSDrawer.DrawerDidOpenNotification,
+                this.logDrawer);
+        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications,
+                new NSSelector("drawerWillClose", new Class[]{NSNotification.class}),
+                NSDrawer.DrawerWillCloseNotification,
+                this.logDrawer);
+        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications,
+                new NSSelector("drawerDidClose", new Class[]{NSNotification.class}),
+                NSDrawer.DrawerDidCloseNotification,
+                this.logDrawer);
     }
 
 //    private NSTextField bookmarkSearchField;
@@ -1825,6 +1876,10 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
+    public void toggleLogDrawer(final Object sender) {
+        this.logDrawer.toggle(this);
+    }
+
     // ----------------------------------------------------------
     // Status
     // ----------------------------------------------------------
@@ -1869,6 +1924,10 @@ public class CDBrowserController extends CDWindowController
 
     public void securityLabelClicked(final Object sender) {
         CDWindowController c = new CDWindowController() {
+            protected String getBundleName() {
+                return "Security";
+            }
+
             public void awakeFromNib() {
                 this.window().setTitle(CDBrowserController.this.window().title());
                 this.window().center();
@@ -1916,11 +1975,7 @@ public class CDBrowserController extends CDWindowController
                 }
             }
         };
-        synchronized(NSApplication.sharedApplication()) {
-            if(!NSApplication.loadNibNamed("Security", c)) {
-                log.fatal("Couldn't load Security.nib");
-            }
-        }
+        c.loadBundle();
     }
 
     // ----------------------------------------------------------
@@ -2003,7 +2058,7 @@ public class CDBrowserController extends CDWindowController
                         source.setLocal(local);
                         DownloadTransfer download = new DownloadTransfer(source);
                         download.start(new TransferPrompt() {
-                            public TransferAction prompt(Transfer transfer) {
+                            public TransferAction prompt() {
                                 return TransferAction.ACTION_OVERWRITE;
                             }
                         }, options);
@@ -2014,7 +2069,7 @@ public class CDBrowserController extends CDWindowController
                         destination.setLocal(local);
                         UploadTransfer upload = new UploadTransfer(destination);
                         upload.start(new TransferPrompt() {
-                            public TransferAction prompt(Transfer transfer) {
+                            public TransferAction prompt() {
                                 return TransferAction.ACTION_OVERWRITE;
                             }
                         }, options);
@@ -2114,7 +2169,7 @@ public class CDBrowserController extends CDWindowController
                         }
                     }
                 };
-                c.beginSheet(true);
+                c.beginSheet();
             }
             else {
                 this.background(action);
@@ -2156,7 +2211,7 @@ public class CDBrowserController extends CDWindowController
                         }
                     }
                 };
-                c.beginSheet(true);
+                c.beginSheet();
             }
             else {
                 this.checkOverwrite(selected, action);
@@ -2263,7 +2318,7 @@ public class CDBrowserController extends CDWindowController
                     }
                 }
             };
-            c.beginSheet(false);
+            c.beginSheet();
         }
     }
 
@@ -2298,24 +2353,24 @@ public class CDBrowserController extends CDWindowController
 
     public void gotoButtonClicked(final Object sender) {
         CDSheetController controller = new CDGotoController(this);
-        controller.beginSheet(false);
+        controller.beginSheet();
     }
 
     public void createFileButtonClicked(final Object sender) {
         CDSheetController controller = new CDCreateFileController(this);
-        controller.beginSheet(false);
+        controller.beginSheet();
     }
 
     public void duplicateFileButtonClicked(final Object sender) {
         if(this.getSelectionCount() > 0) {
             CDSheetController controller = new CDDuplicateFileController(this);
-            controller.beginSheet(false);
+            controller.beginSheet();
         }
     }
 
     public void createFolderButtonClicked(final Object sender) {
         CDSheetController controller = new CDFolderController(this);
-        controller.beginSheet(false);
+        controller.beginSheet();
     }
 
     public void renameFileButtonClicked(final Object sender) {
@@ -2330,7 +2385,7 @@ public class CDBrowserController extends CDWindowController
 
     public void sendCustomCommandClicked(final Object sender) {
         CDSheetController controller = new CDCommandController(this, this.session);
-        controller.beginSheet(false);
+        controller.beginSheet();
     }
 
     public void editMenuClicked(final NSMenuItem sender) {
@@ -2700,7 +2755,7 @@ public class CDBrowserController extends CDWindowController
                 controller.invalidate();
             }
         });
-        controller.beginSheet(false);
+        controller.beginSheet();
     }
 
     public void interruptButtonClicked(final Object sender) {
@@ -3249,6 +3304,17 @@ public class CDBrowserController extends CDWindowController
                 });
             }
         });
+        transcript.clear();
+        session.addTranscriptListener(new TranscriptListener() {
+            public void log(final String message) {
+                CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
+                    public void run() {
+                        transcript.write(message);
+                    }
+                });
+
+            }
+        });
         this.getFocus();
         return session;
     }
@@ -3379,7 +3445,7 @@ public class CDBrowserController extends CDWindowController
             if(this.isBusy()) {
                 this.interrupt();
             }
-            unmount(true);
+            unmount(true); //Todo Background Thread
         }
         // Unmount succeeded
         return true;

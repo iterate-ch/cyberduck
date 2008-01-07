@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class CDBookmarkTableDataSource extends NSObject {
+public class CDBookmarkTableDataSource extends CDController {
     private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 
     private static final NSImage DOCUMENT_ICON;

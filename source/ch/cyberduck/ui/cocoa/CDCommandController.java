@@ -65,11 +65,10 @@ public class CDCommandController extends CDSheetController implements Transcript
         super(parent);
         this.session = session;
         this.session.addTranscriptListener(this);
-        synchronized(NSApplication.sharedApplication()) {
-            if (!NSApplication.loadNibNamed("Command", this)) {
-                log.fatal("Couldn't load Command.nib");
-            }
-        }
+    }
+
+    protected String getBundleName() {
+        return "Command";
     }
 
     public void sendButtonClicked(final NSButton sender) {

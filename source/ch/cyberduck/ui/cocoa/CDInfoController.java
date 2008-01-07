@@ -200,12 +200,12 @@ public class CDInfoController extends CDWindowController {
                 }
             }
         });
-        synchronized(NSApplication.sharedApplication()) {
-            if(!NSApplication.loadNibNamed("Info", this)) {
-                log.fatal("Couldn't load Info.nib");
-            }
-        }
+        this.loadBundle();
         this.setFiles(files);
+    }
+
+    protected String getBundleName() {
+        return "Info";
     }
 
     public void setFiles(List files) {
@@ -287,9 +287,17 @@ public class CDInfoController extends CDWindowController {
                 this.modifiedField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
             }
             else {
-                this.modifiedField.setAttributedStringValue(new NSAttributedString(
-                        CDDateFormatter.getLongFormat(file.attributes.getModificationDate(), file.getHost().getTimezone()),
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
+                if(-1 == file.attributes.getModificationDate()) {
+                    this.modifiedField.setAttributedStringValue(new NSAttributedString(
+                            NSBundle.localizedString("Unknown", ""),
+                            TRUNCATE_MIDDLE_ATTRIBUTES));
+
+                }
+                else {
+                    this.modifiedField.setAttributedStringValue(new NSAttributedString(
+                            CDDateFormatter.getLongFormat(file.attributes.getModificationDate(), file.getHost().getTimezone()),
+                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                }
             }
             this.ownerField.setStringValue(this.numberOfFiles() > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.attributes.getOwner());

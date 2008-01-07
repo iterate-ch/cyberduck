@@ -139,6 +139,17 @@ public class CDTableCell extends NSCell {
                     NSAttributedString.ParagraphStyleAttributeName} //keys
     );
 
+    public static NSDictionary NORMAL_GRAY_FONT = new NSDictionary(
+            new Object[]{
+                    NSFont.systemFontOfSize(11.0f),
+                    NSColor.darkGrayColor(),
+                    PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
+            new Object[]{
+                    NSAttributedString.FontAttributeName,
+                    NSAttributedString.ForegroundColorAttributeName,
+                    NSAttributedString.ParagraphStyleAttributeName} //keys
+    );
+
     public static NSDictionary TINY_FONT = new NSDictionary(
             new Object[]{
                     NSFont.systemFontOfSize(10.0f),

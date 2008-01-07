@@ -413,7 +413,6 @@ public class CDBookmarkController extends CDWindowController {
     private CDBookmarkController(final Host host) {
         this.host = host;
         HostCollection.instance().addListener(new AbstractCollectionListener() {
-
             public void collectionItemRemoved(Object item) {
                 assert item instanceof Host;
                 if(item.equals(host)) {
@@ -425,11 +424,11 @@ public class CDBookmarkController extends CDWindowController {
                 }
             }
         });
-        synchronized(NSApplication.sharedApplication()) {
-            if(!NSApplication.loadNibNamed("Bookmark", this)) {
-                log.fatal("Couldn't load Bookmark.nib");
-            }
-        }
+        this.loadBundle();
+    }
+
+    protected String getBundleName() {
+        return "Bookmark";
     }
 
     public void windowWillClose(NSNotification notification) {

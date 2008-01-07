@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 
-import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSImageView;
 import com.apple.cocoa.application.NSTextField;
@@ -43,11 +42,10 @@ public class CDDuplicateFileController extends CDFileController {
 
     public CDDuplicateFileController(final CDWindowController parent) {
         super(parent);
-        synchronized(NSApplication.sharedApplication()) {
-            if (!NSApplication.loadNibNamed("Duplicate", this)) {
-                log.fatal("Couldn't load Duplicate.nib");
-            }
-        }
+    }
+    
+    protected String getBundleName() {
+        return "Duplicate";
     }
 
     public void setFilenameField(NSTextField field) {

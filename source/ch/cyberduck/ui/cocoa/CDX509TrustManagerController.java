@@ -157,6 +157,10 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 //            log.error(k.getMessage());
 //        }
         CDSheetController c = new CDSheetController(parent) {
+            protected String getBundleName() {
+                return "Certificate";
+            }
+
             private NSButton alertIcon; // IBOutlet
 
             public void setAlertIcon(NSButton alertIcon) {
@@ -221,12 +225,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
                 }
             }
         };
-        synchronized(NSApplication.sharedApplication()) {
-            if(!NSApplication.loadNibNamed("Certificate", c)) {
-                log.fatal("Couldn't load Certificate.nib");
-            }
-        }
-        c.beginSheet(true);
+        c.beginSheet();
         if(!acceptedCertificates.contains(cert)) {
             // The certificate has not been trusted
             throw new CertificateException(

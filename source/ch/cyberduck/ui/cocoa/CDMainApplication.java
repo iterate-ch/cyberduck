@@ -88,4 +88,10 @@ public class CDMainApplication extends NSApplication {
         // in subthreads bubble up in the main thread event queue.
         sharedApplication().postEvent(event, false);
     }
+
+    private static final String MAIN_THREAD_NAME = "main";
+
+    public static boolean isMainThread() {
+        return Thread.currentThread().getName().equals(MAIN_THREAD_NAME);
+    }
 }

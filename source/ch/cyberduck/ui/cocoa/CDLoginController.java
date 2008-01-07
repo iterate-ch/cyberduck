@@ -22,7 +22,6 @@ import ch.cyberduck.core.Login;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.LoginController;
 
-import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.application.NSCell;
 import com.apple.cocoa.application.NSSecureTextField;
@@ -33,8 +32,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class CDLoginController implements LoginController
-{
+public class CDLoginController extends CDController implements LoginController {
     private static Logger log = Logger.getLogger(CDLoginController.class);
 
     CDWindowController parent;
@@ -45,6 +43,10 @@ public class CDLoginController implements LoginController
 
     public void promptUser(final Login login, final String reason, final String message) {
         CDSheetController c = new CDSheetController(parent) {
+            protected String getBundleName() {
+                return "Login";
+            }
+
             private NSTextField titleField; // IBOutlet
 
             public void setTitleField(NSTextField titleField) {
@@ -101,11 +103,10 @@ public class CDLoginController implements LoginController
                 }
             }
         };
-        synchronized(NSApplication.sharedApplication()) {
-            if (!NSApplication.loadNibNamed("Login", c)) {
-                log.fatal("Couldn't load Login.nib");
-            }
-        }
-        c.beginSheet(true);
+        c.beginSheet();
+    }
+
+    protected String getBundleName() {
+        return null;
     }
 }

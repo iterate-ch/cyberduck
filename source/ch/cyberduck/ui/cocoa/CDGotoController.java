@@ -24,7 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
-import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSComboBox;
 import com.apple.cocoa.application.NSImageView;
 import com.apple.cocoa.foundation.NSObject;
@@ -89,11 +88,10 @@ public class CDGotoController extends CDSheetController{
 
     public CDGotoController(final CDWindowController parent) {
         super(parent);
-        synchronized(NSApplication.sharedApplication()) {
-            if (!NSApplication.loadNibNamed("Goto", this)) {
-                log.fatal("Couldn't load Goto.nib");
-            }
-        }
+    }
+
+    public String getBundleName() {
+        return "Goto";
     }
 
     public void callback(final int returncode) {

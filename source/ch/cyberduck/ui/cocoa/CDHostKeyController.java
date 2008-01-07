@@ -27,6 +27,7 @@ import ch.cyberduck.core.Preferences;
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.application.NSWindow;
 import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
@@ -36,7 +37,7 @@ import java.io.IOException;
 /**
  * @version $Id$
  */
-public class CDHostKeyController implements ServerHostKeyVerifier {
+public class CDHostKeyController extends CDController implements ServerHostKeyVerifier {
     protected static Logger log = Logger.getLogger(CDHostKeyController.class);
 
     private CDWindowController parent;
@@ -95,7 +96,7 @@ public class CDHostKeyController implements ServerHostKeyVerifier {
                     }
                 }
             };
-            c.beginSheet(true);
+            c.beginSheet();
             return c.returnCode() == CDSheetCallback.DEFAULT_OPTION
                     || c.returnCode() == CDSheetCallback.ALTERNATE_OPTION;
         }
@@ -123,7 +124,7 @@ public class CDHostKeyController implements ServerHostKeyVerifier {
                     }
                 }
             };
-            c.beginSheet(true);
+            c.beginSheet();
             return c.returnCode() == CDSheetCallback.DEFAULT_OPTION
                     || c.returnCode() == CDSheetCallback.ALTERNATE_OPTION;
         }

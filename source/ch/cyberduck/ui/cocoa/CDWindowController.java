@@ -32,9 +32,8 @@ import java.util.Vector;
 /**
  * @version $Id$
  */
-public abstract class CDWindowController extends CDController
-{
-    protected static Logger log = Logger.getLogger(CDWindowController.class);
+public abstract class CDWindowController extends CDBundleController {
+    private static Logger log = Logger.getLogger(CDWindowController.class);
 
     protected static final String DEFAULT = NSBundle.localizedString("Default", "");
 
@@ -115,16 +114,6 @@ public abstract class CDWindowController extends CDController
                         runnable.init();
                         // Execute the action of the runnable
                         runnable.run();
-                    }
-                    catch(NullPointerException e) {
-                        log.error(e.getClass().getName());
-                        StackTraceElement[] stacktrace = e.getStackTrace();
-                        for(int i = 0; i < stacktrace.length; i++) {
-                            log.error(stacktrace[i].toString());
-                        }
-                        // We might get a null pointer if the session has been interrupted
-                        // during the action in progress and closing the underlying socket
-                        // asynchronously. See Session#interrupt
                     }
                     finally {
                         // Increase the run counter
@@ -254,7 +243,7 @@ public abstract class CDWindowController extends CDController
     /**
      * Attach a sheet to this window
      * @param sheet The sheet to be attached to this window
-     * @see ch.cyberduck.ui.cocoa.CDSheetController#beginSheet(boolean)
+     * @see ch.cyberduck.ui.cocoa.CDSheetController#beginSheet()
      */
     protected void alert(final NSWindow sheet) {
         this.alert(sheet, new CDSheetCallback() {
@@ -267,26 +256,15 @@ public abstract class CDWindowController extends CDController
     /**
      * Attach a sheet to this window
      * @param sheet The sheet to be attached to this window
-     * @param callback
-     * @see ch.cyberduck.ui.cocoa.CDSheetController#beginSheet(boolean)
+     * @param callback The callback to call after the sheet is dismissed
+     * @see ch.cyberduck.ui.cocoa.CDSheetController#beginSheet()
      */
     protected void alert(final NSWindow sheet, final CDSheetCallback callback) {
-        this.alert(sheet, callback, false);
-    }
-
-    /**
-     * Attach a sheet to this window
-     * @param sheet The sheet to be attached to this window
-     * @param callback The callback to call after the sheet is dismissed
-     * @param blocking If true, do not return from this method until the sheet is dismissed
-     * @see ch.cyberduck.ui.cocoa.CDSheetController#beginSheet(boolean)
-     */
-    protected void alert(final NSWindow sheet, final CDSheetCallback callback, final boolean blocking) {
         CDSheetController c = new CDSheetController(this, sheet) {
             public void callback(final int returncode) {
                 callback.callback(returncode);
             }
         };
-        c.beginSheet(blocking);
+        c.beginSheet();
     }
 }

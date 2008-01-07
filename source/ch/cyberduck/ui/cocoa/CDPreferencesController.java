@@ -45,9 +45,6 @@ public class CDPreferencesController extends CDWindowController {
         synchronized(NSApplication.sharedApplication()) {
             if (null == instance) {
                 instance = new CDPreferencesController();
-                if (!NSApplication.loadNibNamed("Preferences", instance)) {
-                    log.fatal("Couldn't load Preferences.nib");
-                }
             }
             return instance;
         }
@@ -55,6 +52,10 @@ public class CDPreferencesController extends CDWindowController {
 
     private CDPreferencesController() {
         ;
+    }
+
+    protected String getBundleName() {
+        return "Preferences";
     }
 
     private NSTabView tabView;
