@@ -299,7 +299,7 @@ public class DownloadTransfer extends Transfer {
                         }
                     }
                     // Prompt user to choose a filter
-                    TransferAction result = prompt.prompt(this);
+                    TransferAction result = prompt.prompt();
                     return this.filter(result); //break out of loop
                 }
             }

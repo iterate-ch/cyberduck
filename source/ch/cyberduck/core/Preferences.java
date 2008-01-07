@@ -243,6 +243,9 @@ public abstract class Preferences {
          */
         defaults.put("browser.confirmMove", String.valueOf(false));
 
+        defaults.put("browser.logDrawer.isOpen", String.valueOf(false));
+        defaults.put("browser.logDrawer.size.width", String.valueOf(200));
+
         /**
          * Default editor
          */
@@ -345,6 +348,9 @@ public abstract class Preferences {
          * Default synchronize action selected in the sync dialog
          */
         defaults.put("queue.sync.action.default", SyncTransfer.ACTION_UPLOAD.toString());
+
+        defaults.put("queue.logDrawer.isOpen", String.valueOf(false));
+        defaults.put("queue.logDrawer.size.width", String.valueOf(200));
 
         //ftp properties
         defaults.put("ftp.anonymous.name", "anonymous");

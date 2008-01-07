@@ -246,7 +246,7 @@ public class UploadTransfer extends Transfer {
                 Path root = (Path)iter.next();
                 if(UploadTransfer.this.exists(root)) {
                     // Prompt user to choose a filter
-                    TransferAction result = prompt.prompt(this);
+                    TransferAction result = prompt.prompt();
                     return this.filter(result); //break out of loop
                 }
             }

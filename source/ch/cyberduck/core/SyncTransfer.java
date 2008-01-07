@@ -194,7 +194,7 @@ public class SyncTransfer extends Transfer {
             return ACTION_OVERWRITE;
         }
         if (action.equals(TransferAction.ACTION_CALLBACK)) {
-            TransferAction result = prompt.prompt(this);
+            TransferAction result = prompt.prompt();
             return this.filter(result); //break out of loop
         }
         return super.filter(action);

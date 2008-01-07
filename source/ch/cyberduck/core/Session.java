@@ -443,7 +443,7 @@ public abstract class Session extends NSObject {
      * @param message
      * @see TranscriptListener
      */
-    protected void log(final String message) {
+    public void log(final String message) {
         log.info(message);
         TranscriptListener[] l = (TranscriptListener[]) transcriptListeners.toArray(
                 new TranscriptListener[transcriptListeners.size()]);
