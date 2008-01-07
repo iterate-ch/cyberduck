@@ -1,0 +1,19 @@
+{
+    IBClasses =     (
+                {
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = "ch.cyberduck.ui.cocoa.CDTranscriptController";
+            LANGUAGE = Java;
+            OUTLETS =             {
+                logTextView = NSTextView;
+                logView = NSView;
+            };
+            SUPERCLASS = NSObject;
+        }
+    );
+    IBVersion = 1;
+}

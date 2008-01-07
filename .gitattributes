@@ -640,6 +640,9 @@ en.lproj/Security.nib/classes.nib -text
 en.lproj/Security.nib/info.nib -text
 en.lproj/Security.nib/keyedobjects.nib -text
 en.lproj/Status.strings -text svneol=unset#text/utf-16
+en.lproj/Transcript.nib/classes.nib -text
+en.lproj/Transcript.nib/info.nib -text
+en.lproj/Transcript.nib/keyedobjects.nib -text
 en.lproj/Transfer.nib/classes.nib -text
 en.lproj/Transfer.nib/info.nib -text
 en.lproj/Transfer.nib/keyedobjects.nib -text
@@ -1687,6 +1690,7 @@ source/ch/cyberduck/ui/cocoa/CDBottomView.m -text
 source/ch/cyberduck/ui/cocoa/CDMainApplication.java -text
 source/ch/cyberduck/ui/cocoa/CDNavigationView.m -text
 source/ch/cyberduck/ui/cocoa/CDPreferencesImpl.m -text
+source/ch/cyberduck/ui/cocoa/CDTranscriptController.java -text
 source/ch/cyberduck/ui/cocoa/delegate/BackPathHistoryMenuDelegate.java -text
 source/ch/cyberduck/ui/cocoa/delegate/ForwardPathHistoryMenuDelegate.java -text
 source/ch/cyberduck/ui/cocoa/growl/GrowlNative.java -text
