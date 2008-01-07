@@ -15,6 +15,7 @@
 		<br />
 		<strong>This update should fix many crashes and is strongly recommended.</strong>
 		<ul>
+			<li>[Feature] Log Drawer in browser and transfer window</li>
 			<li>[Feature] Toolbar button to open Terminal.app SSH session in current working directory (SFTP) [<a href="http://trac.cyberduck.ch/ticket/1508">#1508</a>]</li>
 			<li>[Feature] Added MacVim to the list of supported editors (<a href="http://code.google.com/p/macvim/">http://code.google.com/p/macvim/</a>) [<a href="http://trac.cyberduck.ch/ticket/1322">#1322</a>]</li>
 			<li>[Feature] Custom icon for executable files [<a href="http://trac.cyberduck.ch/ticket/945">#945</a>]</li>
@@ -42,86 +43,6 @@
 			<li>[Bugfix] Bookmarks drawer remembers width [<a href="http://trac.cyberduck.ch/ticket/371">#371</a>]</li>
 			<li>[Bugfix] Crashes after application launch (10.3.9) [<a href="http://trac.cyberduck.ch/ticket/1339">#1339</a>]</li>
 			<li>[Bugfix] Downloading multiple files with same name in outline hierarchy [<a href="http://trac.cyberduck.ch/ticket/1400">#1400</a>]</li>
-		</ul>
-	</div>
-
-	<div>
-		<strong><a href=
-		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=2.8.1">
-		2.8.1</a></strong> <em>Nov-12-2007</em> (Build 3290)<br />
-		
-		<ul>
-			<li>[Feature] Application code is signed (10.5)</li>
-			<li>[Bugfix] Saving file in external editor does not cause upload (10.5) [<a href="http://trac.cyberduck.ch/ticket/1244">#1244</a>]</li>
-			<li>[Bugfix] Login failure with correct credentials [<a href="http://trac.cyberduck.ch/ticket/1231">#1231</a>]</li>
-			<li>[Bugfix] Failure to list directory on some servers (SFTP) [<a href="http://trac.cyberduck.ch/ticket/1170">#1170</a>]</li>
-			<li>[Bugfix] Transfers fails with punctuation characters in path (SCP) [<a href="http://trac.cyberduck.ch/ticket/1265">#1265</a>]</li>
-		</ul>
-	</div>
-
-	<div>
-		<strong><a href=
-		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=2.8">
-		2.8</a></strong> <em>Sept-02-2007</em> (Build 3257)<br />
-		
-		<ul>
-			<li>[Feature] Use system setting for connect mode (FTP)<br />
-				<strong>Warning! Make sure your setting in <i>System Preferences &#8594; Network &#8594; Use Passive FTP Mode (PASV)</i> is checked
-				to get the same default setting as in previous versions.</strong></li>
-			<li>[Feature] Added WriteRoom to the list of supported editors (http://hogbaysoftware.com/projects/writeroom)</li>
-			<li>[Bugfix] Don't use SOCKS proxy if hostname is excluded in system preferences</li>
-		</ul>
-	</div>
-
-	<div>
-		<strong><a href=
-		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=2.8">
-		2.8b1</a></strong> <em>Aug-12-2007</em> (Build 3212)<br />
-		
-		<ul>
-			<li>[Feature] Create known hosts file if missing (SFTP)</li>
-			<li>[Bugfix] Crash opening Preferences [<a href="http://trac.cyberduck.ch/ticket/1145">#1145</a>]</li>
-			<li>[Bugfix] Improvements to the synchronization dialog [<a href="http://trac.cyberduck.ch/ticket/1189">#1189</a>]</li>
-			<li>[Bugfix] Uploading zero sized files [<a href="http://trac.cyberduck.ch/ticket/1207">#1207</a>]</li>
-			<li>[Bugfix] Listing directories for Stingray server (FTP) [<a href="http://trac.cyberduck.ch/ticket/1198">#1198</a>]</li>
-		</ul>
-	</div>
-
-	<div>
-		<strong><a href=
-		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=2.8">
-		2.8b1</a></strong> <em>Jul-16-2007</em> (Build 3178)<br />
-		
-		<ul>
-			<li>[Bugfix] Crash opening Preferences (10.3) [<a href="http://trac.cyberduck.ch/ticket/1145">#1145</a>]</li>
-			<li>[Bugfix] Crash fetching password from Keychain (10.3) [<a href="http://trac.cyberduck.ch/ticket/1155">#1155</a>]</li>
-			<li>[Bugfix] Shortcut to edit files missing [<a href="http://trac.cyberduck.ch/ticket/1157">#1157</a>]</li>
-			<li>[Bugfix] Directory listing fails when symlink target file is not present (SFTP) [<a href="http://trac.cyberduck.ch/ticket/1156">#1156</a>]</li>
-			<li>[Bugfix] Editing files might fail if server does not support permissions (FTP) [<a href="http://trac.cyberduck.ch/ticket/1158">#1158</a>]</li>
-		</ul>
-	</div>
-
-	<div>
-		<strong><a href=
-		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=2.8">
-		2.8b1</a></strong> <em>Jul-09-2007</em> (Build 3161)<br />
-		
-		<ul>
-			<li>[Feature] Using Ganymed SSH2 library [<a href="http://trac.cyberduck.ch/ticket/185">#185</a>]</li>
-			<li>[Feature] Support for SCP transfers [<a href="http://trac.cyberduck.ch/ticket/1043">#1043]</a></li>
-			<li>[Feature] Queuing file transfers [<a href="http://trac.cyberduck.ch/ticket/986">#986</a>]</li>
-			<li>[Feature] Automatic retry of failed network operations [<a href="http://trac.cyberduck.ch/ticket/783">#783</a>]</li>
-			<li>[Feature] Limit available bandwidth for transfers [<a href="http://trac.cyberduck.ch/ticket/48">#48</a>]</li>
-			<li>[Feature] Browse folder hierarchy in overwrite warning dialog [<a href="http://trac.cyberduck.ch/ticket/18">#18</a>]</li>
-			<li>[Feature] Browse folder hierarchy in synchronisation dialog [<a href="http://trac.cyberduck.ch/ticket/18">#18</a>]</li>
-			<li>[Feature] Use small icons in the bookmark drawer [#--]</li>
-			<li>[Feature] Set the default protocol helper application for FTP and SFTP URLs [<a href="http://trac.cyberduck.ch/ticket/1049">#1049</a>]</li>
-			<li>[Feature] Setting default permissions for folders [<a href="http://trac.cyberduck.ch/ticket/77">#77</a>]</li>
-			<li>[Feature] Notes for bookmarks [<a href="http://trac.cyberduck.ch/ticket/67">#67</a>]</li>
-			<li>[Feature] Support for international domain names (IDN) [<a href="http://trac.cyberduck.ch/ticket/1133">#1133</a>]</li>
-			<li>[Feature] Move files to Trash before overwriting locally [<a href="http://trac.cyberduck.ch/ticket/936">#936</a>]</li>
-			<li>[Bugfix] Resolve Alias files to upload [<a href="http://trac.cyberduck.ch/ticket/859">#859</a>]</li>
-			<li>[Bugfix] Subsequent type-ahead selection misbehaving [<a href="http://trac.cyberduck.ch/ticket/896">#896</a>]</li>
 		</ul>
 	</div>
 </body>

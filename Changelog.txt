@@ -5,6 +5,7 @@ Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
 2.8.3 [http://trac.cyberduck.ch/query?status=closed&milestone=2.8.3]
+- [Feature] Log Drawer in browser and transfer window
 - [Feature] Toolbar button to open Terminal.app SSH session in current working directory (SFTP) [#1508]
 - [Feature] Added MacVim to the list of supported editors (http://code.google.com/p/macvim/) [#1322]
 - [Feature] Custom icon for executable files [#945]
