@@ -21,6 +21,7 @@ package ch.cyberduck.core.ftp.parser;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.parser.ConfigurableFTPFileEntryParserImpl;
+import org.apache.commons.net.ftp.parser.FTPTimestampParser;
 import org.apache.log4j.Logger;
 
 import java.text.ParseException;
@@ -31,38 +32,12 @@ import java.text.ParseException;
 public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryParserImpl {
     private static Logger log = Logger.getLogger(CommonUnixFTPEntryParser.class);
 
-    static final String DEFAULT_DATE_FORMAT
-            = "MMM d yyyy"; //Nov 9 2001
-
-    static final String DEFAULT_RECENT_DATE_FORMAT
-            = "MMM d HH:mm"; //Nov 9 20:06
-
-    static final String NUMERIC_DATE_FORMAT
-            = "yyyy-MM-dd HH:mm"; //2001-11-09 20:06
-
-    /**
-     * Some Linux distributions are now shipping an FTP server which formats
-     * file listing dates in an all-numeric format:
-     * <code>"yyyy-MM-dd HH:mm</code>.
-     * This is a very welcome development,  and hopefully it will soon become
-     * the standard.  However, since it is so new, for now, and possibly
-     * forever, we merely accomodate it, but do not make it the default.
-     * <p/>
-     * For now end users may specify this format only via
-     * <code>UnixFTPEntryParser(FTPClientConfig)</code>.
-     * Steve Cohen - 2005-04-17
-     */
-    public static final FTPClientConfig NUMERIC_DATE_CONFIG =
-            new FTPClientConfig(
-                    FTPClientConfig.SYST_UNIX,
-                    NUMERIC_DATE_FORMAT,
-                    null, null, null, null);
-
     /**
      * @param REGEX
      */
     public CommonUnixFTPEntryParser(String REGEX) {
         super(REGEX);
+        this.configure(null);
     }
 
     /**
@@ -75,8 +50,8 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
     protected FTPClientConfig getDefaultConfiguration() {
         final FTPClientConfig config = new FTPClientConfig(
                 FTPClientConfig.SYST_UNIX,
-                DEFAULT_DATE_FORMAT,
-                DEFAULT_RECENT_DATE_FORMAT,
+                FTPTimestampParser.DEFAULT_SDF,
+                FTPTimestampParser.DEFAULT_RECENT_SDF,
                 null, null, null);
         config.setLenientFutureDates(true);
         return config;
@@ -95,7 +70,6 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
     protected FTPFile parseFTPEntry(String typeStr, String usr, String grp, long filesize, String datestr, String name, String endtoken) {
         FTPFile file = new FTPFile();
         int type;
-        boolean isDevice;
         try {
             file.setTimestamp(super.parseTimestamp(datestr));
         }
@@ -113,8 +87,6 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
                 break;
             case 'b':
             case 'c':
-                isDevice = true;
-                // break; - fall through
             case 'f':
             case '-':
                 type = FTPFile.FILE_TYPE;
@@ -147,7 +119,8 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
 
         if(null == endtoken) {
             file.setName(name);
-        } else {
+        }
+        else {
             // oddball cases like symbolic links, file names
             // with spaces in them.
             name += endtoken;

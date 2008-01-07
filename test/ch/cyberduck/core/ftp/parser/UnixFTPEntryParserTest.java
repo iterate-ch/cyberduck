@@ -47,6 +47,34 @@ public class UnixFTPEntryParserTest extends TestCase {
         super.tearDown();
     }
 
+    public void testParseTimestamp() throws Exception {
+        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+
+        FTPFile parsed = null;
+
+        parsed = parser.parseFTPEntry(
+                "drw-rw-rw-   1 user      ftp             0  DEC 11 20:56 ADMIN_Documentation");
+        assertNotNull(parsed);
+        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.DECEMBER);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 11);
+        assertTrue(parsed.getTimestamp().get(Calendar.HOUR_OF_DAY) == 20);
+        assertTrue(parsed.getTimestamp().get(Calendar.MINUTE) == 56);
+
+        parsed = parser.parseFTPEntry(
+                "drwxr-xr-x    3 ftp      ftp           512 Mar 15  2004 doc");
+        assertNotNull(parsed);
+        assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == 2004);
+        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MARCH);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 15);
+
+        parsed = parser.parseFTPEntry(
+                "drwxrwxr-x    2 ftp      ftp           512 Oct 23  2007 aurox");
+        assertNotNull(parsed);
+        assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == 2007);
+        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.OCTOBER);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 23);
+    }
+
     public void testParseFTPEntryExpected() throws Exception {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
