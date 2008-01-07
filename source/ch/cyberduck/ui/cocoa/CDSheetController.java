@@ -18,17 +18,18 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSModalSession;
-import com.apple.cocoa.application.NSPanel;
-import com.apple.cocoa.application.NSWindow;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSSelector;
+
+import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
+
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
 public abstract class CDSheetController extends CDWindowController implements CDSheetCallback {
+    private static Logger log = Logger.getLogger(CDSheetController.class);
 
     /**
      * The controller of the parent window
@@ -55,14 +56,16 @@ public abstract class CDSheetController extends CDWindowController implements CD
         this.window = sheet;
     }
 
+    /**
+     * @return Null by default, a sheet with no custom NIB
+     */
+    protected String getBundleName() {
+        return null;
+    }
+
     public void awakeFromNib() {
         ;
     }
-
-    /**
-     * The synchronisation lock to check that only one sheet is displayed at a time
-     */
-    private static final Object lock = new Object();
 
     /**
      * This must be the target action for any button in the sheet dialog. Will validate the input
@@ -101,67 +104,71 @@ public abstract class CDSheetController extends CDWindowController implements CD
     }
 
     /**
-     * Wait in the current thread until the sheet
-     * attached to this window has been dismissed by the user
-     */
-    protected void waitForSheetEnd() {
-        synchronized(lock) {
-            while(parent.hasSheet()) {
-                try {
-                    if(Thread.currentThread().getName().equals("main")
-                            || Thread.currentThread().getName().equals("AWT-AppKit")) {
-                        log.warn("Waiting on main thread; will run modal!");
-                        NSApplication app = NSApplication.sharedApplication();
-                        NSModalSession modalSession = app.beginModalSessionForWindow(
-                                this.parent.window().attachedSheet());
-                        while(parent.hasSheet()) {
-                            app.runModalSession(modalSession);
-                        }
-                        app.endModalSession(modalSession);
-                        return;
-                    }
-                    log.debug("Sleeping:waitForSheetEnd...");
-                    lock.wait();
-                    log.debug("Awakened:waitForSheetEnd");
-                }
-                catch(InterruptedException e) {
-                    log.error(e.getMessage());
-                }
-            }
-        }
-    }
-
-    /**
-     * Called after the sheet has been dismissed by the user. The returncodes are defined in
+     * Called after the sheet has been dismissed by the user. The return codes are defined in
      * <code>ch.cyberduck.ui.cooca.CDSheetCallback</code>
      *
      * @param returncode
      */
     public abstract void callback(final int returncode);
 
-    /**
-     * Will attach the sheet to the parent window
-     *
-     * @param blocking will wait for the sheet to end if true
-     */
-    public void beginSheet(final boolean blocking) {
-        log.debug("beginSheet:" + this.window());
-        synchronized(lock) {
-            this.waitForSheetEnd();
-            this.parent.window().makeKeyAndOrderFront(null);
-            NSApplication app = NSApplication.sharedApplication();
-            app.beginSheet(this.window(), //window
-                    this.parent.window(),
-                    this, //modalDelegate
-                    new NSSelector("sheetDidClose",
-                            new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
-                    null); //context
-            this.window().makeKeyAndOrderFront(null);
-            if(blocking) {
-                this.waitForSheetEnd();
+    public void beginSheet() {
+        if(!CDMainApplication.isMainThread()) {
+            synchronized(parent) {
+                CDMainApplication.invoke(new WindowMainAction(parent) {
+                    public void run() {
+                        //Invoke again on main thread
+                        CDSheetController.this.beginSheet();
+                        synchronized(parent.window()) {
+                            parent.window().notify();
+                        }
+                    }
+                });
+                synchronized(parent.window()) {
+                    while(!parent.hasSheet()) {
+                        try {
+                            log.debug("Sleeping:waitSheetDisplayLock...");
+                            parent.window().wait();
+                            log.debug("Awakened:waitSheetDisplayLock");
+                        }
+                        catch(InterruptedException e) {
+                            log.error(e.getMessage());
+                        }
+                    }
+                }
+                synchronized(parent.window()) {
+                    while(parent.hasSheet()) {
+                        try {
+                            log.debug("Sleeping:waitForSheetDismiss...");
+                            parent.window().wait();
+                            log.debug("Awakened:waitForSheetDismiss");
+                        }
+                        catch(InterruptedException e) {
+                            log.error(e.getMessage());
+                        }
+                    }
+                }
+                return;
             }
-            lock.notifyAll();
         }
+        this.loadBundle();
+        final NSApplication app = NSApplication.sharedApplication();
+        synchronized(parent.window()) {
+            if(parent.hasSheet()) {
+                NSModalSession modalSession = app.beginModalSessionForWindow(
+                        this.parent.window().attachedSheet());
+                while(parent.hasSheet()) {
+                    app.runModalSession(modalSession);
+                }
+                app.endModalSession(modalSession);
+            }
+        }
+        app.beginSheet(this.window(), //window
+                parent.window(),
+                this, //modalDelegate
+                new NSSelector("sheetDidClose",
+                        new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
+                null); //context
+        this.window().makeKeyAndOrderFront(null);
     }
 
     /**
@@ -181,14 +188,14 @@ public abstract class CDSheetController extends CDWindowController implements CD
         if(!this.isSingleton()) {
             this.invalidate();
         }
-        synchronized(lock) {
-            lock.notifyAll();
+        synchronized(parent.window()) {
+            parent.window().notify();
         }
     }
 
     /**
      * @return True if the class is a singleton and the object should
-     * not be invlidated upon the sheet is closed
+     *         not be invlidated upon the sheet is closed
      * @see #sheetDidClose(com.apple.cocoa.application.NSPanel, int, Object)
      */
     public boolean isSingleton() {
