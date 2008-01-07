@@ -18,8 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSOutlineView;
+import ch.cyberduck.core.Transfer;
 
 import org.apache.log4j.Logger;
 
@@ -29,12 +28,12 @@ import org.apache.log4j.Logger;
 public class CDDownloadPrompt extends CDTransferPrompt {
     private static Logger log = Logger.getLogger(CDDownloadPrompt.class);
 
-    public CDDownloadPrompt(final CDWindowController parent) {
-        super(parent);
+    public CDDownloadPrompt(final CDWindowController parent, Transfer transfer) {
+        super(parent, transfer);
     }
 
-    public void init() {
-        this.browserModel = new CDDownloadPromptModel(this, transfer);
-        super.init();
+    public void awakeFromNib() {
+        this.browserView.setDataSource(this.browserModel = new CDDownloadPromptModel(this, transfer));
+        super.awakeFromNib();
     }
 }

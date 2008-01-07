@@ -32,30 +32,34 @@ import org.apache.log4j.Logger;
 public abstract class CDTransferPrompt extends CDSheetController implements TransferPrompt {
     private static Logger log = Logger.getLogger(CDTransferPrompt.class);
 
-    public static TransferPrompt create(CDWindowController parent, Transfer transfer) {
+    public static TransferPrompt create(CDWindowController parent, final Transfer transfer) {
         if(transfer instanceof DownloadTransfer) {
-            return new CDDownloadPrompt(parent);
+            return new CDDownloadPrompt(parent, transfer);
         }
         if(transfer instanceof UploadTransfer) {
-            return new CDUploadPrompt(parent);
+            return new CDUploadPrompt(parent, transfer);
         }
         if(transfer instanceof SyncTransfer) {
-            return new CDSyncPrompt(parent);
+            return new CDSyncPrompt(parent, transfer);
         }
         throw new IllegalArgumentException(transfer.toString());
     }
 
-    public CDTransferPrompt(final CDWindowController parent) {
+    public CDTransferPrompt(final CDWindowController parent, final Transfer transfer) {
         super(parent);
+        this.transfer = transfer;
     }
 
-    public void init() {
-        synchronized(NSApplication.sharedApplication()) {
-            if(!NSApplication.loadNibNamed("Prompt", this)) {
-                log.fatal("Couldn't load Prompt.nib");
-            }
+    protected String getBundleName() {
+        return "Prompt";
+    }
+
+    public void awakeFromNib() {
+        this.transfer.getSession().addProgressListener(l);
+        this.reloadData();
+        if(browserView.numberOfRows() > 0) {
+            browserView.selectRow(0, false);
         }
-        this.browserModel.build();
     }
 
     public void invalidate() {
@@ -103,19 +107,6 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         if(returncode == CANCEL_OPTION) { // Abort
             action = TransferAction.ACTION_CANCEL;
         }
-        synchronized(promptLock) {
-            promptLock.notifyAll();
-        }
-    }
-
-    public void beginSheet(final boolean blocking) {
-        super.beginSheet(blocking);
-
-        transfer.getSession().addProgressListener(l);
-        this.reloadData();
-        if(browserView.numberOfRows() > 0) {
-            browserView.selectRow(0, false);
-        }
     }
 
     /**
@@ -137,36 +128,11 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         });
     }
 
-    protected final Object promptLock = new Object();
-
-    /**
-     * @param transfer
-     * @return
-     */
-    public TransferAction prompt(final Transfer transfer) {
+    public TransferAction prompt() {
         log.debug("prompt:" + transfer);
-        this.transfer = transfer;
-
-        this.init();
-
         this.transfer.fireTransferPaused();
-
-        CDMainApplication.invoke(new WindowMainAction(this) {
-            public void run() {
-                beginSheet(false);
-            }
-        });
-        synchronized(promptLock) {
-            try {
-                promptLock.wait();
-            }
-            catch(InterruptedException e) {
-                log.error(e.getMessage());
-            }
-        }
-
+        this.beginSheet();
         this.transfer.fireTransferResumed();
-
         return action;
     }
 
@@ -187,7 +153,6 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
     public void setBrowserView(final NSOutlineView view) {
         this.browserView = view;
-        this.browserView.setDataSource(this.browserModel);
         this.browserView.setHeaderView(null);
         this.browserView.setDelegate(this.browserViewDelegate = new CDAbstractTableDelegate() {
 

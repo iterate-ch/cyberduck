@@ -21,6 +21,8 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.SyncTransfer;
 import ch.cyberduck.core.TransferAction;
+import ch.cyberduck.core.Transfer;
+
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSBundle;
@@ -33,13 +35,13 @@ import org.apache.log4j.Logger;
 public class CDSyncPrompt extends CDTransferPrompt {
     private static Logger log = Logger.getLogger(CDSyncPrompt.class);
 
-    public CDSyncPrompt(final CDWindowController parent) {
-        super(parent);
+    public CDSyncPrompt(final CDWindowController parent, final Transfer transfer) {
+        super(parent, transfer);
     }
 
-    public void init() {
-        this.browserModel = new CDSyncPromptModel(this, transfer);
-        super.init();
+    public void awakeFromNib() {
+        this.browserView.setDataSource(this.browserModel = new CDSyncPromptModel(this, transfer));
+        super.awakeFromNib();
     }
 
     public void setBrowserView(NSOutlineView view) {
@@ -91,9 +93,6 @@ public class CDSyncPrompt extends CDTransferPrompt {
         }
         else if(returncode == CANCEL_OPTION) { // Abort
             action = TransferAction.ACTION_CANCEL;
-        }
-        synchronized(promptLock) {
-            promptLock.notifyAll();
         }
     }
 
