@@ -22,6 +22,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSSelector;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -38,7 +39,7 @@ import java.util.TimerTask;
 /**
  * @version $Id$
  */
-public class CDProgressController extends CDController {
+public class CDProgressController extends CDBundleController {
     private static Logger log = Logger.getLogger(CDProgressController.class);
 
     private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
@@ -78,15 +79,15 @@ public class CDProgressController extends CDController {
                 }
             }
         });
-        synchronized(NSApplication.sharedApplication()) {
-            if(!NSApplication.loadNibNamed("Progress", this)) {
-                log.fatal("Couldn't load Progress.nib");
-            }
-        }
         this.init();
     }
 
+    protected String getBundleName() {
+        return "Progress.nib";
+    }
+
     private void init() {
+        this.loadBundle();
         final ProgressListener pl = new ProgressListener() {
             public void message(final String message) {
                 progressText = message;
@@ -121,6 +122,22 @@ public class CDProgressController extends CDController {
                 });
             }
 
+            public void transferDidEnd() {
+                CDMainApplication.invoke(new DefaultMainAction() {
+                    public void run() {
+                        // Do not display any progress text when transfer is stopped
+                        progressText = null;
+                        setProgressText();
+                        setStatusText();
+                        progressBar.setIndeterminate(true);
+                        progressBar.stopAnimation(null);
+                        progressBar.setHidden(true);
+                        statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
+                        filesPopup.itemAtIndex(0).setEnabled(transfer.getRoot().getLocal().exists());
+                    }
+                });
+            }
+
             public void transferPaused() {
                 CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
@@ -147,22 +164,6 @@ public class CDProgressController extends CDController {
                     }
                 });
             }
-
-            public void transferDidEnd() {
-                CDMainApplication.invoke(new DefaultMainAction() {
-                    public void run() {
-                        // Do not display any progress text when transfer is stopped
-                        progressText = null;
-                        setProgressText();
-                        setStatusText();
-                        progressBar.setIndeterminate(true);
-                        progressBar.stopAnimation(null);
-                        progressBar.setHidden(true);
-                        statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
-                    }
-                });
-            }
-
 
             public void willTransferPath(final Path path) {
                 meter.reset();
@@ -232,10 +233,16 @@ public class CDProgressController extends CDController {
     public void setHighlighted(final boolean highlighted) {
         statusField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.textColor());
         progressField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.darkGrayColor());
-        if(filesPopupMenu.numberOfItems() > 0) {
-            filesPopupMenu.itemAtIndex(0).setAttributedTitle(
-                    new NSAttributedString(filesPopupMenu.itemAtIndex(0).title(),
+        if(transfer.getRoot().getLocal().exists()) {
+            filesPopup.itemAtIndex(0).setAttributedTitle(
+                    new NSAttributedString(filesPopup.itemAtIndex(0).title(),
                             highlighted ? CDTableCell.NORMAL_FONT_HIGHLIGHTED : CDTableCell.NORMAL_FONT)
+            );
+        }
+        else {
+            filesPopup.itemAtIndex(0).setAttributedTitle(
+                    new NSAttributedString(filesPopup.itemAtIndex(0).title(),
+                            highlighted ? CDTableCell.NORMAL_FONT_HIGHLIGHTED : CDTableCell.NORMAL_GRAY_FONT)
             );
         }
     }
@@ -246,16 +253,25 @@ public class CDProgressController extends CDController {
 
     private NSPopUpButton filesPopup; // IBOutlet
 
-    private NSMenu filesPopupMenu;
-
     private MenuDelegate filesPopupMenuDelegate;
 
     public void setFilesPopup(NSPopUpButton filesPopup) {
         this.filesPopup = filesPopup;
-        this.filesPopup.setMenu(filesPopupMenu = new NSMenu());
-        this.filesPopupMenu.setDelegate(filesPopupMenuDelegate
-                = new TransferMenuDelegate(transfer.getRoots()));
-        this.filesPopup.setTitle(transfer.getRoot().getName());
+        this.filesPopup.setTarget(this);
+        this.filesPopup.removeAllItems();
+        {
+            Path path = transfer.getRoot();
+            NSMenuItem item = new NSMenuItem();
+            item.setTitle(path.getName());
+            item.setAction(new NSSelector("reveal", new Class[]{NSMenuItem.class}));
+            item.setRepresentedObject(path);
+            item.setImage(CDIconCache.instance().iconForPath(path, 16));
+            item.setEnabled(path.getLocal().exists());
+            this.filesPopup.menu().addItem(item);
+        }
+        this.filesPopup.menu().setDelegate(filesPopupMenuDelegate
+                = new TransferMenuDelegate(transfer.getRoots())
+        );
     }
 
     private NSTextField progressField; // IBOutlet
