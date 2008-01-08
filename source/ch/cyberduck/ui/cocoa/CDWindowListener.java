@@ -26,5 +26,5 @@ public interface CDWindowListener {
     /**
      * Sent after NSWindow.WindowWillCloseNotification is fired for this window
      */
-    public void windowWillClose();
+    abstract void windowWillClose();
 }

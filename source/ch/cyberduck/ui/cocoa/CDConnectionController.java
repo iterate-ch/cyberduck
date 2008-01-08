@@ -345,7 +345,9 @@ public class CDConnectionController extends CDSheetController {
             controller.loadBundle("Connection");
             controllers.put(parent, controller);
         }
-        return (CDConnectionController) controllers.get(parent);
+        final CDConnectionController c = (CDConnectionController) controllers.get(parent);
+        c.passField.setStringValue("");
+        return c;
     }
 
     public boolean isSingleton() {
