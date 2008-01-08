@@ -1,8 +1,5 @@
 package ch.cyberduck.core.ftp.parser;
 
-import ch.cyberduck.core.Status;
-
-import org.apache.commons.net.ftp.FTPFile;
 /*
  *  Copyright (c) 2007 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -21,12 +18,17 @@ import org.apache.commons.net.ftp.FTPFile;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Status;
+import ch.cyberduck.core.Preferences;
+
+import org.apache.commons.net.ftp.FTPFile;
+
 /**
  * @version $Id:$
  */
 public class LaxUnixFTPEntryParser extends CommonUnixFTPEntryParser {
 
-    private static final String REGEX =
+    private static final String REGEX_DEFAULT =
             "([bcdlfmpSs-])"
                     + "(((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-])))\\+?\\s+"
                     /**
@@ -58,13 +60,44 @@ public class LaxUnixFTPEntryParser extends CommonUnixFTPEntryParser {
                        or time (for numeric or recent standard format
                     */
                     + "(\\d+(?::\\d+)?)\\s+"
-
                     + "(\\S*)(\\s*.*)";
-                    //    + "(\\d+(?::\\d+)?)\\s"
-                    //    + "(\\s*\\S+)(\\s*.*)";
+
+    private static final String REGEX_WHITESPACE_AWARE =
+            "([bcdlfmpSs-])"
+                    + "(((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-])))\\+?\\s+"
+                    /**
+                     * hard link count
+                     */
+                    + "(\\d+)\\s+"
+                    /**
+                     * user
+                     */
+                    + "(\\S+)\\s+"
+                    /**
+                     * group, maybe missing
+                     */
+                    + "(?:(\\S+)\\s+)?"
+                    /**
+                     * file size
+                     */
+                    + "(\\d+)"
+                    /**
+                     * file size maybe given in human readable format eg 15.6k
+                     */
+                    + "(\\.?\\d?)(\\w?)\\s+"
+                    /**
+                      numeric or standard format date
+                    */
+                    + "((?:\\d+[-/]\\d+[-/]\\d+)|(?:\\S+\\s+\\S+))\\s+"
+                    /**
+                       year (for non-recent standard format)
+                       or time (for numeric or recent standard format
+                    */
+                    + "(\\d+(?::\\d+)?)\\s"
+                    + "(\\s*\\S+)(\\s*.*)";
 
     public LaxUnixFTPEntryParser() {
-        super(REGEX);
+        super(Preferences.instance().getBoolean("ftp.parser.whitespaceAware") ? REGEX_WHITESPACE_AWARE : REGEX_DEFAULT);
     }
 
     public FTPFile parseFTPEntry(String entry) {

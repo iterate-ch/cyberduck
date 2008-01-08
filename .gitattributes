@@ -1259,7 +1259,7 @@ ko.lproj/Transfer.nib/classes.nib -text
 ko.lproj/Transfer.nib/info.nib -text
 ko.lproj/Transfer.nib/keyedobjects.nib -text
 ko.lproj/Transfer.strings -text svneol=unset#text/utf-16
-lib/commons-net-20070730.jar -text
+lib/commons-net-1.5.0-dev.jar -text
 lib/ext/junit.jar -text
 lib/icu4j-3.6.1.jar -text
 lib/jakarta-oro-2.0.8.jar -text
@@ -1686,6 +1686,7 @@ source/ch/cyberduck/core/io/UKFileWatcher.m -text
 source/ch/cyberduck/core/io/UKKQueue.m -text
 source/ch/cyberduck/core/io/UKMainThreadProxy.m -text
 source/ch/cyberduck/core/util/URLSchemeHandlerConfiguration.m -text
+source/ch/cyberduck/ui/cocoa/CDActivityController.java -text
 source/ch/cyberduck/ui/cocoa/CDBottomView.m -text
 source/ch/cyberduck/ui/cocoa/CDBundleController.java -text
 source/ch/cyberduck/ui/cocoa/CDMainApplication.java -text

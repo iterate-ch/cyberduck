@@ -383,6 +383,11 @@ public abstract class Preferences {
          */
         defaults.put("ftp.tls.acceptAnyCertificate", String.valueOf(false));
         /**
+         * If the parser should not trim whitespace from filenames
+         */
+        defaults.put("ftp.parser.whitespaceAware", String.valueOf(false));
+
+        /**
          * Maximum concurrent connections to the same host
          * Unlimited by default
          */
