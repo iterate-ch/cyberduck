@@ -2,6 +2,9 @@
 "Authenticating as" = "Bejelentkezés mint";
 
 /* No comment provided by engineer. */
+"Checking connection..." = "Checking connection…";
+
+/* No comment provided by engineer. */
 "Closing SSH Session Channel" = "SSH csatorna bezárása";
 
 /* No comment provided by engineer. */
