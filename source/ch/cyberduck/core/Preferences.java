@@ -385,7 +385,7 @@ public abstract class Preferences {
         /**
          * If the parser should not trim whitespace from filenames
          */
-        defaults.put("ftp.parser.whitespaceAware", String.valueOf(false));
+        defaults.put("ftp.parser.whitespaceAware", String.valueOf(true));
 
         /**
          * Maximum concurrent connections to the same host
