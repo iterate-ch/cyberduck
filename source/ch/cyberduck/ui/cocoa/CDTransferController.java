@@ -142,8 +142,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private NSDrawer.Notifications logDrawerNotifications = new NSDrawer.Notifications() {
         public void drawerWillOpen(NSNotification notification) {
             logDrawer.setContentSize(new NSSize(
-                    Preferences.instance().getFloat("queue.logDrawer.size.width"),
-                    logDrawer.contentSize().height()
+                    logDrawer.contentSize().height(),
+                    Preferences.instance().getFloat("queue.logDrawer.size.height")
             ));
         }
 
@@ -152,8 +152,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
 
         public void drawerWillClose(NSNotification notification) {
-            Preferences.instance().setProperty("queue.logDrawer.size.width",
-                    logDrawer.contentSize().width());
+            Preferences.instance().setProperty("queue.logDrawer.size.height",
+                    logDrawer.contentSize().height());
         }
 
         public void drawerDidClose(NSNotification notification) {

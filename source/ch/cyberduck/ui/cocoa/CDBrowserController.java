@@ -745,8 +745,8 @@ public class CDBrowserController extends CDWindowController
     private NSDrawer.Notifications logDrawerNotifications = new NSDrawer.Notifications() {
         public void drawerWillOpen(NSNotification notification) {
             logDrawer.setContentSize(new NSSize(
-                    Preferences.instance().getFloat("browser.logDrawer.size.width"),
-                    logDrawer.contentSize().height()
+                    logDrawer.contentSize().width(),
+                    Preferences.instance().getFloat("browser.logDrawer.size.height")
             ));
         }
 
@@ -755,8 +755,8 @@ public class CDBrowserController extends CDWindowController
         }
 
         public void drawerWillClose(NSNotification notification) {
-            Preferences.instance().setProperty("browser.logDrawer.size.width",
-                    logDrawer.contentSize().width());
+            Preferences.instance().setProperty("browser.logDrawer.size.height",
+                    logDrawer.contentSize().height());
         }
 
         public void drawerDidClose(NSNotification notification) {
