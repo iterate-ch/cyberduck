@@ -75,7 +75,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/commons-net-20070730.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/commons-net-1.5.0-dev.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
