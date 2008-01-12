@@ -110,9 +110,7 @@ public class CDTransferTableDataSource extends CDController {
      * @param view
      */
     public int numberOfRowsInTableView(NSTableView view) {
-        synchronized(TransferCollection.instance()) {
-            return this.filter(TransferCollection.instance()).size();
-        }
+        return this.filter(TransferCollection.instance()).size();
     }
 
     /**
@@ -122,22 +120,20 @@ public class CDTransferTableDataSource extends CDController {
      * @param row
      */
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
-        synchronized(TransferCollection.instance()) {
-            if (row < numberOfRowsInTableView(view)) {
-                final String identifier = (String) tableColumn.identifier();
-                if (identifier.equals(ICON_COLUMN)) {
-                    return (Transfer) this.filter(TransferCollection.instance()).get(row);
-                }
-                if (identifier.equals(PROGRESS_COLUMN)) {
-                    return ((CDProgressController)controllers.get(this.filter(TransferCollection.instance()).get(row)));
-                }
-                if (identifier.equals(TYPEAHEAD_COLUMN)) {
-                    return ((Transfer) this.filter(TransferCollection.instance()).get(row)).getName();
-                }
-                throw new IllegalArgumentException("Unknown identifier: " + identifier);
+        if (row < numberOfRowsInTableView(view)) {
+            final String identifier = (String) tableColumn.identifier();
+            if (identifier.equals(ICON_COLUMN)) {
+                return (Transfer) this.filter(TransferCollection.instance()).get(row);
             }
-            return null;
+            if (identifier.equals(PROGRESS_COLUMN)) {
+                return ((CDProgressController)controllers.get(this.filter(TransferCollection.instance()).get(row)));
+            }
+            if (identifier.equals(TYPEAHEAD_COLUMN)) {
+                return ((Transfer) this.filter(TransferCollection.instance()).get(row)).getName();
+            }
+            throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
+        return null;
     }
 
     // ----------------------------------------------------------
@@ -203,16 +199,14 @@ public class CDTransferTableDataSource extends CDController {
                 log.debug("tableViewAcceptDrop:" + o);
                 if (o != null) {
                     NSArray elements = (NSArray) o;
-                    synchronized(TransferCollection.instance()) {
-                        for (int i = 0; i < elements.count(); i++) {
-                            NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                            TransferCollection.instance().add(row, TransferFactory.create(dict));
-                            tableView.reloadData();
-                            tableView.selectRow(row, false);
-                            tableView.scrollRowToVisible(row);
-                        }
-                        pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
+                    for (int i = 0; i < elements.count(); i++) {
+                        NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+                        TransferCollection.instance().add(row, TransferFactory.create(dict));
+                        tableView.reloadData();
+                        tableView.selectRow(row, false);
+                        tableView.scrollRowToVisible(row);
                     }
+                    pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
                     return true;
                 }
             }

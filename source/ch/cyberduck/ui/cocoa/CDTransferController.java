@@ -239,16 +239,14 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void bandwidthPopupChanged(NSPopUpButton sender) {
         NSEnumerator iterator = transferTable.selectedRowEnumerator();
-        synchronized(TransferCollection.instance()) {
-            int bandwidth = BandwidthThrottle.UNLIMITED;
-            if(sender.selectedItem().tag() > 0 ) {
-                bandwidth = sender.selectedItem().tag()*1024; // from Kilobytes to Bytes
-            }
-            while(iterator.hasMoreElements()) {
-                int i = ((Number) iterator.nextElement()).intValue();
-                Transfer transfer = (Transfer) TransferCollection.instance().get(i);
-                transfer.setBandwidth(bandwidth);
-            }
+        int bandwidth = BandwidthThrottle.UNLIMITED;
+        if(sender.selectedItem().tag() > 0 ) {
+            bandwidth = sender.selectedItem().tag()*1024; // from Kilobytes to Bytes
+        }
+        while(iterator.hasMoreElements()) {
+            int i = ((Number) iterator.nextElement()).intValue();
+            Transfer transfer = (Transfer) TransferCollection.instance().get(i);
+            transfer.setBandwidth(bandwidth);
         }
         this.updateBandwidthPopup();
     }
@@ -288,12 +286,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 instance.alert(sheet, new CDSheetCallback() {
                     public void callback(int returncode) {
                         if(returncode == DEFAULT_OPTION) { //Quit
-                            synchronized(TransferCollection.instance()) {
-                                for(int i = 0; i < TransferCollection.instance().size(); i++) {
-                                    Transfer transfer = (Transfer) TransferCollection.instance().get(i);
-                                    if(transfer.isRunning()) {
-                                        transfer.interrupt();
-                                    }
+                            for(int i = 0; i < TransferCollection.instance().size(); i++) {
+                                Transfer transfer = (Transfer) TransferCollection.instance().get(i);
+                                if(transfer.isRunning()) {
+                                    transfer.interrupt();
                                 }
                             }
                             NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
@@ -332,36 +328,30 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
 
             public void tableRowDoubleClicked(final Object sender) {
-                synchronized(TransferCollection.instance()) {
-                    if(CDTransferController.this.transferTable.selectedRow() != -1) {
-                        Transfer item = (Transfer) TransferCollection.instance().get(CDTransferController.this.transferTable.selectedRow());
-                        if(!item.isRunning()) {
-                            reloadButtonClicked(sender);
-                        }
+                if(CDTransferController.this.transferTable.selectedRow() != -1) {
+                    Transfer item = (Transfer) TransferCollection.instance().get(CDTransferController.this.transferTable.selectedRow());
+                    if(!item.isRunning()) {
+                        reloadButtonClicked(sender);
                     }
                 }
             }
 
 //            float tableViewHeightOfRow(NSTableView view, int row) {
-//                synchronized(TransferCollection.instance()) {
-//                    if(row < TransferCollection.instance().size()) {
-//                        Transfer item = (Transfer) TransferCollection.instance().get(row);
-//                        if(item.isRunning()) {
-//                            log.debug("tableViewHeightOfRow:" + row +" :"+67);
-//                            return 67f;
-//                        }
+//                if(row < TransferCollection.instance().size()) {
+//                    Transfer item = (Transfer) TransferCollection.instance().get(row);
+//                    if(item.isRunning()) {
+//                        log.debug("tableViewHeightOfRow:" + row +" :"+67);
+//                        return 67f;
 //                    }
-//                    log.debug("tableViewHeightOfRow:" + row +" :"+50);
-//                    return 50f;
 //                }
+//                log.debug("tableViewHeightOfRow:" + row +" :"+50);
+//                return 50f;
 //            }
 
             public String tableViewToolTipForCell(NSTableView view, NSCell cell, NSMutableRect rect,
                                                   NSTableColumn tc, int row, NSPoint mouseLocation) {
-                synchronized(TransferCollection.instance()) {
-                    if(row < TransferCollection.instance().size()) {
-                        TransferCollection.instance().get(row).toString();
-                    }
+                if(row < TransferCollection.instance().size()) {
+                    TransferCollection.instance().get(row).toString();
                 }
                 return null;
             }
@@ -428,12 +418,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
      *
      */
     private void updateHighlight() {
-        synchronized(TransferCollection.instance()) {
-            boolean isKeyWindow = window().isKeyWindow();
-            for(int i = 0; i < TransferCollection.instance().size(); i++) {
-                transferModel.setHighlighted((Transfer)TransferCollection.instance().get(i),
-                        transferTable.isRowSelected(i) && isKeyWindow);
-            }
+        boolean isKeyWindow = window().isKeyWindow();
+        for(int i = 0; i < TransferCollection.instance().size(); i++) {
+            transferModel.setHighlighted((Transfer)TransferCollection.instance().get(i),
+                    transferTable.isRowSelected(i) && isKeyWindow);
         }
     }
 
@@ -503,22 +491,20 @@ public class CDTransferController extends CDWindowController implements NSToolba
         final int selected = transferTable.numberOfSelectedRows();
         bandwidthPopup.setEnabled(selected > 0);
         NSEnumerator iterator = transferTable.selectedRowEnumerator();
-        synchronized(TransferCollection.instance()) {
-            while(iterator.hasMoreElements()) {
-                int i = ((Number) iterator.nextElement()).intValue();
-                Transfer transfer = (Transfer) TransferCollection.instance().get(i);
-                if(transfer instanceof SyncTransfer) {
-                    // Currently we do not support bandwidth throtling for sync transfers due to
-                    // the problem of mapping both download and upload rate in the GUI
-                    bandwidthPopup.setEnabled(false);
-                    // Break through and set the standard icon below
-                    break;
-                }
-                if(transfer.getBandwidth() != BandwidthThrottle.UNLIMITED) {
-                    // Mark as throttled
-                    this.bandwidthPopup.itemAtIndex(0).setImage(NSImage.imageNamed("turtle.tiff"));
-                    return;
-                }
+        while(iterator.hasMoreElements()) {
+            int i = ((Number) iterator.nextElement()).intValue();
+            Transfer transfer = (Transfer) TransferCollection.instance().get(i);
+            if(transfer instanceof SyncTransfer) {
+                // Currently we do not support bandwidth throtling for sync transfers due to
+                // the problem of mapping both download and upload rate in the GUI
+                bandwidthPopup.setEnabled(false);
+                // Break through and set the standard icon below
+                break;
+            }
+            if(transfer.getBandwidth() != BandwidthThrottle.UNLIMITED) {
+                // Mark as throttled
+                this.bandwidthPopup.itemAtIndex(0).setImage(NSImage.imageNamed("turtle.tiff"));
+                return;
             }
         }
         // Set the standard icon
@@ -526,12 +512,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
     }
 
     private void reloadData() {
-        synchronized(instance()) {
-            while(transferTable.subviews().count() > 0) {
-                ((NSView) transferTable.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
-            }
-            transferTable.reloadData();
+        while(transferTable.subviews().count() > 0) {
+            ((NSView) transferTable.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
         }
+        transferTable.reloadData();
         this.updateHighlight();
     }
 
@@ -541,10 +525,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
      * @param transfer
      */
     public void removeTransfer(final Transfer transfer) {
-        synchronized(TransferCollection.instance()) {
-            TransferCollection.instance().remove(transfer);
-            this.reloadData();
-        }
+        TransferCollection.instance().remove(transfer);
+        this.reloadData();
     }
 
     /**
@@ -553,13 +535,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
      * @param transfer
      */
     public void addTransfer(final Transfer transfer) {
-        synchronized(TransferCollection.instance()) {
-            TransferCollection.instance().add(transfer);
-            final int row = TransferCollection.instance().size()-1;
-            this.reloadData();
-            transferTable.selectRow(row, false);
-            transferTable.scrollRowToVisible(row);
-        }
+        TransferCollection.instance().add(transfer);
+        final int row = TransferCollection.instance().size()-1;
+        this.reloadData();
+        transferTable.selectRow(row, false);
+        transferTable.scrollRowToVisible(row);
     }
 
     /**
@@ -575,10 +555,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
      * @param reloadRequested
      */
     private void startTransfer(final Transfer transfer, final boolean resumeRequested, final boolean reloadRequested) {
-        synchronized(TransferCollection.instance()) {
-            if(!TransferCollection.instance().contains(transfer)) {
-                this.addTransfer(transfer);
-            }
+        if(!TransferCollection.instance().contains(transfer)) {
+            this.addTransfer(transfer);
         }
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
             this.window.makeKeyAndOrderFront(null);
@@ -623,12 +601,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     public void transferWillStart() {
                         CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
                             public void run() {
-//                                synchronized(TransferCollection.instance()) {
 //                                    transferTable.noteHeightOfRowsWithIndexesChanged(
 //                                            new NSIndexSet(new NSRange(TransferCollection.instance().indexOf(transfer),
 //                                                    TransferCollection.instance().size() - 1))
 //                                    );
-//                                }
                                 window.toolbar().validateVisibleItems();
                                 updateIcon();
                             }
@@ -638,12 +614,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     public void transferDidEnd() {
                         CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
                             public void run() {
-//                                synchronized(TransferCollection.instance()) {
 //                                    transferTable.noteHeightOfRowsWithIndexesChanged(
 //                                            new NSIndexSet(new NSRange(TransferCollection.instance().indexOf(transfer),
 //                                                    TransferCollection.instance().size() - 1))
 //                                    );
-//                                }
                                 window.toolbar().validateVisibleItems();
                                 updateIcon();
                             }
@@ -1190,13 +1164,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
      */
     private boolean validate(TransferToolbarValidator v) {
         NSEnumerator iterator = transferTable.selectedRowEnumerator();
-        synchronized(TransferCollection.instance()) {
-            while(iterator.hasMoreElements()) {
-                int i = ((Number) iterator.nextElement()).intValue();
-                Transfer transfer = (Transfer) TransferCollection.instance().get(i);
-                if(v.validate(transfer)) {
-                    return true;
-                }
+        while(iterator.hasMoreElements()) {
+            int i = ((Number) iterator.nextElement()).intValue();
+            Transfer transfer = (Transfer) TransferCollection.instance().get(i);
+            if(v.validate(transfer)) {
+                return true;
             }
         }
         return false;

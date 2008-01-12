@@ -62,7 +62,7 @@ public class TransferCollection extends Collection {
         QUEUE_FILE.getParent().mkdir();
     }
 
-    public boolean add(Object o) {
+    public synchronized boolean add(Object o) {
         assert o instanceof Transfer;
         ((Transfer)o).addListener(new TransferAdapter() {
             public void transferDidEnd() {
@@ -81,7 +81,7 @@ public class TransferCollection extends Collection {
      * @param o
      * @see #save()
      */
-    public void add(int row, Object o) {
+    public synchronized void add(int row, Object o) {
         assert o instanceof Transfer;
         ((Transfer)o).addListener(new TransferAdapter() {
             public void transferDidEnd() {
@@ -99,7 +99,7 @@ public class TransferCollection extends Collection {
      * @return the element that was removed from the list.
      * @see #save()
      */
-    public Object remove(int row) {
+    public synchronized Object remove(int row) {
         return super.remove(row);
     }
 
@@ -107,7 +107,7 @@ public class TransferCollection extends Collection {
         this.save(QUEUE_FILE);
     }
 
-    private void save(Local f) {
+    private synchronized void save(Local f) {
         log.debug("save");
         synchronized(this) {
             if(Preferences.instance().getBoolean("queue.save")) {
@@ -143,7 +143,7 @@ public class TransferCollection extends Collection {
         this.load(QUEUE_FILE);
     }
 
-    private void load(Local f) {
+    private synchronized void load(Local f) {
         log.debug("load");
         synchronized(this) {
             if(f.exists()) {
@@ -182,7 +182,7 @@ public class TransferCollection extends Collection {
      *
      * @return
      */
-    public int numberOfRunningTransfers() {
+    public synchronized int numberOfRunningTransfers() {
         int running = 0;
         // Count the number of running transfers
         for(Iterator iter = this.iterator(); iter.hasNext(); ) {
@@ -202,7 +202,7 @@ public class TransferCollection extends Collection {
      * 
      * @return
      */
-    public int numberOfQueuedTransfers() {
+    public synchronized int numberOfQueuedTransfers() {
         int queued = 0;
         // Count the number of queued transfers
         for(Iterator iter = this.iterator(); iter.hasNext(); ) {

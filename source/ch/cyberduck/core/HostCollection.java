@@ -48,7 +48,7 @@ public class HostCollection extends Collection {
         }
     }
 
-    public Object get(int row) {
+    public synchronized Object get(int row) {
         return super.get(row);
     }
 
@@ -57,7 +57,7 @@ public class HostCollection extends Collection {
      * @param o
      * @return
      */
-    public boolean add(Object o) {
+    public synchronized boolean add(Object o) {
         this.add(this.size(), o);
         return true;
     }
@@ -67,7 +67,7 @@ public class HostCollection extends Collection {
      * @param row
      * @param o
      */
-    public void add(int row, Object o) {
+    public synchronized void add(int row, Object o) {
         final Host host = (Host)o;
         String proposal = host.getNickname();
         int no = 0;
@@ -86,7 +86,7 @@ public class HostCollection extends Collection {
      * @param row
      * @return the element that was removed from the list.
      */
-    public Object remove(int row) {
+    public synchronized Object remove(int row) {
         Object previous = super.remove(row);
         this.save();
         return previous;
@@ -155,7 +155,7 @@ public class HostCollection extends Collection {
     /**
      * Deserialize all the bookmarks saved previously in the users's application support directory
      */
-    private void load(File f) {
+    private synchronized void load(File f) {
         if(f.exists()) {
             final int pool = NSAutoreleasePool.push();
             try {
