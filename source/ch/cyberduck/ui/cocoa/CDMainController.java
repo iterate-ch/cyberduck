@@ -542,6 +542,7 @@ public class CDMainController extends CDController {
                         NSApplication.sharedApplication().terminate(null);
                     }
                 };
+                c.loadBundle();
                 donationBoxDisplayed = true;
                 // Cancel application termination. Dismissing the donation dialog will attempt to quit again.
                 return NSApplication.TerminateCancel;
