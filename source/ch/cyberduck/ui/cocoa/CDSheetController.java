@@ -152,23 +152,12 @@ public abstract class CDSheetController extends CDWindowController implements CD
         }
         this.loadBundle();
         final NSApplication app = NSApplication.sharedApplication();
-        synchronized(parent.window()) {
-            if(parent.hasSheet()) {
-                NSModalSession modalSession = app.beginModalSessionForWindow(
-                        this.parent.window().attachedSheet());
-                while(parent.hasSheet()) {
-                    app.runModalSession(modalSession);
-                }
-                app.endModalSession(modalSession);
-            }
-        }
         app.beginSheet(this.window(), //window
-                parent.window(),
-                this, //modalDelegate
+                parent.window(), // modalForWindow
+                this, // modalDelegate
                 new NSSelector("sheetDidClose",
                         new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
                 null); //context
-        this.window().makeKeyAndOrderFront(null);
     }
 
     /**
