@@ -461,17 +461,17 @@ public class Local extends AbstractPath {
                 if(!Local.jni_load()) {
                     return;
                 }
-                if(-1 == progress) {
-                    this.removeResourceFork();
-                } else {
-                    final String icon = "download" + progress + ".icns";
-                    final String path =  this.getAbsolute();
-                    CDMainApplication.invoke(new DefaultMainAction() {
-                        public void run() {
-                            setIconFromFile(path, icon);
+                final String path =  this.getAbsolute();
+                CDMainApplication.invoke(new DefaultMainAction() {
+                    public void run() {
+                        if(-1 == progress) {
+                            removeResourceFork();
                         }
-                    });
-                }
+                        else {
+                            setIconFromFile(path, "download" + progress + ".icns");
+                        }
+                    }
+                });
             }
         }
         // Disabled because of #221
