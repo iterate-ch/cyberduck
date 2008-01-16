@@ -60,6 +60,8 @@
 	<string>_VERSION_</string>
 	<key>CFBundleVersion</key>
 	<string>_REVISION_</string>
+	<key>CFBundleShortVersionString</key>
+	<string>_VERSION_ (_REVISION_)</string>
 	<key>Java</key>
 	<dict>
 		<key>JVMVersion</key>
