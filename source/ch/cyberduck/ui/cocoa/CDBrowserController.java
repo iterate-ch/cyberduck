@@ -4164,54 +4164,7 @@ public class CDBrowserController extends CDWindowController
         if(this.hasSession()) {
             this.session.removeConnectionListener(this.listener);
         }
-        this.toolbar.setDelegate(null);
-
-        this.bookmarkDrawer.setContentView(null);
-
-        this.bookmarkTable.setDataSource(null);
         HostCollection.instance().removeListener(this.bookmarkCollectionListener);
-        this.bookmarkModel = null;
-        this.bookmarkTable.setDelegate(null);
-        this.bookmarkTableDelegate = null;
-        this.bookmarkTable = null;
-
-        this.browserListView.setDataSource(null);
-        this.browserListModel = null;
-        this.browserListView.setDelegate(null);
-        this.browserListViewDelegate = null;
-        this.browserListView = null;
-
-        this.browserOutlineView.setDataSource(null);
-        this.browserOutlineModel = null;
-        this.browserOutlineView.setDelegate(null);
-        this.browserOutlineViewDelegate = null;
-        this.browserOutlineView = null;
-
-        this.browserSwitchView.setTarget(null);
-        this.browserSwitchView = null;
-        this.browserTabView = null;
-
-        this.addBookmarkButton.setTarget(null);
-        this.deleteBookmarkButton.setTarget(null);
-        this.editBookmarkButton.setTarget(null);
-
-        this.actionPopupButton.setTarget(null);
-
-        this.navigationButton.setTarget(null);
-        this.upButton.setTarget(null);
-        this.pathPopupButton.setTarget(null);
-        this.encodingPopup.setTarget(null);
-
-        this.quickConnectPopup.setDataSource(null);
-        this.quickConnectPopupModel = null;
-        this.quickConnectPopup.setTarget(null);
-        this.quickConnectPopup = null;
-
-//        this.navigationPopup.setDataSource(null);
-//        this.navigationPopupModel = null;
-//        this.navigationPopup.setTarget(null);
-//        this.navigationPopup = null;
-
         super.invalidate();
     }
 }
