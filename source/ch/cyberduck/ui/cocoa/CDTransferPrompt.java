@@ -77,7 +77,6 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                     // Update the status label at the bottom of the browser window
                     statusLabel.setAttributedStringValue(new NSAttributedString(msg,
                             TRUNCATE_MIDDLE_ATTRIBUTES));
-                    statusLabel.display();
                 }
             });
         }
@@ -123,7 +122,6 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 statusLabel.setAttributedStringValue(new NSAttributedString(
                         browserView.numberOfRows() + " " + NSBundle.localizedString("files", ""),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
-                statusLabel.display();
             }
         });
     }
