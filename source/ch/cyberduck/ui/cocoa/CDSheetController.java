@@ -169,16 +169,16 @@ public abstract class CDSheetController extends CDWindowController implements CD
      * @param returncode Identifier for the button clicked by the user
      * @param context    Not used
      */
-    public void sheetDidClose(NSPanel sheet, final int returncode, Object context) {
+    public void sheetDidClose(final NSPanel sheet, final int returncode, Object context) {
         log.debug("sheetDidClose:" + sheet);
-        sheet.orderOut(null);
         this.returncode = returncode;
+        sheet.orderOut(null);
         this.callback(returncode);
-        if(!this.isSingleton()) {
-            this.invalidate();
-        }
         synchronized(parent.window()) {
             parent.window().notify();
+        }
+        if(!this.isSingleton()) {
+            this.invalidate();
         }
     }
 
