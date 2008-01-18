@@ -28,6 +28,8 @@ import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
+
 /**
  * @version $Id$
  */
@@ -76,8 +78,7 @@ public class CDFolderController extends CDFileController {
                     if(filename.charAt(0) == '.') {
                         c.setShowHiddenFiles(true);
                     }
-                    c.reloadData(false);
-                    c.setSelectedPath(folder);
+                    c.reloadData(Collections.singletonList(folder));
                 }
             }
         });
