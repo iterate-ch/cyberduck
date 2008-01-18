@@ -555,21 +555,11 @@ public class CDBrowserController extends CDWindowController
         final NSTableView browser = this.getSelectedBrowserView();
         browser.reloadData();
         if(this.isMounted()) {
-            // Delay for later invocation to make sure this is displayed as the last status message
-            CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
-                public void run() {
-                    CDBrowserController.this.displayStatus();
-                }
-            });
+            statusLabel.setAttributedStringValue(new NSAttributedString(
+                    this.getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", ""),
+                    TRUNCATE_MIDDLE_ATTRIBUTES));
         }
         this.setSelectedPaths(selected);
-    }
-
-    private void displayStatus() {
-        statusLabel.setAttributedStringValue(new NSAttributedString(
-                this.getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", ""),
-                TRUNCATE_MIDDLE_ATTRIBUTES));
-        statusLabel.display();
     }
 
     /**
@@ -1909,7 +1899,6 @@ public class CDBrowserController extends CDWindowController
         statusLabel.setAttributedStringValue(new NSAttributedString(
                 b.toString(),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
-        statusLabel.display();
     }
 
     private NSButton securityLabel; // IBOutlet
@@ -2714,7 +2703,9 @@ public class CDBrowserController extends CDWindowController
                 }
 
                 public void cleanup() {
-                    CDBrowserController.this.displayStatus();
+                    statusLabel.setAttributedStringValue(new NSAttributedString(
+                            getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", ""),
+                            TRUNCATE_MIDDLE_ATTRIBUTES));
                 }
             });
         }
@@ -3094,10 +3085,6 @@ public class CDBrowserController extends CDWindowController
                         p = (Path) p.getParent();
                     }
                 }
-            }
-        });
-        CDMainApplication.invoke(new WindowMainAction(this) {
-            public void run() {
                 // Mark the browser data source as dirty
                 reloadData(false);
             }
@@ -3289,7 +3276,6 @@ public class CDBrowserController extends CDWindowController
             public void activityStarted() {
                 CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
-                        statusLabel.display();
                         window.toolbar().validateVisibleItems();
                     }
                 });
@@ -3298,7 +3284,6 @@ public class CDBrowserController extends CDWindowController
             public void activityStopped() {
                 CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
-                        statusLabel.display();
                         window.toolbar().validateVisibleItems();
                     }
                 });
@@ -3445,7 +3430,15 @@ public class CDBrowserController extends CDWindowController
             if(this.isBusy()) {
                 this.interrupt();
             }
-            unmount(true); //Todo Background Thread
+            this.background(new BackgroundActionImpl(this) {
+                public void run() {
+                    unmount(true);
+                }
+
+                public void cleanup() {
+                    ;
+                }
+            });
         }
         // Unmount succeeded
         return true;
