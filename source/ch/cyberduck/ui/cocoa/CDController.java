@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotificationCenter;
 import com.apple.cocoa.foundation.NSObject;
 
@@ -29,6 +30,15 @@ import org.apache.log4j.Logger;
 public abstract class CDController extends NSObject {
     private static Logger log = Logger.getLogger(CDController.class);
 
+    public CDController() {
+        // Add this object to the array to safe weak references
+        // from being garbage collected (#hack)
+        instances.addObject(this);
+    }
+
+    protected static final NSMutableArray instances
+            = new NSMutableArray();
+
     /**
      * Free all locked resources by this controller; also remove me from all observables;
      * marks this controller to be garbage collected as soon as needed
@@ -38,6 +48,7 @@ public abstract class CDController extends NSObject {
             log.debug("invalidate:" + this.toString());
         }
         NSNotificationCenter.defaultCenter().removeObserver(this);
+        instances.removeObject(this);
     }
 
     protected void finalize() throws java.lang.Throwable {
