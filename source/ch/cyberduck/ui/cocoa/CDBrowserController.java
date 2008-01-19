@@ -555,9 +555,14 @@ public class CDBrowserController extends CDWindowController
         final NSTableView browser = this.getSelectedBrowserView();
         browser.reloadData();
         if(this.isMounted()) {
-            statusLabel.setAttributedStringValue(new NSAttributedString(
-                    this.getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", ""),
-                    TRUNCATE_MIDDLE_ATTRIBUTES));
+            // Delay for later invocation to make sure this is displayed as the last status message
+            CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
+                public void run() {
+                    statusLabel.setAttributedStringValue(new NSAttributedString(
+                            getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", ""),
+                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                }
+            });
         }
         this.setSelectedPaths(selected);
     }
