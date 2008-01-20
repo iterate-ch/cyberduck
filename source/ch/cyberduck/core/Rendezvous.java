@@ -286,15 +286,22 @@ public class Rendezvous
     public void serviceResolved(DNSSDService resolver, int flags, int ifIndex,
                                 String fullname, String hostname, int port, TXTRecord txtRecord) {
         log.debug("serviceResolved:" + hostname);
-        Host host = new Host(hostname, port);
-        host.setCredentials(Preferences.instance().getProperty("connection.login.name"), null);
-        if(host.getProtocol().equals(Session.FTP)) {
-            host.setCredentials(null, null); //use anonymous login for FTP
-        }
-        synchronized(this) {
-            if(null == this.services.put(fullname, host)) {
-                this.notifier.serviceResolved(fullname, hostname);
+        try {
+            Host host = new Host(hostname, port);
+            host.setCredentials(Preferences.instance().getProperty("connection.login.name"), null);
+            if(host.getProtocol().equals(Session.FTP)) {
+                host.setCredentials(null, null); //use anonymous login for FTP
             }
+            synchronized(this) {
+                if(null == this.services.put(fullname, host)) {
+                    this.notifier.serviceResolved(fullname, hostname);
+                }
+            }
+        }
+        finally {
+            // Note: When the desired results have been returned, the client MUST terminate
+            // the resolve by calling DNSSDService.stop().
+            resolver.stop();
         }
     }
 }
