@@ -202,6 +202,7 @@ public abstract class Preferences {
         defaults.put("browser.columnSize", String.valueOf(true));
         defaults.put("browser.columnModification", String.valueOf(true));
         defaults.put("browser.columnOwner", String.valueOf(false));
+        defaults.put("browser.columnGroup", String.valueOf(false));
         defaults.put("browser.columnPermissions", String.valueOf(false));
 
         defaults.put("browser.sort.column", CDBrowserTableDataSource.FILENAME_COLUMN);

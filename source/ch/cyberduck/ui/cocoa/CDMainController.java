@@ -70,6 +70,7 @@ public class CDMainController extends CDController {
         columns.put("browser.columnSize", NSBundle.localizedString("Size", ""));
         columns.put("browser.columnModification", NSBundle.localizedString("Modified", ""));
         columns.put("browser.columnOwner", NSBundle.localizedString("Owner", ""));
+        columns.put("browser.columnGroup", NSBundle.localizedString("Group", ""));
         columns.put("browser.columnPermissions", NSBundle.localizedString("Permissions", ""));
         Iterator identifiers = columns.keySet().iterator();
         int i = 0;

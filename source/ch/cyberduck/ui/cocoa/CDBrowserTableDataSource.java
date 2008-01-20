@@ -42,6 +42,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
     public static final String SIZE_COLUMN = "SIZE";
     public static final String MODIFIED_COLUMN = "MODIFIED";
     public static final String OWNER_COLUMN = "OWNER";
+    public static final String GROUP_COLUMN = "GROUP";
     public static final String PERMISSIONS_COLUMN = "PERMISSIONS";
     public static final String KIND_COLUMN = "KIND";
     // virtual column to implement keyboard selection
@@ -158,6 +159,10 @@ public abstract class CDBrowserTableDataSource extends CDController {
             }
             if(identifier.equals(OWNER_COLUMN)) {
                 return new NSAttributedString(item.attributes.getOwner(),
+                        CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
+            }
+            if(identifier.equals(GROUP_COLUMN)) {
+                return new NSAttributedString(item.attributes.getGroup(),
                         CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
             }
             if(identifier.equals(PERMISSIONS_COLUMN)) {

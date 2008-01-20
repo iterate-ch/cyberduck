@@ -1258,6 +1258,23 @@ public class CDBrowserController extends CDWindowController
             c.setDataCell(new NSTextFieldCell());
             table.addTableColumn(c);
         }
+        table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.GROUP_COLUMN));
+        if(Preferences.instance().getBoolean("browser.columnGroup")) {
+            NSTableColumn c = new NSTableColumn();
+            c.headerCell().setStringValue(NSBundle.localizedString("Group", "A column in the browser"));
+            c.setIdentifier(CDBrowserTableDataSource.GROUP_COLUMN);
+            c.setMinWidth(50f);
+            c.setWidth(80f);
+            c.setMaxWidth(500f);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
+            c.setDataCell(new NSTextFieldCell());
+            table.addTableColumn(c);
+        }
         table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.PERMISSIONS_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnPermissions")) {
             NSTableColumn c = new NSTableColumn();
