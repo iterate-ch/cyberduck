@@ -559,6 +559,24 @@ public class Host extends NSObject {
      */
     public String getHostname(boolean punycode) {
         if(punycode && Preferences.instance().getBoolean("connection.hostname.idn")) {
+            if(null == this.punycode) {
+                try {
+                    // Convenience function that implements the IDNToASCII operation as defined in
+                    // the IDNA RFC. This operation is done on complete domain names, e.g: "www.example.com".
+                    // It is important to note that this operation can fail. If it fails, then the input
+                    // domain name cannot be used as an Internationalized Domain Name and the application
+                    // should have methods defined to deal with the failure.
+                    // IDNA.DEFAULT Use default options, i.e., do not process unassigned code points
+                    // and do not use STD3 ASCII rules If unassigned code points are found
+                    // the operation fails with ParseException
+                    final String idn = IDNA.convertIDNToASCII(this.hostname, IDNA.DEFAULT).toString();
+                    log.info("IDN hostname for "+this.hostname+":"+idn);
+                    this.punycode = idn;
+                }
+                catch(StringPrepParseException e) {
+                    log.error("Cannot convert hostname to IDNA:"+e.getMessage());
+                }
+            }
             return this.punycode;
         }
         return this.hostname;
@@ -578,22 +596,6 @@ public class Host extends NSObject {
             }
         }
         this.hostname = hostname;
-        try {
-            // Convenience function that implements the IDNToASCII operation as defined in
-            // the IDNA RFC. This operation is done on complete domain names, e.g: "www.example.com".
-            // It is important to note that this operation can fail. If it fails, then the input
-            // domain name cannot be used as an Internationalized Domain Name and the application
-            // should have methods defined to deal with the failure.
-            // IDNA.DEFAULT Use default options, i.e., do not process unassigned code points
-            // and do not use STD3 ASCII rules If unassigned code points are found
-            // the operation fails with ParseException
-            final String idn = IDNA.convertIDNToASCII(this.hostname, IDNA.DEFAULT).toString();
-            log.info("IDN hostname for "+this.hostname+":"+idn);
-            this.punycode = idn;
-        }
-        catch(StringPrepParseException e) {
-            log.error("Cannot convert hostname to IDNA:"+e.getMessage());
-        }
     }
 
     /**
