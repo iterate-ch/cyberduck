@@ -251,6 +251,9 @@
 /* A column in the browser */
 "Owner" = "Tulajdonos";
 
+/* A column in the browser */
+"Group" = "Csoport";
+
 /* No comment provided by engineer. */
 "Passive" = "Passzív";
 

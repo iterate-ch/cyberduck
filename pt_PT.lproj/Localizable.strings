@@ -1,5 +1,5 @@
 /* No comment provided by engineer. */
-"A file with the same name already exists. Do you want to replace the existing file?" = "Já existe um ficheiro com o mesmo nome. Deseja substituí-lo?;
+"A file with the same name already exists. Do you want to replace the existing file?" = "Já existe um ficheiro com o mesmo nome. Deseja substituí-lo?";
 
 /* Toolbar item */
 "Action" = "Acção";
@@ -250,6 +250,9 @@
 
 /* A column in the browser */
 "Owner" = "Proprietário";
+
+/* A column in the browser */
+"Group" = "Grupo";
 
 /* No comment provided by engineer. */
 "Passive" = "Passivo";

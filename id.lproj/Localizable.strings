@@ -251,6 +251,9 @@
 /* A column in the browser */
 "Owner" = "Pemilik";
 
+/* A column in the browser */
+"Group" = "Grup";
+
 /* No comment provided by engineer. */
 "Passive" = "Passive";
 
