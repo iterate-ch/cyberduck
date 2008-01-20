@@ -1837,9 +1837,6 @@ public class CDBrowserController extends CDWindowController
             if(this.session.getEncoding().equals(encoding)) {
                 return;
             }
-            if(this.isBusy()) {
-                this.interrupt();
-            }
             this.background(new BackgroundAction() {
                 public void run() {
                     unmount(false);
@@ -2772,13 +2769,13 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void interruptButtonClicked(final Object sender) {
+        // Interrupt any pending operation by forcefully closing the socket
         this.interrupt();
     }
 
     public void disconnectButtonClicked(final Object sender) {
-        if(this.isBusy()) {
-            // Interrupt any pending operation by forcefully closing the socket
-            this.interrupt();
+        if(this.isActivityRunning()) {
+            this.interruptButtonClicked(sender);
         }
         else {
             this.disconnect();
@@ -2818,12 +2815,6 @@ public class CDBrowserController extends CDWindowController
      */
     public boolean isMounted() {
         return this.hasSession() && this.workdir() != null;
-    }
-
-    private boolean interrupted;
-
-    public boolean isInterrupted() {
-        return this.interrupted;
     }
 
     /**
@@ -2976,7 +2967,7 @@ public class CDBrowserController extends CDWindowController
     /**
      * @return true if there is any network activity running in the background
      */
-    public boolean isBusy() {
+    public boolean isActivityRunning() {
         return this.activityRunning;
     }
 
@@ -2991,18 +2982,17 @@ public class CDBrowserController extends CDWindowController
      * Will queue up the <code>BackgroundAction</code> to be run in a background thread. Will be executed
      * as soon as no other previous <code>BackgroundAction</code> is pending.
      * Before the <code>BackgroundAction</code> is run, the progress indicator of this browser
-     * is animated. While the <code>BackgroundAction</code> is executed, #isBusy will return true
+     * is animated. While the <code>BackgroundAction</code> is executed, #isActivityRunning will return true
      *
      * @param runnable The action to execute
      * @pre must always be invoked form the main interface thread
      * @see ch.cyberduck.ui.cocoa.CDWindowController#background(ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl,Object)
-     * @see #isBusy()
+     * @see #isActivityRunning()
      */
     public void background(final BackgroundAction runnable) {
         super.background(backgroundAction = new BackgroundActionImpl(this) {
             public void prepare() {
                 activityRunning = true;
-                interrupted = false;
                 session.addErrorListener(this);
                 session.addTranscriptListener(this);
                 super.prepare();
@@ -3345,7 +3335,7 @@ public class CDBrowserController extends CDWindowController
      * @param h
      * @return The session to be used for any further operations
      */
-    public Session mount(Host h) {
+    public void mount(Host h) {
         final HostCollection c = HostCollection.instance();
         if(c.contains(h)) {
             // Use the bookmarked reference if any. Otherwise if a clone thereof is used
@@ -3371,45 +3361,26 @@ public class CDBrowserController extends CDWindowController
                         ;
                     }
                 });
-                    return session;
+                return;
             }
         }
-        if(this.unmount(new CDSheetCallback() {
-            public void callback(int returncode) {
-                if(returncode == DEFAULT_OPTION) {
-                    if(isBusy()) {
-                        interrupt();
+        this.unmount(new Runnable() {
+            public void run() {
+                // The browser has no session, we are allowed to proceed
+                // Initialize the browser with the new session attaching all listeners
+                final Session session = init(host);
+                background(new BackgroundAction() {
+                    public void run() {
+                        // Mount this session and set the working directory in the background
+                        setWorkdir(session.mount());
                     }
-                    // The user has approved closing the current session
-                    background(new BackgroundAction() {
-                        public void run() {
-                            unmount(true);
-                        }
 
-                        public void cleanup() {
-                            mount(host);
-                        }
-                    });
-                }
+                    public void cleanup() {
+                        ;
+                    }
+                });
             }
-        })) {
-            // The browser has no session, we are allowed to proceed
-            // Initialize the browser with the new session attaching all listeners
-            final Session session = this.init(host);
-            this.background(new BackgroundAction() {
-                public void run() {
-                    // Mount this session and set the working directory in the background
-                    setWorkdir(session.mount());
-                }
-
-                public void cleanup() {
-                    ;
-                }
-            });
-            return session;
-        }
-        // The current session is still valid
-        return null;
+        });
     }
 
     /**
@@ -3418,7 +3389,7 @@ public class CDBrowserController extends CDWindowController
      *
      * @param forever The session won't be remounted in any case; will clear the cache
      */
-    public void unmount(final boolean forever) {
+    private void unmount(final boolean forever) {
         // This is not synchronized to the <code>mountingLock</code> intentionally; this allows to unmount
         // sessions not yet connected
         if(this.hasSession()) {
@@ -3432,13 +3403,43 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
+    public boolean unmount() {
+        return this.unmount(new Runnable() {
+            public void run() {
+                ;
+            }
+        });
+    }
+
     /**
      * @return True if the unmount process has finished, false if the user has to agree first
      *         to close the connection
+     * @param disconnected Callback after the session has been disconnected
      */
-    public boolean unmount(final CDSheetCallback callback) {
+    public boolean unmount(final Runnable disconnected) {
+        return this.unmount(new CDSheetCallback() {
+            public void callback(int returncode) {
+                if(returncode == DEFAULT_OPTION) {
+                    if(isActivityRunning()) {
+                        interrupt();
+                    }
+                    background(new BackgroundAction() {
+                        public void run() {
+                            unmount(true);
+                        }
+
+                        public void cleanup() {
+                            disconnected.run();
+                        }
+                    });
+                }
+            };
+        }, disconnected);
+    }
+
+    public boolean unmount(final CDSheetCallback callback, final Runnable disconnected) {
         log.debug("unmount");
-        if(this.isConnected() || this.isBusy()) {
+        if(this.isConnected() || this.isActivityRunning()) {
             if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                 // Defer the unmount to the callback function
                 this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Disconnect from", "Alert sheet title") + " " + this.session.getHost().getHostname(), //title
@@ -3447,21 +3448,25 @@ public class CDBrowserController extends CDWindowController
                         NSBundle.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
                         null //other button
                 ), callback);
+                // No unmount yet
                 return false;
             }
-            if(this.isBusy()) {
-                this.interrupt();
+            if(isActivityRunning()) {
+                interrupt();
             }
-            this.background(new BackgroundActionImpl(this) {
+            this.background(new BackgroundAction() {
                 public void run() {
                     unmount(true);
                 }
 
                 public void cleanup() {
-                    ;
+                    disconnected.run();
                 }
             });
+            // Unmount in progress
+            return true;
         }
+        disconnected.run();
         // Unmount succeeded
         return true;
     }
@@ -3485,7 +3490,6 @@ public class CDBrowserController extends CDWindowController
                 }
             });
         }
-        this.interrupted = true;
     }
 
     /**
@@ -3523,50 +3527,52 @@ public class CDBrowserController extends CDWindowController
      * @param app
      * @return NSApplication.TerminateLater if the application should not yet be terminated
      */
-    public static int applicationShouldTerminate(NSApplication app) {
+    public static int applicationShouldTerminate(final NSApplication app) {
         // Determine if there are any open connections
-        NSArray windows = NSApplication.sharedApplication().windows();
+        NSArray windows = app.windows();
         int count = windows.count();
         // Determine if there are any open connections
         while(0 != count--) {
             final NSWindow window = (NSWindow) windows.objectAtIndex(count);
-            CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+            final CDBrowserController controller = CDBrowserController.controllerForWindow(window);
             if(null != controller) {
                 if(!controller.unmount(new CDSheetCallback() {
-                    public void callback(int returncode) {
+                    public void callback(final int returncode) {
                         if(returncode == DEFAULT_OPTION) { //Disconnect
+                            controller.background(new BackgroundAction() {
+                                public void run() {
+                                    controller.unmount(true);
+                                }
+
+                                public void cleanup() {
+                                    ;
+                                }
+                            });
                             window.close();
-                            CDBrowserController.applicationShouldTerminate(null);
+                            if(NSApplication.TerminateNow == CDBrowserController.applicationShouldTerminate(app)) {
+                                app.terminate(null);
+                            }
                         }
                         if(returncode == ALTERNATE_OPTION) { //Cancel
-                            NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
+                            app.replyToApplicationShouldTerminate(false);
                         }
+                    }
+                }, new Runnable() {
+                    public void run() {
+                        ;
                     }
                 })) {
                     return NSApplication.TerminateLater;
                 }
             }
         }
-        return CDTransferController.applicationShouldTerminate(app);
+        return NSApplication.TerminateNow;
     }
 
     public boolean windowShouldClose(final NSWindow sender) {
-        return this.unmount(new CDSheetCallback() {
-            public void callback(int returncode) {
-                if(returncode == DEFAULT_OPTION) {
-                    if(isBusy()) {
-                        interrupt();
-                    }
-                    background(new BackgroundAction() {
-                        public void run() {
-                            unmount(true);
-                        }
-
-                        public void cleanup() {
-                            sender.close();
-                        }
-                    });
-                }
+        return this.unmount(new Runnable() {
+            public void run() {
+                sender.close();
             }
         });
     }
@@ -3581,7 +3587,7 @@ public class CDBrowserController extends CDWindowController
 
         this.pathPopupButton.setEnabled(this.isMounted());
         this.searchField.setEnabled(this.isMounted());
-        this.encodingPopup.setEnabled(!this.isBusy());
+        this.encodingPopup.setEnabled(!this.isActivityRunning());
     }
 
     /**
@@ -3714,7 +3720,7 @@ public class CDBrowserController extends CDWindowController
             return false;
         }
         if(identifier.equals("encodingMenuClicked:")) {
-            return !isBusy();
+            return !isActivityRunning();
         }
         if(identifier.equals("connectBookmarkButtonClicked:")) {
             return bookmarkTable.numberOfSelectedRows() == 1;
@@ -3817,12 +3823,12 @@ public class CDBrowserController extends CDWindowController
         }
         if(identifier.equals("disconnectButtonClicked:")) {
             if(!this.isConnected()) {
-                return this.isBusy();
+                return this.isActivityRunning();
             }
             return this.isConnected();
         }
         if(identifier.equals("interruptButtonClicked:")) {
-            return this.isBusy();
+            return this.isActivityRunning();
         }
         if(identifier.equals("gotofolderButtonClicked:")) {
             return this.isMounted();
@@ -3852,7 +3858,7 @@ public class CDBrowserController extends CDWindowController
             }
         }
         if(identifier.equals("disconnectButtonClicked:")) {
-            if(this.isBusy()) {
+            if(this.isActivityRunning()) {
                 item.setLabel(NSBundle.localizedString(TOOLBAR_INTERRUPT, "Toolbar item"));
                 item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_INTERRUPT, "Toolbar item"));
                 item.setToolTip(NSBundle.localizedString("Cancel current operation in progress", "Toolbar item tooltip"));

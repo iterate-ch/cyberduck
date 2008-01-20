@@ -165,6 +165,7 @@ public abstract class BackgroundActionImpl extends CDController
     private boolean canceled;
 
     public void cancel() {
+        log.debug("cancel");
         canceled = true;
     }
 

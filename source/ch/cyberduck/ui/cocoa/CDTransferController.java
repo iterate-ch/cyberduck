@@ -272,7 +272,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
       * @return NSApplication.TerminateLater or NSApplication.TerminateNow depending if there are
       * running transfers to be checked first
       */
-    public static int applicationShouldTerminate(NSApplication app) {
+    public static int applicationShouldTerminate(final NSApplication app) {
         if(null != instance) {
             //Saving state of transfer window
             Preferences.instance().setProperty("queue.openByDefault", instance.window().isVisible());
@@ -292,17 +292,16 @@ public class CDTransferController extends CDWindowController implements NSToolba
                                     transfer.interrupt();
                                 }
                             }
-                            NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
+                            app.replyToApplicationShouldTerminate(true);
                         }
                         if(returncode == ALTERNATE_OPTION) { //Cancel
-                            NSApplication.sharedApplication().replyToApplicationShouldTerminate(false);
+                            app.replyToApplicationShouldTerminate(false);
                         }
                     }
                 });
                 return NSApplication.TerminateLater; //break
             }
         }
-        NSApplication.sharedApplication().replyToApplicationShouldTerminate(true);
         return NSApplication.TerminateNow;
     }
 

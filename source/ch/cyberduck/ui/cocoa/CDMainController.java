@@ -574,7 +574,11 @@ public class CDMainController extends CDController {
                                 NSBundle.localizedString("Review...", "")); //alternate
                         if(choice == CDSheetCallback.ALTERNATE_OPTION) {
                             // Review if at least one window reqested to terminate later, we shall wait
-                            return CDBrowserController.applicationShouldTerminate(app);
+                            final int result = CDBrowserController.applicationShouldTerminate(app);
+                            if(NSApplication.TerminateNow == result) {
+                                return CDTransferController.applicationShouldTerminate(app);
+                            }
+                            return result;
                         }
                         if(choice == CDSheetCallback.CANCEL_OPTION) {
                             // Cancel. Quit has been interrupted. Delete any saved sessions so far.
@@ -590,19 +594,7 @@ public class CDMainController extends CDController {
                         }
                     }
                     else {
-                        if(controller.isBusy()) {
-                            // Close the socket to interrupt the current operation in progress
-                            controller.interrupt();
-                        }
-                        controller.background(new BackgroundAction() {
-                            public void run() {
-                                controller.unmount(true);
-                            }
-
-                            public void cleanup() {
-                                ;
-                            }
-                        });
+                        controller.unmount();
                     }
                 }
             }
