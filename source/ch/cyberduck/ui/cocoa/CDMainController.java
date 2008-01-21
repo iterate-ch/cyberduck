@@ -428,9 +428,6 @@ public class CDMainController extends CDController {
                 ;
             }
         });
-        if(Preferences.instance().getBoolean("rendezvous.enable")) {
-            Rendezvous.instance().init();
-        }
         if(Preferences.instance().getBoolean("browser.serialize")) {
             Local[] files = this.getSavedSessions();
             for(int i = 0; i < files.length; i++) {
@@ -480,6 +477,9 @@ public class CDMainController extends CDController {
                 new NSSelector("workspaceWillLogout", new Class[]{NSNotification.class}),
                 NSWorkspace.WorkspaceSessionDidResignActiveNotification,
                 null);
+        if(Preferences.instance().getBoolean("rendezvous.enable")) {
+            Rendezvous.instance().init();
+        }
     }
 
     /**
