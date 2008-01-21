@@ -2702,6 +2702,7 @@ public class CDBrowserController extends CDWindowController
 
                 public void didTransferPath(Path path) {
                     progressTimer.cancel();
+                    meterText = null;
                     meter.reset();
                 }
 
@@ -3455,8 +3456,8 @@ public class CDBrowserController extends CDWindowController
                 // No unmount yet
                 return false;
             }
-            if(isActivityRunning()) {
-                interrupt();
+            if(this.isActivityRunning()) {
+                this.interrupt();
             }
             this.background(new BackgroundAction() {
                 public void run() {
@@ -3479,12 +3480,13 @@ public class CDBrowserController extends CDWindowController
      * Interrupt any operation in progress;
      * just closes the socket without any quit message sent to the server
      */
-    protected void interrupt() {
+    private void interrupt() {
         if(this.hasSession()) {
             if(this.activityRunning) {
                 backgroundAction.cancel();
             }
-            this.background(new BackgroundActionImpl(this) {
+            // Directly call super.background to circumvent the background concurrency lock
+            super.background(new BackgroundActionImpl(this) {
                 public void run() {
                     session.interrupt();
                 }
@@ -3499,7 +3501,7 @@ public class CDBrowserController extends CDWindowController
     /**
      * Unmount this session
      */
-    public void disconnect() {
+    private void disconnect() {
         this.background(new BackgroundAction() {
             public void run() {
                 unmount(false);
