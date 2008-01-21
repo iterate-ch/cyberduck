@@ -396,7 +396,7 @@ public abstract class Preferences {
         /**
          * Default login name
          */
-        defaults.put("connection.login.name", "anonymous"); //System.getProperty("user.name")
+        defaults.put("connection.login.name", System.getProperty("user.name"));
         /**
          * Search for passphrases in Keychain
          */
