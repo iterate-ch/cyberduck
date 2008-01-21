@@ -667,7 +667,10 @@ public class CDBrowserController extends CDWindowController
         Path item = null;
         switch(this.browserSwitchView.selectedSegment()) {
             case LIST_VIEW: {
-                item = (Path) this.browserListModel.childs(this.workdir()).get(row);
+                final AttributedList childs = this.browserListModel.childs(this.workdir());
+                if(row < childs.size()) {
+                    item = (Path) childs.get(row);
+                }
                 break;
             }
             case OUTLINE_VIEW: {
