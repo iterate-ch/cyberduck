@@ -2999,7 +2999,11 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void run() {
-                spinner.startAnimation(this);
+                CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
+                    public void run() {
+                        spinner.startAnimation(this);
+                    }
+                });
                 runnable.run();
             }
 
