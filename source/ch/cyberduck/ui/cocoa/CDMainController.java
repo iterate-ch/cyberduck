@@ -199,6 +199,7 @@ public class CDMainController extends CDController {
     }
 
     public void newDownloadMenuClicked(final Object sender) {
+        this.showTransferQueueClicked(sender);
         CDSheetController c = new CDDownloadController(CDTransferController.instance());
         c.beginSheet();
     }
