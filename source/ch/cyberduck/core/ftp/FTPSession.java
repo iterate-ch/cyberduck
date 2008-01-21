@@ -311,6 +311,7 @@ public class FTPSession extends Session {
             throw new ConnectionCanceledException();
         }
         if(host.getCredentials().check(this.loginController, host.getProtocol(), host.getHostname())) {
+            String failure = null;
             try {
                 this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " "
                         + host.getCredentials().getUsername() + "...");
@@ -320,10 +321,16 @@ public class FTPSession extends Session {
                         host.getHostname(), host.getPort());
             }
             catch(FTPException e) {
+                failure = e.getMessage();
+            }
+            catch(FTPNullReplyException e) {
+                failure = e.getMessage();
+            }
+            if(failure != null) {
                 this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
                 loginController.promptUser(host.getCredentials(),
                         NSBundle.localizedString("Login failed", "Credentials", ""),
-                        e.getMessage());
+                        failure);
                 if(!host.getCredentials().tryAgain()) {
                     throw new LoginCanceledException();
                 }

@@ -480,7 +480,7 @@ public class FTPControlSocket {
             line = reader.readLine();
 
         if(line == null)
-            throw new IOException("Unexpected null reply received");
+            throw new FTPNullReplyException();
 
         this.log(line, false);
 
@@ -502,7 +502,7 @@ public class FTPControlSocket {
             while(!complete) {
                 line = reader.readLine();
                 if(line == null)
-                    throw new IOException("Unexpected null reply received");
+                    throw new FTPNullReplyException();
 
                 if(line.length() == 0)
                     continue;
