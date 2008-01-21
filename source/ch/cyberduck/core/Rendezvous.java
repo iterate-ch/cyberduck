@@ -269,7 +269,7 @@ public class Rendezvous
      * @param errorCode
      */
     public void operationFailed(DNSSDService resolver, int errorCode) {
-        log.debug("operationFailed:" + errorCode);
+        log.warn("operationFailed:" + errorCode);
         resolver.stop();
     }
 
@@ -287,11 +287,7 @@ public class Rendezvous
                                 String fullname, String hostname, int port, TXTRecord txtRecord) {
         log.debug("serviceResolved:" + hostname);
         try {
-            Host host = new Host(hostname, port);
-            host.setCredentials(Preferences.instance().getProperty("connection.login.name"), null);
-            if(host.getProtocol().equals(Session.FTP)) {
-                host.setCredentials(null, null); //use anonymous login for FTP
-            }
+            final Host host = new Host(hostname, port);
             synchronized(this) {
                 if(null == this.services.put(fullname, host)) {
                     this.notifier.serviceResolved(fullname, hostname);
