@@ -203,6 +203,11 @@ public abstract class CDWindowController extends CDBundleController {
         this.invalidate();
     }
 
+    protected void invalidate() {
+        this.window = null;
+        super.invalidate();
+    }
+
     /**
      * @return False if the window has been released
      */
