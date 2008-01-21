@@ -1693,23 +1693,23 @@ public class CDBrowserController extends CDWindowController
 
     private NSSegmentedControl navigationButton; // IBOutlet
 
-    private NSMenu navigationBackMenu;
-    private MenuDelegate navigationBackMenuDelegate;
-    private NSMenu navigationForwardMenu;
-    private MenuDelegate navigationForwardMenuDelegate;
+//    private NSMenu navigationBackMenu;
+//    private MenuDelegate navigationBackMenuDelegate;
+//    private NSMenu navigationForwardMenu;
+//    private MenuDelegate navigationForwardMenuDelegate;
 
     public void setNavigationButton(NSSegmentedControl navigationButton) {
         this.navigationButton = navigationButton;
         this.navigationButton.setTarget(this);
         this.navigationButton.setAction(new NSSelector("navigationButtonClicked", new Class[]{Object.class}));
 
-        this.navigationBackMenu = new NSMenu();
-        this.navigationBackMenu.setDelegate(this.navigationBackMenuDelegate = new BackPathHistoryMenuDelegate(this));
-        this.navigationButton.setMenu(this.navigationBackMenu, NAVIGATION_LEFT_SEGMENT_BUTTON);
+//        this.navigationBackMenu = new NSMenu();
+//        this.navigationBackMenu.setDelegate(this.navigationBackMenuDelegate = new BackPathHistoryMenuDelegate(this));
+//        this.navigationButton.setMenu(this.navigationBackMenu, NAVIGATION_LEFT_SEGMENT_BUTTON);
 
-        this.navigationForwardMenu = new NSMenu();
-        this.navigationForwardMenu.setDelegate(this.navigationForwardMenuDelegate = new ForwardPathHistoryMenuDelegate(this));
-        this.navigationButton.setMenu(this.navigationForwardMenu, NAVIGATION_RIGHT_SEGMENT_BUTTON);
+//        this.navigationForwardMenu = new NSMenu();
+//        this.navigationForwardMenu.setDelegate(this.navigationForwardMenuDelegate = new ForwardPathHistoryMenuDelegate(this));
+//        this.navigationButton.setMenu(this.navigationForwardMenu, NAVIGATION_RIGHT_SEGMENT_BUTTON);
     }
 
     public void navigationButtonClicked(NSSegmentedControl sender) {
@@ -3857,7 +3857,6 @@ public class CDBrowserController extends CDWindowController
                     Preferences.instance().getProperty("editor.bundleIdentifier"));
             if(editorPath != null) {
                 item.setImage(NSWorkspace.sharedWorkspace().iconForFile(editorPath));
-
             }
             else {
                 item.setImage(NSImage.imageNamed("pencil.tiff"));
