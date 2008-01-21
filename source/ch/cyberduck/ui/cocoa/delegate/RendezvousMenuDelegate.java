@@ -41,13 +41,11 @@ public class RendezvousMenuDelegate extends MenuDelegate {
      * @see com.apple.cocoa.application.NSMenu.Delegate
      */
     public int numberOfItemsInMenu(NSMenu menu) {
-        synchronized(Rendezvous.instance()) {
-            int n = Rendezvous.instance().numberOfServices();
-            if(n > 0) {
-                return n;
-            }
-            return 1;
+        int n = Rendezvous.instance().numberOfServices();
+        if(n > 0) {
+            return n;
         }
+        return 1;
     }
 
     /**
@@ -60,25 +58,23 @@ public class RendezvousMenuDelegate extends MenuDelegate {
      * @see com.apple.cocoa.application.NSMenu.Delegate
      */
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
-        synchronized(Rendezvous.instance()) {
-            if(Rendezvous.instance().numberOfServices() == 0) {
-                sender.setTitle(NSBundle.localizedString("No Bonjour services available", ""));
-                sender.setEnabled(false);
-                return !shouldCancel;
+        if(Rendezvous.instance().numberOfServices() == 0) {
+            sender.setTitle(NSBundle.localizedString("No Bonjour services available", ""));
+            sender.setEnabled(false);
+            return !shouldCancel;
+        }
+        else {
+            if(index >= this.numberOfItemsInMenu(menu)) {
+                log.warn("Invalid index in menuUpdateItemAtIndex:" + index);
+                return false;
             }
-            else {
-                if(index >= this.numberOfItemsInMenu(menu)) {
-                    log.warn("Invalid index in menuUpdateItemAtIndex:" + index);
-                    return false;
-                }
-                String title = Rendezvous.instance().getDisplayedName(index);
-                sender.setTitle(title);
-                sender.setTarget(this);
-                sender.setEnabled(true);
-                sender.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
-                sender.setRepresentedObject(Rendezvous.instance().getServiceWithDisplayedName(title));
-                return !shouldCancel;
-            }
+            String title = Rendezvous.instance().getDisplayedName(index);
+            sender.setTitle(title);
+            sender.setTarget(this);
+            sender.setEnabled(true);
+            sender.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
+            sender.setRepresentedObject(Rendezvous.instance().getServiceWithDisplayedName(title));
+            return !shouldCancel;
         }
     }
 
