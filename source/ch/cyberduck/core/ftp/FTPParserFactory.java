@@ -35,10 +35,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
     public FTPFileEntryParser createFileEntryParser(String key) throws ParserInitializationException {
         if(null != key) {
             String ukey = key.toUpperCase();
-            if(ukey.indexOf("TRELLIX") >= 0) {
-                return createTrellixFTPEntryParser();
-            }
-            else if(ukey.indexOf(FTPClientConfig.SYST_UNIX) >= 0) {
+            if(ukey.indexOf(FTPClientConfig.SYST_UNIX) >= 0) {
                 return this.createUnixFTPEntryParser();
             }
             else if(ukey.indexOf(FTPClientConfig.SYST_VMS) >= 0) {
@@ -64,14 +61,6 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
         return this.createUnixFTPEntryParser();
     }
 
-    private FTPFileEntryParser createTrellixFTPEntryParser() {
-        return new CompositeFileEntryParser(new FTPFileEntryParser[]
-                {
-                        new TrellixFTPEntryParser(),
-                        this.createUnixFTPEntryParser()
-                });
-    }
-
     public FTPFileEntryParser createFileEntryParser(FTPClientConfig config) throws ParserInitializationException {
         return this.createFileEntryParser(config.getServerSystemKey());
     }
@@ -81,7 +70,8 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
                 {
                         new LaxUnixFTPEntryParser(),
                         new EPLFFTPEntryParser(),
-                        new RumpusFTPEntryParser()
+                        new RumpusFTPEntryParser(),
+                        new TrellixFTPEntryParser()
                 });
     }
 
