@@ -107,6 +107,31 @@ public class RumpusFTPEntryParserTest extends TestCase {
         assertFalse(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION));
     }
 
+    public void testUnknownSystIdentifier() throws Exception {
+        this.parser = new FTPParserFactory().createFileEntryParser("Digital Domain FTP");
+
+        FTPFile parsed = null;
+        parsed = parser.parseFTPEntry(
+                "drwxrwxrwx               folder        0 Jan 19 20:36 Mastered 1644"
+        );
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), "Mastered 1644");
+        assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
+
+        parsed = parser.parseFTPEntry(
+                "-rwxrwxrwx        0   208143684 208143684 Jan 14 02:13 Dhannya dhannya.rar"
+        );
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), "Dhannya dhannya.rar");
+        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
+
+        parsed = parser.parseFTPEntry(
+                "drwxr-xr-x               folder        0 Jan 14 16:04 Probeordner");
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), "Probeordner");
+        assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
+    }
+
     public static Test suite() {
         return new TestSuite(RumpusFTPEntryParserTest.class);
     }

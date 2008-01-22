@@ -59,12 +59,6 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
             else if(ukey.indexOf(FTPClientConfig.SYST_MVS) >= 0) {
                 return this.createMVSEntryParser();
             }
-            else if(ukey.indexOf("MACOS") >= 0) {
-                return this.createRumpusFTPEntryParser();
-            }
-            else if(ukey.indexOf("OSWALD") >= 0) {
-                return this.createRumpusFTPEntryParser();
-            }
         }
         // Defaulting to UNIX parser
         return this.createUnixFTPEntryParser();
@@ -86,7 +80,8 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
                         new LaxUnixFTPEntryParser(),
-                        new EPLFFTPEntryParser()
+                        new EPLFFTPEntryParser(),
+                        new RumpusFTPEntryParser()
                 });
     }
 
@@ -120,13 +115,5 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
 
     private FTPFileEntryParser createMVSEntryParser() {
         return new MVSFTPEntryParser();
-    }
-
-    private FTPFileEntryParser createRumpusFTPEntryParser() {
-        return new CompositeFileEntryParser(new FTPFileEntryParser[]
-                {
-                        new RumpusFTPEntryParser(),
-                        this.createUnixFTPEntryParser()
-                });
     }
 }
