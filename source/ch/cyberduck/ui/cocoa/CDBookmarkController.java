@@ -502,11 +502,11 @@ public class CDBookmarkController extends CDWindowController {
         try {
             NSDictionary parsed = Host.parse(hostField.stringValue().trim()).getAsDictionary();
             this.host.init(parsed);
-            this.updateFields();
         }
         catch(MalformedURLException e) {
             this.host.setHostname(hostField.stringValue());
         }
+        this.updateFields();
         this.itemChanged();
         this.background(new BackgroundActionImpl(this) {
             boolean reachable = false;

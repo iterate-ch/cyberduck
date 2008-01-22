@@ -596,6 +596,7 @@ public class Host extends NSObject {
             }
         }
         this.hostname = hostname;
+        this.punycode = null;
     }
 
     /**
