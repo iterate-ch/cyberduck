@@ -111,7 +111,7 @@ public class Rendezvous
                     ; //Ignore
                 }
             }
-            RendezvousListener[] l = null;
+            RendezvousListener[] l;
             synchronized(this) {
                 l = (RendezvousListener[]) listeners.toArray(
                         new RendezvousListener[listeners.size()]);
@@ -123,7 +123,7 @@ public class Rendezvous
 
         public void serviceLost(final String servicename) {
             log.info("Service lost:"+servicename);
-            RendezvousListener[] l = null;
+            RendezvousListener[] l;
             synchronized(this) {
                 l = (RendezvousListener[]) listeners.toArray(
                         new RendezvousListener[listeners.size()]);
@@ -289,10 +289,9 @@ public class Rendezvous
         try {
             final Host host = new Host(hostname, port);
             synchronized(this) {
-                if(null == this.services.put(fullname, host)) {
-                    this.notifier.serviceResolved(fullname, hostname);
-                }
+                this.services.put(fullname, host);
             }
+            this.notifier.serviceResolved(fullname, hostname);
         }
         finally {
             // Note: When the desired results have been returned, the client MUST terminate
