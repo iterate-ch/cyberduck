@@ -3283,9 +3283,9 @@ public class CDBrowserController extends CDWindowController
                 getSelectedBrowserView().setNeedsDisplay();
                 CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
-                        window.setTitle(
-                                (String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
-                        window.setRepresentedFilename(""); //can't send null
+//                        window.setTitle(
+//                                (String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
+//                        window.setRepresentedFilename(""); //can't send null
                         window.setDocumentEdited(false);
                         securityLabel.setImage(NSImage.imageNamed("unlocked.tiff"));
                         securityLabel.setEnabled(false);
