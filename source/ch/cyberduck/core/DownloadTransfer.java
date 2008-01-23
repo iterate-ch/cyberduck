@@ -56,7 +56,7 @@ public class DownloadTransfer extends Transfer {
                 Path n = (Path) normalizedIter.next();
                 if(download.isChild(n)) {
                     // The selected file is a child of a directory
-                    // already included for deletion
+                    // already included
                     duplicate = true;
                     break;
                 }
@@ -168,10 +168,6 @@ public class DownloadTransfer extends Transfer {
                     && DOWNLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
                 return false;
             }
-            ((Path) child).getLocal().setPath(
-                    ((Path) child.getParent()).getLocal().getAbsolute(),
-                    ((Path) child).getLocal().getName()
-            );
             return true;
         }
     };
@@ -181,7 +177,15 @@ public class DownloadTransfer extends Transfer {
             // Cannot fetch file listing of non existant file
             return new AttributedList(Collections.EMPTY_LIST);
         }
-        return parent.childs(new NullComparator(), childFilter);
+        final AttributedList childs = parent.childs(new NullComparator(), childFilter);
+        for(Iterator iter = childs.iterator(); iter.hasNext(); ) {
+            final Local local = ((Path) iter.next()).getLocal();
+            local.setPath(
+                    parent.getLocal().getAbsolute(),
+                    local.getName()
+            );
+        }
+        return childs;
     }
 
     public boolean isCached(Path file) {
