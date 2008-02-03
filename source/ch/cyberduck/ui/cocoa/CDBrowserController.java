@@ -2930,11 +2930,14 @@ public class CDBrowserController extends CDWindowController
 
     public void openTerminalButtonClicked(final Object sender) {
         final boolean identity = this.getSession().getHost().getCredentials().usesPublicKeyAuthentication();
-        final String workdir;
+        String workdir = null;
         if(this.getSelectionCount() == 1) {
-            workdir = this.getSelectedPath().getAbsolute();
+            Path selected = this.getSelectedPath();
+            if(selected.attributes.isDirectory()) {
+                workdir = selected.getAbsolute();
+            }
         }
-        else {
+        if(null == workdir) {
             workdir = this.getWorkingDirectory();
         }
         final String command
