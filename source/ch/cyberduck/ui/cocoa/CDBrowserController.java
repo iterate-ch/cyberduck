@@ -3313,6 +3313,8 @@ public class CDBrowserController extends CDWindowController
             }
         });
         transcript.clear();
+        backHistory.clear();
+        forwardHistory.clear();
         session.addTranscriptListener(new TranscriptListener() {
             public void log(final String message) {
                 CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
