@@ -3258,9 +3258,9 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void connectionDidOpen() {
-                getSelectedBrowserView().setNeedsDisplay();
                 CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
+                        getSelectedBrowserView().setNeedsDisplay();
                         Growl.instance().notify("Connection opened", host.getHostname());
                         ((CDMainController) NSApplication.sharedApplication().delegate()).exportBookmark(host,
                                 CDBrowserController.this.getRepresentedFile());
@@ -3283,9 +3283,9 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void connectionDidClose() {
-                getSelectedBrowserView().setNeedsDisplay();
                 CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
+                        getSelectedBrowserView().setNeedsDisplay();
 //                        window.setTitle(
 //                                (String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
 //                        window.setRepresentedFilename(""); //can't send null
