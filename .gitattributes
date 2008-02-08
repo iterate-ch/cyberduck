@@ -2016,7 +2016,17 @@ www/help/images/transfer.png -text svneol=unset#image/png
 www/help/images/upload.png -text svneol=unset#image/png
 www/help/index.css -text
 www/help/it/.htaccess -text
-www/help/ja/.htaccess -text
+www/help/ja/faq/index.html -text
+www/help/ja/howto/bookmark.html -text
+www/help/ja/howto/download.html -text
+www/help/ja/howto/editing.html -text
+www/help/ja/howto/index.html -text
+www/help/ja/howto/preferences.html -text
+www/help/ja/howto/ssh.html -text
+www/help/ja/howto/upload.html -text
+www/help/ja/howto/widget.html -text
+www/help/ja/index.html -text
+www/help/ja/problems/index.html -text
 www/help/ko/.htaccess -text
 www/help/nl/.htaccess -text
 www/help/no/.htaccess -text
