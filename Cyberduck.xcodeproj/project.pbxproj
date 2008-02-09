@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 42;
+	objectVersion = 44;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -3965,8 +3965,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = (
-					ppc,
 					i386,
+					ppc,
 				);
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3979,7 +3979,9 @@
 				JAVA_COMPILER_DEBUGGING_SYMBOLS = NO;
 				JAVA_COMPILER_DEPRECATED_WARNINGS = YES;
 				JAVA_COMPILER_TARGET_VM_VERSION = 1.4;
-				MACOSX_DEPLOYMENT_TARGET = 10.3;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				"MACOSX_DEPLOYMENT_TARGET[arch=i386]" = 10.4;
+				"MACOSX_DEPLOYMENT_TARGET[arch=ppc]" = 10.3;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"-lz",
@@ -3990,6 +3992,8 @@
 				);
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = Cyberduck;
+				"SDKROOT[arch=i386]" = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
+				"SDKROOT[arch=ppc]" = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
 				SECTORDER_FLAGS = "";
 				SRCROOT = "";
 				WARNING_CFLAGS = (
@@ -4049,7 +4053,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 			};
 			name = Deployment;
 		};
