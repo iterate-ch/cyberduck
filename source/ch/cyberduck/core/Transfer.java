@@ -227,8 +227,8 @@ public abstract class Transfer extends NSObject {
         for(int i = 0; i < l.length; i++) {
             l[i].transferDidEnd();
         }
-        synchronized(lock) {
-            lock.notifyAll();
+        synchronized(queueLock) {
+            queueLock.notify();
         }
     }
 
@@ -596,15 +596,6 @@ public abstract class Transfer extends NSObject {
     }
 
     /**
-     * Calls #start with TransferOptions.DEFAULT
-     *
-     * @param prompt
-     */
-    public void start(TransferPrompt prompt) {
-        this.start(prompt, TransferOptions.DEFAULT);
-    }
-
-    /**
      * Calls #start with queueing off
      *
      * @param prompt
@@ -622,19 +613,19 @@ public abstract class Transfer extends NSObject {
     /**
      * The lock used for queuing transfers
      */
-    private static final Object lock = Queue.instance();
+    private static final Object queueLock = Queue.instance();
 
     /**
      * @param prompt
      * @param options
-     * @param queued
+     * @param queuing This transfer should respect the settings for maximum number of transfers
      */
     public void start(TransferPrompt prompt, final TransferOptions options,
-                      final boolean queued) {
+                      final boolean queuing) {
         log.debug("start:" + prompt);
         try {
             this.fireTransferWillStart();
-            if(queued) {
+            if(queuing) {
                 // This transfer should respect the settings for maximum number of transfers
                 final TransferCollection q = TransferCollection.instance();
                 while(!this.isCanceled() && q.numberOfRunningTransfers()
@@ -643,14 +634,14 @@ public abstract class Transfer extends NSObject {
                     log.info("Queuing " + this.toString());
                     // The maximum number of transfers is already reached
                     try {
-                        // Wait for transfer slot
                         if(!this.queued) {
                             // Notify if not queued already before
                             this.fireTransferQueued();
                             this.getSession().message(NSBundle.localizedString("Maximum allowed connections exceeded. Waiting...", "Status", ""));
                         }
-                        synchronized(lock) {
-                            lock.wait();
+                        synchronized(queueLock) {
+                            // Wait for transfer slot
+                            queueLock.wait();
                         }
                     }
                     catch(InterruptedException e) {
@@ -660,7 +651,7 @@ public abstract class Transfer extends NSObject {
                 log.info(this.toString() + " released from queue");
                 this.fireTransferResumed();
                 if(this.isCanceled()) {
-                    // The transfer has been canceled while queued
+                    // The transfer has been canceled while being queued
                     return;
                 }
             }
@@ -696,8 +687,8 @@ public abstract class Transfer extends NSObject {
             }
             canceled = true;
         }
-        synchronized(lock) {
-            lock.notifyAll();
+        synchronized(queueLock) {
+            queueLock.notify();
         }
     }
 
