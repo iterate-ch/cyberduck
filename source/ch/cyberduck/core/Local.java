@@ -184,6 +184,8 @@ public class Local extends AbstractPath {
         };
     }
 
+    private static final Object lock = new Object();
+
     private static boolean JNI_LOADED = false;
 
     private static boolean jni_load() {
@@ -407,28 +409,36 @@ public class Local extends AbstractPath {
         else _impl.mkdir();
     }
 
-    public void writePermissions(Permission perm, boolean recursive) {
-        boolean success = NSPathUtilities.setFileAttributes(_impl.getAbsolutePath(),
-                new NSDictionary(new Integer(perm.getOctalNumber()),
-                        NSPathUtilities.FilePosixPermissions));
-        if(!success) {
-            log.error("File attribute changed failed:" + getAbsolute());
-        }
-        if(this.attributes.isDirectory() && recursive) {
-            for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
-                Local child = (Local) iter.next();
-                child.writePermissions(perm, recursive);
+    public void writePermissions(final Permission perm, final boolean recursive) {
+        CDMainApplication.invoke(new DefaultMainAction() {
+            public void run() {
+                boolean success = NSPathUtilities.setFileAttributes(_impl.getAbsolutePath(),
+                        new NSDictionary(new Integer(perm.getOctalNumber()),
+                                NSPathUtilities.FilePosixPermissions));
+                if(!success) {
+                    log.error("File attribute changed failed:" + getAbsolute());
+                }
+                if(attributes.isDirectory() && recursive) {
+                    for(Iterator iter = childs().iterator(); iter.hasNext();) {
+                        Local child = (Local) iter.next();
+                        child.writePermissions(perm, recursive);
+                    }
+                }
             }
-        }
+        });
     }
 
-    public void writeModificationDate(long millis) {
-        boolean success = NSPathUtilities.setFileAttributes(_impl.getAbsolutePath(),
-                new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis), NSDate.DateFor1970),
-                        NSPathUtilities.FileModificationDate));
-        if(!success) {
-            log.error("File attribute changed failed:" + getAbsolute());
-        }
+    public void writeModificationDate(final long millis) {
+        CDMainApplication.invoke(new DefaultMainAction() {
+            public void run() {
+                boolean success = NSPathUtilities.setFileAttributes(_impl.getAbsolutePath(),
+                        new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis), NSDate.DateFor1970),
+                                NSPathUtilities.FileModificationDate));
+                if(!success) {
+                    log.error("File attribute changed failed:" + getAbsolute());
+                }
+            }
+        });
     }
 
     public void delete() {
@@ -443,8 +453,6 @@ public class Local extends AbstractPath {
         ;
     }
 
-    private static final Object lock = new Object();
-
     /**
      * Update the custom icon for the file in the Finder
      *
@@ -457,22 +465,20 @@ public class Local extends AbstractPath {
             return;
         }
         if(Preferences.instance().getBoolean("queue.download.updateIcon")) {
-            synchronized(lock) {
-                if(!Local.jni_load()) {
-                    return;
-                }
-                final String path =  this.getAbsolute();
-                CDMainApplication.invoke(new DefaultMainAction() {
-                    public void run() {
-                        if(-1 == progress) {
-                            removeResourceFork();
-                        }
-                        else {
-                            setIconFromFile(path, "download" + progress + ".icns");
-                        }
-                    }
-                });
+            if(!Local.jni_load()) {
+                return;
             }
+            final String path =  this.getAbsolute();
+            CDMainApplication.invoke(new DefaultMainAction() {
+                public void run() {
+                    if(-1 == progress) {
+                        removeResourceFork();
+                    }
+                    else {
+                        setIconFromFile(path, "download" + progress + ".icns");
+                    }
+                }
+            });
         }
         // Disabled because of #221
         // NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
