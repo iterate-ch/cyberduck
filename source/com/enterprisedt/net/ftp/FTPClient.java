@@ -35,9 +35,7 @@ import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Properties;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * Supports client-side FTP. Most common
@@ -112,6 +110,8 @@ public class FTPClient {
         this.control = new FTPControlSocket(encoding, listener);
     }
 
+    private String[] features;
+
     /**
      *
      * @param remoteHost  the remote hostname
@@ -122,6 +122,7 @@ public class FTPClient {
     public void connect(final String remoteHost, int controlPort)
             throws IOException, FTPException {
         this.control.connect(InetAddress.getByName(remoteHost), controlPort);
+        this.features = this.features();
     }
 
     /**
@@ -417,13 +418,16 @@ public class FTPClient {
      * @param append     true if appending, false otherwise
      */
     private void initPut(String remoteFile, boolean append) throws IOException, FTPException {
+        final String cmd = append ? "APPE " : "STOR "+remoteFile;
+
+        this.pret(cmd);
+
         // set up data channel
         data = control.createDataSocket(connectMode);
         data.setTimeout(timeout);
 
         // send the command to store
-        String cmd = append ? "APPE " : "STOR ";
-        FTPReply reply = control.sendCommand(cmd+remoteFile);
+        FTPReply reply = control.sendCommand(cmd);
 
         // Can get a 125 or a 150
         String[] validCodes = {"125", "150"};
@@ -436,6 +440,10 @@ public class FTPClient {
      * @param remoteFile name of remote file
      */
     private void initGet(String remoteFile, long resume) throws IOException, FTPException {
+        final String cmd = "RETR "+remoteFile;
+
+        this.pret(cmd);
+
         // set up data channel
         data = control.createDataSocket(connectMode);
         data.setTimeout(timeout);
@@ -446,7 +454,7 @@ public class FTPClient {
         }
 
         // send the retrieve command
-        FTPReply reply = control.sendCommand("RETR "+remoteFile);
+        FTPReply reply = control.sendCommand(cmd);
 
         // Can get a 125 or a 150
         String[] validCodes1 = {"125", "150"};
@@ -522,6 +530,8 @@ public class FTPClient {
      * @return an array of directory listing strings
      */
     public BufferedReader dir(String encoding, String command) throws IOException, FTPException {
+        this.pret(command);
+
         // set up data channel
         data = control.createDataSocket(connectMode);
         data.setTimeout(timeout);
@@ -860,12 +870,15 @@ public class FTPClient {
      *         supported
      */
     public String[] features() throws IOException, FTPException {
-        FTPReply reply = control.sendCommand("FEAT");
-        lastValidReply = control.validateReply(reply, new String[]{"211", "500", "502"});
-        if(lastValidReply.getReplyCode().equals("211"))
-            return lastValidReply.getReplyData();
-        else
-            throw new FTPException(reply);
+        if(null == features) {
+            FTPReply reply = control.sendCommand("FEAT");
+            lastValidReply = control.validateReply(reply, new String[]{"211", "500", "502"});
+            if(lastValidReply.getReplyCode().equals("211"))
+                return lastValidReply.getReplyData();
+            else
+                throw new FTPException(reply);
+        }
+        return features;
     }
 
     /**
@@ -877,6 +890,79 @@ public class FTPClient {
         FTPReply reply = control.sendCommand("SYST");
         lastValidReply = control.validateReply(reply, new String[]{"200", "213", "215"});
         return lastValidReply.getReplyText();
+    }
+
+    protected boolean isMDTMSupported() {
+        try {
+            for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
+                if("MDTM".equals(((String) iter.next()).trim())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch(IOException e) {
+            return false;
+        }
+    }
+
+    protected boolean isMDTMSetSupported() {
+        try {
+            for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
+                if("MDTM yyyyMMddHHmmss".equals(((String) iter.next()).trim())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch(IOException e) {
+            return false;
+        }
+    }
+
+    protected boolean isUTIMESupported() {
+        try {
+            for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
+                if("SITE UTIME".equals(((String) iter.next()).trim())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch(IOException e) {
+            return false;
+        }
+    }
+
+    protected boolean isPRETSupported() {
+        try {
+            for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
+                if("PRET".equals(((String) iter.next()).trim())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch(IOException e) {
+            return false;
+        }
+    }
+
+    /**
+     * http://drftpd.org/index.php/PRET_Specifications
+     * @param cmd
+     * @throws IOException
+     */
+    private void pret(String cmd) throws IOException {
+        try {
+            if(this.isPRETSupported()) {
+                // PRET support
+                control.sendCommand("PRET "+cmd);
+            }
+        }
+        catch(FTPException e) {
+            log.warn("PRET (PRE Transfer) command not supported:"+e.getMessage());
+        }
     }
 
     /**
