@@ -122,7 +122,6 @@ public class FTPClient {
     public void connect(final String remoteHost, int controlPort)
             throws IOException, FTPException {
         this.control.connect(InetAddress.getByName(remoteHost), controlPort);
-        this.features = this.features();
     }
 
     /**
