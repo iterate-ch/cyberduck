@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		47026428087DC91C008837FD /* IDisk.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47026426087DC91C008837FD /* IDisk.strings */; };
 		470912ED0C36FCE00049FBCE /* Prompt.nib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.nib */; };
+		470CB6B70D6B5A9D009C8D3B /* s3.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 470CB6B60D6B5A9D009C8D3B /* s3.tiff */; };
 		470E56D508BE3E1E00BDF3CD /* MacOSXForkerIO.c in Sources */ = {isa = PBXBuildFile; fileRef = 470E56D008BE3E1E00BDF3CD /* MacOSXForkerIO.c */; };
 		470E56D608BE3E1F00BDF3CD /* TinAlias.h in Headers */ = {isa = PBXBuildFile; fileRef = 470E56D108BE3E1E00BDF3CD /* TinAlias.h */; };
 		470E56D708BE3E1F00BDF3CD /* TinFSFork.h in Headers */ = {isa = PBXBuildFile; fileRef = 470E56D208BE3E1E00BDF3CD /* TinFSFork.h */; };
@@ -222,6 +223,7 @@
 		47E0BB4F0746B1FA00C4A68E /* arrowUp.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47E0BB490746B1FA00C4A68E /* arrowUp.tiff */; };
 		47E0BB6D0746B27400C4A68E /* arrowUp16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47E0BB6C0746B27400C4A68E /* arrowUp16.tiff */; };
 		47E2D70D0D3226050018AF56 /* Transcript.nib in Resources */ = {isa = PBXBuildFile; fileRef = 47E2D70B0D3226050018AF56 /* Transcript.nib */; };
+		47E987600D689A280077733F /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
 		47ED8CCB08813F9200314985 /* bookmark16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47ED8CC908813F9200314985 /* bookmark16.tiff */; };
 		47ED8CCC08813F9200314985 /* bookmark40.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47ED8CCA08813F9200314985 /* bookmark40.tiff */; };
 		47EEBC680808362700BE95E7 /* ftp-tls.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47EEBC670808362700BE95E7 /* ftp-tls.tiff */; };
@@ -394,6 +396,7 @@
 		470913200C36FDE00049FBCE /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Prompt.nib; sourceTree = "<group>"; };
 		470913210C36FDE50049FBCE /* pt_BR */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pt_BR; path = pt_BR.lproj/Prompt.nib; sourceTree = "<group>"; };
 		470913220C36FDEA0049FBCE /* pt_PT */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pt_PT; path = pt_PT.lproj/Prompt.nib; sourceTree = "<group>"; };
+		470CB6B60D6B5A9D009C8D3B /* s3.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = s3.tiff; sourceTree = "<group>"; };
 		470E56D008BE3E1E00BDF3CD /* MacOSXForkerIO.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MacOSXForkerIO.c; sourceTree = "<group>"; };
 		470E56D108BE3E1E00BDF3CD /* TinAlias.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinAlias.h; sourceTree = "<group>"; };
 		470E56D208BE3E1E00BDF3CD /* TinFSFork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinFSFork.h; sourceTree = "<group>"; };
@@ -1214,6 +1217,7 @@
 		47E0BB490746B1FA00C4A68E /* arrowUp.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowUp.tiff; sourceTree = "<group>"; };
 		47E0BB6C0746B27400C4A68E /* arrowUp16.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowUp16.tiff; sourceTree = "<group>"; };
 		47E2D70C0D3226050018AF56 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Transcript.nib; sourceTree = "<group>"; };
+		47E9875F0D689A280077733F /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/S3.strings; sourceTree = "<group>"; };
 		47EC858D0AF0929E0057AC1F /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_TW; path = zh_TW.lproj/Alert.nib; sourceTree = "<group>"; };
 		47EC858E0AF0929E0057AC1F /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_CN; path = zh_CN.lproj/Alert.nib; sourceTree = "<group>"; };
 		47EC858F0AF0929E0057AC1F /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Alert.nib; sourceTree = "<group>"; };
@@ -1610,6 +1614,7 @@
 		4741639206C4F58D00AC0BD2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				47E9875E0D689A280077733F /* S3.strings */,
 				47911A170B84C4E8001A29AE /* Acknowledgments.rtf */,
 				47E2D70B0D3226050018AF56 /* Transcript.nib */,
 				47905BF60AE3E10000F9E193 /* Security.nib */,
@@ -1653,6 +1658,7 @@
 		4741653C06C4FC3F00AC0BD2 /* img */ = {
 			isa = PBXGroup;
 			children = (
+				470CB6B60D6B5A9D009C8D3B /* s3.tiff */,
 				479F9DFF0C0E210100610A91 /* goto.tiff */,
 				479982810D26DA8200DB5353 /* executable.tiff */,
 				478B871D0BDE013D0040E559 /* turtle.tiff */,
@@ -2229,7 +2235,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 47D286ED0855740D008142CF /* Build configuration list for PBXProject "Cyberduck" */;
-			compatibilityVersion = "Xcode 2.4";
+			compatibilityVersion = "Xcode 3.0";
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				en,
@@ -2425,6 +2431,8 @@
 				47A0C83E0CFF6C9F00AA8DB2 /* AliasBadgeIcon.icns in Resources */,
 				479982820D26DA8200DB5353 /* executable.tiff in Resources */,
 				47E2D70D0D3226050018AF56 /* Transcript.nib in Resources */,
+				47E987600D689A280077733F /* S3.strings in Resources */,
+				470CB6B70D6B5A9D009C8D3B /* s3.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3558,6 +3566,14 @@
 				47E2D70C0D3226050018AF56 /* en */,
 			);
 			name = Transcript.nib;
+			sourceTree = "<group>";
+		};
+		47E9875E0D689A280077733F /* S3.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				47E9875F0D689A280077733F /* en */,
+			);
+			name = S3.strings;
 			sourceTree = "<group>";
 		};
 		47F0B6FE087ACD0300439978 /* Growl.strings */ = {
