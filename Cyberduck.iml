@@ -24,9 +24,7 @@
           <root url="file:///System/Library/Java" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES>
-          <root url="intellijad://intellijad" />
-        </SOURCES>
+        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library">
