@@ -36,8 +36,8 @@ public class PathTest extends TestCase {
     }
 
     public void testNormalize() throws Exception {
-        Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")));
-        path.setPath("/path/to/remove/..");
+        Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+                "/path/to/remove/..", Path.DIRECTORY_TYPE);
         assertEquals("/path/to", path.getAbsolute());
         path.setPath("/path/to/remove/.././");
         assertEquals( "/path/to", path.getAbsolute());
@@ -69,8 +69,8 @@ public class PathTest extends TestCase {
     }
 
     public void test1067() throws Exception {
-        Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")));
-        path.setPath("\\\\directory");
+        Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
+                "\\\\directory", Path.DIRECTORY_TYPE);
         assertEquals("\\\\directory", path.getAbsolute());
         assertEquals("/", path.getParent().getAbsolute());
     }
