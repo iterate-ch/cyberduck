@@ -46,7 +46,7 @@ public class LoginTest extends TestCase {
 		try {
             Login login = new Login(null,
 									Preferences.instance().getProperty("ftp.anonymous.pass"));
-			assertTrue(login.hasReasonableValues());
+			assertFalse(login.hasReasonableValues());
 		}
 		catch(java.lang.UnsatisfiedLinkError e) {}
 	}
