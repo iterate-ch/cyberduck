@@ -364,6 +364,7 @@ ca.lproj/Preferences.strings -text svneol=unset#text/utf-16
 ca.lproj/Prompt.nib/data.dependency -text
 ca.lproj/Prompt.nib/keyedobjects.nib -text
 ca.lproj/Prompt.strings -text svneol=unset#text/utf-16
+ca.lproj/S3.strings -text
 ca.lproj/Status.strings -text svneol=unset#text/utf-16
 ca.lproj/Transfer.nib/classes.nib -text
 ca.lproj/Transfer.nib/info.nib -text
@@ -417,6 +418,7 @@ cs.lproj/Preferences.strings -text svneol=unset#text/utf-16
 cs.lproj/Prompt.nib/data.dependency -text
 cs.lproj/Prompt.nib/keyedobjects.nib -text
 cs.lproj/Prompt.strings -text svneol=unset#text/utf-16
+cs.lproj/S3.strings -text
 cs.lproj/Status.strings -text svneol=unset#text/utf-16
 cs.lproj/Transfer.nib/classes.nib -text
 cs.lproj/Transfer.nib/info.nib -text
@@ -470,6 +472,7 @@ cy.lproj/Preferences.strings -text svneol=unset#text/utf-16
 cy.lproj/Prompt.nib/data.dependency -text
 cy.lproj/Prompt.nib/keyedobjects.nib -text
 cy.lproj/Prompt.strings -text svneol=unset#text/utf-16
+cy.lproj/S3.strings -text
 cy.lproj/Status.strings -text svneol=unset#text/utf-16
 cy.lproj/Transfer.nib/classes.nib -text
 cy.lproj/Transfer.nib/info.nib -text
@@ -527,6 +530,7 @@ da.lproj/Preferences.strings -text svneol=unset#text/utf-16
 da.lproj/Prompt.nib/data.dependency -text
 da.lproj/Prompt.nib/keyedobjects.nib -text
 da.lproj/Prompt.strings -text svneol=unset#text/utf-16
+da.lproj/S3.strings -text
 da.lproj/Status.strings -text svneol=unset#text/utf-16
 da.lproj/Transfer.nib/classes.nib -text
 da.lproj/Transfer.nib/info.nib -text
@@ -580,6 +584,7 @@ de.lproj/Preferences.strings -text svneol=unset#text/utf-16
 de.lproj/Prompt.nib/data.dependency -text
 de.lproj/Prompt.nib/keyedobjects.nib -text
 de.lproj/Prompt.strings -text svneol=unset#text/utf-16
+de.lproj/S3.strings -text
 de.lproj/Status.strings -text svneol=unset#text/utf-16
 de.lproj/Transfer.nib/classes.nib -text
 de.lproj/Transfer.nib/info.nib -text
@@ -636,6 +641,7 @@ en.lproj/Progress.nib/keyedobjects.nib -text
 en.lproj/Prompt.nib/data.dependency -text
 en.lproj/Prompt.nib/keyedobjects.nib -text
 en.lproj/Prompt.strings -text svneol=unset#text/utf-16
+en.lproj/S3.strings -text
 en.lproj/Security.nib/classes.nib -text
 en.lproj/Security.nib/info.nib -text
 en.lproj/Security.nib/keyedobjects.nib -text
@@ -695,6 +701,7 @@ es.lproj/Preferences.strings -text svneol=unset#text/utf-16
 es.lproj/Prompt.nib/data.dependency -text
 es.lproj/Prompt.nib/keyedobjects.nib -text
 es.lproj/Prompt.strings -text svneol=unset#text/utf-16
+es.lproj/S3.strings -text
 es.lproj/Status.strings -text svneol=unset#text/utf-16
 es.lproj/Transfer.nib/classes.nib -text
 es.lproj/Transfer.nib/info.nib -text
@@ -748,6 +755,7 @@ fi.lproj/Preferences.strings -text svneol=unset#text/utf-16
 fi.lproj/Prompt.nib/data.dependency -text
 fi.lproj/Prompt.nib/keyedobjects.nib -text
 fi.lproj/Prompt.strings -text svneol=unset#text/utf-16
+fi.lproj/S3.strings -text
 fi.lproj/Status.strings -text svneol=unset#text/utf-16
 fi.lproj/Transfer.nib/classes.nib -text
 fi.lproj/Transfer.nib/info.nib -text
@@ -801,6 +809,7 @@ fr.lproj/Preferences.strings -text svneol=unset#text/utf-16
 fr.lproj/Prompt.nib/data.dependency -text
 fr.lproj/Prompt.nib/keyedobjects.nib -text
 fr.lproj/Prompt.strings -text svneol=unset#text/utf-16
+fr.lproj/S3.strings -text
 fr.lproj/Status.strings -text svneol=unset#text/utf-16
 fr.lproj/Transfer.nib/classes.nib -text
 fr.lproj/Transfer.nib/info.nib -text
@@ -888,6 +897,7 @@ he.lproj/Prompt.nib/data.dependency -text
 he.lproj/Prompt.nib/info.nib -text
 he.lproj/Prompt.nib/keyedobjects.nib -text
 he.lproj/Prompt.strings -text svneol=unset#text/utf-16
+he.lproj/S3.strings -text
 he.lproj/Status.strings -text svneol=unset#text/utf-16
 he.lproj/Transfer.nib/classes.nib -text
 he.lproj/Transfer.nib/info.nib -text
@@ -941,6 +951,7 @@ hu.lproj/Preferences.strings -text svneol=unset#text/utf-16
 hu.lproj/Prompt.nib/data.dependency -text
 hu.lproj/Prompt.nib/keyedobjects.nib -text
 hu.lproj/Prompt.strings -text svneol=unset#text/utf-16
+hu.lproj/S3.strings -text
 hu.lproj/Status.strings -text svneol=unset#text/utf-16
 hu.lproj/Transfer.nib/classes.nib -text
 hu.lproj/Transfer.nib/info.nib -text
@@ -994,6 +1005,7 @@ id.lproj/Preferences.strings -text svneol=unset#text/utf-16
 id.lproj/Prompt.nib/data.dependency -text
 id.lproj/Prompt.nib/keyedobjects.nib -text
 id.lproj/Prompt.strings -text svneol=unset#text/utf-16
+id.lproj/S3.strings -text
 id.lproj/Status.strings -text svneol=unset#text/utf-16
 id.lproj/Transfer.nib/classes.nib -text
 id.lproj/Transfer.nib/info.nib -text
@@ -1148,6 +1160,7 @@ it.lproj/Preferences.strings -text svneol=unset#text/utf-16
 it.lproj/Prompt.nib/data.dependency -text
 it.lproj/Prompt.nib/keyedobjects.nib -text
 it.lproj/Prompt.strings -text svneol=unset#text/utf-16
+it.lproj/S3.strings -text
 it.lproj/Status.strings -text svneol=unset#text/utf-16
 it.lproj/Transfer.nib/classes.nib -text
 it.lproj/Transfer.nib/info.nib -text
@@ -1202,6 +1215,7 @@ ja.lproj/Preferences.strings -text svneol=unset#text/utf-16
 ja.lproj/Prompt.nib/data.dependency -text
 ja.lproj/Prompt.nib/keyedobjects.nib -text
 ja.lproj/Prompt.strings -text svneol=unset#text/utf-16
+ja.lproj/S3.strings -text
 ja.lproj/Status.strings -text svneol=unset#text/utf-16
 ja.lproj/Transfer.nib/classes.nib -text
 ja.lproj/Transfer.nib/info.nib -text
@@ -1255,6 +1269,7 @@ ko.lproj/Preferences.strings -text svneol=unset#text/utf-16
 ko.lproj/Prompt.nib/data.dependency -text
 ko.lproj/Prompt.nib/keyedobjects.nib -text
 ko.lproj/Prompt.strings -text svneol=unset#text/utf-16
+ko.lproj/S3.strings -text
 ko.lproj/Status.strings -text svneol=unset#text/utf-16
 ko.lproj/Transfer.nib/classes.nib -text
 ko.lproj/Transfer.nib/info.nib -text
@@ -1318,6 +1333,7 @@ nl.lproj/Preferences.strings -text svneol=unset#text/utf-16
 nl.lproj/Prompt.nib/data.dependency -text
 nl.lproj/Prompt.nib/keyedobjects.nib -text
 nl.lproj/Prompt.strings -text svneol=unset#text/utf-16
+nl.lproj/S3.strings -text
 nl.lproj/Status.strings -text svneol=unset#text/utf-16
 nl.lproj/Transfer.nib/classes.nib -text
 nl.lproj/Transfer.nib/info.nib -text
@@ -1371,6 +1387,7 @@ no.lproj/Preferences.strings -text svneol=unset#text/utf-16
 no.lproj/Prompt.nib/data.dependency -text
 no.lproj/Prompt.nib/keyedobjects.nib -text
 no.lproj/Prompt.strings -text svneol=unset#text/utf-16
+no.lproj/S3.strings -text
 no.lproj/Status.strings -text svneol=unset#text/utf-16
 no.lproj/Transfer.nib/classes.nib -text
 no.lproj/Transfer.nib/info.nib -text
@@ -1425,6 +1442,7 @@ pl.lproj/Preferences.strings -text svneol=unset#text/utf-16
 pl.lproj/Prompt.nib/data.dependency -text
 pl.lproj/Prompt.nib/keyedobjects.nib -text
 pl.lproj/Prompt.strings -text svneol=unset#text/utf-16
+pl.lproj/S3.strings -text
 pl.lproj/Status.strings -text svneol=unset#text/utf-16
 pl.lproj/Transfer.nib/classes.nib -text
 pl.lproj/Transfer.nib/info.nib -text
@@ -1512,6 +1530,7 @@ pt_BR.lproj/Prompt.nib/info.nib -text
 pt_BR.lproj/Prompt.nib/keyedobjects.nib -text
 pt_BR.lproj/Prompt.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Queue.strings -text svneol=unset#text/utf-16
+pt_BR.lproj/S3.strings -text
 pt_BR.lproj/Security.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Status.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Transfer.nib/classes.nib -text
@@ -1566,6 +1585,7 @@ pt_PT.lproj/Preferences.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Prompt.nib/data.dependency -text
 pt_PT.lproj/Prompt.nib/keyedobjects.nib -text
 pt_PT.lproj/Prompt.strings -text svneol=unset#text/utf-16
+pt_PT.lproj/S3.strings -text
 pt_PT.lproj/Status.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Transfer.nib/classes.nib -text
 pt_PT.lproj/Transfer.nib/info.nib -text
@@ -1619,6 +1639,7 @@ ru.lproj/Preferences.strings -text svneol=unset#text/utf-16
 ru.lproj/Prompt.nib/data.dependency -text
 ru.lproj/Prompt.nib/keyedobjects.nib -text
 ru.lproj/Prompt.strings -text svneol=unset#text/utf-16
+ru.lproj/S3.strings -text
 ru.lproj/Status.strings -text svneol=unset#text/utf-16
 ru.lproj/Transfer.nib/classes.nib -text
 ru.lproj/Transfer.nib/info.nib -text
@@ -1672,6 +1693,7 @@ sk.lproj/Preferences.strings -text svneol=unset#text/utf-16
 sk.lproj/Prompt.nib/data.dependency -text
 sk.lproj/Prompt.nib/keyedobjects.nib -text
 sk.lproj/Prompt.strings -text svneol=unset#text/utf-16
+sk.lproj/S3.strings -text
 sk.lproj/Status.strings -text svneol=unset#text/utf-16
 sk.lproj/Transfer.nib/classes.nib -text
 sk.lproj/Transfer.nib/info.nib -text
@@ -1763,6 +1785,7 @@ sv.lproj/Preferences.strings -text svneol=unset#text/utf-16
 sv.lproj/Prompt.nib/data.dependency -text
 sv.lproj/Prompt.nib/keyedobjects.nib -text
 sv.lproj/Prompt.strings -text svneol=unset#text/utf-16
+sv.lproj/S3.strings -text
 sv.lproj/Status.strings -text svneol=unset#text/utf-16
 sv.lproj/Transfer.nib/classes.nib -text
 sv.lproj/Transfer.nib/info.nib -text
@@ -1853,6 +1876,7 @@ th.lproj/Prompt.nib/data.dependency -text
 th.lproj/Prompt.nib/info.nib -text
 th.lproj/Prompt.nib/keyedobjects.nib -text
 th.lproj/Prompt.strings -text svneol=unset#text/utf-16
+th.lproj/S3.strings -text
 th.lproj/Status.strings -text svneol=unset#text/utf-16
 th.lproj/Transfer.nib/classes.nib -text
 th.lproj/Transfer.nib/info.nib -text
@@ -1938,6 +1962,7 @@ tr.lproj/Prompt.nib/data.dependency -text
 tr.lproj/Prompt.nib/info.nib -text
 tr.lproj/Prompt.nib/keyedobjects.nib -text
 tr.lproj/Prompt.strings -text svneol=unset#text/utf-16
+tr.lproj/S3.strings -text
 tr.lproj/Status.strings -text svneol=unset#text/utf-16
 tr.lproj/Transfer.nib/classes.nib -text
 tr.lproj/Transfer.nib/info.nib -text
@@ -2109,6 +2134,7 @@ zh_CN.lproj/Preferences.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Prompt.nib/data.dependency -text
 zh_CN.lproj/Prompt.nib/keyedobjects.nib -text
 zh_CN.lproj/Prompt.strings -text svneol=unset#text/utf-16
+zh_CN.lproj/S3.strings -text
 zh_CN.lproj/Status.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Transfer.nib/classes.nib -text
 zh_CN.lproj/Transfer.nib/info.nib -text
@@ -2162,6 +2188,7 @@ zh_TW.lproj/Preferences.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Prompt.nib/data.dependency -text
 zh_TW.lproj/Prompt.nib/keyedobjects.nib -text
 zh_TW.lproj/Prompt.strings -text svneol=unset#text/utf-16
+zh_TW.lproj/S3.strings -text
 zh_TW.lproj/Status.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Transfer.nib/classes.nib -text
 zh_TW.lproj/Transfer.nib/info.nib -text
