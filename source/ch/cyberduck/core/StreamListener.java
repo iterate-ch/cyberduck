@@ -27,11 +27,11 @@ public interface StreamListener
      *
      * @param bytes
      */
-    public void bytesSent(int bytes);
+    void bytesSent(long bytes);
 
     /**
      *
      * @param bytes
      */
-    public void bytesReceived(int bytes);
+    void bytesReceived(long bytes);
 }

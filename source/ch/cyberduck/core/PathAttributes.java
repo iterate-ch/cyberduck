@@ -140,8 +140,13 @@ public class PathAttributes extends Attributes {
         return this.type;
     }
 
+    public boolean isVolume() {
+        return (this.type & Path.VOLUME_TYPE) == Path.VOLUME_TYPE;
+    }
+
     public boolean isDirectory() {
-        return (this.type & Path.DIRECTORY_TYPE) == Path.DIRECTORY_TYPE;
+        return (this.type & Path.DIRECTORY_TYPE) == Path.DIRECTORY_TYPE
+                || this.isVolume();
     }
 
     public boolean isFile() {

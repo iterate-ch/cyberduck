@@ -29,6 +29,17 @@ public abstract class Attributes {
     public abstract int getType();
 
     /**
+     * @param i
+     * @see AbstractPath#FILE_TYPE
+     * @see AbstractPath#DIRECTORY_TYPE
+     * @see AbstractPath#SYMBOLIC_LINK_TYPE
+     * @see #isDirectory()
+     * @see #isFile()
+     * @see #isSymbolicLink()
+     */
+    public abstract void setType(int i);
+
+    /**
      * @return The length of the file
      */
     public abstract double getSize();
@@ -66,6 +77,8 @@ public abstract class Attributes {
      */
     public abstract boolean isDirectory();
 
+    public abstract boolean isVolume();
+
     /**
      * @return True if this path denotes a regular file or is a symbolic link pointing to a regular file
      */
@@ -76,17 +89,6 @@ public abstract class Attributes {
      * @warn Returns false for Mac OS Classic Alias
      */
     public abstract boolean isSymbolicLink();
-
-    /**
-     * @param i
-     * @see AbstractPath.FILE_TYPE
-     * @see AbstractPath.DIRECTORY_TYPE
-     * @see AbstractPath.SYMBOLIC_LINK_TYPE
-     * @see #isDirectory()
-     * @see #isFile()
-     * @see #isSymbolicLink()
-     */
-    public abstract void setType(int i);
 
     public abstract void setSize(double size);
 
@@ -103,7 +105,7 @@ public abstract class Attributes {
      */
     public boolean isExecutable() {
         Permission perm = this.getPermission();
-        if (null == perm) {
+        if(null == perm) {
             log.warn("Unknown permissions");
             return true;
         }
@@ -117,7 +119,7 @@ public abstract class Attributes {
      */
     public boolean isReadable() {
         Permission perm = this.getPermission();
-        if (null == perm) {
+        if(null == perm) {
             log.warn("Unknown permissions");
             return true;
         }
@@ -131,7 +133,7 @@ public abstract class Attributes {
      */
     public boolean isWritable() {
         Permission perm = this.getPermission();
-        if (null == perm) {
+        if(null == perm) {
             log.warn("Unknown permissions");
             return true;
         }

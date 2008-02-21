@@ -51,16 +51,12 @@ public class SFTPPath extends Path {
     }
 
     private static class Factory extends PathFactory {
-        protected Path create(Session session) {
-            return new SFTPPath((SFTPSession) session);
+        protected Path create(Session session, String path, int type) {
+            return new SFTPPath((SFTPSession) session, path, type);
         }
 
-        protected Path create(Session session, String path) {
-            return new SFTPPath((SFTPSession) session, path);
-        }
-
-        protected Path create(Session session, String parent, String name) {
-            return new SFTPPath((SFTPSession) session, parent, name);
+        protected Path create(Session session, String parent, String name, int type) {
+            return new SFTPPath((SFTPSession) session, parent, name, type);
         }
 
         protected Path create(Session session, String path, Local file) {
@@ -74,17 +70,13 @@ public class SFTPPath extends Path {
 
     private final SFTPSession session;
 
-    private SFTPPath(SFTPSession s) {
+    private SFTPPath(SFTPSession s, String parent, String name, int type) {
+        super(parent, name, type);
         this.session = s;
     }
 
-    private SFTPPath(SFTPSession s, String parent, String name) {
-        super(parent, name);
-        this.session = s;
-    }
-
-    private SFTPPath(SFTPSession s, String path) {
-        super(path);
+    private SFTPPath(SFTPSession s, String path, int type) {
+        super(path, type);
         this.session = s;
     }
 
@@ -119,7 +111,8 @@ public class SFTPPath extends Path {
                 while(i.hasNext()) {
                     SFTPv3DirectoryEntry f = (SFTPv3DirectoryEntry) i.next();
                     if(!f.filename.equals(".") && !f.filename.equals("..")) {
-                        Path p = PathFactory.createPath(session, this.getAbsolute(), f.filename);
+                        Path p = PathFactory.createPath(session, this.getAbsolute(),
+                                f.filename, f.attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                         p.setParent(this);
                         if(null != f.attributes.uid) {
                             p.attributes.setOwner(f.attributes.uid.toString());
@@ -156,17 +149,11 @@ public class SFTPPath extends Path {
                                 p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                             }
                         }
-                        else if(f.attributes.isDirectory()) {
-                            p.attributes.setType(Path.DIRECTORY_TYPE);
-                        }
-                        else if(f.attributes.isRegularFile()) {
-                            p.attributes.setType(Path.FILE_TYPE);
-                        }
                         String perm = f.attributes.getOctalPermissions();
                         if(null != perm) {
                             p.attributes.setPermission(new Permission(Integer.parseInt(perm.substring(perm.length()-3))));
                         }
-                        p.status.setSkipped(this.status.isSkipped());
+                        p.getStatus().setSkipped(this.getStatus().isSkipped());
                         childs.add(p);
                     }
                 }
@@ -515,26 +502,25 @@ public class SFTPPath extends Path {
             InputStream in = null;
             OutputStream out = null;
             try {
-                status.reset();
                 if(this.attributes.isDirectory()) {
                     this.getLocal().mkdir(true);
-                    status.setComplete(true);
+                    getStatus().setComplete(true);
                 }
                 if(this.attributes.isFile()) {
                     session.check(
                             Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)
                     );
-                    out = new Local.OutputStream(this.getLocal(), status.isResume());
+                    out = new Local.OutputStream(this.getLocal(), getStatus().isResume());
                     this.getLocal().touch();
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
                         SFTPv3FileHandle handle = session.sftp().openFileRO(this.getAbsolute());
                         in = new SFTPInputStream(handle);
-                        if(status.isResume()) {
-                            status.setCurrent((long) this.getLocal().attributes.getSize());
-                            long skipped = in.skip(status.getCurrent());
+                        if(getStatus().isResume()) {
+                            getStatus().setCurrent((long) this.getLocal().attributes.getSize());
+                            long skipped = in.skip(getStatus().getCurrent());
                             log.info("Skipping " + skipped + " bytes");
-                            if(skipped < this.status.getCurrent()) {
-                                throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.status.getCurrent());
+                            if(skipped < this.getStatus().getCurrent()) {
+                                throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.getStatus().getCurrent());
                             }
                         }
                     }
@@ -611,10 +597,9 @@ public class SFTPPath extends Path {
             OutputStream out = null;
             SFTPv3FileHandle handle = null;
             try {
-                status.reset();
                 if(this.attributes.isDirectory()) {
                     this.mkdir();
-                    status.setComplete(true);
+                    getStatus().setComplete(true);
                 }
                 if(attributes.isFile()) {
                     session.check(
@@ -622,7 +607,7 @@ public class SFTPPath extends Path {
                     );
                     in = new Local.InputStream(this.getLocal());
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
-                        if(status.isResume() && this.exists()) {
+                        if(getStatus().isResume() && this.exists()) {
                             handle = session.sftp().openFileRWAppend(this.getAbsolute());
                         }
                         else {
@@ -666,18 +651,18 @@ public class SFTPPath extends Path {
                         }
                     }
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
-                        if(status.isResume()) {
-                            status.setCurrent(
+                        if(getStatus().isResume()) {
+                            getStatus().setCurrent(
                                     session.sftp().stat(this.getAbsolute()).size.intValue());
                         }
                     }
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP)) {
                         out = new SFTPOutputStream(handle);
-                        if(status.isResume()) {
-                            long skipped = ((SFTPOutputStream)out).skip(status.getCurrent());
+                        if(getStatus().isResume()) {
+                            long skipped = ((SFTPOutputStream)out).skip(getStatus().getCurrent());
                             log.info("Skipping " + skipped + " bytes");
-                            if(skipped < this.status.getCurrent()) {
-                                throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.status.getCurrent());
+                            if(skipped < this.getStatus().getCurrent()) {
+                                throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.getStatus().getCurrent());
                             }
                         }
                     }

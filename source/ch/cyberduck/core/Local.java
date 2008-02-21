@@ -68,6 +68,10 @@ public class Local extends AbstractPath {
                 ;
             }
 
+            public boolean isVolume() {
+                return null == _impl.getParent();
+            }
+
             public boolean isDirectory() {
                 return _impl.isDirectory();
             }

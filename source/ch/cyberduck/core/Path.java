@@ -52,7 +52,7 @@ public abstract class Path extends AbstractPath {
      */
     private Local local = null;
 
-    public Status status = new Status();
+    private Status status;
 
     /**
      * A compiled representation of a regular expression.
@@ -141,18 +141,15 @@ public abstract class Path extends AbstractPath {
         attributes = new PathAttributes();
     }
 
-    protected Path() {
-        ;
-    }
-
     /**
      * A remote path where nothing is known about a local equivalent.
      *
      * @param parent the absolute directory
      * @param name   the file relative to param path
      */
-    protected Path(String parent, String name) {
+    protected Path(String parent, String name, int type) {
         this.setPath(parent, name);
+        this.attributes.setType(type);
     }
 
     /**
@@ -160,8 +157,9 @@ public abstract class Path extends AbstractPath {
      *
      * @param path The absolute path of the remote file
      */
-    protected Path(String path) {
+    protected Path(String path, int type) {
         this.setPath(path);
+        this.attributes.setType(type);
     }
 
     /**
@@ -174,6 +172,8 @@ public abstract class Path extends AbstractPath {
      */
     protected Path(String parent, Local local) {
         this.setPath(parent, local);
+        this.attributes.setType(
+                this.getLocal().attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
     }
 
     /**
@@ -183,9 +183,6 @@ public abstract class Path extends AbstractPath {
     public void setPath(String parent, Local file) {
         this.setPath(parent, file.getName());
         this.setLocal(file);
-        if(this.getLocal().exists()) {
-            this.attributes.setType(this.getLocal().attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-        }
     }
 
     /**
@@ -207,31 +204,46 @@ public abstract class Path extends AbstractPath {
      */
     private Path parent;
 
+    public AbstractPath getParent() {
+        return this.getParent(true);
+    }
+
     /**
      * @return My parent directory
+     * @param create Create if not cached. Otherwise may return null
      */
-    public AbstractPath getParent() {
+    public AbstractPath getParent(final boolean create) {
         if(null == parent) {
-            int index = this.getAbsolute().length() - 1;
-            if(this.getAbsolute().charAt(index) == '/') {
-                if(index > 0)
-                    index--;
-            }
-            int cut = this.getAbsolute().lastIndexOf('/', index);
-            if(cut > 0) {
-                parent = PathFactory.createPath(this.getSession(), this.getAbsolute().substring(0, cut));
-                parent.attributes.setType(Path.DIRECTORY_TYPE);
-            }
-            else {//if (index == 0) //parent is root
-                parent = PathFactory.createPath(this.getSession(), DELIMITER);
-                parent.attributes.setType(Path.DIRECTORY_TYPE);
+            if(create) {
+                int index = this.getAbsolute().length() - 1;
+                if(this.getAbsolute().charAt(index) == '/') {
+                    if(index > 0)
+                        index--;
+                }
+                int cut = this.getAbsolute().lastIndexOf('/', index);
+                if(cut > 0) {
+                    parent = PathFactory.createPath(this.getSession(), this.getAbsolute().substring(0, cut),
+                            Path.DIRECTORY_TYPE);
+                }
+                else {//if (index == 0) //parent is root
+                    parent = PathFactory.createPath(this.getSession(), DELIMITER,
+                            Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                }
             }
         }
         return this.parent;
     }
 
+    public Status getStatus() {
+        if(null == status) {
+             status = new Status();
+        }
+        return status;
+    }
+
     /**
      * @throws NullPointerException if session is not initialized
+     * @return
      */
     public Host getHost() {
         return this.getSession().getHost();
@@ -371,7 +383,7 @@ public abstract class Path extends AbstractPath {
      */
     public void download(StreamListener listener) {
         this.download(new BandwidthThrottle(0) {
-            synchronized public int request(int desired) {
+            public synchronized int request(int desired) {
                 return desired;
             }
         }, listener);
@@ -427,11 +439,11 @@ public abstract class Path extends AbstractPath {
             log.debug("upload(" + out.toString() + ", " + in.toString());
         }
         this.getSession().message(NSBundle.localizedString("Uploading", "Status", "") + " " + this.getName());
-        if(status.isResume()) {
-            long skipped = in.skip(status.getCurrent());
+        if(getStatus().isResume()) {
+            long skipped = in.skip(getStatus().getCurrent());
             log.info("Skipping " + skipped + " bytes");
-            if(skipped < status.getCurrent()) {
-                throw new IOResumeException("Skipped " + skipped + " bytes instead of " + status.getCurrent());
+            if(skipped < getStatus().getCurrent()) {
+                throw new IOResumeException("Skipped " + skipped + " bytes instead of " + getStatus().getCurrent());
             }
         }
         this.transfer(in, new ThrottledOutputStream(out, throttle), l);
@@ -459,11 +471,11 @@ public abstract class Path extends AbstractPath {
         final StreamListener listener = new StreamListener() {
             int step = 0;
 
-            public void bytesSent(int bytes) {
+            public void bytesSent(long bytes) {
                 l.bytesSent(bytes);
             }
 
-            public void bytesReceived(int bytes) {
+            public void bytesReceived(long bytes) {
                 if(-1 == bytes) {
                     // Remove custom icon if complete. The Finder will display the default
                     // icon for this filetype
@@ -472,7 +484,7 @@ public abstract class Path extends AbstractPath {
                 else {
                     l.bytesReceived(bytes);
                     if(updateIcon) {
-                        int fraction = (int) (status.getCurrent() / attributes.getSize() * 10);
+                        int fraction = (int) (getStatus().getCurrent() / attributes.getSize() * 10);
                         // An integer between 0 and 9
                         if(fraction > step) {
                             // Another 10 percent of the file has been transferred
@@ -495,19 +507,19 @@ public abstract class Path extends AbstractPath {
     private void transfer(InputStream in, OutputStream out, StreamListener listener) throws IOException {
         final int chunksize = 32768;
         byte[] chunk = new byte[chunksize];
-        long bytesTransferred = status.getCurrent();
-        while(!status.isCanceled()) {
+        long bytesTransferred = getStatus().getCurrent();
+        while(!getStatus().isCanceled()) {
             int read = in.read(chunk, 0, chunksize);
             listener.bytesReceived(read);
             if(-1 == read) {
                 // End of file
-                status.setComplete(true);
+                getStatus().setComplete(true);
                 break;
             }
             out.write(chunk, 0, read);
             listener.bytesSent(read);
             bytesTransferred += read;
-            status.setCurrent(bytesTransferred);
+            getStatus().setCurrent(bytesTransferred);
         }
         out.flush();
     }

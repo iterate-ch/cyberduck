@@ -22,6 +22,8 @@ import com.ibm.icu.text.Normalizer;
 
 import com.apple.cocoa.foundation.NSObject;
 
+import org.jets3t.service.utils.Mimetypes;
+
 import java.io.IOException;
 import java.util.Comparator;
 
@@ -48,6 +50,7 @@ public abstract class AbstractPath extends NSObject {
     public static final int FILE_TYPE = 1;
     public static final int DIRECTORY_TYPE = 2;
     public static final int SYMBOLIC_LINK_TYPE = 4;
+    public static final int VOLUME_TYPE = 8;
 
     /**
      * @return True if this path denotes a directory and its file listing is cached for this session
@@ -221,6 +224,10 @@ public abstract class AbstractPath extends NSObject {
         return null;
     }
 
+    public String getMimeType() {
+        return Mimetypes.getInstance().getMimetype(this.getName());    
+    }
+
     /**
      * @param parent The parent directory
      * @param name   The relative filename
@@ -266,6 +273,10 @@ public abstract class AbstractPath extends NSObject {
         return null;
     }
 
+    public boolean isMkdirSupported() {
+        return true;
+    }
+
     public void mkdir() {
         this.mkdir(false);
     }
@@ -293,6 +304,15 @@ public abstract class AbstractPath extends NSObject {
      */
     public boolean isEmpty() {
         return this.childs().size() == 0;
+    }
+
+    /**
+     * Supports a rename command
+     *
+     * @return
+     */
+    public boolean isRenameSupported() {
+        return true;
     }
 
     /**

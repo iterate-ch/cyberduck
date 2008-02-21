@@ -253,7 +253,7 @@ public class Login {
      * @return true if reasonable values have been found localy or in the keychain or the user
      *         was prompted to for the credentials and new values got entered.
      */
-    public boolean check(LoginController controller, String protocol, String hostname) {
+    public boolean check(LoginController controller, final String protocol, final String hostname) {
         if(!this.hasReasonableValues()) {
             if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
                 log.info("Searching keychain for password...");
@@ -262,7 +262,7 @@ public class Login {
                     if(null == controller) {
                         throw new IllegalArgumentException("No login controller given");
                     }
-                    controller.promptUser(this,
+                    controller.promptUser(protocol, this,
                             NSBundle.localizedString("Login with username and password", "Credentials", ""),
                             NSBundle.localizedString("No login credentials could be found in the Keychain", "Credentials", ""));
                     return this.tryAgain();
@@ -274,7 +274,7 @@ public class Login {
                 if(null == controller) {
                     throw new IllegalArgumentException("No login controller given");
                 }
-                controller.promptUser(this,
+                controller.promptUser(protocol, this,
                         NSBundle.localizedString("Login with username and password", "Credentials", ""),
                         NSBundle.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials", ""));
                 return this.tryAgain();
@@ -283,7 +283,7 @@ public class Login {
         return true;
     }
 
-    private boolean tryAgain;
+    private boolean tryAgain = true;
 
     /**
      * @return true if the user decided to try login again with new credentials

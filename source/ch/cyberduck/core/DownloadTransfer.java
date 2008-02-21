@@ -112,22 +112,21 @@ public class DownloadTransfer extends Transfer {
      */
     private abstract class DownloadTransferFilter extends TransferFilter {
         public void prepare(Path p) {
-            if(DownloadTransfer.this.exists(p)) {
-                if(p.attributes.getSize() == -1) {
-                    p.readSize();
-                }
-                if(p.attributes.getModificationDate() == -1) {
-                    p.readTimestamp();
-                }
-                if(p.attributes.getPermission() == null) {
-                    p.readPermission();
-                }
+            if(p.attributes.getSize() == -1) {
+                p.readSize();
+            }
+            if(p.attributes.getModificationDate() == -1) {
+                p.readTimestamp();
+            }
+            if(p.attributes.getPermission() == null) {
+                p.readPermission();
             }
             // Read file size
             if(p.attributes.isFile()) {
                 if(p.attributes.isSymbolicLink()) {
                     if(null != p.getSymbolicLinkPath()) {
-                        Path symlink = PathFactory.createPath(p.getSession(), p.getSymbolicLinkPath());
+                        Path symlink = PathFactory.createPath(p.getSession(), p.getSymbolicLinkPath(),
+                                Path.FILE_TYPE);
                         if(symlink.attributes.getSize() == -1) {
                             symlink.readSize();
                         }
@@ -136,7 +135,7 @@ public class DownloadTransfer extends Transfer {
                 } else {
                     size += p.attributes.getSize();
                 }
-                if(p.status.isResume()) {
+                if(p.getStatus().isResume()) {
                     transferred += p.getLocal().attributes.getSize();
                 }
             }
@@ -210,7 +209,7 @@ public class DownloadTransfer extends Transfer {
                 }
             }
             if(p.attributes.isFile()) {
-                p.status.setResume(false);
+                p.getStatus().setResume(false);
             }
             super.prepare(p);
         }
@@ -218,7 +217,7 @@ public class DownloadTransfer extends Transfer {
 
     private final DownloadTransferFilter ACTION_RESUME = new DownloadTransferFilter() {
         public boolean accept(final AbstractPath p) {
-            if(((Path) p).status.isComplete()) {
+            if(((Path) p).getStatus().isComplete()) {
                 return false;
             }
             if(p.attributes.isDirectory()) {
@@ -229,7 +228,7 @@ public class DownloadTransfer extends Transfer {
 
         public void prepare(final Path p) {
             if(p.attributes.isFile()) {
-                p.status.setResume(DownloadTransfer.this.exists(p.getLocal()) && p.getLocal().attributes.getSize() > 0);
+                p.getStatus().setResume(DownloadTransfer.this.exists(p.getLocal()) && p.getLocal().attributes.getSize() > 0);
             }
             super.prepare(p);
         }
@@ -242,7 +241,7 @@ public class DownloadTransfer extends Transfer {
 
         public void prepare(final Path p) {
             if(p.attributes.isFile()) {
-                p.status.setResume(false);
+                p.getStatus().setResume(false);
             }
             if(DownloadTransfer.this.exists(p.getLocal())) {
                 final String parent = p.getLocal().getParent().getAbsolute();
@@ -332,7 +331,7 @@ public class DownloadTransfer extends Transfer {
 
     protected void _transferImpl(final Path p) {
         p.download(bandwidth, new AbstractStreamListener() {
-            public void bytesReceived(int bytes) {
+            public void bytesReceived(long bytes) {
                 transferred += bytes;
             }
         });

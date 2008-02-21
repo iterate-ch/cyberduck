@@ -58,16 +58,12 @@ public class FTPPath extends Path {
     }
 
     private static class Factory extends PathFactory {
-        protected Path create(Session session) {
-            return new FTPPath((FTPSession) session);
+        protected Path create(Session session, String path, int type) {
+            return new FTPPath((FTPSession) session, path, type);
         }
 
-        protected Path create(Session session, String path) {
-            return new FTPPath((FTPSession) session, path);
-        }
-
-        protected Path create(Session session, String parent, String name) {
-            return new FTPPath((FTPSession) session, parent, name);
+        protected Path create(Session session, String parent, String name, int type) {
+            return new FTPPath((FTPSession) session, parent, name, type);
         }
 
         protected Path create(Session session, String path, Local file) {
@@ -81,17 +77,13 @@ public class FTPPath extends Path {
 
     private final FTPSession session;
 
-    protected FTPPath(FTPSession s) {
+    protected FTPPath(FTPSession s, String parent, String name, int type) {
+        super(parent, name, type);
         this.session = s;
     }
 
-    protected FTPPath(FTPSession s, String parent, String name) {
-        super(parent, name);
-        this.session = s;
-    }
-
-    protected FTPPath(FTPSession s, String path) {
-        super(path);
+    protected FTPPath(FTPSession s, String path, int type) {
+        super(path, type);
         this.session = s;
     }
 
@@ -136,8 +128,7 @@ public class FTPPath extends Path {
                     if(null == f || f.getName().equals(".") || f.getName().equals("..")) {
                         continue;
                     }
-                    Path p = new FTPPath(session);
-                    p.setPath(this.getAbsolute(), f.getName());
+                    Path p = new FTPPath(session, this.getAbsolute(), f.getName(), Path.FILE_TYPE);
                     p.setParent(this);
                     switch(f.getType()) {
                         case FTPFile.SYMBOLIC_LINK_TYPE:
@@ -146,9 +137,6 @@ public class FTPPath extends Path {
                             break;
                         case FTPFile.DIRECTORY_TYPE:
                             p.attributes.setType(Path.DIRECTORY_TYPE);
-                            break;
-                        case FTPFile.FILE_TYPE:
-                            p.attributes.setType(Path.FILE_TYPE);
                             break;
                     }
                     p.attributes.setSize(f.getSize());
@@ -176,7 +164,7 @@ public class FTPPath extends Path {
                     if(timestamp != null) {
                         p.attributes.setModificationDate(timestamp.getTimeInMillis());
                     }
-                    p.status.setSkipped(this.status.isSkipped());
+                    p.getStatus().setSkipped(this.getStatus().isSkipped());
                     childs.add(p);
                 }
                 session.FTP.finishDir();
@@ -405,7 +393,7 @@ public class FTPPath extends Path {
                             break;
                         }
                         Path file = (Path) iter.next();
-                        if(file.attributes.isFile()) {
+                        if(attributes.isFile() || attributes.isSymbolicLink()) {
                             session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + file.getName());
                             session.FTP.delete(file.getName());
                         }
@@ -569,7 +557,6 @@ public class FTPPath extends Path {
         synchronized(session) {
             log.debug("download:" + this.toString());
             try {
-                this.status.reset();
                 if(attributes.isFile()) {
                     session.check();
                     this.getParent().cwdir();
@@ -596,7 +583,7 @@ public class FTPPath extends Path {
                 }
                 if(attributes.isDirectory()) {
                     this.getLocal().mkdir(true);
-                    status.setComplete(true);
+                    getStatus().setComplete(true);
                 }
                 if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
                     log.info("Updating permissions");
@@ -646,20 +633,20 @@ public class FTPPath extends Path {
         OutputStream out = null;
         try {
             session.FTP.setTransferType(FTPTransferType.BINARY);
-            if(this.status.isResume()) {
+            if(this.getStatus().isResume()) {
                 long transferred = (long) this.getLocal().attributes.getSize();
-                this.status.setCurrent(transferred);
+                this.getStatus().setCurrent(transferred);
             }
-            out = new Local.OutputStream(this.getLocal(), this.status.isResume());
+            out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
             if(null == out) {
                 throw new IOException("Unable to buffer data");
             }
-            in = session.FTP.get(this.getName(), this.status.isResume() ? (long) this.getLocal().attributes.getSize() : 0);
+            in = session.FTP.get(this.getName(), this.getStatus().isResume() ? (long) this.getLocal().attributes.getSize() : 0);
             if(null == in) {
                 throw new IOException("Unable opening data stream");
             }
             this.download(in, out, throttle, listener);
-            if(this.status.isComplete()) {
+            if(this.getStatus().isComplete()) {
                 if(in != null) {
                     in.close();
                     in = null;
@@ -670,7 +657,7 @@ public class FTPPath extends Path {
                 }
                 session.FTP.validateTransfer();
             }
-            if(this.status.isCanceled()) {
+            if(this.getStatus().isCanceled()) {
                 if(in != null) {
                     in.close();
                     in = null;
@@ -723,7 +710,7 @@ public class FTPPath extends Path {
                 throw new IOException("Unable opening data stream");
             }
             this.download(in, out, throttle, listener);
-            if(this.status.isComplete()) {
+            if(this.getStatus().isComplete()) {
                 if(in != null) {
                     in.close();
                     in = null;
@@ -734,7 +721,7 @@ public class FTPPath extends Path {
                 }
                 session.FTP.validateTransfer();
             }
-            if(this.status.isCanceled()) {
+            if(this.getStatus().isCanceled()) {
                 if(in != null) {
                     in.close();
                     in = null;
@@ -765,7 +752,6 @@ public class FTPPath extends Path {
         synchronized(session) {
             log.debug("upload:" + this.toString());
             try {
-                this.status.reset();
                 if(attributes.isFile()) {
                     session.check();
                     this.getParent().cwdir();
@@ -791,7 +777,7 @@ public class FTPPath extends Path {
                 }
                 if(attributes.isDirectory()) {
                     this.mkdir();
-                    status.setComplete(true);
+                    getStatus().setComplete(true);
                 }
                 if(session.isConnected()) {
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
@@ -854,19 +840,19 @@ public class FTPPath extends Path {
         OutputStream out = null;
         try {
             session.FTP.setTransferType(FTPTransferType.BINARY);
-            if(this.status.isResume()) {
-                this.status.setCurrent((long)attributes.getSize());
+            if(this.getStatus().isResume()) {
+                this.getStatus().setCurrent((long)attributes.getSize());
             }
             in = new Local.InputStream(this.getLocal());
             if(null == in) {
                 throw new IOException("Unable to buffer data");
             }
-            out = session.FTP.put(this.getName(), this.status.isResume());
+            out = session.FTP.put(this.getName(), this.getStatus().isResume());
             if(null == out) {
                 throw new IOException("Unable opening data stream");
             }
             this.upload(out, in, throttle, listener);
-            if(this.status.isComplete()) {
+            if(this.getStatus().isComplete()) {
                 if(in != null) {
                     in.close();
                     in = null;
@@ -877,7 +863,7 @@ public class FTPPath extends Path {
                 }
                 session.FTP.validateTransfer();
             }
-            if(status.isCanceled()) {
+            if(getStatus().isCanceled()) {
                 if(in != null) {
                     in.close();
                     in = null;
@@ -909,14 +895,14 @@ public class FTPPath extends Path {
         OutputStream out = null;
         try {
             session.FTP.setTransferType(FTPTransferType.ASCII);
-            if(this.status.isResume()) {
+            if(this.getStatus().isResume()) {
                 try {
-                    this.status.setCurrent(this.session.FTP.size(this.getName()));
+                    this.getStatus().setCurrent(this.session.FTP.size(this.getName()));
                 }
                 catch(FTPException e) {
                     log.error(e.getMessage());
                     //ignore; SIZE command not recognized
-                    this.status.setCurrent(0);
+                    this.getStatus().setCurrent(0);
                 }
             }
             in = new ToNetASCIIInputStream(new Local.InputStream(this.getLocal()));
@@ -924,12 +910,12 @@ public class FTPPath extends Path {
                 throw new IOException("Unable to buffer data");
             }
             out = new ToNetASCIIOutputStream(session.FTP.put(this.getName(),
-                    this.status.isResume()));
+                    this.getStatus().isResume()));
             if(null == out) {
                 throw new IOException("Unable opening data stream");
             }
             this.upload(out, in, throttle, listener);
-            if(this.status.isComplete()) {
+            if(this.getStatus().isComplete()) {
                 if(in != null) {
                     in.close();
                     in = null;
@@ -940,7 +926,7 @@ public class FTPPath extends Path {
                 }
                 session.FTP.validateTransfer();
             }
-            if(status.isCanceled()) {
+            if(getStatus().isCanceled()) {
                 if(in != null) {
                     in.close();
                     in = null;

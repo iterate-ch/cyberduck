@@ -267,7 +267,7 @@ public class FTPSession extends Session {
             }
             if(failure != null) {
                 this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
-                loginController.promptUser(host.getCredentials(),
+                loginController.promptUser(host.getProtocol(), host.getCredentials(),
                         NSBundle.localizedString("Login failed", "Credentials", ""),
                         failure);
                 if(!host.getCredentials().tryAgain()) {
@@ -286,8 +286,7 @@ public class FTPSession extends Session {
                 throw new ConnectionCanceledException();
             }
             if(null == workdir) {
-                workdir = PathFactory.createPath(this, this.FTP.pwd());
-                workdir.attributes.setType(Path.DIRECTORY_TYPE);
+                workdir = PathFactory.createPath(this, this.FTP.pwd(), Path.DIRECTORY_TYPE);
             }
             return workdir;
         }

@@ -73,7 +73,7 @@ public class UploadTransfer extends Transfer {
             if(p.attributes.isFile()) {
                 // Read file size
                 size += p.getLocal().attributes.getSize();
-                if(p.status.isResume()) {
+                if(p.getStatus().isResume()) {
                     transferred += p.attributes.getSize();
                 }
             }
@@ -152,7 +152,7 @@ public class UploadTransfer extends Transfer {
 
                 public void prepare(final Path p) {
                     if(p.attributes.isFile()) {
-                        p.status.setResume(false);
+                        p.getStatus().setResume(false);
                     }
                     super.prepare(p);
                 }
@@ -163,7 +163,7 @@ public class UploadTransfer extends Transfer {
             return new UploadTransferFilter() {
                 public boolean accept(final AbstractPath p) {
                     if(super.accept(p)) {
-                        if(((Path)p).status.isComplete()) {
+                        if(((Path)p).getStatus().isComplete()) {
                             // No need to resume completed transfers
                             return false;
                         }
@@ -189,7 +189,7 @@ public class UploadTransfer extends Transfer {
                     }
                     if(p.attributes.isFile()) {
                         // Append to file if size is not zero
-                        p.status.setResume(UploadTransfer.this.exists(p) && p.attributes.getSize() > 0);
+                        p.getStatus().setResume(UploadTransfer.this.exists(p) && p.attributes.getSize() > 0);
                     }
                     super.prepare(p);
                 }
@@ -223,7 +223,7 @@ public class UploadTransfer extends Transfer {
                         log.info("Changed local name to:" + p.getName());
                     }
                     if(p.attributes.isFile()) {
-                        p.status.setResume(false);
+                        p.getStatus().setResume(false);
                     }
                     super.prepare(p);
                 }
@@ -280,7 +280,7 @@ public class UploadTransfer extends Transfer {
 
     protected void _transferImpl(final Path p) {
         p.upload(bandwidth, new AbstractStreamListener() {
-            public void bytesSent(int bytes) {
+            public void bytesSent(long bytes) {
                 transferred += bytes;
             }
         });

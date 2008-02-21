@@ -35,7 +35,7 @@ public class Status {
     private static Logger log = Logger.getLogger(Status.class);
 
     /**
-     * Download is resumable
+     * Transfer is resumable
      */
     private boolean resume = false;
 

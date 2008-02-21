@@ -36,16 +36,12 @@ public class FTPSPath extends FTPPath {
     }
 
     private static class Factory extends PathFactory {
-        protected Path create(Session session, String parent, String name) {
-            return new FTPSPath((FTPSSession) session, parent, name);
+        protected Path create(Session session, String parent, String name, int type) {
+            return new FTPSPath((FTPSSession) session, parent, name, type);
         }
 
-        protected Path create(Session session) {
-            return new FTPSPath((FTPSSession) session);
-        }
-
-        protected Path create(Session session, String path) {
-            return new FTPSPath((FTPSSession) session, path);
+        protected Path create(Session session, String path, int type) {
+            return new FTPSPath((FTPSSession) session, path, type);
         }
 
         protected Path create(Session session, String path, Local file) {
@@ -57,16 +53,12 @@ public class FTPSPath extends FTPPath {
         }
     }
 
-    protected FTPSPath(FTPSSession s, String parent, String name) {
-        super(s, parent, name);
+    protected FTPSPath(FTPSSession s, String parent, String name, int type) {
+        super(s, parent, name, type);
     }
 
-    protected FTPSPath(FTPSSession s, String path) {
-        super(s, path);
-    }
-
-    protected FTPSPath(FTPSSession s) {
-        super(s);
+    protected FTPSPath(FTPSSession s, String path, int type) {
+        super(s, path, type);
     }
 
     protected FTPSPath(FTPSSession s, String parent, Local file) {

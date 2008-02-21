@@ -188,7 +188,7 @@ public class SFTPSession extends Session {
             }
         }
         this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
-        loginController.promptUser(host.getCredentials(),
+        loginController.promptUser(host.getProtocol(), host.getCredentials(),
                 NSBundle.localizedString("Login failed", "Credentials", ""),
                 NSBundle.localizedString("Login with username and password", "Credentials", ""));
         if(!host.getCredentials().tryAgain()) {
@@ -217,7 +217,7 @@ public class SFTPSession extends Session {
                 if(PEMDecoder.isPEMEncrypted(cw.toCharArray())) {
                     passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
                     if(null == passphrase || passphrase.equals("")) {
-                        loginController.promptUser(host.getCredentials(),
+                        loginController.promptUser(host.getProtocol(), host.getCredentials(),
                                 NSBundle.localizedString("Private key password protected", "Credentials", ""),
                                 NSBundle.localizedString("Enter the passphrase for the private key file", "Credentials", "")
                                         + " (" + credentials.getPrivateKeyFile() + ")");
@@ -359,8 +359,7 @@ public class SFTPSession extends Session {
             }
             if(null == workdir) {
                 // "." as referring to the current directory
-                workdir = PathFactory.createPath(this, this.sftp().canonicalPath("."));
-                workdir.attributes.setType(Path.DIRECTORY_TYPE);
+                workdir = PathFactory.createPath(this, this.sftp().canonicalPath("."), Path.DIRECTORY_TYPE);
             }
             return workdir;
         }

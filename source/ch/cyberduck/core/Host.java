@@ -315,9 +315,6 @@ public class Host extends NSObject {
         else if(protocol.equals(Session.SFTP)) {
             username = Preferences.instance().getProperty("connection.login.name");
         }
-        else {
-            throw new MalformedURLException("Unknown protocol: " + protocol);
-        }
         if(input.lastIndexOf('@') != -1) {
             if(input.indexOf(':', begin) != -1 && input.lastIndexOf('@') > input.indexOf(':', begin)) {
                 // ':' is not for the port number but username:pass seperator

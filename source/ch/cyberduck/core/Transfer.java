@@ -402,7 +402,7 @@ public abstract class Transfer extends NSObject {
      * @return True if the path is not skipped when transferring
      */
     public boolean isIncluded(Path item) {
-        return !item.status.isSkipped();
+        return !item.getStatus().isSkipped();
     }
 
     /**
@@ -422,7 +422,7 @@ public abstract class Transfer extends NSObject {
      * @param skipped True if skipped
      */
     public void setSkipped(Path item, final boolean skipped) {
-        item.status.setSkipped(skipped);
+        item.getStatus().setSkipped(skipped);
         if(item.attributes.isDirectory()) {
             if(this.isCached(item)) {
                 for(Iterator iter = this.childs(item).iterator(); iter.hasNext();) {
@@ -452,8 +452,10 @@ public abstract class Transfer extends NSObject {
 
         if(filter.accept(p)) {
             this.fireWillTransferPath(p);
-            _transferImpl(_current = p);
-            this.fireDidTransferPath(p);
+            _current = p;
+            _current.getStatus().reset();
+            _transferImpl(_current);
+            this.fireDidTransferPath(_current);
         }
 
         if(!this.check()) {
@@ -683,7 +685,7 @@ public abstract class Transfer extends NSObject {
             this.interrupt();
         } else {
             if(_current != null) {
-                _current.status.setCanceled();
+                _current.getStatus().setCanceled();
             }
             canceled = true;
         }

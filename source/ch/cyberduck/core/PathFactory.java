@@ -27,11 +27,9 @@ public abstract class PathFactory {
 
     private static Map factories = new HashMap();
 
-    protected abstract Path create(Session session);
+    protected abstract Path create(Session session, String path, int type);
 
-    protected abstract Path create(Session session, String path);
-
-    protected abstract Path create(Session session, String parent, String name);
+    protected abstract Path create(Session session, String parent, String name, int type);
 
     protected abstract Path create(Session session, String path, Local file);
 
@@ -42,29 +40,20 @@ public abstract class PathFactory {
     }
 
     /**
-     * Creates a path with no properties
-     * @see ch.cyberduck.core.Path#setPath(String)
-     */
-    public static Path createPath(Session session) {
-        loadClass(session.getHost().getProtocol());
-        return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session);
-    }
-
-    /**
      * @param parent The parent directory
      * @param name The pathname relative the the parent directory
      */
-    public static Path createPath(Session session, String parent, String name) {
+    public static Path createPath(Session session, String parent, String name, int type) {
         loadClass(session.getHost().getProtocol());
-        return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, parent, name);
+        return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, parent, name, type);
     }
 
     /**
      * @param path The absolute pathname
      */
-    public static Path createPath(Session session, String path) {
+    public static Path createPath(Session session, String path, int type) {
         loadClass(session.getHost().getProtocol());
-        return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, path);
+        return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, path, type);
     }
 
     /**
