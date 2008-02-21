@@ -97,7 +97,7 @@ public abstract class Editor extends CDController {
             }
 
             public void cleanup() {
-                if(edited.status.isComplete()) {
+                if(edited.getStatus().isComplete()) {
                     edited.getSession().message(NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
                     final Permission permissions = edited.getLocal().attributes.getPermission();
                     if(null != permissions) {
@@ -163,7 +163,7 @@ public abstract class Editor extends CDController {
             }
 
             public void cleanup() {
-                if(edited.status.isComplete()) {
+                if(edited.getStatus().isComplete()) {
                     Growl.instance().notify("Upload complete", edited.getName());
                     if(deferredDelete) {
                         delete();

@@ -69,7 +69,7 @@ public abstract class CDFileController extends CDSheetController {
         }
         if(filenameField.stringValue().length() != 0) {
             Path file = PathFactory.createPath(this.getWorkdir().getSession(), this.getWorkdir().getAbsolute(),
-                    filenameField.stringValue());
+                    filenameField.stringValue(), Path.FILE_TYPE);
             return !file.exists();
         }
         return false;

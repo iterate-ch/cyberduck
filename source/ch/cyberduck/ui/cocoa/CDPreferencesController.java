@@ -26,6 +26,7 @@ import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
 import org.apache.log4j.Logger;
+import org.jets3t.service.model.S3Bucket;
 
 import java.util.Iterator;
 import java.util.regex.Pattern;
@@ -70,6 +71,7 @@ public class CDPreferencesController extends CDWindowController {
     private NSView panelFTP;
     private NSView panelFTPTLS;
     private NSView panelSFTP;
+    private NSView panelS3;
     private NSView panelBandwidth;
     private NSView panelAdvanced;
     private NSView panelUpdate;
@@ -96,6 +98,10 @@ public class CDPreferencesController extends CDWindowController {
 
     public void setPanelFTP(NSView panelFTP) {
         this.panelFTP = panelFTP;
+    }
+
+    public void setPanelS3(NSView panelS3) {
+        this.panelS3 = panelS3;
     }
 
     public void setPanelTransfer(NSView panelTransfer) {
@@ -202,9 +208,10 @@ public class CDPreferencesController extends CDWindowController {
         tabView.tabViewItemAtIndex(3).setView(panelFTP);
         tabView.tabViewItemAtIndex(4).setView(panelFTPTLS);
         tabView.tabViewItemAtIndex(5).setView(panelSFTP);
-        tabView.tabViewItemAtIndex(6).setView(panelBandwidth);
-        tabView.tabViewItemAtIndex(7).setView(panelAdvanced);
-        tabView.tabViewItemAtIndex(8).setView(panelUpdate);
+        tabView.tabViewItemAtIndex(6).setView(panelS3);
+        tabView.tabViewItemAtIndex(7).setView(panelBandwidth);
+        tabView.tabViewItemAtIndex(8).setView(panelAdvanced);
+        tabView.tabViewItemAtIndex(9).setView(panelUpdate);
     }
 
     private static final String TRANSFERMODE_AUTO = NSBundle.localizedString("Auto", "");
@@ -1747,5 +1754,22 @@ public class CDPreferencesController extends CDWindowController {
         else {
             Preferences.instance().deleteProperty("SUScheduledCheckInterval");
         }
+    }
+
+    private NSPopUpButton defaultBucketLocation; //IBOutlet
+
+    public void setDefaultBucketLocation(NSPopUpButton defaultBucketLocation) {
+        this.defaultBucketLocation = defaultBucketLocation;
+        this.defaultBucketLocation.setAutoenablesItems(false);
+        this.defaultBucketLocation.removeAllItems();
+        this.defaultBucketLocation.addItem("US");
+        this.defaultBucketLocation.addItem(S3Bucket.LOCATION_EUROPE);
+        this.defaultBucketLocation.setTarget(this);
+        this.defaultBucketLocation.setAction(new NSSelector("defaultBucketLocationClicked", new Class[]{NSPopUpButton.class}));
+        this.defaultBucketLocation.selectItemWithTitle(Preferences.instance().getProperty("s3.location"));
+    }
+
+    public void defaultBucketLocationClicked(NSPopUpButton sender) {
+        Preferences.instance().setProperty("s3.location", sender.titleOfSelectedItem());
     }
 }

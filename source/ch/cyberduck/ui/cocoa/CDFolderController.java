@@ -61,7 +61,8 @@ public class CDFolderController extends CDFileController {
         final CDBrowserController c = (CDBrowserController) parent;
         c.background(new BackgroundAction() {
             final Path folder
-                    = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(), filename);
+                    = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
+                    filename, Path.DIRECTORY_TYPE);
 
             public void run() {
                 folder.mkdir(false);

@@ -264,7 +264,7 @@ public class CDInfoController extends CDWindowController {
                 this.filenameField.setEnabled(false);
             }
             else {
-                this.filenameField.setEnabled(true);
+                this.filenameField.setEnabled(file.isRenameSupported());
             }
             if(file.attributes.isSymbolicLink() && file.getSymbolicLinkPath() != null) {
                 this.pathField.setAttributedStringValue(new NSAttributedString(file.getSymbolicLinkPath(),
@@ -396,7 +396,7 @@ public class CDInfoController extends CDWindowController {
             if(!this.filenameField.stringValue().equals(current.getName())) {
                 if(this.filenameField.stringValue().indexOf('/') == -1) {
                     final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
-                            current.getParent().getAbsolute(), this.filenameField.stringValue());
+                            current.getParent().getAbsolute(), this.filenameField.stringValue(), current.attributes.getType());
                     controller.renamePath(current, renamed);
                 }
                 else if(filenameField.stringValue().length() == 0) {

@@ -28,5 +28,5 @@ public interface LoginController {
 	 *
 	 * @param message Any additional information why the login failed.
 	 */
-	public void promptUser(Login login, String reason, String message);
+	void promptUser(String protocol, Login login, String reason, String message);
 }

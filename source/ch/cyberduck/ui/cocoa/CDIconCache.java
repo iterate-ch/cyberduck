@@ -129,10 +129,10 @@ public class CDIconCache extends HashMap {
             }
             return this.convert(this.get(item.getExtension()), size);
         }
+        if(item.attributes.isVolume()) {
+            return this.convert(NSImage.imageNamed("disk.icns"), size);
+        }
         if(item.attributes.isDirectory()) {
-            if(item.isRoot()) {
-                return this.convert(NSImage.imageNamed("disk.icns"), size);
-            }
             if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")) {
                 if(!item.attributes.isExecutable()
                         || (item.isCached() && !item.cache().get(item).attributes().isReadable())) {

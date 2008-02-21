@@ -158,15 +158,14 @@ public class CDBrowserController extends CDWindowController
                 String folder = (String) args.objectForKey("Path");
                 if(folder.charAt(0) == '/') {
                     path = PathFactory.createPath(this.session,
-                            folder);
+                            folder, Path.DIRECTORY_TYPE);
                 }
                 else {
                     path = PathFactory.createPath(this.session,
                             this.workdir().getAbsolute(),
-                            folder);
+                            folder, Path.DIRECTORY_TYPE);
                 }
             }
-            path.attributes.setType(Path.DIRECTORY_TYPE);
             for(Iterator i = path.childs().iterator(); i.hasNext();) {
                 result.addObject(((Path) i.next()).getName());
             }
@@ -196,7 +195,8 @@ public class CDBrowserController extends CDWindowController
             if(!to.startsWith(Path.DELIMITER)) {
                 to = this.workdir().getAbsolute() + Path.DELIMITER + to;
             }
-            this.renamePath(PathFactory.createPath(session, from), PathFactory.createPath(session, to));
+            this.renamePath(PathFactory.createPath(session, from, Path.FILE_TYPE), 
+                    PathFactory.createPath(session, to, Path.FILE_TYPE));
         }
         return null;
     }
@@ -217,7 +217,7 @@ public class CDBrowserController extends CDWindowController
             NSDictionary args = command.evaluatedArguments();
             Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
-                    (String) args.objectForKey("Path"));
+                    (String) args.objectForKey("Path"), Path.FILE_TYPE);
             return new Integer(path.exists() ? 1 : 0);
         }
         return new Integer(0);
@@ -239,7 +239,7 @@ public class CDBrowserController extends CDWindowController
             NSDictionary args = command.evaluatedArguments();
             Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
-                    (String) args.objectForKey("Path"));
+                    (String) args.objectForKey("Path"), Path.FILE_TYPE);
             Editor editor = EditorFactory.createEditor(this);
             editor.open(path);
         }
@@ -252,13 +252,13 @@ public class CDBrowserController extends CDWindowController
             NSDictionary args = command.evaluatedArguments();
             Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
-                    (String) args.objectForKey("Path"));
+                    (String) args.objectForKey("Path"), Path.FILE_TYPE);
             try {
                 path.cwdir();
                 path.attributes.setType(Path.DIRECTORY_TYPE);
             }
             catch(IOException e) {
-                path.attributes.setType(Path.FILE_TYPE);
+                ;
             }
             path.delete();
             this.reloadData(true);
@@ -279,8 +279,7 @@ public class CDBrowserController extends CDWindowController
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
             final Path path = PathFactory.createPath(this.session,
-                    (String) args.objectForKey("Path"));
-            path.attributes.setType(Path.DIRECTORY_TYPE);
+                    (String) args.objectForKey("Path"), Path.DIRECTORY_TYPE);
             Object localObj = args.objectForKey("Local");
             if(localObj != null) {
                 path.getLocal().setPath((String) localObj);
@@ -297,13 +296,13 @@ public class CDBrowserController extends CDWindowController
             NSDictionary args = command.evaluatedArguments();
             final Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
-                    (String) args.objectForKey("Path"));
+                    (String) args.objectForKey("Path"), Path.FILE_TYPE);
             try {
                 path.cwdir();
                 path.attributes.setType(Path.DIRECTORY_TYPE);
             }
             catch(IOException e) {
-                path.attributes.setType(Path.FILE_TYPE);
+                ;
             }
             Object localObj = args.objectForKey("Local");
             if(localObj != null) {
@@ -326,12 +325,6 @@ public class CDBrowserController extends CDWindowController
             final Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     new Local((String) args.objectForKey("Path")));
-            if(path.getLocal().attributes.isFile()) {
-                path.attributes.setType(Path.FILE_TYPE);
-            }
-            if(path.getLocal().attributes.isDirectory()) {
-                path.attributes.setType(Path.DIRECTORY_TYPE);
-            }
             Object remoteObj = args.objectForKey("Remote");
             if(remoteObj != null) {
                 path.setPath((String) remoteObj, path.getName());
@@ -876,7 +869,13 @@ public class CDBrowserController extends CDWindowController
     private class AbstractBrowserTableDelegate extends CDAbstractTableDelegate {
         public boolean isColumnEditable(NSTableColumn column) {
             if(Preferences.instance().getBoolean("browser.editable")) {
-                return column.identifier().equals(CDBrowserTableDataSource.FILENAME_COLUMN);
+                if(column.identifier().equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
+                    Path selected = getSelectedPath();
+                    if(null == selected) {
+                        return false;
+                    }
+                    return selected.isRenameSupported();
+                }
             }
             return false;
         }
@@ -963,10 +962,13 @@ public class CDBrowserController extends CDWindowController
             public void enterKeyPressed(final Object sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
                     if(CDBrowserController.this.browserOutlineView.numberOfSelectedRows() == 1) {
-                        CDBrowserController.this.browserOutlineView.editLocation(
-                                CDBrowserController.this.browserOutlineView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
-                                CDBrowserController.this.browserOutlineView.selectedRow(),
-                                null, true);
+                        Path selected = getSelectedPath();
+                        if(selected.isRenameSupported()) {
+                            CDBrowserController.this.browserOutlineView.editLocation(
+                                    CDBrowserController.this.browserOutlineView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
+                                    CDBrowserController.this.browserOutlineView.selectedRow(),
+                                    null, true);
+                        }
                     }
                 }
                 else {
@@ -983,6 +985,7 @@ public class CDBrowserController extends CDWindowController
                 if(item != null) {
                     if(identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
                         ((CDOutlineCell) cell).setIcon(browserOutlineModel.iconForPath(item));
+                        ((CDOutlineCell) cell).setEditable(item.isRenameSupported());
                     }
                     if(cell instanceof NSTextFieldCell) {
                         if(!CDBrowserController.this.isConnected()) {// || CDBrowserController.this.activityRunning) {
@@ -1111,10 +1114,13 @@ public class CDBrowserController extends CDWindowController
             public void enterKeyPressed(final Object sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
                     if(CDBrowserController.this.browserListView.numberOfSelectedRows() == 1) {
-                        CDBrowserController.this.browserListView.editLocation(
-                                CDBrowserController.this.browserListView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
-                                CDBrowserController.this.browserListView.selectedRow(),
-                                null, true);
+                        Path selected = getSelectedPath();
+                        if(selected.isRenameSupported()) {
+                            CDBrowserController.this.browserListView.editLocation(
+                                    CDBrowserController.this.browserListView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
+                                    CDBrowserController.this.browserListView.selectedRow(),
+                                    null, true);
+                        }
                     }
                 }
                 else {
@@ -2129,7 +2135,10 @@ public class CDBrowserController extends CDWindowController
                 Iterator originalIterator = normalized.keySet().iterator();
                 Iterator renamedIterator = normalized.values().iterator();
                 while(originalIterator.hasNext()) {
-                    ((Path) originalIterator.next()).rename(((AbstractPath) renamedIterator.next()).getAbsolute());
+                    final Path original = (Path) originalIterator.next();
+                    if(original.isRenameSupported()) {
+                        original.rename(((AbstractPath) renamedIterator.next()).getAbsolute());
+                    }
                     if(!isConnected()) {
                         break;
                     }
@@ -2874,10 +2883,11 @@ public class CDBrowserController extends CDWindowController
                     NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                     Transfer q = TransferFactory.create(dict);
                     for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
+                        final Path next = (Path) iter.next();
                         Path current = PathFactory.createPath(getSession(),
-                                ((Path) iter.next()).getAbsolute());
+                                next.getAbsolute(), next.attributes.getType());
                         Path renamed = PathFactory.createPath(getSession(),
-                                parent.getAbsolute(), current.getName());
+                                parent.getAbsolute(), current.getName(), next.attributes.getType());
                         files.put(current, renamed);
                     }
                 }
@@ -3785,7 +3795,7 @@ public class CDBrowserController extends CDWindowController
             return this.isMounted() && this.getSelectionCount() > 0;
         }
         if(identifier.equals("createFolderButtonClicked:")) {
-            return this.isMounted();
+            return this.isMounted() && this.workdir().isMkdirSupported();
         }
         if(identifier.equals("createFileButtonClicked:")) {
             return this.isMounted();
@@ -3794,7 +3804,7 @@ public class CDBrowserController extends CDWindowController
             return this.isMounted() && this.getSelectionCount() == 1 && this.getSelectedPath().attributes.isFile();
         }
         if(identifier.equals("renameFileButtonClicked:")) {
-            return this.isMounted() && this.getSelectionCount() == 1;
+            return this.isMounted() && this.getSelectionCount() == 1 && this.getSelectedPath().isRenameSupported();
         }
         if(identifier.equals("deleteFileButtonClicked:")) {
             return this.isMounted() && this.getSelectionCount() > 0;
@@ -3803,7 +3813,7 @@ public class CDBrowserController extends CDWindowController
             return this.isMounted();
         }
         if(identifier.equals("downloadButtonClicked:")) {
-            return this.isMounted() && this.getSelectionCount() > 0;
+            return this.isMounted() && this.getSelectionCount() > 0 && !this.getSelectedPath().attributes.isVolume();
         }
         if(identifier.equals("uploadButtonClicked:")) {
             return this.isMounted();
@@ -3812,10 +3822,10 @@ public class CDBrowserController extends CDWindowController
             return this.isMounted();
         }
         if(identifier.equals("downloadAsButtonClicked:")) {
-            return this.isMounted() && this.getSelectionCount() == 1;
+            return this.isMounted() && this.getSelectionCount() == 1 && !this.getSelectedPath().attributes.isVolume();
         }
         if(identifier.equals("downloadToButtonClicked:")) {
-            return this.isMounted() && this.getSelectionCount() > 0;
+            return this.isMounted() && this.getSelectionCount() > 0 && !this.getSelectedPath().attributes.isVolume();
         }
         if(identifier.equals("insideButtonClicked:")) {
             return this.isMounted() && this.getSelectionCount() > 0;

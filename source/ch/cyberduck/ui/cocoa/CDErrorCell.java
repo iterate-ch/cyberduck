@@ -29,6 +29,8 @@ import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSRect;
 
+import org.jets3t.service.S3ServiceException;
+
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -57,6 +59,9 @@ public class CDErrorCell extends CDTableCell {
         else if(cause instanceof SFTPException) {
             title = "SSH " + NSBundle.localizedString("Error", "");
         }
+        else if(cause instanceof S3ServiceException) {
+            title = "S3 " + NSBundle.localizedString("Error", "");
+        }
         else if(cause instanceof SocketException) {
             title = "Network " + NSBundle.localizedString("Error", "");
         }
@@ -73,6 +78,11 @@ public class CDErrorCell extends CDTableCell {
         final Throwable cause = e.getCause();
         if(cause instanceof SFTPException) {
             return ((SFTPException)cause).getServerErrorCodeVerbose();
+        }
+        if(cause instanceof S3ServiceException) {
+            if(null != ((S3ServiceException)cause).getS3ErrorMessage()) {
+                return cause.getMessage()+". "+((S3ServiceException)cause).getS3ErrorMessage();
+            }
         }
         return cause.getMessage();
     }

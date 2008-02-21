@@ -56,13 +56,14 @@ public class CDApplescriptabilityController extends NSScriptCommand {
 		            log.error(e.getMessage());
 					return null;
 				}
-                final Path p = PathFactory.createPath(s, h.getDefaultPath());
+                final Path p = PathFactory.createPath(s, h.getDefaultPath(), Path.DIRECTORY_TYPE);
 				try {
 					p.cwdir();
 		            CDBrowserController doc = ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
 		            doc.mount(h);
 				}
                 catch(IOException e) {
+                    p.attributes.setType(Path.FILE_TYPE);
                     // We have to add this to the end of the main thread; there is some obscure
                     // concurrency issue with the rendezvous initialization
                     // running in CDMainController.applicationDidFinishLaunching, see ticket #????

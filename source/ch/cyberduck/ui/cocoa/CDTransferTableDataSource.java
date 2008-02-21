@@ -178,7 +178,7 @@ public class CDTransferTableDataSource extends CDController {
                     String file = h.getDefaultPath();
                     if (file.length() > 1) {
                         final Transfer q = new DownloadTransfer(
-                                PathFactory.createPath(SessionFactory.createSession(h), file)
+                                PathFactory.createPath(SessionFactory.createSession(h), file, Path.FILE_TYPE)
                         );
                         CDTransferController.instance().startTransfer(q);
                         return true;

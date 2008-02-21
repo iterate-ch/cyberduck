@@ -20,12 +20,11 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Login;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.ui.LoginController;
 
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSCell;
-import com.apple.cocoa.application.NSSecureTextField;
-import com.apple.cocoa.application.NSTextField;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
@@ -41,7 +40,7 @@ public class CDLoginController extends CDController implements LoginController {
         this.parent = parent;
     }
 
-    public void promptUser(final Login login, final String reason, final String message) {
+    public void promptUser(final String protocol, final Login login, final String reason, final String message) {
         CDSheetController c = new CDSheetController(parent) {
             protected String getBundleName() {
                 return "Login";
@@ -59,6 +58,11 @@ public class CDLoginController extends CDController implements LoginController {
             public void setUserField(NSTextField userField) {
                 this.userField = userField;
                 this.userField.setStringValue(login.getUsername());
+                if(protocol.equals(Session.S3)) {
+                    ((NSTextFieldCell) this.userField.cell()).setPlaceholderString(
+                            NSBundle.localizedString("Access Key ID", "S3")
+                    );
+                }
             }
 
             private NSTextField textField; // IBOutlet
@@ -73,6 +77,11 @@ public class CDLoginController extends CDController implements LoginController {
             public void setPassField(NSSecureTextField passField) {
                 this.passField = passField;
                 this.passField.setStringValue("");
+                if(protocol.equals(Session.S3)) {
+                    ((NSTextFieldCell) this.passField.cell()).setPlaceholderString(
+                            NSBundle.localizedString("Secret Access Key", "S3")
+                    );
+                }
             }
 
             private NSButton keychainCheckbox;

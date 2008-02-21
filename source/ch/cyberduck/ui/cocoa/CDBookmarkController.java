@@ -45,10 +45,13 @@ public class CDBookmarkController extends CDWindowController {
         this.protocolPopup = protocolPopup;
         this.protocolPopup.setEnabled(true);
         this.protocolPopup.removeAllItems();
-        this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{Session.FTP_STRING, Session.FTP_TLS_STRING, Session.SFTP_STRING}));
+        this.protocolPopup.addItemsWithTitles(new NSArray(
+                new String[]{Session.FTP_STRING, Session.FTP_TLS_STRING, Session.SFTP_STRING, Session.S3_STRING})
+        );
         this.protocolPopup.itemWithTitle(Session.FTP_STRING).setRepresentedObject(Session.FTP);
         this.protocolPopup.itemWithTitle(Session.FTP_TLS_STRING).setRepresentedObject(Session.FTP_TLS);
         this.protocolPopup.itemWithTitle(Session.SFTP_STRING).setRepresentedObject(Session.SFTP);
+        this.protocolPopup.itemWithTitle(Session.S3_STRING).setRepresentedObject(Session.S3);
         this.protocolPopup.setTarget(this);
         this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[]{Object.class}));
     }
@@ -66,6 +69,10 @@ public class CDBookmarkController extends CDWindowController {
         if(protocolPopup.selectedItem().representedObject().equals(Session.FTP)) {
             this.host.setProtocol(Session.FTP);
             this.host.setPort(Session.FTP_PORT);
+        }
+        if(protocolPopup.selectedItem().representedObject().equals(Session.S3)) {
+            this.host.setProtocol(Session.S3);
+            this.host.setPort(Session.HTTPS_PORT);
         }
         this.portField.setStringValue("" + this.host.getPort());
         this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Session.SFTP));
@@ -173,6 +180,11 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setUsernameField(NSTextField usernameField) {
         this.usernameField = usernameField;
+        if(this.host.getProtocol().equals(Session.S3)) {
+            ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString(
+                    NSBundle.localizedString("Access Key ID", "S3")
+            );
+        }
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("usernameInputDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
@@ -581,6 +593,9 @@ public class CDBookmarkController extends CDWindowController {
         }
         if(this.host.getProtocol().equals(Session.SFTP)) {
             this.protocolPopup.selectItemWithTitle(Session.SFTP_STRING);
+        }
+        if(this.host.getProtocol().equals(Session.S3)) {
+            this.protocolPopup.selectItemWithTitle(Session.S3_STRING);
         }
         this.connectmodePopup.setEnabled(this.host.getProtocol().equals(Session.FTP) ||
                 this.host.getProtocol().equals(Session.FTP_TLS));

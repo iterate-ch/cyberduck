@@ -18,14 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DownloadTransfer;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.foundation.NSBundle;
 
@@ -59,7 +54,7 @@ public class CDDownloadController extends CDSheetController {
                 Host host = Host.parse(urlField.stringValue());
                 final Transfer transfer = new DownloadTransfer(
                         PathFactory.createPath(SessionFactory.createSession(host),
-                                host.getDefaultPath())
+                                host.getDefaultPath(), Path.FILE_TYPE)
                 );
                 CDTransferController.instance().startTransfer(transfer);
             }

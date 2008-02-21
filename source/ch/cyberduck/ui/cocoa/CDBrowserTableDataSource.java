@@ -118,9 +118,11 @@ public abstract class CDBrowserTableDataSource extends CDController {
         log.debug("setObjectValueForItem:" + item);
         if(identifier.equals(FILENAME_COLUMN)) {
             if(!item.getName().equals(value) && !value.equals("")) {
-                final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
-                        item.getParent().getAbsolute(), value.toString());
-                controller.renamePath(item, renamed);
+                if(item.isRenameSupported()) {
+                    final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
+                            item.getParent().getAbsolute(), value.toString(), item.attributes.getType());
+                    controller.renamePath(item, renamed);
+                }
             }
         }
     }
@@ -131,7 +133,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
 
     private static final NSAttributedString UNKNOWN_STRING = new NSAttributedString(
             NSBundle.localizedString("Unknown", ""),
-            CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
+            CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
 
     protected Object objectValueForItem(Path item, String identifier) {
         if(null != item) {
@@ -243,10 +245,11 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                         Transfer q = TransferFactory.create(dict);
                         for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
+                            final Path next = (Path) iter.next();
                             Path original = PathFactory.createPath(controller.workdir().getSession(),
-                                    ((Path) iter.next()).getAbsolute());
+                                    next.getAbsolute(), next.attributes.getType());
                             Path renamed = PathFactory.createPath(controller.workdir().getSession(),
-                                    destination.getAbsolute(), original.getName());
+                                    destination.getAbsolute(), original.getName(), next.attributes.getType());
                             files.put(original, renamed);
                         }
                     }
@@ -318,7 +321,9 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         if(info.draggingSourceOperationMask() == NSDraggingInfo.DragOperationCopy) {
                             return NSDraggingInfo.DragOperationCopy;
                         }
-                        return NSDraggingInfo.DragOperationMove;
+                        if(destination.isRenameSupported()) {
+                            return NSDraggingInfo.DragOperationMove;
+                        }
                     }
                 }
             }

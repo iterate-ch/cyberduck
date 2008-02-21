@@ -18,25 +18,24 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
+
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate;
 import ch.cyberduck.ui.cocoa.growl.Growl;
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
-
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 /**
  * @version $Id$
@@ -185,7 +184,7 @@ public class CDMainController extends CDController {
         try {
             String versionString = (String) NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
             NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail.feedback")
-                    + "?subject=Cyberduck-" + versionString));
+                    + "?subject="+NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName")+"-" + versionString));
         }
         catch(java.net.MalformedURLException e) {
             log.error(e.getMessage());
