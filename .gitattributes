@@ -1285,6 +1285,7 @@ lib/jakarta-oro-2.0.8.jar -text
 lib/jets3t-0.6.1.jar -text
 lib/log4j-1.2.13.jar -text
 lib/log4j.properties -text
+lib/mime.types -text
 nl.lproj/Alert.nib/classes.nib -text
 nl.lproj/Alert.nib/data.dependency -text
 nl.lproj/Alert.nib/info.nib -text
