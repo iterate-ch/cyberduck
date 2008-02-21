@@ -1086,6 +1086,7 @@ img/rendezvous16.tiff -text svneol=unset#image/tiff
 img/resume.tiff -text svneol=unset#image/tiff
 img/reveal.tiff -text svneol=unset#image/tiff
 img/run.tiff -text svneol=unset#image/tiff
+img/s3.tiff -text
 img/sftp.tiff -text svneol=unset#image/tiff
 img/statusGreen.tiff -text svneol=unset#image/tiff
 img/statusRed.tiff -text svneol=unset#image/tiff
@@ -1259,11 +1260,16 @@ ko.lproj/Transfer.nib/classes.nib -text
 ko.lproj/Transfer.nib/info.nib -text
 ko.lproj/Transfer.nib/keyedobjects.nib -text
 ko.lproj/Transfer.strings -text svneol=unset#text/utf-16
+lib/commons-codec-1.3.jar -text
+lib/commons-httpclient-3.1.jar -text
+lib/commons-logging-1.1.1.jar -text
 lib/commons-net-1.5.0-dev.jar -text
 lib/ext/junit.jar -text
 lib/icu4j-3.6.1.jar -text
 lib/jakarta-oro-2.0.8.jar -text
+lib/jets3t-0.6.1.jar -text
 lib/log4j-1.2.13.jar -text
+lib/log4j.properties -text
 nl.lproj/Alert.nib/classes.nib -text
 nl.lproj/Alert.nib/data.dependency -text
 nl.lproj/Alert.nib/info.nib -text
@@ -1685,6 +1691,9 @@ source/ch/cyberduck/core/io/UKFileWatcher.h -text
 source/ch/cyberduck/core/io/UKFileWatcher.m -text
 source/ch/cyberduck/core/io/UKKQueue.m -text
 source/ch/cyberduck/core/io/UKMainThreadProxy.m -text
+source/ch/cyberduck/core/s3/S3Exception.java -text
+source/ch/cyberduck/core/s3/S3Path.java -text
+source/ch/cyberduck/core/s3/S3Session.java -text
 source/ch/cyberduck/core/util/URLSchemeHandlerConfiguration.m -text
 source/ch/cyberduck/ui/cocoa/CDActivityController.java -text
 source/ch/cyberduck/ui/cocoa/CDBottomView.m -text

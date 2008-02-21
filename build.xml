@@ -353,6 +353,10 @@
 				<include name="ch/cyberduck/core/**/*.class"/>
 				<include name="glguerin/**/*.class"/>
 			</fileset>
+			<fileset dir="${lib}">
+                <include name="*.properties"/>
+                <include name="mime.types"/>
+            </fileset>
 		</jar>
 		<jar jarfile="${build}/ganymed.jar"
 			update="yes"

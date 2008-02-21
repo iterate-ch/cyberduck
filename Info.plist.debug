@@ -60,6 +60,8 @@
 	<string>_VERSION_</string>
 	<key>CFBundleVersion</key>
 	<string>_REVISION_</string>
+	<key>CFBundleShortVersionString</key>
+	<string>_VERSION_ (_REVISION_)</string>
 	<key>Java</key>
 	<dict>
 		<key>JVMVersion</key>
@@ -79,7 +81,11 @@
 		<string>ftp.jar</string>
 		<string>log4j-1.2.13.jar</string>
 		<string>jakarta-oro-2.0.8.jar</string>
-		<string>commons-net-20070730.jar</string>
+		<string>commons-net-1.5.0-dev.jar</string>
+		<string>commons-logging-1.1.1.jar</string>
+		<string>commons-httpclient-3.1.jar</string>
+		<string>commons-codec-1.3.jar</string>
+		<string>jets3t-0.6.1.jar</string>
 		<string>icu4j-3.6.1.jar</string>
 	</array>
 	<key>NSJavaRoot</key>

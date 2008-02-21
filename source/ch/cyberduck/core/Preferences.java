@@ -144,10 +144,11 @@ public abstract class Preferences {
          */
         defaults.put("logging", "ERROR");
 
-        BasicConfigurator.configure();
-        Logger.getRootLogger().setLevel(Level.toLevel(
+        Logger.getLogger("ch.cyberduck.core").setLevel(Level.toLevel(
                 this.getProperty("logging")));
 
+        defaults.put("version", 
+                NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString"));
         /**
          * How many times the application was launched
          */
@@ -388,6 +389,10 @@ public abstract class Preferences {
          */
         defaults.put("ftp.parser.whitespaceAware", String.valueOf(true));
 
+        defaults.put("s3.location", "US");
+        defaults.put("s3.crypto.algorithm", "PBEWithMD5AndDES");
+        defaults.put("s3.url.expire.seconds", String.valueOf(24 * 60 * 60)); //expiry time for public URL 
+        
         /**
          * Maximum concurrent connections to the same host
          * Unlimited by default

@@ -41,12 +41,14 @@ public abstract class Session extends NSObject {
     public static final String SFTP = "sftp";
     public static final String SCP = "scp";
     public static final String FTP = "ftp";
+    public static final String S3 = "s3";
     public static final String FTP_TLS = "ftps";
 
     public static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer Protocol)", "");
     public static final String FTP_TLS_STRING = NSBundle.localizedString("FTP-SSL (FTP over TLS/SSL)", "");
     public static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
     public static final String SCP_STRING = NSBundle.localizedString("SCP (Secure Copy)", "");
+    public static final String S3_STRING = NSBundle.localizedString("S3 (Amazon Simple Storage Service)", "");
 
     /**
      * Default port for FTP
@@ -57,6 +59,13 @@ public abstract class Session extends NSObject {
      * Default port for SSH
      */
     public static final int SSH_PORT = 22;
+
+    public static final int HTTP_PORT = 80;
+
+    /**
+     * Default port for S3
+     */
+    public static final int HTTPS_PORT = 443;
 
     /**
      * Encapsulating all the information of the remote host
@@ -198,19 +207,19 @@ public abstract class Session extends NSObject {
                 Path home;
                 if(workdir != null) {
                     if(workdir.startsWith(Path.DELIMITER)) {
-                        home = PathFactory.createPath(this, workdir);
+                        home = PathFactory.createPath(this, workdir,
+                                workdir.equals(Path.DELIMITER) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
                     }
                     else if(workdir.startsWith(Path.HOME)) {
                         // relative path to the home directory
                         home = PathFactory.createPath(this,
-                                this.workdir().getAbsolute(), workdir.substring(1));
+                                this.workdir().getAbsolute(), workdir.substring(1), Path.DIRECTORY_TYPE);
                     }
                     else {
                         // relative path
                         home = PathFactory.createPath(this,
-                                this.workdir().getAbsolute(), workdir);
+                                this.workdir().getAbsolute(), workdir, Path.DIRECTORY_TYPE);
                     }
-                    home.attributes.setType(Path.DIRECTORY_TYPE);
                     if(!home.childs().attributes().isReadable()) {
                         // the default path does not exist or is not readable due to permission issues
                         home = this.workdir();
