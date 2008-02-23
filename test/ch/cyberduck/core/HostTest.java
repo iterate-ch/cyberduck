@@ -44,7 +44,7 @@ public class HostTest extends TestCase {
                 String url = "sftp://user:pass@hostname/path/to/file";
                 Host h = Host.parse(url);
                 assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Session.SFTP));
+                assertTrue(h.getProtocol().equals(Protocol.SFTP));
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNotNull(h.getCredentials().getPassword());
@@ -55,7 +55,7 @@ public class HostTest extends TestCase {
                 String url = "ftp://user:pass@hostname/path/to/file";
                 Host h = Host.parse(url);
                 assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Session.FTP));
+                assertTrue(h.getProtocol().equals(Protocol.FTP));
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNotNull(h.getCredentials().getPassword());
@@ -66,7 +66,7 @@ public class HostTest extends TestCase {
                 String url = "ftps://user:pass@hostname/path/to/file";
                 Host h = Host.parse(url);
                 assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Session.FTP_TLS));
+                assertTrue(h.getProtocol().equals(Protocol.FTP_TLS));
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNotNull(h.getCredentials().getPassword());
@@ -85,7 +85,7 @@ public class HostTest extends TestCase {
                 String url = "sftp://user:pass@hostname:999/path/to/file";
                 Host h = Host.parse(url);
                 assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Session.SFTP));
+                assertTrue(h.getProtocol().equals(Protocol.SFTP));
                 assertTrue(h.getPort() == 999);
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
@@ -97,7 +97,7 @@ public class HostTest extends TestCase {
                 String url = "ftp://user:pass@hostname:999/path/to/file";
                 Host h = Host.parse(url);
                 assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Session.FTP));
+                assertTrue(h.getProtocol().equals(Protocol.FTP));
                 assertTrue(h.getPort() == 999);
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
@@ -109,7 +109,7 @@ public class HostTest extends TestCase {
                 String url = "ftps://user:pass@hostname:999/path/to/file";
                 Host h = Host.parse(url);
                 assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Session.FTP_TLS));
+                assertTrue(h.getProtocol().equals(Protocol.FTP_TLS));
                 assertTrue(h.getPort() == 999);
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
@@ -129,7 +129,7 @@ public class HostTest extends TestCase {
                 String url = "sftp://user@hostname/path/to/file";
                 Host h = Host.parse(url);
                 assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Session.SFTP));
+                assertTrue(h.getProtocol().equals(Protocol.SFTP));
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNull(h.getCredentials().getPassword());
@@ -139,7 +139,7 @@ public class HostTest extends TestCase {
                 String url = "ftp://user@hostname/path/to/file";
                 Host h = Host.parse(url);
                 assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Session.FTP));
+                assertTrue(h.getProtocol().equals(Protocol.FTP));
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNull(h.getCredentials().getPassword());
@@ -149,7 +149,7 @@ public class HostTest extends TestCase {
                 String url = "ftps://user@hostname/path/to/file";
                 Host h = Host.parse(url);
                 assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Session.FTP_TLS));
+                assertTrue(h.getProtocol().equals(Protocol.FTP_TLS));
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNull(h.getCredentials().getPassword());
@@ -167,7 +167,8 @@ public class HostTest extends TestCase {
                 String url = "user@hostname/path/to/file";
                 Host h = Host.parse(url);
                 assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Preferences.instance().getProperty("connection.protocol.default")));
+                assertTrue(h.getProtocol().equals(
+                        Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"))));
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNull(h.getCredentials().getPassword());
@@ -177,7 +178,8 @@ public class HostTest extends TestCase {
                 String url = "user@hostname";
                 Host h = Host.parse(url);
                 assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Preferences.instance().getProperty("connection.protocol.default")));
+                assertTrue(h.getProtocol().equals(
+                        Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"))));
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user"));
                 assertNull(h.getCredentials().getPassword());
@@ -194,7 +196,8 @@ public class HostTest extends TestCase {
                 String url = "user@name@hostname";
                 Host h = Host.parse(url);
                 assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Preferences.instance().getProperty("connection.protocol.default")));
+                assertTrue(h.getProtocol().equals(
+                        Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"))));
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user@name"));
                 assertNull(h.getCredentials().getPassword());
@@ -203,7 +206,8 @@ public class HostTest extends TestCase {
                 String url = "user@name:password@hostname";
                 Host h = Host.parse(url);
                 assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Preferences.instance().getProperty("connection.protocol.default")));
+                assertTrue(h.getProtocol().equals(
+                        Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"))));
                 assertNotNull(h.getCredentials().getUsername());
                 assertTrue(h.getCredentials().getUsername().equals("user@name"));
                 assertTrue(h.getCredentials().getPassword().equals("password"));
