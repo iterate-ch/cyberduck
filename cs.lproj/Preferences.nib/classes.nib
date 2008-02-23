@@ -55,6 +55,7 @@
                 chmodUploadTypePopup = NSPopUpButton;
                 confirmDisconnectCheckbox = NSButton;
                 defaultBookmarkCombobox = NSPopUpButton;
+                defaultBucketLocation = NSPopUpButton;
                 defaultDownloadThrottleCombobox = NSPopUpButton;
                 defaultFTPHandlerCombobox = NSPopUpButton;
                 defaultSFTPHandlerCombobox = NSPopUpButton;
@@ -94,6 +95,7 @@
                 panelFTPTLS = NSView;
                 panelGeneral = NSView;
                 panelInterface = NSView;
+                panelS3 = NSView;
                 panelSFTP = NSView;
                 panelTransfer = NSView;
                 panelUpdate = NSView;
