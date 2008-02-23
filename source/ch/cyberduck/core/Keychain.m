@@ -39,17 +39,22 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
 
 SecProtocolType convertToSecProtocolType(JNIEnv *env, jstring jProtocol)
 {
-    SecProtocolType protocol;
+    if([convertToNSString(env, jProtocol) isEqualTo: @"ftp"]) {
+        return kSecProtocolTypeFTP;
+    }
     if([convertToNSString(env, jProtocol) isEqualTo: @"ftps"]) {
-        protocol = kSecProtocolTypeFTPS;
+        return kSecProtocolTypeFTPS;
     }
-    else if([convertToNSString(env, jProtocol) isEqualTo: @"sftp"]) {
-        protocol = kSecProtocolTypeSSH;
+    if([convertToNSString(env, jProtocol) isEqualTo: @"sftp"]) {
+        return kSecProtocolTypeSSH;
     }
-    else {
-        protocol = kSecProtocolTypeFTP;
+    if([convertToNSString(env, jProtocol) isEqualTo: @"http"]) {
+        return kSecProtocolTypeHTTP;
     }
-    return protocol;
+    if([convertToNSString(env, jProtocol) isEqualTo: @"https"]) {
+        return kSecProtocolTypeHTTPS;
+    }
+    return kSecProtocolTypeAny;
 }
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getInternetPasswordFromKeychain(JNIEnv *env, jobject this, jstring jProtocol, jstring jService,jstring jAccount)
