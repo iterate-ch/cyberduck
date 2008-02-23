@@ -33,7 +33,9 @@ public abstract class CDController extends NSObject {
     public CDController() {
         // Add this object to the array to safe weak references
         // from being garbage collected (#hack)
-        instances.addObject(this);
+        synchronized(instances) {
+            instances.addObject(this);
+        }
     }
 
     protected static final NSMutableArray instances
@@ -48,7 +50,9 @@ public abstract class CDController extends NSObject {
             log.debug("invalidate:" + this.toString());
         }
         NSNotificationCenter.defaultCenter().removeObserver(this);
-        instances.removeObject(this);
+        synchronized(instances) {
+            instances.removeObject(this);
+        }
     }
 
     protected void finalize() throws java.lang.Throwable {
