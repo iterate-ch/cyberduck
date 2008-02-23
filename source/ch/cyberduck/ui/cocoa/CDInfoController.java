@@ -65,6 +65,12 @@ public class CDInfoController extends CDWindowController {
         this.kindField = kindField;
     }
 
+//    private NSTextField mimeField; //IBOutlet
+//
+//    public void setMimeField(NSTextField mimeField) {
+//        this.mimeField = mimeField;
+//    }
+
     private NSTextField modifiedField; //IBOutlet
 
     public void setModifiedField(NSTextField modifiedField) {
@@ -278,10 +284,13 @@ public class CDInfoController extends CDWindowController {
                     file.attributes.getGroup());
             if(this.numberOfFiles() > 1) {
                 this.kindField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
+//                this.mimeField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
             }
             else {
                 this.kindField.setAttributedStringValue(new NSAttributedString(file.kind(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
+//                this.mimeField.setAttributedStringValue(new NSAttributedString(file.getMimeType(),
+//                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
             if(this.numberOfFiles() > 1) {
                 this.modifiedField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");

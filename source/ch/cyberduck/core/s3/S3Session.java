@@ -26,7 +26,6 @@ import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.*;
 import org.apache.log4j.Logger;
-import org.jets3t.service.Constants;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3Service;
 import org.jets3t.service.S3ServiceException;
@@ -43,7 +42,7 @@ public class S3Session extends Session {
     private static Logger log = Logger.getLogger(S3Session.class);
 
     static {
-        SessionFactory.addFactory(Session.S3, new Factory());
+        SessionFactory.addFactory(Protocol.S3, new Factory());
     }
 
     private static class Factory extends SessionFactory {
@@ -77,20 +76,13 @@ public class S3Session extends Session {
     private final String ua = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName") + "/"
             + Preferences.instance().getProperty("version");
 
-    private void configure(Jets3tProperties configuration) {
+    private Jets3tProperties configuration;
+
+    protected void configure(Jets3tProperties configuration) {
         configuration.setProperty("s3service.s3-endpoint", host.getHostname());
         configuration.setProperty("s3service.https-only",
-                String.valueOf(host.getPort() == Session.HTTPS_PORT)
+                String.valueOf(host.getProtocol().getScheme().equals("https"))
         );
-
-        final String location = Preferences.instance().getProperty("s3.location");
-        if(location.equals("US")) {
-            // null defaults to US
-            configuration.setProperty("s3service.default-bucket-location", null);
-        }
-        else {
-            configuration.setProperty("s3service.default-bucket-location", location);
-        }
 
         configuration.setProperty("httpclient.proxy-autodetect", "false");
         configuration.setProperty("httpclient.connection-timeout-ms",
@@ -129,7 +121,8 @@ public class S3Session extends Session {
                             host.getCredentials().getPassword());
                 }
 
-                final Jets3tProperties configuration = new Jets3tProperties();
+                configuration = new Jets3tProperties();
+
                 this.configure(configuration);
 
                 this.S3 = new RestS3Service(credentials, ua, new CredentialsProvider() {

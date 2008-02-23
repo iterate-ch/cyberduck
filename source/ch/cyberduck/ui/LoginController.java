@@ -19,6 +19,7 @@ package ch.cyberduck.ui;
  */
 
 import ch.cyberduck.core.Login;
+import ch.cyberduck.core.Protocol;
 
 public interface LoginController {
 
@@ -28,5 +29,5 @@ public interface LoginController {
 	 *
 	 * @param message Any additional information why the login failed.
 	 */
-	void promptUser(String protocol, Login login, String reason, String message);
+	void promptUser(Protocol protocol, Login login, String reason, String message);
 }

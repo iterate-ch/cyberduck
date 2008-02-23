@@ -18,25 +18,20 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPException;
-import com.enterprisedt.net.ftp.FTPMessageListener;
-
-import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginCanceledException;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.ftp.FTPSession;
-
 import com.apple.cocoa.foundation.NSBundle;
 
-import org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.ftp.FTPSession;
+
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
+
+import com.enterprisedt.net.ftp.FTPException;
+import com.enterprisedt.net.ftp.FTPMessageListener;
 
 /**
  * @version $Id$
@@ -45,7 +40,7 @@ public class FTPSSession extends FTPSession {
     private static Logger log = Logger.getLogger(FTPSSession.class);
 
     static {
-        SessionFactory.addFactory(Session.FTP_TLS, new Factory());
+        SessionFactory.addFactory(Protocol.FTP_TLS, new Factory());
     }
 
     private static class Factory extends SessionFactory {

@@ -38,39 +38,10 @@ import java.util.Vector;
 public abstract class Session extends NSObject {
     private static Logger log = Logger.getLogger(Session.class);
 
-    public static final String SFTP = "sftp";
-    public static final String SCP = "scp";
-    public static final String FTP = "ftp";
-    public static final String S3 = "s3";
-    public static final String FTP_TLS = "ftps";
-
-    public static final String FTP_STRING = NSBundle.localizedString("FTP (File Transfer Protocol)", "");
-    public static final String FTP_TLS_STRING = NSBundle.localizedString("FTP-SSL (FTP over TLS/SSL)", "");
-    public static final String SFTP_STRING = NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
-    public static final String SCP_STRING = NSBundle.localizedString("SCP (Secure Copy)", "");
-    public static final String S3_STRING = NSBundle.localizedString("S3 (Amazon Simple Storage Service)", "");
-
-    /**
-     * Default port for FTP
-     */
-    public static final int FTP_PORT = 21;
-
-    /**
-     * Default port for SSH
-     */
-    public static final int SSH_PORT = 22;
-
-    public static final int HTTP_PORT = 80;
-
-    /**
-     * Default port for S3
-     */
-    public static final int HTTPS_PORT = 443;
-
     /**
      * Encapsulating all the information of the remote host
      */
-    protected Host host = null;
+    protected Host host;
 
     /**
      *
@@ -116,7 +87,8 @@ public abstract class Session extends NSObject {
         if(!this.isConnected()) {
             // If not connected anymore, reconnect the session
             this.connect();
-        } else {
+        }
+        else {
             // The session is still supposed to be connected
             try {
                 this.message(NSBundle.localizedString("Checking connection...", "Status", ""));

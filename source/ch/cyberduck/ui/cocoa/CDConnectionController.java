@@ -44,32 +44,28 @@ public class CDConnectionController extends CDSheetController {
     public void setProtocolPopup(NSPopUpButton protocolPopup) {
         this.protocolPopup = protocolPopup;
         this.protocolPopup.setEnabled(true);
-        this.protocolPopup.removeAllItems();
-        this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{
-                Session.FTP_STRING, Session.FTP_TLS_STRING, Session.SFTP_STRING, Session.S3_STRING})
-        );
-        this.protocolPopup.itemWithTitle(Session.FTP_STRING).setRepresentedObject(Session.FTP);
-        this.protocolPopup.itemWithTitle(Session.FTP_TLS_STRING).setRepresentedObject(Session.FTP_TLS);
-        this.protocolPopup.itemWithTitle(Session.SFTP_STRING).setRepresentedObject(Session.SFTP);
-        this.protocolPopup.itemWithTitle(Session.S3_STRING).setRepresentedObject(Session.S3);
         this.protocolPopup.setTarget(this);
         this.protocolPopup.setAction(new NSSelector("protocolSelectionDidChange", new Class[]{Object.class}));
+        this.protocolPopup.removeAllItems();
+        this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{
+                Protocol.FTP.getDescription(), Protocol.FTP_TLS.getDescription(), Protocol.SFTP.getDescription(), Protocol.S3.getDescription()})
+        );
+        this.protocolPopup.itemWithTitle(Protocol.FTP.getDescription()).setRepresentedObject(Protocol.FTP);
+        this.protocolPopup.itemWithTitle(Protocol.FTP_TLS.getDescription()).setRepresentedObject(Protocol.FTP_TLS);
+        this.protocolPopup.itemWithTitle(Protocol.SFTP.getDescription()).setRepresentedObject(Protocol.SFTP);
+        this.protocolPopup.itemWithTitle(Protocol.S3.getDescription()).setRepresentedObject(Protocol.S3);
+
+        final Protocol defaultProtocol
+                = Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
+        this.protocolPopup.selectItemWithTitle(defaultProtocol.getDescription());
     }
 
     public void protocolSelectionDidChange(final NSNotification sender) {
         log.debug("protocolSelectionDidChange:" + sender);
-        if(protocolPopup.selectedItem().representedObject().equals(Session.FTP)) {
-            this.portField.setIntValue(Session.FTP_PORT);
-        }
-        if(protocolPopup.selectedItem().representedObject().equals(Session.FTP_TLS)) {
-            this.portField.setIntValue(Session.FTP_PORT);
-        }
-        if(protocolPopup.selectedItem().representedObject().equals(Session.SFTP)) {
-            this.portField.setIntValue(Session.SSH_PORT);
-        }
-        if(protocolPopup.selectedItem().representedObject().equals(Session.S3)) {
+        final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
+        this.portField.setIntValue(protocol.getDefaultPort());
+        if(protocol.equals(Protocol.S3)) {
             this.hostField.setStringValue(Constants.S3_HOSTNAME);
-            this.portField.setIntValue(Session.HTTPS_PORT);
             ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString(
                     NSBundle.localizedString("Access Key ID", "S3")
             );
@@ -78,12 +74,10 @@ public class CDConnectionController extends CDSheetController {
             );
             this.encodingPopup.selectItemWithTitle(DEFAULT);
         }
-        this.connectmodePopup.setEnabled(protocolPopup.selectedItem().representedObject().equals(Session.FTP)
-                || protocolPopup.selectedItem().representedObject().equals(Session.FTP_TLS));
-        this.encodingPopup.setEnabled(
-                !protocolPopup.selectedItem().representedObject().equals(Session.S3)
-        );
-        this.pkCheckbox.setEnabled(protocolPopup.selectedItem().representedObject().equals(Session.SFTP));
+        this.connectmodePopup.setEnabled(protocol.equals(Protocol.FTP)
+                || protocol.equals(Protocol.FTP_TLS));
+        this.encodingPopup.setEnabled(!protocol.equals(Protocol.S3));
+        this.pkCheckbox.setEnabled(protocol.equals(Protocol.SFTP));
         this.updateURLLabel(null);
     }
 
@@ -121,14 +115,7 @@ public class CDConnectionController extends CDSheetController {
         try {
             final Host h = Host.parse(hostField.stringValue().trim());
             this.hostField.setStringValue(h.getHostname());
-            if(h.getProtocol().equals(Session.FTP))
-                this.protocolPopup.selectItemWithTitle(Session.FTP_STRING);
-            if(h.getProtocol().equals(Session.FTP_TLS))
-                this.protocolPopup.selectItemWithTitle(Session.FTP_TLS_STRING);
-            if(h.getProtocol().equals(Session.SFTP))
-                this.protocolPopup.selectItemWithTitle(Session.SFTP_STRING);
-            if(h.getProtocol().equals(Session.S3))
-                this.protocolPopup.selectItemWithTitle(Session.S3_STRING);
+            this.protocolPopup.selectItemWithTitle(h.getProtocol().getDescription());
             this.portField.setStringValue(String.valueOf(h.getPort()));
             this.usernameField.setStringValue(h.getCredentials().getUsername());
             this.pathField.setStringValue(h.getDefaultPath());
@@ -198,18 +185,8 @@ public class CDConnectionController extends CDSheetController {
 
     public void portFieldTextDidChange(final NSNotification sender) {
         if(null == this.portField.stringValue() || this.portField.stringValue().equals("")) {
-            if(protocolPopup.selectedItem().representedObject().equals(Session.SFTP)) {
-                this.portField.setStringValue("" + Session.SSH_PORT);
-            }
-            if(protocolPopup.selectedItem().representedObject().equals(Session.FTP)) {
-                this.portField.setStringValue("" + Session.FTP_PORT);
-            }
-            if(protocolPopup.selectedItem().representedObject().equals(Session.FTP_TLS)) {
-                this.portField.setStringValue("" + Session.FTP_PORT);
-            }
-            if(protocolPopup.selectedItem().representedObject().equals(Session.S3)) {
-                this.portField.setStringValue("" + Session.HTTPS_PORT);
-            }
+            final Protocol protocol = (Protocol)protocolPopup.selectedItem().representedObject();
+            this.portField.setStringValue(String.valueOf(protocol.getDefaultPort()));
         }
     }
 
@@ -275,7 +252,7 @@ public class CDConnectionController extends CDSheetController {
         this.pkCheckbox.setAction(new NSSelector("pkCheckboxSelectionDidChange", new Class[]{Object.class}));
         this.pkCheckbox.setState(NSCell.OffState);
         this.pkCheckbox.setEnabled(
-                Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP));
+                Preferences.instance().getProperty("connection.protocol.default").equals(Protocol.SFTP.getName()));
     }
 
     private NSOpenPanel publicKeyPanel;
@@ -352,7 +329,7 @@ public class CDConnectionController extends CDSheetController {
         this.connectmodePopup.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
         this.connectmodePopup.selectItemWithTitle(DEFAULT);
         this.connectmodePopup.setEnabled(
-                Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP));
+                Preferences.instance().getProperty("connection.protocol.default").equals(Protocol.FTP.getName()));
     }
 
     private static final Map controllers = new HashMap();
@@ -407,22 +384,12 @@ public class CDConnectionController extends CDSheetController {
                 NSControl.ControlTextDidChangeNotification,
                 this.usernameField);
 
-        if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP)) {
-            this.protocolPopup.selectItemWithTitle(Session.FTP_STRING);
-            this.portField.setIntValue(Session.FTP_PORT);
-        }
-        else if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP_TLS)) {
-            this.protocolPopup.selectItemWithTitle(Session.FTP_TLS_STRING);
-            this.portField.setIntValue(Session.FTP_PORT);
-        }
-        else if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP)) {
-            this.protocolPopup.selectItemWithTitle(Session.SFTP_STRING);
-            this.portField.setIntValue(Session.SSH_PORT);
-        }
-        else if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.S3)) {
-            this.protocolPopup.selectItemWithTitle(Session.S3_STRING);
-            this.portField.setIntValue(Session.HTTPS_PORT);
-        }
+        Protocol defaultProtocol
+                = Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
+        
+        this.protocolPopup.selectItemWithTitle(defaultProtocol.getDescription());
+        this.portField.setIntValue(defaultProtocol.getDefaultPort());
+
         super.awakeFromNib();
     }
 
@@ -434,7 +401,7 @@ public class CDConnectionController extends CDSheetController {
         if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
             if(hostField.stringValue() != null && !hostField.stringValue().equals("") &&
                     usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {
-                String protocol = protocolPopup.selectedItem().representedObject().toString();
+                Protocol protocol = (Protocol)protocolPopup.selectedItem().representedObject();
                 Login l = new Login(usernameField.stringValue(), null);
                 String passFromKeychain = l.getInternetPasswordFromKeychain(protocol, hostField.stringValue());
                 if(passFromKeychain != null && !passFromKeychain.equals("")) {
@@ -449,8 +416,8 @@ public class CDConnectionController extends CDSheetController {
             urlLabel.setStringValue(hostField.stringValue());
         }
         else {
-            String protocol = protocolPopup.selectedItem().representedObject().toString() + "://";
-            urlLabel.setStringValue(protocol + usernameField.stringValue()
+            final Protocol protocol = (Protocol)protocolPopup.selectedItem().representedObject();
+            urlLabel.setStringValue(protocol.getScheme() + "://" + usernameField.stringValue()
                     + "@" + hostField.stringValue() + ":" + portField.stringValue()
                     + Path.normalize(pathField.stringValue()));
         }
@@ -459,12 +426,13 @@ public class CDConnectionController extends CDSheetController {
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             this.window().endEditingForObject(null);
-            Host host = new Host(protocolPopup.selectedItem().representedObject().toString(),
+            Host host = new Host(
+                    (Protocol)protocolPopup.selectedItem().representedObject(),
                     hostField.stringValue(),
                     Integer.parseInt(portField.stringValue()),
                     pathField.stringValue());
-            if(protocolPopup.selectedItem().representedObject().equals(Session.FTP) ||
-                    protocolPopup.selectedItem().representedObject().equals(Session.FTP)) {
+            if(protocolPopup.selectedItem().representedObject().equals(Protocol.FTP) ||
+                    protocolPopup.selectedItem().representedObject().equals(Protocol.FTP)) {
                 if(connectmodePopup.titleOfSelectedItem().equals(DEFAULT)) {
                     host.setFTPConnectMode(null);
                 }
@@ -477,7 +445,7 @@ public class CDConnectionController extends CDSheetController {
             }
             host.setCredentials(usernameField.stringValue(), passField.stringValue(),
                     keychainCheckbox.state() == NSCell.OnState);
-            if(protocolPopup.selectedItem().representedObject().equals(Session.SFTP)) {
+            if(protocolPopup.selectedItem().representedObject().equals(Protocol.SFTP)) {
                 if(pkCheckbox.state() == NSCell.OnState) {
                     host.getCredentials().setPrivateKeyFile(pkLabel.stringValue());
                 }

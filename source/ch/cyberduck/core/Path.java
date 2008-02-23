@@ -572,10 +572,10 @@ public abstract class Path extends AbstractPath {
             StringBuffer b = new StringBuffer();
             StringTokenizer t = new StringTokenizer(this.getAbsolute(), "/");
             while(t.hasMoreTokens()) {
-                b.append(DELIMITER + URLEncoder.encode(t.nextToken(), "UTF-8"));
+                b.append(DELIMITER).append(URLEncoder.encode(t.nextToken(), "UTF-8"));
             }
             // Do not use java.net.URL because it doesn't know about SFTP!
-            return this.getHost().getURL() + b.toString();
+            return this.getSession().getHost().toURL() + b.toString();
         }
         catch(UnsupportedEncodingException e) {
             log.error(e.getMessage());

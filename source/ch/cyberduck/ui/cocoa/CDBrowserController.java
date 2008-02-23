@@ -94,7 +94,8 @@ public class CDBrowserController extends CDWindowController
             if(portObj != null) {
                 Object protocolObj = args.objectForKey("Protocol");
                 if(protocolObj != null) {
-                    host = new Host((String) args.objectForKey("Protocol"),
+                    host = new Host(
+                            Protocol.forName((String) args.objectForKey("Protocol")),
                             (String) args.objectForKey("Host"),
                             Integer.parseInt((String) args.objectForKey("Port")));
                 }
@@ -106,7 +107,8 @@ public class CDBrowserController extends CDWindowController
             else {
                 Object protocolObj = args.objectForKey("Protocol");
                 if(protocolObj != null) {
-                    host = new Host((String) args.objectForKey("Protocol"),
+                    host = new Host(
+                            Protocol.forName((String) args.objectForKey("Protocol")),
                             (String) args.objectForKey("Host"));
                 }
                 else {
@@ -1639,7 +1641,8 @@ public class CDBrowserController extends CDWindowController
             item.setDefaultPath(this.workdir().getAbsolute());
         }
         else {
-            item = new Host(Preferences.instance().getProperty("connection.protocol.default"),
+            item = new Host(
+                    Protocol.forName(Preferences.instance().getProperty("connection.protocol.default")),
                     "localhost",
                     Preferences.instance().getInteger("connection.port.default"));
         }
@@ -3365,14 +3368,14 @@ public class CDBrowserController extends CDWindowController
             // it confuses the user, that settings to the bookmark will not affect the
             // currently mounted browser
             Host bookmark = (Host) c.get(c.indexOf(h));
-            if(h.getURL().equals(bookmark.getURL())) {
+            if(h.toURL().equals(bookmark.toURL())) {
                 h = bookmark;
             }
         }
         final Host host = h;
         log.debug("mount:" + host);
         if(this.isMounted()) {
-            if(this.session.getHost().getURL().equals(host.getURL())) {
+            if(this.session.getHost().toURL().equals(host.toURL())) {
                 // The host is already mounted
                 this.background(new BackgroundAction() {
                     public void run() {

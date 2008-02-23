@@ -47,7 +47,7 @@ public class FTPSession extends Session {
     private static Logger log = Logger.getLogger(FTPSession.class);
 
     static {
-        SessionFactory.addFactory(Session.FTP, new Factory());
+        SessionFactory.addFactory(Protocol.FTP, new Factory());
     }
 
     private static class Factory extends SessionFactory {

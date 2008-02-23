@@ -54,7 +54,7 @@ public class FTPPath extends Path {
     private static final String UNIX_LINE_SEPARATOR = "\n";
 
     static {
-        PathFactory.addFactory(Session.FTP, new Factory());
+        PathFactory.addFactory(Protocol.FTP, new Factory());
     }
 
     private static class Factory extends PathFactory {

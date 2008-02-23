@@ -35,7 +35,7 @@ public abstract class PathFactory {
 
     protected abstract Path create(Session session, NSDictionary dict);
 
-    public static void addFactory(String protocol, PathFactory f) {
+    public static void addFactory(Protocol protocol, PathFactory f) {
         factories.put(protocol, f);
     }
 
@@ -74,18 +74,18 @@ public abstract class PathFactory {
         return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, dict);
     }
 
-    private static void loadClass(String id) {
-        if (!factories.containsKey(id)) {
+    private static void loadClass(Protocol protocol) {
+        if (!factories.containsKey(protocol)) {
             try {
                 // Load dynamically
-                Class.forName("ch.cyberduck.core." + id + "." + id.toUpperCase() + "Path");
+                Class.forName("ch.cyberduck.core." + protocol.getName() + "." + protocol.getName().toUpperCase() + "Path");
             }
             catch (ClassNotFoundException e) {
-                throw new RuntimeException("No class for type: " + id);
+                throw new RuntimeException("No class for type: " + protocol);
             }
             // See if it was put in:
-            if (!factories.containsKey(id)) {
-                throw new RuntimeException("No class for type: " + id);
+            if (!factories.containsKey(protocol)) {
+                throw new RuntimeException("No class for type: " + protocol);
             }
         }
     }

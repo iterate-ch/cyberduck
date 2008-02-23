@@ -124,11 +124,11 @@ public class Login {
     /**
      * @return the password fetched from the keychain or null if it was not found
      */
-    public String getInternetPasswordFromKeychain(String protocol, String hostname) {
+    public String getInternetPasswordFromKeychain(Protocol protocol, String hostname) {
         if(log.isInfoEnabled()) {
             log.info("Fetching password from Keychain for:" + protocol + "," + hostname + "," + this.getUsername());
         }
-        final String p = Keychain.instance().getInternetPasswordFromKeychain(protocol,
+        final String p = Keychain.instance().getInternetPasswordFromKeychain(protocol.getScheme(),
                 hostname, this.getUsername());
         if(null == p) {
             log.info("Password for " + protocol + "," + hostname + "," + this.getUsername() + " not found in Keychain");
@@ -139,12 +139,12 @@ public class Login {
     /**
      * Adds the password to the system keychain
      */
-    public void addInternetPasswordToKeychain(String protocol, String hostname, int port) {
+    public void addInternetPasswordToKeychain(Protocol protocol, String hostname, int port) {
         if(this.shouldBeAddedToKeychain && !this.isAnonymousLogin() && this.hasReasonableValues()) {
             if(log.isInfoEnabled()) {
                 log.debug("addInternetPasswordToKeychain:" + protocol + "," + hostname + "," + this.getUsername());
             }
-            Keychain.instance().addInternetPasswordToKeychain(protocol, port,
+            Keychain.instance().addInternetPasswordToKeychain(protocol.getScheme(), port,
                     hostname, this.getUsername(), this.getPassword());
         }
     }
@@ -253,7 +253,7 @@ public class Login {
      * @return true if reasonable values have been found localy or in the keychain or the user
      *         was prompted to for the credentials and new values got entered.
      */
-    public boolean check(LoginController controller, final String protocol, final String hostname) {
+    public boolean check(LoginController controller, final Protocol protocol, final String hostname) {
         if(!this.hasReasonableValues()) {
             if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
                 log.info("Searching keychain for password...");

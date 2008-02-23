@@ -45,40 +45,21 @@ public class CDBookmarkController extends CDWindowController {
         this.protocolPopup = protocolPopup;
         this.protocolPopup.setEnabled(true);
         this.protocolPopup.removeAllItems();
-        this.protocolPopup.addItemsWithTitles(new NSArray(
-                new String[]{Session.FTP_STRING, Session.FTP_TLS_STRING, Session.SFTP_STRING, Session.S3_STRING})
+        this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{
+                Protocol.FTP.getDescription(), Protocol.FTP_TLS.getDescription(), Protocol.SFTP.getDescription(), Protocol.S3.getDescription()})
         );
-        this.protocolPopup.itemWithTitle(Session.FTP_STRING).setRepresentedObject(Session.FTP);
-        this.protocolPopup.itemWithTitle(Session.FTP_TLS_STRING).setRepresentedObject(Session.FTP_TLS);
-        this.protocolPopup.itemWithTitle(Session.SFTP_STRING).setRepresentedObject(Session.SFTP);
-        this.protocolPopup.itemWithTitle(Session.S3_STRING).setRepresentedObject(Session.S3);
+        this.protocolPopup.itemWithTitle(Protocol.FTP.getDescription()).setRepresentedObject(Protocol.FTP);
+        this.protocolPopup.itemWithTitle(Protocol.FTP_TLS.getDescription()).setRepresentedObject(Protocol.FTP_TLS);
+        this.protocolPopup.itemWithTitle(Protocol.SFTP.getDescription()).setRepresentedObject(Protocol.SFTP);
+        this.protocolPopup.itemWithTitle(Protocol.S3.getDescription()).setRepresentedObject(Protocol.S3);
         this.protocolPopup.setTarget(this);
         this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[]{Object.class}));
     }
 
     public void protocolSelectionChanged(final NSPopUpButton sender) {
         log.debug("protocolSelectionChanged:" + sender);
-        if(protocolPopup.selectedItem().representedObject().equals(Session.SFTP)) {
-            this.host.setProtocol(Session.SFTP);
-            this.host.setPort(Session.SSH_PORT);
-        }
-        if(protocolPopup.selectedItem().representedObject().equals(Session.FTP_TLS)) {
-            this.host.setProtocol(Session.FTP_TLS);
-            this.host.setPort(Session.FTP_PORT);
-        }
-        if(protocolPopup.selectedItem().representedObject().equals(Session.FTP)) {
-            this.host.setProtocol(Session.FTP);
-            this.host.setPort(Session.FTP_PORT);
-        }
-        if(protocolPopup.selectedItem().representedObject().equals(Session.S3)) {
-            this.host.setProtocol(Session.S3);
-            this.host.setPort(Session.HTTPS_PORT);
-        }
-        this.portField.setStringValue("" + this.host.getPort());
-        this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Session.SFTP));
-        if(!this.host.getProtocol().equals(Session.SFTP)) {
-            this.pkCheckbox.setState(NSCell.OffState);
-        }
+        this.host.setProtocol((Protocol)protocolPopup.selectedItem().representedObject());
+        this.host.setPort(((Protocol)protocolPopup.selectedItem().representedObject()).getDefaultPort());
         this.itemChanged();
     }
 
@@ -111,6 +92,7 @@ public class CDBookmarkController extends CDWindowController {
         else {
             this.host.setEncoding(sender.selectedItem().title());
         }
+        this.itemChanged();
     }
 
     private NSTextField nicknameField; // IBOutlet
@@ -118,7 +100,7 @@ public class CDBookmarkController extends CDWindowController {
     public void setNicknameField(NSTextField nicknameField) {
         this.nicknameField = nicknameField;
         NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("nicknameInputDidEndEditing", new Class[]{NSNotification.class}),
+                new NSSelector("nicknameInputDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.nicknameField);
     }
@@ -180,11 +162,6 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setUsernameField(NSTextField usernameField) {
         this.usernameField = usernameField;
-        if(this.host.getProtocol().equals(Session.S3)) {
-            ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString(
-                    NSBundle.localizedString("Access Key ID", "S3")
-            );
-        }
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("usernameInputDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
@@ -254,17 +231,6 @@ public class CDBookmarkController extends CDWindowController {
         this.connectmodePopup.addItem(DEFAULT);
         this.connectmodePopup.menu().addItem(new NSMenuItem().separatorItem());
         this.connectmodePopup.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
-        if(this.host.getProtocol().equals(Session.FTP) || this.host.getProtocol().equals(Session.FTP_TLS)) {
-            if(null == host.getFTPConnectMode()) {
-                this.connectmodePopup.selectItemWithTitle(DEFAULT);
-            }
-            else if(host.getFTPConnectMode().equals(FTPConnectMode.PASV)) {
-                this.connectmodePopup.selectItemWithTitle(CONNECTMODE_PASSIVE);
-            }
-            else if(host.getFTPConnectMode().equals(FTPConnectMode.ACTIVE)) {
-                this.connectmodePopup.selectItemWithTitle(CONNECTMODE_ACTIVE);
-            }
-        }
     }
 
     public void connectmodePopupClicked(final NSPopUpButton sender) {
@@ -450,16 +416,13 @@ public class CDBookmarkController extends CDWindowController {
 
     public void awakeFromNib() {
         this.cascade();
-        this.window.setTitle(this.host.getNickname());
         this.itemChanged();
-        this.updateFields();
     }
 
     private NSTextField pkLabel;
 
     public void setPkLabel(NSTextField pkLabel) {
         this.pkLabel = pkLabel;
-        this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
     }
 
     private NSButton pkCheckbox;
@@ -484,9 +447,8 @@ public class CDBookmarkController extends CDWindowController {
                     new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
         }
         else {
-            this.pkCheckbox.setState(NSCell.OffState);
-            this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
             this.host.getCredentials().setPrivateKeyFile(null);
+            this.itemChanged();
         }
     }
 
@@ -499,15 +461,13 @@ public class CDBookmarkController extends CDWindowController {
                 String pk = NSPathUtilities.stringByAbbreviatingWithTildeInPath(
                         (String) enumerator.nextElement());
                 this.host.getCredentials().setPrivateKeyFile(pk);
-                this.pkLabel.setStringValue(pk);
             }
         }
         if(returncode == NSPanel.CancelButton) {
             this.host.getCredentials().setPrivateKeyFile(null);
-            this.pkCheckbox.setState(NSCell.OffState);
-            this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
         }
         publicKeyPanel = null;
+        this.itemChanged();
     }
 
     public void hostFieldDidChange(final NSNotification sender) {
@@ -518,7 +478,6 @@ public class CDBookmarkController extends CDWindowController {
         catch(MalformedURLException e) {
             this.host.setHostname(hostField.stringValue());
         }
-        this.updateFields();
         this.itemChanged();
         this.background(new BackgroundActionImpl(this) {
             boolean reachable = false;
@@ -549,10 +508,10 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     public void pathInputDidEnd(final NSNotification sender) {
-        this.pathField.setStringValue(this.host.getDefaultPath());
+        this.itemChanged();
     }
 
-    public void nicknameInputDidEndEditing(final NSNotification sender) {
+    public void nicknameInputDidChange(final NSNotification sender) {
         this.host.setNickname(nicknameField.stringValue());
         this.itemChanged();
     }
@@ -569,37 +528,40 @@ public class CDBookmarkController extends CDWindowController {
 
     /**
      * Updates the window title and url label with the properties of this bookmark
-     */
-    private void itemChanged() {
-        this.window.setTitle(this.host.getNickname());
-        this.urlField.setStringValue(this.host.getURL() + Path.normalize(this.host.getDefaultPath()));
-        HostCollection.instance().collectionItemChanged(this.host);
-    }
-
-    /**
      * Propagates all fields with the properties of this bookmark
      */
-    private void updateFields() {
+    private void itemChanged() {
+        HostCollection.instance().collectionItemChanged(this.host);
+
+        this.window.setTitle(this.host.getNickname());
         this.hostField.setStringValue(this.host.getHostname());
-        this.portField.setStringValue("" + this.host.getPort());
+        this.nicknameField.setStringValue(this.host.getNickname());
+        this.urlField.setStringValue(this.host.toURL() + Path.normalize(this.host.getDefaultPath()));
+        this.portField.setStringValue(String.valueOf(this.host.getPort()));
         this.nicknameField.setStringValue(this.host.getNickname());
         this.pathField.setStringValue(this.host.getDefaultPath());
         this.usernameField.setStringValue(this.host.getCredentials().getUsername());
-        if(this.host.getProtocol().equals(Session.FTP)) {
-            this.protocolPopup.selectItemWithTitle(Session.FTP_STRING);
+        if(this.host.getProtocol().equals(Protocol.S3)) {
+            ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString(
+                    NSBundle.localizedString("Access Key ID", "S3")
+            );
         }
-        if(this.host.getProtocol().equals(Session.FTP_TLS)) {
-            this.protocolPopup.selectItemWithTitle(Session.FTP_TLS_STRING);
+        this.protocolPopup.selectItemWithTitle(this.host.getProtocol().getDescription());
+        this.connectmodePopup.setEnabled(this.host.getProtocol().equals(Protocol.FTP)
+                || this.host.getProtocol().equals(Protocol.FTP_TLS));
+        if(this.host.getProtocol().equals(Protocol.FTP)
+                || this.host.getProtocol().equals(Protocol.FTP_TLS)) {
+            if(null == host.getFTPConnectMode()) {
+                this.connectmodePopup.selectItemWithTitle(DEFAULT);
+            }
+            else if(host.getFTPConnectMode().equals(FTPConnectMode.PASV)) {
+                this.connectmodePopup.selectItemWithTitle(CONNECTMODE_PASSIVE);
+            }
+            else if(host.getFTPConnectMode().equals(FTPConnectMode.ACTIVE)) {
+                this.connectmodePopup.selectItemWithTitle(CONNECTMODE_ACTIVE);
+            }
         }
-        if(this.host.getProtocol().equals(Session.SFTP)) {
-            this.protocolPopup.selectItemWithTitle(Session.SFTP_STRING);
-        }
-        if(this.host.getProtocol().equals(Session.S3)) {
-            this.protocolPopup.selectItemWithTitle(Session.S3_STRING);
-        }
-        this.connectmodePopup.setEnabled(this.host.getProtocol().equals(Session.FTP) ||
-                this.host.getProtocol().equals(Session.FTP_TLS));
-        this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Session.SFTP));
+        this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Protocol.SFTP));
         if(this.host.getCredentials().usesPublicKeyAuthentication()) {
             this.pkCheckbox.setState(NSCell.OnState);
             this.pkLabel.setStringValue(this.host.getCredentials().getPrivateKeyFile());

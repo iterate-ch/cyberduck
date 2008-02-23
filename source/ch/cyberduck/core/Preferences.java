@@ -388,10 +388,20 @@ public abstract class Preferences {
          * If the parser should not trim whitespace from filenames
          */
         defaults.put("ftp.parser.whitespaceAware", String.valueOf(true));
-
+        /**
+         * Default bucket location
+         */
         defaults.put("s3.location", "US");
-        defaults.put("s3.crypto.algorithm", "PBEWithMD5AndDES");
-        defaults.put("s3.url.expire.seconds", String.valueOf(24 * 60 * 60)); //expiry time for public URL 
+        /**
+         * Validaty for public S3 URLs
+         */
+        defaults.put("s3.url.expire.seconds", String.valueOf(24 * 60 * 60)); //expiry time for public URL
+        /**
+         * Generate publicy accessible URLs when copying URLs in S3 browser
+         */
+        defaults.put("s3.url.public", String.valueOf(false));
+
+//        defaults.put("s3.crypto.algorithm", "PBEWithMD5AndDES");
         
         /**
          * Maximum concurrent connections to the same host
@@ -435,7 +445,7 @@ public abstract class Preferences {
         /**
          * Use the SFTP subsystem or a SCP channel for file transfers over SSH
          */
-        defaults.put("ssh.transfer", Session.SFTP); // Session.SCP
+        defaults.put("ssh.transfer", Protocol.SFTP.getName()); // Session.SCP
         /**
          * Location of the openssh known_hosts file
          */

@@ -18,10 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPConnectMode;
-import com.ibm.icu.text.IDNA;
-import com.ibm.icu.text.StringPrepParseException;
-
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
@@ -36,23 +32,29 @@ import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.util.TimeZone;
 
+import com.enterprisedt.net.ftp.FTPConnectMode;
+import com.ibm.icu.text.IDNA;
+import com.ibm.icu.text.StringPrepParseException;
+
 /**
  * @version $Id$
  */
 public class Host extends NSObject {
     private static Logger log = Logger.getLogger(Host.class);
-
+    /**
+     * Internal protocol identifier
+     */
+    private String identifier;
     /**
      * The protocol identifier. Must be one of <code>sftp</code>, <code>ftp</code> or <code>ftps</code>
-     * @see ch.cyberduck.core.Session#FTP
-     * @see ch.cyberduck.core.Session#FTP_TLS
-     * @see ch.cyberduck.core.Session#SFTP
+     * @see Protocol#FTP
+     * @see Protocol#FTP_TLS
+     * @see Protocol#SFTP
      */
-    private String protocol;
+    private Protocol protocol;
     /**
      * The port number to connect to
-     * @see ch.cyberduck.core.Session#FTP_PORT
-     * @see ch.cyberduck.core.Session#SSH_PORT
+     * @see Protocol#getDefaultPort()
      */
     private int port;
     /**
@@ -130,7 +132,7 @@ public class Host extends NSObject {
     public void init(NSDictionary dict) {
         Object protocolObj = dict.objectForKey(Host.PROTOCOL);
         if(protocolObj != null) {
-            this.setProtocol((String) protocolObj);
+            this.setProtocol(Protocol.forName(protocolObj.toString()));
         }
         Object hostnameObj = dict.objectForKey(Host.HOSTNAME);
         if(hostnameObj != null) {
@@ -189,7 +191,8 @@ public class Host extends NSObject {
      */
     public NSDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
-        dict.setObjectForKey(this.getProtocol(), Host.PROTOCOL);
+        dict.setObjectForKey(this.getProtocol().getName(), Host.PROTOCOL);
+//        dict.setObjectForKey(this.getProtocol().getScheme(), Host.SCHEME);
         dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
         dict.setObjectForKey(this.getHostname(), Host.HOSTNAME);
         dict.setObjectForKey(String.valueOf(this.getPort()), Host.PORT);
@@ -203,7 +206,7 @@ public class Host extends NSObject {
         if(this.getCredentials().getPrivateKeyFile() != null) {
             dict.setObjectForKey(this.getCredentials().getPrivateKeyFile(), Host.KEYFILE);
         }
-        if(this.getProtocol().equals(Session.FTP) || this.getProtocol().equals(Session.FTP_TLS)) {
+        if(this.getProtocol().equals(Protocol.FTP) || this.getProtocol().equals(Protocol.FTP_TLS)) {
             if(null != this.connectMode) {
                 if(connectMode.equals(FTPConnectMode.ACTIVE))
                     dict.setObjectForKey(FTPConnectMode.ACTIVE.toString(), Host.FTPCONNECTMODE);
@@ -238,7 +241,8 @@ public class Host extends NSObject {
      * @param hostname The hostname of the server
      */
     public Host(String hostname) {
-        this(Preferences.instance().getProperty("connection.protocol.default"), hostname);
+        this(Protocol.forName(Preferences.instance().getProperty("connection.protocol.default")),
+                hostname);
     }
 
     /**
@@ -248,15 +252,15 @@ public class Host extends NSObject {
      * @param port     The port number to connect to
      */
     public Host(String hostname, int port) {
-        this(getDefaultProtocol(port), hostname, port);
+        this(Protocol.getDefaultProtocol(port), hostname, port);
     }
 
     /**
      * @param protocol
      * @param hostname
      */
-    public Host(String protocol, String hostname) {
-        this(protocol, hostname, getDefaultPort(protocol));
+    public Host(Protocol protocol, String hostname) {
+        this(protocol, hostname, protocol.getDefaultPort());
     }
 
     /**
@@ -264,7 +268,7 @@ public class Host extends NSObject {
      * @param hostname The hostname of the server
      * @param port     The port number to connect to
      */
-    public Host(String protocol, String hostname, int port) {
+    public Host(Protocol protocol, String hostname, int port) {
         this(protocol, hostname, port, null);
     }
 
@@ -274,7 +278,7 @@ public class Host extends NSObject {
      * @param port
      * @param defaultpath
      */
-    public Host(String protocol, String hostname, int port, String defaultpath) {
+    public Host(Protocol protocol, String hostname, int port, String defaultpath) {
         this.setProtocol(protocol);
         this.setPort(port);
         this.setHostname(hostname);
@@ -298,21 +302,19 @@ public class Host extends NSObject {
         if(input.indexOf("://", begin) == -1 && input.indexOf('@', begin) == -1) {
             throw new MalformedURLException("No protocol or user delimiter");
         }
-        String protocol = Preferences.instance().getProperty("connection.protocol.default");
+        Protocol protocol = Protocol.forName(
+                Preferences.instance().getProperty("connection.protocol.default"));
         if(input.indexOf("://", begin) != -1) {
             cut = input.indexOf("://", begin);
-            protocol = input.substring(begin, cut);
-            begin += protocol.length() + 3;
+            protocol = Protocol.forName(input.substring(begin, cut));
+            begin += protocol.toString().length() + 3;
         }
         String username = null;
         String password = null;
-        if(protocol.equals(Session.FTP)) {
+        if(protocol.equals(Protocol.FTP)) {
             username = Preferences.instance().getProperty("ftp.anonymous.name");
         }
-        else if(protocol.equals(Session.FTP_TLS)) {
-            username = Preferences.instance().getProperty("connection.login.name");
-        }
-        else if(protocol.equals(Session.SFTP)) {
+        else {
             username = Preferences.instance().getProperty("connection.login.name");
         }
         if(input.lastIndexOf('@') != -1) {
@@ -334,7 +336,7 @@ public class Host extends NSObject {
         }
         String hostname = input.substring(begin, input.length());
         String path = null;
-        int port = getDefaultPort(protocol);
+        int port = protocol.getDefaultPort();
         if(input.indexOf(':', begin) != -1) {
             cut = input.indexOf(':', begin);
             hostname = input.substring(begin, cut);
@@ -410,48 +412,6 @@ public class Host extends NSObject {
         return !this.getDefaultPath().equals("");
     }
 
-    /**
-     * @param port
-     * @return The standard protocol for this port number
-     */
-    protected static String getDefaultProtocol(int port) {
-        switch(port) {
-            case Session.FTP_PORT:
-                return Session.FTP;
-            case Session.SSH_PORT:
-                return Session.SFTP;
-        }
-        log.warn("Cannot find default protocol for port number " + port);
-        return Preferences.instance().getProperty("connection.protocol.default");
-    }
-
-    /**
-     * @param protocol
-     * @return The default port for this protocol
-     */
-    private static int getDefaultPort(String protocol) {
-        if(protocol.equals(Session.FTP)) {
-            return Session.FTP_PORT;
-        }
-        if(protocol.equals(Session.FTP_TLS)) {
-            return Session.FTP_PORT;
-        }
-        if(protocol.equals(Session.SFTP)) {
-            return Session.SSH_PORT;
-        }
-        log.warn("Cannot find default port number for protocol " + protocol);
-        if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP)) {
-            return Session.FTP_PORT;
-        }
-        if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.FTP_TLS)) {
-            return Session.FTP_PORT;
-        }
-        if(Preferences.instance().getProperty("connection.protocol.default").equals(Session.SFTP)) {
-            return Session.SSH_PORT;
-        }
-        throw new IllegalArgumentException("Unsupported protocol: " + protocol);
-    }
-
     // ----------------------------------------------------------
     // Accessor methods
     // ----------------------------------------------------------
@@ -486,10 +446,21 @@ public class Host extends NSObject {
         return this.login;
     }
 
+//    public String getIdentifier() {
+//        if(null == identifier) {
+//            return this.getProtocol().toString();
+//        }
+//        return identifier;
+//    }
+//
+//    public void setIdentifier(String identifier) {
+//        this.identifier = identifier;
+//    }
+//
     /**
      * @param protocol The protocol to use or null to use the default protocol for this port number
      */
-    public void setProtocol(String protocol) {
+    public void setProtocol(Protocol protocol) {
         if(null != this.protocol) {
             if(this.getNickname().equals(this.getDefaultNickname())) {
                 //Revert the last default nickname set
@@ -497,9 +468,9 @@ public class Host extends NSObject {
             }
         }
         this.protocol = protocol != null ? protocol :
-                Preferences.instance().getProperty("connection.protocol.default");
+                Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
 
-        if(!this.protocol.equals(Session.SFTP)) {
+        if(!this.protocol.equals(Protocol.SFTP)) {
             if(this.getCredentials() != null) {
                 this.getCredentials().setPrivateKeyFile(null);
             }
@@ -508,11 +479,11 @@ public class Host extends NSObject {
 
     /**
      * @return
-     * @see Session#FTP
-     * @see Session#FTP_TLS
-     * @see Session#SFTP
+     * @see Protocol#FTP
+     * @see Protocol#FTP_TLS
+     * @see Protocol#SFTP
      */
-    public String getProtocol() {
+    public Protocol getProtocol() {
         return this.protocol;
     }
 
@@ -532,7 +503,7 @@ public class Host extends NSObject {
      * @return The default given name of this bookmark
      */
     private String getDefaultNickname() {
-        return this.getHostname() + " (" + this.getProtocol().toUpperCase() + ")";
+        return this.getHostname() + " (" + this.getProtocol().toString().toUpperCase() + ")";
     }
 
     /**
@@ -602,7 +573,7 @@ public class Host extends NSObject {
     public void setPort(int port) {
         this.port = port;
         if(-1 == port) {
-            this.port = Host.getDefaultPort(this.getProtocol());
+            this.port = this.getProtocol().getDefaultPort();
         }
     }
 
@@ -738,7 +709,7 @@ public class Host extends NSObject {
     }
 
     public String toString() {
-        return this.getURL();
+        return this.toURL();
     }
 
     /**
@@ -746,8 +717,9 @@ public class Host extends NSObject {
      *
      * @return The URL of the remote host including user login hostname and port
      */
-    public String getURL() {
-        return this.getProtocol() + "://" + this.getCredentials().getUsername() + "@" + this.getHostname(true) + ":" + this.getPort();
+    public String toURL() {
+        return this.getProtocol().getScheme() + "://" + this.getCredentials().getUsername() + "@"
+                + this.getHostname(true) + ":" + this.getPort();
     }
 
     public boolean equals(Object other) {
@@ -797,7 +769,7 @@ public class Host extends NSObject {
      * @return True if the host is reachable. Returns false if there is a
      *         network configuration error, no such host is known or the server does
      *         not listing at any such port
-     * @see #getURL
+     * @see #toURL
      */
     public boolean isReachable() {
         if(!Host.jni_load()) {
@@ -806,7 +778,7 @@ public class Host extends NSObject {
         if(!Preferences.instance().getBoolean("connection.hostname.check")) {
             return true;
         }
-        return this.isReachable(this.getURL());
+        return this.isReachable(this.toURL());
     }
 
     private native boolean isReachable(String url);
@@ -814,13 +786,13 @@ public class Host extends NSObject {
     /**
      * Opens the network configuration assistant for the URL denoting this host
      *
-     * @see #getURL
+     * @see #toURL
      */
     public void diagnose() {
         if(!Host.jni_load()) {
             return;
         }
-        this.diagnose(this.getURL());
+        this.diagnose(this.toURL());
     }
 
     private native void diagnose(String url);

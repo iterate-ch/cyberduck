@@ -27,25 +27,25 @@ public abstract class SessionFactory {
 
     protected abstract Session create(Host h);
 
-    public static void addFactory(String protocol, SessionFactory f) {
+    public static void addFactory(Protocol protocol, SessionFactory f) {
         factories.put(protocol, f);
     }
 
     public static Session createSession(Host h) {
-        String id = h.getProtocol();
-        if (!factories.containsKey(id)) {
+        final Protocol protocol = h.getProtocol();
+        if (!factories.containsKey(protocol)) {
             try {
                 // Load dynamically
-                Class.forName("ch.cyberduck.core." + id + "." + id.toUpperCase() + "Session");
+                Class.forName("ch.cyberduck.core." + protocol.getName() + "." + protocol.getName().toUpperCase() + "Session");
             }
             catch (ClassNotFoundException e) {
-                throw new RuntimeException("No class for type: " + id);
+                throw new RuntimeException("No class for type: " + protocol);
             }
             // See if it was put in:
-            if (!factories.containsKey(id)) {
-                throw new RuntimeException("No class for type: " + id);
+            if (!factories.containsKey(protocol)) {
+                throw new RuntimeException("No class for type: " + protocol);
             }
         }
-        return ((SessionFactory) factories.get(id)).create(h);
+        return ((SessionFactory) factories.get(protocol)).create(h);
     }
 }

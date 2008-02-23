@@ -42,7 +42,7 @@ public class SFTPSession extends Session {
     private static Logger log = Logger.getLogger(SFTPSession.class);
 
     static {
-        SessionFactory.addFactory(Session.SFTP, new Factory());
+        SessionFactory.addFactory(Protocol.SFTP, new Factory());
     }
 
     private static class Factory extends SessionFactory {

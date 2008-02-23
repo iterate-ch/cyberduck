@@ -445,7 +445,7 @@ public class CDMainController extends CDController {
         }
         if(Preferences.instance().getBoolean("defaulthandler.reminder")) {
             if(!URLSchemeHandlerConfiguration.instance().isDefaultHandlerForURLScheme(
-                    new String[]{Session.FTP, Session.FTP_TLS, Session.SFTP}))
+                    new String[]{Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()}))
             {
                 int choice = NSAlertPanel.runInformationalAlert(
                         NSBundle.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration", ""),
@@ -455,7 +455,7 @@ public class CDMainController extends CDController {
                         NSBundle.localizedString("Cancel", "Configuration", "")); //alternate
                 if (choice == CDSheetCallback.DEFAULT_OPTION) {
                     URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
-                            new String[]{Session.FTP, Session.FTP_TLS, Session.SFTP},
+                            new String[]{Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()},
                             NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString()
                     );
                 }

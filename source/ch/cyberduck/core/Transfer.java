@@ -91,7 +91,7 @@ public abstract class Transfer extends NSObject {
     public boolean isResumable() {
         if(!this.isComplete() && !this.isVirgin() ) {
             if(this.getSession() instanceof SFTPSession) {
-                return Preferences.instance().getProperty("ssh.transfer").equals(Session.SFTP);
+                return Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getName());
             }
             if(this.getSession() instanceof FTPSession) {
                 return !Preferences.instance().getProperty("ftp.transfermode").equals(

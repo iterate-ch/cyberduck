@@ -210,7 +210,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                     }
 
                     remoteURLField.setAttributedStringValue(new NSAttributedString(
-                            p.getHost().getURL() + p.getAbsolute(),
+                            p.getHost().toURL() + p.getAbsolute(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                     remoteURLField.setHidden(false);
 

@@ -96,7 +96,7 @@ public class CDErrorCell extends CDTableCell {
                     new NSRect(cellFrame.origin().x() + 5, cellFrame.origin().y() + 1,
                             cellFrame.size().width() - 5, cellFrame.size().height()));
             if(null == failure.getPath()) {
-                NSGraphics.drawAttributedString(new NSAttributedString(failure.getSession().getHost().getURL(),
+                NSGraphics.drawAttributedString(new NSAttributedString(failure.getSession().getHost().toURL(),
                         fixedFont),
                         new NSRect(cellFrame.origin().x() + 5, cellFrame.origin().y() + 16,
                                 cellFrame.size().width() - 5, cellFrame.size().height()));

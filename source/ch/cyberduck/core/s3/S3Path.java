@@ -35,14 +35,9 @@ import org.jets3t.service.model.S3Object;
 import org.jets3t.service.multithread.*;
 import org.jets3t.service.utils.ObjectUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
+import java.net.URLEncoder;
 
 /**
  * @version $Id:$
@@ -51,7 +46,7 @@ public class S3Path extends Path {
     private static Logger log = Logger.getLogger(S3Path.class);
 
     static {
-        PathFactory.addFactory(Session.S3, new Factory());
+        PathFactory.addFactory(Protocol.S3, new Factory());
     }
 
     private static class Factory extends PathFactory {
@@ -204,30 +199,30 @@ public class S3Path extends Path {
                 session.check();
                 session.message(NSBundle.localizedString("Getting permission of", "Status", "") + " " + this.getName());
 
-                final AccessControlList acl;
-                if(this.isBucket()) {
-                    // Retrieve the bucket's ACL
-                    acl = session.S3.getBucketAcl(this.getBucket());
-                }
-                else {
-                    acl = session.S3.getObjectAcl(this.getBucket(), this.getKey());
-                }
-
-                final Set grants = acl.getGrants();
-                for(Iterator iter = grants.iterator(); iter.hasNext();) {
-                    GrantAndPermission grant = (GrantAndPermission) iter.next();
-                    final org.jets3t.service.acl.Permission access = grant.getPermission();
-                    if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_READ)) {
-                    }
-                    if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_WRITE)) {
-                    }
-                }
+//                final AccessControlList acl;
+//                if(this.isBucket()) {
+//                    // Retrieve the bucket's ACL
+//                    acl = session.S3.getBucketAcl(this.getBucket());
+//                }
+//                else {
+//                    acl = session.S3.getObjectAcl(this.getBucket(), this.getKey());
+//                }
+//
+//                final Set grants = acl.getGrants();
+//                for(Iterator iter = grants.iterator(); iter.hasNext();) {
+//                    GrantAndPermission grant = (GrantAndPermission) iter.next();
+//                    final org.jets3t.service.acl.Permission access = grant.getPermission();
+//                    if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_READ)) {
+//                    }
+//                    if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_WRITE)) {
+//                    }
+//                }
 
                 attributes.setPermission(Permission.EMPTY);
             }
-            catch(S3ServiceException e) {
-                this.error("Cannot read file attributes", e);
-            }
+//            catch(S3ServiceException e) {
+//                this.error("Cannot read file attributes", e);
+//            }
             catch(IOException e) {
                 this.error("Connection failed", e);
                 session.interrupt();
@@ -556,11 +551,8 @@ public class S3Path extends Path {
                 }
                 session.check();
                 session.message(NSBundle.localizedString("Make directory", "Status", "") + " " + this.getName());
-                String location = null; // US
-                if(Preferences.instance().getObject("s3.location") != null) {
-                    location = Preferences.instance().getProperty("s3.location");
-                }
-                session.S3.createBucket(this.getName(), location);
+
+                session.S3.createBucket(this.getName(), Preferences.instance().getProperty("s3.location"));
                 this.cache().put(this, new AttributedList());
                 this.getParent().invalidate();
             }
@@ -577,7 +569,7 @@ public class S3Path extends Path {
     }
 
     public void mkdir(boolean recursive) {
-        this.mkdir(false);
+        this.mkdir();
     }
 
     public void writePermissions(Permission perm, boolean recursive) {
@@ -645,22 +637,28 @@ public class S3Path extends Path {
      * @return
      */
     public String toURL() {
-        // Determine expiry time for URL
-        int secondsFromNow = Preferences.instance().getInteger("s3.url.expire.seconds");
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.SECOND, secondsFromNow);
-        long secondsSinceEpoch = cal.getTimeInMillis() / 1000;
+        if(Preferences.instance().getBoolean("s3.url.public")) {
+            // Determine expiry time for URL
+            int secondsFromNow = Preferences.instance().getInteger("s3.url.expire.seconds");
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.SECOND, secondsFromNow);
+            long secondsSinceEpoch = cal.getTimeInMillis() / 1000;
 
-        // Generate URL
-        try {
-            return S3Service.createSignedUrl("GET",
-                    this.getBucket().getName(), this.getName(), null,
-                    null, session.S3.getAWSCredentials(), secondsSinceEpoch, false);
+            // Generate URL
+            try {
+                session.check();
+                return S3Service.createSignedUrl("GET",
+                        this.getBucket().getName(), this.getName(), null,
+                        null, session.S3.getAWSCredentials(), secondsSinceEpoch, false);
+            }
+            catch(S3ServiceException e) {
+                log.error(e.getMessage());
+            }
+            catch(IOException e) {
+                log.error(e.getMessage());
+            }
         }
-        catch(S3ServiceException e) {
-            log.error(e.getMessage());
-            return super.toURL();
-        }
+        return super.toURL();
     }
 
     public boolean isRenameSupported() {

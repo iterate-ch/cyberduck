@@ -444,7 +444,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         if(1 == selected) {
             final Transfer transfer = (Transfer) TransferCollection.instance().get(transferTable.selectedRow());
             // Draw text fields at the bottom
-            urlField.setAttributedStringValue(new NSAttributedString(transfer.getRoot().getHost().getURL()
+            urlField.setAttributedStringValue(new NSAttributedString(transfer.getRoot().getHost().toURL()
                     + transfer.getRoot().getParent().getAbsolute(),
                     TRUNCATE_MIDDLE_ATTRIBUTES));
             if(transfer.numberOfRoots() == 1) {

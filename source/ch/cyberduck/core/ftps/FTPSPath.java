@@ -18,13 +18,10 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.ftp.FTPPath;
-
 import com.apple.cocoa.foundation.NSDictionary;
+
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.ftp.FTPPath;
 
 /**
  * @version $Id$
@@ -32,7 +29,7 @@ import com.apple.cocoa.foundation.NSDictionary;
 public class FTPSPath extends FTPPath {
 
     static {
-        PathFactory.addFactory(Session.FTP_TLS, new Factory());
+        PathFactory.addFactory(Protocol.FTP_TLS, new Factory());
     }
 
     private static class Factory extends PathFactory {
