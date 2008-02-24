@@ -11,6 +11,6 @@ public interface ErrorListener {
      *
      * @param exception
      */
-    public abstract void error(final BackgroundException exception);
+    abstract void error(final BackgroundException exception);
 
 }

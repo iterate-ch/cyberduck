@@ -478,7 +478,7 @@ public abstract class Session extends NSObject {
      */
     public void error(Path path, String message, Throwable e) {
         log.info(e.getMessage());
-        BackgroundException failure = new BackgroundException(this, path, message, e);
+        final BackgroundException failure = new BackgroundException(this, path, message, e);
         ErrorListener[] l = (ErrorListener[]) errorListeners.toArray(
                 new ErrorListener[errorListeners.size()]);
         for(int i = 0; i < l.length; i++) {
