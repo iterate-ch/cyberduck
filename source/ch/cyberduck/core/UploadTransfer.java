@@ -22,8 +22,9 @@ import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.ui.cocoa.CDMainApplication;
+import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import java.util.Collections;
@@ -133,6 +134,13 @@ public class UploadTransfer extends Transfer {
 
     public boolean isCached(Path file) {
         return _cache.containsKey(file);
+    }
+
+    public boolean isResumable() {
+        if(this.getSession() instanceof S3Session) {
+            return false;
+        }
+        return super.isResumable();
     }
 
     public TransferFilter filter(final TransferAction action) {
