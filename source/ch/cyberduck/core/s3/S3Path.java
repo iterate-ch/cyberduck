@@ -29,15 +29,22 @@ import org.jets3t.service.S3ObjectsChunk;
 import org.jets3t.service.S3Service;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.acl.AccessControlList;
+import org.jets3t.service.acl.CanonicalGrantee;
 import org.jets3t.service.acl.GrantAndPermission;
+import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.multithread.*;
 import org.jets3t.service.utils.ObjectUtils;
 
-import java.io.*;
-import java.util.*;
-import java.net.URLEncoder;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @version $Id:$
@@ -121,6 +128,10 @@ public class S3Path extends Path {
 
     private S3Object _details;
 
+    /**
+     * @return
+     * @throws S3ServiceException
+     */
     private S3Object getDetails() throws S3ServiceException {
         if(null == this._details || !_details.isMetadataComplete()) {
             log.debug("getDetails");
@@ -131,14 +142,19 @@ public class S3Path extends Path {
 
     private S3Bucket _bucket;
 
+    /**
+     * @return
+     * @throws S3ServiceException
+     */
     private S3Bucket getBucket() throws S3ServiceException {
         if(null == _bucket) {
+            if(this.isRoot()) {
+                return null;
+            }
             AbstractPath bucketname = this;
             while(!bucketname.getParent().isRoot()) {
                 bucketname = bucketname.getParent();
             }
-            log.warn("Initializing bucket with name " + bucketname.getName());
-            _bucket = new S3Bucket(bucketname.getName());
             if(!session.S3.isBucketAccessible(bucketname.getName())) {
                 throw new S3ServiceException("Bucket not available: " + bucketname.getName());
             }
@@ -175,20 +191,22 @@ public class S3Path extends Path {
 
     public void readTimestamp() {
         synchronized(session) {
-            try {
-                session.check();
-                session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
+            if(attributes.isFile()) {
+                try {
+                    session.check();
+                    session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
 
-                attributes.setModificationDate(this.getDetails().getLastModifiedDate().getTime());
-            }
-            catch(S3ServiceException e) {
-                log.warn("Cannot read timestamp:" + e.getMessage());
-            }
-            catch(IOException e) {
-                this.error("Connection failed", e);
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                    attributes.setModificationDate(this.getDetails().getLastModifiedDate().getTime());
+                }
+                catch(S3ServiceException e) {
+                    log.warn("Cannot read timestamp:" + e.getMessage());
+                }
+                catch(IOException e) {
+                    this.error("Connection failed", e);
+                }
+                finally {
+                    session.fireActivityStoppedEvent();
+                }
             }
         }
     }
@@ -199,30 +217,23 @@ public class S3Path extends Path {
                 session.check();
                 session.message(NSBundle.localizedString("Getting permission of", "Status", "") + " " + this.getName());
 
-//                final AccessControlList acl;
-//                if(this.isBucket()) {
-//                    // Retrieve the bucket's ACL
-//                    acl = session.S3.getBucketAcl(this.getBucket());
-//                }
-//                else {
-//                    acl = session.S3.getObjectAcl(this.getBucket(), this.getKey());
-//                }
-//
-//                final Set grants = acl.getGrants();
-//                for(Iterator iter = grants.iterator(); iter.hasNext();) {
-//                    GrantAndPermission grant = (GrantAndPermission) iter.next();
-//                    final org.jets3t.service.acl.Permission access = grant.getPermission();
-//                    if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_READ)) {
-//                    }
-//                    if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_WRITE)) {
-//                    }
-//                }
-
-                attributes.setPermission(Permission.EMPTY);
+                AccessControlList acl = null;
+                if(this.isBucket()) {
+                    acl = session.S3.getBucketAcl(this.getBucket());
+                }
+                else if(attributes.isFile()) {
+                    acl = session.S3.getObjectAcl(this.getBucket(), this.getKey());
+                }
+                if(null == acl) {
+                    attributes.setPermission(Permission.EMPTY);
+                }
+                else {
+                    attributes.setPermission(this.readPermissions(acl.getGrants()));
+                }
             }
-//            catch(S3ServiceException e) {
-//                this.error("Cannot read file attributes", e);
-//            }
+            catch(S3ServiceException e) {
+                this.error("Cannot read file attributes", e);
+            }
             catch(IOException e) {
                 this.error("Connection failed", e);
                 session.interrupt();
@@ -231,6 +242,35 @@ public class S3Path extends Path {
                 session.fireActivityStoppedEvent();
             }
         }
+    }
+
+    private Permission readPermissions(Set grants) {
+        boolean[][] p = new boolean[3][3];
+        for(Iterator iter = grants.iterator(); iter.hasNext();) {
+            GrantAndPermission grant = (GrantAndPermission) iter.next();
+            final org.jets3t.service.acl.Permission access = grant.getPermission();
+            if(grant.getGrantee().equals(GroupGrantee.ALL_USERS)) {
+                if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_READ)
+                        || access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
+                    p[Permission.OTHER][Permission.READ] = true;
+                }
+                if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_WRITE)
+                        || access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
+                    p[Permission.OTHER][Permission.WRITE] = true;
+                }
+            }
+            if(grant.getGrantee().equals(new CanonicalGrantee(_bucket.getOwner().getId()))) {
+                if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_READ)
+                        || access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
+                    p[Permission.OWNER][Permission.READ] = true;
+                }
+                if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_WRITE)
+                        || access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
+                    p[Permission.OWNER][Permission.WRITE] = true;
+                }
+            }
+        }
+        return new Permission(p);
     }
 
     private CancelEventTrigger cancelTrigger;
@@ -312,7 +352,7 @@ public class S3Path extends Path {
                     }
 
                     in = session.S3.getObject(this.getBucket(), this.getKey(), null, null, null, null,
-                            new Long(status.getCurrent()), null).getDataInputStream();
+                            status.isResume() ? new Long(status.getCurrent()) : null, null).getDataInputStream();
                     if(null == in) {
                         throw new IOException("Unable opening data stream");
                     }
@@ -363,6 +403,34 @@ public class S3Path extends Path {
                                 new File(this.getLocal().getAbsolute()),
                                 null, //no encryption
                                 false); //no gzip
+                        if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                            Permission p = attributes.getPermission();
+                            if(null == p) {
+                                if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                                    if(this.attributes.isFile()) {
+                                        p = new Permission(
+                                                Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+                                    }
+                                    if(this.attributes.isDirectory()) {
+                                        p = new Permission(
+                                                Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+                                    }
+                                }
+                                else {
+                                    p = this.getLocal().attributes.getPermission();
+                                }
+                            }
+                            if(null != p) {
+                                AccessControlList acl = AccessControlList.REST_CANNED_PRIVATE;
+                                if(p.getOtherPermissions()[Permission.READ]) {
+                                    acl = AccessControlList.REST_CANNED_PUBLIC_READ;
+                                }
+                                if(p.getOtherPermissions()[Permission.WRITE]) {
+                                    acl = AccessControlList.REST_CANNED_PUBLIC_READ_WRITE;
+                                }
+                                object.setAcl(acl);
+                            }
+                        }
                     }
                     catch(Exception e) {
                         throw new S3ServiceException(e.getMessage(), e);
@@ -435,11 +503,7 @@ public class S3Path extends Path {
 
                         p.attributes.setOwner(buckets[i].getOwner().getDisplayName());
                         p.attributes.setCreationDate(buckets[i].getCreationDate().getTime());
-//                        if (buckets[i].getAcl() == null) {
-//                            buckets[i].setAcl(
-//                                session.S3.getBucketAcl(
-//                                    buckets[i]));
-//                        }
+
                         childs.add(p);
                     }
                 }
@@ -465,9 +529,6 @@ public class S3Path extends Path {
                     final String delimiter = Path.DELIMITER;
                     // Null if listing is complete
                     String priorLastKey = null;
-
-                    S3ServiceSimpleMulti multi = new S3ServiceSimpleMulti(session.S3);
-
                     do {
                         // Read directory listing in chunks. List results are always returned
                         // in lexicographic (alphabetical) order.
@@ -489,27 +550,6 @@ public class S3Path extends Path {
 
                             paths[i].getStatus().setSkipped(this.getStatus().isSkipped());
                         }
-/*
-                        // Fetching headers
-                        final S3Object[] heads = multi.getObjectsHeads(bucket, objects);
-                        for(int i = 0; i < heads.length; i++) {
-                            paths[i]._details = heads[i];
-                            if("application/x-directory".equals(paths[i].getDetails().getContentType())) {
-                                paths[i].attributes.setType(Path.DIRECTORY_TYPE);
-                            }
-                        }
-
-                        // Fetching ACLs
-                        final S3Object[] acls = multi.getObjectACLs(bucket, objects);
-                        for(int i = 0; i < acls.length; i++) {
-                            final AccessControlList acl = acls[i].getAcl();
-                            Set grants = acl.getGrants();
-                            for(Iterator iter = grants.iterator(); iter.hasNext();) {
-                                GrantAndPermission grant = (GrantAndPermission) iter.next();
-                                log.debug(grant);
-                            }
-                        }
-*/
                         childs.addAll(Arrays.asList(paths));
 
                         final String[] prefixes = chunk.getCommonPrefixes();
@@ -520,6 +560,10 @@ public class S3Path extends Path {
                             p._bucket = bucket;
 
                             p.attributes.setOwner(bucket.getOwner().getDisplayName());
+                            boolean[][] access = new boolean[3][3];
+                            access[Permission.OWNER][Permission.EXECUTE] = true;
+                            access[Permission.OTHER][Permission.EXECUTE] = true;
+                            p.attributes.setPermission(new Permission(access));
                             childs.add(p);
                         }
 
@@ -573,7 +617,67 @@ public class S3Path extends Path {
     }
 
     public void writePermissions(Permission perm, boolean recursive) {
-        throw new UnsupportedOperationException();
+        synchronized(session) {
+            log.debug("changePermissions:" + perm);
+            try {
+                session.check();
+                session.message(NSBundle.localizedString("Changing permission to", "Status", "") + " " + perm.getOctalString() + " (" + this.getName() + ")");
+
+                AccessControlList acl = null;
+                if(this.isBucket()) {
+                    acl = session.S3.getBucketAcl(this.getBucket());
+                }
+                else if(attributes.isFile()) {
+                    acl = session.S3.getObjectAcl(this.getBucket(), this.getKey());
+                }
+                if(acl != null) {
+                    final CanonicalGrantee ownerGrantee = new CanonicalGrantee(acl.getOwner().getId());
+                    acl.revokeAllPermissions(ownerGrantee);
+                    if(perm.getOwnerPermissions()[Permission.READ]) {
+                        acl.grantPermission(ownerGrantee,
+                                org.jets3t.service.acl.Permission.PERMISSION_READ);
+                    }
+                    if(perm.getOwnerPermissions()[Permission.WRITE]) {
+                        acl.grantPermission(ownerGrantee,
+                                org.jets3t.service.acl.Permission.PERMISSION_WRITE);
+                    }
+                    acl.revokeAllPermissions(GroupGrantee.ALL_USERS);
+                    if(perm.getOtherPermissions()[Permission.READ]) {
+                        acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_READ);
+                    }
+                    if(perm.getOtherPermissions()[Permission.WRITE]) {
+                        acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
+                    }
+                    if(this.isBucket()) {
+                        session.S3.putBucketAcl(this.getBucket().getName(), acl);
+                    }
+                    else if(attributes.isFile()) {
+                        session.S3.putObjectAcl(this.getBucket().getName(), this.getKey(), acl);
+                    }
+                }
+                if(attributes.isDirectory()) {
+                    if(recursive) {
+                        for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
+                            if(!session.isConnected()) {
+                                break;
+                            }
+                            ((AbstractPath) iter.next()).writePermissions(perm, recursive);
+                        }
+                    }
+                }
+                this.getParent().invalidate();
+            }
+            catch(S3ServiceException e) {
+                this.error("Cannot change permissions", e);
+            }
+            catch(IOException e) {
+                this.error("Connection failed", e);
+                session.interrupt();
+            }
+            finally {
+                session.fireActivityStoppedEvent();
+            }
+        }
     }
 
     public void writeModificationDate(long millis) {
