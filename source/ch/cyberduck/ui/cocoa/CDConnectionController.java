@@ -366,7 +366,6 @@ public class CDConnectionController extends CDSheetController {
     }
 
     public void awakeFromNib() {
-        //ControlTextDidChangeNotification
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("updateURLLabel", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
@@ -384,11 +383,7 @@ public class CDConnectionController extends CDSheetController {
                 NSControl.ControlTextDidChangeNotification,
                 this.usernameField);
 
-        Protocol defaultProtocol
-                = Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
-        
-        this.protocolPopup.selectItemWithTitle(defaultProtocol.getDescription());
-        this.portField.setIntValue(defaultProtocol.getDefaultPort());
+        this.protocolSelectionDidChange(null);
 
         super.awakeFromNib();
     }

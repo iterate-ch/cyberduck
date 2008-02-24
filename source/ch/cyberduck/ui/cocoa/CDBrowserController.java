@@ -421,8 +421,6 @@ public class CDBrowserController extends CDWindowController
         this._updateBrowserColumns(this.browserOutlineView);
 
         // Configure window
-        this.window.setTitle(
-                NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName").toString());
         if(Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen")) {
             this.bookmarkDrawer.open();
         }
@@ -549,16 +547,6 @@ public class CDBrowserController extends CDWindowController
         // which will refetch paths from the server marked as invalid.
         final NSTableView browser = this.getSelectedBrowserView();
         browser.reloadData();
-        if(this.isMounted()) {
-            // Delay for later invocation to make sure this is displayed as the last status message
-            CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
-                public void run() {
-                    statusLabel.setAttributedStringValue(new NSAttributedString(
-                            getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", ""),
-                            TRUNCATE_MIDDLE_ATTRIBUTES));
-                }
-            });
-        }
         this.setSelectedPaths(selected);
     }
 
@@ -916,12 +904,22 @@ public class CDBrowserController extends CDWindowController
         public void selectionDidChange(NSNotification notification) {
             if(Preferences.instance().getBoolean("browser.info.isInspector")) {
                 if(inspector != null && inspector.window() != null && inspector.window().isVisible()) {
-                    List files = new Collection();
-                    for(Iterator i = getSelectedPaths().iterator(); i.hasNext();) {
-                        files.add(i.next());
-                    }
-                    if(files.size() > 0) {
-                        inspector.setFiles(files);
+                    final List selected = getSelectedPaths();
+                    if(selected.size() > 0) {
+                        background(new BackgroundAction() {
+                            public void run() {
+                                for(Iterator iter = selected.iterator(); iter.hasNext(); ) {
+                                    final Path selected = (Path) iter.next();
+                                    if(selected.attributes.getPermission() == null) {
+                                        selected.readPermission();
+                                    }
+                                }
+                            }
+
+                            public void cleanup() {
+                                inspector.setFiles(selected);
+                            }
+                        });
                     }
                 }
             }
@@ -2434,20 +2432,33 @@ public class CDBrowserController extends CDWindowController
 
     public void infoButtonClicked(final Object sender) {
         if(this.getSelectionCount() > 0) {
-            List files = this.getSelectedPaths();
-            if(Preferences.instance().getBoolean("browser.info.isInspector")) {
-                if(null == this.inspector || null == this.inspector.window()) {
-                    this.inspector = CDInfoController.Factory.create(this, files);
+            final List selected = this.getSelectedPaths();
+            this.background(new BackgroundAction() {
+                public void run() {
+                    for(Iterator iter = selected.iterator(); iter.hasNext(); ) {
+                        final Path selected = (Path) iter.next();
+                        if(selected.attributes.getPermission() == null) {
+                            selected.readPermission();
+                        }
+                    }
                 }
-                else {
-                    this.inspector.setFiles(files);
+
+                public void cleanup() {
+                    if(Preferences.instance().getBoolean("browser.info.isInspector")) {
+                        if(null == inspector || null == inspector.window()) {
+                            inspector = CDInfoController.Factory.create(CDBrowserController.this, selected);
+                        }
+                        else {
+                            inspector.setFiles(selected);
+                        }
+                        inspector.window().makeKeyAndOrderFront(null);
+                    }
+                    else {
+                        CDInfoController c = CDInfoController.Factory.create(CDBrowserController.this, selected);
+                        c.window().makeKeyAndOrderFront(null);
+                    }
                 }
-                this.inspector.window().makeKeyAndOrderFront(null);
-            }
-            else {
-                CDInfoController c = CDInfoController.Factory.create(this, files);
-                c.window().makeKeyAndOrderFront(null);
-            }
+            });
         }
     }
 
@@ -3042,6 +3053,9 @@ public class CDBrowserController extends CDWindowController
             public void cleanup() {
                 spinner.stopAnimation(this);
                 runnable.cleanup();
+                statusLabel.setAttributedStringValue(new NSAttributedString(
+                        getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", ""),
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
 
             public Session session() {
@@ -3264,7 +3278,7 @@ public class CDBrowserController extends CDWindowController
             public void connectionWillOpen() {
                 CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
-                        window.setTitle(host.getProtocol() + ":" + host.getCredentials().getUsername()
+                        window.setTitle(host.getProtocol().getScheme() + ":" + host.getCredentials().getUsername()
                                 + "@" + host.getHostname());
                     }
                 });
@@ -3299,9 +3313,6 @@ public class CDBrowserController extends CDWindowController
                 CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
                         getSelectedBrowserView().setNeedsDisplay();
-//                        window.setTitle(
-//                                (String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
-//                        window.setRepresentedFilename(""); //can't send null
                         window.setDocumentEdited(false);
                         securityLabel.setImage(NSImage.imageNamed("unlocked.tiff"));
                         securityLabel.setEnabled(false);
