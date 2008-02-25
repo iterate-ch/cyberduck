@@ -1,7 +1,7 @@
 package ch.cyberduck.core.s3;
 
 /*
- *  Copyright (c) 2007 David Kocher. All rights reserved.
+ *  Copyright (c) 2008 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -497,7 +497,7 @@ public class S3Path extends Path {
                     // List all buckets
                     final S3Bucket[] buckets = session.S3.listAllBuckets();
                     for(int i = 0; i < buckets.length; i++) {
-                        S3Path p = (S3Path) PathFactory.createPath(session, this.getAbsolute(), buckets[i].getName(),
+                        S3Path p = new S3Path(session, this.getAbsolute(), buckets[i].getName(),
                                 Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                         p._bucket = buckets[i];
 

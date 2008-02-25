@@ -1,7 +1,7 @@
 package ch.cyberduck.core.s3;
 
 /*
- *  Copyright (c) 2007 David Kocher. All rights reserved.
+ *  Copyright (c) 2008 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -121,9 +121,8 @@ public class S3Session extends Session {
                             host.getCredentials().getPassword());
                 }
 
-                configuration = new Jets3tProperties();
-
-                this.configure(configuration);
+                // Configure connection options
+                this.configure(configuration = new Jets3tProperties());
 
                 this.S3 = new RestS3Service(credentials, ua, new CredentialsProvider() {
                     /**
@@ -170,24 +169,18 @@ public class S3Session extends Session {
                         }
                     }
                 }, configuration);
+
                 host.getCredentials().addInternetPasswordToKeychain(host.getProtocol(),
                         host.getHostname(), host.getPort());
             }
             catch(S3ServiceException e) {
                 throw new S3Exception(e.getMessage(), e);
             }
-            try {
-                if(!this.isConnected()) {
-                    throw new ConnectionCanceledException();
-                }
-                this.message(NSBundle.localizedString("S3 connection opened", "Status", ""));
-                this.fireConnectionDidOpenEvent();
-            }
-            catch(NullPointerException e) {
-                // Because the connection could have been closed using #interrupt and set this.FTP to null; we
-                // should find a better way to handle this asynchroneous issue than to catch a null pointer
+            if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
             }
+            this.message(NSBundle.localizedString("S3 connection opened", "Status", ""));
+            this.fireConnectionDidOpenEvent();
         }
     }
 
@@ -215,10 +208,6 @@ public class S3Session extends Session {
                 this.fireActivityStoppedEvent();
             }
         }
-    }
-
-    public void interrupt() {
-        ;
     }
 
     protected Path workdir() throws IOException {
