@@ -20,7 +20,7 @@
 "Downloading" = "Letöltés";
 
 /* No comment provided by engineer. */
-"FTP connection opened" = "FTP kapcsolat nyitva";
+"{1} connection opened" = "{1} kapcsolat nyitva";
 
 /* No comment provided by engineer. */
 "Getting size of" = "Méret olvasása";
@@ -50,22 +50,13 @@
 "No trusted certificate found" = "Nincs megbízható tanúsítvány";
 
 /* No comment provided by engineer. */
-"Opening FTP connection to" = "FTP kapcsolódás";
-
-/* No comment provided by engineer. */
-"Opening FTP-TLS connection to" = "FTP-TLS kapcsolódás";
-
-/* No comment provided by engineer. */
-"Opening SSH connection to" = "SSH kapcsolódás";
+"Opening {1} connection to {2}..." = "{1} kapcsolódás {2}…";
 
 /* No comment provided by engineer. */
 "SFTP subsystem ready" = "SFTP filerendszer kész";
 
 /* No comment provided by engineer. */
 "SCP subsystem ready" = "SCP subsystem ready";
-
-/* No comment provided by engineer. */
-"SSH connection opened" = "SSH kapcsolat létrehozva";
 
 /* No comment provided by engineer. */
 "Starting SFTP subsystem..." = "SFTP filerendszer indítása…";
