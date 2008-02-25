@@ -1283,7 +1283,7 @@ lib/ext/junit.jar -text
 lib/icu4j-3.6.1.jar -text
 lib/jakarta-oro-2.0.8.jar -text
 lib/jets3t-0.6.1.jar -text
-lib/log4j-1.2.13.jar -text
+lib/log4j-1.2.15.jar -text
 lib/log4j.properties -text
 lib/mime.types -text
 nl.lproj/Alert.nib/classes.nib -text
