@@ -111,7 +111,7 @@ public class SFTPPath extends Path {
                 while(i.hasNext()) {
                     SFTPv3DirectoryEntry f = (SFTPv3DirectoryEntry) i.next();
                     if(!f.filename.equals(".") && !f.filename.equals("..")) {
-                        Path p = PathFactory.createPath(session, this.getAbsolute(),
+                        Path p = new SFTPPath(session, this.getAbsolute(),
                                 f.filename, f.attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                         p.setParent(this);
                         if(null != f.attributes.uid) {
