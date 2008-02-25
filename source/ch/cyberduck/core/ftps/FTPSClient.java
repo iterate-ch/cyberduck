@@ -23,6 +23,7 @@ import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPMessageListener;
 
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 
 import org.apache.log4j.Logger;
 
@@ -33,7 +34,7 @@ import java.io.IOException;
  * @version $Id$
  */
 public class FTPSClient extends FTPClient {
-    private static Logger log = Logger.getLogger(SSLProtocolSocketFactory.class);
+    private static Logger log = Logger.getLogger(CustomTrustSSLProtocolSocketFactory.class);
 
     public FTPSClient(final String encoding, final FTPMessageListener listener, final X509TrustManager trustManager) {
         super(encoding, listener);

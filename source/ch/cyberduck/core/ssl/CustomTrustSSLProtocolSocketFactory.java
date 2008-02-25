@@ -1,34 +1,26 @@
-package ch.cyberduck.core.ftps;
+package ch.cyberduck.core.ssl;
 
 /*
- * $Header$
- * $Revision$
- * $Date$
- * 
- * ====================================================================
+ *  Copyright (c) 2008 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
  *
- *  Copyright 2002-2005 The Apache Software Foundation
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- * ====================================================================
- *
- * This software consists of voluntary contributions made by many
- * individuals on behalf of the Apache Software Foundation.  For more
- * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
- *
+ *  Bug fixes, suggestions and comments should be sent to:
+ *  dkocher@cyberduck.ch
  */
 
+import org.apache.commons.httpclient.ConnectTimeoutException;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
+import org.apache.commons.httpclient.protocol.SSLProtocolSocketFactory;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLContext;
@@ -40,14 +32,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class SSLProtocolSocketFactory implements SecureProtocolSocketFactory {
-    private static Logger log = Logger.getLogger(SSLProtocolSocketFactory.class);
+/**
+ * @version $Id$
+ */
+public class CustomTrustSSLProtocolSocketFactory extends SSLProtocolSocketFactory {
+    private static Logger log = Logger.getLogger(CustomTrustSSLProtocolSocketFactory.class);
 
     private SSLContext sslcontext = null;
 
     private X509TrustManager trustManager;
 
-    public SSLProtocolSocketFactory(X509TrustManager trustManager) {
+    public CustomTrustSSLProtocolSocketFactory(X509TrustManager trustManager) {
         this.trustManager = trustManager;
     }
 
@@ -59,14 +54,14 @@ public class SSLProtocolSocketFactory implements SecureProtocolSocketFactory {
                     null);
             return context;
         }
-        catch (Exception e) {
+        catch(Exception e) {
             log.error(e.getMessage(), e);
             return null;
         }
     }
 
     private SSLContext getSSLContext() {
-        if (null == this.sslcontext) {
+        if(null == this.sslcontext) {
             this.sslcontext = createEasySSLContext();
         }
         return this.sslcontext;
@@ -82,6 +77,15 @@ public class SSLProtocolSocketFactory implements SecureProtocolSocketFactory {
                 port,
                 clientHost,
                 clientPort);
+    }
+
+    public Socket createSocket(String host, int port, InetAddress localAddress, int localPort, HttpConnectionParams params)
+            throws IOException, UnknownHostException, ConnectTimeoutException {
+
+        return this.getSSLContext().getSocketFactory().createSocket(host,
+                port,
+                localAddress,
+                localPort);
     }
 
     public Socket createSocket(String host, int port)
@@ -104,13 +108,5 @@ public class SSLProtocolSocketFactory implements SecureProtocolSocketFactory {
     public ServerSocket createServerSocket(int port)
             throws IOException {
         return getSSLContext().getServerSocketFactory().createServerSocket(port);
-    }
-
-    public boolean equals(Object obj) {
-        return ((obj != null) && obj.getClass().equals(SSLProtocolSocketFactory.class));
-    }
-
-    public int hashCode() {
-        return SSLProtocolSocketFactory.class.hashCode();
     }
 }

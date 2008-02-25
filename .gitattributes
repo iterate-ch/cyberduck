@@ -1718,6 +1718,7 @@ source/ch/cyberduck/core/io/UKMainThreadProxy.m -text
 source/ch/cyberduck/core/s3/S3Exception.java -text
 source/ch/cyberduck/core/s3/S3Path.java -text
 source/ch/cyberduck/core/s3/S3Session.java -text
+source/ch/cyberduck/core/ssl/SSLSession.java -text
 source/ch/cyberduck/core/util/URLSchemeHandlerConfiguration.m -text
 source/ch/cyberduck/ui/cocoa/CDActivityController.java -text
 source/ch/cyberduck/ui/cocoa/CDBottomView.m -text

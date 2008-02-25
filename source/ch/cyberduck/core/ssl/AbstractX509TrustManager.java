@@ -1,4 +1,4 @@
-package ch.cyberduck.core.ftps;
+package ch.cyberduck.core.ssl;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.

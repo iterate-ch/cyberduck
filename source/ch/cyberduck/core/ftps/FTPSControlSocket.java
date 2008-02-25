@@ -21,6 +21,7 @@ package ch.cyberduck.core.ftps;
 import com.enterprisedt.net.ftp.*;
 
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 
 import javax.net.ssl.HandshakeCompletedEvent;
 import javax.net.ssl.HandshakeCompletedListener;
@@ -49,7 +50,7 @@ public class FTPSControlSocket extends FTPControlSocket {
         // This constructor can be used when tunneling SSL through a proxy or when negotiating the
         // use of SSL over an existing socket. The host and port refer to the logical peer destination.
         // This socket is configured using the socket options established for this factory.
-        this.controlSock = new SSLProtocolSocketFactory(this.trustManager).createSocket(this.controlSock,
+        this.controlSock = new CustomTrustSSLProtocolSocketFactory(this.trustManager).createSocket(this.controlSock,
                 this.controlSock.getInetAddress().getHostName(),
                 this.controlSock.getPort(),
                 true); //close the underlying socket when this socket is closed
@@ -74,7 +75,7 @@ public class FTPSControlSocket extends FTPControlSocket {
         if (useDataConnectionSecurity) {
             // use any available port
             FTPDataSocket socket = new FTPActiveDataSocket(
-                    new SSLProtocolSocketFactory(trustManager).createServerSocket(0));
+                    new CustomTrustSSLProtocolSocketFactory(trustManager).createServerSocket(0));
 
             // get the local address to which the control socket is bound.
             InetAddress localhost = controlSock.getLocalAddress();
@@ -125,12 +126,12 @@ public class FTPSControlSocket extends FTPControlSocket {
                 if(InetAddress.getByName(ipAddress).isSiteLocalAddress()) {
                     // Do not trust a local address; may be a misconfigured router
                     return new FTPPassiveDataSocket(
-                            new SSLProtocolSocketFactory(trustManager).createSocket(controlSock.getInetAddress().getHostAddress(), port));
+                            new CustomTrustSSLProtocolSocketFactory(trustManager).createSocket(controlSock.getInetAddress().getHostAddress(), port));
                 }
 
                 // create the socket
                 return new FTPPassiveDataSocket(
-                        new SSLProtocolSocketFactory(trustManager).createSocket(ipAddress, port));
+                        new CustomTrustSSLProtocolSocketFactory(trustManager).createSocket(ipAddress, port));
             }
             catch (ConnectException e) {
                 // See #15353

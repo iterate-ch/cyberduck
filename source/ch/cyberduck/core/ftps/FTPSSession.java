@@ -22,6 +22,8 @@ import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
+import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.log4j.Logger;
 
@@ -36,7 +38,7 @@ import com.enterprisedt.net.ftp.FTPMessageListener;
 /**
  * @version $Id$
  */
-public class FTPSSession extends FTPSession {
+public class FTPSSession extends FTPSession implements SSLSession {
     private static Logger log = Logger.getLogger(FTPSSession.class);
 
     static {
@@ -58,32 +60,37 @@ public class FTPSSession extends FTPSession {
     }
 
     /**
-     * @return
-     */
-    public String getSecurityInformation() {
-        StringBuffer info = new StringBuffer();
-        X509Certificate[] accepted = this.trustManager.getAcceptedIssuers();
-        for(int i = 0; i < accepted.length; i++) {
-            info.append(accepted[i].toString());
-        }
-        return info.toString();
-    }
-
-    /**
      * A trust manager accepting any certificate by default
      */
     private X509TrustManager trustManager
             = new IgnoreX509TrustManager();
 
+    /**
+     * @return
+     */
     public X509TrustManager getTrustManager() {
         return trustManager;
     }
 
     /**
      * Override the default ignoring trust manager
+     *
+     * @param trustManager
      */
     public void setTrustManager(X509TrustManager trustManager) {
         this.trustManager = trustManager;
+    }
+
+    /**
+     * @return
+     */
+    public String getSecurityInformation() {
+        StringBuffer info = new StringBuffer();
+        X509Certificate[] accepted = this.getTrustManager().getAcceptedIssuers();
+        for(int i = 0; i < accepted.length; i++) {
+            info.append(accepted[i].toString());
+        }
+        return info.toString();
     }
 
     protected void connect() throws IOException, FTPException, ConnectionCanceledException, LoginCanceledException {
@@ -101,7 +108,7 @@ public class FTPSSession extends FTPSession {
                 public void logReply(String reply) {
                     FTPSSession.this.log(reply);
                 }
-            }, this.trustManager);
+            }, this.getTrustManager());
             try {
                 this.FTP.setTimeout(this.timeout());
                 this.FTP.connect(host.getHostname(true), host.getPort());

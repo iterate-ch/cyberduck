@@ -1,7 +1,7 @@
-package ch.cyberduck.core.ftps;
+package ch.cyberduck.core.ssl;
 
 /*
- *  Copyright (c) 2005 David Kocher. All rights reserved.
+ *  Copyright (c) 2008 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,17 +18,15 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
-public class IgnoreX509TrustManager extends AbstractX509TrustManager {
-    public void checkClientTrusted(java.security.cert.X509Certificate[] x509Certificates, java.lang.String string)
-            throws java.security.cert.CertificateException {
-        //ignore
-    }
+import javax.net.ssl.X509TrustManager;
 
-    public void checkServerTrusted(java.security.cert.X509Certificate[] x509Certificates, java.lang.String string)
-            throws java.security.cert.CertificateException {
-        //ignore
-    }
+/**
+ * @version $Id:$
+ */
+public interface SSLSession {
+    X509TrustManager getTrustManager();
+
+    void setTrustManager(X509TrustManager trustManager);
+
+    String getSecurityInformation();
 }
