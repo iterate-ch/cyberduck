@@ -36,8 +36,16 @@ public abstract class Protocol {
         return this.getScheme();
     }
 
+    /**
+     *
+     * @return
+     */
     public abstract String getDescription();
 
+    /**
+     *
+     * @return
+     */
     public abstract String getScheme();
 
     public boolean equals(Object other) {
@@ -53,36 +61,17 @@ public abstract class Protocol {
 
     /**
      *
+     * @return
+     */
+    public boolean isSecure() {
+        return false;
+    }
+
+    /**
+     *
      * @return The default port this protocol connects to
      */
     public abstract int getDefaultPort();
-
-    /**
-     * 
-     * @param protocol
-     * @return
-     */
-    public static Protocol forName(String protocol) {
-        if(protocol.equals(FTP.getName())) {
-            return FTP;
-        }
-        if(protocol.equals(FTP_TLS.getName())) {
-            return FTP_TLS;
-        }
-        if(protocol.equals(SFTP.getName())) {
-            return SFTP;
-        }
-        if(protocol.equals(SCP.getName())) {
-            return SCP;
-        }
-        if(protocol.equals(S3.getName())) {
-            return S3;
-        }
-        if(protocol.equals(WEBDAV.getName())) {
-            return WEBDAV;
-        }
-        throw new RuntimeException();
-    }
 
     public static final Protocol SFTP = new Protocol() {
         public String getDescription() {
@@ -96,7 +85,12 @@ public abstract class Protocol {
         public String getScheme() {
             return "sftp";
         }
+
+        public boolean isSecure() {
+            return true;
+        }
     };
+
     public static final Protocol SCP = new Protocol() {
         public String getDescription() {
             return NSBundle.localizedString("SCP (Secure Copy)", "");
@@ -109,7 +103,12 @@ public abstract class Protocol {
         public String getScheme() {
             return "scp";
         }
+
+        public boolean isSecure() {
+            return true;
+        }
     };
+
     public static final Protocol FTP = new Protocol() {
         public String getDescription() {
             return NSBundle.localizedString("FTP (File Transfer Protocol)", "");
@@ -123,6 +122,7 @@ public abstract class Protocol {
             return "ftp";
         }
     };
+
     public static final Protocol FTP_TLS = new Protocol() {
         public String getDescription() {
             return NSBundle.localizedString("FTP-SSL (FTP over TLS/SSL)", "");
@@ -135,10 +135,15 @@ public abstract class Protocol {
         public String getScheme() {
             return "ftps";
         }
+
+        public boolean isSecure() {
+            return true;
+        }
     };
+
     public static final Protocol S3 = new Protocol() {
         public String getDescription() {
-            return NSBundle.localizedString("S3 (Amazon Simple Storage Service)", "");
+            return NSBundle.localizedString("Amazon S3 (HTTPS)", "");
         }
 
         public String getName() {
@@ -152,14 +157,37 @@ public abstract class Protocol {
         public String getScheme() {
             return "https";
         }
+
+        public boolean isSecure() {
+            return true;
+        }
     };
+
     public static final Protocol WEBDAV = new Protocol() {
         public String getDescription() {
-            return NSBundle.localizedString("WebDAV (Web-based Distributed Authoring and Versioning)", "");
+            return NSBundle.localizedString("WebDAV (HTTP)", "");
         }
 
         public String getName() {
-            return "webdav";
+            return "dav";
+        }
+
+        public int getDefaultPort() {
+            return 80;
+        }
+
+        public String getScheme() {
+            return "http";
+        }
+    };
+
+    public static final Protocol WEBDAV_SSL = new Protocol() {
+        public String getDescription() {
+            return NSBundle.localizedString("WebDAV (HTTPS)", "");
+        }
+
+        public String getName() {
+            return "davs";
         }
 
         public int getDefaultPort() {
@@ -169,28 +197,64 @@ public abstract class Protocol {
         public String getScheme() {
             return "https";
         }
-    };
 
-    public static String getDefaultScheme(String protocol) {
-        return Protocol.forName(protocol).getScheme();
-    }
+        public boolean isSecure() {
+            return true;
+        }
+    };
 
     /**
      * @param port
      * @return The standard protocol for this port number
      */
     public static Protocol getDefaultProtocol(int port) {
-        if(port == FTP.getDefaultPort())
-            return FTP;
-        if(port == SFTP.getDefaultPort())
-            return SFTP;
-        if(port == S3.getDefaultPort())
-            return S3;
-        if(port == WEBDAV.getDefaultPort())
-            return WEBDAV;
-
-        log.warn("Cannot find default protocol for port number " + port);
+        final Protocol[] protocols = getKnownProtocols();
+        for(int i = 0; i < protocols.length; i++) {
+            if(protocols[i].getDefaultPort() == port) {
+                return protocols[i];
+            }
+        }
+        log.warn("Cannot find default protocol for port:" + port);
         return Protocol.forName(
                 Preferences.instance().getProperty("connection.protocol.default"));
+    }
+
+    public static String[] getProtocolDescriptions() {
+        final Protocol[] protocols = getKnownProtocols();
+        final String[] descriptions = new String[protocols.length];
+        for(int i = 0; i < protocols.length; i++) {
+            descriptions[i] = protocols[i].getDescription();
+        }
+        return descriptions;
+    }
+
+    /**
+     *
+     * @param protocol
+     * @return
+     */
+    public static Protocol forName(final String protocol) {
+        final Protocol[] protocols = getKnownProtocols();
+        for(int i = 0; i < protocols.length; i++) {
+            if(protocols[i].getName().equals(protocol)) {
+                return protocols[i];
+            }
+        }
+        throw new RuntimeException("Unkown protocol:"+protocol);
+    }
+
+    public static Protocol forScheme(final String scheme) {
+        final Protocol[] protocols = getKnownProtocols();
+        for(int i = 0; i < protocols.length; i++) {
+            if(protocols[i].getScheme().equals(scheme)) {
+                return protocols[i];
+            }
+        }
+        throw new RuntimeException("Unkown scheme:"+scheme);
+    }
+
+    public static Protocol[] getKnownProtocols() {
+        return new Protocol[]{
+                FTP, FTP_TLS, SFTP, WEBDAV, WEBDAV_SSL, S3};
     }
 }

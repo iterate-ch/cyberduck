@@ -45,13 +45,11 @@ public class CDBookmarkController extends CDWindowController {
         this.protocolPopup = protocolPopup;
         this.protocolPopup.setEnabled(true);
         this.protocolPopup.removeAllItems();
-        this.protocolPopup.addItemsWithTitles(new NSArray(new String[]{
-                Protocol.FTP.getDescription(), Protocol.FTP_TLS.getDescription(), Protocol.SFTP.getDescription(), Protocol.S3.getDescription()})
-        );
-        this.protocolPopup.itemWithTitle(Protocol.FTP.getDescription()).setRepresentedObject(Protocol.FTP);
-        this.protocolPopup.itemWithTitle(Protocol.FTP_TLS.getDescription()).setRepresentedObject(Protocol.FTP_TLS);
-        this.protocolPopup.itemWithTitle(Protocol.SFTP.getDescription()).setRepresentedObject(Protocol.SFTP);
-        this.protocolPopup.itemWithTitle(Protocol.S3.getDescription()).setRepresentedObject(Protocol.S3);
+        this.protocolPopup.addItemsWithTitles(new NSArray(Protocol.getProtocolDescriptions()));
+        final Protocol[] protocols = Protocol.getKnownProtocols();
+        for(int i = 0; i < protocols.length; i++) {
+            this.protocolPopup.itemWithTitle(protocols[i].getDescription()).setRepresentedObject(protocols[i]);
+        }
         this.protocolPopup.setTarget(this);
         this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[]{Object.class}));
     }

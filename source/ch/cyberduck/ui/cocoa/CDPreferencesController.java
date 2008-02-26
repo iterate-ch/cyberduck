@@ -1463,13 +1463,11 @@ public class CDPreferencesController extends CDWindowController {
         this.protocolCombobox.setTarget(this);
         this.protocolCombobox.setAction(new NSSelector("protocolComboboxClicked", new Class[]{NSPopUpButton.class}));
         this.protocolCombobox.removeAllItems();
-        this.protocolCombobox.addItemsWithTitles(new NSArray(new String[]{
-                Protocol.FTP.getDescription(), Protocol.FTP_TLS.getDescription(), Protocol.SFTP.getDescription(), Protocol.S3.getDescription()})
-        );
-        this.protocolCombobox.itemWithTitle(Protocol.FTP.getDescription()).setRepresentedObject(Protocol.FTP);
-        this.protocolCombobox.itemWithTitle(Protocol.FTP_TLS.getDescription()).setRepresentedObject(Protocol.FTP_TLS);
-        this.protocolCombobox.itemWithTitle(Protocol.SFTP.getDescription()).setRepresentedObject(Protocol.SFTP);
-        this.protocolCombobox.itemWithTitle(Protocol.S3.getDescription()).setRepresentedObject(Protocol.S3);
+        this.protocolCombobox.addItemsWithTitles(new NSArray(Protocol.getProtocolDescriptions()));
+        final Protocol[] protocols = Protocol.getKnownProtocols();
+        for(int i = 0; i < protocols.length; i++) {
+            this.protocolCombobox.itemWithTitle(protocols[i].getDescription()).setRepresentedObject(protocols[i]);
+        }
 
         final Protocol defaultProtocol
                 = Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
