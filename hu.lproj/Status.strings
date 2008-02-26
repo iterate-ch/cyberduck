@@ -20,7 +20,7 @@
 "Downloading" = "Letöltés";
 
 /* No comment provided by engineer. */
-"{1} connection opened" = "{1} kapcsolat nyitva";
+"{0} connection opened" = "{0} kapcsolat nyitva";
 
 /* No comment provided by engineer. */
 "Getting size of" = "Méret olvasása";
@@ -50,7 +50,7 @@
 "No trusted certificate found" = "Nincs megbízható tanúsítvány";
 
 /* No comment provided by engineer. */
-"Opening {1} connection to {2}..." = "{1} kapcsolódás {2}…";
+"Opening {0} connection to {1}..." = "{0} kapcsolódás {1}…";
 
 /* No comment provided by engineer. */
 "SFTP subsystem ready" = "SFTP filerendszer kész";
