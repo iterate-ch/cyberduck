@@ -1,4 +1,4 @@
 /* Localized versions of Info.plist keys */
 
-CFBundleGetInfoString = "_VERSION_ (_REVISION_), 版权所有 2001-2007 David V. Kocher.";
-NSHumanReadableCopyright = "版权所有 2001-2007 David V. Kocher";
+CFBundleGetInfoString = "_VERSION_ (_REVISION_), 版权所有 2001-2008 David V. Kocher.";
+NSHumanReadableCopyright = "版权所有 2001-2008 David V. Kocher";

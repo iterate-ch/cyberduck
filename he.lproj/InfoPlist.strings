@@ -1,5 +1,5 @@
 /* Localized versions of Info.plist keys */
 
 
-CFBundleGetInfoString = "_VERSION_ (_REVISION_), Copyright 2001-2007 David V. Kocher.";
-NSHumanReadableCopyright = "Copyright 2001-2007 David V. Kocher";
+CFBundleGetInfoString = "_VERSION_ (_REVISION_), Copyright 2001-2008 David V. Kocher.";
+NSHumanReadableCopyright = "Copyright 2001-2008 David V. Kocher";
