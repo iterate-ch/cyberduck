@@ -42,10 +42,6 @@ import com.ibm.icu.text.StringPrepParseException;
 public class Host extends NSObject {
     private static Logger log = Logger.getLogger(Host.class);
     /**
-     * Internal protocol identifier
-     */
-    private String identifier;
-    /**
      * The protocol identifier. Must be one of <code>sftp</code>, <code>ftp</code> or <code>ftps</code>
      * @see Protocol#FTP
      * @see Protocol#FTP_TLS
@@ -192,7 +188,6 @@ public class Host extends NSObject {
     public NSDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
         dict.setObjectForKey(this.getProtocol().getName(), Host.PROTOCOL);
-//        dict.setObjectForKey(this.getProtocol().getScheme(), Host.SCHEME);
         dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
         dict.setObjectForKey(this.getHostname(), Host.HOSTNAME);
         dict.setObjectForKey(String.valueOf(this.getPort()), Host.PORT);
@@ -298,7 +293,7 @@ public class Host extends NSObject {
         if(null == input || input.length() == 0)
             throw new MalformedURLException("No hostname given");
         int begin = 0;
-        int cut = 0;
+        int cut;
         if(input.indexOf("://", begin) == -1 && input.indexOf('@', begin) == -1) {
             throw new MalformedURLException("No protocol or user delimiter");
         }
@@ -307,7 +302,7 @@ public class Host extends NSObject {
         if(input.indexOf("://", begin) != -1) {
             cut = input.indexOf("://", begin);
             protocol = Protocol.forScheme(input.substring(begin, cut));
-            begin += protocol.toString().length() + 3;
+            begin += protocol.getScheme().length() + 3;
         }
         String username = null;
         String password = null;
