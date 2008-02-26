@@ -306,7 +306,7 @@ public class Host extends NSObject {
                 Preferences.instance().getProperty("connection.protocol.default"));
         if(input.indexOf("://", begin) != -1) {
             cut = input.indexOf("://", begin);
-            protocol = Protocol.forName(input.substring(begin, cut));
+            protocol = Protocol.forScheme(input.substring(begin, cut));
             begin += protocol.toString().length() + 3;
         }
         String username = null;

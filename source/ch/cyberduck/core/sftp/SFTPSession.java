@@ -23,12 +23,13 @@ import com.apple.cocoa.foundation.NSBundle;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Session;
 
+import org.apache.log4j.Logger;
+
 import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-
-import org.apache.log4j.Logger;
+import java.text.MessageFormat;
 
 import ch.ethz.ssh2.*;
 import ch.ethz.ssh2.channel.ChannelClosedException;
@@ -140,26 +141,24 @@ public class SFTPSession extends Session {
                 return;
             }
             this.fireConnectionWillOpenEvent();
-            this.message(NSBundle.localizedString("Opening SSH connection to", "Status", "") + " " + host.getHostname() + "...");
+
+            this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}...", "Status", ""),
+                    new Object[]{host.getProtocol().getName(), host.getHostname()}));
+
             SSH = new Connection(this.host.getHostname(true), this.host.getPort());
-            try {
-                final int timeout = this.timeout();
-                SSH.connect(verifier, timeout, timeout);
-                if(!this.isConnected()) {
-                    throw new ConnectionCanceledException();
-                }
-                this.message(NSBundle.localizedString("SSH connection opened", "Status", ""));
-                this.login();
-                if(!SSH.isAuthenticationComplete()) {
-                    throw new LoginCanceledException();
-                }
-                this.fireConnectionDidOpenEvent();
-            }
-            catch(NullPointerException e) {
-                // Because the connection could have been closed using #interrupt and set this.FTP to null; we
-                // should find a better way to handle this asynchroneous issue than to catch a null pointer
+
+            final int timeout = this.timeout();
+            SSH.connect(verifier, timeout, timeout);
+            if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
             }
+            this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
+                    new Object[]{host.getProtocol().getName().toUpperCase()}));
+            this.login();
+            if(!SSH.isAuthenticationComplete()) {
+                throw new LoginCanceledException();
+            }
+            this.fireConnectionDidOpenEvent();
         }
     }
 

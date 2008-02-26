@@ -31,6 +31,7 @@ import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
+import java.text.MessageFormat;
 
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPMessageListener;
@@ -99,7 +100,10 @@ public class FTPSSession extends FTPSession implements SSLSession {
                 return;
             }
             this.fireConnectionWillOpenEvent();
-            this.message(NSBundle.localizedString("Opening FTP-TLS connection to", "Status", "") + " " + host.getHostname() + "...");
+
+            this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}...", "Status", ""),
+                    new Object[]{host.getProtocol().getName().toUpperCase(), host.getHostname()}));
+
             this.FTP = new FTPSClient(this.getEncoding(), new FTPMessageListener() {
                 public void logCommand(String cmd) {
                     FTPSSession.this.log(cmd);
@@ -117,7 +121,8 @@ public class FTPSSession extends FTPSession implements SSLSession {
                 }
                 this.FTP.setStrictReturnCodes(true);
                 this.FTP.setConnectMode(this.getConnectMode());
-                this.message(NSBundle.localizedString("FTP connection opened", "Status", ""));
+                this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
+                        new Object[]{host.getProtocol().getName().toUpperCase()}));
                 ((FTPSClient) this.FTP).auth();
                 this.login();
                 try {

@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+import java.text.MessageFormat;
 
 import com.enterprisedt.net.ftp.*;
 
@@ -192,7 +193,10 @@ public class FTPSession extends Session {
                 return;
             }
             this.fireConnectionWillOpenEvent();
-            this.message(NSBundle.localizedString("Opening FTP connection to", "Status", "") + " " + host.getHostname() + "...");
+
+            this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}...", "Status", ""),
+                    new Object[]{host.getProtocol().getName().toUpperCase(), host.getHostname()}));
+
             this.FTP = new FTPClient(this.getEncoding(), new FTPMessageListener() {
                 public void logCommand(String cmd) {
                     FTPSession.this.log(cmd);
@@ -202,29 +206,23 @@ public class FTPSession extends Session {
                     FTPSession.this.log(reply);
                 }
             });
-            try {
-                this.FTP.setTimeout(this.timeout());
-                this.FTP.connect(host.getHostname(true), host.getPort());
-                if(!this.isConnected()) {
-                    throw new ConnectionCanceledException();
-                }
-                this.FTP.setStrictReturnCodes(true);
-                this.FTP.setConnectMode(this.getConnectMode());
-                this.message(NSBundle.localizedString("FTP connection opened", "Status", ""));
-                this.login();
-                try {
-                    this.setIdentification(this.FTP.system());
-                }
-                catch(FTPException e) {
-                    log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
-                }
-                this.fireConnectionDidOpenEvent();
-            }
-            catch(NullPointerException e) {
-                // Because the connection could have been closed using #interrupt and set this.FTP to null; we
-                // should find a better way to handle this asynchroneous issue than to catch a null pointer
+            this.FTP.setTimeout(this.timeout());
+            this.FTP.connect(host.getHostname(true), host.getPort());
+            if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
             }
+            this.FTP.setStrictReturnCodes(true);
+            this.FTP.setConnectMode(this.getConnectMode());
+            this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
+                    new Object[]{host.getProtocol().getName().toUpperCase()}));
+            this.login();
+            try {
+                this.setIdentification(this.FTP.system());
+            }
+            catch(FTPException e) {
+                log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
+            }
+            this.fireConnectionDidOpenEvent();
         }
     }
 

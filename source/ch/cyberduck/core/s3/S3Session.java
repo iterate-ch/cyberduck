@@ -34,6 +34,7 @@ import org.jets3t.service.security.AWSCredentials;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.text.MessageFormat;
 
 /**
  * @version $Id:$
@@ -111,7 +112,10 @@ public class S3Session extends Session {
                 return;
             }
             this.fireConnectionWillOpenEvent();
-            this.message(NSBundle.localizedString("Opening S3 connection to", "Status", "") + " " + host.getHostname() + "...");
+
+            this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}...", "Status", ""),
+                    new Object[]{host.getProtocol().getName(), host.getHostname()}));
+
             try {
                 // Prompt the login credentials first
                 this.login();
@@ -179,7 +183,8 @@ public class S3Session extends Session {
             if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
             }
-            this.message(NSBundle.localizedString("S3 connection opened", "Status", ""));
+            this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
+                    new Object[]{host.getProtocol().getName().toUpperCase()}));
             this.fireConnectionDidOpenEvent();
         }
     }
