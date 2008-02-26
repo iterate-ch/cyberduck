@@ -402,7 +402,8 @@ public abstract class Preferences {
         defaults.put("s3.url.public", String.valueOf(false));
 
 //        defaults.put("s3.crypto.algorithm", "PBEWithMD5AndDES");
-        
+
+        defaults.put("webdav.followRedirects", String.valueOf(true));
         /**
          * Maximum concurrent connections to the same host
          * Unlimited by default

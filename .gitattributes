@@ -1282,6 +1282,8 @@ lib/commons-net-1.5.0-dev.jar -text
 lib/ext/junit.jar -text
 lib/icu4j-3.6.1.jar -text
 lib/jakarta-oro-2.0.8.jar -text
+lib/jakarta-slide-webdavlib-2.2-dev.jar -text
+lib/jdom-1.1.jar -text
 lib/jets3t-0.6.1.jar -text
 lib/log4j-1.2.15.jar -text
 lib/log4j.properties -text
@@ -1704,6 +1706,10 @@ source/ch/cyberduck/core/CollectionListener.java -text
 source/ch/cyberduck/core/Host.m -text
 source/ch/cyberduck/core/Protocol.java -text
 source/ch/cyberduck/core/Speedometer.java -text
+source/ch/cyberduck/core/dav/DAVPath.java -text
+source/ch/cyberduck/core/dav/DAVSession.java -text
+source/ch/cyberduck/core/davs/DAVSPath.java -text
+source/ch/cyberduck/core/davs/DAVSSession.java -text
 source/ch/cyberduck/core/forker/NSString+CarbonFSRefCreation.m -text
 source/ch/cyberduck/core/ftp/parser/CommonUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/LaxUnixFTPEntryParser.java -text
