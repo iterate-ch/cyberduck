@@ -23,8 +23,8 @@ import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.sftp.SFTPSession;
-import ch.cyberduck.core.ftps.FTPSSession;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.cocoa.delegate.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
@@ -95,7 +95,7 @@ public class CDBrowserController extends CDWindowController
                 Object protocolObj = args.objectForKey("Protocol");
                 if(protocolObj != null) {
                     host = new Host(
-                            Protocol.forName((String) args.objectForKey("Protocol")),
+                            Protocol.forScheme((String) args.objectForKey("Protocol")),
                             (String) args.objectForKey("Host"),
                             Integer.parseInt((String) args.objectForKey("Port")));
                 }
@@ -1971,8 +1971,8 @@ public class CDBrowserController extends CDWindowController
 
             public void setAlertLabel(NSTextField alertLabel) {
                 this.alertLabel = alertLabel;
-                if(session instanceof FTPSSession) {
-                    X509Certificate[] certificates = ((FTPSSession) session).getTrustManager().getAcceptedIssuers();
+                if(session instanceof SSLSession) {
+                    X509Certificate[] certificates = ((SSLSession) session).getTrustManager().getAcceptedIssuers();
                     for(int i = 0; i < certificates.length; i++) {
                         try {
                             certificates[i].checkValidity();
@@ -3262,8 +3262,8 @@ public class CDBrowserController extends CDWindowController
             ((ch.cyberduck.core.sftp.SFTPSession) session).setHostKeyVerificationController(
                     new CDHostKeyController(this));
         }
-        if(this.session instanceof ch.cyberduck.core.ftps.FTPSSession) {
-            ((ch.cyberduck.core.ftps.FTPSSession) this.session).setTrustManager(
+        if(this.session instanceof SSLSession) {
+            ((SSLSession) this.session).setTrustManager(
                     new CDX509TrustManagerController(this));
         }
         this.session.setLoginController(new CDLoginController(this));

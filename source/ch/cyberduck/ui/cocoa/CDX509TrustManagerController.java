@@ -23,7 +23,7 @@ import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Keychain;
-import ch.cyberduck.core.ftps.AbstractX509TrustManager;
+import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 
 import org.apache.log4j.Logger;
 

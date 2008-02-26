@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
@@ -633,8 +634,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     ((ch.cyberduck.core.sftp.SFTPSession) transfer.getSession()).setHostKeyVerificationController(
                             new CDHostKeyController(CDTransferController.this));
                 }
-                if(transfer.getSession() instanceof ch.cyberduck.core.ftps.FTPSSession) {
-                    ((ch.cyberduck.core.ftps.FTPSSession) transfer.getSession()).setTrustManager(
+                if(transfer.getSession() instanceof SSLSession) {
+                    ((SSLSession) transfer.getSession()).setTrustManager(
                             new CDX509TrustManagerController(CDTransferController.this));
                 }
                 transfer.getSession().setLoginController(new CDLoginController(CDTransferController.this));
@@ -652,8 +653,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 if(transfer.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
                     ((ch.cyberduck.core.sftp.SFTPSession) transfer.getSession()).setHostKeyVerificationController(null);
                 }
-                if(transfer.getSession() instanceof ch.cyberduck.core.ftps.FTPSSession) {
-                    ((ch.cyberduck.core.ftps.FTPSSession) transfer.getSession()).setTrustManager(null);
+                if(transfer.getSession() instanceof SSLSession) {
+                    ((SSLSession) transfer.getSession()).setTrustManager(null);
                 }
                 transfer.getSession().setLoginController(null);
 
