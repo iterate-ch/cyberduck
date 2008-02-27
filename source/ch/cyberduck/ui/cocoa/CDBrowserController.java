@@ -1639,9 +1639,8 @@ public class CDBrowserController extends CDWindowController
             item.setDefaultPath(this.workdir().getAbsolute());
         }
         else {
-            item = new Host(
-                    Protocol.forName(Preferences.instance().getProperty("connection.protocol.default")),
-                    "localhost",
+            item = new Host(Protocol.forName(Preferences.instance().getProperty("connection.protocol.default")),
+                    Preferences.instance().getProperty("connection.host.default"),
                     Preferences.instance().getInteger("connection.port.default"));
         }
         HostCollection.instance().add(item);

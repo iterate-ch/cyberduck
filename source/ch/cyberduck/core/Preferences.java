@@ -388,6 +388,7 @@ public abstract class Preferences {
          * If the parser should not trim whitespace from filenames
          */
         defaults.put("ftp.parser.whitespaceAware", String.valueOf(true));
+
         /**
          * Default bucket location
          */
@@ -404,6 +405,9 @@ public abstract class Preferences {
 //        defaults.put("s3.crypto.algorithm", "PBEWithMD5AndDES");
 
         defaults.put("webdav.followRedirects", String.valueOf(true));
+
+        defaults.put("connection.host.default", "localhost");
+
         /**
          * Maximum concurrent connections to the same host
          * Unlimited by default
