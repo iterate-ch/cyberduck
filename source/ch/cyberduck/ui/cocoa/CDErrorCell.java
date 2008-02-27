@@ -30,6 +30,7 @@ import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSRect;
 
 import org.jets3t.service.S3ServiceException;
+import org.apache.commons.httpclient.HttpException;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -62,6 +63,9 @@ public class CDErrorCell extends CDTableCell {
         else if(cause instanceof S3ServiceException) {
             title = "S3 " + NSBundle.localizedString("Error", "");
         }
+        else if(cause instanceof HttpException) {
+            title = "HTTP " + NSBundle.localizedString("Error", "");
+        }
         else if(cause instanceof SocketException) {
             title = "Network " + NSBundle.localizedString("Error", "");
         }
@@ -84,7 +88,7 @@ public class CDErrorCell extends CDTableCell {
                 return cause.getMessage()+". "+((S3ServiceException)cause).getS3ErrorMessage();
             }
         }
-        return cause.getMessage();
+        return NSBundle.localizedString(cause.getMessage(), "Error", "");
     }
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
