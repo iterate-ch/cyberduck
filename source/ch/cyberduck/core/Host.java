@@ -301,10 +301,13 @@ public class Host extends NSObject {
         if(input.indexOf("://", begin) != -1) {
             cut = input.indexOf("://", begin);
             protocol = Protocol.forScheme(input.substring(begin, cut));
-            if(null == protocol) {
-                protocol = Protocol.forName(input.substring(begin, cut));
+            if(null != protocol) {
+                begin += protocol.getScheme().length() + 3;
             }
-            begin += protocol.getScheme().length() + 3;
+            else {
+                protocol = Protocol.forName(input.substring(begin, cut));
+                begin += protocol.getName().length() + 3;
+            }
         }
         if(null == protocol) {
             protocol = Protocol.forName(
