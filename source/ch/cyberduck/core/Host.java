@@ -297,12 +297,18 @@ public class Host extends NSObject {
         if(input.indexOf("://", begin) == -1 && input.indexOf('@', begin) == -1) {
             throw new MalformedURLException("No protocol or user delimiter");
         }
-        Protocol protocol = Protocol.forName(
-                Preferences.instance().getProperty("connection.protocol.default"));
+        Protocol protocol = null;
         if(input.indexOf("://", begin) != -1) {
             cut = input.indexOf("://", begin);
             protocol = Protocol.forScheme(input.substring(begin, cut));
+            if(null == protocol) {
+                protocol = Protocol.forName(input.substring(begin, cut));
+            }
             begin += protocol.getScheme().length() + 3;
+        }
+        if(null == protocol) {
+            protocol = Protocol.forName(
+                Preferences.instance().getProperty("connection.protocol.default"));
         }
         String username = null;
         String password = null;
