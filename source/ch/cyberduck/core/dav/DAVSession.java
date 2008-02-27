@@ -96,29 +96,24 @@ public class DAVSession extends Session {
             this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}...", "Status", ""),
                     new Object[]{host.getProtocol().getName().toUpperCase(), host.getHostname()}));
 
-            try {
-                WebdavResource.setDefaultAction(WebdavResource.NOACTION);
+            WebdavResource.setDefaultAction(WebdavResource.NOACTION);
 
-                this.DAV = new WebdavResource(host.toURL());
-                this.DAV.setPath(host.getDefaultPath());
+            this.DAV = new WebdavResource(host.toURL());
+            this.DAV.setPath(host.getDefaultPath());
 
-                this.configure();
-                this.login();
+            this.configure();
+            this.login();
 
-                WebdavResource.setDefaultAction(WebdavResource.BASIC);
+            WebdavResource.setDefaultAction(WebdavResource.BASIC);
 
-                this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
-                        new Object[]{host.getProtocol().getName().toUpperCase()}));
+            this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
+                    new Object[]{host.getProtocol().getName().toUpperCase()}));
 
-                if(!this.DAV.getResourceType().isCollection()) {
-                    throw new ConnectionCanceledException("Resource is not a collection");
-                }
-
-                this.fireConnectionDidOpenEvent();
+            if(null == this.DAV.getResourceType() || !this.DAV.getResourceType().isCollection()) {
+                throw new IOException("Listing directory failed");
             }
-            catch(HttpException e) {
-                throw new HttpException(e.getReason());
-            }
+
+            this.fireConnectionDidOpenEvent();
         }
     }
 
@@ -183,6 +178,24 @@ public class DAVSession extends Session {
                 this.fireConnectionDidCloseEvent();
                 this.fireActivityStoppedEvent();
             }
+        }
+    }
+
+    public void interrupt() {
+        try {
+            super.interrupt();
+            this.fireConnectionWillCloseEvent();
+            if(this.isConnected()) {
+                DAV.close();
+            }
+        }
+        catch(IOException e) {
+            log.error(e.getMessage());
+        }
+        finally {
+            DAV = null;
+            this.fireActivityStoppedEvent();
+            this.fireConnectionDidCloseEvent();
         }
     }
 
