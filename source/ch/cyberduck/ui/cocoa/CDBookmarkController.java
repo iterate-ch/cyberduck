@@ -25,6 +25,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 
 import org.apache.log4j.Logger;
+import org.jets3t.service.Constants;
 
 import java.net.MalformedURLException;
 import java.util.HashMap;
@@ -56,8 +57,17 @@ public class CDBookmarkController extends CDWindowController {
 
     public void protocolSelectionChanged(final NSPopUpButton sender) {
         log.debug("protocolSelectionChanged:" + sender);
-        this.host.setProtocol((Protocol)protocolPopup.selectedItem().representedObject());
-        this.host.setPort(((Protocol)protocolPopup.selectedItem().representedObject()).getDefaultPort());
+        final Protocol selected = (Protocol) protocolPopup.selectedItem().representedObject();
+        this.host.setProtocol(selected);
+        this.host.setPort(selected.getDefaultPort());
+        if(selected.equals(Protocol.S3)) {
+            this.host.setHostname(Constants.S3_HOSTNAME);
+        }
+        else {
+            if(Constants.S3_HOSTNAME.equals(this.host.getHostname())) {
+                this.host.setHostname(null);
+            }
+        }
         this.itemChanged();
     }
 

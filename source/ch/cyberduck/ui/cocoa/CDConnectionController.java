@@ -72,6 +72,13 @@ public class CDConnectionController extends CDSheetController {
             );
             this.encodingPopup.selectItemWithTitle(DEFAULT);
         }
+        else {
+            if(Constants.S3_HOSTNAME.equals(this.hostField.stringValue())) {
+                this.hostField.setStringValue("");
+            }
+            ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString("");
+            ((NSTextFieldCell) this.passField.cell()).setPlaceholderString("");
+        }
         this.connectmodePopup.setEnabled(protocol.equals(Protocol.FTP)
                 || protocol.equals(Protocol.FTP_TLS));
         this.encodingPopup.setEnabled(!protocol.equals(Protocol.S3));
