@@ -115,7 +115,7 @@ public class CDProgressController extends CDBundleController {
                         progressBar.setIndeterminate(true);
                         progressBar.startAnimation(null);
                         progressBar.setNeedsDisplay(true);
-                        statusIconView.setImage(RED_ICON);
+                        statusIconView.setImage(YELLOW_ICON);
                         setProgressText();
                         setStatusText();
                     }
@@ -141,7 +141,6 @@ public class CDProgressController extends CDBundleController {
             public void transferPaused() {
                 CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
-                        statusIconView.setImage(YELLOW_ICON);
                         progressBar.stopAnimation(null);
                     }
                 });
@@ -159,7 +158,6 @@ public class CDProgressController extends CDBundleController {
             public void transferResumed() {
                 CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
-                        statusIconView.setImage(RED_ICON);
                         progressBar.startAnimation(null);
                     }
                 });
@@ -311,12 +309,7 @@ public class CDProgressController extends CDBundleController {
 
     public void setStatusIconView(final NSImageView statusIconView) {
         this.statusIconView = statusIconView;
-        if(transfer.isQueued()) {
-            this.statusIconView.setImage(YELLOW_ICON);
-        }
-        else {
-            this.statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
-        }
+        this.statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
     }
 
     /**
