@@ -73,6 +73,14 @@ public class HostTest extends TestCase {
                 assertTrue(h.getCredentials().getPassword().equals("pass"));
                 assertTrue(h.getDefaultPath().equals("/path/to/file"));
             }
+            {
+                String url = "http://www.testrumpus.com/";
+                Host h = Host.parse(url);
+                assertTrue(h.getHostname().equals("www.testrumpus.com"));
+                assertTrue(h.getProtocol().equals(Protocol.WEBDAV));
+                assertNotNull(h.getCredentials().getUsername());
+                assertTrue(h.getDefaultPath().equals("/"));
+            }
         }
         catch(MalformedURLException e) {
             fail(e.getMessage());
