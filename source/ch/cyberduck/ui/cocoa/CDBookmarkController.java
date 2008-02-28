@@ -65,7 +65,7 @@ public class CDBookmarkController extends CDWindowController {
         }
         else {
             if(Constants.S3_HOSTNAME.equals(this.host.getHostname())) {
-                this.host.setHostname(null);
+                this.host.setHostname(Preferences.instance().getProperty("connection.hostname.default"));
             }
         }
         this.itemChanged();

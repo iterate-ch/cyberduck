@@ -26,13 +26,10 @@ import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
-import java.net.*;
 
 /**
  * Holding all application preferences. Default values get overwritten when loading
@@ -406,8 +403,6 @@ public abstract class Preferences {
 
         defaults.put("webdav.followRedirects", String.valueOf(true));
 
-        defaults.put("connection.host.default", "localhost");
-
         /**
          * Maximum concurrent connections to the same host
          * Unlimited by default
@@ -437,6 +432,8 @@ public abstract class Preferences {
          */
         defaults.put("connection.retry", String.valueOf(1));
         defaults.put("connection.retry.delay", String.valueOf(10));
+
+        defaults.put("connection.hostname.default", "localhost");
         /**
          * Try to resolve the hostname when entered in connection dialog
          */
@@ -450,7 +447,7 @@ public abstract class Preferences {
         /**
          * Use the SFTP subsystem or a SCP channel for file transfers over SSH
          */
-        defaults.put("ssh.transfer", Protocol.SFTP.getName()); // Session.SCP
+        defaults.put("ssh.transfer", Protocol.SFTP.getIdentifier()); // Session.SCP
         /**
          * Location of the openssh known_hosts file
          */

@@ -1640,7 +1640,7 @@ public class CDBrowserController extends CDWindowController
         }
         else {
             item = new Host(Protocol.forName(Preferences.instance().getProperty("connection.protocol.default")),
-                    Preferences.instance().getProperty("connection.host.default"),
+                    Preferences.instance().getProperty("connection.hostname.default"),
                     Preferences.instance().getInteger("connection.port.default"));
         }
         HostCollection.instance().add(item);
