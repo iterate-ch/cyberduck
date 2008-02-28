@@ -1476,7 +1476,7 @@ public class CDPreferencesController extends CDWindowController {
 
     public void protocolComboboxClicked(NSPopUpButton sender) {
         final Protocol selected = (Protocol)sender.selectedItem().representedObject();
-        Preferences.instance().setProperty("connection.protocol.default", selected.getName());
+        Preferences.instance().setProperty("connection.protocol.default", selected.getIdentifier());
         Preferences.instance().setProperty("connection.port.default", selected.getDefaultPort());
     }
 

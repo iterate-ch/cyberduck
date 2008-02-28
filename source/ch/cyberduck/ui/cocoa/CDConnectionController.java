@@ -257,7 +257,7 @@ public class CDConnectionController extends CDSheetController {
         this.pkCheckbox.setAction(new NSSelector("pkCheckboxSelectionDidChange", new Class[]{Object.class}));
         this.pkCheckbox.setState(NSCell.OffState);
         this.pkCheckbox.setEnabled(
-                Preferences.instance().getProperty("connection.protocol.default").equals(Protocol.SFTP.getName()));
+                Preferences.instance().getProperty("connection.protocol.default").equals(Protocol.SFTP.getIdentifier()));
     }
 
     private NSOpenPanel publicKeyPanel;
@@ -333,8 +333,6 @@ public class CDConnectionController extends CDSheetController {
         this.connectmodePopup.menu().addItem(new NSMenuItem().separatorItem());
         this.connectmodePopup.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
         this.connectmodePopup.selectItemWithTitle(DEFAULT);
-        this.connectmodePopup.setEnabled(
-                Preferences.instance().getProperty("connection.protocol.default").equals(Protocol.FTP.getName()));
     }
 
     private static final Map controllers = new HashMap();
