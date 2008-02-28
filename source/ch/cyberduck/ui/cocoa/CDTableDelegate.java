@@ -24,11 +24,11 @@ import java.util.Comparator;
  * @version $Id$
  */
 public interface CDTableDelegate {
-    public abstract  void enterKeyPressed(final Object sender);
+    abstract void enterKeyPressed(final Object sender);
 
-    public abstract  void deleteKeyPressed(final Object sender);
+    abstract void deleteKeyPressed(final Object sender);
 
-    public abstract  boolean isSortedAscending();
+    abstract boolean isSortedAscending();
 
-    public abstract  Comparator getSortingComparator();
+    abstract Comparator getSortingComparator();
 }

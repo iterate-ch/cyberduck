@@ -18,17 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.BrowserComparator;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Status;
+import ch.cyberduck.core.*;
 
 import com.apple.cocoa.application.NSOutlineView;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
 import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
@@ -250,7 +245,7 @@ public abstract class CDAbstractTableDelegate extends CDController implements CD
     }
 
     private class FilenameComparator extends BrowserComparator {
-        private Collator impl = Collator.getInstance(Locale.getDefault());
+        private Comparator impl = new NaturalOrderComparator();
 
         public FilenameComparator(boolean ascending) {
             super(ascending);
