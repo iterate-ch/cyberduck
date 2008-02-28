@@ -102,7 +102,7 @@ public class FTPSSession extends FTPSession implements SSLSession {
             this.fireConnectionWillOpenEvent();
 
             this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}...", "Status", ""),
-                    new Object[]{host.getProtocol().getName().toUpperCase(), host.getHostname()}));
+                    new Object[]{host.getProtocol().getName(), host.getHostname()}));
 
             this.FTP = new FTPSClient(this.getEncoding(), new FTPMessageListener() {
                 public void logCommand(String cmd) {
@@ -122,7 +122,7 @@ public class FTPSSession extends FTPSession implements SSLSession {
                 this.FTP.setStrictReturnCodes(true);
                 this.FTP.setConnectMode(this.getConnectMode());
                 this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
-                        new Object[]{host.getProtocol().getName().toUpperCase()}));
+                        new Object[]{host.getProtocol().getName()}));
                 ((FTPSClient) this.FTP).auth();
                 this.login();
                 try {

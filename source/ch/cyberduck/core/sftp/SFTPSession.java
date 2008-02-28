@@ -153,7 +153,7 @@ public class SFTPSession extends Session {
                 throw new ConnectionCanceledException();
             }
             this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
-                    new Object[]{host.getProtocol().getName().toUpperCase()}));
+                    new Object[]{host.getProtocol().getName()}));
             this.login();
             if(!SSH.isAuthenticationComplete()) {
                 throw new LoginCanceledException();

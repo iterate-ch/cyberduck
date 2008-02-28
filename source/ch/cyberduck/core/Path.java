@@ -253,9 +253,17 @@ public abstract class Path extends AbstractPath {
         return this.getSession().cache();
     }
 
-    public abstract void writeOwner(String owner, boolean recursive);
+    public boolean isWriteOwnerSupported() {
+        return false;
+    }
 
-    public abstract void writeGroup(String group, boolean recursive);
+    public void writeOwner(String owner, boolean recursive) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void writeGroup(String group, boolean recursive) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Read the size of the file
@@ -409,7 +417,7 @@ public abstract class Path extends AbstractPath {
      */
     public void upload(StreamListener listener) {
         this.upload(new BandwidthThrottle(0) {
-            synchronized public int request(int desired) {
+            public synchronized int request(int desired) {
                 return desired;
             }
         }, listener);

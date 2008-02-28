@@ -195,7 +195,7 @@ public class FTPSession extends Session {
             this.fireConnectionWillOpenEvent();
 
             this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}...", "Status", ""),
-                    new Object[]{host.getProtocol().getName().toUpperCase(), host.getHostname()}));
+                    new Object[]{host.getProtocol().getName(), host.getHostname()}));
 
             this.FTP = new FTPClient(this.getEncoding(), new FTPMessageListener() {
                 public void logCommand(String cmd) {
@@ -214,7 +214,7 @@ public class FTPSession extends Session {
             this.FTP.setStrictReturnCodes(true);
             this.FTP.setConnectMode(this.getConnectMode());
             this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
-                    new Object[]{host.getProtocol().getName().toUpperCase()}));
+                    new Object[]{host.getProtocol().getName()}));
             this.login();
             try {
                 this.setIdentification(this.FTP.system());

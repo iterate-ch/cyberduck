@@ -36,7 +36,7 @@ public abstract class SessionFactory {
         if (!factories.containsKey(protocol)) {
             try {
                 // Load dynamically
-                Class.forName("ch.cyberduck.core." + protocol.getName() + "." + protocol.getName().toUpperCase() + "Session");
+                Class.forName("ch.cyberduck.core." + protocol.getIdentifier() + "." + protocol.getIdentifier().toUpperCase() + "Session");
             }
             catch (ClassNotFoundException e) {
                 throw new RuntimeException("No class for type: " + protocol);

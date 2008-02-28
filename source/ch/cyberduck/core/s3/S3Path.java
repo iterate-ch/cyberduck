@@ -118,14 +118,6 @@ public class S3Path extends Path {
         return status;
     }
 
-    public void writeOwner(String owner, boolean recursive) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void writeGroup(String group, boolean recursive) {
-        throw new UnsupportedOperationException();
-    }
-
     private S3Object _details;
 
     /**
@@ -394,7 +386,7 @@ public class S3Path extends Path {
                     session.check();
                     session.message(NSBundle.localizedString("Uploading", "Status", "") + " " + this.getName());
 
-                    S3ServiceMulti multi = new S3ServiceMulti(session.S3,
+                    final S3ServiceMulti multi = new S3ServiceMulti(session.S3,
                             new S3ServiceTransferEventAdaptor(listener)
                     );
                     final S3Object object;
@@ -763,10 +755,6 @@ public class S3Path extends Path {
             }
         }
         return super.toURL();
-    }
-
-    public boolean isRenameSupported() {
-        return false;
     }
 
     public boolean isMkdirSupported() {

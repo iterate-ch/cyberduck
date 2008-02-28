@@ -91,14 +91,6 @@ public class DAVPath extends Path {
         return this.session;
     }
 
-    public void writeOwner(String owner, boolean recursive) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void writeGroup(String group, boolean recursive) {
-        throw new UnsupportedOperationException();
-    }
-
     public void readSize() {
         synchronized(session) {
             try {

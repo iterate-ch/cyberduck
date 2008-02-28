@@ -94,7 +94,7 @@ public class DAVSession extends Session {
             this.fireConnectionWillOpenEvent();
 
             this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}...", "Status", ""),
-                    new Object[]{host.getProtocol().getName().toUpperCase(), host.getHostname()}));
+                    new Object[]{host.getProtocol().getName(), host.getHostname()}));
 
             WebdavResource.setDefaultAction(WebdavResource.NOACTION);
 
@@ -107,7 +107,7 @@ public class DAVSession extends Session {
             WebdavResource.setDefaultAction(WebdavResource.BASIC);
 
             this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
-                    new Object[]{host.getProtocol().getName().toUpperCase()}));
+                    new Object[]{host.getProtocol().getName()}));
 
             if(null == this.DAV.getResourceType() || !this.DAV.getResourceType().isCollection()) {
                 throw new IOException("Listing directory failed");

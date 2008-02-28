@@ -381,6 +381,10 @@ public class SFTPPath extends Path {
         }
     }
 
+    public boolean isWriteOwnerSupported() {
+        return true;
+    }
+
     public void writeOwner(String owner, boolean recursive) {
         synchronized(session) {
             log.debug("changeOwner");
@@ -508,11 +512,11 @@ public class SFTPPath extends Path {
                 }
                 if(this.attributes.isFile()) {
                     session.check(
-                            Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getName())
+                            Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())
                     );
                     out = new Local.OutputStream(this.getLocal(), getStatus().isResume());
                     this.getLocal().touch();
-                    if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getName())) {
+                    if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                         SFTPv3FileHandle handle = session.sftp().openFileRO(this.getAbsolute());
                         in = new SFTPInputStream(handle);
                         if(getStatus().isResume()) {
@@ -524,7 +528,7 @@ public class SFTPPath extends Path {
                             }
                         }
                     }
-                    if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getName())) {
+                    if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getIdentifier())) {
                         SCPClient scp = session.openScp();
                         scp.setCharset(session.getEncoding());
                         in = scp.get(this.getAbsolute());
@@ -603,10 +607,10 @@ public class SFTPPath extends Path {
                 }
                 if(attributes.isFile()) {
                     session.check(
-                            Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getName())
+                            Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())
                     );
                     in = new Local.InputStream(this.getLocal());
-                    if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getName())) {
+                    if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                         if(getStatus().isResume() && this.exists()) {
                             handle = session.sftp().openFileRWAppend(this.getAbsolute());
                         }
@@ -634,7 +638,7 @@ public class SFTPPath extends Path {
                             }
                         }
                         if(null != p) {
-                            if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getName())) {
+                            if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                                 try {
                                     log.info("Updating permissions:"+p.getOctalString());
                                     SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
@@ -650,13 +654,13 @@ public class SFTPPath extends Path {
                             }
                         }
                     }
-                    if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getName())) {
+                    if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                         if(getStatus().isResume()) {
                             getStatus().setCurrent(
                                     session.sftp().stat(this.getAbsolute()).size.intValue());
                         }
                     }
-                    if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getName())) {
+                    if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                         out = new SFTPOutputStream(handle);
                         if(getStatus().isResume()) {
                             long skipped = ((SFTPOutputStream)out).skip(getStatus().getCurrent());
@@ -666,7 +670,7 @@ public class SFTPPath extends Path {
                             }
                         }
                     }
-                    if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getName())) {
+                    if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getIdentifier())) {
                         SCPClient scp = session.openScp();
                         scp.setCharset(session.getEncoding());
                         out = scp.put(this.getName(), (long)this.getLocal().attributes.getSize(),
@@ -675,7 +679,7 @@ public class SFTPPath extends Path {
                     }
                     this.upload(out, in, throttle, listener);
                 }
-                if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getName())) {
+                if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                     if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                         if(this.attributes.isFile()) {
                             log.info("Updating timestamp");

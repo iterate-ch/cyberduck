@@ -187,7 +187,7 @@ public class Host extends NSObject {
      */
     public NSDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
-        dict.setObjectForKey(this.getProtocol().getName(), Host.PROTOCOL);
+        dict.setObjectForKey(this.getProtocol().getIdentifier(), Host.PROTOCOL);
         dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
         dict.setObjectForKey(this.getHostname(), Host.HOSTNAME);
         dict.setObjectForKey(String.valueOf(this.getPort()), Host.PORT);
@@ -306,7 +306,7 @@ public class Host extends NSObject {
             }
             else {
                 protocol = Protocol.forName(input.substring(begin, cut));
-                begin += protocol.getName().length() + 3;
+                begin += protocol.getIdentifier().length() + 3;
             }
         }
         if(null == protocol) {
@@ -507,7 +507,7 @@ public class Host extends NSObject {
      * @return The default given name of this bookmark
      */
     private String getDefaultNickname() {
-        return this.getHostname() + " (" + this.getProtocol().toString().toUpperCase() + ")";
+        return this.getHostname() + " (" + this.getProtocol().getName() + ")";
     }
 
     /**

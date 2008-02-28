@@ -184,7 +184,7 @@ public class S3Session extends Session {
                 throw new ConnectionCanceledException();
             }
             this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
-                    new Object[]{host.getProtocol().getName().toUpperCase()}));
+                    new Object[]{host.getProtocol().getName()}));
             this.fireConnectionDidOpenEvent();
         }
     }
