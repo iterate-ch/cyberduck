@@ -507,7 +507,7 @@ public class Host extends NSObject {
      * @return The default given name of this bookmark
      */
     private String getDefaultNickname() {
-        return this.getHostname() + " Ñ " + this.getProtocol().getName();
+        return this.getHostname() + " \u2013 " + this.getProtocol().getName();
     }
 
     /**
