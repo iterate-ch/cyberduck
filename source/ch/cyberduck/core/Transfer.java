@@ -58,6 +58,10 @@ public abstract class Transfer extends NSObject {
      */
     private boolean canceled;
 
+    protected Transfer() {
+        ;
+    }
+
     /**
      * @return True if in <code>canceled</code> state
      */
@@ -91,7 +95,7 @@ public abstract class Transfer extends NSObject {
     public boolean isResumable() {
         if(!this.isComplete() && !this.isVirgin() ) {
             if(this.getSession() instanceof SFTPSession) {
-                return Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getName());
+                return Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier());
             }
             if(this.getSession() instanceof FTPSession) {
                 return !Preferences.instance().getProperty("ftp.transfermode").equals(
