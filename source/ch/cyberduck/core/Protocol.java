@@ -173,7 +173,7 @@ public abstract class Protocol {
 
     public static final Protocol WEBDAV = new Protocol() {
         public String getName() {
-            return "WebDAV(HTTP)";
+            return "WebDAV (HTTP)";
         }
 
         public String getDescription() {
@@ -195,7 +195,7 @@ public abstract class Protocol {
 
     public static final Protocol WEBDAV_SSL = new Protocol() {
         public String getName() {
-            return "WebDAV(HTTPS)";
+            return "WebDAV (HTTPS)";
         }
 
         public String getDescription() {
