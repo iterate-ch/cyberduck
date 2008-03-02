@@ -137,7 +137,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_GrowlNative_notifyWithIm
 #pragma mark Growl Delegate methods
 
 - (NSString *)applicationNameForGrowl {
-    return @"Cyberduck";
+    return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
 }
 
 - (NSDictionary *)registrationDictionaryForGrowl {
