@@ -18,13 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFilter;
-import ch.cyberduck.core.Transfer;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.NullComparator;
+import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 
 import com.apple.cocoa.application.NSCell;
@@ -194,7 +188,12 @@ public abstract class CDTransferPromptModel extends CDController {
 
     protected Object objectValueForItem(final Path item, final String identifier) {
         if(identifier.equals(INCLUDE_COLUMN)) {
-            return transfer.isIncluded(item) ? new Integer(NSCell.OnState) : new Integer(NSCell.OffState);
+            // Not included if the particular path should be skipped or skip
+            // existing is selected as the default transfer action for duplicate
+            // files
+            final boolean skipped = !transfer.isIncluded(item)
+                    || ((CDTransferPrompt) controller).getAction().equals(TransferAction.ACTION_SKIP);
+            return skipped ? new Integer(NSCell.OffState) : new Integer(NSCell.OnState);
         }
         if(identifier.equals(FILENAME_COLUMN)) {
             return new NSAttributedString(item.getName(),

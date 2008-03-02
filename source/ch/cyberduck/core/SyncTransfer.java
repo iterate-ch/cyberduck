@@ -25,7 +25,7 @@ import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
-import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.foundation.NSBundle;
 
 import java.util.*;
 
@@ -92,14 +92,14 @@ public class SyncTransfer extends Transfer {
         return transferred;
     }
 
-    private Action action = Action.forString(
+    private TransferAction action = TransferAction.forName(
             Preferences.instance().getProperty("queue.sync.action.default")
     );
 
     /**
      * @param action
      */
-    public void setAction(Action action) {
+    public void setTransferAction(TransferAction action) {
         this.action = action;
         this._comparisons.clear();
     }
@@ -107,45 +107,35 @@ public class SyncTransfer extends Transfer {
     /**
      * @return
      */
-    public Action getAction() {
+    public TransferAction getAction() {
         return this.action;
     }
 
-    /**
-     *
-     */
-    public static class Action {
-        public boolean equals(Object other) {
-            if (null == other) {
-                return false;
-            }
-            return this == other;
-        }
-
-        public static Action forString(String s) {
-            if(s.equals(ACTION_DOWNLOAD.toString())) {
-                return ACTION_DOWNLOAD;
-            }
-            if(s.equals(ACTION_UPLOAD.toString())) {
-                return ACTION_UPLOAD;
-            }
-            return ACTION_MIRROR;
-        }
-    }
-
-    public static final Action ACTION_DOWNLOAD = new Action() {
+    public static final TransferAction ACTION_DOWNLOAD = new TransferAction() {
         public String toString() {
             return "download";
         }
+
+        public String getLocalizableString() {
+            return NSBundle.localizedString("Download", "");
+        }
     };
-    public static final Action ACTION_UPLOAD = new Action() {
+    public static final TransferAction ACTION_UPLOAD = new TransferAction() {
         public String toString() {
             return "upload";
         }
+
+        public String getLocalizableString() {
+            return NSBundle.localizedString("Upload", "");
+        }
     };
-    public static final Action ACTION_MIRROR = new Action() {
+    public static final TransferAction ACTION_MIRROR = new TransferAction() {
         public String toString() {
             return "mirror";
+        }
+
+        public String getLocalizableString() {
+            return NSBundle.localizedString("Mirror", "");
         }
     };
 

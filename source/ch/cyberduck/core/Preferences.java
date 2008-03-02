@@ -347,6 +347,7 @@ public abstract class Preferences {
          * Default synchronize action selected in the sync dialog
          */
         defaults.put("queue.sync.action.default", SyncTransfer.ACTION_UPLOAD.toString());
+        defaults.put("queue.prompt.action.default", TransferAction.ACTION_OVERWRITE.toString());
 
         defaults.put("queue.logDrawer.isOpen", String.valueOf(false));
         defaults.put("queue.logDrawer.size.height", String.valueOf(200));
