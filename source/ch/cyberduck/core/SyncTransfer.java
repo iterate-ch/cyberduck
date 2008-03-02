@@ -207,7 +207,7 @@ public class SyncTransfer extends Transfer {
     }
 
     public boolean isSelectable(Path item) {
-        return !this.compare(item).equals(COMPARISON_EQUAL);
+        return item.attributes.isDirectory() || !this.compare(item).equals(COMPARISON_EQUAL);
     }
 
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
@@ -305,7 +305,7 @@ public class SyncTransfer extends Transfer {
     /**
      * Files differ in size
      */
-    public static final Comparison COMPARISON_UNEQUAL = new Comparison() {
+    private static final Comparison COMPARISON_UNEQUAL = new Comparison() {
         public String toString() {
             return "COMPARISON_UNEQUAL";
         }

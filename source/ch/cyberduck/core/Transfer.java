@@ -406,7 +406,7 @@ public abstract class Transfer extends NSObject {
      * @return True if the path is not skipped when transferring
      */
     public boolean isIncluded(Path item) {
-        return !item.getStatus().isSkipped();
+        return !item.getStatus().isSkipped() && this.isSelectable(item);
     }
 
     /**
