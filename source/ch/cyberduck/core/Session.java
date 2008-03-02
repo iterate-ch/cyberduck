@@ -91,7 +91,6 @@ public abstract class Session extends NSObject {
         else {
             // The session is still supposed to be connected
             try {
-                this.message(NSBundle.localizedString("Checking connection...", "Status", ""));
                 // Send a 'no operation command' to make sure the session is alive
                 this.noop();
             }
