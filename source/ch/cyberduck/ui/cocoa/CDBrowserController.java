@@ -1077,8 +1077,8 @@ public class CDBrowserController extends CDWindowController
             };
             {
                 cell.setEditable(true);
-                cell.setTarget(browserListView.target());
-                cell.setAction(browserListView.action());
+                cell.setTarget(browserOutlineView.target());
+                cell.setAction(browserOutlineView.action());
             }
             c.setDataCell(cell);
             this.browserOutlineView.addTableColumn(c);
