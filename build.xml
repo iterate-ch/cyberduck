@@ -354,7 +354,6 @@
 				<include name="glguerin/**/*.class"/>
 			</fileset>
 			<fileset dir="${lib}">
-                <include name="*.properties"/>
                 <include name="mime.types"/>
             </fileset>
 		</jar>
