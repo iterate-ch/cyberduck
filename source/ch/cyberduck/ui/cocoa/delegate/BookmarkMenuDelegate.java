@@ -50,7 +50,7 @@ public class BookmarkMenuDelegate extends MenuDelegate {
      * @see com.apple.cocoa.application.NSMenu.Delegate
      */
     public int numberOfItemsInMenu(NSMenu menu) {
-        return HostCollection.instance().size() + 8;
+        return HostCollection.instance().size() + 10;
         //index 0-2 are static menu items, 3 is sepeartor, 4 is iDisk with submenu, 5 is History with submenu,
         // 6 is Bonjour with submenu, 7 is sepearator
     }
@@ -69,22 +69,22 @@ public class BookmarkMenuDelegate extends MenuDelegate {
             log.warn("Invalid index in menuUpdateItemAtIndex:" + index);
             return false;
         }
-        if(index == 4) {
+        if(index == 6) {
             item.setEnabled(true);
             NSImage icon = NSImage.imageNamed("idisk.tiff");
             icon.setSize(new NSSize(16f, 16f));
             item.setImage(icon);
         }
-        if(index == 5) {
+        if(index == 7) {
             item.setEnabled(true);
             item.setImage(NSImage.imageNamed("history.tiff"));
         }
-        if(index == 6) {
+        if(index == 8) {
             item.setEnabled(true);
             item.setImage(NSImage.imageNamed("rendezvous16.tiff"));
         }
-        if(index > 7) {
-            Host h = (Host) HostCollection.instance().get(index - 8);
+        if(index > 9) {
+            Host h = (Host) HostCollection.instance().get(index - 10);
             item.setTitle(h.getNickname());
             item.setTarget(this);
             item.setImage(DOCUMENT_ICON_SMALL);

@@ -4,6 +4,7 @@
             ACTIONS =             {
                 addBookmarkButtonClicked = id;
                 backButtonClicked = id;
+                bookmarkSwitchClicked = id;
                 browserSwitchMenuClicked = id;
                 connectButtonClicked = id;
                 copyURLButtonClicked = id;
@@ -23,8 +24,6 @@
                 infoButtonClicked = id;
                 insideButtonClicked = id;
                 interruptButtonClicked = id;
-                myAction = id;
-                myAction1 = id;
                 pasteFromFinder = id;
                 reloadButtonClicked = id;
                 renameFileButtonClicked = id;
@@ -32,7 +31,6 @@
                 showHiddenFilesClicked = id;
                 showTransferQueueClicked = id;
                 syncButtonClicked = id;
-                toggleBookmarkDrawer = id;
                 toggleLogDrawer = id;
                 upButtonClicked = id;
                 uploadButtonClicked = id;
