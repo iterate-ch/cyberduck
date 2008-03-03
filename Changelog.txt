@@ -4,11 +4,15 @@ http://cyberduck.ch/
 Last modified: $Date$
 Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser licenced under the GPL for the Mac. 
 
-2.9b1 [http://trac.cyberduck.ch/query?status=closed&milestone=2.9]
-- [Feature] Amazon Simple Storage Service (S3) support (http://aws.amazon.com/s3) [#1725]
+3.0b1 [http://trac.cyberduck.ch/query?status=closed&milestone=3.0]
+- [Feature] Amazon Simple Storage Service (S3) protocol support (http://aws.amazon.com/s3) [#1725]
+- [Feature] WebDAV protocol support [#464]
+- [Feature] Search bookmarks [#916]
 - [Feature] Added ForgEdit to the list of supported editors (http://forgedit.com) [#1779]
 - [Feature] PRET (PRE Transfer) command support for distributed FTP (http://www.drftpd.org) [#684]
+- [Feature] Skip option not available in transfer prompt [#1159]
 - [Bugfix] Downloads no longer keep modified date [#1756]
+- [Bugfix] Leap year bug wen parsing date without year [#1813]
 
 2.8.4 [http://trac.cyberduck.ch/query?status=closed&milestone=2.8.4]
 [Bugfix] Crash when dismissing sheet attached to window [#1616]
