@@ -23,10 +23,11 @@ import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.ssl.SSLSession;
-import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.ui.cocoa.delegate.*;
+import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
@@ -139,7 +140,7 @@ public class CDBrowserController extends CDWindowController
     public Object handleCloseScriptCommand(NSScriptCommand command) {
         log.debug("handleCloseScriptCommand:" + command);
         this.handleDisconnectScriptCommand(command);
-        this.window.close();
+        this.window().close();
         return null;
     }
 
@@ -197,7 +198,7 @@ public class CDBrowserController extends CDWindowController
             if(!to.startsWith(Path.DELIMITER)) {
                 to = this.workdir().getAbsolute() + Path.DELIMITER + to;
             }
-            this.renamePath(PathFactory.createPath(session, from, Path.FILE_TYPE), 
+            this.renamePath(PathFactory.createPath(session, from, Path.FILE_TYPE),
                     PathFactory.createPath(session, to, Path.FILE_TYPE));
         }
         return null;
@@ -420,10 +421,6 @@ public class CDBrowserController extends CDWindowController
         this._updateBrowserColumns(this.browserListView);
         this._updateBrowserColumns(this.browserOutlineView);
 
-        // Configure window
-        if(Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen")) {
-            this.bookmarkDrawer.open();
-        }
         if(Preferences.instance().getBoolean("browser.logDrawer.isOpen")) {
             this.logDrawer.open();
         }
@@ -432,11 +429,14 @@ public class CDBrowserController extends CDWindowController
         this.toolbar.setDelegate(this);
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
-        this.window.setToolbar(toolbar);
+        this.window().setToolbar(toolbar);
 
-        this.browserSwitchClicked(Preferences.instance().getInteger("browser.view"));
-
-        this.window.setInitialFirstResponder(this.quickConnectPopup);
+        // Configure window
+        // Toggle
+        this.bookmarkSwitchClicked(Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen"));
+        if(!Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen")) {
+            this.browserSwitchClicked(Preferences.instance().getInteger("browser.view"));
+        }
 
         this.browserListView.setNextKeyView(this.searchField);
         this.browserOutlineView.setNextKeyView(this.searchField);
@@ -505,7 +505,26 @@ public class CDBrowserController extends CDWindowController
      * Marks the current browser as the first responder
      */
     private void getFocus() {
-        this.window.makeFirstResponder(this.getSelectedBrowserView());
+        if(this.getSelectedTabView() == TAB_BOOKMARKS) {
+            if(this.isMounted()) {
+                int row = HostCollection.instance().indexOf(this.getSession().getHost());
+                if(row != -1) {
+                    this.bookmarkTable.selectRow(row, false);
+                    this.bookmarkTable.scrollRowToVisible(row);
+                }
+            }
+            this.statusText = this.bookmarkTable.numberOfRows() + " " + NSBundle.localizedString("Bookmarks", "");
+        }
+        else {
+            if(this.isMounted()) {
+                this.window().makeFirstResponder(this.getSelectedBrowserView());
+                this.statusText = getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("Files", "");
+            }
+            else {
+                this.statusText = null;
+            }
+        }
+        this.updateStatusLabel();
     }
 
     /**
@@ -584,14 +603,14 @@ public class CDBrowserController extends CDWindowController
         this.deselectAll();
         if(!selected.isEmpty()) {
             switch(this.browserSwitchView.selectedSegment()) {
-                case LIST_VIEW: {
+                case SWITCH_LIST_VIEW: {
                     //selection handling
                     for(Iterator iter = selected.iterator(); iter.hasNext();) {
                         this.selectRow((Path) iter.next(), true);
                     }
                     break;
                 }
-                case OUTLINE_VIEW: {
+                case SWITCH_OUTLINE_VIEW: {
                     for(int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
                         Path p = (Path) this.browserOutlineView.itemAtRow(i);
                         if(null == p) {
@@ -649,14 +668,14 @@ public class CDBrowserController extends CDWindowController
     private Path pathAtRow(int row) {
         Path item = null;
         switch(this.browserSwitchView.selectedSegment()) {
-            case LIST_VIEW: {
+            case SWITCH_LIST_VIEW: {
                 final AttributedList childs = this.browserListModel.childs(this.workdir());
                 if(row < childs.size()) {
                     item = (Path) childs.get(row);
                 }
                 break;
             }
-            case OUTLINE_VIEW: {
+            case SWITCH_OUTLINE_VIEW: {
                 item = (Path) this.browserOutlineView.itemAtRow(row);
                 break;
             }
@@ -673,50 +692,6 @@ public class CDBrowserController extends CDWindowController
         window.setTitle((String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
         window.setMiniwindowImage(NSImage.imageNamed("cyberduck-document.icns"));
         super.setWindow(window);
-    }
-
-    private NSDrawer bookmarkDrawer;
-
-    private NSDrawer.Notifications bookmarkDrawerNotifications = new NSDrawer.Notifications() {
-        public void drawerWillOpen(NSNotification notification) {
-            bookmarkDrawer.setContentSize(new NSSize(
-                    Preferences.instance().getFloat("browser.bookmarkDrawer.size.width"),
-                    bookmarkDrawer.contentSize().height()
-            ));
-        }
-
-        public void drawerDidOpen(NSNotification notification) {
-            Preferences.instance().setProperty("browser.bookmarkDrawer.isOpen", true);
-        }
-
-        public void drawerWillClose(NSNotification notification) {
-            Preferences.instance().setProperty("browser.bookmarkDrawer.size.width",
-                    bookmarkDrawer.contentSize().width());
-        }
-
-        public void drawerDidClose(NSNotification notification) {
-            Preferences.instance().setProperty("browser.bookmarkDrawer.isOpen", false);
-        }
-    };
-
-    public void setBookmarkDrawer(NSDrawer bookmarkDrawer) {
-        this.bookmarkDrawer = bookmarkDrawer;
-        NSNotificationCenter.defaultCenter().addObserver(bookmarkDrawerNotifications,
-                new NSSelector("drawerWillOpen", new Class[]{NSNotification.class}),
-                NSDrawer.DrawerWillOpenNotification,
-                this.bookmarkDrawer);
-        NSNotificationCenter.defaultCenter().addObserver(bookmarkDrawerNotifications,
-                new NSSelector("drawerDidOpen", new Class[]{NSNotification.class}),
-                NSDrawer.DrawerDidOpenNotification,
-                this.bookmarkDrawer);
-        NSNotificationCenter.defaultCenter().addObserver(bookmarkDrawerNotifications,
-                new NSSelector("drawerWillClose", new Class[]{NSNotification.class}),
-                NSDrawer.DrawerWillCloseNotification,
-                this.bookmarkDrawer);
-        NSNotificationCenter.defaultCenter().addObserver(bookmarkDrawerNotifications,
-                new NSSelector("drawerDidClose", new Class[]{NSNotification.class}),
-                NSDrawer.DrawerDidCloseNotification,
-                this.bookmarkDrawer);
     }
 
     private CDTranscriptController transcript;
@@ -767,32 +742,16 @@ public class CDBrowserController extends CDWindowController
                 this.logDrawer);
     }
 
-//    private NSTextField bookmarkSearchField;
-//
-//    public void setBookmarkSearchField(NSTextField bookmarkSearchField) {
-//        this.bookmarkSearchField = bookmarkSearchField;
-//        NSNotificationCenter.defaultCenter().addObserver(this,
-//                new NSSelector("bookmarkSearchFieldDidChange", new Class[]{Object.class}),
-//                NSControl.ControlTextDidChangeNotification,
-//                this.bookmarkSearchField);
-//    }
-//
-//    public void bookmarkSearchFieldDidChange(NSNotification notification) {
-//        NSDictionary userInfo = notification.userInfo();
-//        if(null != userInfo) {
-//            Object o = userInfo.allValues().lastObject();
-//            if(null != o) {
-//                final String searchString = ((NSText)o).string();
-//                this.bookmarkModel.setFilter(new HostFilter() {
-//                    public boolean accept(Host host) {
-//                        return host.getNickname().indexOf(searchString) != -1
-//                                || host.getHostname().indexOf(searchString) != -1;
-//                    }
-//                });
-//                this.bookmarkTable.reloadData();
-//            }
-//        }
-//    }
+    private static final int TAB_BOOKMARKS = 0;
+    private static final int TAB_LIST_VIEW = 1;
+    private static final int TAB_OUTLINE_VIEW = 2;
+
+    /**
+     * @return
+     */
+    private int getSelectedTabView() {
+        return this.browserTabView.indexOfTabViewItem(this.browserTabView.selectedTabViewItem());
+    }
 
     private NSTabView browserTabView;
 
@@ -805,10 +764,10 @@ public class CDBrowserController extends CDWindowController
      */
     public NSTableView getSelectedBrowserView() {
         switch(this.browserSwitchView.selectedSegment()) {
-            case LIST_VIEW: {
+            case SWITCH_LIST_VIEW: {
                 return this.browserListView;
             }
-            case OUTLINE_VIEW: {
+            case SWITCH_OUTLINE_VIEW: {
                 return this.browserOutlineView;
             }
         }
@@ -822,16 +781,47 @@ public class CDBrowserController extends CDWindowController
         return (CDBrowserTableDataSource) this.getSelectedBrowserView().dataSource();
     }
 
+    private NSSegmentedControl bookmarkSwitchView;
+
+    public void setBookmarkSwitchView(NSSegmentedControl bookmarkSwitchView) {
+        this.bookmarkSwitchView = bookmarkSwitchView;
+        this.bookmarkSwitchView.setTarget(this);
+        this.bookmarkSwitchView.setAction(new NSSelector("bookmarkSwitchClicked", new Class[]{Object.class}));
+    }
+
+    public void bookmarkSwitchClicked(final Object sender) {
+        final boolean open = Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen");
+        // Toggle
+        this.bookmarkSwitchClicked(!open);
+        if(!Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen")) {
+            this.browserSwitchClicked(Preferences.instance().getInteger("browser.view"));
+        }
+    }
+
+    /**
+     * @param open Should open the bookmarks
+     */
+    public void bookmarkSwitchClicked(final boolean open) {
+        log.debug("bookmarkSwitchClicked:" + open);
+        this.bookmarkSwitchView.setSelected(open, 0);
+        Preferences.instance().setProperty("browser.bookmarkDrawer.isOpen", open);
+        if(open) {
+            // Display bookmarks
+            this.browserTabView.selectTabViewItemAtIndex(TAB_BOOKMARKS);
+            this.getFocus();
+        }
+    }
+
     private NSSegmentedControl browserSwitchView;
 
-    private static final int LIST_VIEW = 0;
-    private static final int OUTLINE_VIEW = 1;
+    private static final int SWITCH_LIST_VIEW = 0;
+    private static final int SWITCH_OUTLINE_VIEW = 1;
 
     public void setBrowserSwitchView(NSSegmentedControl browserSwitchView) {
         this.browserSwitchView = browserSwitchView;
         this.browserSwitchView.setSegmentCount(2); // list, outline
-        this.browserSwitchView.setImage(NSImage.imageNamed("list.tiff"), LIST_VIEW);
-        this.browserSwitchView.setImage(NSImage.imageNamed("outline.tiff"), OUTLINE_VIEW);
+        this.browserSwitchView.setImage(NSImage.imageNamed("list.tiff"), SWITCH_LIST_VIEW);
+        this.browserSwitchView.setImage(NSImage.imageNamed("outline.tiff"), SWITCH_OUTLINE_VIEW);
         this.browserSwitchView.setTarget(this);
         this.browserSwitchView.setAction(new NSSelector("browserSwitchButtonClicked", new Class[]{Object.class}));
         ((NSSegmentedCell) this.browserSwitchView.cell()).setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectOne);
@@ -844,16 +834,27 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void browserSwitchMenuClicked(final NSMenuItem sender) {
+        this.browserSwitchView.setSelected(true, sender.tag());
         this.browserSwitchClicked(sender.tag());
     }
 
-    private void browserSwitchClicked(final int tag) {
-        Preferences.instance().setProperty("browser.view", tag);
-        this.browserSwitchView.setSelected(tag);
-        this.browserTabView.selectTabViewItemAtIndex(tag);
+    private void browserSwitchClicked(final int selected) {
+        // Close bookmarks
+        this.bookmarkSwitchClicked(false);
+        // Save selected browser view
+        Preferences.instance().setProperty("browser.view", selected);
+        // Highlight selected browser view
+        this.browserSwitchView.setSelected(selected);
         this.reloadData(false);
-        this.quickConnectPopup.setNextKeyView(this.getSelectedBrowserView());
-        this.searchField.setNextKeyView(this.getSelectedBrowserView());
+        switch(selected) {
+            case SWITCH_LIST_VIEW:
+                this.browserTabView.selectTabViewItemAtIndex(TAB_LIST_VIEW);
+                break;
+            case SWITCH_OUTLINE_VIEW:
+                this.browserTabView.selectTabViewItemAtIndex(TAB_OUTLINE_VIEW);
+                break;
+        }
+        this.getFocus();
     }
 
     private class AbstractBrowserTableDelegate extends CDAbstractTableDelegate {
@@ -908,7 +909,7 @@ public class CDBrowserController extends CDWindowController
                     if(selected.size() > 0) {
                         background(new BackgroundAction() {
                             public void run() {
-                                for(Iterator iter = selected.iterator(); iter.hasNext(); ) {
+                                for(Iterator iter = selected.iterator(); iter.hasNext();) {
                                     final Path selected = (Path) iter.next();
                                     if(selected.attributes.getPermission() == null) {
                                         selected.readPermission();
@@ -1002,18 +1003,18 @@ public class CDBrowserController extends CDWindowController
              * @see NSOutlineView.Delegate
              */
             public boolean outlineViewShouldExpandItem(final NSOutlineView view, final Path item) {
-                log.debug("outlineViewShouldExpandItem:"+item);
+                log.debug("outlineViewShouldExpandItem:" + item);
                 NSEvent event = NSApplication.sharedApplication().currentEvent();
-                if (event != null) {
+                if(event != null) {
                     if(NSEvent.LeftMouseDragged == event.type()) {
                         final int draggingColumn = view.columnAtPoint(view.convertPointFromView(event.locationInWindow(), null));
                         if(draggingColumn != 0) {
-                            log.debug("Returning false to #outlineViewShouldExpandItem for column:"+draggingColumn);
+                            log.debug("Returning false to #outlineViewShouldExpandItem for column:" + draggingColumn);
                             // See ticket #60
                             return false;
                         }
                         if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
-                            log.debug("Returning false to #outlineViewShouldExpandItem:"+item.getName()+" while dragging because browser.view.autoexpand == false");
+                            log.debug("Returning false to #outlineViewShouldExpandItem:" + item.getName() + " while dragging because browser.view.autoexpand == false");
                             // See tickets #98 and #633
                             return false;
                         }
@@ -1026,20 +1027,16 @@ public class CDBrowserController extends CDWindowController
              * @see NSOutlineView.Notifications
              */
             public void outlineViewItemDidExpand(NSNotification notification) {
-                statusLabel.setAttributedStringValue(new NSAttributedString(
-                        CDBrowserController.this.browserOutlineView.numberOfRows() + " " +
-                                NSBundle.localizedString("files", ""),
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
+                statusText = getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", "");
+                updateStatusLabel();
             }
 
             /**
              * @see NSOutlineView.Notifications
              */
             public void outlineViewItemDidCollapse(NSNotification notification) {
-                statusLabel.setAttributedStringValue(new NSAttributedString(
-                        CDBrowserController.this.browserOutlineView.numberOfRows() + " " +
-                                NSBundle.localizedString("files", ""),
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
+                statusText = getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", "");
+                updateStatusLabel();
             }
 
             /**
@@ -1335,7 +1332,7 @@ public class CDBrowserController extends CDWindowController
 
     public void setBookmarkTable(NSTableView view) {
         this.bookmarkTable = view;
-        this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource());
+        this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource(this));
         HostCollection.instance().addListener(this.bookmarkCollectionListener = new CollectionListener() {
             public void collectionItemAdded(Object item) {
                 bookmarkTable.reloadData();
@@ -1398,7 +1395,7 @@ public class CDBrowserController extends CDWindowController
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
             else {
-                c.setResizable(true);
+                c.setResizable(false);
             }
             c.setDataCell(new NSImageCell());
             this.bookmarkTable.addTableColumn(c);
@@ -1407,9 +1404,7 @@ public class CDBrowserController extends CDWindowController
             NSTableColumn c = new NSTableColumn();
             c.setIdentifier(CDBookmarkTableDataSource.BOOKMARK_COLUMN);
             c.headerCell().setStringValue(NSBundle.localizedString("Bookmarks", "A column in the browser"));
-            c.setMinWidth(50f);
-            c.setWidth(200f);
-            c.setMaxWidth(500f);
+            c.setMinWidth(150f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
@@ -1417,6 +1412,23 @@ public class CDBrowserController extends CDWindowController
                 c.setResizable(true);
             }
             c.setDataCell(new CDBookmarkCell());
+            this.bookmarkTable.addTableColumn(c);
+        }
+        {
+            NSTableColumn c = new NSTableColumn();
+            c.setIdentifier(CDBookmarkTableDataSource.STATUS_COLUMN);
+            c.headerCell().setStringValue("");
+            c.setMinWidth(20f);
+            c.setWidth(20f);
+            c.setMaxWidth(20f);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(false);
+            }
+            c.setDataCell(new NSImageCell());
+            c.dataCell().setAlignment(NSText.CenterTextAlignment);
             this.bookmarkTable.addTableColumn(c);
         }
 
@@ -1580,14 +1592,26 @@ public class CDBrowserController extends CDWindowController
                 this.searchField);
     }
 
+
     public void searchFieldTextDidChange(NSNotification notification) {
         NSDictionary userInfo = notification.userInfo();
         if(null != userInfo) {
             Object o = userInfo.allValues().lastObject();
             if(null != o) {
                 final String searchString = ((NSText) o).string();
-                this.setFileFilter(searchString);
-                this.reloadData(true);
+                if(this.getSelectedTabView() == TAB_BOOKMARKS) {
+                    this.bookmarkModel.setFilter(new HostFilter() {
+                        public boolean accept(Host host) {
+                            return host.getNickname().indexOf(searchString) != -1
+                                    || host.getHostname().indexOf(searchString) != -1;
+                        }
+                    });
+                    this.bookmarkTable.reloadData();
+                }
+                else {
+                    this.setFileFilter(searchString);
+                    this.reloadData(true);
+                }
             }
         }
     }
@@ -1600,9 +1624,6 @@ public class CDBrowserController extends CDWindowController
         if(bookmarkTable.numberOfSelectedRows() == 1) {
             final Host selected = (Host) HostCollection.instance().get(bookmarkTable.selectedRow());
             this.mount(selected);
-            if(Preferences.instance().getBoolean("browser.closeDrawer")) {
-                bookmarkDrawer.close();
-            }
         }
     }
 
@@ -1616,7 +1637,6 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void editBookmarkButtonClicked(final Object sender) {
-        this.bookmarkDrawer.open();
         CDBookmarkController c = CDBookmarkController.Factory.create(
                 (Host) HostCollection.instance().get(bookmarkTable.selectedRow())
         );
@@ -1632,7 +1652,6 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void addBookmarkButtonClicked(final Object sender) {
-        this.bookmarkDrawer.open();
         Host item;
         if(this.isMounted()) {
             item = (Host) this.session.getHost().clone();
@@ -1662,7 +1681,6 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void deleteBookmarkButtonClicked(final Object sender) {
-        this.bookmarkDrawer.open();
         NSEnumerator iterator = this.bookmarkTable.selectedRowEnumerator();
         int[] indexes = new int[this.bookmarkTable.numberOfSelectedRows()];
         int i = 0;
@@ -1870,30 +1888,6 @@ public class CDBrowserController extends CDWindowController
     // Drawers
     // ----------------------------------------------------------
 
-    public void toggleBookmarkDrawer(final Object sender) {
-        this.bookmarkDrawer.toggle(this);
-        if(this.bookmarkDrawer.state() == NSDrawer.OpenState || this.bookmarkDrawer.state() == NSDrawer.OpeningState) {
-            this.window.makeFirstResponder(this.bookmarkTable);
-            if(this.isMounted()) {
-                int row = HostCollection.instance().indexOf(this.getSession().getHost());
-                if(row != -1) {
-                    this.bookmarkTable.selectRow(row, false);
-                    this.bookmarkTable.scrollRowToVisible(row);
-                }
-            }
-        }
-        else {
-            if(this.isMounted()) {
-                this.getFocus();
-            }
-            else {
-                if(this.window.toolbar().isVisible()) {
-                    this.window.makeFirstResponder(this.quickConnectPopup);
-                }
-            }
-        }
-    }
-
     public void toggleLogDrawer(final Object sender) {
         this.logDrawer.toggle(this);
     }
@@ -1918,7 +1912,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void updateStatusLabel() {
-        StringBuffer b = new StringBuffer(statusText);
+        StringBuffer b = new StringBuffer(statusText != null ? statusText : "");
         if(meterText != null) {
             b.append(" \u2013 ");
             b.append(meterText);
@@ -2013,11 +2007,11 @@ public class CDBrowserController extends CDWindowController
     public void reloadButtonClicked(final Object sender) {
         if(this.isMounted()) {
             switch(this.browserSwitchView.selectedSegment()) {
-                case LIST_VIEW: {
+                case SWITCH_LIST_VIEW: {
                     this.workdir().invalidate();
                     break;
                 }
-                case OUTLINE_VIEW: {
+                case SWITCH_OUTLINE_VIEW: {
                     this.workdir().invalidate();
                     for(int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
                         Path p = (Path) this.browserOutlineView.itemAtRow(i);
@@ -2434,7 +2428,7 @@ public class CDBrowserController extends CDWindowController
             final List selected = this.getSelectedPaths();
             this.background(new BackgroundAction() {
                 public void run() {
-                    for(Iterator iter = selected.iterator(); iter.hasNext(); ) {
+                    for(Iterator iter = selected.iterator(); iter.hasNext();) {
                         final Path selected = (Path) iter.next();
                         if(selected.attributes.getPermission() == null) {
                             selected.readPermission();
@@ -2694,7 +2688,6 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
-     *
      * @param transfer
      * @param useBrowserConnection
      */
@@ -2977,7 +2970,7 @@ public class CDBrowserController extends CDWindowController
                 + "@"
                 + this.getSession().getHost().getHostname()
                 + " "
-                + "\\\"cd "+ workdir +" && exec \\\\$SHELL\\\"\""
+                + "\\\"cd " + workdir + " && exec \\\\$SHELL\\\"\""
                 + "\n"
                 + "end tell";
         NSAppleScript as = new NSAppleScript(command);
@@ -3124,6 +3117,8 @@ public class CDBrowserController extends CDWindowController
         this.addPathToHistory(this.workdir = path);
         CDMainApplication.invoke(new WindowMainAction(this) {
             public void run() {
+                // Change to last selected browser view
+                browserSwitchClicked(Preferences.instance().getInteger("browser.view"));
 //                navigationPopup.setStringValue(workdir().getAbsolute());
                 pathPopupButton.removeAllItems();
                 // Update the path selection menu above the browser
@@ -3282,6 +3277,7 @@ public class CDBrowserController extends CDWindowController
             public void connectionWillOpen() {
                 CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
+                        bookmarkTable.setNeedsDisplay();
                         window.setTitle(host.getProtocol().getScheme() + ":" + host.getCredentials().getUsername()
                                 + "@" + host.getHostname());
                     }
@@ -3292,6 +3288,7 @@ public class CDBrowserController extends CDWindowController
                 CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
                         getSelectedBrowserView().setNeedsDisplay();
+                        bookmarkTable.setNeedsDisplay();
                         Growl.instance().notify("Connection opened", host.getHostname());
                         ((CDMainController) NSApplication.sharedApplication().delegate()).exportBookmark(host,
                                 CDBrowserController.this.getRepresentedFile());
@@ -3317,6 +3314,7 @@ public class CDBrowserController extends CDWindowController
                 CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
                         getSelectedBrowserView().setNeedsDisplay();
+                        bookmarkTable.setNeedsDisplay();
                         window.setDocumentEdited(false);
                         securityLabel.setImage(NSImage.imageNamed("unlocked.tiff"));
                         securityLabel.setEnabled(false);
@@ -3353,7 +3351,6 @@ public class CDBrowserController extends CDWindowController
 
             }
         });
-        this.getFocus();
         return session;
     }
 
@@ -3453,9 +3450,9 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
+     * @param disconnected Callback after the session has been disconnected
      * @return True if the unmount process has finished, false if the user has to agree first
      *         to close the connection
-     * @param disconnected Callback after the session has been disconnected
      */
     public boolean unmount(final Runnable disconnected) {
         return this.unmount(new CDSheetCallback() {
@@ -3474,7 +3471,9 @@ public class CDBrowserController extends CDWindowController
                         }
                     });
                 }
-            };
+            }
+
+            ;
         }, disconnected);
     }
 
@@ -3628,7 +3627,7 @@ public class CDBrowserController extends CDWindowController
                 NAVIGATION_UP_SEGMENT_BUTTON);
 
         this.pathPopupButton.setEnabled(this.isMounted());
-        this.searchField.setEnabled(this.isMounted());
+        this.searchField.setEnabled(this.isMounted() || this.getSelectedTabView() == TAB_BOOKMARKS);
         this.encodingPopup.setEnabled(!this.isActivityRunning());
     }
 
@@ -3917,7 +3916,6 @@ public class CDBrowserController extends CDWindowController
 
     private static final String TOOLBAR_NEW_CONNECTION = "New Connection";
     private static final String TOOLBAR_BROWSER_VIEW = "Browser View";
-    private static final String TOOLBAR_BOOKMARKS = "Bookmarks";
     private static final String TOOLBAR_TRANSFERS = "Transfers";
     private static final String TOOLBAR_QUICK_CONNECT = "Quick Connect";
     private static final String TOOLBAR_NAVIGATION = "Location";
@@ -3975,15 +3973,6 @@ public class CDBrowserController extends CDWindowController
             item.setImage(NSImage.imageNamed("connect.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("connectButtonClicked", new Class[]{Object.class}));
-            return item;
-        }
-        if(itemIdentifier.equals(TOOLBAR_BOOKMARKS)) {
-            item.setLabel(NSBundle.localizedString(TOOLBAR_BOOKMARKS, "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_BOOKMARKS, "Toolbar item"));
-            item.setToolTip(NSBundle.localizedString("Toggle Bookmarks", "Toolbar item tooltip"));
-            item.setImage(NSImage.imageNamed("drawer.tiff"));
-            item.setTarget(this);
-            item.setAction(new NSSelector("toggleBookmarkDrawer", new Class[]{Object.class}));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_TRANSFERS)) {
@@ -4175,7 +4164,6 @@ public class CDBrowserController extends CDWindowController
         return new NSArray(new Object[]{
                 TOOLBAR_NEW_CONNECTION,
                 NSToolbarItem.SeparatorItemIdentifier,
-                TOOLBAR_BOOKMARKS,
                 TOOLBAR_QUICK_CONNECT,
                 TOOLBAR_TOOLS,
                 NSToolbarItem.SeparatorItemIdentifier,
@@ -4194,7 +4182,6 @@ public class CDBrowserController extends CDWindowController
         return new NSArray(new Object[]{
                 TOOLBAR_NEW_CONNECTION,
                 TOOLBAR_BROWSER_VIEW,
-                TOOLBAR_BOOKMARKS,
                 TOOLBAR_TRANSFERS,
                 TOOLBAR_QUICK_CONNECT,
 //                TOOLBAR_NAVIGATION,
