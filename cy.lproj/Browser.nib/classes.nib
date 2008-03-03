@@ -6,6 +6,11 @@
             SUPERCLASS = NSScrollView;
         },
                 {
+            CLASS = AnimatingTabView;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSTabView;
+        },
+                {
             CLASS = CDBottomView;
             LANGUAGE = ObjC;
             SUPERCLASS = NSView;
@@ -68,7 +73,7 @@
             OUTLETS =             {
                 actionPopupButton = NSPopUpButton;
                 addBookmarkButton = NSButton;
-                bookmarkDrawer = NSDrawer;
+                bookmarkSwitchView = NSSegmentedControl;
                 bookmarkTable = NSTableView;
                 browserListView = NSTableView;
                 browserOutlineView = NSOutlineView;
