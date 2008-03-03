@@ -18,18 +18,20 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSPathUtilities;
+
 import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
 import ch.cyberduck.ui.cocoa.CDPortablePreferencesImpl;
 import ch.cyberduck.ui.cocoa.CDPreferencesImpl;
 
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSPathUtilities;
-
-import org.apache.log4j.Logger;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Holding all application preferences. Default values get overwritten when loading
@@ -141,7 +143,8 @@ public abstract class Preferences {
          */
         defaults.put("logging", "ERROR");
 
-        Logger.getLogger("ch.cyberduck.core").setLevel(Level.toLevel(
+        BasicConfigurator.configure();
+        Logger.getRootLogger().setLevel(Level.toLevel(
                 this.getProperty("logging")));
 
         defaults.put("version", 
@@ -227,16 +230,12 @@ public abstract class Preferences {
          * Enable inline editing in browser
          */
         defaults.put("browser.editable", String.valueOf(true));
+
         /**
          * Bookmark drawer should be opened for new browser windows
          */
-        defaults.put("browser.bookmarkDrawer.isOpen", String.valueOf(false));
+        defaults.put("browser.bookmarkDrawer.isOpen", String.valueOf(true));
         defaults.put("browser.bookmarkDrawer.smallItems", String.valueOf(false));
-        defaults.put("browser.bookmarkDrawer.size.width", String.valueOf(200));
-        /**
-         * Close bookmark drawer upon opening a connection
-         */
-        defaults.put("browser.closeDrawer", String.valueOf(false));
         /**
          * Warn before renaming files
          */
