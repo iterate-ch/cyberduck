@@ -553,7 +553,9 @@ public class S3Path extends Path {
 
                             p.attributes.setOwner(bucket.getOwner().getDisplayName());
                             boolean[][] access = new boolean[3][3];
+                            access[Permission.OWNER][Permission.READ] = true;
                             access[Permission.OWNER][Permission.EXECUTE] = true;
+                            access[Permission.OTHER][Permission.READ] = true;
                             access[Permission.OTHER][Permission.EXECUTE] = true;
                             p.attributes.setPermission(new Permission(access));
                             childs.add(p);
