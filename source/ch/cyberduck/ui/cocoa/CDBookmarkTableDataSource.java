@@ -78,7 +78,7 @@ public class CDBookmarkTableDataSource extends CDController {
      * @return The filtered collection currently to be displayed within the constraints
      * given by the comparision with the HostFilter
      */
-    private Collection filter(Collection c) {
+    protected Collection filter(Collection c) {
         if(null == filter) {
             return c;
         }

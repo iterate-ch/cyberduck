@@ -1638,7 +1638,7 @@ public class CDBrowserController extends CDWindowController
 
     public void editBookmarkButtonClicked(final Object sender) {
         CDBookmarkController c = CDBookmarkController.Factory.create(
-                (Host) HostCollection.instance().get(bookmarkTable.selectedRow())
+                (Host) bookmarkModel.filter(HostCollection.instance()).get(bookmarkTable.selectedRow())
         );
         c.window().makeKeyAndOrderFront(null);
     }
@@ -1694,7 +1694,7 @@ public class CDBrowserController extends CDWindowController
             int row = indexes[i] - j;
             this.bookmarkTable.selectRow(row, false);
             this.bookmarkTable.scrollRowToVisible(row);
-            Host host = (Host) HostCollection.instance().get(row);
+            Host host = (Host) bookmarkModel.filter(HostCollection.instance()).get(row);
             switch(NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark", ""),
                     NSBundle.localizedString("Do you want to delete the selected bookmark?", "")
                             + " (" + host.getNickname() + ")",
@@ -1702,7 +1702,9 @@ public class CDBrowserController extends CDWindowController
                     NSBundle.localizedString("Cancel", ""),
                     null)) {
                 case CDSheetCallback.DEFAULT_OPTION:
-                    HostCollection.instance().remove(row);
+                    HostCollection.instance().remove(
+                            bookmarkModel.filter(HostCollection.instance()).get(row)
+                    );
                     j++;
             }
         }
