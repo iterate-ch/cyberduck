@@ -421,10 +421,6 @@ public class FTPPath extends Path {
         }
     }
 
-    public boolean isWriteOwnerSupported() {
-        return true;
-    }
-
     public void writeOwner(String owner, boolean recursive) {
         synchronized(session) {
             String command = "chown";

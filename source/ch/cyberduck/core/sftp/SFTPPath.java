@@ -381,10 +381,6 @@ public class SFTPPath extends Path {
         }
     }
 
-    public boolean isWriteOwnerSupported() {
-        return true;
-    }
-
     public void writeOwner(String owner, boolean recursive) {
         synchronized(session) {
             log.debug("changeOwner");
