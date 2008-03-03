@@ -1064,8 +1064,6 @@ img/download7.icns -text
 img/download8.icns -text
 img/download9.icns -text
 img/downloadFile.tiff -text svneol=unset#image/tiff
-img/drawer.tiff -text svneol=unset#image/tiff
-img/drawerPressed.tiff -text svneol=unset#image/tiff
 img/edit.tiff -text svneol=unset#image/tiff
 img/editPressed.tiff -text svneol=unset#image/tiff
 img/eject.tiff -text svneol=unset#image/tiff
