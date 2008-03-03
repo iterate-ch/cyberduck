@@ -505,7 +505,7 @@ public class CDInfoController extends CDWindowController {
              */
             private double calculateSize(Path p) {
                 if(p.attributes.isDirectory()) {
-                    double size = 0;
+                    long size = 0;
                     for(Iterator iter = p.childs().iterator(); iter.hasNext();) {
                         size += this.calculateSize((Path) iter.next());
                     }
