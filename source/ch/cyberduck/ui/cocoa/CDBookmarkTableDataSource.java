@@ -18,26 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSDraggingInfo;
-import com.apple.cocoa.application.NSDraggingSource;
-import com.apple.cocoa.application.NSEvent;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSPasteboard;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSObject;
-import com.apple.cocoa.foundation.NSPoint;
-import com.apple.cocoa.foundation.NSRect;
-import com.apple.cocoa.foundation.NSSize;
+import ch.cyberduck.core.*;
 
 import org.apache.log4j.Logger;
 
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * @version $Id$
@@ -55,49 +44,59 @@ public class CDBookmarkTableDataSource extends CDController {
         DOCUMENT_ICON_SMALL.setSize(new NSSize(16, 16));
     }
 
+    private static final NSImage GREEN_ICON
+            = NSImage.imageNamed("statusGreen.tiff");
+
+    private static final NSImage YELLOW_ICON
+            = NSImage.imageNamed("statusYellow.tiff");
+
     public static final String ICON_COLUMN = "ICON";
     public static final String BOOKMARK_COLUMN = "BOOKMARK";
+    public static final String STATUS_COLUMN = "STATUS";
     // virtual column to implement keyboard selection
     protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
 
-//    private HostFilter filter;
+    protected CDBrowserController controller;
 
-//    /**
-//     * Display only a subset of all bookmarks
-//     * @see CDBrowserController#bookmarkSearchField
-//     * @param filter
-//     */
-//    public void setFilter(HostFilter filter) {
-//        this.filter = filter;
-//    }
-//
-//    /**
-//     * @param c
-//     * @see CDBrowserController#bookmarkSearchField
-//     * @see HostFilter
-//     * @return The filtered collection currently to be displayed within the constraints
-//     * given by the comparision with the HostFilter
-//     */
-//    private Collection filter(Collection c) {
-//        if(null == filter) {
-//            return c;
-//        }
-//        Collection filtered = new Collection(c);
-//        Host bookmark = null;
-//        for(Iterator i = filtered.iterator(); i.hasNext();) {
-//            if(!filter.accept(bookmark = (Host) i.next())) {
-//                //temporarly remove the bookmark from the collection
-//                i.remove();
-//            }
-//        }
-//        return filtered;
-//    }
+    public CDBookmarkTableDataSource(CDBrowserController controller) {
+        this.controller = controller;
+    }
+
+    private HostFilter filter;
+
+    /**
+     * Display only a subset of all bookmarks
+     * @param filter
+     */
+    public void setFilter(HostFilter filter) {
+        this.filter = filter;
+    }
+
+    /**
+     * @param c
+     * @see HostFilter
+     * @return The filtered collection currently to be displayed within the constraints
+     * given by the comparision with the HostFilter
+     */
+    private Collection filter(Collection c) {
+        if(null == filter) {
+            return c;
+        }
+        Collection filtered = new Collection(c);
+        for(Iterator i = filtered.iterator(); i.hasNext();) {
+            if(!filter.accept((Host) i.next())) {
+                //temporarly remove the bookmark from the collection
+                i.remove();
+            }
+        }
+        return filtered;
+    }
 
     /**
      * @see NSTableView.DataSource
      */
     public int numberOfRowsInTableView(NSTableView view) {
-        return HostCollection.instance().size();
+        return this.filter(HostCollection.instance()).size();
     }
 
     /**
@@ -112,11 +111,20 @@ public class CDBookmarkTableDataSource extends CDController {
                 }
                 return DOCUMENT_ICON;
             }
+            final Object host = this.filter(HostCollection.instance()).get(row);
             if(identifier.equals(BOOKMARK_COLUMN)) {
-                return HostCollection.instance().get(row);
+                return host;
+            }
+            if(identifier.equals(STATUS_COLUMN)) {
+                if(controller.isMounted()) {
+                    if(host.equals(controller.getSession().getHost())) {
+                        return controller.isConnected() ? GREEN_ICON : YELLOW_ICON;
+                    }
+                }
+                return null;
             }
             if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                return ((Host) HostCollection.instance().get(row)).getNickname();
+                return ((Host) host).getNickname();
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
@@ -165,6 +173,7 @@ public class CDBookmarkTableDataSource extends CDController {
      */
     public boolean tableViewAcceptDrop(NSTableView view, NSDraggingInfo info, int index, int operation) {
         log.debug("tableViewAcceptDrop:" + index);
+        final Collection collection = this.filter(HostCollection.instance());
         if(info.draggingPasteboard().availableTypeFromArray(
                 new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
 
@@ -189,7 +198,7 @@ public class CDBookmarkTableDataSource extends CDController {
                             new Local(filename));
                     if(bookmark != null) {
                         //parsing succeeded
-                        HostCollection.instance().add(index, bookmark);
+                        collection.add(index, bookmark);
                         view.reloadData();
                         view.selectRow(index, false);
                         view.scrollRowToVisible(index);
@@ -198,7 +207,7 @@ public class CDBookmarkTableDataSource extends CDController {
                 }
                 else {
                     // The bookmark this file has been dropped onto
-                    Host h = (Host) HostCollection.instance().get(index);
+                    Host h = (Host) collection.get(index);
                     if(null == session) {
                         session = SessionFactory.createSession(h);
                     }
@@ -217,8 +226,8 @@ public class CDBookmarkTableDataSource extends CDController {
         if(info.draggingPasteboard().availableTypeFromArray(
                 new NSArray(NSPasteboard.FilesPromisePboardType)) != null) {
             for(int i = 0; i < promisedDragBookmarks.length; i++) {
-                HostCollection.instance().remove(HostCollection.instance().indexOf(promisedDragBookmarks[i]));
-                HostCollection.instance().add(index, promisedDragBookmarks[i]);
+                collection.remove(collection.indexOf(promisedDragBookmarks[i]));
+                collection.add(index, promisedDragBookmarks[i]);
                 view.reloadData();
                 view.selectRow(index, false);
                 view.scrollRowToVisible(index);
