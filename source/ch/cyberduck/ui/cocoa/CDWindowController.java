@@ -115,6 +115,16 @@ public abstract class CDWindowController extends CDBundleController {
                         // Execute the action of the runnable
                         runnable.run();
                     }
+                    catch(NullPointerException e) {
+                        log.error(e.getClass().getName());
+                        StackTraceElement[] stacktrace = e.getStackTrace();
+                        for(int i = 0; i < stacktrace.length; i++) {
+                            log.error(stacktrace[i].toString());
+                        }
+                        // We might get a null pointer if the session has been interrupted
+                        // during the action in progress and closing the underlying socket
+                        // asynchronously. See Session#interrupt
+                    }
                     finally {
                         // Increase the run counter
                         runnable.finish();
