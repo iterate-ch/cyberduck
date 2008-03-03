@@ -383,11 +383,11 @@ public class DAVPath extends Path {
                         log.error(e.getMessage());
                     }
                 }
-                if(attributes.isDirectory()) {
-                    this.getLocal().mkdir(true);
-                    getStatus().setComplete(true);
-                }
                 session.fireActivityStoppedEvent();
+            }
+            if(attributes.isDirectory()) {
+                this.getLocal().mkdir(true);
+                this.getStatus().setComplete(true);
             }
         }
     }
@@ -409,7 +409,11 @@ public class DAVPath extends Path {
                         if(null == in) {
                             throw new IOException("Unable to buffer data");
                         }
-                        session.DAV.putMethod(this.getAbsolute(), in);
+
+                        if(session.DAV.putMethod(this.getAbsolute(), in)) {
+                            this.getStatus().setComplete(true);
+                            listener.bytesSent(this.getLocal().attributes.getSize());
+                        }
 
 //                        this.upload(out, in, throttle, listener);
                         if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
@@ -431,7 +435,8 @@ public class DAVPath extends Path {
                     }
                 }
                 if(attributes.isDirectory()) {
-                    getStatus().setComplete(true);
+                    this.mkdir();
+                    this.getStatus().setComplete(true);
                 }
                 this.getParent().invalidate();
             }

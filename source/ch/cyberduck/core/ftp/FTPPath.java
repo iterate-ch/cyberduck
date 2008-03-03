@@ -18,30 +18,26 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPException;
-import com.enterprisedt.net.ftp.FTPTransferType;
-
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.FromNetASCIIInputStream;
-import ch.cyberduck.core.io.FromNetASCIIOutputStream;
-import ch.cyberduck.core.io.ToNetASCIIInputStream;
-import ch.cyberduck.core.io.ToNetASCIIOutputStream;
-
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
+
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.io.*;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.log4j.Logger;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.BufferedReader;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Calendar;
+
+import com.enterprisedt.net.ftp.FTPException;
+import com.enterprisedt.net.ftp.FTPTransferType;
 
 /**
  * @version $Id$
@@ -144,16 +140,16 @@ public class FTPPath extends Path {
                     p.attributes.setGroup(f.getGroup());
                     if(session.isPermissionSupported(parser)) {
                         p.attributes.setPermission(new Permission(
-                                new boolean[][] {
-                                        {       f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION),
+                                new boolean[][]{
+                                        {f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION),
                                                 f.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION),
                                                 f.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION)
                                         },
-                                        {       f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION),
+                                        {f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION),
                                                 f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION),
                                                 f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION)
                                         },
-                                        {       f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION),
+                                        {f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION),
                                                 f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION),
                                                 f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION)
                                         }
@@ -169,8 +165,8 @@ public class FTPPath extends Path {
                 }
                 session.FTP.finishDir();
                 boolean dirChanged = false;
-                for(Iterator iter = childs.iterator(); iter.hasNext(); ) {
-                    Path p = (Path)iter.next();
+                for(Iterator iter = childs.iterator(); iter.hasNext();) {
+                    Path p = (Path) iter.next();
                     if(p.attributes.getType() == Path.SYMBOLIC_LINK_TYPE) {
                         try {
                             p.cwdir();
@@ -428,7 +424,7 @@ public class FTPPath extends Path {
     public boolean isWriteOwnerSupported() {
         return true;
     }
-    
+
     public void writeOwner(String owner, boolean recursive) {
         synchronized(session) {
             String command = "chown";
@@ -587,7 +583,7 @@ public class FTPPath extends Path {
                 }
                 if(attributes.isDirectory()) {
                     this.getLocal().mkdir(true);
-                    getStatus().setComplete(true);
+                    this.getStatus().setComplete(true);
                 }
                 if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
                     log.info("Updating permissions");
@@ -803,7 +799,7 @@ public class FTPPath extends Path {
                         }
                         if(null != p) {
                             try {
-                                log.info("Updating permissions:"+p.getOctalString());
+                                log.info("Updating permissions:" + p.getOctalString());
                                 session.FTP.setPermissions(p.getOctalString(),
                                         this.getName());
                             }
@@ -845,7 +841,7 @@ public class FTPPath extends Path {
         try {
             session.FTP.setTransferType(FTPTransferType.BINARY);
             if(this.getStatus().isResume()) {
-                this.getStatus().setCurrent((long)attributes.getSize());
+                this.getStatus().setCurrent(attributes.getSize());
             }
             in = new Local.InputStream(this.getLocal());
             if(null == in) {

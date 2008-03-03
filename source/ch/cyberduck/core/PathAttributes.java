@@ -35,7 +35,7 @@ public class PathAttributes extends Attributes {
     /**
      * The file length
      */
-    private double size = -1;
+    private long size = -1;
     /**
      * The file modification date
      */
@@ -83,14 +83,14 @@ public class PathAttributes extends Attributes {
     /**
      * @param size the size of file in bytes.
      */
-    public void setSize(double size) {
+    public void setSize(long size) {
         this.size = size;
     }
 
     /**
      * @return length the size of file in bytes.
      */
-    public double getSize() {
+    public long getSize() {
         return this.size;
     }
 

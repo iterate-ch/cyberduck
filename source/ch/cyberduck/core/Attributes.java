@@ -42,7 +42,7 @@ public abstract class Attributes {
     /**
      * @return The length of the file
      */
-    public abstract double getSize();
+    public abstract long getSize();
 
     /**
      * @return The time the file was last modified in millis UTC or -1 if unknown
@@ -90,7 +90,7 @@ public abstract class Attributes {
      */
     public abstract boolean isSymbolicLink();
 
-    public abstract void setSize(double size);
+    public abstract void setSize(long size);
 
     public abstract void setOwner(String owner);
 

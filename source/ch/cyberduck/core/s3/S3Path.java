@@ -436,7 +436,7 @@ public class S3Path extends Path {
                         // Create bucket
                         this.mkdir();
                     }
-                    getStatus().setComplete(true);
+                    this.getStatus().setComplete(true);
                 }
                 this.getParent().invalidate();
             }

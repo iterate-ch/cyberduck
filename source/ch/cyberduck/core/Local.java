@@ -108,7 +108,7 @@ public class Local extends AbstractPath {
                 ;
             }
 
-            public void setSize(double size) {
+            public void setSize(long size) {
                 ;
             }
 
@@ -179,7 +179,7 @@ public class Local extends AbstractPath {
                 return t;
             }
 
-            public double getSize() {
+            public long getSize() {
                 if(this.isDirectory()) {
                     return 0;
                 }

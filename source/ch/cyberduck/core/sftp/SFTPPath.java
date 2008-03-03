@@ -18,19 +18,11 @@ package ch.cyberduck.core.sftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.ethz.ssh2.SCPClient;
-import ch.ethz.ssh2.io.SFTPInputStream;
-import ch.ethz.ssh2.io.SFTPOutputStream;
-import ch.ethz.ssh2.sftp.SFTPException;
-import ch.ethz.ssh2.sftp.SFTPv3DirectoryEntry;
-import ch.ethz.ssh2.sftp.SFTPv3FileAttributes;
-import ch.ethz.ssh2.sftp.SFTPv3FileHandle;
+import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSDictionary;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.io.BandwidthThrottle;
-
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
 
 import org.apache.log4j.Logger;
 
@@ -39,6 +31,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
+
+import ch.ethz.ssh2.SCPClient;
+import ch.ethz.ssh2.io.SFTPInputStream;
+import ch.ethz.ssh2.io.SFTPOutputStream;
+import ch.ethz.ssh2.sftp.SFTPException;
+import ch.ethz.ssh2.sftp.SFTPv3DirectoryEntry;
+import ch.ethz.ssh2.sftp.SFTPv3FileAttributes;
+import ch.ethz.ssh2.sftp.SFTPv3FileHandle;
 
 /**
  * @version $Id$
@@ -121,7 +121,7 @@ public class SFTPPath extends Path {
                             p.attributes.setGroup(f.attributes.gid.toString());
                         }
                         if(null != f.attributes.size) {
-                            p.attributes.setSize(f.attributes.size.doubleValue());
+                            p.attributes.setSize(f.attributes.size.longValue());
                         }
                         if(null != f.attributes.mtime) {
                             p.attributes.setModificationDate(Long.parseLong(f.attributes.mtime.toString()) * 1000L);
@@ -145,13 +145,13 @@ public class SFTPPath extends Path {
                                 }
                             }
                             catch(IOException e) {
-                                log.warn("Cannot read symbolic link target of "+p.getAbsolute()+":"+e.getMessage());
+                                log.warn("Cannot read symbolic link target of " + p.getAbsolute() + ":" + e.getMessage());
                                 p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                             }
                         }
                         String perm = f.attributes.getOctalPermissions();
                         if(null != perm) {
-                            p.attributes.setPermission(new Permission(Integer.parseInt(perm.substring(perm.length()-3))));
+                            p.attributes.setPermission(new Permission(Integer.parseInt(perm.substring(perm.length() - 3))));
                         }
                         p.getStatus().setSkipped(this.getStatus().isSkipped());
                         childs.add(p);
@@ -282,7 +282,7 @@ public class SFTPPath extends Path {
                     handle = session.sftp().openFileRO(this.getAbsolute());
                     SFTPv3FileAttributes attr = session.sftp().fstat(handle);
                     session.message(NSBundle.localizedString("Getting size of", "Status", "") + " " + this.getName());
-                    this.attributes.setSize(attr.size.doubleValue());
+                    this.attributes.setSize(attr.size.longValue());
                     session.sftp().closeFile(handle);
                 }
                 catch(SFTPException e) {
@@ -352,7 +352,7 @@ public class SFTPPath extends Path {
                     SFTPv3FileAttributes attr = session.sftp().fstat(handle);
                     String perm = attr.getOctalPermissions();
                     try {
-                        this.attributes.setPermission(new Permission(Integer.parseInt(perm.substring(perm.length()-3))));
+                        this.attributes.setPermission(new Permission(Integer.parseInt(perm.substring(perm.length() - 3))));
                     }
                     catch(NumberFormatException e) {
                         this.attributes.setPermission(Permission.EMPTY);
@@ -640,7 +640,7 @@ public class SFTPPath extends Path {
                         if(null != p) {
                             if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                                 try {
-                                    log.info("Updating permissions:"+p.getOctalString());
+                                    log.info("Updating permissions:" + p.getOctalString());
                                     SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
                                     attr.permissions = new Integer(p.getOctalNumber());
                                     session.sftp().fsetstat(handle, attr);
@@ -663,7 +663,7 @@ public class SFTPPath extends Path {
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                         out = new SFTPOutputStream(handle);
                         if(getStatus().isResume()) {
-                            long skipped = ((SFTPOutputStream)out).skip(getStatus().getCurrent());
+                            long skipped = ((SFTPOutputStream) out).skip(getStatus().getCurrent());
                             log.info("Skipping " + skipped + " bytes");
                             if(skipped < this.getStatus().getCurrent()) {
                                 throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.getStatus().getCurrent());
@@ -673,9 +673,9 @@ public class SFTPPath extends Path {
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getIdentifier())) {
                         SCPClient scp = session.openScp();
                         scp.setCharset(session.getEncoding());
-                        out = scp.put(this.getName(), (long)this.getLocal().attributes.getSize(),
+                        out = scp.put(this.getName(), (long) this.getLocal().attributes.getSize(),
                                 this.getParent().getAbsolute(),
-                                "0"+p.getOctalString());
+                                "0" + p.getOctalString());
                     }
                     this.upload(out, in, throttle, listener);
                 }
