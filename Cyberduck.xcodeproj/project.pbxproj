@@ -103,7 +103,6 @@
 		474165BE06C4FC4000AC0BD2 /* connect.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4741654806C4FC3F00AC0BD2 /* connect.tiff */; };
 		474165BF06C4FC4000AC0BD2 /* deleteFile.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4741654906C4FC3F00AC0BD2 /* deleteFile.tiff */; };
 		474165E006C4FC4000AC0BD2 /* downloadFile.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4741656A06C4FC3F00AC0BD2 /* downloadFile.tiff */; };
-		474165E106C4FC4000AC0BD2 /* drawer.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4741656B06C4FC3F00AC0BD2 /* drawer.tiff */; };
 		474165E306C4FC4000AC0BD2 /* edit.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4741656D06C4FC3F00AC0BD2 /* edit.tiff */; };
 		474165E406C4FC4000AC0BD2 /* editPressed.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4741656E06C4FC3F00AC0BD2 /* editPressed.tiff */; };
 		474165E506C4FC4000AC0BD2 /* eject.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4741656F06C4FC3F00AC0BD2 /* eject.tiff */; };
@@ -178,10 +177,6 @@
 		4781AF410828423100B3E0FA /* download0.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4781AF400828423100B3E0FA /* download0.icns */; };
 		4784DAAB07AEFB5900A8FC38 /* transparent.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4784DAAA07AEFB5900A8FC38 /* transparent.tiff */; };
 		4785B6060806FC6500F4E71F /* download10.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4785B6050806FC6500F4E71F /* download10.icns */; };
-		478B36340A07C395000F11F2 /* SKWSegmentedControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 478B36300A07C395000F11F2 /* SKWSegmentedControl.h */; };
-		478B36350A07C395000F11F2 /* SKWSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 478B36310A07C395000F11F2 /* SKWSegmentedControl.m */; };
-		478B36360A07C395000F11F2 /* SKWSegmentedControlWindowProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 478B36320A07C395000F11F2 /* SKWSegmentedControlWindowProxy.h */; };
-		478B36370A07C395000F11F2 /* SKWSegmentedControlWindowProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 478B36330A07C395000F11F2 /* SKWSegmentedControlWindowProxy.m */; };
 		478B71F0089FEB4E003B512A /* arrowRightBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 478B71EF089FEB4E003B512A /* arrowRightBlack16.tiff */; };
 		478B871E0BDE013D0040E559 /* turtle.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 478B871D0BDE013D0040E559 /* turtle.tiff */; };
 		47905BE30AE3D6FF00F9E193 /* unlocked.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47905BE10AE3D6FF00F9E193 /* unlocked.tiff */; };
@@ -683,7 +678,6 @@
 		4741654806C4FC3F00AC0BD2 /* connect.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = connect.tiff; sourceTree = "<group>"; };
 		4741654906C4FC3F00AC0BD2 /* deleteFile.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = deleteFile.tiff; sourceTree = "<group>"; };
 		4741656A06C4FC3F00AC0BD2 /* downloadFile.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = downloadFile.tiff; sourceTree = "<group>"; };
-		4741656B06C4FC3F00AC0BD2 /* drawer.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = drawer.tiff; sourceTree = "<group>"; };
 		4741656D06C4FC3F00AC0BD2 /* edit.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = edit.tiff; sourceTree = "<group>"; };
 		4741656E06C4FC3F00AC0BD2 /* editPressed.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = editPressed.tiff; sourceTree = "<group>"; };
 		4741656F06C4FC3F00AC0BD2 /* eject.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = eject.tiff; sourceTree = "<group>"; };
@@ -996,10 +990,6 @@
 		4781AF400828423100B3E0FA /* download0.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download0.icns; sourceTree = "<group>"; };
 		4784DAAA07AEFB5900A8FC38 /* transparent.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = transparent.tiff; sourceTree = "<group>"; };
 		4785B6050806FC6500F4E71F /* download10.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download10.icns; sourceTree = "<group>"; };
-		478B36300A07C395000F11F2 /* SKWSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControl.h; sourceTree = "<group>"; };
-		478B36310A07C395000F11F2 /* SKWSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControl.m; sourceTree = "<group>"; };
-		478B36320A07C395000F11F2 /* SKWSegmentedControlWindowProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControlWindowProxy.h; sourceTree = "<group>"; };
-		478B36330A07C395000F11F2 /* SKWSegmentedControlWindowProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControlWindowProxy.m; sourceTree = "<group>"; };
 		478B71EF089FEB4E003B512A /* arrowRightBlack16.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowRightBlack16.tiff; sourceTree = "<group>"; };
 		478B871D0BDE013D0040E559 /* turtle.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = turtle.tiff; sourceTree = "<group>"; };
 		47905BE10AE3D6FF00F9E193 /* unlocked.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = unlocked.tiff; sourceTree = "<group>"; };
@@ -1632,7 +1622,6 @@
 			isa = PBXGroup;
 			children = (
 				477B1B7B0AF384350023BA7F /* snoize */,
-				478B362F0A07C395000F11F2 /* macfoh */,
 			);
 			path = com;
 			sourceTree = "<group>";
@@ -1745,7 +1734,6 @@
 				4741654906C4FC3F00AC0BD2 /* deleteFile.tiff */,
 				47442A6A0733C7DD00BA512B /* rendezvous.icns */,
 				47442A6B0733C7DD00BA512B /* rendezvous16.tiff */,
-				4741656B06C4FC3F00AC0BD2 /* drawer.tiff */,
 				4741656D06C4FC3F00AC0BD2 /* edit.tiff */,
 				4741656E06C4FC3F00AC0BD2 /* editPressed.tiff */,
 				4741656F06C4FC3F00AC0BD2 /* eject.tiff */,
@@ -1808,17 +1796,6 @@
 				477B1B7F0AF384350023BA7F /* SNDisclosureButton.m */,
 			);
 			path = snoize;
-			sourceTree = "<group>";
-		};
-		478B362F0A07C395000F11F2 /* macfoh */ = {
-			isa = PBXGroup;
-			children = (
-				478B36300A07C395000F11F2 /* SKWSegmentedControl.h */,
-				478B36310A07C395000F11F2 /* SKWSegmentedControl.m */,
-				478B36320A07C395000F11F2 /* SKWSegmentedControlWindowProxy.h */,
-				478B36330A07C395000F11F2 /* SKWSegmentedControlWindowProxy.m */,
-			);
-			path = macfoh;
 			sourceTree = "<group>";
 		};
 		479815EA0728DCA000FA3CDB /* growl */ = {
@@ -1895,8 +1872,6 @@
 				47494C4307EC6B4200B34D53 /* CDListView.h in Headers */,
 				47457F8E09980270002C93C3 /* UKCrashReporter.h in Headers */,
 				475E53F709AD1B48007CFC2B /* UKPrefsPanel.h in Headers */,
-				478B36340A07C395000F11F2 /* SKWSegmentedControl.h in Headers */,
-				478B36360A07C395000F11F2 /* SKWSegmentedControlWindowProxy.h in Headers */,
 				47BA61C70A2507320034AB18 /* CDNavigationView.h in Headers */,
 				4799CE260A29EF5600AA4E59 /* CDBottomView.h in Headers */,
 				477B1B800AF384350023BA7F /* SNDisclosableView.h in Headers */,
@@ -2354,7 +2329,6 @@
 				474165BE06C4FC4000AC0BD2 /* connect.tiff in Resources */,
 				474165BF06C4FC4000AC0BD2 /* deleteFile.tiff in Resources */,
 				474165E006C4FC4000AC0BD2 /* downloadFile.tiff in Resources */,
-				474165E106C4FC4000AC0BD2 /* drawer.tiff in Resources */,
 				474165E306C4FC4000AC0BD2 /* edit.tiff in Resources */,
 				474165E406C4FC4000AC0BD2 /* editPressed.tiff in Resources */,
 				474165E506C4FC4000AC0BD2 /* eject.tiff in Resources */,
@@ -2567,8 +2541,6 @@
 				47494C4207EC6B4200B34D53 /* CDListView.m in Sources */,
 				47457F8F09980270002C93C3 /* UKCrashReporter.m in Sources */,
 				475E53F809AD1B48007CFC2B /* UKPrefsPanel.m in Sources */,
-				478B36350A07C395000F11F2 /* SKWSegmentedControl.m in Sources */,
-				478B36370A07C395000F11F2 /* SKWSegmentedControlWindowProxy.m in Sources */,
 				47BA61C80A2507320034AB18 /* CDNavigationView.m in Sources */,
 				4799CE270A29EF5600AA4E59 /* CDBottomView.m in Sources */,
 				477B1B810AF384350023BA7F /* SNDisclosableView.m in Sources */,
