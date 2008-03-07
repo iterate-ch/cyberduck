@@ -71,14 +71,14 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_GrowlNative_notifyWithIm
     [pool release];
 }
 
-#define GROWL_DOWNLOAD_COMPLETE             NSLocalizedStringFromTable(@"Download complete", @"Growl", @"Growl Notification")
-#define GROWL_UPLOAD_COMPLETE               NSLocalizedStringFromTable(@"Upload complete", @"Growl", @"Growl Notification")
-#define GROWL_SYNCHRONIZATION_COMPLETE      NSLocalizedStringFromTable(@"Synchronization complete", @"Growl", @"Growl Notification")
-#define GROWL_CONNECTION_OPENED             NSLocalizedStringFromTable(@"Connection opened", @"Growl", @"Growl Notification")
-#define GROWL_CONNECTION_FAILED             NSLocalizedStringFromTable(@"Connection failed", @"Growl", @"Growl Notification")
-#define GROWL_DOWNLOAD_FAILED               NSLocalizedStringFromTable(@"Download failed", @"Growl", @"Growl Notification")
-#define GROWL_UPLOAD_FAILED                 NSLocalizedStringFromTable(@"Upload failed", @"Growl", @"Growl Notification")
-#define GROWL_QUEUED                        NSLocalizedStringFromTable(@"Transfer queued", @"Growl", @"Growl Notification")
+#define GROWL_DOWNLOAD_COMPLETE             @"Download complete"
+#define GROWL_UPLOAD_COMPLETE               @"Upload complete"
+#define GROWL_SYNCHRONIZATION_COMPLETE      @"Synchronization complete"
+#define GROWL_CONNECTION_OPENED             @"Connection opened"
+#define GROWL_CONNECTION_FAILED             @"Connection failed"
+#define GROWL_DOWNLOAD_FAILED               @"Download failed"
+#define GROWL_UPLOAD_FAILED                 @"Upload failed"
+#define GROWL_QUEUED                        @"Transfer queued"
 #define GROWL_RENDEZVOUS_FOUND_SERVICE      @"Bonjour"
 
 @implementation Growl
@@ -142,7 +142,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_GrowlNative_notifyWithIm
 
 - (NSDictionary *)registrationDictionaryForGrowl {
 
-    NSArray *allNotifications = [NSArray arrayWithObjects:
+    NSArray *notifications = [NSArray arrayWithObjects:
         GROWL_DOWNLOAD_COMPLETE,
         GROWL_UPLOAD_COMPLETE,
         GROWL_SYNCHRONIZATION_COMPLETE,
@@ -153,21 +153,10 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_GrowlNative_notifyWithIm
         GROWL_RENDEZVOUS_FOUND_SERVICE,
         GROWL_QUEUED,
         nil];
-    NSArray *defaultNotifications = [NSArray arrayWithObjects:
-        GROWL_DOWNLOAD_COMPLETE,
-        GROWL_UPLOAD_COMPLETE,
-        GROWL_SYNCHRONIZATION_COMPLETE,
-        GROWL_CONNECTION_OPENED,
-        GROWL_CONNECTION_FAILED,
-        GROWL_DOWNLOAD_FAILED,
-        GROWL_UPLOAD_FAILED,
-        GROWL_RENDEZVOUS_FOUND_SERVICE,
-        GROWL_QUEUED,
-        nil];
-    
+
     NSDictionary *registrationDict = [NSDictionary dictionaryWithObjectsAndKeys:
-        allNotifications, GROWL_NOTIFICATIONS_ALL,
-        defaultNotifications, GROWL_NOTIFICATIONS_DEFAULT,
+        notifications, GROWL_NOTIFICATIONS_ALL,
+        notifications, GROWL_NOTIFICATIONS_DEFAULT,
         nil];
     
     return registrationDict;
