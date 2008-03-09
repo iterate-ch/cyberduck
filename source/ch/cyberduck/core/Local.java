@@ -18,13 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDate;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSPathUtilities;
+import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.ui.cocoa.CDMainApplication;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
+import ch.cyberduck.core.io.FileWatcher;
+import ch.cyberduck.core.io.FileWatcherListener;
 
 import org.apache.log4j.Logger;
 
@@ -249,18 +249,18 @@ public class Local extends AbstractPath {
         }
     }
 
-//    private FileWatcher uk;
-//
-//    /**
-//     *
-//     * @param listener
-//     */
-//    public void watch(FileWatcherListener listener) {
-//        if(null == uk) {
-//            uk = FileWatcher.instance(this);
-//        }
-//        uk.watch(listener);
-//    }
+    private FileWatcher uk;
+
+    /**
+     *
+     * @param listener
+     */
+    public void watch(FileWatcherListener listener) {
+        if(null == uk) {
+            uk = FileWatcher.instance(this);
+        }
+        uk.watch(listener);
+    }
 
     public boolean isReadable() {
         return _impl.canRead();
@@ -446,7 +446,12 @@ public class Local extends AbstractPath {
     }
 
     public void delete() {
-        _impl.delete();
+        if(this.exists()) {
+            if(0 > NSWorkspace.sharedWorkspace().performFileOperation(NSWorkspace.RecycleOperation,
+                    this.getParent().getAbsolute(), "", new NSArray(this.getName()))) {
+                log.warn("Failed to move " + this.getAbsolute() + " to Trash");
+            }
+        }
     }
 
     public void rename(String name) {
@@ -472,7 +477,7 @@ public class Local extends AbstractPath {
             if(!Local.jni_load()) {
                 return;
             }
-            final String path =  this.getAbsolute();
+            final String path = this.getAbsolute();
             CDMainApplication.invoke(new DefaultMainAction() {
                 public void run() {
                     if(-1 == progress) {
