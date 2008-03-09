@@ -257,7 +257,8 @@ public abstract class Protocol {
             }
         }
         log.fatal("Unknown protocol:"+protocol);
-        return null;
+        return Protocol.forName(
+                Preferences.instance().getProperty("connection.protocol.default"));
     }
 
     /**
@@ -273,7 +274,8 @@ public abstract class Protocol {
             }
         }
         log.fatal("Unknown scheme:"+scheme);
-        return null;
+        return Protocol.forName(
+                Preferences.instance().getProperty("connection.protocol.default"));
     }
 
     public static Protocol[] getKnownProtocols() {
