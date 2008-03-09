@@ -99,6 +99,12 @@ public class Collection extends ArrayList implements CollectionListener {
         return previous;
     }
 
+    public boolean remove(Object bookmark) {
+        boolean previous = super.remove(bookmark);
+        this.collectionItemRemoved(bookmark);
+        return previous;
+    }
+
     public void collectionItemAdded(Object item) {
         CollectionListener[] l = (CollectionListener[])listeners.toArray(
                 new CollectionListener[listeners.size()]);
