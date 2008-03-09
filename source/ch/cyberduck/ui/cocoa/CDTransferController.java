@@ -18,15 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.*;
+
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
-
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -990,13 +990,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             Transfer q = (Transfer) TransferCollection.instance().get(i);
             if(!q.isRunning()) {
                 for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                    Local l = ((Path) iter.next()).getLocal();
-                    if(l.exists()) {
-                        if(0 > NSWorkspace.sharedWorkspace().performFileOperation(NSWorkspace.RecycleOperation,
-                                l.getParent().getAbsolute(), "", new NSArray(l.getName()))) {
-                            log.warn("Failed to move "+l.getAbsolute()+" to Trash");
-                        }
-                    }
+                    ((Path) iter.next()).getLocal().delete();
                 }
             }
         }
