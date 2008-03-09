@@ -40,13 +40,13 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_io_FileWatcher_addPath(JNIEnv *env, jobject instance, jstring local)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	[[UKKQueue sharedUKKQueue] addPathToQueue:convertToNSString(env, local)];
+	[[UKKQueue sharedFileWatcher] addPathToQueue:convertToNSString(env, local)];
 	[pool release];
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_io_FileWatcher_removePath(JNIEnv *env, jobject instance, jstring local)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	[[UKKQueue sharedUKKQueue] removePathFromQueue:convertToNSString(env, local)];
+	[[UKKQueue sharedFileWatcher] removePathFromQueue:convertToNSString(env, local)];
 	[pool release];
 }

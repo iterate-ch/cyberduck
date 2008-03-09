@@ -88,7 +88,7 @@ public class FileWatcher extends NSObject {
         FileWatcherListener[] l = (FileWatcherListener[])listeners.toArray(
                 new FileWatcherListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
-            l[i].fileWritten(new Local((String) notification.object()));
+            l[i].fileWritten(new Local(notification.userInfo().objectForKey("path").toString()));
         }
     }
 
@@ -96,7 +96,7 @@ public class FileWatcher extends NSObject {
         FileWatcherListener[] l = (FileWatcherListener[])listeners.toArray(
                 new FileWatcherListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
-            l[i].fileRenamed(new Local((String) notification.object()));
+            l[i].fileRenamed(new Local(notification.userInfo().objectForKey("path").toString()));
         }
     }
 
@@ -104,7 +104,7 @@ public class FileWatcher extends NSObject {
         FileWatcherListener[] l = (FileWatcherListener[])listeners.toArray(
                 new FileWatcherListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
-            l[i].fileDeleted(new Local((String) notification.object()));
+            l[i].fileDeleted(new Local(notification.userInfo().objectForKey("path").toString()));
         }
         removePath(file.getAbsolute());
     }
