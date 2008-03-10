@@ -153,13 +153,6 @@ public class Rendezvous
     }
 
     /**
-     * @return All services discovered
-     */
-    public java.util.Collection getServices() {
-        return services.keySet();
-    }
-
-    /**
      * @param identifier The full service domain name
      * @return The host this name maps to or null if none is found
      */
@@ -190,6 +183,12 @@ public class Rendezvous
      */
     public int numberOfServices() {
         return services.size();
+    }
+
+    public Host getService(int index) {
+        synchronized(this) {
+            return ((Host[]) services.values().toArray(new Host[services.size()]))[index];
+        }
     }
 
     /**
