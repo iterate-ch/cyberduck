@@ -456,6 +456,7 @@ public class Local extends AbstractPath {
 
     public void rename(String name) {
         _impl.renameTo(new File(this.getParent().getAbsolute(), name));
+        this.setPath(this.getParent().getAbsolute(), name);
     }
 
     public void cwdir() throws IOException {
