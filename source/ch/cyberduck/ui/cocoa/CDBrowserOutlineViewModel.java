@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource {
+public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implements CDOutlineDataSource {
     protected static Logger log = Logger.getLogger(CDBrowserOutlineViewModel.class);
 
     public CDBrowserOutlineViewModel(CDBrowserController controller) {

@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class CDBrowserListViewModel extends CDBrowserTableDataSource {
+public class CDBrowserListViewModel extends CDBrowserTableDataSource implements CDListDataSource {
 
     public CDBrowserListViewModel(CDBrowserController controller) {
         super(controller);
