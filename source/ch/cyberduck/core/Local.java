@@ -277,7 +277,10 @@ public class Local extends AbstractPath {
      */
     public boolean touch() {
         try {
-            if(_impl.createNewFile()) {
+            if(this.exists()) {
+                attributes.setModificationDate(System.currentTimeMillis());
+            }
+            else if(_impl.createNewFile()) {
                 this.setIcon(0);
             }
         }
