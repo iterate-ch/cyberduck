@@ -27,17 +27,17 @@ public interface CollectionListener {
      *
      * @param item
      */
-    public abstract void collectionItemAdded(Object item);
+    abstract void collectionItemAdded(Object item);
 
     /**
      *
      * @param item
      */
-    public abstract void collectionItemRemoved(Object item);
+    abstract void collectionItemRemoved(Object item);
 
     /**
      *
      * @param item
      */
-    public abstract void collectionItemChanged(Object item);
+    abstract void collectionItemChanged(Object item);
 }
