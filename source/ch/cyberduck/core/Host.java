@@ -43,6 +43,7 @@ public class Host extends NSObject {
     private static Logger log = Logger.getLogger(Host.class);
     /**
      * The protocol identifier. Must be one of <code>sftp</code>, <code>ftp</code> or <code>ftps</code>
+     *
      * @see Protocol#FTP
      * @see Protocol#FTP_TLS
      * @see Protocol#SFTP
@@ -50,6 +51,7 @@ public class Host extends NSObject {
     private Protocol protocol;
     /**
      * The port number to connect to
+     *
      * @see Protocol#getDefaultPort()
      */
     private int port;
@@ -115,15 +117,21 @@ public class Host extends NSObject {
     private static final String COMMENT = "Comment";
 
     /**
-     * @param dict
+     * @param dict A valid bookmark dictionary
      */
     public Host(NSDictionary dict) {
         this.init(dict);
     }
 
     /**
-     * 
-     * @param dict
+     * @see Bookmark#read() 
+     */
+    protected Host() {
+        ;
+    }
+
+    /**
+     * @param dict A valid bookmark dictionary
      */
     public void init(NSDictionary dict) {
         Object protocolObj = dict.objectForKey(Host.PROTOCOL);
@@ -141,7 +149,7 @@ public class Host extends NSObject {
         }
         Object portObj = dict.objectForKey(Host.PORT);
         if(portObj != null) {
-            this.setPort(Integer.parseInt((String) portObj));
+            this.setPort(Integer.parseInt(portObj.toString()));
         }
         Object pathObj = dict.objectForKey(Host.PATH);
         if(pathObj != null) {
@@ -166,7 +174,7 @@ public class Host extends NSObject {
         }
         Object connObj = dict.objectForKey(Host.MAXCONNECTIONS);
         if(connObj != null) {
-            this.setMaxConnections(Integer.valueOf((String) connObj));
+            this.setMaxConnections(Integer.valueOf(connObj.toString()));
         }
         Object downloadObj = dict.objectForKey(Host.DOWNLOADFOLDER);
         if(downloadObj != null) {
@@ -188,7 +196,9 @@ public class Host extends NSObject {
     public NSDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
         dict.setObjectForKey(this.getProtocol().getIdentifier(), Host.PROTOCOL);
-        dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
+        if(!this.getNickname().equals(this.getDefaultNickname())) {
+            dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
+        }
         dict.setObjectForKey(this.getHostname(), Host.HOSTNAME);
         dict.setObjectForKey(String.valueOf(this.getPort()), Host.PORT);
         dict.setObjectForKey(this.getCredentials().getUsername(), Host.USERNAME);
@@ -277,7 +287,6 @@ public class Host extends NSObject {
         this.setProtocol(protocol);
         this.setPort(port);
         this.setHostname(hostname);
-        this.setNickname(nickname);
         this.setDefaultPath(defaultpath);
         this.setCredentials(null, null);
     }
@@ -450,27 +459,10 @@ public class Host extends NSObject {
         return this.login;
     }
 
-//    public String getIdentifier() {
-//        if(null == identifier) {
-//            return this.getProtocol().toString();
-//        }
-//        return identifier;
-//    }
-//
-//    public void setIdentifier(String identifier) {
-//        this.identifier = identifier;
-//    }
-//
     /**
      * @param protocol The protocol to use or null to use the default protocol for this port number
      */
     public void setProtocol(Protocol protocol) {
-        if(null != this.protocol) {
-            if(this.getNickname().equals(this.getDefaultNickname())) {
-                //Revert the last default nickname set
-                this.setNickname(null);
-            }
-        }
         this.protocol = protocol != null ? protocol :
                 Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
 
@@ -498,7 +490,7 @@ public class Host extends NSObject {
      */
     public String getNickname() {
         if(null == this.nickname) {
-            this.setNickname(this.getDefaultNickname());
+            return this.getDefaultNickname();
         }
         return this.nickname;
     }
@@ -542,11 +534,11 @@ public class Host extends NSObject {
                     // and do not use STD3 ASCII rules If unassigned code points are found
                     // the operation fails with ParseException
                     final String idn = IDNA.convertIDNToASCII(this.hostname, IDNA.DEFAULT).toString();
-                    log.info("IDN hostname for "+this.hostname+":"+idn);
+                    log.info("IDN hostname for " + this.hostname + ":" + idn);
                     this.punycode = idn;
                 }
                 catch(StringPrepParseException e) {
-                    log.error("Cannot convert hostname to IDNA:"+e.getMessage());
+                    log.error("Cannot convert hostname to IDNA:" + e.getMessage());
                 }
             }
             return this.punycode;
@@ -561,12 +553,6 @@ public class Host extends NSObject {
      * @param hostname
      */
     public void setHostname(String hostname) {
-        if(null != this.hostname) {
-            if(this.getNickname().equals(this.getDefaultNickname())) {
-                //Revert the last default nickname set
-                this.setNickname(null);
-            }
-        }
         this.hostname = hostname;
         this.punycode = null;
     }
@@ -681,7 +667,6 @@ public class Host extends NSObject {
     }
 
     /**
-     *
      * @param comment
      */
     public void setComment(String comment) {
@@ -689,7 +674,6 @@ public class Host extends NSObject {
     }
 
     /**
-     *
      * @return
      */
     public String getComment() {
