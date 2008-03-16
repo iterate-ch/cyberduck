@@ -22,9 +22,14 @@ import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.parser.ConfigurableFTPFileEntryParserImpl;
 import org.apache.commons.net.ftp.parser.FTPTimestampParser;
+import org.apache.commons.net.ftp.parser.FTPTimestampParserImpl;
 import org.apache.log4j.Logger;
 
 import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @version $Id:$
@@ -38,6 +43,37 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
     public CommonUnixFTPEntryParser(String REGEX) {
         super(REGEX);
         this.configure(null);
+    }
+
+    public Calendar parseTimestamp(String timestampStr) throws ParseException {
+        try {
+            return super.parseTimestamp(timestampStr);
+        }
+        catch(ParseException e) {
+            // #1813 Leap year bug. Taken from http://svn.apache.org/viewvc/commons/proper/net/branches/NET_2_0/src/main/java/org/apache/commons/net/ftp/parser/FTPTimestampParserImpl.java?pathrev=631284&view=diff&r1=631284&r2=139565&diff_format=u
+            return new FTPTimestampParserImpl() {
+                public Calendar parseTimestamp(String timestampStr) throws ParseException {
+                    Calendar working = Calendar.getInstance();
+                    working.setTimeZone(this.getServerTimeZone());
+
+                    int year = Calendar.getInstance().get(Calendar.YEAR);
+                    String timeStampStrPlusYear = timestampStr + " " + year;
+                    SimpleDateFormat hackFormatter = new SimpleDateFormat(this.getRecentDateFormat().toPattern() + " yyyy",
+                            this.getRecentDateFormat().getDateFormatSymbols());
+                    hackFormatter.setLenient(false);
+                    hackFormatter.setTimeZone(this.getRecentDateFormat().getTimeZone());
+                    final ParsePosition pp = new ParsePosition(0);
+                    Date parsed = hackFormatter.parse(timeStampStrPlusYear, pp);
+                    if(parsed != null && pp.getIndex() == timestampStr.length() + 5) {
+                        working.setTime(parsed);
+                    }
+                    else {
+                        throw new ParseException("Timestamp could not be parsed:" + timestampStr, pp.getIndex());
+                    }
+                    return working;
+                }
+            }.parseTimestamp(timestampStr);
+        }
     }
 
     /**
@@ -71,7 +107,7 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
         FTPFile file = new FTPFile();
         int type;
         try {
-            file.setTimestamp(super.parseTimestamp(datestr));
+            file.setTimestamp(this.parseTimestamp(datestr));
         }
         catch(ParseException e) {
             log.warn(e.getMessage());
@@ -110,7 +146,8 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
             String execPerm = group(g + 2);
             if(!execPerm.equals("-") && !Character.isUpperCase(execPerm.charAt(0))) {
                 file.setPermission(access, FTPFile.EXECUTE_PERMISSION, true);
-            } else {
+            }
+            else {
                 file.setPermission(access, FTPFile.EXECUTE_PERMISSION, false);
             }
         }
@@ -130,12 +167,14 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
                 // Give up if no link indicator is present
                 if(end == -1) {
                     file.setName(name);
-                } else {
+                }
+                else {
                     file.setName(name.substring(0, end));
                     file.setLink(name.substring(end + 4));
                 }
 
-            } else {
+            }
+            else {
                 file.setName(name);
             }
         }
