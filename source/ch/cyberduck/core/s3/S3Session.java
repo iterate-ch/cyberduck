@@ -86,6 +86,18 @@ public class S3Session extends Session {
         );
 
         configuration.setProperty("httpclient.proxy-autodetect", "false");
+        if(host.getProtocol().getScheme().equals("https")) {
+            if(Proxy.isHTTPSProxyEnabled()) {
+                configuration.setProperty("httpclient.proxy-host", Proxy.getHTTPSProxyHost());
+                configuration.setProperty("httpclient.proxy-port", String.valueOf(Proxy.getHTTPSProxyPort()));
+            }
+        }
+        else {
+            if(Proxy.isHTTPProxyEnabled()) {
+                configuration.setProperty("httpclient.proxy-host", Proxy.getHTTPProxyHost());
+                configuration.setProperty("httpclient.proxy-port", String.valueOf(Proxy.getHTTPProxyPort()));
+            }
+        }
         configuration.setProperty("httpclient.connection-timeout-ms",
                 String.valueOf(Preferences.instance().getInteger("connection.timeout.seconds") * 1000)
         );
