@@ -21,10 +21,10 @@ package ch.cyberduck.core;
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.*;
 
-import ch.cyberduck.ui.cocoa.CDMainApplication;
-import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 import ch.cyberduck.core.io.FileWatcher;
 import ch.cyberduck.core.io.FileWatcherListener;
+import ch.cyberduck.ui.cocoa.CDMainApplication;
+import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
 
@@ -252,7 +252,6 @@ public class Local extends AbstractPath {
     private FileWatcher uk;
 
     /**
-     *
      * @param listener
      */
     public void watch(FileWatcherListener listener) {
@@ -276,16 +275,15 @@ public class Local extends AbstractPath {
      * @return
      */
     public boolean touch() {
-        try {
-            if(this.exists()) {
-                attributes.setModificationDate(System.currentTimeMillis());
+        if(!this.exists()) {
+            try {
+                if(_impl.createNewFile()) {
+                    this.setIcon(0);
+                }
             }
-            else if(_impl.createNewFile()) {
-                this.setIcon(0);
+            catch(IOException e) {
+                log.error(e.getMessage());
             }
-        }
-        catch(IOException e) {
-            log.error(e.getMessage());
         }
         return false;
     }
