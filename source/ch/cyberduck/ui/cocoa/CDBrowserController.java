@@ -429,6 +429,8 @@ public class CDBrowserController extends CDWindowController
         this.toolbar.setAutosavesConfiguration(true);
         this.window().setToolbar(toolbar);
 
+        this.window().makeFirstResponder(this.quickConnectPopup);
+
         this.toggleBookmarks(Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen"));
 
         if(!Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen")) {
@@ -3554,8 +3556,14 @@ public class CDBrowserController extends CDWindowController
                 CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
                         bookmarkTable.setNeedsDisplay();
-                        window.setTitle(host.getProtocol().getScheme() + ":" + host.getCredentials().getUsername()
-                                + "@" + host.getHostname());
+                        if(StringUtils.hasText(host.getCredentials().getUsername())) {
+                            window.setTitle(host.getProtocol().getScheme() + ":" + host.getCredentials().getUsername()
+                                    + "@" + host.getHostname());
+                        }
+                        else {
+                            window.setTitle(host.getProtocol().getScheme() + ":"
+                                    + host.getHostname());
+                        }
                         window.setRepresentedFilename("");
                     }
                 });
