@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.odb;
 import com.apple.cocoa.application.NSWorkspace;
 
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 
 import org.apache.log4j.Logger;
@@ -66,6 +67,35 @@ public class EditorFactory {
                 INSTALLED_ODB_EDITORS.put(editor, identifier);
             }
         }
+    }
+
+    /**
+     *
+     * @param file
+     * @return The bundle identifier of the editor for this file
+     */
+    public static String editorBundleIdentifierForFile(final Local file) {
+        final String defaultApplication = file.getDefaultEditor();
+        if(null == defaultApplication) {
+            // Use default editor
+            return Preferences.instance().getProperty("editor.bundleIdentifier");
+        }
+        for(Iterator iter = INSTALLED_ODB_EDITORS.values().iterator(); iter.hasNext(); ) {
+            final String identifier = (String) iter.next();
+            final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
+            if(null == path) {
+                continue;
+            }
+            if(path.equals(defaultApplication)) {
+                return identifier;
+            }
+        }
+        // Use default editor
+        return Preferences.instance().getProperty("editor.bundleIdentifier");
+    }
+
+    public static Editor createEditor(CDBrowserController c, Local file) {
+        return createEditor(c, editorBundleIdentifierForFile(file));
     }
 
     /**

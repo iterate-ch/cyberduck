@@ -241,7 +241,7 @@ public class CDBrowserController extends CDWindowController
             Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"), Path.FILE_TYPE);
-            Editor editor = EditorFactory.createEditor(this);
+            Editor editor = EditorFactory.createEditor(this, path.getLocal());
             editor.open(path);
         }
         return null;
@@ -1846,6 +1846,7 @@ public class CDBrowserController extends CDWindowController
 
     public void setSearchField(NSTextField searchField) {
         this.searchField = searchField;
+        this.searchField.setEnabled(false);
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("searchFieldTextDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
@@ -2371,7 +2372,7 @@ public class CDBrowserController extends CDWindowController
                 for(Iterator iter = normalized.values().iterator(); iter.hasNext();) {
                     Path duplicate = (Path) iter.next();
                     if(edit) {
-                        Editor editor = EditorFactory.createEditor(CDBrowserController.this);
+                        Editor editor = EditorFactory.createEditor(CDBrowserController.this, duplicate.getLocal());
                         editor.open(duplicate);
                     }
                     if(duplicate.getName().charAt(0) == '.') {
@@ -2689,7 +2690,7 @@ public class CDBrowserController extends CDWindowController
     public void editButtonClicked(final Object sender) {
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
             final Path selected = (Path) i.next();
-            Editor editor = EditorFactory.createEditor(this);
+            Editor editor = EditorFactory.createEditor(this, selected.getLocal());
             editor.open(selected);
         }
     }
@@ -3388,8 +3389,10 @@ public class CDBrowserController extends CDWindowController
         this.addPathToHistory(this.workdir = path);
         CDMainApplication.invoke(new WindowMainAction(this) {
             public void run() {
-                // Change to last selected browser view
-                browserSwitchClicked(Preferences.instance().getInteger("browser.view"));
+                if(Preferences.instance().getBoolean("browser.closeDrawer")) {
+                    // Change to last selected browser view
+                    browserSwitchClicked(Preferences.instance().getInteger("browser.view"));
+                }
 //                navigationPopup.setStringValue(workdir().getAbsolute());
                 pathPopupButton.removeAllItems();
                 // Update the path selection menu above the browser
@@ -3892,7 +3895,11 @@ public class CDBrowserController extends CDWindowController
                 NAVIGATION_UP_SEGMENT_BUTTON);
 
         this.pathPopupButton.setEnabled(this.isMounted());
-        this.searchField.setEnabled(this.isMounted() || this.getSelectedTabView() == TAB_BOOKMARKS);
+        final boolean enabled = this.isMounted() || this.getSelectedTabView() == TAB_BOOKMARKS;
+        this.searchField.setEnabled(enabled);
+        if(!enabled) {
+            this.searchField.setStringValue("");
+        }
         this.encodingPopup.setEnabled(!this.isActivityRunning());
     }
 
@@ -4153,13 +4160,22 @@ public class CDBrowserController extends CDWindowController
     public boolean validateToolbarItem(NSToolbarItem item) {
         String identifier = item.action().name();
         if(identifier.equals("editButtonClicked:")) {
-            String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                    Preferences.instance().getProperty("editor.bundleIdentifier"));
-            if(editorPath != null) {
-                item.setImage(NSWorkspace.sharedWorkspace().iconForFile(editorPath));
+            final String editorBundleIdentifier;
+            if(this.getSelectionCount() > 0 && this.getSelectedPath().attributes.isFile()) {
+                editorBundleIdentifier = EditorFactory.editorBundleIdentifierForFile(
+                        this.getSelectedPath().getLocal());
             }
             else {
+                editorBundleIdentifier = Preferences.instance().getProperty("editor.bundleIdentifier");
+            }
+            if(null == editorBundleIdentifier) {
                 item.setImage(NSImage.imageNamed("pencil.tiff"));
+            }
+            else {
+                Preferences.instance().setProperty("editor.bundleIdentifier.selected", editorBundleIdentifier);
+                item.setImage(NSWorkspace.sharedWorkspace().iconForFile(
+                        NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(editorBundleIdentifier))
+                );
             }
         }
         if(identifier.equals("disconnectButtonClicked:")) {

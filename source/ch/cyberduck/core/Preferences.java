@@ -237,6 +237,10 @@ public abstract class Preferences {
         defaults.put("browser.bookmarkDrawer.isOpen", String.valueOf(true));
         defaults.put("browser.bookmarkDrawer.smallItems", String.valueOf(false));
         /**
+         * Close bookmark drawer upon opening a connection
+         */
+        defaults.put("browser.closeDrawer", String.valueOf(true));
+        /**
          * Warn before renaming files
          */
         defaults.put("browser.confirmMove", String.valueOf(false));
@@ -249,6 +253,10 @@ public abstract class Preferences {
          */
         defaults.put("editor.name", "TextMate");
         defaults.put("editor.bundleIdentifier", "com.macromates.textmate");
+        /**
+         * Editor for the current selected file. Used to set the shortcut key in the menu delegate
+         */
+        defaults.put("editor.bundleIdentifier.selected", "com.macromates.textmate");
         defaults.put("editor.kqueue.enable", "false");
         defaults.put("editor.tmp.directory", NSPathUtilities.temporaryDirectory());
 

@@ -51,6 +51,14 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_removeCustomIcon
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_kind
   (JNIEnv *, jobject, jstring);
 
+/*
+ * Class:     ch_cyberduck_core_Local
+ * Method:    applicationForExtension
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_applicationForExtension
+  (JNIEnv *env, jobject this, jstring extension);
+
 
 #ifdef __cplusplus
 }

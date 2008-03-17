@@ -355,6 +355,7 @@ public class Local extends AbstractPath {
         return childs;
     }
 
+    
     /**
      * @return the file type for the extension of this file provided by launch services
      */
@@ -548,6 +549,23 @@ public class Local extends AbstractPath {
             return null;
         }
     }
+
+    /**
+     * The default application for this file as set by the launch services
+     * @return Full path to the application bundle. Null if unknown
+     */
+    public String getDefaultEditor() {
+        if(!Local.jni_load()) {
+            return null;
+        }
+        final String extension = this.getExtension();
+        if(null == extension) {
+            return null;
+        }
+        return this.applicationForExtension(extension);
+    }
+
+    private native String applicationForExtension(String extension);
 
     public static class OutputStream extends FileOutputStream {
         public OutputStream(Local local, boolean resume) throws FileNotFoundException {

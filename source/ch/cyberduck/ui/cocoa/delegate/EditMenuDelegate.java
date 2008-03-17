@@ -58,7 +58,7 @@ public class EditMenuDelegate extends MenuDelegate {
         String editor = (String) EditorFactory.INSTALLED_ODB_EDITORS.keySet().toArray(
                 new String[EditorFactory.INSTALLED_ODB_EDITORS.size()])[index];
         item.setTitle(editor);
-        if(editor.equals(Preferences.instance().getProperty("editor.name"))) {
+        if(identifier.equals(Preferences.instance().getProperty("editor.bundleIdentifier.selected"))) {
             item.setKeyEquivalent("k");
             item.setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
         } else {

@@ -42,6 +42,38 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
     return converted;
 }
 
+jstring convertToJString(JNIEnv *env, NSString *nsString)
+{
+	if(nsString == nil) {
+		return NULL;
+	}
+	const char *unichars = [nsString UTF8String];
+
+	return (*env)->NewStringUTF(env, unichars);
+}
+
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_applicationForExtension(
+										JNIEnv *env,
+										jobject this,
+                                        jstring extension)
+{
+    CFURLRef url; // Path of the application bundle
+	// Locates the preferred application for opening items with a specified file type,
+	// creator signature, filename extension, or any combination of these characteristics.
+    OSStatus err = LSGetApplicationForInfo(kLSUnknownType, kLSUnknownCreator,
+        (CFStringRef)convertToNSString(env, extension),
+        kLSRolesAll, NULL, &url);
+    if(err != noErr) {
+        // kLSApplicationNotFoundErr
+		// If no application suitable for opening items with the specified characteristics is found
+		// in the Launch Services database
+		return NULL;
+    }
+    NSString *result = [(NSURL *)url path];
+    CFRelease(url);
+	return convertToJString(env, result);
+}
+
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromExtension(JNIEnv *env, jobject this, jstring path, jstring icon)
 {
 	NSImage *image = [[NSWorkspace sharedWorkspace] iconForFileType:convertToNSString(env, icon)];
