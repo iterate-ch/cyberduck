@@ -8,18 +8,22 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] Amazon Simple Storage Service (S3) protocol support (http://aws.amazon.com/s3) [#1725]
 - [Feature] WebDAV protocol support [#464]
 - [Feature] Search bookmarks [#916]
-- [Feature] Added ForgEdit to the list of supported editors (http://forgedit.com) [#1779]
+- [Feature] Bookmark editor inside browser window instead of drawer
+- [Feature] Different editors for different file types [#146]
 - [Feature] PRET (PRE Transfer) command support for distributed FTP (http://www.drftpd.org) [#684]
 - [Feature] Skip option not available in transfer prompt [#1159]
+
+2.8.5 [http://trac.cyberduck.ch/query?status=closed&milestone=2.8.5]
+- [Feature] Added ForgEdit to the list of supported editors (http://forgedit.com) [#1779]
 - [Bugfix] Downloads no longer keep modified date [#1756]
 - [Bugfix] Leap year bug wen parsing date without year [#1813]
 
 2.8.4 [http://trac.cyberduck.ch/query?status=closed&milestone=2.8.4]
-[Bugfix] Crash when dismissing sheet attached to window [#1616]
-[Bugfix] Resolving Bonjour names blocks user interface [#1657]
-[Bugfix] Closing browser window during connection attempt blocks user interface
-[Bugfix] Downloading to default download location when dragging folder to Finder [#1611]
-[Feature] Add group ownership as optional browser column [#1590]
+- [Bugfix] Crash when dismissing sheet attached to window [#1616]
+- [Bugfix] Resolving Bonjour names blocks user interface [#1657]
+- [Bugfix] Closing browser window during connection attempt blocks user interface
+- [Bugfix] Downloading to default download location when dragging folder to Finder [#1611]
+- [Feature] Add group ownership as optional browser column [#1590]
 
 2.8.3 [http://trac.cyberduck.ch/query?status=closed&milestone=2.8.3]
 - [Feature] Log Drawer in browser and transfer window
