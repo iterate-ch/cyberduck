@@ -243,38 +243,27 @@ public class FTPSession extends Session {
 
     }
 
-    protected void login() throws IOException, ConnectionCanceledException, LoginCanceledException {
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
+    protected void login() throws IOException, LoginCanceledException {
+        final Credentials credentials = host.getCredentials();
+        login.check(credentials, host.getProtocol(), host.getHostname());
+
+        String failure = null;
+        try {
+            this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " "
+                    + credentials.getUsername() + "...");
+            this.FTP.login(credentials.getUsername(), credentials.getPassword());
+            this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
         }
-        if(host.getCredentials().check(this.loginController, host.getProtocol(), host.getHostname())) {
-            String failure = null;
-            try {
-                this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " "
-                        + host.getCredentials().getUsername() + "...");
-                this.FTP.login(host.getCredentials().getUsername(), host.getCredentials().getPassword());
-                this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
-                host.getCredentials().addInternetPasswordToKeychain(host.getProtocol(),
-                        host.getHostname(), host.getPort());
-            }
-            catch(FTPException e) {
-                failure = e.getMessage();
-            }
-            catch(FTPNullReplyException e) {
-                failure = e.getMessage();
-            }
-            if(failure != null) {
-                this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
-                loginController.promptUser(host.getProtocol(), host.getCredentials(),
-                        NSBundle.localizedString("Login failed", "Credentials", ""),
-                        failure);
-                if(!host.getCredentials().tryAgain()) {
-                    throw new LoginCanceledException();
-                }
-                this.login();
-            }
-        } else {
-            throw new LoginCanceledException();
+        catch(FTPException e) {
+            failure = e.getMessage();
+        }
+        catch(FTPNullReplyException e) {
+            failure = e.getMessage();
+        }
+        if(failure != null) {
+            this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
+            this.login.fail(host.getProtocol(), credentials, failure);
+            this.login();
         }
     }
 

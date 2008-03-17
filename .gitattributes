@@ -1700,6 +1700,7 @@ sk.lproj/Transfer.nib/classes.nib -text
 sk.lproj/Transfer.nib/info.nib -text
 sk.lproj/Transfer.nib/keyedobjects.nib -text
 sk.lproj/Transfer.strings -text svneol=unset#text/utf-16
+source/ch/cyberduck/core/AbstractLoginController.java -text
 source/ch/cyberduck/core/CollectionListener.java -text
 source/ch/cyberduck/core/HistoryCollection.java -text
 source/ch/cyberduck/core/Host.m -text

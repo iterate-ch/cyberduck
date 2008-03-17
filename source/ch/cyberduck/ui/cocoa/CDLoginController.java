@@ -18,11 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Login;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.ui.LoginController;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.LoginController;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSBundle;
@@ -32,7 +29,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class CDLoginController extends CDController implements LoginController {
+public class CDLoginController extends AbstractLoginController implements LoginController {
     private static Logger log = Logger.getLogger(CDLoginController.class);
 
     CDWindowController parent;
@@ -41,7 +38,9 @@ public class CDLoginController extends CDController implements LoginController {
         this.parent = parent;
     }
 
-    public void promptUser(final Protocol protocol, final Login login, final String reason, final String message) {
+    public void prompt(final Protocol protocol, final Credentials credentials, final String reason, final String message)
+            throws LoginCanceledException {
+
         CDSheetController c = new CDSheetController(parent) {
             protected String getBundleName() {
                 return "Login";
@@ -58,7 +57,10 @@ public class CDLoginController extends CDController implements LoginController {
 
             public void setUserField(NSTextField userField) {
                 this.userField = userField;
-                this.userField.setStringValue(login.getUsername());
+                this.userField.setEnabled(!credentials.usesPublicKeyAuthentication());
+                if(StringUtils.hasText(credentials.getUsername())) {
+                    this.userField.setStringValue(credentials.getUsername());
+                }
                 if(protocol.equals(Protocol.S3)) {
                     ((NSTextFieldCell) this.userField.cell()).setPlaceholderString(
                             NSBundle.localizedString("Access Key ID", "S3")
@@ -77,7 +79,9 @@ public class CDLoginController extends CDController implements LoginController {
 
             public void setPassField(NSSecureTextField passField) {
                 this.passField = passField;
-                this.passField.setStringValue("");
+                if(StringUtils.hasText(credentials.getPassword())) {
+                    this.passField.setStringValue(credentials.getPassword());
+                }
                 if(protocol.equals(Protocol.S3)) {
                     ((NSTextFieldCell) this.passField.cell()).setPlaceholderString(
                             NSBundle.localizedString("Secret Access Key", "S3")
@@ -101,19 +105,23 @@ public class CDLoginController extends CDController implements LoginController {
             public void callback(final int returncode) {
                 if (returncode == DEFAULT_OPTION) {
                     log.info("Update login credentials...");
-                    login.setTryAgain(true);
                     this.window().endEditingForObject(null);
-                    login.setUsername((String) userField.objectValue());
-                    login.setPassword((String) passField.objectValue());
-                    login.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
+                    credentials.setUsername((String) userField.objectValue());
+                    credentials.setPassword((String) passField.objectValue());
+                    credentials.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
                 }
                 if (returncode == CANCEL_OPTION) {
                     log.info("Cancel login...");
-                    login.setTryAgain(false);
+                    credentials.setUsername(null);
+                    credentials.setPassword(null);
                 }
             }
         };
         c.beginSheet();
+
+        if(null == credentials.getUsername() && null == credentials.getPassword()) {
+            throw new LoginCanceledException();
+        }
     }
 
     protected String getBundleName() {

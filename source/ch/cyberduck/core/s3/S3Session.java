@@ -22,9 +22,9 @@ import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.*;
+import org.apache.commons.httpclient.auth.AuthScheme;
+import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
+import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3Service;
@@ -128,70 +128,11 @@ public class S3Session extends Session {
             this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}...", "Status", ""),
                     new Object[]{host.getProtocol().getName(), host.getHostname()}));
 
-            try {
-                // Prompt the login credentials first
-                this.login();
-                AWSCredentials credentials = null; //Browse publicly available bucket
-                if(!host.getCredentials().isAnonymousLogin()) {
-                    credentials = new AWSCredentials(host.getCredentials().getUsername(),
-                            host.getCredentials().getPassword());
-                }
-
                 // Configure connection options
                 this.configure(configuration = new Jets3tProperties());
 
-                this.S3 = new RestS3Service(credentials, ua, new CredentialsProvider() {
-                    /**
-                     * Implementation method for the CredentialsProvider interface
-                     * @throws CredentialsNotAvailableException
-                     */
-                    public Credentials getCredentials(AuthScheme authscheme, String hostname, int port, boolean proxy)
-                            throws CredentialsNotAvailableException {
-                        if(authscheme == null) {
-                            return null;
-                        }
-                        try {
-                            // Backup server credentials
-                            final String user = host.getCredentials().getUsername();
-                            final String pass = host.getCredentials().getPassword();
-                            // Misuse the login dialog for the credential provider for
-                            // the additional HTTP auth scheme
-                            login();
-                            Credentials credentials = null;
-                            if(authscheme instanceof NTLMScheme) {
-                                //requires Windows authentication
-//                                        credentials = new NTCredentials(host.getCredentials().getUsername(),
-//                                                host.getCredentials().getPassword(),
-//                                            host, domain);
-                                throw new CredentialsNotAvailableException("Unsupported authentication scheme: " +
-                                        authscheme.getSchemeName());
-                            }
-                            else if(authscheme instanceof RFC2617Scheme) {
-                                //requires authentication for the realm authschema.getRealm()
-                                credentials = new UsernamePasswordCredentials(
-                                        host.getCredentials().getUsername(), host.getCredentials().getPassword());
-                            }
-                            else {
-                                throw new CredentialsNotAvailableException("Unsupported authentication scheme: " +
-                                        authscheme.getSchemeName());
-                            }
-                            // Set previous values for the authentication to the server
-                            host.getCredentials().setUsername(user);
-                            host.getCredentials().setPassword(pass);
-                            return credentials;
-                        }
-                        catch(IOException e) {
-                            throw new CredentialsNotAvailableException(e.getMessage(), e);
-                        }
-                    }
-                }, configuration);
-
-                host.getCredentials().addInternetPasswordToKeychain(host.getProtocol(),
-                        host.getHostname(), host.getPort());
-            }
-            catch(S3ServiceException e) {
-                throw new S3Exception(e.getMessage(), e);
-            }
+                // Prompt the login credentials first
+                this.login();
             if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
             }
@@ -202,14 +143,47 @@ public class S3Session extends Session {
     }
 
     protected void login() throws IOException, LoginCanceledException {
-        if(!host.getCredentials().tryAgain()) {
-            throw new LoginCanceledException();
+        final Credentials credentials = host.getCredentials();
+        login.check(credentials, host.getProtocol(), host.getHostname());
+
+        try {
+            this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " '"
+                    + credentials.getUsername() + "'");
+
+            this.S3 = new RestS3Service(credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
+                    credentials.getPassword()), ua, new CredentialsProvider() {
+                /**
+                 * Implementation method for the CredentialsProvider interface
+                 * @throws CredentialsNotAvailableException
+                 */
+                public org.apache.commons.httpclient.Credentials getCredentials(AuthScheme authscheme, String hostname, int port, boolean proxy)
+                        throws CredentialsNotAvailableException {
+                    log.error("Additional HTTP authentication not supported:" + authscheme.getSchemeName());
+                    throw new CredentialsNotAvailableException("Unsupported authentication scheme: " +
+                            authscheme.getSchemeName());
+                }
+            }, configuration);
+            this.S3.listAllBuckets();
         }
-        if(!host.getCredentials().check(this.loginController, host.getProtocol(), host.getHostname())) {
-            throw new LoginCanceledException();
+        catch(S3ServiceException e) {
+            if(this.isLoginFailure(e)) {
+                this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
+                this.login.fail(host.getProtocol(), credentials,
+                        NSBundle.localizedString("Login with username and password", "Credentials", ""));
+                this.login();
+            }
+            else {
+                throw new S3Exception(e.getMessage(), e);
+            }
         }
-        this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " '"
-                + host.getCredentials().getUsername() + "'");
+    }
+
+    private boolean isLoginFailure(S3ServiceException e) {
+        if(null == e.getS3ErrorCode()) {
+            return false;
+        }
+        return e.getS3ErrorCode().equals("InvalidAccessKeyId") // Invalid Access ID
+                || e.getS3ErrorCode().equals("SignatureDoesNotMatch"); // Invalid Secret Key
     }
 
     public void close() {

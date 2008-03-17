@@ -163,40 +163,32 @@ public class SFTPSession extends Session {
     }
 
     protected void login() throws IOException, ConnectionCanceledException, LoginCanceledException {
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
-        if(!host.getCredentials().check(this.loginController, host.getProtocol(), host.getHostname())) {
-            throw new LoginCanceledException();
-        }
+        final Credentials credentials = host.getCredentials();
+        login.check(credentials, host.getProtocol(), host.getHostname());
+
         this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " '"
-                + host.getCredentials().getUsername() + "'");
-        if(host.getCredentials().usesPublicKeyAuthentication()) {
-            if(this.loginUsingPublicKeyAuthentication(host.getCredentials())) {
+                + credentials.getUsername() + "'");
+
+        if(credentials.usesPublicKeyAuthentication()) {
+            if(this.loginUsingPublicKeyAuthentication(credentials)) {
                 this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
                 return;
             }
         }
         else {
-            if(this.loginUsingPasswordAuthentication(host.getCredentials()) ||
-                    this.loginUsingKBIAuthentication(host.getCredentials())) {
+            if(this.loginUsingPasswordAuthentication(credentials) ||
+                    this.loginUsingKBIAuthentication(credentials)) {
                 this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
-                host.getCredentials().addInternetPasswordToKeychain(host.getProtocol(),
-                        host.getHostname(), host.getPort());
                 return;
             }
         }
         this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
-        loginController.promptUser(host.getProtocol(), host.getCredentials(),
-                NSBundle.localizedString("Login failed", "Credentials", ""),
+        this.login.fail(host.getProtocol(), credentials,
                 NSBundle.localizedString("Login with username and password", "Credentials", ""));
-        if(!host.getCredentials().tryAgain()) {
-            throw new LoginCanceledException();
-        }
         this.login();
     }
 
-    private boolean loginUsingPublicKeyAuthentication(final Login credentials) throws IOException {
+    private boolean loginUsingPublicKeyAuthentication(final Credentials credentials) throws IOException {
         log.debug("loginUsingPublicKeyAuthentication:" + credentials);
         if(SSH.isAuthMethodAvailable(host.getCredentials().getUsername(), "publickey")) {
             Local key = new Local(credentials.getPrivateKeyFile());
@@ -215,20 +207,15 @@ public class SFTPSession extends Session {
                 String passphrase = null;
                 if(PEMDecoder.isPEMEncrypted(cw.toCharArray())) {
                     passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
-                    if(null == passphrase || passphrase.equals("")) {
-                        loginController.promptUser(host.getProtocol(), host.getCredentials(),
+                    if(!StringUtils.hasLength(passphrase)) {
+                        login.prompt(host.getProtocol(), host.getCredentials(),
                                 NSBundle.localizedString("Private key password protected", "Credentials", ""),
                                 NSBundle.localizedString("Enter the passphrase for the private key file", "Credentials", "")
                                         + " (" + credentials.getPrivateKeyFile() + ")");
-                        if(host.getCredentials().tryAgain()) {
-                            passphrase = credentials.getPassword();
-                            if(credentials.usesKeychain() && PEMDecoder.isPEMEncrypted(cw.toCharArray())) {
-                                Keychain.instance().addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(),
-                                        passphrase);
-                            }
-                        }
-                        else {
-                            throw new LoginCanceledException();
+                        passphrase = credentials.getPassword();
+                        if(credentials.usesKeychain() && PEMDecoder.isPEMEncrypted(cw.toCharArray())) {
+                            Keychain.instance().addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(),
+                                    passphrase);
                         }
                     }
                 }
@@ -240,7 +227,7 @@ public class SFTPSession extends Session {
         return false;
     }
 
-    private boolean loginUsingPasswordAuthentication(final Login credentials) throws IOException {
+    private boolean loginUsingPasswordAuthentication(final Credentials credentials) throws IOException {
         log.debug("loginUsingPasswordAuthentication:" + credentials);
         if(SSH.isAuthMethodAvailable(host.getCredentials().getUsername(), "password")) {
             return SSH.authenticateWithPassword(credentials.getUsername(), credentials.getPassword());
@@ -248,7 +235,7 @@ public class SFTPSession extends Session {
         return false;
     }
 
-    private boolean loginUsingKBIAuthentication(final Login credentials) throws IOException {
+    private boolean loginUsingKBIAuthentication(final Credentials credentials) throws IOException {
         log.debug("loginUsingKBIAuthentication" +
                 "make:" + credentials);
         if(SSH.isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
@@ -264,9 +251,9 @@ public class SFTPSession extends Session {
      */
     private class InteractiveLogic implements InteractiveCallback {
         int promptCount = 0;
-        Login credentials;
+        Credentials credentials;
 
-        public InteractiveLogic(final Login credentials) {
+        public InteractiveLogic(final Credentials credentials) {
             this.credentials = credentials;
         }
 

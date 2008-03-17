@@ -70,7 +70,7 @@ public class Host extends NSObject {
     /**
      * The credentials to authenticate with
      */
-    private Login login;
+    private Credentials credentials;
     /**
      * The character encoding to use for file listings
      */
@@ -441,18 +441,18 @@ public class Host extends NSObject {
      * @param addToKeychain
      */
     public void setCredentials(String username, String password, boolean addToKeychain) {
-        this.setCredentials(new Login(username, password, addToKeychain));
+        this.setCredentials(new Credentials(username, password, addToKeychain));
     }
 
     /**
-     * @param login
+     * @param credentials
      */
-    public void setCredentials(Login login) {
-        this.login = login;
+    public void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
     }
 
-    public Login getCredentials() {
-        return this.login;
+    public Credentials getCredentials() {
+        return this.credentials;
     }
 
     /**

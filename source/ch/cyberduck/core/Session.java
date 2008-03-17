@@ -21,7 +21,7 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSObject;
 
-import ch.cyberduck.ui.LoginController;
+import ch.cyberduck.core.LoginController;
 import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import org.apache.log4j.Logger;
@@ -130,7 +130,7 @@ public abstract class Session extends NSObject {
      */
     protected abstract void connect() throws IOException, ConnectionCanceledException, LoginCanceledException;
 
-    protected LoginController loginController;
+    protected LoginController login;
 
     /**
      * Sets the callback to ask for login credentials
@@ -139,7 +139,7 @@ public abstract class Session extends NSObject {
      * @see #login
      */
     public void setLoginController(LoginController loginController) {
-        this.loginController = loginController;
+        this.login = loginController;
     }
 
     /**
@@ -149,7 +149,7 @@ public abstract class Session extends NSObject {
      * @throws LoginCanceledException
      * @see #connect
      */
-    protected abstract void login() throws IOException, ConnectionCanceledException, LoginCanceledException;
+    protected abstract void login() throws IOException, LoginCanceledException;
 
     public Path mount() {
         if(host.hasReasonableDefaultPath()) {
@@ -328,6 +328,10 @@ public abstract class Session extends NSObject {
      */
     protected void fireConnectionDidOpenEvent() {
         log.debug("connectionDidOpen");
+
+        host.getCredentials().addInternetPasswordToKeychain(host.getProtocol(),
+                host.getHostname(), host.getPort());
+
         if(Preferences.instance().getBoolean("connection.keepalive")) {
             this.keepAliveTimer = new Timer();
             this.keepAliveTimer.scheduleAtFixedRate(new KeepAliveTask(),

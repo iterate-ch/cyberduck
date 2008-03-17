@@ -118,46 +118,36 @@ public class DAVSession extends Session {
     }
 
     protected void login() throws IOException, LoginCanceledException {
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
-        if(host.getCredentials().check(loginController, host.getProtocol(), host.getHostname())) {
+        final Credentials credentials = host.getCredentials();
+        login.check(credentials, host.getProtocol(), host.getHostname());
+
+        try {
             this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " "
-                    + host.getCredentials().getUsername() + "...");
-            try {
-                this.DAV.setCredentials(
-                        new UsernamePasswordCredentials(host.getCredentials().getUsername(),
-                                host.getCredentials().getPassword())
-                );
-                this.DAV.setUserInfo(host.getCredentials().getUsername(),
-                        host.getCredentials().getPassword());
+                    + credentials.getUsername() + "...");
+            this.DAV.setCredentials(
+                    new UsernamePasswordCredentials(credentials.getUsername(),
+                            credentials.getPassword())
+            );
+            this.DAV.setUserInfo(credentials.getUsername(),
+                    credentials.getPassword());
 
-                this.configure();
+            this.configure();
 
-                // Try to get basic properties fo this resource using these credentials
-                this.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_0);
+            // Try to get basic properties fo this resource using these credentials
+            this.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_0);
 
-                this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
-
-                host.getCredentials().addInternetPasswordToKeychain(host.getProtocol(),
-                        host.getHostname(), host.getPort());
+            this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
+        }
+        catch(HttpException e) {
+            if(e.getReasonCode() == HttpStatus.SC_UNAUTHORIZED) {
+                this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
+                this.login.fail(host.getProtocol(), credentials,
+                        e.getReason());
+                this.login();
             }
-            catch(HttpException e) {
-                if(e.getReasonCode() == HttpStatus.SC_UNAUTHORIZED) {
-                    this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
-                    loginController.promptUser(host.getProtocol(), host.getCredentials(),
-                            NSBundle.localizedString("Login failed", "Credentials", ""),
-                            NSBundle.localizedString("Login with username and password", "Credentials", ""));
-                    if(!host.getCredentials().tryAgain()) {
-                        throw new LoginCanceledException();
-                    }
-                    this.login();
-                }
+            else {
                 throw e;
             }
-        }
-        else {
-            throw new LoginCanceledException();
         }
     }
 

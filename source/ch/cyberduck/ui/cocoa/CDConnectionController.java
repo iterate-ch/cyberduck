@@ -400,7 +400,7 @@ public class CDConnectionController extends CDSheetController {
             if(hostField.stringValue() != null && !hostField.stringValue().equals("") &&
                     usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {
                 Protocol protocol = (Protocol)protocolPopup.selectedItem().representedObject();
-                Login l = new Login(usernameField.stringValue(), null);
+                Credentials l = new Credentials(usernameField.stringValue(), null);
                 String passFromKeychain = l.getInternetPasswordFromKeychain(protocol, hostField.stringValue());
                 if(passFromKeychain != null && !passFromKeychain.equals("")) {
                     this.passField.setStringValue(passFromKeychain);
