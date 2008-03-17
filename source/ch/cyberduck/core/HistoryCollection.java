@@ -92,7 +92,7 @@ public class HistoryCollection extends HostCollection {
         );
         for(Iterator iter = bookmarks.iterator(); iter.hasNext();) {
             try {
-                this.add(new Host((Local) iter.next()));
+                super.add(this.size(), new Host((Local) iter.next()));
             }
             catch(IOException e) {
                 log.error(e.getMessage());
