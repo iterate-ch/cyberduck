@@ -35,54 +35,54 @@ public class LoginTest extends TestCase {
 	
 	public void testLoginReasonable() {
 		try {
-			Login login = new Login("guest",
+			Credentials credentials = new Credentials("guest",
 									"changeme");
-			assertTrue(login.hasReasonableValues());
+			assertTrue(credentials.isValid());
 		}
 		catch(java.lang.UnsatisfiedLinkError e) {}
 	}
 	
 	public void testLoginWithoutUsername() {
 		try {
-            Login login = new Login(null,
+            Credentials credentials = new Credentials(null,
 									Preferences.instance().getProperty("ftp.anonymous.pass"));
-			assertFalse(login.hasReasonableValues());
+			assertFalse(credentials.isValid());
 		}
 		catch(java.lang.UnsatisfiedLinkError e) {}
 	}
 	
 	public void testLoginWithoutPass() {
 		try {
-            Login login = new Login("guest",
+            Credentials credentials = new Credentials("guest",
 									null);
-			assertFalse(login.hasReasonableValues());
+			assertFalse(credentials.isValid());
 		}
 		catch(java.lang.UnsatisfiedLinkError e) {}
 	}
 
     public void testLoginWithoutEmptyPass() {
         try {
-            Login login = new Login("guest",
+            Credentials credentials = new Credentials("guest",
                                     "");
-            assertTrue(login.hasReasonableValues());
+            assertTrue(credentials.isValid());
         }
         catch(java.lang.UnsatisfiedLinkError e) {}
     }
 
     public void testLoginAnonymous1() {
 		try {
-            Login login = new Login(Preferences.instance().getProperty("ftp.anonymous.name"),
+            Credentials credentials = new Credentials(Preferences.instance().getProperty("ftp.anonymous.name"),
 									Preferences.instance().getProperty("ftp.anonymous.pass"));
-			assertTrue(login.hasReasonableValues());
+			assertTrue(credentials.isValid());
 		}
 		catch(java.lang.UnsatisfiedLinkError e) {}
 	}
 	
 	public void testLoginAnonymous2() {
 		try {
-            Login login = new Login(Preferences.instance().getProperty("ftp.anonymous.name"),
+            Credentials credentials = new Credentials(Preferences.instance().getProperty("ftp.anonymous.name"),
 									null);
-			assertTrue(login.hasReasonableValues());
+			assertTrue(credentials.isValid());
 		}
 		catch(java.lang.UnsatisfiedLinkError e) {}
 	}
@@ -92,11 +92,11 @@ public class LoginTest extends TestCase {
      */
     public void testLogin1204() {
         try {
-            Login login = new Login("cyberduck.login",
+            Credentials credentials = new Credentials("cyberduck.login",
                                     "1seCret");
-            assertTrue(login.hasReasonableValues());
-            assertEquals("cyberduck.login", login.getUsername());
-            assertEquals("1seCret", login.getPassword());
+            assertTrue(credentials.isValid());
+            assertEquals("cyberduck.login", credentials.getUsername());
+            assertEquals("1seCret", credentials.getPassword());
 
         }
         catch(java.lang.UnsatisfiedLinkError e) {}
