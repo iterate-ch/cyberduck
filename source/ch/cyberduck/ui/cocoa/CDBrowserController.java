@@ -915,7 +915,6 @@ public class CDBrowserController extends CDWindowController
     public void setBonjourButton(NSButton bonjourButton) {
         this.bonjourButton = bonjourButton;
         this.bonjourButton.setImage(NSImage.imageNamed("rendezvous16.tiff"));
-        this.bonjourButton.setTitle(NSBundle.localizedString("Bonjour"));
         this.setRecessedBezelStyle(this.bonjourButton);
         this.bonjourButton.setTarget(this);
         this.bonjourButton.setAction(new NSSelector("bookmarkButtonClicked", new Class[]{Object.class}));
@@ -939,7 +938,7 @@ public class CDBrowserController extends CDWindowController
         this.setRecessedBezelStyle(this.bookmarkButton);
         this.bookmarkButton.setTarget(this);
         this.bookmarkButton.setAction(new NSSelector("bookmarkButtonClicked", new Class[]{Object.class}));
-        this.bookmarkButton.setState(NSCell.OnState);
+        this.bookmarkButton.setState(NSCell.OnState); // Set as default selected bookmark source
         this.bookmarkButton.setShowsBorderOnlyWhileMouseInside(false);
     }
 
