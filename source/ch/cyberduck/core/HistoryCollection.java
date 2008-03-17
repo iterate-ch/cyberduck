@@ -63,7 +63,7 @@ public class HistoryCollection extends HostCollection {
             log.error(e.getMessage());
             return;
         }
-        if(this.contains(bookmark)) {
+        if(!this.contains(bookmark)) {
             super.add(row, h);
         }
         else {
