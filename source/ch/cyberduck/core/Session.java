@@ -48,10 +48,6 @@ public abstract class Session extends NSObject {
      */
     protected Path workdir;
 
-    public Object clone() {
-        return SessionFactory.createSession((Host) this.host.clone());
-    }
-
     protected Session(Host h) {
         this.host = h;
     }

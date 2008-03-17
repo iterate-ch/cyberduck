@@ -38,12 +38,6 @@ import sun.misc.BASE64Encoder;
 public class Login {
     private static Logger log = Logger.getLogger(Login.class);
 
-    public Object clone() {
-        Login l = new Login(this.getUsername(), this.getPassword());
-        l.setPrivateKeyFile(this.privateKeyFile);
-        return l;
-    }
-
     /**
      * The login name
      */

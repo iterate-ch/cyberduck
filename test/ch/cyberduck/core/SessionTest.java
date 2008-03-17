@@ -39,13 +39,6 @@ public class SessionTest extends TestCase {
         this.session = null;
     }
 
-    public void testClone() throws Exception {
-        Session clone = (Session) session.clone();
-        assertNotSame(clone, session);
-
-        assertNotSame(clone.getHost(), session.getHost());
-    }
-
     public void testGetHost() throws Exception {
         assertEquals(session.getHost(), session.getHost());
         assertEquals(session.getHost().getCredentials(), session.getHost().getCredentials());
