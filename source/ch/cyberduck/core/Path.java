@@ -215,6 +215,9 @@ public abstract class Path extends AbstractPath {
     public AbstractPath getParent(final boolean create) {
         if(null == parent) {
             if(create) {
+                if(this.isRoot()) {
+                    return this;
+                }
                 int index = this.getAbsolute().length() - 1;
                 if(this.getAbsolute().charAt(index) == '/') {
                     if(index > 0)
