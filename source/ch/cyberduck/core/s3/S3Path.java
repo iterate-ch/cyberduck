@@ -372,7 +372,6 @@ public class S3Path extends Path {
                 }
                 if(attributes.isDirectory()) {
                     this.getLocal().mkdir(true);
-                    getStatus().setComplete(true);
                 }
                 session.fireActivityStoppedEvent();
             }
@@ -436,7 +435,6 @@ public class S3Path extends Path {
                         // Create bucket
                         this.mkdir();
                     }
-                    this.getStatus().setComplete(true);
                 }
                 this.getParent().invalidate();
             }

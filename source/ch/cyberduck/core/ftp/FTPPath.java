@@ -579,7 +579,6 @@ public class FTPPath extends Path {
                 }
                 if(attributes.isDirectory()) {
                     this.getLocal().mkdir(true);
-                    this.getStatus().setComplete(true);
                 }
                 if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
                     log.info("Updating permissions");
@@ -773,7 +772,6 @@ public class FTPPath extends Path {
                 }
                 if(attributes.isDirectory()) {
                     this.mkdir();
-                    getStatus().setComplete(true);
                 }
                 if(session.isConnected()) {
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {

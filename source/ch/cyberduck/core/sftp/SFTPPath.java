@@ -504,7 +504,6 @@ public class SFTPPath extends Path {
             try {
                 if(this.attributes.isDirectory()) {
                     this.getLocal().mkdir(true);
-                    getStatus().setComplete(true);
                 }
                 if(this.attributes.isFile()) {
                     session.check(
@@ -599,7 +598,6 @@ public class SFTPPath extends Path {
             try {
                 if(this.attributes.isDirectory()) {
                     this.mkdir();
-                    getStatus().setComplete(true);
                 }
                 if(attributes.isFile()) {
                     session.check(

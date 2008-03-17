@@ -387,7 +387,6 @@ public class DAVPath extends Path {
             }
             if(attributes.isDirectory()) {
                 this.getLocal().mkdir(true);
-                this.getStatus().setComplete(true);
             }
         }
     }
@@ -411,7 +410,6 @@ public class DAVPath extends Path {
                         }
 
                         if(session.DAV.putMethod(this.getAbsolute(), in)) {
-                            this.getStatus().setComplete(true);
                             listener.bytesSent(this.getLocal().attributes.getSize());
                         }
 
@@ -436,7 +434,6 @@ public class DAVPath extends Path {
                 }
                 if(attributes.isDirectory()) {
                     this.mkdir();
-                    this.getStatus().setComplete(true);
                 }
                 this.getParent().invalidate();
             }
