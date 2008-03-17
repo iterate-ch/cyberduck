@@ -47,7 +47,7 @@ public class CDApplescriptabilityController extends NSScriptCommand {
         log.debug("Received URL from Apple Event:" + arg);
         try {
             final Host h = Host.parse(arg);
-            if (h.getDefaultPath().length() > 1) {
+            if (StringUtils.hasText(h.getDefaultPath())) {
 				final Session s = SessionFactory.createSession(h);
 				try {
 					s.check();

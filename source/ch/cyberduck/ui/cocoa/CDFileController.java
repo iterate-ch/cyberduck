@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.StringUtils;
 
 import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.application.NSTextField;
@@ -67,7 +68,7 @@ public abstract class CDFileController extends CDSheetController {
         if (filenameField.stringValue().indexOf('/') != -1) {
             return false;
         }
-        if(filenameField.stringValue().length() != 0) {
+        if(StringUtils.hasText(filenameField.stringValue())) {
             Path file = PathFactory.createPath(this.getWorkdir().getSession(), this.getWorkdir().getAbsolute(),
                     filenameField.stringValue(), Path.FILE_TYPE);
             return !file.exists();

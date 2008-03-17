@@ -408,7 +408,7 @@ public class CDInfoController extends CDWindowController {
                             current.getParent().getAbsolute(), this.filenameField.stringValue(), current.attributes.getType());
                     controller.renamePath(current, renamed);
                 }
-                else if(filenameField.stringValue().length() == 0) {
+                else if(!StringUtils.hasText(filenameField.stringValue())) {
                     this.filenameField.setStringValue(current.getName());
                 }
                 else {

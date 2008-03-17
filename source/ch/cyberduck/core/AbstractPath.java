@@ -198,7 +198,7 @@ public abstract class AbstractPath extends NSObject {
                 n.append(DELIMITER);
             }
             normalized = n.toString();
-            while(normalized.endsWith(DELIMITER) && normalized.length() > 1) {
+            while(normalized.endsWith(DELIMITER) && StringUtils.hasLength(normalized)) {
                 //Strip any redundant delimiter at the end of the path
                 normalized = normalized.substring(0, normalized.length() - 1);
             }

@@ -18,17 +18,18 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPException;
-
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
-
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSRange;
 
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.StringUtils;
+import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
+
 import java.io.IOException;
+
+import com.enterprisedt.net.ftp.FTPException;
 
 /**
  * @version $Id$
@@ -54,7 +55,7 @@ public class CDCommandController extends CDSheetController implements Transcript
     public void layoutManagerDidCompleteLayoutForTextContainer(NSLayoutManager layoutManager,
                                                                NSTextContainer textContainer,
                                                                boolean finished) {
-        if (finished && this.responseField.window().isVisible()) {
+        if(finished && this.responseField.window().isVisible()) {
             this.responseField.scrollRangeToVisible(new NSRange(this.responseField.textStorage().length(), 0));
         }
     }
@@ -73,7 +74,7 @@ public class CDCommandController extends CDSheetController implements Transcript
 
     public void sendButtonClicked(final NSButton sender) {
         String command = this.inputField.stringValue();
-        if (command != null && command.length() > 0) {
+        if(StringUtils.hasText(command)) {
             try {
                 session.sendCommand(command);
             }

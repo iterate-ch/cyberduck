@@ -18,15 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.NullComparator;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFilter;
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
-
 import com.apple.cocoa.application.NSComboBox;
 import com.apple.cocoa.application.NSImageView;
 import com.apple.cocoa.foundation.NSObject;
+
+import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import org.apache.log4j.Logger;
 
@@ -36,7 +33,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class CDGotoController extends CDSheetController{
+public class CDGotoController extends CDSheetController {
     private static Logger log = Logger.getLogger(CDGotoController.class);
 
     protected NSImageView iconView; //IBOutlet
@@ -54,7 +51,7 @@ public class CDGotoController extends CDSheetController{
         this.folderCombobox.setCompletes(true);
         this.folderCombobox.setUsesDataSource(true);
         this.folderCombobox.setDataSource(this.folderComboboxModel = new NSObject()/*NSComboBox.DataSource*/ {
-            final CDBrowserController c = (CDBrowserController)parent;
+            final CDBrowserController c = (CDBrowserController) parent;
             private final Comparator comparator = new NullComparator();
             private final PathFilter filter = new PathFilter() {
                 public boolean accept(AbstractPath p) {
@@ -78,12 +75,12 @@ public class CDGotoController extends CDSheetController{
             public Object comboBoxObjectValueForItemAtIndex(final NSComboBox sender, final int row) {
                 final List childs = c.workdir().childs(comparator, filter);
                 if(row < childs.size()) {
-                    return ((Path)childs.get(row)).getAbsolute();
+                    return ((Path) childs.get(row)).getAbsolute();
                 }
                 return null;
             }
         });
-        this.folderCombobox.setStringValue(((CDBrowserController)this.parent).workdir().getAbsolute());
+        this.folderCombobox.setStringValue(((CDBrowserController) this.parent).workdir().getAbsolute());
     }
 
     public CDGotoController(final CDWindowController parent) {
@@ -95,22 +92,22 @@ public class CDGotoController extends CDSheetController{
     }
 
     public void callback(final int returncode) {
-        if (returncode == DEFAULT_OPTION) {
-            this.gotoFolder(((CDBrowserController)parent).workdir(), folderCombobox.stringValue());
+        if(returncode == DEFAULT_OPTION) {
+            this.gotoFolder(((CDBrowserController) parent).workdir(), folderCombobox.stringValue());
         }
     }
 
     protected boolean validateInput() {
-        return folderCombobox.stringValue().length() != 0;
+        return StringUtils.hasText(folderCombobox.stringValue());
     }
 
     protected void gotoFolder(final Path workdir, final String filename) {
-        final CDBrowserController c = (CDBrowserController)parent;
+        final CDBrowserController c = (CDBrowserController) parent;
         c.background(new BackgroundAction() {
-            final Path dir = (Path)workdir.clone();
+            final Path dir = (Path) workdir.clone();
 
             public void run() {
-                if (filename.charAt(0) != '/') {
+                if(filename.charAt(0) != '/') {
                     dir.setPath(workdir.getAbsolute(), filename);
                 }
                 else {
