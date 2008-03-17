@@ -1,16 +1,6 @@
 {
     IBClasses =     (
                 {
-            CLASS = AIAutoScrollView;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSScrollView;
-        },
-                {
-            CLASS = AnimatingTabView;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSTabView;
-        },
-                {
             CLASS = CDBottomView;
             LANGUAGE = ObjC;
             SUPERCLASS = NSView;
@@ -57,11 +47,6 @@
             SUPERCLASS = NSControl;
         },
                 {
-            CLASS = SKWSegmentedControl;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSSegmentedControl;
-        },
-                {
             ACTIONS =             {
                 addBookmarkButtonClicked = id;
                 connectBookmarkButtonClicked = id;
@@ -73,6 +58,8 @@
             OUTLETS =             {
                 actionPopupButton = NSPopUpButton;
                 addBookmarkButton = NSButton;
+                bonjourButton = NSButton;
+                bookmarkButton = NSButton;
                 bookmarkSwitchView = NSSegmentedControl;
                 bookmarkTable = NSTableView;
                 browserListView = NSTableView;
@@ -82,6 +69,7 @@
                 deleteBookmarkButton = NSButton;
                 editBookmarkButton = NSButton;
                 encodingPopup = NSPopUpButton;
+                historyButton = NSButton;
                 logDrawer = NSDrawer;
                 navigationButton = NSSegmentedControl;
                 pathPopup = NSPopUpButton;
