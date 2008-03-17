@@ -389,7 +389,7 @@ public class FTPPath extends Path {
                             break;
                         }
                         Path file = (Path) iter.next();
-                        if(attributes.isFile() || attributes.isSymbolicLink()) {
+                        if(file.attributes.isFile() || file.attributes.isSymbolicLink()) {
                             session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + file.getName());
                             session.FTP.delete(file.getName());
                         }
