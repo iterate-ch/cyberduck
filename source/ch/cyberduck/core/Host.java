@@ -18,18 +18,14 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableDictionary;
-import com.apple.cocoa.foundation.NSObject;
+import com.apple.cocoa.application.NSWorkspace;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URLDecoder;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.TimeZone;
 
 import com.enterprisedt.net.ftp.FTPConnectMode;
@@ -116,18 +112,23 @@ public class Host extends NSObject {
     private static final String TIMEZONE = "Timezone";
     private static final String COMMENT = "Comment";
 
+    private Local file;
+
+    /**
+     * Read the bookmark from the given file
+     *
+     * @param file A valid bookmark dictionary
+     */
+    public Host(final Local file) throws IOException {
+        this.file = file;
+        this.read();
+    }
+
     /**
      * @param dict A valid bookmark dictionary
      */
     public Host(NSDictionary dict) {
         this.init(dict);
-    }
-
-    /**
-     * @see Bookmark#read() 
-     */
-    protected Host() {
-        ;
     }
 
     /**
@@ -234,12 +235,6 @@ public class Host extends NSObject {
         return dict;
     }
 
-    public Object clone() {
-        Host h = new Host(this.getAsDictionary());
-        h.setCredentials((Login) this.getCredentials().clone());
-        return h;
-    }
-
     /**
      * New host with the default protocol
      *
@@ -299,8 +294,9 @@ public class Host extends NSObject {
      * @throws MalformedURLException
      */
     public static Host parse(String input) throws MalformedURLException {
-        if(null == input || input.length() == 0)
+        if(!StringUtils.hasText(input)) {
             throw new MalformedURLException("No hostname given");
+        }
         int begin = 0;
         int cut;
         if(input.indexOf("://", begin) == -1 && input.indexOf('@', begin) == -1) {
@@ -320,7 +316,7 @@ public class Host extends NSObject {
         }
         if(null == protocol) {
             protocol = Protocol.forName(
-                Preferences.instance().getProperty("connection.protocol.default"));
+                    Preferences.instance().getProperty("connection.protocol.default"));
         }
         String username = null;
         String password = null;
@@ -784,4 +780,79 @@ public class Host extends NSObject {
     }
 
     private native void diagnose(String url);
+
+    /**
+     * @return The imported bookmark deserialized as a #Host
+     * @pre Host#setFile()
+     */
+    private void read() throws IOException {
+        log.info("Reading bookmark from:" + file);
+        NSData plistData;
+        try {
+            plistData = new NSData(new URL(file.toURL()));
+        }
+        catch(MalformedURLException e) {
+            throw new IOException(e.getMessage());
+        }
+        final String[] errorString = new String[]{null};
+        Object propertyListFromXMLData =
+                NSPropertyListSerialization.propertyListFromData(plistData,
+                        NSPropertyListSerialization.PropertyListImmutable,
+                        new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
+                        errorString);
+        if(StringUtils.hasText(errorString[0])) {
+            throw new IOException("Problem reading bookmark file:" + errorString[0]);
+        }
+        if(propertyListFromXMLData instanceof NSDictionary) {
+            this.init((NSDictionary) propertyListFromXMLData);
+        }
+        else {
+            throw new IOException("Invalid file format:" + file);
+        }
+    }
+
+
+    /**
+     * Serializes the bookmark to the given folder
+     *
+     * @pre Host#setFile()
+     */
+    public void write() throws IOException {
+        log.info("Exporting bookmark " + this.toURL() + " to " + file);
+        NSMutableData collection = new NSMutableData();
+        final String[] errorString = new String[]{null};
+        collection.appendData(NSPropertyListSerialization.dataFromPropertyList(this.getAsDictionary(),
+                NSPropertyListSerialization.PropertyListXMLFormat,
+                errorString));
+        if(StringUtils.hasText(errorString[0])) {
+            throw new IOException("Problem writing bookmark file:" + errorString[0]);
+        }
+        try {
+            if(collection.writeToURL(new URL(file.toURL()), true)) {
+                log.info("Bookmarks sucessfully saved in :" + file);
+                NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(file.getAbsolute());
+            }
+            else {
+                throw new IOException("Error saving bookmark to:" + file);
+            }
+        }
+        catch(MalformedURLException e) {
+            throw new IOException(e.getMessage());
+        }
+    }
+
+    /**
+     *
+     * @param file
+     */
+    public void setFile(Local file) {
+        this.file = file;
+    }
+
+    /**
+     * @return Null if bookmark is not persisted
+     */
+    public Local getFile() {
+        return this.file;
+    }
 }

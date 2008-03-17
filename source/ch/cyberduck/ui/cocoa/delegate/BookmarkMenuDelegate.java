@@ -18,17 +18,17 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostCollection;
-import ch.cyberduck.ui.cocoa.CDBrowserController;
-import ch.cyberduck.ui.cocoa.CDMainController;
-
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSMenu;
 import com.apple.cocoa.application.NSMenuItem;
 import com.apple.cocoa.foundation.NSSelector;
 import com.apple.cocoa.foundation.NSSize;
+
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostCollection;
+import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.ui.cocoa.CDMainController;
 
 import org.apache.log4j.Logger;
 
@@ -50,7 +50,7 @@ public class BookmarkMenuDelegate extends MenuDelegate {
      * @see com.apple.cocoa.application.NSMenu.Delegate
      */
     public int numberOfItemsInMenu(NSMenu menu) {
-        return HostCollection.instance().size() + 10;
+        return HostCollection.defaultCollection().size() + 10;
         //index 0-2 are static menu items, 3 is sepeartor, 4 is iDisk with submenu, 5 is History with submenu,
         // 6 is Bonjour with submenu, 7 is sepearator
     }
@@ -62,6 +62,7 @@ public class BookmarkMenuDelegate extends MenuDelegate {
      * You can then update the menu title, image, and so forth for the menu item.
      * Return true to continue the process. If you return false, your menuUpdateItemAtIndex
      * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
+     *
      * @see com.apple.cocoa.application.NSMenu.Delegate
      */
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
@@ -84,7 +85,7 @@ public class BookmarkMenuDelegate extends MenuDelegate {
             item.setImage(NSImage.imageNamed("rendezvous16.tiff"));
         }
         if(index > 9) {
-            Host h = (Host) HostCollection.instance().get(index - 10);
+            Host h = (Host) HostCollection.defaultCollection().get(index - 10);
             item.setTitle(h.getNickname());
             item.setTarget(this);
             item.setImage(DOCUMENT_ICON_SMALL);

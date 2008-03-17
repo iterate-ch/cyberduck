@@ -23,15 +23,13 @@ import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
-import ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -74,10 +72,10 @@ public class CDMainController extends CDController {
         Iterator identifiers = columns.keySet().iterator();
         int i = 0;
         for(Iterator iter = columns.values().iterator(); iter.hasNext(); i++) {
-            NSMenuItem item = new NSMenuItem((String)iter.next(),
+            NSMenuItem item = new NSMenuItem((String) iter.next(),
                     new NSSelector("columnMenuClicked", new Class[]{Object.class}),
                     "");
-            final String identifier = (String)identifiers.next();
+            final String identifier = (String) identifiers.next();
             item.setState(Preferences.instance().getBoolean(identifier) ? NSCell.OnState : NSCell.OffState);
             item.setRepresentedObject(identifier);
             this.columnMenu.insertItemAtIndex(item, i);
@@ -85,7 +83,7 @@ public class CDMainController extends CDController {
     }
 
     public void columnMenuClicked(final NSMenuItem sender) {
-        final String identifier = (String)sender.representedObject();
+        final String identifier = (String) sender.representedObject();
         final boolean enabled = !Preferences.instance().getBoolean(identifier);
         sender.setState(enabled ? NSCell.OnState : NSCell.OffState);
         Preferences.instance().setProperty(identifier, enabled);
@@ -93,7 +91,7 @@ public class CDMainController extends CDController {
     }
 
     public void historyMenuClicked(NSMenuItem sender) {
-        NSWorkspace.sharedWorkspace().openFile(HistoryMenuDelegate.HISTORY_FOLDER.getAbsolute());
+        NSWorkspace.sharedWorkspace().openFile(((HistoryCollection) HistoryCollection.defaultCollection()).getFile().getAbsolute());
     }
 
     public void bugreportMenuClicked(final Object sender) {
@@ -108,7 +106,7 @@ public class CDMainController extends CDController {
 
     /**
      * @return The preferred locale of all available in this application bundle
-     * for the currently logged in user
+     *         for the currently logged in user
      */
     private String locale() {
         String locale = "en";
@@ -184,7 +182,7 @@ public class CDMainController extends CDController {
         try {
             String versionString = (String) NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
             NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail.feedback")
-                    + "?subject="+NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName")+"-" + versionString));
+                    + "?subject=" + NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName") + "-" + versionString));
         }
         catch(java.net.MalformedURLException e) {
             log.error(e.getMessage());
@@ -238,10 +236,13 @@ public class CDMainController extends CDController {
         Local f = new Local(filename);
         if(f.exists()) {
             if(f.getAbsolute().endsWith(".duck")) {
-                Host host = this.importBookmark(f);
-                if(host != null) {
+                try {
+                    final Host host = new Host(f);
                     this.newDocument().mount(host);
                     return true;
+                }
+                catch(IOException e) {
+                    return false;
                 }
             }
             else {
@@ -305,6 +306,7 @@ public class CDMainController extends CDController {
 
     /**
      * Mounts the default bookmark if any
+     *
      * @param controller
      */
     private void openDefaultBookmark(CDBrowserController controller) {
@@ -312,10 +314,10 @@ public class CDMainController extends CDController {
         if(null == defaultBookmark) {
             return; //No default bookmark given
         }
-        for(Iterator iter = HostCollection.instance().iterator(); iter.hasNext();) {
-            Host host = (Host) iter.next();
-            if(host.getNickname().equals(defaultBookmark)) {
-                controller.mount(host);
+        for(Iterator iter = HostCollection.defaultCollection().iterator(); iter.hasNext();) {
+            final Host bookmark = (Host) iter.next();
+            if(bookmark.getNickname().equals(defaultBookmark)) {
+                controller.mount(bookmark);
                 return;
             }
         }
@@ -372,28 +374,6 @@ public class CDMainController extends CDController {
         return false;
     }
 
-    private static final Local SESSIONS_FOLDER
-            = new Local(Preferences.instance().getProperty("application.support.path"), "Sessions");
-
-    static {
-        SESSIONS_FOLDER.mkdir(true);
-    }
-
-    /**
-     *
-     * @return The bookmark files of the last saved workspace
-     */
-    private Local[] getSavedSessions() {
-        return (Local[])SESSIONS_FOLDER.childs(
-                new NullComparator(),
-                new PathFilter() {
-                    public boolean accept(AbstractPath file) {
-                        return file.getName().endsWith(".duck");
-                    }
-                }
-        ).toArray(new Local[]{});
-    }
-
     /**
      * Sent by the default notification center after the application has been launched and initialized but
      * before it has received its first event. aNotification is always an
@@ -428,38 +408,36 @@ public class CDMainController extends CDController {
             }
         });
         if(Preferences.instance().getBoolean("browser.serialize")) {
-            Local[] files = this.getSavedSessions();
-            for(int i = 0; i < files.length; i++) {
-                this.newDocument(true).mount(this.importBookmark(files[i]));
-                files[i].delete();
-            }
-            if(files.length == 0) {
+            if(sessions.size() == 0) {
                 // Open empty browser if no saved sessions
                 if(Preferences.instance().getBoolean("browser.openUntitled")) {
                     this.openDefaultBookmark(this.newDocument());
                 }
             }
+            for(Iterator iter = sessions.iterator(); iter.hasNext();) {
+                this.newDocument(true).mount((Host) iter.next());
+            }
+            sessions.clear();
         }
         else if(Preferences.instance().getBoolean("browser.openUntitled")) {
             this.openDefaultBookmark(this.newDocument());
         }
         if(Preferences.instance().getBoolean("defaulthandler.reminder")) {
             if(!URLSchemeHandlerConfiguration.instance().isDefaultHandlerForURLScheme(
-                    new String[]{Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()}))
-            {
+                    new String[]{Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()})) {
                 int choice = NSAlertPanel.runInformationalAlert(
                         NSBundle.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration", ""),
                         NSBundle.localizedString("As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later.", "Configuration", ""),
                         NSBundle.localizedString("Change", "Configuration", ""), //default
                         NSBundle.localizedString("Don't Ask Again", "Configuration", ""), //other
                         NSBundle.localizedString("Cancel", "Configuration", "")); //alternate
-                if (choice == CDSheetCallback.DEFAULT_OPTION) {
+                if(choice == CDSheetCallback.DEFAULT_OPTION) {
                     URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
                             new String[]{Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()},
                             NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString()
                     );
                 }
-                if (choice == CDSheetCallback.CANCEL_OPTION) {
+                if(choice == CDSheetCallback.CANCEL_OPTION) {
                     Preferences.instance().setProperty("defaulthandler.reminder", false);
                 }
             }
@@ -487,6 +465,12 @@ public class CDMainController extends CDController {
     private boolean donationBoxDisplayed = false;
 
     /**
+     * Saved browsers
+     */
+    private Collection sessions = new HistoryCollection(
+            new Local(Preferences.instance().getProperty("application.support.path"), "Sessions"));
+
+    /**
      * Invoked from within the terminate method immediately before the
      * application terminates. sender is the NSApplication to be terminated.
      * If this method returns false, the application is not terminated,
@@ -500,8 +484,7 @@ public class CDMainController extends CDController {
         if(!donationBoxDisplayed) {
             Object lastreminder = Preferences.instance().getObject("donate.reminder");
             if(null == lastreminder
-                    || !NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString().equals(lastreminder)) 
-            {
+                    || !NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString().equals(lastreminder)) {
                 // The donation dialog has not been displayed yet and the users has never choosen
                 // not to show it again in the future
                 final int uses = Preferences.instance().getInteger("uses");
@@ -559,10 +542,7 @@ public class CDMainController extends CDController {
                 if(Preferences.instance().getBoolean("browser.serialize")) {
                     if(controller.isMounted()) {
                         // The workspace should be saved. Serialize all open browser sessions
-                        final Host bookmark = (Host) controller.getSession().getHost().clone();
-                        bookmark.setDefaultPath(controller.workdir().getAbsolute());
-                        this.exportBookmark(bookmark,
-                                new Local(SESSIONS_FOLDER, bookmark.getNickname() + ".duck"));
+                        sessions.add(controller.getSession().getHost());
                     }
                 }
                 if(controller.isConnected()) {
@@ -582,10 +562,7 @@ public class CDMainController extends CDController {
                         }
                         if(choice == CDSheetCallback.CANCEL_OPTION) {
                             // Cancel. Quit has been interrupted. Delete any saved sessions so far.
-                            Local[] files = this.getSavedSessions();
-                            for(int i = 0; i < files.length; i++) {
-                                files[i].delete();
-                            }
+                            sessions.clear();
                             return NSApplication.TerminateCancel;
                         }
                         if(choice == CDSheetCallback.DEFAULT_OPTION) {
@@ -604,6 +581,7 @@ public class CDMainController extends CDController {
 
     /**
      * Quits the Rendezvous daemon and saves all preferences
+     *
      * @param notification
      */
     public void applicationWillTerminate(NSNotification notification) {
@@ -618,6 +596,7 @@ public class CDMainController extends CDController {
 
     /**
      * Posted when the user has requested a logout or that the machine be powered off.
+     *
      * @param notification
      */
     public void workspaceWillPowerOff(NSNotification notification) {
@@ -629,15 +608,17 @@ public class CDMainController extends CDController {
      * Posted before a user session is switched out. This allows an application to
      * disable some processing when its user session is switched out, and reenable when that
      * session gets switched back in, for example.
+     *
      * @param notification
      */
     public void workspaceWillLogout(NSNotification notification) {
         log.debug("workspaceWillLogout");
         donationBoxDisplayed = true;
     }
-    
+
     /**
      * Makes a unmounted browser window the key window and brings it to the front
+     *
      * @return A reference to a browser window
      */
     public CDBrowserController newDocument() {
@@ -646,6 +627,7 @@ public class CDMainController extends CDController {
 
     /**
      * Makes a unmounted browser window the key window and brings it to the front
+     *
      * @param force If true, open a new browser regardeless of any unused browser window
      * @return A reference to a browser window
      */
@@ -712,6 +694,7 @@ public class CDMainController extends CDController {
 
     /**
      * We are not a Windows application. Long live the application wide menu bar.
+     *
      * @param app
      * @return
      */
@@ -720,7 +703,6 @@ public class CDMainController extends CDController {
     }
 
     /**
-     *
      * @return The available character sets available on this platform
      */
     protected String[] availableCharsets() {
@@ -732,74 +714,5 @@ public class CDMainController extends CDController {
             }
         }
         return (String[]) charsets.toArray(new String[0]);
-    }
-
-    /**
-     * @param file
-     * @return The imported bookmark deserialized as a #Host
-     */
-    public Host importBookmark(final Local file) {
-        NSData plistData = null;
-        try {
-            plistData = new NSData(new URL(file.toURL()));
-        }
-        catch(MalformedURLException e) {
-            log.error(e.getMessage());
-        }
-        String[] errorString = new String[]{null};
-        Object propertyListFromXMLData =
-                NSPropertyListSerialization.propertyListFromData(plistData,
-                        NSPropertyListSerialization.PropertyListImmutable,
-                        new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-                        errorString);
-        if(errorString[0] != null) {
-            log.error("Problem reading bookmark file:" + errorString[0]);
-            return null;
-        }
-        if(propertyListFromXMLData instanceof NSDictionary) {
-            return new Host((NSDictionary) propertyListFromXMLData);
-        }
-        log.error("Invalid file format:" + file);
-        return null;
-    }
-
-    /**
-     * @param bookmark
-     * @param file
-     */
-    public void exportBookmark(final Host bookmark, Local file) {
-        log.info("Exporting bookmark " + bookmark + " to " + file);
-        NSMutableData collection = new NSMutableData();
-        String[] errorString = new String[]{null};
-        collection.appendData(NSPropertyListSerialization.dataFromPropertyList(bookmark.getAsDictionary(),
-                NSPropertyListSerialization.PropertyListXMLFormat,
-                errorString));
-        if(errorString[0] != null) {
-            log.error("Problem writing bookmark file:" + errorString[0]);
-        }
-        try {
-            if(collection.writeToURL(new URL(file.toURL()), true)) {
-                log.info("Bookmarks sucessfully saved in :" + file.toString());
-                NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(file.getAbsolute());
-            }
-            else {
-                log.error("Error saving bookmark to:" + file.toString());
-            }
-        }
-        catch(MalformedURLException e) {
-            log.error(e.getMessage());
-        }
-    }
-
-    public void help(NSControl sender) {
-        log.info("Opening help for ID "+sender.tag());
-        try {
-            NSWorkspace.sharedWorkspace().openURL(
-                    new java.net.URL(Preferences.instance().getProperty("website.help")
-                            + this.locale() + "/find/"+sender.tag()));
-        }
-        catch(java.net.MalformedURLException e) {
-            log.error(e.getMessage());
-        }
     }
 }

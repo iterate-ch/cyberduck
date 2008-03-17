@@ -22,7 +22,7 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
+import java.net.URL;
 
 /**
  * @version $Id$
@@ -30,22 +30,48 @@ import java.io.File;
 public class HostCollection extends Collection {
     private static Logger log = Logger.getLogger(HostCollection.class);
 
-    private static HostCollection instance;
+    /**
+     * Default bookmark file
+     */
+    private static HostCollection DEFAULT_COLLECTION = new HostCollection(
+            new Local(Preferences.instance().getProperty("application.support.path"), "Favorites.plist")
+    );
 
-    private HostCollection() {
-        ;
+    /**
+     * @return
+     */
+    public static Collection defaultCollection() {
+        return DEFAULT_COLLECTION;
     }
 
-    private static final Object lock = new Object();
+    /**
+     * @param file
+     */
+    public HostCollection(Local file) {
+        this.setFile(file);
+        this.load();
+    }
 
-    public static HostCollection instance() {
-        synchronized(lock) {
-            if(null == instance) {
-                instance = new HostCollection();
-                instance.load();
-            }
-            return instance;
-        }
+    /**
+     * The file to persist this collection in
+     */
+    protected Local file;
+
+    /**
+     * Will create the parent directory if missing
+     *
+     * @param file
+     */
+    protected void setFile(Local file) {
+        this.file = file;
+        this.file.getParent().mkdir(true);
+    }
+
+    /**
+     * @return
+     */
+    public Local getFile() {
+        return this.file;
     }
 
     public synchronized Object get(int row) {
@@ -53,36 +79,41 @@ public class HostCollection extends Collection {
     }
 
     /**
-     * @see Host
-     * @param o
+     * @param host
      * @return
+     * @see Host
      */
-    public synchronized boolean add(Object o) {
-        this.add(this.size(), o);
+    public synchronized boolean add(Object host) {
+        this.add(this.size(), host);
         return true;
     }
 
     /**
-     * @see Host
      * @param row
-     * @param o
+     * @param host
+     * @see Host
      */
-    public synchronized void add(int row, Object o) {
-        final Host host = (Host)o;
-        String proposal = host.getNickname();
-        int no = 0;
-        do {
-            host.setNickname(proposal);
-            no++;
-            proposal = host.getNickname() + " (" + no + ")";
-        }
-        while(this.contains(o) && !(this.get(this.indexOf(o)) == o));
-        super.add(row, host);
+    public synchronized void add(int row, Object host) {
+        super.add(row, this.unique((Host) host));
+        this.sort();
         this.save();
     }
 
     /**
+     * Ensures the bookmark nickname is unique
      *
+     * @param host
+     * @return
+     */
+    protected Host unique(Host host) {
+        final String proposal = host.getNickname();
+        for(int i = 1; this.contains(host) && !(this.get(this.indexOf(host)) == host); i++) {
+            host.setNickname(proposal + " (" + i + ")");
+        }
+        return host;
+    }
+
+    /**
      * @param row
      * @return the element that was removed from the list.
      */
@@ -92,28 +123,15 @@ public class HostCollection extends Collection {
         return previous;
     }
 
-    /**
-     *
-     */
-    private static final File BOOKMARKS_FILE
-            = new File(Preferences.instance().getProperty("application.support.path"), "Favorites.plist");
-
-    static {
-        BOOKMARKS_FILE.getParentFile().mkdir();
-    }
-
-    /**
-     *
-     */
-    public void save() {
-        this.save(BOOKMARKS_FILE);
+    protected void sort() {
+        //
     }
 
     /**
      * Saves this collection of bookmarks in to a file to the users's application support directory
      * in a plist xml format
      */
-    private synchronized void save(File f) {
+    protected void save() {
         if(Preferences.instance().getBoolean("favorites.save")) {
             try {
                 NSMutableArray list = new NSMutableArray();
@@ -130,13 +148,12 @@ public class HostCollection extends Collection {
                 if(errorString[0] != null) {
                     log.error("Problem writing bookmark file: " + errorString[0]);
                 }
-
-                if(collection.writeToURL(f.toURL(), true)) {
+                if(collection.writeToURL(new URL(file.toURL()), true)) {
                     if(log.isInfoEnabled())
-                        log.info("Bookmarks sucessfully saved to :" + f.toString());
+                        log.info("Bookmarks sucessfully saved to :" + file.toString());
                 }
                 else {
-                    log.error("Error saving Bookmarks to :" + f.toString());
+                    log.error("Error saving Bookmarks to :" + file.toString());
                 }
             }
             catch(java.net.MalformedURLException e) {
@@ -146,21 +163,13 @@ public class HostCollection extends Collection {
     }
 
     /**
-     *
-     */
-    public void load() {
-        this.load(BOOKMARKS_FILE);
-    }
-
-    /**
      * Deserialize all the bookmarks saved previously in the users's application support directory
      */
-    private synchronized void load(File f) {
-        if(f.exists()) {
-            final int pool = NSAutoreleasePool.push();
+    protected void load() {
+        if(file.exists()) {
             try {
-                log.info("Found Bookmarks file: " + f.toString());
-                NSData plistData = new NSData(f);
+                log.info("Found Bookmarks file: " + file.toString());
+                NSData plistData = new NSData(new URL(file.toURL()));
                 String[] errorString = new String[]{null};
                 Object propertyListFromXMLData =
                         NSPropertyListSerialization.propertyListFromData(plistData,
@@ -182,9 +191,10 @@ public class HostCollection extends Collection {
                     }
                 }
             }
-            finally {
-                NSAutoreleasePool.pop(pool);
+            catch(java.net.MalformedURLException e) {
+                log.error(e.getMessage());
             }
+            this.sort();
         }
     }
 }

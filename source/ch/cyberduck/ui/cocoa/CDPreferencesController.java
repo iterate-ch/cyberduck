@@ -319,14 +319,14 @@ public class CDPreferencesController extends CDWindowController {
         this.defaultBookmarkCombobox.removeAllItems();
         this.defaultBookmarkCombobox.addItem(NSBundle.localizedString("None", ""));
         this.defaultBookmarkCombobox.menu().addItem(new NSMenuItem().separatorItem());
-        Iterator iter = HostCollection.instance().iterator();
+        Iterator iter = HostCollection.defaultCollection().iterator();
         while(iter.hasNext()) {
             Host bookmark = (Host) iter.next();
             this.defaultBookmarkCombobox.addItem(bookmark.getNickname());
             this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(NSImage.imageNamed("bookmark16.tiff"));
             this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark);
         }
-        HostCollection.instance().addListener(new CollectionListener() {
+        HostCollection.defaultCollection().addListener(new CollectionListener() {
             public void collectionItemAdded(Object item) {
                 Host bookmark = (Host) item;
                 CDPreferencesController.this.defaultBookmarkCombobox.addItem(bookmark.getNickname());

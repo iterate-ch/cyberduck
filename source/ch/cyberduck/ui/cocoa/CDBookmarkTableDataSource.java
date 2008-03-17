@@ -25,8 +25,9 @@ import ch.cyberduck.core.*;
 
 import org.apache.log4j.Logger;
 
-import java.util.List;
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -58,45 +59,77 @@ public class CDBookmarkTableDataSource extends CDController {
 
     protected CDBrowserController controller;
 
-    public CDBookmarkTableDataSource(CDBrowserController controller) {
+    public CDBookmarkTableDataSource(CDBrowserController controller, Collection source) {
         this.controller = controller;
+        this.source = source;
+    }
+
+    private Collection source;
+
+    public void setSource(final Collection source) {
+        this.source = source;
+        this.setFilter(null);
     }
 
     private HostFilter filter;
 
     /**
      * Display only a subset of all bookmarks
+     *
      * @param filter
      */
     public void setFilter(HostFilter filter) {
         this.filter = filter;
+        this.filtered = null;
     }
 
     /**
-     * @param c
-     * @see HostFilter
-     * @return The filtered collection currently to be displayed within the constraints
-     * given by the comparision with the HostFilter
+     * Subset of the original source
      */
-    protected Collection filter(Collection c) {
+    private Collection filtered;
+
+    /**
+     * @return The filtered collection currently to be displayed within the constraints
+     *         given by the comparision with the HostFilter
+     * @see HostFilter
+     */
+    protected Collection getSource() {
         if(null == filter) {
-            return c;
+            return source;
         }
-        Collection filtered = new Collection(c);
-        for(Iterator i = filtered.iterator(); i.hasNext();) {
-            if(!filter.accept((Host) i.next())) {
-                //temporarly remove the bookmark from the collection
-                i.remove();
+        if(null == filtered) {
+            filtered = new Collection(source);
+            for(Iterator i = filtered.iterator(); i.hasNext();) {
+                if(!filter.accept((Host) i.next())) {
+                    //temporarly remove the bookmark from the collection
+                    i.remove();
+                }
             }
+            filtered.addListener(new AbstractCollectionListener() {
+                public void collectionItemAdded(Object item) {
+                    source.add(item);
+                }
+
+                public void collectionItemRemoved(Object item) {
+                    source.remove(item);
+                }
+            });
         }
         return filtered;
+    }
+
+    /**
+     * @return
+     */
+    public boolean isEditable() {
+        return source.equals(HostCollection.defaultCollection());
     }
 
     /**
      * @see NSTableView.DataSource
      */
     public int numberOfRowsInTableView(NSTableView view) {
-        return this.filter(HostCollection.instance()).size();
+        return this.getSource().size();
     }
 
     /**
@@ -111,12 +144,12 @@ public class CDBookmarkTableDataSource extends CDController {
                 }
                 return DOCUMENT_ICON;
             }
-            final Object host = this.filter(HostCollection.instance()).get(row);
+            final Object host = this.getSource().get(row);
             if(identifier.equals(BOOKMARK_COLUMN)) {
                 return host;
             }
             if(identifier.equals(STATUS_COLUMN)) {
-                if(controller.isMounted()) {
+                if(controller.hasSession()) {
                     if(host.equals(controller.getSession().getHost())) {
                         return controller.isConnected() ? GREEN_ICON : YELLOW_ICON;
                     }
@@ -136,6 +169,10 @@ public class CDBookmarkTableDataSource extends CDController {
      * @see NSTableView.DataSource
      */
     public int tableViewValidateDrop(NSTableView view, NSDraggingInfo info, int index, int operation) {
+        if(!this.isEditable()) {
+            // Do not allow drags for non writable collections
+            return NSDraggingInfo.DragOperationNone;
+        }
         if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
             Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
             if(o != null) {
@@ -164,20 +201,17 @@ public class CDBookmarkTableDataSource extends CDController {
     }
 
     /**
+     * @param info contains details on this dragging operation.
+     * @param row  The proposed location is row and action is operation.
+     *             The data source should incorporate the data from the dragging pasteboard at this time.
      * @see NSTableView.DataSource
-     * Invoked by view when the mouse button is released over a table view that previously decided to allow a drop.
-     *
-     * @param info  contains details on this dragging operation.
-     * @param index The proposed location is row and action is operation.
-     *              The data source should incorporate the data from the dragging pasteboard at this time.
+     *      Invoked by view when the mouse button is released over a table view that previously decided to allow a drop.
      */
-    public boolean tableViewAcceptDrop(NSTableView view, NSDraggingInfo info, int index, int operation) {
-        log.debug("tableViewAcceptDrop:" + index);
-        final Collection collection = this.filter(HostCollection.instance());
+    public boolean tableViewAcceptDrop(NSTableView view, NSDraggingInfo info, int row, int operation) {
+        log.debug("tableViewAcceptDrop:" + row);
         if(info.draggingPasteboard().availableTypeFromArray(
-                new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-
-            boolean accepted = false;
+                new NSArray(NSPasteboard.FilenamesPboardType)) != null)
+        {
             // We get a drag from another application e.g. Finder.app proposing some files
             NSArray filesList = (NSArray) info.draggingPasteboard().propertyListForType(
                     NSPasteboard.FilenamesPboardType);// get the filenames from pasteboard
@@ -188,26 +222,26 @@ public class CDBookmarkTableDataSource extends CDController {
                 String filename = (String) filesList.objectAtIndex(i);
                 if(filename.endsWith(".duck")) {
                     // Adding a previously exported bookmark file from the Finder
-                    if(index < 0) {
-                        index = 0;
+                    if(row < 0) {
+                        row = 0;
                     }
-                    if(index > view.numberOfRows()) {
-                        index = view.numberOfRows();
+                    if(row > view.numberOfRows()) {
+                        row = view.numberOfRows();
                     }
-                    Host bookmark = ((CDMainController)NSApplication.sharedApplication().delegate()).importBookmark(
-                            new Local(filename));
-                    if(bookmark != null) {
-                        //parsing succeeded
-                        collection.add(index, bookmark);
+                    try {
+                        source.add(row, new Host(new Local(filename)));
                         view.reloadData();
-                        view.selectRow(index, false);
-                        view.scrollRowToVisible(index);
-                        accepted = true;
+                        view.selectRow(row, false);
+                        view.scrollRowToVisible(row);
+                    }
+                    catch(IOException e) {
+                        log.error(e.getMessage());
+                        return false;
                     }
                 }
                 else {
                     // The bookmark this file has been dropped onto
-                    Host h = (Host) collection.get(index);
+                    Host h = (Host) this.getSource().get(row);
                     if(null == session) {
                         session = SessionFactory.createSession(h);
                     }
@@ -219,18 +253,17 @@ public class CDBookmarkTableDataSource extends CDController {
             // If anything has been added to the queue, then process the queue
             if(q.numberOfRoots() > 0) {
                 CDTransferController.instance().startTransfer(q);
-                accepted = true;
             }
-            return accepted;
+            return true;
         }
         if(info.draggingPasteboard().availableTypeFromArray(
                 new NSArray(NSPasteboard.FilesPromisePboardType)) != null) {
             for(int i = 0; i < promisedDragBookmarks.length; i++) {
-                collection.remove(collection.indexOf(promisedDragBookmarks[i]));
-                collection.add(index, promisedDragBookmarks[i]);
+                source.remove(source.indexOf(promisedDragBookmarks[i]));
+                source.add(row, promisedDragBookmarks[i]);
                 view.reloadData();
-                view.selectRow(index, false);
-                view.scrollRowToVisible(index);
+                view.selectRow(row, false);
+                view.scrollRowToVisible(row);
             }
             return true;
         }
@@ -239,7 +272,6 @@ public class CDBookmarkTableDataSource extends CDController {
 
     /**
      * @see NSDraggingSource
-     *
      * @see "http://www.cocoabuilder.com/archive/message/2005/10/5/118857"
      */
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
@@ -248,10 +280,9 @@ public class CDBookmarkTableDataSource extends CDController {
     }
 
     /**
-     * @see NSDraggingSource
-     *
      * @param local
      * @return
+     * @see NSDraggingSource
      */
     public int draggingSourceOperationMaskForLocal(boolean local) {
         log.debug("draggingSourceOperationMaskForLocal:" + local);
@@ -266,25 +297,24 @@ public class CDBookmarkTableDataSource extends CDController {
     private Host[] promisedDragBookmarks;
 
     /**
-     * @see NSTableView.DataSource
-     * Invoked by view after it has been determined that a drag should begin, but before the drag has been started.
-     * The drag image and other drag-related information will be set up and provided by the table view once this call
-     * returns with true.
-     *
      * @param rows is the list of row numbers that will be participating in the drag.
      * @return To refuse the drag, return false. To start a drag, return true and place
      *         the drag data onto pboard (data, owner, and so on).
+     * @see NSTableView.DataSource
+     *      Invoked by view after it has been determined that a drag should begin, but before the drag has been started.
+     *      The drag image and other drag-related information will be set up and provided by the table view once this call
+     *      returns with true.
      */
     public boolean tableViewWriteRowsToPasteboard(NSTableView view, NSArray rows, NSPasteboard pboard) {
         log.debug("tableViewWriteRowsToPasteboard:" + rows);
         if(rows.count() > 0) {
             this.promisedDragBookmarks = new Host[rows.count()];
             for(int i = 0; i < rows.count(); i++) {
-                promisedDragBookmarks[i]
-                        = (Host) HostCollection.instance().get(((Number) rows.objectAtIndex(i)).intValue());
+                promisedDragBookmarks[i] =
+                        new Host(((Host) source.get(((Number) rows.objectAtIndex(i)).intValue())).getAsDictionary());
             }
             NSEvent event = NSApplication.sharedApplication().currentEvent();
-            if (event != null) {
+            if(event != null) {
                 NSPoint dragPosition = view.convertPointFromView(event.locationInWindow(), null);
                 NSRect imageRect = new NSRect(new NSPoint(dragPosition.x() - 16, dragPosition.y() - 16), new NSSize(32, 32));
                 // Writing a promised file of the host as a bookmark file to the clipboard
@@ -296,31 +326,33 @@ public class CDBookmarkTableDataSource extends CDController {
     }
 
     /**
-     * @see NSTableView.DataSource
      * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
      *         This method is invoked when the drop has been accepted by the destination and the destination,
      *         in the case of another Cocoa application, invokes the NSDraggingInfo method
      *         namesOfPromisedFilesDroppedAtDestination.
      *         For long operations, you can cache dropDestination and defer the creation of the files until the
      *         finishedDraggingImage method to avoid blocking the destination application.
+     * @see NSTableView.DataSource
      */
     public NSArray namesOfPromisedFilesDroppedAtDestination(java.net.URL dropDestination) {
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
-        NSMutableArray promisedDragNames = new NSMutableArray();
-        for(int i = 0; i < promisedDragBookmarks.length; i++) {
-            try {
+        final NSMutableArray promisedDragNames = new NSMutableArray();
+        try {
+            for(int i = 0; i < promisedDragBookmarks.length; i++) {
                 // utf-8 is just a wild guess
                 Local file = new Local(java.net.URLDecoder.decode(dropDestination.getPath(), "utf-8"),
                         promisedDragBookmarks[i].getNickname() + ".duck");
-                ((CDMainController)NSApplication.sharedApplication().delegate()).exportBookmark(
-                        promisedDragBookmarks[i],
-                        file);
+                promisedDragBookmarks[i].setFile(file);
+                promisedDragBookmarks[i].write();
                 // Adding the filename that is promised to be created at the dropDestination
                 promisedDragNames.addObject(file.getName());
             }
-            catch(java.io.UnsupportedEncodingException e) {
-                log.error(e.getMessage());
-            }
+        }
+        catch(java.io.UnsupportedEncodingException e) {
+            log.error(e.getMessage());
+        }
+        catch(IOException e) {
+            log.error(e.getMessage());
         }
         return promisedDragNames;
     }

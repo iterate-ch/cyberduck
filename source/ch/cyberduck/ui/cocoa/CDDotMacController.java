@@ -18,11 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostCollection;
-
 import com.apple.cocoa.application.NSAlertPanel;
 import com.apple.cocoa.foundation.*;
+
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostCollection;
 
 import org.apache.log4j.Logger;
 
@@ -44,7 +44,7 @@ public class CDDotMacController extends CDController {
             System.load(lib);
             log.info("libDotMac.dylib loaded");
         }
-        catch (UnsatisfiedLinkError e) {
+        catch(UnsatisfiedLinkError e) {
             log.error("Could not load the libDotMac.dylib library:" + e.getMessage());
             throw e;
         }
@@ -57,7 +57,7 @@ public class CDDotMacController extends CDController {
     public void downloadBookmarks() {
         File f = new File(NSPathUtilities.temporaryDirectory(), "Favorites.plist");
         this.downloadBookmarks(f.getAbsolutePath());
-        if (f.exists()) {
+        if(f.exists()) {
             NSData plistData = new NSData(f);
             String[] errorString = new String[]{null};
             Object propertyListFromXMLData =
@@ -65,27 +65,27 @@ public class CDDotMacController extends CDController {
                             NSPropertyListSerialization.PropertyListImmutable,
                             new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
                             errorString);
-            if (errorString[0] != null) {
+            if(errorString[0] != null) {
                 log.error("Problem reading bookmark file: " + errorString[0]);
             }
-            if (propertyListFromXMLData instanceof NSArray) {
+            if(propertyListFromXMLData instanceof NSArray) {
                 NSArray entries = (NSArray) propertyListFromXMLData;
                 java.util.Enumeration i = entries.objectEnumerator();
                 Object element;
-                while (i.hasMoreElements()) {
+                while(i.hasMoreElements()) {
                     element = i.nextElement();
-                    if (element instanceof NSDictionary) {
-                        Host bookmark = new Host((NSDictionary) element);
-                        if (!HostCollection.instance().contains(bookmark)) {
+                    if(element instanceof NSDictionary) {
+                        final Host bookmark = new Host((NSDictionary) element);
+                        if(!HostCollection.defaultCollection().contains(bookmark)) {
                             int choice = NSAlertPanel.runAlert((bookmark).getNickname(),
                                     NSBundle.localizedString("Add this bookmark to your existing bookmarks?", "IDisk", ""),
                                     NSBundle.localizedString("Add", "IDisk", ""), //default
                                     NSBundle.localizedString("Cancel", ""), //alternate
                                     NSBundle.localizedString("Skip", "IDisk", "")); //other
-                            if (choice == CDSheetCallback.DEFAULT_OPTION) {
-                                HostCollection.instance().add(bookmark);
+                            if(choice == CDSheetCallback.DEFAULT_OPTION) {
+                                HostCollection.defaultCollection().add(bookmark);
                             }
-                            if (choice == CDSheetCallback.ALTERNATE_OPTION) {
+                            if(choice == CDSheetCallback.ALTERNATE_OPTION) {
                                 return;
                             }
                         }

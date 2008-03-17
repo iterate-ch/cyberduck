@@ -223,6 +223,7 @@ public class CDBookmarkController extends CDWindowController {
                 }
             }
         }
+        this.itemChanged();
     }
 
     private NSPopUpButton connectmodePopup; //IBOutlet
@@ -251,6 +252,7 @@ public class CDBookmarkController extends CDWindowController {
         else if(sender.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
             this.host.setFTPConnectMode(FTPConnectMode.PASV);
         }
+        this.itemChanged();
     }
 
     private NSPopUpButton transferPopup; //IBOutlet
@@ -282,6 +284,7 @@ public class CDBookmarkController extends CDWindowController {
         else if(sender.indexOfSelectedItem() == USE_QUEUE_SESSION_INDEX) {
             this.host.setMaxConnections(new Integer(-1));
         }
+        this.itemChanged();
     }
 
     private NSPopUpButton downloadPathPopup; //IBOutlet
@@ -342,6 +345,7 @@ public class CDBookmarkController extends CDWindowController {
         else {
             host.setDownloadFolder(NSPathUtilities.stringByAbbreviatingWithTildeInPath(
                     sender.representedObject().toString()));
+            this.itemChanged();
         }
     }
 
@@ -365,6 +369,7 @@ public class CDBookmarkController extends CDWindowController {
                 CDIconCache.instance().iconForPath(host.getDownloadFolder(), 16));
         this.downloadPathPopup.selectItemAtIndex(0);
         this.downloadPathPanel = null;
+        this.itemChanged();
     }
 
     /**
@@ -398,11 +403,11 @@ public class CDBookmarkController extends CDWindowController {
      */
     private CDBookmarkController(final Host host) {
         this.host = host;
-        HostCollection.instance().addListener(new AbstractCollectionListener() {
+        // Register for bookmark delete event. Will close this window.
+        HostCollection.defaultCollection().addListener(new AbstractCollectionListener() {
             public void collectionItemRemoved(Object item) {
-                assert item instanceof Host;
                 if(item.equals(host)) {
-                    HostCollection.instance().removeListener(this);
+                    HostCollection.defaultCollection().removeListener(this);
                     final NSWindow window = window();
                     if(null != window) {
                         window.close();
@@ -417,14 +422,9 @@ public class CDBookmarkController extends CDWindowController {
         return "Bookmark";
     }
 
-    public void windowWillClose(NSNotification notification) {
-        HostCollection.instance().save();
-        super.windowWillClose(notification);
-    }
-
     public void awakeFromNib() {
         this.cascade();
-        this.itemChanged();
+        this.init();
     }
 
     private NSTextField pkLabel;
@@ -480,7 +480,7 @@ public class CDBookmarkController extends CDWindowController {
 
     public void hostFieldDidChange(final NSNotification sender) {
         try {
-            NSDictionary parsed = Host.parse(hostField.stringValue().trim()).getAsDictionary();
+            final NSDictionary parsed = Host.parse(hostField.stringValue().trim()).getAsDictionary();
             this.host.init(parsed);
         }
         catch(MalformedURLException e) {
@@ -539,8 +539,11 @@ public class CDBookmarkController extends CDWindowController {
      * Propagates all fields with the properties of this bookmark
      */
     private void itemChanged() {
-        HostCollection.instance().collectionItemChanged(this.host);
+        HostCollection.defaultCollection().collectionItemChanged(host);
+        this.init();
+    }
 
+    private void init() {
         this.window.setTitle(this.host.getNickname());
         this.hostField.setStringValue(this.host.getHostname());
         this.nicknameField.setStringValue(this.host.getNickname());
@@ -553,6 +556,9 @@ public class CDBookmarkController extends CDWindowController {
             ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString(
                     NSBundle.localizedString("Access Key ID", "S3")
             );
+        }
+        else {
+            ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString("");
         }
         this.protocolPopup.selectItemWithTitle(this.host.getProtocol().getDescription());
         this.connectmodePopup.setEnabled(this.host.getProtocol().equals(Protocol.FTP)

@@ -96,12 +96,12 @@ public class CDConnectionController extends CDSheetController {
         this.hostField.setUsesDataSource(true);
         this.hostField.setDataSource(this.hostPopupDataSource = new NSObject() {
             public int numberOfItemsInComboBox(final NSComboBox sender) {
-                return HostCollection.instance().size();
+                return HostCollection.defaultCollection().size();
             }
 
             public Object comboBoxObjectValueForItemAtIndex(final NSComboBox sender, final int row) {
                 if(row < this.numberOfItemsInComboBox(sender)) {
-                    return ((Host) HostCollection.instance().get(row)).getHostname();
+                    return ((Host) HostCollection.defaultCollection().get(row)).getHostname();
                 }
                 return null;
             }
