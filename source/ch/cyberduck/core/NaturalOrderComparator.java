@@ -46,7 +46,7 @@ public class NaturalOrderComparator implements Comparator {
      * Length of string is passed in for improved efficiency (only need to calculate it once) *
      */
     private String getChunk(String s, int slength, int marker) {
-        StringBuilder chunk = new StringBuilder();
+        final StringBuffer chunk = new StringBuffer();
         char c = s.charAt(marker);
         chunk.append(c);
         marker++;
