@@ -897,7 +897,7 @@ public class CDPreferencesController extends CDWindowController {
         this.keepAliveIntervalField = keepAliveIntervalField;
         try {
             int i = Preferences.instance().getInteger("connection.keepalive.interval");
-            this.keepAliveIntervalField.setStringValue("" + i);
+            this.keepAliveIntervalField.setStringValue(String.valueOf(i));
         }
         catch (NumberFormatException e) {
             log.error(e.getMessage());

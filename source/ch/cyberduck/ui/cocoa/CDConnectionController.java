@@ -119,11 +119,11 @@ public class CDConnectionController extends CDSheetController {
     public void hostFieldTextDidChange(final NSNotification sender) {
         try {
             final Host h = Host.parse(hostField.stringValue().trim());
-            this.hostField.setStringValue(h.getHostname());
-            this.protocolPopup.selectItemWithTitle(h.getProtocol().getDescription());
-            this.portField.setStringValue(String.valueOf(h.getPort()));
-            this.usernameField.setStringValue(h.getCredentials().getUsername());
-            this.pathField.setStringValue(h.getDefaultPath());
+            this.updateField(hostField, h.getHostname());
+            protocolPopup.selectItemWithTitle(h.getProtocol().getDescription());
+            this.updateField(portField, String.valueOf(h.getPort()));
+            this.updateField(usernameField, h.getCredentials().getUsername());
+            this.updateField(pathField, h.getDefaultPath());
         }
         catch(java.net.MalformedURLException e) {
             // ignore; just a hostname has been entered
@@ -401,23 +401,20 @@ public class CDConnectionController extends CDSheetController {
                     usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {
                 Protocol protocol = (Protocol)protocolPopup.selectedItem().representedObject();
                 Credentials l = new Credentials(usernameField.stringValue(), null);
-                String passFromKeychain = l.getInternetPasswordFromKeychain(protocol, hostField.stringValue());
-                if(passFromKeychain != null && !passFromKeychain.equals("")) {
-                    this.passField.setStringValue(passFromKeychain);
-                }
+                this.updateField(this.passField, l.getInternetPasswordFromKeychain(protocol, hostField.stringValue()));
             }
         }
     }
 
     private void updateURLLabel(final NSNotification sender) {
-        if("".equals(hostField.stringValue())) {
-            urlLabel.setStringValue(hostField.stringValue());
-        }
-        else {
+        if(StringUtils.hasText(hostField.stringValue())) {
             final Protocol protocol = (Protocol)protocolPopup.selectedItem().representedObject();
             urlLabel.setStringValue(protocol.getScheme() + "://" + usernameField.stringValue()
                     + "@" + hostField.stringValue() + ":" + portField.stringValue()
                     + Path.normalize(pathField.stringValue()));
+        }
+        else {
+            urlLabel.setStringValue(hostField.stringValue());
         }
     }
 

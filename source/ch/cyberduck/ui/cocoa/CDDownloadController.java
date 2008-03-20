@@ -38,10 +38,18 @@ public class CDDownloadController extends CDSheetController {
 
     public void setUrlField(NSTextField urlField) {
         this.urlField = urlField;
+        this.updateField(this.urlField, url);
     }
+
+    private String url;
 
     public CDDownloadController(final CDWindowController parent) {
         super(parent);
+    }
+
+    public CDDownloadController(final CDWindowController parent, final String url) {
+        this(parent);
+        this.url = url;
     }
 
     protected String getBundleName() {
@@ -67,7 +75,7 @@ public class CDDownloadController extends CDSheetController {
     protected boolean validateInput() {
         try {
             Host host = Host.parse(urlField.stringValue());
-            return host.hasReasonableDefaultPath();
+            return StringUtils.hasText(host.getDefaultPath());
         }
         catch (MalformedURLException e) {
             this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"),

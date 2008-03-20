@@ -171,41 +171,34 @@ public class CDTransferTableDataSource extends CDController {
             if(droppedText != null) {
                 log.info("NSPasteboard.StringPboardType:" + droppedText);
                 try {
-                    Host h = Host.parse(droppedText);
-                    String file = h.getDefaultPath();
-                    if(StringUtils.hasText(file)) {
-                        final Transfer q = new DownloadTransfer(
-                                PathFactory.createPath(SessionFactory.createSession(h), file, Path.FILE_TYPE)
-                        );
-                        CDTransferController.instance().startTransfer(q);
-                        return true;
-                    }
+                    CDDownloadController c = new CDDownloadController(CDTransferController.instance(), Host.parse(droppedText).getDefaultPath());
+                    c.beginSheet();
+                    return true;
                 }
                 catch(java.net.MalformedURLException e) {
                     log.error(e.getMessage());
                 }
             }
+            return false;
         }
-        else {
-            // we are only interested in our private pasteboard with a description of the queue
-            // encoded in as a xml.
-            NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
-            log.debug("availableTypeFromArray:TransferPasteboardType: " + pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)));
-            if(pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
-                Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);// get the data from paste board
-                log.debug("tableViewAcceptDrop:" + o);
-                if(o != null) {
-                    NSArray elements = (NSArray) o;
-                    for(int i = 0; i < elements.count(); i++) {
-                        NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                        TransferCollection.instance().add(row, TransferFactory.create(dict));
-                        tableView.reloadData();
-                        tableView.selectRow(row, false);
-                        tableView.scrollRowToVisible(row);
-                    }
-                    pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
-                    return true;
+        // we are only interested in our private pasteboard with a description of the queue
+        // encoded in as a xml.
+        NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+        log.debug("availableTypeFromArray:TransferPasteboardType: " + pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)));
+        if(pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
+            Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);// get the data from paste board
+            log.debug("tableViewAcceptDrop:" + o);
+            if(o != null) {
+                NSArray elements = (NSArray) o;
+                for(int i = 0; i < elements.count(); i++) {
+                    NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+                    TransferCollection.instance().add(row, TransferFactory.create(dict));
+                    tableView.reloadData();
+                    tableView.selectRow(row, false);
+                    tableView.scrollRowToVisible(row);
                 }
+                pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
+                return true;
             }
         }
         return false;

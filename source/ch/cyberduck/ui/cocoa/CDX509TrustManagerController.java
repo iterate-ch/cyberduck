@@ -193,7 +193,7 @@ public class CDX509TrustManagerController extends AbstractX509TrustManager {
 
             public void setAlertField(NSTextField alertField) {
                 this.alertField = alertField;
-                this.alertField.setStringValue(e.getMessage());
+                this.updateField(this.alertField, e.getMessage());
             }
 
             private NSTextView certificateField; // IBOutlet

@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
+import ch.cyberduck.core.StringUtils;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
@@ -276,5 +277,18 @@ public abstract class CDWindowController extends CDBundleController {
             }
         };
         c.beginSheet();
+    }
+
+
+    protected void updateField(final NSTextView f, final String value) {
+        if(StringUtils.hasText(value)) {
+            f.setString(value);
+        }
+    }
+
+    protected void updateField(final NSTextField f, final String value) {
+        if(StringUtils.hasText(value)) {
+            f.setStringValue(value);
+        }
     }
 }

@@ -26,6 +26,7 @@ import com.apple.cocoa.foundation.NSRect;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.StringUtils;
 
 /**
  * @version $Id$
@@ -55,7 +56,8 @@ public class CDBookmarkCell extends CDTableCell {
                         new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 14,
                                 cellFrame.size().width() - 5, cellFrame.size().height()));
                 NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getProtocol()
-                        + "://" + bookmark.getHostname() + Path.normalize(bookmark.getDefaultPath()),
+                        + "://" + bookmark.getHostname()
+                        + (StringUtils.hasText(bookmark.getDefaultPath()) ? Path.normalize(bookmark.getDefaultPath()) : ""),
                         tinyFont),
                         new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 27,
                                 cellFrame.size().width() - 5, cellFrame.size().height()));

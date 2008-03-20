@@ -545,13 +545,12 @@ public class CDBookmarkController extends CDWindowController {
 
     private void init() {
         this.window.setTitle(this.host.getNickname());
-        this.hostField.setStringValue(this.host.getHostname());
-        this.nicknameField.setStringValue(this.host.getNickname());
-        this.urlField.setStringValue(this.host.toURL() + Path.normalize(this.host.getDefaultPath()));
-        this.portField.setStringValue(String.valueOf(this.host.getPort()));
-        this.nicknameField.setStringValue(this.host.getNickname());
-        this.pathField.setStringValue(this.host.getDefaultPath());
-        this.usernameField.setStringValue(this.host.getCredentials().getUsername());
+        this.updateField(this.hostField, this.host.getHostname());
+        this.updateField(this.nicknameField, this.host.getNickname());
+        this.updateField(this.urlField, this.host.toURL() + Path.normalize(this.host.getDefaultPath()));
+        this.updateField(this.portField, String.valueOf(this.host.getPort()));
+        this.updateField(this.pathField, this.host.getDefaultPath());
+        this.updateField(this.usernameField, this.host.getCredentials().getUsername());
         if(this.host.getProtocol().equals(Protocol.S3)) {
             ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString(
                     NSBundle.localizedString("Access Key ID", "S3")
@@ -578,12 +577,12 @@ public class CDBookmarkController extends CDWindowController {
         this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Protocol.SFTP));
         if(this.host.getCredentials().usesPublicKeyAuthentication()) {
             this.pkCheckbox.setState(NSCell.OnState);
-            this.pkLabel.setStringValue(this.host.getCredentials().getPrivateKeyFile());
+            this.updateField(this.pkLabel, this.host.getCredentials().getPrivateKeyFile());
         }
         else {
             this.pkCheckbox.setState(NSCell.OffState);
             this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
         }
-        this.commentField.setString(this.host.getComment());
+        this.updateField(this.commentField, this.host.getComment());
     }
 }

@@ -50,7 +50,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
 
             public void setTitleField(NSTextField titleField) {
                 this.titleField = titleField;
-                this.titleField.setStringValue(reason);
+                this.updateField(this.titleField, reason);
             }
 
             private NSTextField userField; // IBOutlet
@@ -58,9 +58,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
             public void setUserField(NSTextField userField) {
                 this.userField = userField;
                 this.userField.setEnabled(!credentials.usesPublicKeyAuthentication());
-                if(StringUtils.hasText(credentials.getUsername())) {
-                    this.userField.setStringValue(credentials.getUsername());
-                }
+                this.updateField(this.userField, credentials.getUsername());
                 if(protocol.equals(Protocol.S3)) {
                     ((NSTextFieldCell) this.userField.cell()).setPlaceholderString(
                             NSBundle.localizedString("Access Key ID", "S3")
@@ -72,16 +70,14 @@ public class CDLoginController extends AbstractLoginController implements LoginC
 
             public void setTextField(NSTextField textField) {
                 this.textField = textField;
-                this.textField.setStringValue(message);
+                this.updateField(this.textField, message);
             }
 
             private NSSecureTextField passField; // IBOutlet
 
             public void setPassField(NSSecureTextField passField) {
                 this.passField = passField;
-                if(StringUtils.hasText(credentials.getPassword())) {
-                    this.passField.setStringValue(credentials.getPassword());
-                }
+                this.updateField(this.passField, credentials.getPassword());
                 if(protocol.equals(Protocol.S3)) {
                     ((NSTextFieldCell) this.passField.cell()).setPlaceholderString(
                             NSBundle.localizedString("Secret Access Key", "S3")
