@@ -152,7 +152,7 @@ public abstract class Session extends NSObject {
     protected abstract void login() throws IOException, LoginCanceledException;
 
     public Path mount() {
-        if(host.hasReasonableDefaultPath()) {
+        if(StringUtils.hasText(host.getDefaultPath())) {
             return this.mount(host.getDefaultPath());
         }
         return this.mount(null);

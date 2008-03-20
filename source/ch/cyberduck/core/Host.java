@@ -408,17 +408,7 @@ public class Host extends NSObject {
      * @return empty string if no default path is set
      */
     public String getDefaultPath() {
-        if(null == this.defaultpath) {
-            return "";
-        }
         return this.defaultpath;
-    }
-
-    /**
-     * @return Has a non empty default path set
-     */
-    public boolean hasReasonableDefaultPath() {
-        return !this.getDefaultPath().equals("");
     }
 
     // ----------------------------------------------------------
@@ -673,9 +663,6 @@ public class Host extends NSObject {
      * @return
      */
     public String getComment() {
-        if(null == comment) {
-            return "";
-        }
         return this.comment;
     }
 
