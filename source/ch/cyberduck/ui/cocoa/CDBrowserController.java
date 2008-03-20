@@ -4049,7 +4049,7 @@ public class CDBrowserController extends CDWindowController
             return bookmarkTable.selectedRow() != -1;
         }
         if(identifier.equals("editBookmarkButtonClicked:")) {
-            return bookmarkTable.numberOfSelectedRows() == 1;
+            return bookmarkModel.isEditable() && bookmarkTable.numberOfSelectedRows() == 1;
         }
         if(identifier.equals("editButtonClicked:")) {
             if(this.isMounted() && this.getSelectionCount() > 0) {
@@ -4168,9 +4168,10 @@ public class CDBrowserController extends CDWindowController
         String identifier = item.action().name();
         if(identifier.equals("editButtonClicked:")) {
             final String editorBundleIdentifier;
-            if(this.getSelectionCount() > 0 && this.getSelectedPath().attributes.isFile()) {
+            final Path selected = this.getSelectedPath();
+            if(null != selected && selected.attributes.isFile()) {
                 editorBundleIdentifier = EditorFactory.editorBundleIdentifierForFile(
-                        this.getSelectedPath().getLocal());
+                        selected.getLocal());
             }
             else {
                 editorBundleIdentifier = Preferences.instance().getProperty("editor.bundleIdentifier");
