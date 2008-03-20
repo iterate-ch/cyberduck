@@ -46,6 +46,7 @@ public class CDPreferencesController extends CDWindowController {
         synchronized(NSApplication.sharedApplication()) {
             if (null == instance) {
                 instance = new CDPreferencesController();
+                instance.loadBundle();
             }
             return instance;
         }
