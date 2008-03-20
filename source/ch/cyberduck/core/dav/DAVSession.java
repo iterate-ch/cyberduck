@@ -99,7 +99,9 @@ public class DAVSession extends Session {
             WebdavResource.setDefaultAction(WebdavResource.NOACTION);
 
             this.DAV = new WebdavResource(host.toURL());
-            this.DAV.setPath(host.getDefaultPath());
+            if(StringUtils.hasText(host.getDefaultPath())) {
+                this.DAV.setPath(host.getDefaultPath());
+            }
 
             this.configure();
             this.login();
