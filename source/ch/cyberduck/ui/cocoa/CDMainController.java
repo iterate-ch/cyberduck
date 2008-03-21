@@ -191,7 +191,6 @@ public class CDMainController extends CDController {
 
     public void preferencesMenuClicked(final Object sender) {
         CDPreferencesController controller = CDPreferencesController.instance();
-        controller.loadBundle();
         controller.window().makeKeyAndOrderFront(null);
     }
 
