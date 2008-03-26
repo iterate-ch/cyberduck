@@ -1,5 +1,7 @@
 package ch.cyberduck.core.ssl;
 
+import org.apache.log4j.Logger;
+
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -22,13 +24,15 @@ package ch.cyberduck.core.ssl;
  * @version $Id$
  */
 public class IgnoreX509TrustManager extends AbstractX509TrustManager {
+    private static Logger log = Logger.getLogger(IgnoreX509TrustManager.class);
+
     public void checkClientTrusted(java.security.cert.X509Certificate[] x509Certificates, java.lang.String string)
             throws java.security.cert.CertificateException {
-        //ignore
+        log.warn("Certificate not verified!");
     }
 
     public void checkServerTrusted(java.security.cert.X509Certificate[] x509Certificates, java.lang.String string)
             throws java.security.cert.CertificateException {
-        //ignore
+        log.warn("Certificate not verified!");
     }
 }

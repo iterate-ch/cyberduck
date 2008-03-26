@@ -3534,10 +3534,6 @@ public class CDBrowserController extends CDWindowController
             ((ch.cyberduck.core.sftp.SFTPSession) session).setHostKeyVerificationController(
                     new CDHostKeyController(this));
         }
-        if(this.session instanceof SSLSession) {
-            ((SSLSession) this.session).setTrustManager(
-                    new CDX509TrustManagerController(this));
-        }
         this.session.setLoginController(new CDLoginController(this));
         this.setWorkdir(null);
         this.setEncoding(this.session.getEncoding());

@@ -99,11 +99,5 @@ public class Keychain {
      * @param certificate
      * @return
      */
-    public native synchronized boolean hasCertificate(byte[] certificate);
-
-    /**
-     *
-     * @param certificate
-     */
-    public native synchronized void addCertificateToKeychain(byte[] certificate);
+    public native synchronized boolean isTrusted(byte[] certificate);
 }

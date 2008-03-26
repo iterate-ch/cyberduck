@@ -17,7 +17,11 @@
  */
 
 #import "Keychain.h"
+
+#import <Security/Security.h>
+#import <SecurityInterface/SFCertificateTrustPanel.h>
 #import <Keychain/Keychain.h>
+#import <Keychain/Trust.h>
 #import <Keychain/KeychainSearch.h>
 
 // Simple utility to convert java strings to NSStrings
@@ -97,40 +101,136 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addPasswordToKeychain(JNI
     [[Keychain defaultKeychain] addGenericPassword:convertToNSString(env, jPass) onService:convertToNSString(env, jService) forAccount:convertToNSString(env, jUsername) replaceExisting:YES];
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addCertificateToKeychain(JNIEnv *env, jobject this, jbyteArray jCertificate)
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrusted (JNIEnv * env, jobject this, jbyteArray jCertificate)
 {
-    jbyte *certByte = (*env)->GetByteArrayElements(env, jCertificate, NULL);
-    
+	OSStatus err;
+	
+	jbyte *certByte = (*env)->GetByteArrayElements(env, jCertificate, NULL);
+    // Creates a certificate object based on the specified data, type, and encoding.
     NSData *certData = [NSData dataWithBytes:certByte length:(*env)->GetArrayLength(env, jCertificate)];
-    Certificate *certificate = [Certificate certificateWithData:certData type:CSSM_CERT_X_509v3 encoding:CSSM_CERT_ENCODING_DER];
-
-    (*env)->ReleaseByteArrayElements(env, jCertificate, certByte, 0);
-
-    [[Keychain defaultKeychain] addCertificate:certificate];
-}
-
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_hasCertificate (JNIEnv * env, jobject this, jbyteArray jCertificate)
-{
-    jbyte *certByte = (*env)->GetByteArrayElements(env, jCertificate, NULL);
+	(*env)->ReleaseByteArrayElements(env, jCertificate, certByte, 0);
     
-    NSData *certData = [NSData dataWithBytes:certByte length:(*env)->GetArrayLength(env, jCertificate)];
-    Certificate *certificate = [Certificate certificateWithData:certData type:CSSM_CERT_X_509v3 encoding:CSSM_CERT_ENCODING_DER];
-
-    (*env)->ReleaseByteArrayElements(env, jCertificate, certByte, 0);
-
-    KeychainSearch *search = [KeychainSearch keychainSearchWithKeychains:[NSArray arrayWithObject:[Keychain defaultKeychain]]];
-    NSArray *certificates = [search certificateSearchResults];
-    NSObject *item = nil;
-    NSEnumerator *enumerator = [certificates objectEnumerator];
-    while (item = [enumerator nextObject]) {
-        if([item isKindOfClass:[KeychainItem class]]) {
-            KeychainItem *result = (KeychainItem*)item;
-            if([result isCertificate]) {
-                if([[result certificate] isEqualToCertificate:certificate]) {
-                    return TRUE;
-                }
-            }
-        }
+	SecCertificateRef certificateRef = NULL;
+    CSSM_DATA *cssmData = NULL;
+    if (certData) {
+        cssmData = (CSSM_DATA*)malloc(sizeof(CSSM_DATA));
+        cssmData->Length = [certData length];
+        cssmData->Data = (uint8*)malloc(cssmData->Length);
+        [certData getBytes:(char*)(cssmData->Data)];
     }
+    err = SecCertificateCreateFromData(cssmData, CSSM_CERT_X_509v3, CSSM_CERT_ENCODING_DER, &certificateRef);
+	if(err != noErr) {
+		return FALSE;
+	}
+	// Adds a certificate to a keychain.
+	err = SecCertificateAddToKeychain(certificateRef, NULL);
+	switch(err) 
+	{
+		case errSecDuplicateItem:
+			// The function returns errSecDuplicateItem and does not add another copy to the keychain.
+			// The function looks at the certificate data, not at the certificate object, to
+			// determine whether the certificate is a duplicate. It considers two certificates to be
+			// duplicates if they have the same primary key attributes.
+			break;
+		default:
+			NSLog(@"Error adding certificate to Keychain");
+			break;
+	}
+	// Creates a search object for finding policies.
+	SecPolicySearchRef searchRef = NULL;
+	err = SecPolicySearchCreate(CSSM_CERT_X_509v3, &CSSMOID_APPLE_TP_SSL, NULL, &searchRef);
+	if(err != noErr) {
+		if(certificateRef) {
+			CFRelease(certificateRef);
+		}
+		return FALSE;
+	}
+	// Retrieves a policy object for the next policy matching specified search criteria.
+	SecPolicyRef policyRef = NULL;
+	err = SecPolicySearchCopyNext(searchRef, &policyRef);
+	if(err != noErr) {
+		if(certificateRef) {
+			CFRelease(certificateRef);
+		}
+		if(searchRef) {
+			CFRelease(searchRef);
+		}
+		return FALSE;
+	}
+	if(searchRef) {
+		CFRelease(searchRef);
+	}
+	// Creates a trust management object based on certificates and policies.
+	SecTrustRef trustRef = NULL;
+	SecCertificateRef evalCertArray[1] = {certificateRef};
+    CFArrayRef cfCertRef = CFArrayCreate ((CFAllocatorRef) NULL, (void *)evalCertArray, 1, &kCFTypeArrayCallBacks);
+	err = SecTrustCreateWithCertificates(cfCertRef, policyRef, &trustRef);
+	if(err != noErr) {
+		if(policyRef) {
+			CFRelease(policyRef);
+		}
+		if(certificateRef) {
+			CFRelease(certificateRef);
+		}
+		return FALSE;
+	}
+	if(certificateRef) {
+		CFRelease(certificateRef);
+	}
+	SecTrustResultType trustResult;
+	err = SecTrustEvaluate(trustRef, &trustResult);
+	if(err != noErr) {
+		if(policyRef) {
+			CFRelease(policyRef);
+		}
+		if(trustRef) {
+			CFRelease(trustRef);
+		}
+		return FALSE;
+	}
+	// kSecTrustResultProceed -> trust ok, go right ahead
+	// kSecTrustResultConfirm -> trust ok, but user asked (earlier) that you check with him before proceeding
+	// kSecTrustResultDeny -> trust ok, but user previously said not to trust it anyway
+	// kSecTrustResultUnspecified -> trust ok, user has no particular opinion about this
+	// kSecTrustResultRecoverableTrustFailure -> trust broken, perhaps argue with the user
+	// kSecTrustResultFatalTrustFailure -> trust broken, user can't fix it
+	// kSecTrustResultOtherError -> something failed weirdly, abort operation
+	// kSecTrustResultInvalid -> logic error; fix your program (SecTrust was used incorrectly)
+	switch(trustResult) {
+		case kSecTrustResultProceed:
+			// Accepted by user keychain setting
+			if(policyRef) {
+				CFRelease(policyRef);
+			}
+			if(trustRef) {
+				CFRelease(trustRef);
+			}
+			return TRUE;
+		default:
+			break;
+	}
+	SFCertificateTrustPanel *panel = [[SFCertificateTrustPanel alloc] init];
+	if([panel respondsToSelector:@selector(setAlternateButtonTitle:)]) {
+		[panel setAlternateButtonTitle:NSLocalizedString(@"Disconnect", @"")];
+	}
+	if([panel respondsToSelector:@selector(setPolicies:)]) {
+		[panel setPolicies:(id)policyRef];
+	}
+	if([panel respondsToSelector:@selector(setShowsHelp:)]) {
+		[panel setShowsHelp:YES];
+	}
+	// Displays a modal panel that shows the results of a certificate trust evaluation and
+	// that allows the user to edit trust settings.
+	int result = [panel runModalForTrust:trustRef message:nil];
+	[panel release];
+	if(policyRef) {
+		CFRelease(policyRef);
+	}
+	if(trustRef) {
+		CFRelease(trustRef);
+	}
+	if(NSOKButton == result) {
+		return TRUE;
+	}
     return FALSE;
 }

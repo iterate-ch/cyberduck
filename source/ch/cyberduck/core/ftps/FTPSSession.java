@@ -23,6 +23,7 @@ import com.apple.cocoa.foundation.NSBundle;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.log4j.Logger;
@@ -54,6 +55,12 @@ public class FTPSSession extends FTPSession implements SSLSession {
 
     protected FTPSSession(Host h) {
         super(h);
+        if(Preferences.instance().getBoolean("ftp.tls.acceptAnyCertificate")) {
+            this.setTrustManager(new IgnoreX509TrustManager());
+        }
+        else {
+            this.setTrustManager(new KeychainX509TrustManager());
+        }
     }
 
     public boolean isSecure() {
@@ -63,8 +70,7 @@ public class FTPSSession extends FTPSession implements SSLSession {
     /**
      * A trust manager accepting any certificate by default
      */
-    private X509TrustManager trustManager
-            = new IgnoreX509TrustManager();
+    private X509TrustManager trustManager;
 
     /**
      * @return
@@ -113,34 +119,29 @@ public class FTPSSession extends FTPSession implements SSLSession {
                     FTPSSession.this.log(reply);
                 }
             }, this.getTrustManager());
-            try {
-                this.FTP.setTimeout(this.timeout());
-                this.FTP.connect(host.getHostname(true), host.getPort());
-                if(!this.isConnected()) {
-                    throw new ConnectionCanceledException();
-                }
-                this.FTP.setStrictReturnCodes(true);
-                this.FTP.setConnectMode(this.getConnectMode());
-                this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
-                        new Object[]{host.getProtocol().getName()}));
-                ((FTPSClient) this.FTP).auth();
-                this.login();
-                try {
-                    this.setIdentification(this.FTP.system());
-                }
-                catch(FTPException e) {
-                    log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
-                }
-                this.fireConnectionDidOpenEvent();
-            }
-            catch(SSLHandshakeException e) {
-                this.close();
-            }
-            catch(NullPointerException e) {
-                // Because the connection could have been closed using #interrupt and set this.FTP to null; we
-                // should find a better way to handle this asynchroneous issue than to catch a null pointer
+            this.FTP.setTimeout(this.timeout());
+            this.FTP.connect(host.getHostname(true), host.getPort());
+            if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
             }
+            this.FTP.setStrictReturnCodes(true);
+            this.FTP.setConnectMode(this.getConnectMode());
+            this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
+                    new Object[]{host.getProtocol().getName()}));
+            try {
+                ((FTPSClient) this.FTP).auth();
+            }
+            catch(SSLHandshakeException e) {
+                throw new ConnectionCanceledException(e.getMessage());
+            }
+            this.login();
+            try {
+                this.setIdentification(this.FTP.system());
+            }
+            catch(FTPException e) {
+                log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
+            }
+            this.fireConnectionDidOpenEvent();
         }
     }
 }

@@ -21,12 +21,14 @@ package ch.cyberduck.core.davs;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
-import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
 
 import org.apache.commons.httpclient.HttpClient;
 
 import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
 
@@ -47,6 +49,12 @@ public class DAVSSession extends DAVSession implements SSLSession {
 
     protected DAVSSession(Host h) {
         super(h);
+        if(Preferences.instance().getBoolean("webdav.tls.acceptAnyCertificate")) {
+            this.setTrustManager(new IgnoreX509TrustManager());
+        }
+        else {
+            this.setTrustManager(new KeychainX509TrustManager());
+        }
     }
 
     protected void configure() throws IOException {
@@ -60,11 +68,19 @@ public class DAVSSession extends DAVSession implements SSLSession {
         }
     }
 
+    public void connect() throws IOException {
+        try {
+            super.connect();
+        }
+        catch(SSLHandshakeException e) {
+            throw new ConnectionCanceledException(e.getMessage());
+        }
+    }
+
     /**
      * A trust manager accepting any certificate by default
      */
-    private X509TrustManager trustManager
-            = new IgnoreX509TrustManager();
+    private X509TrustManager trustManager;
 
     /**
      * @return

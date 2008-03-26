@@ -51,19 +51,11 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
 
     public void checkClientTrusted(X509Certificate[] x509Certificates, String authType)
             throws CertificateException {
-        if (Preferences.instance().getBoolean("ftp.tls.acceptAnyCertificate")) {
-            log.warn("Certificate not verified!");
-            return;
-        }
         this.standardTrustManager.checkClientTrusted(x509Certificates, authType);
     }
 
     public void checkServerTrusted(X509Certificate[] x509Certificates, String authType)
             throws CertificateException {
-        if (Preferences.instance().getBoolean("ftp.tls.acceptAnyCertificate")) {
-            log.warn("Certificate not verified!");
-            return;
-        }
         if ((x509Certificates != null)) {
             log.info("Server certificate chain:");
             for (int i = 0; i < x509Certificates.length; i++) {
