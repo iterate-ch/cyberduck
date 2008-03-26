@@ -104,7 +104,7 @@ public class CDGotoController extends CDSheetController {
     protected void gotoFolder(final Path workdir, final String filename) {
         final CDBrowserController c = (CDBrowserController) parent;
         c.background(new BackgroundAction() {
-            final Path dir = (Path) workdir.clone();
+            final Path dir = PathFactory.createPath(workdir.getSession(), workdir.getAsDictionary());
 
             public void run() {
                 if(filename.charAt(0) != '/') {

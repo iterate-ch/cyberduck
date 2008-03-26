@@ -97,7 +97,8 @@ public abstract class CDBrowserTableDataSource extends CDController {
                             }
                         }
                     });
-                } else {
+                }
+                else {
                     return path.childs(controller.getComparator(), controller.getFileFilter());
                 }
             }
@@ -263,7 +264,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         Transfer q = TransferFactory.create(dict, controller.getSession());
                         for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                             final Path source = (Path) iter.next();
-                            final Path copy = (Path) source.clone();
+                            final Path copy = PathFactory.createPath(source.getSession(), source.getAsDictionary());
                             copy.setPath(destination.getAbsolute(), source.getName());
                             files.put(source, copy);
                         }
@@ -335,7 +336,8 @@ public abstract class CDBrowserTableDataSource extends CDController {
         if(destination.equals(controller.workdir())) {
             log.debug("setDropRowAndDropOperation:-1");
             view.setDropRowAndDropOperation(-1, NSTableView.DropOn);
-        } else if(destination.attributes.isDirectory()) {
+        }
+        else if(destination.attributes.isDirectory()) {
             log.debug("setDropRowAndDropOperation:" + row);
             view.setDropRowAndDropOperation(row, NSTableView.DropOn);
         }
@@ -358,16 +360,19 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 final List roots = new Collection();
                 final Session session = controller.getTransferSession();
                 for(int i = 0; i < items.count(); i++) {
-                    promisedDragPaths[i] = (Path) ((Path) items.objectAtIndex(i)).clone(session);
+                    promisedDragPaths[i] = PathFactory.createPath(session, ((Path) items.objectAtIndex(i)).getAsDictionary());
                     if(promisedDragPaths[i].attributes.isFile()) {
                         if(promisedDragPaths[i].getExtension() != null) {
                             fileTypes.addObject(promisedDragPaths[i].getExtension());
-                        } else {
+                        }
+                        else {
                             fileTypes.addObject(NSPathUtilities.FileTypeRegular);
                         }
-                    } else if(promisedDragPaths[i].attributes.isDirectory()) {
+                    }
+                    else if(promisedDragPaths[i].attributes.isDirectory()) {
                         fileTypes.addObject("'fldr'");
-                    } else {
+                    }
+                    else {
                         fileTypes.addObject(NSPathUtilities.FileTypeUnknown);
                     }
                     roots.add(promisedDragPaths[i]);

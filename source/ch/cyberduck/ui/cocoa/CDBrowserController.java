@@ -2763,7 +2763,7 @@ public class CDBrowserController extends CDWindowController
             final Session session = this.getTransferSession();
             final List roots = new Collection();
             for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
-                Path path = (Path) ((Path) i.next()).clone(session);
+                Path path = PathFactory.createPath(session, ((Path) i.next()).getAsDictionary());
                 path.getLocal().setPath(sheet.filename(), path.getLocal().getName());
                 roots.add(path);
             }
@@ -2778,7 +2778,7 @@ public class CDBrowserController extends CDWindowController
     public void downloadAsButtonClicked(final Object sender) {
         final Session session = this.getTransferSession();
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
-            Path path = (Path) ((Path) i.next()).clone(session);
+            Path path = PathFactory.createPath(session, ((Path) i.next()).getAsDictionary());
             NSSavePanel panel = NSSavePanel.savePanel();
             panel.setMessage(NSBundle.localizedString("Download the selected file to...", ""));
             panel.setNameFieldLabel(NSBundle.localizedString("Download As:", ""));
@@ -2843,7 +2843,7 @@ public class CDBrowserController extends CDWindowController
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
             final Path selection = (Path) contextInfo;
             if(sheet.filenames().count() > 0) {
-                Path root = (Path) selection.clone(this.getTransferSession());
+                Path root = PathFactory.createPath(this.getTransferSession(), selection.getAsDictionary());
                 root.getLocal().setPath((String) sheet.filenames().lastObject());
                 final Transfer q = new SyncTransfer(root);
                 this.transfer(q, selection);
@@ -2856,7 +2856,7 @@ public class CDBrowserController extends CDWindowController
         final Session session = this.getTransferSession();
         final List roots = new Collection();
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
-            Path path = (Path) ((Path) i.next()).clone(session);
+            Path path = PathFactory.createPath(session, ((Path) i.next()).getAsDictionary());
             roots.add(path);
         }
         final Transfer q = new DownloadTransfer(roots);

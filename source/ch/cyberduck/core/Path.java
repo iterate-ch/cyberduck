@@ -116,7 +116,7 @@ public abstract class Path extends AbstractPath {
         }
     }
 
-    public NSDictionary getAsDictionary() {
+    public NSMutableDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
         dict.setObjectForKey(this.getAbsolute(), REMOTE);
         dict.setObjectForKey(this.getLocal().toString(), LOCAL);
@@ -125,16 +125,6 @@ public abstract class Path extends AbstractPath {
         }
         dict.setObjectForKey(((PathAttributes) this.attributes).getAsDictionary(), ATTRIBUTES);
         return dict;
-    }
-
-    public Object clone() {
-        return this.clone(this.getSession());
-    }
-
-    public Object clone(Session session) {
-        Path copy = PathFactory.createPath(session, this.getAsDictionary());
-        copy.attributes = (Attributes) ((PathAttributes) this.attributes).clone();
-        return copy;
     }
 
     {

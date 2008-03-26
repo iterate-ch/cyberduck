@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
 
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSImageView;
@@ -81,7 +82,7 @@ public class CDDuplicateFileController extends CDFileController {
     }
 
     private void duplicateFile(final Path selected, final String filename, final boolean edit) {
-        final Path duplicate = (Path)selected.clone();
+        final Path duplicate = PathFactory.createPath(selected.getSession(), selected.getAsDictionary());
         duplicate.setPath(duplicate.getParent().getAbsolute(), filename);
         ((CDBrowserController)parent).duplicatePath(selected, duplicate, edit);
     }

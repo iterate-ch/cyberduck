@@ -67,10 +67,11 @@ public abstract class Editor extends CDController {
     }
 
     /**
-     *
+     * 
+     * @param path
      */
     public void open(Path path) {
-        edited = (Path) path.clone();
+        edited = PathFactory.createPath(path.getSession(), path.getAsDictionary());
 
         Local folder = new Local(new File(TEMPORARY_DIRECTORY.getAbsolute(),
                 edited.getParent().getAbsolute()));
