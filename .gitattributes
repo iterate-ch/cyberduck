@@ -326,8 +326,6 @@ ca.lproj/Bookmark.nib/keyedobjects.nib -text
 ca.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 ca.lproj/Browser.nib/keyedobjects.nib -text
 ca.lproj/Browser.strings -text svneol=unset#text/utf-16
-ca.lproj/Certificate.nib/keyedobjects.nib -text
-ca.lproj/Certificate.strings -text svneol=unset#text/utf-16
 ca.lproj/Command.nib/keyedobjects.nib -text
 ca.lproj/Command.strings -text svneol=unset#text/utf-16
 ca.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -380,8 +378,6 @@ cs.lproj/Bookmark.nib/keyedobjects.nib -text
 cs.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 cs.lproj/Browser.nib/keyedobjects.nib -text
 cs.lproj/Browser.strings -text svneol=unset#text/utf-16
-cs.lproj/Certificate.nib/keyedobjects.nib -text
-cs.lproj/Certificate.strings -text svneol=unset#text/utf-16
 cs.lproj/Command.nib/keyedobjects.nib -text
 cs.lproj/Command.strings -text svneol=unset#text/utf-16
 cs.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -434,8 +430,6 @@ cy.lproj/Bookmark.nib/keyedobjects.nib -text
 cy.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 cy.lproj/Browser.nib/keyedobjects.nib -text
 cy.lproj/Browser.strings -text svneol=unset#text/utf-16
-cy.lproj/Certificate.nib/keyedobjects.nib -text
-cy.lproj/Certificate.strings -text svneol=unset#text/utf-16
 cy.lproj/Command.nib/keyedobjects.nib -text
 cy.lproj/Command.strings -text svneol=unset#text/utf-16
 cy.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -492,8 +486,6 @@ da.lproj/Bookmark.nib/keyedobjects.nib -text
 da.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 da.lproj/Browser.nib/keyedobjects.nib -text
 da.lproj/Browser.strings -text svneol=unset#text/utf-16
-da.lproj/Certificate.nib/keyedobjects.nib -text
-da.lproj/Certificate.strings -text svneol=unset#text/utf-16
 da.lproj/Command.nib/keyedobjects.nib -text
 da.lproj/Command.strings -text svneol=unset#text/utf-16
 da.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -546,8 +538,6 @@ de.lproj/Bookmark.nib/keyedobjects.nib -text
 de.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 de.lproj/Browser.nib/keyedobjects.nib -text
 de.lproj/Browser.strings -text svneol=unset#text/utf-16
-de.lproj/Certificate.nib/keyedobjects.nib -text
-de.lproj/Certificate.strings -text svneol=unset#text/utf-16
 de.lproj/Command.nib/keyedobjects.nib -text
 de.lproj/Command.strings -text svneol=unset#text/utf-16
 de.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -600,8 +590,6 @@ en.lproj/Bookmark.nib/keyedobjects.nib -text
 en.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 en.lproj/Browser.nib/keyedobjects.nib -text
 en.lproj/Browser.strings -text svneol=unset#text/utf-16
-en.lproj/Certificate.nib/keyedobjects.nib -text
-en.lproj/Certificate.strings -text svneol=unset#text/utf-16
 en.lproj/Command.nib/keyedobjects.nib -text
 en.lproj/Command.strings -text svneol=unset#text/utf-16
 en.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -663,8 +651,6 @@ es.lproj/Bookmark.nib/keyedobjects.nib -text
 es.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 es.lproj/Browser.nib/keyedobjects.nib -text
 es.lproj/Browser.strings -text svneol=unset#text/utf-16
-es.lproj/Certificate.nib/keyedobjects.nib -text
-es.lproj/Certificate.strings -text svneol=unset#text/utf-16
 es.lproj/Command.nib/keyedobjects.nib -text
 es.lproj/Command.strings -text svneol=unset#text/utf-16
 es.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -717,8 +703,6 @@ fi.lproj/Bookmark.nib/keyedobjects.nib -text
 fi.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 fi.lproj/Browser.nib/keyedobjects.nib -text
 fi.lproj/Browser.strings -text svneol=unset#text/utf-16
-fi.lproj/Certificate.nib/keyedobjects.nib -text
-fi.lproj/Certificate.strings -text svneol=unset#text/utf-16
 fi.lproj/Command.nib/keyedobjects.nib -text
 fi.lproj/Command.strings -text svneol=unset#text/utf-16
 fi.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -771,8 +755,6 @@ fr.lproj/Bookmark.nib/keyedobjects.nib -text
 fr.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 fr.lproj/Browser.nib/keyedobjects.nib -text
 fr.lproj/Browser.strings -text svneol=unset#text/utf-16
-fr.lproj/Certificate.nib/keyedobjects.nib -text
-fr.lproj/Certificate.strings -text svneol=unset#text/utf-16
 fr.lproj/Command.nib/keyedobjects.nib -text
 fr.lproj/Command.strings -text svneol=unset#text/utf-16
 fr.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -831,10 +813,6 @@ he.lproj/Browser.nib/classes.nib -text
 he.lproj/Browser.nib/info.nib -text
 he.lproj/Browser.nib/keyedobjects.nib -text
 he.lproj/Browser.strings -text svneol=unset#text/utf-16
-he.lproj/Certificate.nib/classes.nib -text
-he.lproj/Certificate.nib/info.nib -text
-he.lproj/Certificate.nib/keyedobjects.nib -text
-he.lproj/Certificate.strings -text svneol=unset#text/utf-16
 he.lproj/Command.nib/classes.nib -text
 he.lproj/Command.nib/info.nib -text
 he.lproj/Command.nib/keyedobjects.nib -text
@@ -913,8 +891,6 @@ hu.lproj/Bookmark.nib/keyedobjects.nib -text
 hu.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 hu.lproj/Browser.nib/keyedobjects.nib -text
 hu.lproj/Browser.strings -text svneol=unset#text/utf-16
-hu.lproj/Certificate.nib/keyedobjects.nib -text
-hu.lproj/Certificate.strings -text svneol=unset#text/utf-16
 hu.lproj/Command.nib/keyedobjects.nib -text
 hu.lproj/Command.strings -text svneol=unset#text/utf-16
 hu.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -967,8 +943,6 @@ id.lproj/Bookmark.nib/keyedobjects.nib -text
 id.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 id.lproj/Browser.nib/keyedobjects.nib -text
 id.lproj/Browser.strings -text svneol=unset#text/utf-16
-id.lproj/Certificate.nib/keyedobjects.nib -text
-id.lproj/Certificate.strings -text svneol=unset#text/utf-16
 id.lproj/Command.nib/keyedobjects.nib -text
 id.lproj/Command.strings -text svneol=unset#text/utf-16
 id.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -1120,8 +1094,6 @@ it.lproj/Bookmark.nib/keyedobjects.nib -text
 it.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 it.lproj/Browser.nib/keyedobjects.nib -text
 it.lproj/Browser.strings -text svneol=unset#text/utf-16
-it.lproj/Certificate.nib/keyedobjects.nib -text
-it.lproj/Certificate.strings -text svneol=unset#text/utf-16
 it.lproj/Command.nib/keyedobjects.nib -text
 it.lproj/Command.strings -text svneol=unset#text/utf-16
 it.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -1174,8 +1146,6 @@ ja.lproj/Bookmark.nib/keyedobjects.nib -text
 ja.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 ja.lproj/Browser.nib/keyedobjects.nib -text
 ja.lproj/Browser.strings -text svneol=unset#text/utf-16
-ja.lproj/Certificate.nib/keyedobjects.nib -text
-ja.lproj/Certificate.strings -text svneol=unset#text/utf-16
 ja.lproj/Command.nib/keyedobjects.nib -text
 ja.lproj/Command.strings -text svneol=unset#text/utf-16
 ja.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -1229,8 +1199,6 @@ ko.lproj/Bookmark.nib/keyedobjects.nib -text
 ko.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 ko.lproj/Browser.nib/keyedobjects.nib -text
 ko.lproj/Browser.strings -text svneol=unset#text/utf-16
-ko.lproj/Certificate.nib/keyedobjects.nib -text
-ko.lproj/Certificate.strings -text svneol=unset#text/utf-16
 ko.lproj/Command.nib/keyedobjects.nib -text
 ko.lproj/Command.strings -text svneol=unset#text/utf-16
 ko.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -1296,8 +1264,6 @@ nl.lproj/Bookmark.nib/keyedobjects.nib -text
 nl.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 nl.lproj/Browser.nib/keyedobjects.nib -text
 nl.lproj/Browser.strings -text svneol=unset#text/utf-16
-nl.lproj/Certificate.nib/keyedobjects.nib -text
-nl.lproj/Certificate.strings -text svneol=unset#text/utf-16
 nl.lproj/Command.nib/keyedobjects.nib -text
 nl.lproj/Command.strings -text svneol=unset#text/utf-16
 nl.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -1350,8 +1316,6 @@ no.lproj/Bookmark.nib/keyedobjects.nib -text
 no.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 no.lproj/Browser.nib/keyedobjects.nib -text
 no.lproj/Browser.strings -text svneol=unset#text/utf-16
-no.lproj/Certificate.nib/keyedobjects.nib -text
-no.lproj/Certificate.strings -text svneol=unset#text/utf-16
 no.lproj/Command.nib/keyedobjects.nib -text
 no.lproj/Command.strings -text svneol=unset#text/utf-16
 no.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -1404,8 +1368,6 @@ pl.lproj/Bookmark.nib/keyedobjects.nib -text
 pl.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 pl.lproj/Browser.nib/keyedobjects.nib -text
 pl.lproj/Browser.strings -text svneol=unset#text/utf-16
-pl.lproj/Certificate.nib/keyedobjects.nib -text
-pl.lproj/Certificate.strings -text svneol=unset#text/utf-16
 pl.lproj/Command.nib/keyedobjects.nib -text
 pl.lproj/Command.strings -text svneol=unset#text/utf-16
 pl.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -1463,10 +1425,6 @@ pt_BR.lproj/Browser.nib/classes.nib -text
 pt_BR.lproj/Browser.nib/info.nib -text
 pt_BR.lproj/Browser.nib/keyedobjects.nib -text
 pt_BR.lproj/Browser.strings -text svneol=unset#text/utf-16
-pt_BR.lproj/Certificate.nib/classes.nib -text
-pt_BR.lproj/Certificate.nib/info.nib -text
-pt_BR.lproj/Certificate.nib/keyedobjects.nib -text
-pt_BR.lproj/Certificate.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Command.nib/classes.nib -text
 pt_BR.lproj/Command.nib/info.nib -text
 pt_BR.lproj/Command.nib/keyedobjects.nib -text
@@ -1548,8 +1506,6 @@ pt_PT.lproj/Bookmark.nib/keyedobjects.nib -text
 pt_PT.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Browser.nib/keyedobjects.nib -text
 pt_PT.lproj/Browser.strings -text svneol=unset#text/utf-16
-pt_PT.lproj/Certificate.nib/keyedobjects.nib -text
-pt_PT.lproj/Certificate.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Command.nib/keyedobjects.nib -text
 pt_PT.lproj/Command.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -1602,8 +1558,6 @@ ru.lproj/Bookmark.nib/keyedobjects.nib -text
 ru.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 ru.lproj/Browser.nib/keyedobjects.nib -text
 ru.lproj/Browser.strings -text svneol=unset#text/utf-16
-ru.lproj/Certificate.nib/keyedobjects.nib -text
-ru.lproj/Certificate.strings -text svneol=unset#text/utf-16
 ru.lproj/Command.nib/keyedobjects.nib -text
 ru.lproj/Command.strings -text svneol=unset#text/utf-16
 ru.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -1656,8 +1610,6 @@ sk.lproj/Bookmark.nib/keyedobjects.nib -text
 sk.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 sk.lproj/Browser.nib/keyedobjects.nib -text
 sk.lproj/Browser.strings -text svneol=unset#text/utf-16
-sk.lproj/Certificate.nib/keyedobjects.nib -text
-sk.lproj/Certificate.strings -text svneol=unset#text/utf-16
 sk.lproj/Command.nib/keyedobjects.nib -text
 sk.lproj/Command.strings -text svneol=unset#text/utf-16
 sk.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -1760,8 +1712,6 @@ sv.lproj/Bookmark.nib/keyedobjects.nib -text
 sv.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 sv.lproj/Browser.nib/keyedobjects.nib -text
 sv.lproj/Browser.strings -text svneol=unset#text/utf-16
-sv.lproj/Certificate.nib/keyedobjects.nib -text
-sv.lproj/Certificate.strings -text svneol=unset#text/utf-16
 sv.lproj/Command.nib/keyedobjects.nib -text
 sv.lproj/Command.strings -text svneol=unset#text/utf-16
 sv.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -1823,10 +1773,6 @@ th.lproj/Browser.nib/classes.nib -text
 th.lproj/Browser.nib/info.nib -text
 th.lproj/Browser.nib/keyedobjects.nib -text
 th.lproj/Browser.strings -text svneol=unset#text/utf-16
-th.lproj/Certificate.nib/classes.nib -text
-th.lproj/Certificate.nib/info.nib -text
-th.lproj/Certificate.nib/keyedobjects.nib -text
-th.lproj/Certificate.strings -text svneol=unset#text/utf-16
 th.lproj/Command.nib/classes.nib -text
 th.lproj/Command.nib/info.nib -text
 th.lproj/Command.nib/keyedobjects.nib -text
@@ -1909,10 +1855,6 @@ tr.lproj/Browser.nib/classes.nib -text
 tr.lproj/Browser.nib/info.nib -text
 tr.lproj/Browser.nib/keyedobjects.nib -text
 tr.lproj/Browser.strings -text svneol=unset#text/utf-16
-tr.lproj/Certificate.nib/classes.nib -text
-tr.lproj/Certificate.nib/info.nib -text
-tr.lproj/Certificate.nib/keyedobjects.nib -text
-tr.lproj/Certificate.strings -text svneol=unset#text/utf-16
 tr.lproj/Command.nib/classes.nib -text
 tr.lproj/Command.nib/info.nib -text
 tr.lproj/Command.nib/keyedobjects.nib -text
@@ -2109,8 +2051,6 @@ zh_CN.lproj/Bookmark.nib/keyedobjects.nib -text
 zh_CN.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Browser.nib/keyedobjects.nib -text
 zh_CN.lproj/Browser.strings -text svneol=unset#text/utf-16
-zh_CN.lproj/Certificate.nib/keyedobjects.nib -text
-zh_CN.lproj/Certificate.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Command.nib/keyedobjects.nib -text
 zh_CN.lproj/Command.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Configuration.strings -text svneol=unset#text/utf-16
@@ -2163,8 +2103,6 @@ zh_TW.lproj/Bookmark.nib/keyedobjects.nib -text
 zh_TW.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Browser.nib/keyedobjects.nib -text
 zh_TW.lproj/Browser.strings -text svneol=unset#text/utf-16
-zh_TW.lproj/Certificate.nib/keyedobjects.nib -text
-zh_TW.lproj/Certificate.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Command.nib/keyedobjects.nib -text
 zh_TW.lproj/Command.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Configuration.strings -text svneol=unset#text/utf-16
