@@ -197,4 +197,9 @@ public class HostCollection extends Collection {
             this.sort();
         }
     }
+
+    public void collectionItemChanged(Object item) {
+        this.save();
+        super.collectionItemChanged(item);
+    }
 }
