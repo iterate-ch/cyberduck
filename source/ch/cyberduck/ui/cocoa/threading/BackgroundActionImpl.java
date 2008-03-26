@@ -62,6 +62,7 @@ public abstract class BackgroundActionImpl extends CDController
         // Do not report an error when the action was canceled intentionally
         Throwable cause = exception.getCause();
         if(cause instanceof ConnectionCanceledException) {
+            log.warn(cause.getMessage());
             // Do not report as failed if instanceof ConnectionCanceledException
             return;
         }
