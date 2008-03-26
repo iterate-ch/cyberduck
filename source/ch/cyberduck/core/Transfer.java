@@ -135,7 +135,12 @@ public abstract class Transfer extends NSObject {
             NSArray r = (NSArray) rootsObj;
             roots = new Collection();
             for(int i = 0; i < r.count(); i++) {
-                roots.add(PathFactory.createPath(s, (NSDictionary) r.objectAtIndex(i)));
+                final NSDictionary rootDict = (NSDictionary) r.objectAtIndex(i);
+                final Path root = PathFactory.createPath(s, rootDict);
+                if(rootDict.objectForKey("Complete") != null) {
+                    root.getStatus().setComplete(true);
+                }
+                roots.add(root);
             }
         }
         Object sizeObj = dict.objectForKey("Size");
@@ -158,13 +163,21 @@ public abstract class Transfer extends NSObject {
         dict.setObjectForKey(this.getHost().getAsDictionary(), "Host");
         NSMutableArray r = new NSMutableArray();
         for(Iterator iter = this.roots.iterator(); iter.hasNext();) {
-            r.addObject(((Path) iter.next()).getAsDictionary());
+            final Path root = (Path) iter.next();
+            final NSMutableDictionary rootDict = root.getAsDictionary();
+            if(root.getStatus().isComplete()) {
+                rootDict.setObjectForKey(String.valueOf(true), "Complete");
+            }
+            r.addObject(rootDict);
         }
         dict.setObjectForKey(r, "Roots");
-        dict.setObjectForKey("" + this.getSize(), "Size");
-        dict.setObjectForKey("" + this.getTransferred(), "Current");
+        dict.setObjectForKey(String.valueOf(this.getSize()), "Size");
+        dict.setObjectForKey(String.valueOf(this.getTransferred()), "Current");
+        if(this.getSize() == this.getTransferred()) {
+
+        }
         if(bandwidth != null) {
-            dict.setObjectForKey("" + bandwidth.getRate(), "Bandwidth");
+            dict.setObjectForKey(String.valueOf(bandwidth.getRate()), "Bandwidth");
         }
         return dict;
     }
@@ -467,10 +480,16 @@ public abstract class Transfer extends NSObject {
         }
 
         if(p.attributes.isDirectory()) {
+            boolean flag = false;
             for(Iterator iter = this.childs(p).iterator(); iter.hasNext();) {
-                Path child = (Path) iter.next();
+                final Path child = (Path) iter.next();
                 this.transfer(child, filter);
-
+                if(!child.getStatus().isComplete()) {
+                    flag = true;
+                }
+            }
+            if(!flag) {
+                p.getStatus().setComplete(true);
             }
         }
 
@@ -736,7 +755,12 @@ public abstract class Transfer extends NSObject {
                 return false;
             }
         }
-        return this.getSize() == this.getTransferred();
+        for(Iterator iter = this.roots.iterator(); iter.hasNext(); ) {
+            if(!((Path)iter.next()).getStatus().isComplete()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
