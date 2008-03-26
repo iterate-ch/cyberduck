@@ -25,17 +25,16 @@ import ch.cyberduck.core.Keychain;
 
 import org.apache.log4j.Logger;
 
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.*;
+import javax.net.ssl.X509TrustManager;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * @version $Id$
  */
-public class KeychainX509TrustManager extends AbstractX509TrustManager {
+public class KeychainX509TrustManager implements X509TrustManager {
     protected static Logger log = Logger.getLogger(KeychainX509TrustManager.class);
 
     /**
@@ -45,15 +44,6 @@ public class KeychainX509TrustManager extends AbstractX509TrustManager {
 
     public KeychainX509TrustManager() {
         this.acceptedCertificates = new Collection();
-        try {
-            this.init(KeyStore.getInstance(KeyStore.getDefaultType()));
-        }
-        catch(NoSuchAlgorithmException e) {
-            log.error(e.getMessage());
-        }
-        catch(KeyStoreException e) {
-            log.error(e.getMessage());
-        }
     }
 
     private void acceptCertificate(final X509Certificate[] certs) {
