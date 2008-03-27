@@ -58,13 +58,6 @@ public class S3Session extends Session {
         super(h);
     }
 
-    public boolean isSecure() {
-        if(this.isConnected()) {
-            return S3.isHttpsOnly();
-        }
-        return false;
-    }
-
     public String getSecurityInformation() {
         try {
             return this.host.getIp();

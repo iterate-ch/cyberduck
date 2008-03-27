@@ -63,10 +63,6 @@ public class FTPSSession extends FTPSession implements SSLSession {
         }
     }
 
-    public boolean isSecure() {
-        return this.isConnected();
-    }
-
     /**
      * A trust manager accepting any certificate by default
      */

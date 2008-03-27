@@ -56,13 +56,6 @@ public class DAVSession extends Session {
         super(h);
     }
 
-    public boolean isSecure() {
-        if(this.isConnected()) {
-            return this.host.getProtocol().isSecure();
-        }
-        return false;
-    }
-
     public String getSecurityInformation() {
         try {
             return this.host.getIp();

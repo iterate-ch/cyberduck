@@ -59,10 +59,10 @@ public class SFTPSession extends Session {
     }
 
     public boolean isSecure() {
-        if(null == SSH) {
-            return false;
+        if(super.isSecure()) {
+            return SSH.isAuthenticationComplete();
         }
-        return SSH.isAuthenticationComplete();
+        return false;
     }
 
     public String getSecurityInformation() {

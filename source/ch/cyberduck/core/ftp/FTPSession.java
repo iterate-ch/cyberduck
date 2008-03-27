@@ -64,10 +64,6 @@ public class FTPSession extends Session {
         super(h);
     }
 
-    public boolean isSecure() {
-        return false;
-    }
-
     public String getSecurityInformation() {
         String syst = this.getIdentification();
         try {

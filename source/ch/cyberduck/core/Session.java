@@ -115,7 +115,12 @@ public abstract class Session extends NSObject {
     /**
      * @return true if the control channel is either tunneled using TLS or SSH
      */
-    public abstract boolean isSecure();
+    public boolean isSecure() {
+        if(this.isConnected()) {
+            return this.host.getProtocol().isSecure();
+        }
+        return false;
+    }
 
     /**
      * @return
