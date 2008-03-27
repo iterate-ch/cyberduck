@@ -2,6 +2,10 @@ package ch.cyberduck.core.ssl;
 
 import org.apache.log4j.Logger;
 
+import java.security.cert.X509Certificate;
+import java.util.List;
+import java.util.Arrays;
+
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -26,13 +30,25 @@ import org.apache.log4j.Logger;
 public class IgnoreX509TrustManager extends AbstractX509TrustManager {
     private static Logger log = Logger.getLogger(IgnoreX509TrustManager.class);
 
+    protected List acceptedCertificates;
+
     public void checkClientTrusted(java.security.cert.X509Certificate[] x509Certificates, java.lang.String string)
             throws java.security.cert.CertificateException {
         log.warn("Certificate not verified!");
+        acceptedCertificates.addAll(Arrays.asList(x509Certificates));
     }
 
     public void checkServerTrusted(java.security.cert.X509Certificate[] x509Certificates, java.lang.String string)
             throws java.security.cert.CertificateException {
         log.warn("Certificate not verified!");
+        acceptedCertificates.addAll(Arrays.asList(x509Certificates));
+    }
+
+    /**
+     * @return All accepted certificates
+     */
+    public X509Certificate[] getAcceptedIssuers() {
+        return (X509Certificate[]) this.acceptedCertificates.toArray(
+                new X509Certificate[this.acceptedCertificates.size()]);
     }
 }
