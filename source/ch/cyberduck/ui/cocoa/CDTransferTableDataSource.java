@@ -168,16 +168,11 @@ public class CDTransferTableDataSource extends CDController {
         }
         if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
             String droppedText = info.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);// get the data from paste board
-            if(droppedText != null) {
+            if(StringUtils.hasText(droppedText)) {
                 log.info("NSPasteboard.StringPboardType:" + droppedText);
-                try {
-                    CDDownloadController c = new CDDownloadController(CDTransferController.instance(), Host.parse(droppedText).getDefaultPath());
-                    c.beginSheet();
-                    return true;
-                }
-                catch(java.net.MalformedURLException e) {
-                    log.error(e.getMessage());
-                }
+                CDDownloadController c = new CDDownloadController(CDTransferController.instance(), droppedText);
+                c.beginSheet();
+                return true;
             }
             return false;
         }
