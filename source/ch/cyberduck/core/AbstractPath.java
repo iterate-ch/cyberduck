@@ -140,6 +140,9 @@ public abstract class AbstractPath extends NSObject {
      * @license http://www.apache.org/licenses/LICENSE-2.0
      */
     public static String normalize(final String path, final boolean absolute) {
+        if(null == path) {
+            return DELIMITER;
+        }
         String normalized = path;
         if(Preferences.instance().getBoolean("path.normalize")) {
             if(absolute) {
