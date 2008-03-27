@@ -38,8 +38,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
@@ -1114,6 +1113,14 @@ public class CDBrowserController extends CDWindowController
         }
 
         public void selectionDidChange(NSNotification notification) {
+            final Path p = getSelectedPath();
+            if(p != null) {
+                if(null != p && p.attributes.isFile()) {
+                    String editorBundleIdentifier = EditorFactory.editorBundleIdentifierForFile(
+                            p.getLocal());
+                    EditorFactory.setCurrentEditor(editorBundleIdentifier);
+                }
+            }
             if(Preferences.instance().getBoolean("browser.info.isInspector")) {
                 if(inspector != null && inspector.window() != null && inspector.window().isVisible()) {
                     final List selected = getSelectedPaths();
@@ -2209,59 +2216,20 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void securityLabelClicked(final Object sender) {
-        CDWindowController c = new CDWindowController() {
-            protected String getBundleName() {
-                return "Security";
+        if(session instanceof SSLSession) {
+            final X509Certificate[] certificates = ((SSLSession) this.session).getTrustManager().getAcceptedIssuers();
+            if(0 == certificates.length) {
+                log.warn("No accepted certificates found");
+                return;
             }
-
-            public void awakeFromNib() {
-                this.window().setTitle(CDBrowserController.this.window().title());
-                this.window().center();
-                this.window().makeKeyAndOrderFront(null);
+            final X509Certificate cert = certificates[0];
+            try {
+                Keychain.instance().displayCertificate(cert.getEncoded());
             }
-
-            private NSTextView textView; // IBOutlet
-
-            public void setTextView(NSTextView textView) {
-                this.textView = textView;
-                this.textView.textStorage().appendAttributedString(
-                        new NSAttributedString(session.getSecurityInformation(), FIXED_WITH_FONT_ATTRIBUTES));
+            catch(CertificateEncodingException e) {
+                log.error(e.getMessage());
             }
-
-            private NSButton alertIcon; // IBOutlet
-
-            public void setAlertIcon(NSButton alertIcon) {
-                this.alertIcon = alertIcon;
-                this.alertIcon.setHidden(true);
-            }
-
-            private NSTextField alertLabel; // IBOutlet
-
-            public void setAlertLabel(NSTextField alertLabel) {
-                this.alertLabel = alertLabel;
-                if(session instanceof SSLSession) {
-                    X509Certificate[] certificates = ((SSLSession) session).getTrustManager().getAcceptedIssuers();
-                    for(int i = 0; i < certificates.length; i++) {
-                        try {
-                            certificates[i].checkValidity();
-                        }
-                        catch(CertificateNotYetValidException e) {
-                            log.warn(e.getMessage());
-                            this.alertIcon.setHidden(false);
-                            this.alertLabel.setStringValue(NSBundle.localizedString("Certificate not yet valid", "")
-                                    + ": " + e.getMessage());
-                        }
-                        catch(CertificateExpiredException e) {
-                            log.warn(e.getMessage());
-                            this.alertIcon.setHidden(false);
-                            this.alertLabel.setStringValue(NSBundle.localizedString("Certificate expired", "")
-                                    + ": " + e.getMessage());
-                        }
-                    }
-                }
-            }
-        };
-        c.loadBundle();
+        }
     }
 
     // ----------------------------------------------------------
@@ -3582,7 +3550,7 @@ public class CDBrowserController extends CDWindowController
                         }
                         securityLabel.setImage(session.isSecure() ? NSImage.imageNamed("locked.tiff")
                                 : NSImage.imageNamed("unlocked.tiff"));
-                        securityLabel.setEnabled(true);
+                        securityLabel.setEnabled(session.isSecure());
                     }
                 });
             }
@@ -3657,22 +3625,6 @@ public class CDBrowserController extends CDWindowController
         }
         final Host host = h;
         log.debug("mount:" + host);
-        if(this.isMounted()) {
-            if(this.session.getHost().toURL().equals(host.toURL())) {
-                // The host is already mounted
-                this.background(new BackgroundAction() {
-                    public void run() {
-                        // Change to its default path
-                        setWorkdir(session.mount(host.getDefaultPath()));
-                    }
-
-                    public void cleanup() {
-                        ;
-                    }
-                });
-                return;
-            }
-        }
         this.unmount(new Runnable() {
             public void run() {
                 // The browser has no session, we are allowed to proceed
@@ -4049,24 +4001,22 @@ public class CDBrowserController extends CDWindowController
         }
         if(identifier.equals("editButtonClicked:")) {
             if(this.isMounted() && this.getSelectionCount() > 0) {
-                String editorPath = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                        Preferences.instance().getProperty("editor.bundleIdentifier"));
-                if(editorPath != null) {
-                    if(!Preferences.instance().getBoolean("editor.kqueue.enable")) {
-                        for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
-                            final Path selected = (Path) i.next();
-                            if(!this.isEditable(selected)) {
-                                return false;
-                            }
-                        }
-                    }
-                    return true;
+                String editor = EditorFactory.getSelectedEditor();
+                if(null == editor) {
+                    return false;
                 }
+                for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
+                    final Path selected = (Path) i.next();
+                    if(!this.isEditable(selected)) {
+                        return false;
+                    }
+                }
+                return true;
             }
             return false;
         }
         if(identifier.equals("editMenuClicked:")) {
-            if(this.isMounted()) {
+            if(this.isMounted() && this.getSelectionCount() > 0) {
                 for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
                     final Path selected = (Path) i.next();
                     if(!this.isEditable(selected)) {
@@ -4163,23 +4113,16 @@ public class CDBrowserController extends CDWindowController
     public boolean validateToolbarItem(NSToolbarItem item) {
         String identifier = item.action().name();
         if(identifier.equals("editButtonClicked:")) {
-            final String editorBundleIdentifier;
-            final Path selected = this.getSelectedPath();
-            if(null != selected && selected.attributes.isFile()) {
-                editorBundleIdentifier = EditorFactory.editorBundleIdentifierForFile(
-                        selected.getLocal());
-            }
-            else {
-                editorBundleIdentifier = Preferences.instance().getProperty("editor.bundleIdentifier");
-            }
-            if(null == editorBundleIdentifier) {
-                item.setImage(NSImage.imageNamed("pencil.tiff"));
-            }
-            else {
-                Preferences.instance().setProperty("editor.bundleIdentifier.selected", editorBundleIdentifier);
-                item.setImage(NSWorkspace.sharedWorkspace().iconForFile(
-                        NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(editorBundleIdentifier))
-                );
+            if(this.getSelectionCount() > 0) {
+                final String editorBundleIdentifier = EditorFactory.getSelectedEditor();
+                if(null == editorBundleIdentifier) {
+                    item.setImage(NSImage.imageNamed("pencil.tiff"));
+                }
+                else {
+                    item.setImage(NSWorkspace.sharedWorkspace().iconForFile(
+                            NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(editorBundleIdentifier))
+                    );
+                }
             }
         }
         if(identifier.equals("disconnectButtonClicked:")) {

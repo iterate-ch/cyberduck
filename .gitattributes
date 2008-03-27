@@ -630,9 +630,6 @@ en.lproj/Prompt.nib/data.dependency -text
 en.lproj/Prompt.nib/keyedobjects.nib -text
 en.lproj/Prompt.strings -text svneol=unset#text/utf-16
 en.lproj/S3.strings -text
-en.lproj/Security.nib/classes.nib -text
-en.lproj/Security.nib/info.nib -text
-en.lproj/Security.nib/keyedobjects.nib -text
 en.lproj/Status.strings -text svneol=unset#text/utf-16
 en.lproj/Transcript.nib/classes.nib -text
 en.lproj/Transcript.nib/info.nib -text
