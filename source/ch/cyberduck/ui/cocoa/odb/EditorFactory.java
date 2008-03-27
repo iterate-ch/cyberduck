@@ -72,7 +72,8 @@ public class EditorFactory {
     /**
      *
      * @param file
-     * @return The bundle identifier of the editor for this file
+     * @return The bundle identifier of the editor for this file.
+     * Null if no suitable and installed editor is found.
      */
     public static String editorBundleIdentifierForFile(final Local file) {
         final String defaultApplication = file.getDefaultEditor();
@@ -90,8 +91,11 @@ public class EditorFactory {
                 return identifier;
             }
         }
-        // Use default editor
-        return Preferences.instance().getProperty("editor.bundleIdentifier");
+        if(INSTALLED_ODB_EDITORS.containsValue(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
+            // Use default editor
+            return Preferences.instance().getProperty("editor.bundleIdentifier");
+        }
+        return null;
     }
 
     public static Editor createEditor(CDBrowserController c, Local file) {
@@ -128,5 +132,15 @@ public class EditorFactory {
 //            return null;
 //        }
 //        return new WatchEditor(c, bundleIdentifier);
+    }
+
+    private static String SELECTED_EDITOR;
+
+    public static void setCurrentEditor(String editorBundleIdentifier) {
+        SELECTED_EDITOR = editorBundleIdentifier;
+    }
+
+    public static String getSelectedEditor() {
+        return SELECTED_EDITOR;
     }
 }

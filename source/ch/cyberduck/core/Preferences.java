@@ -256,7 +256,6 @@ public abstract class Preferences {
         /**
          * Editor for the current selected file. Used to set the shortcut key in the menu delegate
          */
-        defaults.put("editor.bundleIdentifier.selected", "com.macromates.textmate");
         defaults.put("editor.kqueue.enable", "false");
         defaults.put("editor.tmp.directory", NSPathUtilities.temporaryDirectory());
 
