@@ -32,10 +32,9 @@ import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.text.MessageFormat;
 
 import com.enterprisedt.net.ftp.*;
 
@@ -64,23 +63,17 @@ public class FTPSession extends Session {
         super(h);
     }
 
-    public String getSecurityInformation() {
-        String syst = this.getIdentification();
-        try {
-            if(null == syst) {
-                return this.host.getIp();
-            }
-            return syst + " (" + this.host.getIp() + ")";
-        }
-        catch(UnknownHostException e) {
-            return this.host.getHostname();
-        }
-    }
-
     protected FTPFileEntryParser getFileParser() throws IOException {
         try {
             if(null == parser) {
-                parser = new FTPParserFactory().createFileEntryParser(this.getIdentification());
+                String system = null;
+                try {
+                    system = this.FTP.system();
+                }
+                catch(FTPException e) {
+                    log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
+                }
+                parser = new FTPParserFactory().createFileEntryParser(system);
             }
             return parser;
         }
@@ -104,7 +97,8 @@ public class FTPSession extends Session {
                 log.warn("Composite FTP parser has no cached delegate yet");
                 return false;
             }
-        } else {
+        }
+        else {
             // Not a composite parser
             delegate = p;
         }
@@ -117,6 +111,17 @@ public class FTPSession extends Session {
             );
         }
         return ((Boolean) parsers.get(delegate)).booleanValue();
+    }
+
+    public String getIdentification() {
+        StringBuffer info = new StringBuffer(super.getIdentification() + "\n");
+        try {
+            info.append(this.FTP.system()).append("\n");
+        }
+        catch(IOException e) {
+            log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
+        }
+        return info.toString();
     }
 
     public boolean isConnected() {
@@ -183,6 +188,18 @@ public class FTPSession extends Session {
         }
     }
 
+    protected FTPClient getClient() {
+        return new FTPClient(this.getEncoding(), new FTPMessageListener() {
+            public void logCommand(String cmd) {
+                FTPSession.this.log(cmd);
+            }
+
+            public void logReply(String reply) {
+                FTPSession.this.log(reply);
+            }
+        });
+    }
+
     protected void connect() throws IOException, FTPException, ConnectionCanceledException, LoginCanceledException {
         synchronized(this) {
             if(this.isConnected()) {
@@ -193,15 +210,7 @@ public class FTPSession extends Session {
             this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}...", "Status", ""),
                     new Object[]{host.getProtocol().getName(), host.getHostname()}));
 
-            this.FTP = new FTPClient(this.getEncoding(), new FTPMessageListener() {
-                public void logCommand(String cmd) {
-                    FTPSession.this.log(cmd);
-                }
-
-                public void logReply(String reply) {
-                    FTPSession.this.log(reply);
-                }
-            });
+            this.FTP = this.getClient();
             this.FTP.setTimeout(this.timeout());
             this.FTP.connect(host.getHostname(true), host.getPort());
             if(!this.isConnected()) {
@@ -212,12 +221,6 @@ public class FTPSession extends Session {
             this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
                     new Object[]{host.getProtocol().getName()}));
             this.login();
-            try {
-                this.setIdentification(this.FTP.system());
-            }
-            catch(FTPException e) {
-                log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
-            }
             this.fireConnectionDidOpenEvent();
         }
     }

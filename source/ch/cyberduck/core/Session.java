@@ -21,7 +21,6 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSObject;
 
-import ch.cyberduck.core.LoginController;
 import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import org.apache.log4j.Logger;
@@ -52,20 +51,16 @@ public abstract class Session extends NSObject {
         this.host = h;
     }
 
-    private String identification;
-
     /**
      * @return The remote host identification such as the response to the SYST command in FTP
      */
     public String getIdentification() {
-        return this.identification;
-    }
-
-    /**
-     * @param id
-     */
-    public void setIdentification(String id) {
-        this.identification = id;
+        try {
+            return this.host.getIp();
+        }
+        catch(UnknownHostException e) {
+            return this.host.getHostname();
+        }
     }
 
     /**
@@ -121,11 +116,6 @@ public abstract class Session extends NSObject {
         }
         return false;
     }
-
-    /**
-     * @return
-     */
-    public abstract String getSecurityInformation();
 
     /**
      * Opens the TCP connection to the server

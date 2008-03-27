@@ -65,20 +65,20 @@ public class SFTPSession extends Session {
         return false;
     }
 
-    public String getSecurityInformation() {
-        StringBuffer info = new StringBuffer();
+    public String getIdentification() {
+        StringBuffer info = new StringBuffer(super.getIdentification() + "\n");
         if(SFTP != null) {
-            info.append("SFTP Protocol version: " + SFTP.getProtocolVersion() + "\n");
+            info.append("SFTP Protocol version: ").append(SFTP.getProtocolVersion()).append("\n");
         }
         try {
             final ConnectionInfo i = SSH.getConnectionInfo();
-            info.append("Key Exchange (KEX) Algorithm: " + i.keyExchangeAlgorithm + "\n");
-            info.append("Number of key exchanges performed on this connection so far: " + i.keyExchangeCounter + "\n");
-            info.append("Host Key Algorithm: " + i.serverHostKeyAlgorithm + "\n");
-            info.append("Server to Client Crypto Algorithm: " + i.serverToClientCryptoAlgorithm + "\n");
-            info.append("Client to Server Crypto Algorithm: " + i.clientToServerCryptoAlgorithm + "\n");
-            info.append("Server to Client MAC Algorithm: " + i.serverToClientMACAlgorithm + "\n");
-            info.append("Client to Server MAC Algorithm: " + i.clientToServerMACAlgorithm + "\n");
+            info.append("Key Exchange (KEX) Algorithm: ").append(i.keyExchangeAlgorithm).append("\n");
+            info.append("Number of key exchanges performed on this connection so far: ").append(i.keyExchangeCounter).append("\n");
+            info.append("Host Key Algorithm: ").append(i.serverHostKeyAlgorithm).append("\n");
+            info.append("Server to Client Crypto Algorithm: ").append(i.serverToClientCryptoAlgorithm).append("\n");
+            info.append("Client to Server Crypto Algorithm: ").append(i.clientToServerCryptoAlgorithm).append("\n");
+            info.append("Server to Client MAC Algorithm: ").append(i.serverToClientMACAlgorithm).append("\n");
+            info.append("Client to Server MAC Algorithm: ").append(i.clientToServerMACAlgorithm).append("\n");
         }
         catch(IOException e) {
             log.error(e.getMessage());

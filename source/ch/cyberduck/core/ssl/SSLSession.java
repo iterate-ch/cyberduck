@@ -27,6 +27,4 @@ public interface SSLSession {
     X509TrustManager getTrustManager();
 
     void setTrustManager(X509TrustManager trustManager);
-
-    String getSecurityInformation();
 }

@@ -58,15 +58,6 @@ public class S3Session extends Session {
         super(h);
     }
 
-    public String getSecurityInformation() {
-        try {
-            return this.host.getIp();
-        }
-        catch(UnknownHostException e) {
-            return this.host.getHostname();
-        }
-    }
-
     private final String ua = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName") + "/"
             + Preferences.instance().getProperty("version");
 

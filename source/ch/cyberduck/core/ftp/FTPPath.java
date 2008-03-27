@@ -109,6 +109,7 @@ public class FTPPath extends Path {
             try {
                 session.check();
                 session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
+                final FTPFileEntryParser parser = session.getFileParser();
                 session.FTP.setTransferType(FTPTransferType.ASCII);
                 this.cwdir();
                 final BufferedReader reader = session.FTP.dir(this.session.getEncoding());
@@ -116,8 +117,7 @@ public class FTPPath extends Path {
                     // This is an empty directory
                     return childs;
                 }
-                String line = null;
-                FTPFileEntryParser parser = session.getFileParser();
+                String line;
                 while((line = parser.readNextEntry(reader)) != null) {
                     session.log(line);
                     FTPFile f = parser.parseFTPEntry(line);

@@ -97,16 +97,4 @@ public class DAVSSession extends DAVSession implements SSLSession {
     public void setTrustManager(X509TrustManager trustManager) {
         this.trustManager = trustManager;
     }
-
-    /**
-     * @return
-     */
-    public String getSecurityInformation() {
-        StringBuffer info = new StringBuffer();
-        X509Certificate[] accepted = this.getTrustManager().getAcceptedIssuers();
-        for(int i = 0; i < accepted.length; i++) {
-            info.append(accepted[i].toString());
-        }
-        return info.toString();
-    }
 }

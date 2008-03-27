@@ -18,8 +18,6 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
@@ -31,10 +29,8 @@ import org.apache.log4j.Logger;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
-import java.security.cert.X509Certificate;
-import java.text.MessageFormat;
 
-import com.enterprisedt.net.ftp.FTPException;
+import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPMessageListener;
 
 /**
@@ -84,60 +80,25 @@ public class FTPSSession extends FTPSession implements SSLSession {
         this.trustManager = trustManager;
     }
 
-    /**
-     * @return
-     */
-    public String getSecurityInformation() {
-        StringBuffer info = new StringBuffer();
-        X509Certificate[] accepted = this.getTrustManager().getAcceptedIssuers();
-        for(int i = 0; i < accepted.length; i++) {
-            info.append(accepted[i].toString());
-        }
-        return info.toString();
+    protected FTPClient getClient() {
+        return new FTPSClient(this.getEncoding(), new FTPMessageListener() {
+            public void logCommand(String cmd) {
+                FTPSSession.this.log(cmd);
+            }
+
+            public void logReply(String reply) {
+                FTPSSession.this.log(reply);
+            }
+        }, this.getTrustManager());
     }
 
-    protected void connect() throws IOException, FTPException, ConnectionCanceledException, LoginCanceledException {
-        synchronized(this) {
-            if(this.isConnected()) {
-                return;
-            }
-            this.fireConnectionWillOpenEvent();
-
-            this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}...", "Status", ""),
-                    new Object[]{host.getProtocol().getName(), host.getHostname()}));
-
-            this.FTP = new FTPSClient(this.getEncoding(), new FTPMessageListener() {
-                public void logCommand(String cmd) {
-                    FTPSSession.this.log(cmd);
-                }
-
-                public void logReply(String reply) {
-                    FTPSSession.this.log(reply);
-                }
-            }, this.getTrustManager());
-            this.FTP.setTimeout(this.timeout());
-            this.FTP.connect(host.getHostname(true), host.getPort());
-            if(!this.isConnected()) {
-                throw new ConnectionCanceledException();
-            }
-            this.FTP.setStrictReturnCodes(true);
-            this.FTP.setConnectMode(this.getConnectMode());
-            this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
-                    new Object[]{host.getProtocol().getName()}));
-            try {
-                ((FTPSClient) this.FTP).auth();
-            }
-            catch(SSLHandshakeException e) {
-                throw new ConnectionCanceledException(e.getMessage());
-            }
-            this.login();
-            try {
-                this.setIdentification(this.FTP.system());
-            }
-            catch(FTPException e) {
-                log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
-            }
-            this.fireConnectionDidOpenEvent();
+    public void login() throws IOException {
+        try {
+            ((FTPSClient) this.FTP).auth();
         }
+        catch(SSLHandshakeException e) {
+            throw new ConnectionCanceledException(e.getMessage());
+        }
+        super.login();
     }
 }
