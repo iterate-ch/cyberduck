@@ -21,7 +21,12 @@ package ch.cyberduck.core.s3;
 import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
+import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.SSLSession;
 
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
@@ -32,14 +37,14 @@ import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.security.AWSCredentials;
 
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.text.MessageFormat;
 
 /**
  * @version $Id:$
  */
-public class S3Session extends Session {
+public class S3Session extends Session implements SSLSession {
     private static Logger log = Logger.getLogger(S3Session.class);
 
     static {
@@ -54,8 +59,35 @@ public class S3Session extends Session {
 
     protected S3Service S3;
 
+    /**
+     * A trust manager accepting any certificate by default
+     */
+    private X509TrustManager trustManager;
+
+    /**
+     * @return
+     */
+    public X509TrustManager getTrustManager() {
+        return trustManager;
+    }
+
+    /**
+     * Override the default ignoring trust manager
+     *
+     * @param trustManager
+     */
+    public void setTrustManager(X509TrustManager trustManager) {
+        this.trustManager = trustManager;
+    }
+
     protected S3Session(Host h) {
         super(h);
+        if(Preferences.instance().getBoolean("s3.tls.acceptAnyCertificate")) {
+            this.setTrustManager(new IgnoreX509TrustManager());
+        }
+        else {
+            this.setTrustManager(new KeychainX509TrustManager());
+        }
     }
 
     private final String ua = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName") + "/"
@@ -112,11 +144,11 @@ public class S3Session extends Session {
             this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}...", "Status", ""),
                     new Object[]{host.getProtocol().getName(), host.getHostname()}));
 
-                // Configure connection options
-                this.configure(configuration = new Jets3tProperties());
+            // Configure connection options
+            this.configure(configuration = new Jets3tProperties());
 
-                // Prompt the login credentials first
-                this.login();
+            // Prompt the login credentials first
+            this.login();
             if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
             }
@@ -146,7 +178,21 @@ public class S3Session extends Session {
                     throw new CredentialsNotAvailableException("Unsupported authentication scheme: " +
                             authscheme.getSchemeName());
                 }
-            }, configuration);
+            }, configuration) {
+                protected void performRequest(HttpMethodBase httpMethod, int expectedResponseCode)
+                        throws S3ServiceException {
+                    if(this.isHttpsOnly()) {
+                        org.apache.commons.httpclient.protocol.Protocol.registerProtocol(host.getProtocol().getScheme(),
+                                new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
+                                        new CustomTrustSSLProtocolSocketFactory(S3Session.this.getTrustManager()), host.getPort())
+                        );
+                    }
+                    super.performRequest(httpMethod, expectedResponseCode);
+                    if(this.isHttpsOnly()) {
+                        org.apache.commons.httpclient.protocol.Protocol.unregisterProtocol(host.getProtocol().getScheme());
+                    }
+                }
+            };
             this.S3.listAllBuckets();
         }
         catch(S3ServiceException e) {
