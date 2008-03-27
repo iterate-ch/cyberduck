@@ -1183,7 +1183,7 @@ ja.lproj/Preferences.strings -text svneol=unset#text/utf-16
 ja.lproj/Prompt.nib/data.dependency -text
 ja.lproj/Prompt.nib/keyedobjects.nib -text
 ja.lproj/Prompt.strings -text svneol=unset#text/utf-16
-ja.lproj/S3.strings -text
+ja.lproj/S3.strings -text svneol=unset#unset
 ja.lproj/Status.strings -text svneol=unset#text/utf-16
 ja.lproj/Transfer.nib/classes.nib -text
 ja.lproj/Transfer.nib/info.nib -text
