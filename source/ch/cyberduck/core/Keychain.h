@@ -2,6 +2,12 @@
 #include <jni.h>
 /* Header for class ch_cyberduck_core_Keychain */
 
+#import <Security/Security.h>
+#import <SecurityInterface/SFCertificateTrustPanel.h>
+#import <Keychain/Keychain.h>
+#import <Keychain/Trust.h>
+#import <Keychain/KeychainSearch.h>
+
 #ifndef _Included_ch_cyberduck_core_Keychain
 #define _Included_ch_cyberduck_core_Keychain
 #ifdef __cplusplus
@@ -48,6 +54,17 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addInternetPasswordToKeyc
  * Signature: ([B)Z
  */
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrusted
+  (JNIEnv * env, jobject this, jbyteArray jCertificate);
+
+OSStatus Java_ch_cyberduck_core_Keychain_createCertificateFromData
+  (JNIEnv * env, jbyteArray jCertificate, SecCertificateRef *certificateRef);
+	
+/*
+ * Class:     ch_cyberduck_core_Keychain
+ * Method:    isTrusted
+ * Signature: ([B)Z
+ */
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_displayCertificate
   (JNIEnv * env, jobject this, jbyteArray jCertificate);
 
 #ifdef __cplusplus
