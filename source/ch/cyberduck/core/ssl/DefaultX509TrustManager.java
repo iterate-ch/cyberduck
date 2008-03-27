@@ -37,6 +37,18 @@ public class DefaultX509TrustManager implements X509TrustManager {
 
     private X509TrustManager standardTrustManager;
 
+    public DefaultX509TrustManager() {
+        try {
+            this.init(KeyStore.getInstance(KeyStore.getDefaultType()));
+        }
+        catch(NoSuchAlgorithmException e) {
+            log.error(e.getMessage());
+        }
+        catch(KeyStoreException e) {
+            log.error(e.getMessage());
+        }
+    }
+
     protected void init(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
         TrustManagerFactory factory = TrustManagerFactory.getInstance("SunX509");
         factory.init(keystore);

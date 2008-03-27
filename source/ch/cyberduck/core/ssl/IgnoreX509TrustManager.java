@@ -4,6 +4,7 @@ import ch.cyberduck.core.Collection;
 
 import org.apache.log4j.Logger;
 
+import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class IgnoreX509TrustManager extends DefaultX509TrustManager {
+public class IgnoreX509TrustManager implements X509TrustManager {
     private static Logger log = Logger.getLogger(IgnoreX509TrustManager.class);
 
     protected List acceptedCertificates;
