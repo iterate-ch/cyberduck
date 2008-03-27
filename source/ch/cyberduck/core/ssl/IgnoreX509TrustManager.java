@@ -1,10 +1,12 @@
 package ch.cyberduck.core.ssl;
 
+import ch.cyberduck.core.Collection;
+
 import org.apache.log4j.Logger;
 
 import java.security.cert.X509Certificate;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -27,10 +29,14 @@ import java.util.Arrays;
 /**
  * @version $Id$
  */
-public class IgnoreX509TrustManager extends AbstractX509TrustManager {
+public class IgnoreX509TrustManager extends DefaultX509TrustManager {
     private static Logger log = Logger.getLogger(IgnoreX509TrustManager.class);
 
     protected List acceptedCertificates;
+
+    public IgnoreX509TrustManager() {
+        this.acceptedCertificates = new Collection();
+    }
 
     public void checkClientTrusted(java.security.cert.X509Certificate[] x509Certificates, java.lang.String string)
             throws java.security.cert.CertificateException {

@@ -18,8 +18,6 @@ package ch.cyberduck.core.ssl;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
-
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.TrustManager;
@@ -34,8 +32,8 @@ import java.security.cert.X509Certificate;
 /**
  * @version $Id$
  */
-public abstract class AbstractX509TrustManager implements X509TrustManager {
-    private static Logger log = Logger.getLogger(AbstractX509TrustManager.class);
+public class DefaultX509TrustManager implements X509TrustManager {
+    private static Logger log = Logger.getLogger(DefaultX509TrustManager.class);
 
     private X509TrustManager standardTrustManager;
 
@@ -43,7 +41,7 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
         TrustManagerFactory factory = TrustManagerFactory.getInstance("SunX509");
         factory.init(keystore);
         TrustManager[] trustmanagers = factory.getTrustManagers();
-        if (trustmanagers.length == 0) {
+        if(trustmanagers.length == 0) {
             throw new NoSuchAlgorithmException("SunX509 trust manager not supported");
         }
         this.standardTrustManager = (X509TrustManager) trustmanagers[0];
@@ -56,9 +54,9 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
 
     public void checkServerTrusted(X509Certificate[] x509Certificates, String authType)
             throws CertificateException {
-        if ((x509Certificates != null)) {
+        if((x509Certificates != null)) {
             log.info("Server certificate chain:");
-            for (int i = 0; i < x509Certificates.length; i++) {
+            for(int i = 0; i < x509Certificates.length; i++) {
                 log.info("X509Certificate[" + i + "]=" + x509Certificates[i]);
             }
         }
