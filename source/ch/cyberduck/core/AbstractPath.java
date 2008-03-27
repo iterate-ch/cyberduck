@@ -236,6 +236,9 @@ public abstract class AbstractPath extends NSObject {
      * @param name   The relative filename
      */
     public void setPath(String parent, String name) {
+        if(null == parent) {
+            parent = DELIMITER;
+        }
         //Determine if the parent path already ends with a delimiter
         if(parent.endsWith(DELIMITER)) {
             this.setPath(parent + name);

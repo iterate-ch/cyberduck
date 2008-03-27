@@ -405,7 +405,7 @@ public class Host extends NSObject {
     }
 
     /**
-     * @return empty string if no default path is set
+     * @return Null if no default path is set
      */
     public String getDefaultPath() {
         return this.defaultpath;
