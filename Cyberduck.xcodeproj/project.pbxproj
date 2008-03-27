@@ -182,7 +182,6 @@
 		478B871E0BDE013D0040E559 /* turtle.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 478B871D0BDE013D0040E559 /* turtle.tiff */; };
 		47905BE30AE3D6FF00F9E193 /* unlocked.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47905BE10AE3D6FF00F9E193 /* unlocked.tiff */; };
 		47905BE40AE3D6FF00F9E193 /* locked.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47905BE20AE3D6FF00F9E193 /* locked.tiff */; };
-		47905BF80AE3E10000F9E193 /* Security.nib in Resources */ = {isa = PBXBuildFile; fileRef = 47905BF60AE3E10000F9E193 /* Security.nib */; };
 		47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
 		479734DB077B735A0027370F /* arrowLeftBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479734D9077B735A0027370F /* arrowLeftBlack16.tiff */; };
 		479982820D26DA8200DB5353 /* executable.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479982810D26DA8200DB5353 /* executable.tiff */; };
@@ -973,7 +972,6 @@
 		478B871D0BDE013D0040E559 /* turtle.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = turtle.tiff; sourceTree = "<group>"; };
 		47905BE10AE3D6FF00F9E193 /* unlocked.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = unlocked.tiff; sourceTree = "<group>"; };
 		47905BE20AE3D6FF00F9E193 /* locked.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = locked.tiff; sourceTree = "<group>"; };
-		47905BF70AE3E10000F9E193 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Security.nib; sourceTree = "<group>"; };
 		4790762A0764903900676C18 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47911A170B84C4E8001A29AE /* Acknowledgments.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Acknowledgments.rtf; sourceTree = "<group>"; };
 		479734D9077B735A0027370F /* arrowLeftBlack16.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowLeftBlack16.tiff; sourceTree = "<group>"; };
@@ -1612,7 +1610,6 @@
 				47E9875E0D689A280077733F /* S3.strings */,
 				47911A170B84C4E8001A29AE /* Acknowledgments.rtf */,
 				47E2D70B0D3226050018AF56 /* Transcript.nib */,
-				47905BF60AE3E10000F9E193 /* Security.nib */,
 				4759C93B0A1476E500C5980A /* Progress.nib */,
 				4741653C06C4FC3F00AC0BD2 /* img */,
 				47FC190A099FB8AF0082431D /* Crash.strings */,
@@ -2383,7 +2380,6 @@
 				4799CE110A29EEF700AA4E59 /* bottom.tiff in Resources */,
 				47905BE30AE3D6FF00F9E193 /* unlocked.tiff in Resources */,
 				47905BE40AE3D6FF00F9E193 /* locked.tiff in Resources */,
-				47905BF80AE3E10000F9E193 /* Security.nib in Resources */,
 				473779A50AE5365600F73905 /* stop16.tiff in Resources */,
 				474B5BA40AEFB7F5009FD459 /* Alert.nib in Resources */,
 				47AA19690AF09F810059C736 /* Error.strings in Resources */,
@@ -3426,14 +3422,6 @@
 				47742E360BECF3D500EC4DEA /* pt_PT */,
 			);
 			name = Transfer.nib;
-			sourceTree = "<group>";
-		};
-		47905BF60AE3E10000F9E193 /* Security.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				47905BF70AE3E10000F9E193 /* en */,
-			);
-			name = Security.nib;
 			sourceTree = "<group>";
 		};
 		47A88FB90B931D9C00DB9D87 /* Configuration.strings */ = {
