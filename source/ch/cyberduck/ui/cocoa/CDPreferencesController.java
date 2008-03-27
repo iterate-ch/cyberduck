@@ -240,8 +240,7 @@ public class CDPreferencesController extends CDWindowController {
             String editor = (String) editorNames.next();
             String identifier = (String) editorIdentifiers.next();
             this.editorCombobox.addItem(editor);
-            boolean enabled = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                    identifier) != null;
+            final boolean enabled = EditorFactory.INSTALLED_ODB_EDITORS.containsValue(identifier);
             this.editorCombobox.itemWithTitle(editor).setEnabled(enabled);
             if (enabled) {
                 NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
