@@ -547,8 +547,14 @@ public class CDBookmarkController extends CDWindowController {
         this.window.setTitle(this.host.getNickname());
         this.updateField(this.hostField, this.host.getHostname());
         this.updateField(this.nicknameField, this.host.getNickname());
-        this.updateField(this.urlField, this.host.toURL() + Path.normalize(this.host.getDefaultPath()));
+        if(StringUtils.hasText(this.host.getDefaultPath())) {
+            this.updateField(this.urlField, this.host.toURL() + Path.normalize(this.host.getDefaultPath()));
+        }
+        else {
+            this.updateField(this.urlField, this.host.toURL());
+        }
         this.updateField(this.portField, String.valueOf(this.host.getPort()));
+        this.portField.setEnabled(!this.host.getProtocol().equals(Protocol.S3));
         this.updateField(this.pathField, this.host.getDefaultPath());
         this.updateField(this.usernameField, this.host.getCredentials().getUsername());
         if(this.host.getProtocol().equals(Protocol.S3)) {
