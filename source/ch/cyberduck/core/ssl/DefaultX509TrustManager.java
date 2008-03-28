@@ -50,7 +50,7 @@ public class DefaultX509TrustManager implements X509TrustManager {
     }
 
     protected void init(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
-        TrustManagerFactory factory = TrustManagerFactory.getInstance("SunX509");
+        TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         factory.init(keystore);
         TrustManager[] trustmanagers = factory.getTrustManagers();
         if(trustmanagers.length == 0) {
@@ -72,7 +72,12 @@ public class DefaultX509TrustManager implements X509TrustManager {
                 log.info("X509Certificate[" + i + "]=" + x509Certificates[i]);
             }
         }
-        this.standardTrustManager.checkServerTrusted(x509Certificates, authType);
+        if((x509Certificates != null) && (x509Certificates.length == 1)) {
+            x509Certificates[0].checkValidity();
+        }
+        else {
+            standardTrustManager.checkServerTrusted(x509Certificates, authType);
+        }
     }
 
     public X509Certificate[] getAcceptedIssuers() {
