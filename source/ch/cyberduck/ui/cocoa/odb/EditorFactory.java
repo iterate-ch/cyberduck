@@ -136,7 +136,13 @@ public class EditorFactory {
 
     private static String SELECTED_EDITOR;
 
-    public static void setCurrentEditor(String editorBundleIdentifier) {
+    static {
+        if(INSTALLED_ODB_EDITORS.containsValue(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
+            SELECTED_EDITOR = Preferences.instance().getProperty("editor.bundleIdentifier");
+        }
+    }
+
+    public static void setSelectedEditor(String editorBundleIdentifier) {
         SELECTED_EDITOR = editorBundleIdentifier;
     }
 
