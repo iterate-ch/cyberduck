@@ -21,12 +21,13 @@ package ch.cyberduck.core.s3;
 import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
 
-import org.apache.commons.httpclient.HttpMethodBase;
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
@@ -166,6 +167,12 @@ public class S3Session extends Session implements SSLSession {
             this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " '"
                     + credentials.getUsername() + "'");
 
+            final HostConfiguration hostConfiguration = new StickyHostConfiguration();
+            hostConfiguration.setHost(host.getHostname(), host.getPort(),
+                    new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
+                            new CustomTrustSSLProtocolSocketFactory(S3Session.this.getTrustManager()), host.getPort())
+            );
+
             this.S3 = new RestS3Service(credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
                     credentials.getPassword()), ua, new CredentialsProvider() {
                 /**
@@ -178,21 +185,7 @@ public class S3Session extends Session implements SSLSession {
                     throw new CredentialsNotAvailableException("Unsupported authentication scheme: " +
                             authscheme.getSchemeName());
                 }
-            }, configuration) {
-                protected void performRequest(HttpMethodBase httpMethod, int expectedResponseCode)
-                        throws S3ServiceException {
-                    if(this.isHttpsOnly()) {
-                        org.apache.commons.httpclient.protocol.Protocol.registerProtocol(host.getProtocol().getScheme(),
-                                new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                                        new CustomTrustSSLProtocolSocketFactory(S3Session.this.getTrustManager()), host.getPort())
-                        );
-                    }
-                    super.performRequest(httpMethod, expectedResponseCode);
-                    if(this.isHttpsOnly()) {
-                        org.apache.commons.httpclient.protocol.Protocol.unregisterProtocol(host.getProtocol().getScheme());
-                    }
-                }
-            };
+            }, configuration, hostConfiguration);
             this.S3.listAllBuckets();
         }
         catch(S3ServiceException e) {
