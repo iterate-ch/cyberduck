@@ -3550,7 +3550,7 @@ public class CDBrowserController extends CDWindowController
                         }
                         securityLabel.setImage(session.isSecure() ? NSImage.imageNamed("locked.tiff")
                                 : NSImage.imageNamed("unlocked.tiff"));
-                        securityLabel.setEnabled(session.isSecure());
+                        securityLabel.setEnabled(session instanceof SSLSession);
                     }
                 });
             }
