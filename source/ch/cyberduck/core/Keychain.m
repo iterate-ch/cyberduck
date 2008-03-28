@@ -246,7 +246,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_displayCertificate (J
 	if([panel respondsToSelector:@selector(setShowsHelp:)]) {
 		[panel setShowsHelp:NO];
 	}
-	int result = [panel runModalForCertificates:[NSArray arrayWithObject:(id)certificateRef] showGroup:true];
+	int result = [panel runModalForCertificates:[NSArray arrayWithObject:(id)certificateRef] showGroup:YES];
 	if(certificateRef) {
 		CFRelease(certificateRef);
 	}
