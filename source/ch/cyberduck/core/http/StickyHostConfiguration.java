@@ -1,7 +1,5 @@
 package ch.cyberduck.core.http;
 
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpHost;
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -19,6 +17,9 @@ import org.apache.commons.httpclient.HttpHost;
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
+
+import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.httpclient.HttpHost;
 
 /**
  * @version $Id:$
