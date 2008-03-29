@@ -2222,13 +2222,7 @@ public class CDBrowserController extends CDWindowController
                 log.warn("No accepted certificates found");
                 return;
             }
-            final X509Certificate cert = certificates[0];
-            try {
-                Keychain.instance().displayCertificate(cert.getEncoded());
-            }
-            catch(CertificateEncodingException e) {
-                log.error(e.getMessage());
-            }
+            Keychain.instance().displayCertificates(certificates);
         }
     }
 

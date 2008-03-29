@@ -405,7 +405,7 @@ public abstract class Preferences {
          * Generate publicy accessible URLs when copying URLs in S3 browser
          */
         defaults.put("s3.url.public", String.valueOf(false));
-        defaults.put("s3.tls.acceptAnyCertificate", String.valueOf(true));
+        defaults.put("s3.tls.acceptAnyCertificate", String.valueOf(false));
 
 //        defaults.put("s3.crypto.algorithm", "PBEWithMD5AndDES");
 

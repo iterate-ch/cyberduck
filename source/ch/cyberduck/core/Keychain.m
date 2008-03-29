@@ -95,61 +95,67 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addPasswordToKeychain(JNI
     [[Keychain defaultKeychain] addGenericPassword:convertToNSString(env, jPass) onService:convertToNSString(env, jService) forAccount:convertToNSString(env, jUsername) replaceExisting:YES];
 }
 
-OSStatus Java_ch_cyberduck_core_Keychain_createCertificateFromData(JNIEnv *env, jbyteArray jCertificate, SecCertificateRef *certificateRef) 
-{
-	jbyte *certByte = (*env)->GetByteArrayElements(env, jCertificate, NULL);
-    // Creates a certificate object based on the specified data, type, and encoding.
-    NSData *certData = [NSData dataWithBytes:certByte length:(*env)->GetArrayLength(env, jCertificate)];
-	(*env)->ReleaseByteArrayElements(env, jCertificate, certByte, 0);
-	CSSM_DATA *cssmData = NULL;
-    if (certData) {
-        cssmData = (CSSM_DATA*)malloc(sizeof(CSSM_DATA));
-        cssmData->Length = [certData length];
-        cssmData->Data = (uint8*)malloc(cssmData->Length);
-        [certData getBytes:(char*)(cssmData->Data)];
-    }
-    return SecCertificateCreateFromData(cssmData, CSSM_CERT_X_509v3, CSSM_CERT_ENCODING_DER, certificateRef);
-} 
-
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrusted (JNIEnv *env, jobject this, jbyteArray jCertificate)
+NSArray* Java_ch_cyberduck_core_Keychain_createCertificatesFromData(JNIEnv *env, jobjectArray jCertificateChain)
 {
 	OSStatus err;
+    NSMutableArray *result = [NSMutableArray arrayWithCapacity:(*env)->GetArrayLength(env, jCertificateChain)];
+	int i;
+    for(i = 0; i < (*env)->GetArrayLength(env, jCertificateChain); i++) {
+        jbyteArray jCertificate = (jbyteArray)(*env)->GetObjectArrayElement(env, jCertificateChain, i);
+        jbyte *certByte = (*env)->GetByteArrayElements(env, jCertificate, NULL);
+        // Creates a certificate object based on the specified data, type, and encoding.
+        NSData *certData = [NSData dataWithBytes:certByte length:(*env)->GetArrayLength(env, jCertificate)];
+        (*env)->ReleaseByteArrayElements(env, jCertificate, certByte, 0);
+        CSSM_DATA *cssmData = NULL;
+        if (certData) {
+            cssmData = (CSSM_DATA*)malloc(sizeof(CSSM_DATA));
+            cssmData->Length = [certData length];
+            cssmData->Data = (uint8*)malloc(cssmData->Length);
+            [certData getBytes:(char*)(cssmData->Data)];
+        }
+    	SecCertificateRef certificateRef = NULL;
+        err = SecCertificateCreateFromData(cssmData, CSSM_CERT_X_509v3, CSSM_CERT_ENCODING_DER, &certificateRef);
+		if(err != noErr) {
+			NSLog(@"Error creating certificate from data");
+			continue;
+		}
+        [result addObject:(id)certificateRef];
+    }
+	NSLog(@"Successfully created %d certificate from data", [result count]);
+    return result;
+}
 
-	SecCertificateRef certificateRef = NULL;
-	err = Java_ch_cyberduck_core_Keychain_createCertificateFromData(env, jCertificate, &certificateRef);
-	if(err != noErr) {
-		return FALSE;
-	}
-	// Adds a certificate to a keychain.
-	err = SecCertificateAddToKeychain(certificateRef, NULL);
-	switch(err) 
-	{
-		case errSecDuplicateItem:
-			// The function returns errSecDuplicateItem and does not add another copy to the keychain.
-			// The function looks at the certificate data, not at the certificate object, to
-			// determine whether the certificate is a duplicate. It considers two certificates to be
-			// duplicates if they have the same primary key attributes.
-			break;
-		default:
-			NSLog(@"Error adding certificate to Keychain");
-			break;
-	}
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrusted (JNIEnv *env, jobject this, jobjectArray jCertificateChain)
+{
+	OSStatus err;
+	NSArray *certificates = Java_ch_cyberduck_core_Keychain_createCertificatesFromData(env, jCertificateChain);
+	// Adds a certificates to a keychain.
+	int i;
+	for(i = 0; i < [certificates count]; i++) {
+        SecCertificateRef certificateRef = (SecCertificateRef)[certificates objectAtIndex:i];
+        err = SecCertificateAddToKeychain(certificateRef, NULL);
+        switch(err)
+        {
+            case errSecDuplicateItem:
+                // The function returns errSecDuplicateItem and does not add another copy to the keychain.
+                // The function looks at the certificate data, not at the certificate object, to
+                // determine whether the certificate is a duplicate. It considers two certificates to be
+                // duplicates if they have the same primary key attributes.
+                break;
+            default:
+                NSLog(@"Error adding certificate to Keychain");
+        }
+    }
 	// Creates a search object for finding policies.
 	SecPolicySearchRef searchRef = NULL;
 	err = SecPolicySearchCreate(CSSM_CERT_X_509v3, &CSSMOID_APPLE_TP_SSL, NULL, &searchRef);
 	if(err != noErr) {
-		if(certificateRef) {
-			CFRelease(certificateRef);
-		}
 		return FALSE;
 	}
 	// Retrieves a policy object for the next policy matching specified search criteria.
 	SecPolicyRef policyRef = NULL;
 	err = SecPolicySearchCopyNext(searchRef, &policyRef);
 	if(err != noErr) {
-		if(certificateRef) {
-			CFRelease(certificateRef);
-		}
 		if(searchRef) {
 			CFRelease(searchRef);
 		}
@@ -160,20 +166,12 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrusted (JNIEnv *en
 	}
 	// Creates a trust management object based on certificates and policies.
 	SecTrustRef trustRef = NULL;
-	SecCertificateRef evalCertArray[1] = {certificateRef};
-    CFArrayRef certificateArrayRef = CFArrayCreate ((CFAllocatorRef) NULL, (void *)evalCertArray, 1, &kCFTypeArrayCallBacks);
-	err = SecTrustCreateWithCertificates(certificateArrayRef, policyRef, &trustRef);
+	err = SecTrustCreateWithCertificates((CFArrayRef)certificates, policyRef, &trustRef);
 	if(err != noErr) {
 		if(policyRef) {
 			CFRelease(policyRef);
 		}
-		if(certificateRef) {
-			CFRelease(certificateRef);
-		}
 		return FALSE;
-	}
-	if(certificateRef) {
-		CFRelease(certificateRef);
 	}
 	SecTrustResultType trustResult;
 	err = SecTrustEvaluate(trustRef, &trustResult);
@@ -233,23 +231,14 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrusted (JNIEnv *en
     return FALSE;
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_displayCertificate (JNIEnv *env, jobject this, jbyteArray jCertificate)
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_displayCertificates (JNIEnv *env, jobject this, jobjectArray jCertificateChain)
 {
-	OSStatus err;
-
-	SecCertificateRef certificateRef = NULL;
-	err = Java_ch_cyberduck_core_Keychain_createCertificateFromData(env, jCertificate, &certificateRef);
-	if(err != noErr) {
-		return FALSE;
-	}
+	NSArray *certificates = Java_ch_cyberduck_core_Keychain_createCertificatesFromData(env, jCertificateChain);
 	SFCertificatePanel *panel = [[SFCertificatePanel alloc] init];
 	if([panel respondsToSelector:@selector(setShowsHelp:)]) {
 		[panel setShowsHelp:NO];
 	}
-	int result = [panel runModalForCertificates:[NSArray arrayWithObject:(id)certificateRef] showGroup:YES];
-	if(certificateRef) {
-		CFRelease(certificateRef);
-	}
+	int result = [panel runModalForCertificates:certificates showGroup:YES];
 	if(result == NSOKButton) {
 		return TRUE;
 	}
