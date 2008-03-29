@@ -514,6 +514,7 @@ public class CDBrowserController extends CDWindowController
                 }
             }
             this.statusText = this.bookmarkTable.numberOfRows() + " " + NSBundle.localizedString("Bookmarks", "");
+            this.window().makeFirstResponder(bookmarkTable);
         }
         else {
             if(this.isMounted()) {
@@ -521,6 +522,7 @@ public class CDBrowserController extends CDWindowController
                 this.statusText = getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("Files", "");
             }
             else {
+                this.window().makeFirstResponder(this.quickConnectPopup);
                 this.statusText = null;
             }
         }
