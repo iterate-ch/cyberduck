@@ -47,6 +47,11 @@
             SUPERCLASS = NSControl;
         },
                 {
+            CLASS = SKWSegmentedControl;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSSegmentedControl;
+        },
+                {
             ACTIONS =             {
                 addBookmarkButtonClicked = id;
                 connectBookmarkButtonClicked = id;
