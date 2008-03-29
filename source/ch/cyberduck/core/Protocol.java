@@ -29,7 +29,6 @@ public abstract class Protocol {
     private static Logger log = Logger.getLogger(Protocol.class);
 
     /**
-     *
      * @return The identifier for this protocol which is the scheme by default
      */
     public String getIdentifier() {
@@ -41,20 +40,22 @@ public abstract class Protocol {
     }
 
     /**
-     *
      * @return
      */
     public abstract String getDescription();
 
     /**
-     *
      * @return
      */
     public abstract String getScheme();
 
+    public String[] getSchemes() {
+        return new String[]{this.getScheme()};
+    }
+
     public boolean equals(Object other) {
         if(other instanceof Protocol) {
-            return ((Protocol)other).getIdentifier().equals(this.getIdentifier());
+            return ((Protocol) other).getIdentifier().equals(this.getIdentifier());
         }
         return false;
     }
@@ -64,7 +65,6 @@ public abstract class Protocol {
     }
 
     /**
-     *
      * @return
      */
     public boolean isSecure() {
@@ -72,7 +72,6 @@ public abstract class Protocol {
     }
 
     /**
-     *
      * @return The default port this protocol connects to
      */
     public abstract int getDefaultPort();
@@ -133,7 +132,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return NSBundle.localizedString("FTP-SSL (FTP over TLS/SSL)", "");
+            return NSBundle.localizedString("FTP (TLS/SSL)", "");
         }
 
         public int getDefaultPort() {
@@ -166,6 +165,10 @@ public abstract class Protocol {
             return "https";
         }
 
+        public String[] getSchemes() {
+            return new String[]{this.getScheme(), "s3"};
+        }
+
         public boolean isSecure() {
             return true;
         }
@@ -177,7 +180,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return NSBundle.localizedString("WebDAV (Web-based Distributed Authoring and Versioning)", "");
+            return NSBundle.localizedString("WebDAV (HTTP)", "");
         }
 
         public String getIdentifier() {
@@ -199,7 +202,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return NSBundle.localizedString("WebDAV (HTTPS)", "");
+            return NSBundle.localizedString("WebDAV (HTTP/SSL)", "");
         }
 
         public String getIdentifier() {
@@ -245,7 +248,6 @@ public abstract class Protocol {
     }
 
     /**
-     *
      * @param protocol
      * @return
      */
@@ -256,24 +258,25 @@ public abstract class Protocol {
                 return protocols[i];
             }
         }
-        log.fatal("Unknown protocol:"+protocol);
+        log.fatal("Unknown protocol:" + protocol);
         return Protocol.forName(
                 Preferences.instance().getProperty("connection.protocol.default"));
     }
 
     /**
-     * 
      * @param scheme
      * @return
      */
     public static Protocol forScheme(final String scheme) {
         final Protocol[] protocols = getKnownProtocols();
         for(int i = 0; i < protocols.length; i++) {
-            if(protocols[i].getScheme().equals(scheme)) {
-                return protocols[i];
+            for(int k = 0; k < protocols[i].getSchemes().length; k++) {
+                if(protocols[i].getSchemes()[k].equals(scheme)) {
+                    return protocols[i];
+                }
             }
         }
-        log.fatal("Unknown scheme:"+scheme);
+        log.fatal("Unknown scheme:" + scheme);
         return Protocol.forName(
                 Preferences.instance().getProperty("connection.protocol.default"));
     }
