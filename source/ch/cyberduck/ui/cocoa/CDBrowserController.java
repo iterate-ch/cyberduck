@@ -986,6 +986,7 @@ public class CDBrowserController extends CDWindowController
         else if(bookmarkButton.state() == NSCell.OnState) {
             bookmarkModel.setSource(HostCollection.defaultCollection());
         }
+        addBookmarkButton.setEnabled(bookmarkModel.isEditable());
         this.setBookmarkFilter(null);
         bookmarkTable.deselectAll(null);
         bookmarkTable.reloadData();
