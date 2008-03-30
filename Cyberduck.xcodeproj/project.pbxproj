@@ -15,6 +15,10 @@
 		470E56D708BE3E1F00BDF3CD /* TinFSFork.h in Headers */ = {isa = PBXBuildFile; fileRef = 470E56D208BE3E1E00BDF3CD /* TinFSFork.h */; };
 		470E56D808BE3E1F00BDF3CD /* TinFSRefItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 470E56D308BE3E1E00BDF3CD /* TinFSRefItem.h */; };
 		470E56D908BE3E1F00BDF3CD /* TinWatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 470E56D408BE3E1E00BDF3CD /* TinWatcher.h */; };
+		47152E1D0D9F2586003D8AE4 /* SKWSegmentedControl.h in Headers */ = {isa = PBXBuildFile; fileRef = 47152E190D9F2586003D8AE4 /* SKWSegmentedControl.h */; };
+		47152E1E0D9F2586003D8AE4 /* SKWSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 47152E1A0D9F2586003D8AE4 /* SKWSegmentedControl.m */; };
+		47152E1F0D9F2586003D8AE4 /* SKWSegmentedControlWindowProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 47152E1B0D9F2586003D8AE4 /* SKWSegmentedControlWindowProxy.h */; };
+		47152E200D9F2586003D8AE4 /* SKWSegmentedControlWindowProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 47152E1C0D9F2586003D8AE4 /* SKWSegmentedControlWindowProxy.m */; };
 		4716C5F50872BA9900938886 /* Command.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5EF0872BA9800938886 /* Command.nib */; };
 		4716C5F80872BAA900938886 /* command.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5F70872BAA900938886 /* command.tiff */; };
 		4716C6440872C8BA00938886 /* idisk.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4716C6430872C8BA00938886 /* idisk.tiff */; };
@@ -418,6 +422,10 @@
 		470FDC7F099E4AC5008DE09C /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Growl.strings; sourceTree = "<group>"; };
 		470FDC80099E4AC5008DE09C /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Status.strings; sourceTree = "<group>"; };
 		470FDC81099E4AC5008DE09C /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		47152E190D9F2586003D8AE4 /* SKWSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControl.h; sourceTree = "<group>"; };
+		47152E1A0D9F2586003D8AE4 /* SKWSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControl.m; sourceTree = "<group>"; };
+		47152E1B0D9F2586003D8AE4 /* SKWSegmentedControlWindowProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKWSegmentedControlWindowProxy.h; sourceTree = "<group>"; };
+		47152E1C0D9F2586003D8AE4 /* SKWSegmentedControlWindowProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKWSegmentedControlWindowProxy.m; sourceTree = "<group>"; };
 		4716C5F00872BA9800938886 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Command.nib; sourceTree = "<group>"; };
 		4716C5F70872BAA900938886 /* command.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = command.tiff; sourceTree = "<group>"; };
 		4716C6430872C8BA00938886 /* idisk.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = idisk.tiff; sourceTree = "<group>"; };
@@ -1486,6 +1494,17 @@
 			path = forker;
 			sourceTree = "<group>";
 		};
+		47152E180D9F2586003D8AE4 /* macfoh */ = {
+			isa = PBXGroup;
+			children = (
+				47152E190D9F2586003D8AE4 /* SKWSegmentedControl.h */,
+				47152E1A0D9F2586003D8AE4 /* SKWSegmentedControl.m */,
+				47152E1B0D9F2586003D8AE4 /* SKWSegmentedControlWindowProxy.h */,
+				47152E1C0D9F2586003D8AE4 /* SKWSegmentedControlWindowProxy.m */,
+			);
+			path = macfoh;
+			sourceTree = "<group>";
+		};
 		471DFF0C0BCEDACB00AE81F9 /* preferences */ = {
 			isa = PBXGroup;
 			children = (
@@ -1599,6 +1618,7 @@
 		4741532B06C4F08A00AC0BD2 /* com */ = {
 			isa = PBXGroup;
 			children = (
+				47152E180D9F2586003D8AE4 /* macfoh */,
 				477B1B7B0AF384350023BA7F /* snoize */,
 			);
 			path = com;
@@ -1852,6 +1872,8 @@
 				4799CE260A29EF5600AA4E59 /* CDBottomView.h in Headers */,
 				477B1B800AF384350023BA7F /* SNDisclosableView.h in Headers */,
 				477B1B820AF384350023BA7F /* SNDisclosureButton.h in Headers */,
+				47152E1D0D9F2586003D8AE4 /* SKWSegmentedControl.h in Headers */,
+				47152E1F0D9F2586003D8AE4 /* SKWSegmentedControlWindowProxy.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2519,6 +2541,8 @@
 				4799CE270A29EF5600AA4E59 /* CDBottomView.m in Sources */,
 				477B1B810AF384350023BA7F /* SNDisclosableView.m in Sources */,
 				477B1B830AF384350023BA7F /* SNDisclosureButton.m in Sources */,
+				47152E1E0D9F2586003D8AE4 /* SKWSegmentedControl.m in Sources */,
+				47152E200D9F2586003D8AE4 /* SKWSegmentedControlWindowProxy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
