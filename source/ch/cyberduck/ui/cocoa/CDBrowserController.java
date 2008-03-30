@@ -38,7 +38,6 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
@@ -119,7 +118,9 @@ public class CDBrowserController extends CDWindowController
             }
             Object userObj = args.objectForKey("Username");
             if(userObj != null) {
-                host.setCredentials((String) args.objectForKey("Username"), (String) args.objectForKey("Password"));
+                host.setCredentials(new Credentials(
+                        (String) args.objectForKey("Username"), (String) args.objectForKey("Password"))
+                );
             }
             Object modeObj = args.objectForKey("Mode");
             if(modeObj != null) {

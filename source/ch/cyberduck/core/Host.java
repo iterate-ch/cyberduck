@@ -35,7 +35,7 @@ import com.ibm.icu.text.StringPrepParseException;
 /**
  * @version $Id$
  */
-public class Host extends NSObject {
+public class Host extends NSObject implements Serializable {
     private static Logger log = Logger.getLogger(Host.class);
     /**
      * The protocol identifier. Must be one of <code>sftp</code>, <code>ftp</code> or <code>ftps</code>
@@ -70,7 +70,7 @@ public class Host extends NSObject {
     /**
      * The credentials to authenticate with
      */
-    private Credentials credentials;
+    private Credentials credentials = new Credentials();
     /**
      * The character encoding to use for file listings
      */
@@ -135,18 +135,24 @@ public class Host extends NSObject {
      * @param dict A valid bookmark dictionary
      */
     public void init(NSDictionary dict) {
+        if(log.isDebugEnabled()) {
+            log.debug("init:" + dict);
+        }
         Object protocolObj = dict.objectForKey(Host.PROTOCOL);
         if(protocolObj != null) {
             this.setProtocol(Protocol.forName(protocolObj.toString()));
         }
         Object hostnameObj = dict.objectForKey(Host.HOSTNAME);
         if(hostnameObj != null) {
-            this.setHostname((String) hostnameObj);
-            Object usernameObj = dict.objectForKey(Host.USERNAME);
-            if(usernameObj != null) {
-                this.setCredentials((String) usernameObj, null);
-            }
-            this.getCredentials().setPrivateKeyFile((String) dict.objectForKey(Host.KEYFILE));
+            this.setHostname(hostnameObj.toString());
+        }
+        Object usernameObj = dict.objectForKey(Host.USERNAME);
+        if(usernameObj != null) {
+            this.setCredentials(new Credentials(usernameObj.toString(), null));
+        }
+        final Object keyObj = dict.objectForKey(Host.KEYFILE);
+        if(keyObj != null) {
+            this.getCredentials().setPrivateKeyFile(keyObj.toString());
         }
         Object portObj = dict.objectForKey(Host.PORT);
         if(portObj != null) {
@@ -154,15 +160,15 @@ public class Host extends NSObject {
         }
         Object pathObj = dict.objectForKey(Host.PATH);
         if(pathObj != null) {
-            this.setDefaultPath((String) pathObj);
+            this.setDefaultPath(pathObj.toString());
         }
         Object nicknameObj = dict.objectForKey(Host.NICKNAME);
         if(nicknameObj != null) {
-            this.setNickname((String) nicknameObj);
+            this.setNickname(nicknameObj.toString());
         }
         Object encodingObj = dict.objectForKey(Host.ENCODING);
         if(encodingObj != null) {
-            this.setEncoding((String) encodingObj);
+            this.setEncoding(encodingObj.toString());
         }
         Object connectModeObj = dict.objectForKey(Host.FTPCONNECTMODE);
         if(connectModeObj != null) {
@@ -179,37 +185,41 @@ public class Host extends NSObject {
         }
         Object downloadObj = dict.objectForKey(Host.DOWNLOADFOLDER);
         if(downloadObj != null) {
-            this.setDownloadFolder((String) downloadObj);
+            this.setDownloadFolder(downloadObj.toString());
         }
         Object timezoneObj = dict.objectForKey(Host.TIMEZONE);
         if(timezoneObj != null) {
-            this.setTimezone(TimeZone.getTimeZone((String) timezoneObj));
+            this.setTimezone(TimeZone.getTimeZone(timezoneObj.toString()));
         }
         Object commentObj = dict.objectForKey(Host.COMMENT);
         if(commentObj != null) {
-            this.setComment((String) commentObj);
+            this.setComment(commentObj.toString());
         }
     }
 
     /**
      * @return
      */
-    public NSDictionary getAsDictionary() {
+    public NSMutableDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
         dict.setObjectForKey(this.getProtocol().getIdentifier(), Host.PROTOCOL);
         if(!this.getNickname().equals(this.getDefaultNickname())) {
             dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
         }
-        dict.setObjectForKey(this.getHostname(), Host.HOSTNAME);
+        if(StringUtils.hasText(this.hostname)) {
+            dict.setObjectForKey(this.hostname, Host.HOSTNAME);
+        }
         dict.setObjectForKey(String.valueOf(this.getPort()), Host.PORT);
-        dict.setObjectForKey(this.getCredentials().getUsername(), Host.USERNAME);
-        if(null != this.defaultpath) {
+        if(StringUtils.hasText(this.getCredentials().getUsername())) {
+            dict.setObjectForKey(this.getCredentials().getUsername(), Host.USERNAME);
+        }
+        if(StringUtils.hasText(this.defaultpath)) {
             dict.setObjectForKey(this.defaultpath, Host.PATH);
         }
-        if(null != this.encoding) {
+        if(StringUtils.hasText(this.encoding)) {
             dict.setObjectForKey(this.encoding, Host.ENCODING);
         }
-        if(this.getCredentials().getPrivateKeyFile() != null) {
+        if(StringUtils.hasText(this.getCredentials().getPrivateKeyFile())) {
             dict.setObjectForKey(this.getCredentials().getPrivateKeyFile(), Host.KEYFILE);
         }
         if(this.getProtocol().equals(Protocol.FTP) || this.getProtocol().equals(Protocol.FTP_TLS)) {
@@ -223,14 +233,14 @@ public class Host extends NSObject {
         if(null != this.maxConnections) {
             dict.setObjectForKey(String.valueOf(this.maxConnections), Host.MAXCONNECTIONS);
         }
-        if(null != this.downloadFolder) {
+        if(StringUtils.hasText(this.downloadFolder)) {
             dict.setObjectForKey(this.downloadFolder, Host.DOWNLOADFOLDER);
         }
         if(null != this.timezone) {
             dict.setObjectForKey(this.timezone.getID(), Host.TIMEZONE);
         }
-        if(null != this.comment) {
-            dict.setObjectForKey(comment, Host.COMMENT);
+        if(StringUtils.hasText(this.comment)) {
+            dict.setObjectForKey(this.comment, Host.COMMENT);
         }
         return dict;
     }
@@ -283,7 +293,6 @@ public class Host extends NSObject {
         this.setPort(port);
         this.setHostname(hostname);
         this.setDefaultPath(defaultpath);
-        this.setCredentials(null, null);
     }
 
     /**
@@ -386,7 +395,7 @@ public class Host extends NSObject {
                 hostname,
                 port,
                 path);
-        h.setCredentials(username, password);
+        h.setCredentials(new Credentials(username, password));
         return h;
     }
 
@@ -396,12 +405,7 @@ public class Host extends NSObject {
      * @param defaultpath The path to change the working directory to upon connecting
      */
     public void setDefaultPath(String defaultpath) {
-        if(null == defaultpath || "".equals(defaultpath)) {
-            this.defaultpath = null;
-        }
-        else {
-            this.defaultpath = Path.normalize(defaultpath, false);
-        }
+        this.defaultpath = StringUtils.hasText(defaultpath) ? Path.normalize(defaultpath, false) : null;
     }
 
     /**
@@ -411,33 +415,11 @@ public class Host extends NSObject {
         return this.defaultpath;
     }
 
-    // ----------------------------------------------------------
-    // Accessor methods
-    // ----------------------------------------------------------
-
-    /**
-     * @param username
-     * @param password
-     */
-    public void setCredentials(String username, String password) {
-        this.setCredentials(username,
-                password,
-                Preferences.instance().getBoolean("connection.login.useKeychain"));
-    }
-
-    /**
-     * @param username
-     * @param password
-     * @param addToKeychain
-     */
-    public void setCredentials(String username, String password, boolean addToKeychain) {
-        this.setCredentials(new Credentials(username, password, addToKeychain));
-    }
-
     /**
      * @param credentials
      */
     public void setCredentials(Credentials credentials) {
+        log.debug("setCredentials" + credentials);
         this.credentials = credentials;
     }
 
@@ -449,13 +431,12 @@ public class Host extends NSObject {
      * @param protocol The protocol to use or null to use the default protocol for this port number
      */
     public void setProtocol(Protocol protocol) {
+        log.debug("setProtocol:" + protocol);
         this.protocol = protocol != null ? protocol :
                 Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
 
         if(!this.protocol.equals(Protocol.SFTP)) {
-            if(this.getCredentials() != null) {
-                this.getCredentials().setPrivateKeyFile(null);
-            }
+            this.getCredentials().setPrivateKeyFile(null);
         }
     }
 
@@ -539,6 +520,7 @@ public class Host extends NSObject {
      * @param hostname
      */
     public void setHostname(String hostname) {
+        log.debug("setHostname:" + hostname);
         this.hostname = hostname;
         this.punycode = null;
     }
@@ -829,7 +811,6 @@ public class Host extends NSObject {
     }
 
     /**
-     *
      * @param file
      */
     public void setFile(Local file) {

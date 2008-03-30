@@ -141,12 +141,17 @@ public class Credentials {
         }
     }
 
+    public Credentials() {
+        this(Preferences.instance().getProperty("connection.login.name"), null,
+                Preferences.instance().getBoolean("connection.login.useKeychain"));
+    }
+
     /**
      * @param user Login with this username
      * @param pass Passphrase
      */
     public Credentials(String user, String pass) {
-        this(user, pass, false);
+        this(user, pass, Preferences.instance().getBoolean("connection.login.useKeychain"));
     }
 
     /**

@@ -18,13 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.ThrottledInputStream;
-import ch.cyberduck.core.io.ThrottledOutputStream;
-
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
+
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.ThrottledInputStream;
+import ch.cyberduck.core.io.ThrottledOutputStream;
 
 import org.apache.log4j.Logger;
 
@@ -40,7 +40,7 @@ import java.util.regex.PatternSyntaxException;
 /**
  * @version $Id$
  */
-public abstract class Path extends AbstractPath {
+public abstract class Path extends AbstractPath implements Serializable {
     private static Logger log = Logger.getLogger(Path.class);
 
     /**
@@ -98,17 +98,21 @@ public abstract class Path extends AbstractPath {
     private static final String ATTRIBUTES = "Attributes";
 
     public Path(NSDictionary dict) {
+        this.init(dict);
+    }
+
+    public void init(NSDictionary dict) {
         Object pathObj = dict.objectForKey(REMOTE);
         if(pathObj != null) {
-            this.setPath((String) pathObj);
+            this.setPath(pathObj.toString());
         }
         Object localObj = dict.objectForKey(LOCAL);
         if(localObj != null) {
-            this.setLocal(new Local((String) localObj));
+            this.setLocal(new Local(localObj.toString()));
         }
         Object symlinkObj = dict.objectForKey(SYMLINK);
         if(symlinkObj != null) {
-            this.setSymbolicLinkPath((String) symlinkObj);
+            this.setSymbolicLinkPath(symlinkObj.toString());
         }
         Object attributesObj = dict.objectForKey(ATTRIBUTES);
         if(attributesObj != null) {
@@ -120,7 +124,7 @@ public abstract class Path extends AbstractPath {
         NSMutableDictionary dict = new NSMutableDictionary();
         dict.setObjectForKey(this.getAbsolute(), REMOTE);
         dict.setObjectForKey(this.getLocal().toString(), LOCAL);
-        if(null != this.getSymbolicLinkPath()) {
+        if(StringUtils.hasText(this.getSymbolicLinkPath())) {
             dict.setObjectForKey(this.getSymbolicLinkPath(), SYMLINK);
         }
         dict.setObjectForKey(((PathAttributes) this.attributes).getAsDictionary(), ATTRIBUTES);
@@ -199,8 +203,8 @@ public abstract class Path extends AbstractPath {
     }
 
     /**
-     * @return My parent directory
      * @param create Create if not cached. Otherwise may return null
+     * @return My parent directory
      */
     public AbstractPath getParent(final boolean create) {
         if(null == parent) {
@@ -229,14 +233,14 @@ public abstract class Path extends AbstractPath {
 
     public Status getStatus() {
         if(null == status) {
-             status = new Status();
+            status = new Status();
         }
         return status;
     }
 
     /**
-     * @throws NullPointerException if session is not initialized
      * @return
+     * @throws NullPointerException if session is not initialized
      */
     public Host getHost() {
         return this.getSession().getHost();
@@ -260,18 +264,21 @@ public abstract class Path extends AbstractPath {
 
     /**
      * Read the size of the file
+     *
      * @see Attributes#getSize()
      */
     public abstract void readSize();
 
     /**
      * Read the modification date of the file
+     *
      * @see Attributes#getModificationDate()
      */
     public abstract void readTimestamp();
 
     /**
      * Read the file permission of the file
+     *
      * @see Attributes#getPermission()
      */
     public abstract void readPermission();
@@ -379,7 +386,6 @@ public abstract class Path extends AbstractPath {
     }
 
     /**
-     *
      * @param listener The stream listener to notify about bytes received and sent
      */
     public void download(StreamListener listener) {
@@ -391,7 +397,6 @@ public abstract class Path extends AbstractPath {
     }
 
     /**
-     * 
      * @param throttle The bandwidth limit
      * @param listener
      */
@@ -405,7 +410,6 @@ public abstract class Path extends AbstractPath {
     }
 
     /**
-     *
      * @param listener The stream listener to notify about bytes received and sent
      */
     public void upload(StreamListener listener) {
@@ -428,10 +432,10 @@ public abstract class Path extends AbstractPath {
      * is asssumed to append to a already existing file if
      * Status#getCurrent > 0
      *
-     * @param in  The stream to read from
-     * @param out The stream to write to
+     * @param in       The stream to read from
+     * @param out      The stream to write to
      * @param throttle The bandwidth limit
-     * @param l The stream listener to notify about bytes received and sent
+     * @param l        The stream listener to notify about bytes received and sent
      * @throws IOResumeException If the input stream fails to skip the appropriate
      *                           number of bytes
      */
@@ -453,10 +457,10 @@ public abstract class Path extends AbstractPath {
     /**
      * Will copy from in to out. Does not attempt to skip any bytes from the streams.
      *
-     * @param in  The stream to read from
-     * @param out The stream to write to
+     * @param in       The stream to read from
+     * @param out      The stream to write to
      * @param throttle The bandwidth limit
-     * @param l The stream listener to notify about bytes received and sent
+     * @param l        The stream listener to notify about bytes received and sent
      * @throws IOException
      */
     public void download(InputStream in, OutputStream out, BandwidthThrottle throttle, final StreamListener l) throws IOException {
@@ -499,9 +503,8 @@ public abstract class Path extends AbstractPath {
     }
 
     /**
-     *
-     * @param in  The stream to read from
-     * @param out The stream to write to
+     * @param in       The stream to read from
+     * @param out      The stream to write to
      * @param listener The stream listener to notify about bytes received and sent
      * @throws IOException
      */

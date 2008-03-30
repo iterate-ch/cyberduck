@@ -190,7 +190,7 @@ public class CDConnectionController extends CDSheetController {
 
     public void portFieldTextDidChange(final NSNotification sender) {
         if(null == this.portField.stringValue() || this.portField.stringValue().equals("")) {
-            final Protocol protocol = (Protocol)protocolPopup.selectedItem().representedObject();
+            final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
             this.portField.setStringValue(String.valueOf(protocol.getDefaultPort()));
         }
     }
@@ -399,7 +399,7 @@ public class CDConnectionController extends CDSheetController {
         if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
             if(hostField.stringValue() != null && !hostField.stringValue().equals("") &&
                     usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {
-                Protocol protocol = (Protocol)protocolPopup.selectedItem().representedObject();
+                Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
                 Credentials l = new Credentials(usernameField.stringValue(), null);
                 this.updateField(this.passField, l.getInternetPasswordFromKeychain(protocol, hostField.stringValue()));
             }
@@ -408,7 +408,7 @@ public class CDConnectionController extends CDSheetController {
 
     private void updateURLLabel(final NSNotification sender) {
         if(StringUtils.hasText(hostField.stringValue())) {
-            final Protocol protocol = (Protocol)protocolPopup.selectedItem().representedObject();
+            final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
             urlLabel.setStringValue(protocol.getScheme() + "://" + usernameField.stringValue()
                     + "@" + hostField.stringValue() + ":" + portField.stringValue()
                     + Path.normalize(pathField.stringValue()));
@@ -422,7 +422,7 @@ public class CDConnectionController extends CDSheetController {
         if(returncode == DEFAULT_OPTION) {
             this.window().endEditingForObject(null);
             Host host = new Host(
-                    (Protocol)protocolPopup.selectedItem().representedObject(),
+                    (Protocol) protocolPopup.selectedItem().representedObject(),
                     hostField.stringValue(),
                     Integer.parseInt(portField.stringValue()),
                     pathField.stringValue());
@@ -438,8 +438,8 @@ public class CDConnectionController extends CDSheetController {
                     host.setFTPConnectMode(FTPConnectMode.PASV);
                 }
             }
-            host.setCredentials(usernameField.stringValue(), passField.stringValue(),
-                    keychainCheckbox.state() == NSCell.OnState);
+            host.setCredentials(new Credentials(usernameField.stringValue(), passField.stringValue(),
+                    keychainCheckbox.state() == NSCell.OnState));
             if(protocolPopup.selectedItem().representedObject().equals(Protocol.SFTP)) {
                 if(pkCheckbox.state() == NSCell.OnState) {
                     host.getCredentials().setPrivateKeyFile(pkLabel.stringValue());

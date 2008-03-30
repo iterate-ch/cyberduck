@@ -34,7 +34,7 @@ import com.enterprisedt.net.ftp.FTPTransferType;
 /**
  * @version $Id$
  */
-public abstract class Transfer extends NSObject {
+public abstract class Transfer extends NSObject implements Serializable {
     protected static Logger log = Logger.getLogger(Transfer.class);
 
     /**
@@ -87,6 +87,8 @@ public abstract class Transfer extends NSObject {
         return queued;
     }
 
+    private Session session;
+
     /**
      * The transfer has been reset
      */
@@ -121,6 +123,7 @@ public abstract class Transfer extends NSObject {
      */
     public Transfer(List roots) {
         this.setRoots(roots);
+        this.session = this.getRoot().getSession();
         this.init();
     }
 
@@ -130,13 +133,18 @@ public abstract class Transfer extends NSObject {
     protected abstract void init();
 
     public Transfer(NSDictionary dict, Session s) {
+        this.session = s;
+        this.init(dict);
+    }
+
+    public void init(NSDictionary dict) {
         Object rootsObj = dict.objectForKey("Roots");
         if(rootsObj != null) {
             NSArray r = (NSArray) rootsObj;
             roots = new Collection();
             for(int i = 0; i < r.count(); i++) {
                 final NSDictionary rootDict = (NSDictionary) r.objectAtIndex(i);
-                final Path root = PathFactory.createPath(s, rootDict);
+                final Path root = PathFactory.createPath(this.session, rootDict);
                 if(rootDict.objectForKey("Complete") != null) {
                     root.getStatus().setComplete(true);
                 }
@@ -313,7 +321,7 @@ public abstract class Transfer extends NSObject {
     }
 
     public Session getSession() {
-        return this.getRoot().getSession();
+        return this.session;
     }
 
     /**
