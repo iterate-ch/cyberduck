@@ -203,16 +203,17 @@ public class CDPreferencesController extends CDWindowController {
         this.uotherx.setTarget(this);
         this.uotherx.setAction(new NSSelector("defaultPermissionsUploadChanged", new Class[]{NSButton.class}));
 
-        tabView.tabViewItemAtIndex(0).setView(panelGeneral);
-        tabView.tabViewItemAtIndex(1).setView(panelInterface);
-        tabView.tabViewItemAtIndex(2).setView(panelTransfer);
-        tabView.tabViewItemAtIndex(3).setView(panelFTP);
-        tabView.tabViewItemAtIndex(4).setView(panelFTPTLS);
-        tabView.tabViewItemAtIndex(5).setView(panelSFTP);
-        tabView.tabViewItemAtIndex(6).setView(panelS3);
-        tabView.tabViewItemAtIndex(7).setView(panelBandwidth);
-        tabView.tabViewItemAtIndex(8).setView(panelAdvanced);
-        tabView.tabViewItemAtIndex(9).setView(panelUpdate);
+        int i = -1;
+        tabView.tabViewItemAtIndex(++i).setView(panelGeneral);
+        tabView.tabViewItemAtIndex(++i).setView(panelInterface);
+        tabView.tabViewItemAtIndex(++i).setView(panelTransfer);
+        tabView.tabViewItemAtIndex(++i).setView(panelFTP);
+        tabView.tabViewItemAtIndex(++i).setView(panelFTPTLS);
+        tabView.tabViewItemAtIndex(++i).setView(panelSFTP);
+        tabView.tabViewItemAtIndex(++i).setView(panelS3);
+        tabView.tabViewItemAtIndex(++i).setView(panelBandwidth);
+        tabView.tabViewItemAtIndex(++i).setView(panelAdvanced);
+        tabView.tabViewItemAtIndex(++i).setView(panelUpdate);
     }
 
     private static final String TRANSFERMODE_AUTO = NSBundle.localizedString("Auto", "");
