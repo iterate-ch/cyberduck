@@ -1681,11 +1681,9 @@ source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text
 source/ch/cyberduck/core/ssl/SSLSession.java -text
 source/ch/cyberduck/core/util/URLSchemeHandlerConfiguration.m -text
 source/ch/cyberduck/ui/cocoa/CDActivityController.java -text
-source/ch/cyberduck/ui/cocoa/CDBottomView.m -text
 source/ch/cyberduck/ui/cocoa/CDBundleController.java -text
 source/ch/cyberduck/ui/cocoa/CDListDataSource.java -text
 source/ch/cyberduck/ui/cocoa/CDMainApplication.java -text
-source/ch/cyberduck/ui/cocoa/CDNavigationView.m -text
 source/ch/cyberduck/ui/cocoa/CDOutlineDataSource.java -text
 source/ch/cyberduck/ui/cocoa/CDPreferencesImpl.m -text
 source/ch/cyberduck/ui/cocoa/CDTranscriptController.java -text
@@ -1702,6 +1700,10 @@ source/ch/cyberduck/ui/cocoa/threading/WindowMainAction.java -text
 source/com/snoize/SNDisclosableView.m -text
 source/com/snoize/SNDisclosureButton.m -text
 source/de/zathras/UKCrashReporter.m -text
+source/net/oofn/CTGradient.h -text
+source/net/oofn/CTGradient.m -text
+source/net/oofn/CTGradientView.h -text
+source/net/oofn/CTGradientView.m -text
 sv.lproj/Alert.nib/classes.nib -text
 sv.lproj/Alert.nib/data.dependency -text
 sv.lproj/Alert.nib/info.nib -text
