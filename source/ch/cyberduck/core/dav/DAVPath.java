@@ -410,10 +410,13 @@ public class DAVPath extends Path {
                         }
 
                         if(session.DAV.putMethod(this.getAbsolute(), in)) {
-                            listener.bytesSent(this.getLocal().attributes.getSize());
+                            // Manually mark as complete
+                            final long sent = this.getLocal().attributes.getSize();
+                            this.getStatus().setCurrent(sent);
+                            this.getStatus().setComplete(true);
+                            listener.bytesSent(sent);
                         }
 
-//                        this.upload(out, in, throttle, listener);
                         if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                             this.writeModificationDate(this.getLocal().attributes.getModificationDate());
                         }

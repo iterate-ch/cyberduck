@@ -32,19 +32,15 @@ import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.CanonicalGrantee;
 import org.jets3t.service.acl.GrantAndPermission;
 import org.jets3t.service.acl.GroupGrantee;
+import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.multithread.*;
 import org.jets3t.service.utils.ObjectUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.Set;
+import java.io.*;
+import java.net.URLEncoder;
+import java.util.*;
 
 /**
  * @version $Id:$
@@ -134,6 +130,14 @@ public class S3Path extends Path {
 
     private S3Bucket _bucket;
 
+    private String getBucketName() {
+        AbstractPath bucketname = this;
+        while(!bucketname.getParent().isRoot()) {
+            bucketname = bucketname.getParent();
+        }
+        return bucketname.getName();
+    }
+
     /**
      * @return
      * @throws S3ServiceException
@@ -143,16 +147,13 @@ public class S3Path extends Path {
             if(this.isRoot()) {
                 return null;
             }
-            AbstractPath bucketname = this;
-            while(!bucketname.getParent().isRoot()) {
-                bucketname = bucketname.getParent();
-            }
-            if(!session.S3.isBucketAccessible(bucketname.getName())) {
-                throw new S3ServiceException("Bucket not available: " + bucketname.getName());
+            final String bucketname = this.getBucketName();
+            if(!session.S3.isBucketAccessible(bucketname)) {
+                throw new S3ServiceException("Bucket not available: " + bucketname);
             }
             final S3Bucket[] buckets = session.S3.listAllBuckets();
             for(int i = 0; i < buckets.length; i++) {
-                if(buckets[i].getName().equals(bucketname.getName())) {
+                if(buckets[i].getName().equals(bucketname)) {
                     _bucket = buckets[i];
                     break;
                 }
@@ -301,18 +302,22 @@ public class S3Path extends Path {
         public void s3ServiceEventPerformed(CreateObjectsEvent event) {
             super.s3ServiceEventPerformed(event);
 
-            if(ServiceEvent.EVENT_STARTED == event.getEventCode()) {
-                final ThreadWatcher watcher = event.getThreadWatcher();
-
-                cancelTrigger = watcher.getCancelEventListener();
-            }
-            else if(ServiceEvent.EVENT_IN_PROGRESS == event.getEventCode()) {
+            if(ServiceEvent.EVENT_IN_PROGRESS == event.getEventCode()) {
                 final ThreadWatcher watcher = event.getThreadWatcher();
 
                 final long diff = watcher.getBytesTransferred() - bytesTransferred;
 
                 listener.bytesSent(diff);
                 S3Path.this.getStatus().setCurrent(bytesTransferred += diff);
+            }
+            else if(ServiceEvent.EVENT_STARTED == event.getEventCode()) {
+                final ThreadWatcher watcher = event.getThreadWatcher();
+
+                cancelTrigger = watcher.getCancelEventListener();
+            }
+            else if(ServiceEvent.EVENT_COMPLETED == event.getEventCode()) {
+                // Manually mark as complete
+                S3Path.this.getStatus().setComplete(true);
             }
             else if(ServiceEvent.EVENT_ERROR == event.getEventCode()) {
                 S3Path.this.error("Upload failed", event.getErrorCause());
@@ -458,13 +463,12 @@ public class S3Path extends Path {
      * The absolute path minus the bucket part
      *
      * @return
-     * @throws S3ServiceException
      */
-    private String getKey() throws S3ServiceException {
+    private String getKey() {
         if(this.isBucket()) {
-            return this.getBucket().getName();
+            return this.getBucketName();
         }
-        return this.getAbsolute().substring(this.getBucket().getName().length() + 2);
+        return this.getAbsolute().substring(this.getBucketName().length() + 2);
     }
 
     private static final int BUCKET_LIST_CHUNKING_SIZE = 1000;
@@ -641,10 +645,10 @@ public class S3Path extends Path {
                         acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
                     }
                     if(this.isBucket()) {
-                        session.S3.putBucketAcl(this.getBucket().getName(), acl);
+                        session.S3.putBucketAcl(this.getBucketName(), acl);
                     }
                     else if(attributes.isFile()) {
-                        session.S3.putObjectAcl(this.getBucket().getName(), this.getKey(), acl);
+                        session.S3.putObjectAcl(this.getBucketName(), this.getKey(), acl);
                     }
                 }
                 if(attributes.isDirectory()) {
@@ -683,11 +687,11 @@ public class S3Path extends Path {
                 session.check();
                 if(attributes.isFile()) {
                     session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
-                    session.S3.deleteObject(this.getBucket().getName(), this.getKey());
+                    session.S3.deleteObject(this.getBucketName(), this.getKey());
                 }
                 else if(attributes.isDirectory()) {
                     if(this.isBucket()) {
-                        session.S3.deleteBucket(this.getBucket().getName());
+                        session.S3.deleteBucket(this.getBucketName());
                     }
                     else {
                         for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
@@ -744,7 +748,7 @@ public class S3Path extends Path {
             try {
                 session.check();
                 return S3Service.createSignedUrl("GET",
-                        this.getBucket().getName(), this.getName(), null,
+                        this.getBucketName(), this.getName(), null,
                         null, session.S3.getAWSCredentials(), secondsSinceEpoch, false);
             }
             catch(S3ServiceException e) {
@@ -754,7 +758,19 @@ public class S3Path extends Path {
                 log.error(e.getMessage());
             }
         }
-        return super.toURL();
+        try {
+            StringBuffer b = new StringBuffer();
+            StringTokenizer t = new StringTokenizer(this.getKey(), "/");
+            while(t.hasMoreTokens()) {
+                b.append(DELIMITER).append(URLEncoder.encode(t.nextToken(), "UTF-8"));
+            }
+            // Do not use java.net.URL because it doesn't know about SFTP!
+            return Protocol.S3.getScheme() + "://" + RestS3Service.generateS3HostnameForBucket(this.getBucketName()) + b.toString();
+        }
+        catch(UnsupportedEncodingException e) {
+            log.error(e.getMessage());
+            return null;
+        }
     }
 
     public boolean isMkdirSupported() {
