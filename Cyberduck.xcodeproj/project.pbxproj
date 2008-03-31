@@ -189,9 +189,6 @@
 		47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
 		479734DB077B735A0027370F /* arrowLeftBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479734D9077B735A0027370F /* arrowLeftBlack16.tiff */; };
 		479982820D26DA8200DB5353 /* executable.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479982810D26DA8200DB5353 /* executable.tiff */; };
-		4799CE110A29EEF700AA4E59 /* bottom.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4799CE100A29EEF700AA4E59 /* bottom.tiff */; };
-		4799CE260A29EF5600AA4E59 /* CDBottomView.h in Headers */ = {isa = PBXBuildFile; fileRef = 4799CE240A29EF5600AA4E59 /* CDBottomView.h */; };
-		4799CE270A29EF5600AA4E59 /* CDBottomView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4799CE250A29EF5600AA4E59 /* CDBottomView.m */; };
 		479C422A097AB2BB00DDE88A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 479C4229097AB2BB00DDE88A /* Credits.rtf */; };
 		479D64A70752257400FE6086 /* arrowUpBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479D64A50752257400FE6086 /* arrowUpBlack16.tiff */; };
 		479F9E000C0E210100610A91 /* goto.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479F9DFF0C0E210100610A91 /* goto.tiff */; };
@@ -199,9 +196,10 @@
 		47A61DCA076C854A00B535D6 /* generic-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A61DC9076C854A00B535D6 /* generic-document.icns */; };
 		47A88FBB0B931D9C00DB9D87 /* Configuration.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47A88FB90B931D9C00DB9D87 /* Configuration.strings */; };
 		47AA19690AF09F810059C736 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47AA19670AF09F810059C736 /* Error.strings */; };
-		47BA61C70A2507320034AB18 /* CDNavigationView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47BA61C50A2507320034AB18 /* CDNavigationView.h */; };
-		47BA61C80A2507320034AB18 /* CDNavigationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BA61C60A2507320034AB18 /* CDNavigationView.m */; };
-		47BA622D0A25127B0034AB18 /* navigation.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47BA622C0A25127B0034AB18 /* navigation.tiff */; };
+		47AC356F0DA1025000CC1426 /* CTGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = 47AC356B0DA1025000CC1426 /* CTGradient.h */; };
+		47AC35700DA1025000CC1426 /* CTGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = 47AC356C0DA1025000CC1426 /* CTGradient.m */; };
+		47AC35710DA1025000CC1426 /* CTGradientView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47AC356D0DA1025000CC1426 /* CTGradientView.h */; };
+		47AC35720DA1025000CC1426 /* CTGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47AC356E0DA1025000CC1426 /* CTGradientView.m */; };
 		47BEDAFC0B92960400141EB4 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		47BEDAFD0B92960400141EB4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		47BEDAFE0B92960400141EB4 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479982AF05F54B1600F81519 /* Carbon.framework */; };
@@ -1005,9 +1003,6 @@
 		47983764072AD73700FA3CDB /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 		479982810D26DA8200DB5353 /* executable.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = executable.tiff; sourceTree = "<group>"; };
 		479982AF05F54B1600F81519 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		4799CE100A29EEF700AA4E59 /* bottom.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = bottom.tiff; sourceTree = "<group>"; };
-		4799CE240A29EF5600AA4E59 /* CDBottomView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDBottomView.h; sourceTree = "<group>"; };
-		4799CE250A29EF5600AA4E59 /* CDBottomView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDBottomView.m; sourceTree = "<group>"; };
 		479C4229097AB2BB00DDE88A /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		479D64A50752257400FE6086 /* arrowUpBlack16.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowUpBlack16.tiff; sourceTree = "<group>"; };
 		479F9DFF0C0E210100610A91 /* goto.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = goto.tiff; sourceTree = "<group>"; };
@@ -1113,6 +1108,10 @@
 		47AA19800AF0ABA80059C736 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = zh_CN.lproj/Error.strings; sourceTree = "<group>"; };
 		47AA19810AF0ABA80059C736 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/Error.strings; sourceTree = "<group>"; };
 		47AA19820AF0ABA80059C736 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Error.strings; sourceTree = "<group>"; };
+		47AC356B0DA1025000CC1426 /* CTGradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CTGradient.h; sourceTree = "<group>"; };
+		47AC356C0DA1025000CC1426 /* CTGradient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CTGradient.m; sourceTree = "<group>"; };
+		47AC356D0DA1025000CC1426 /* CTGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CTGradientView.h; sourceTree = "<group>"; };
+		47AC356E0DA1025000CC1426 /* CTGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CTGradientView.m; sourceTree = "<group>"; };
 		47B19B4207AA609B0064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Info.nib; sourceTree = "<group>"; };
 		47B19B4507AA60BE0064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Browser.nib; sourceTree = "<group>"; };
 		47B19B4607AA60CD0064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Main.nib; sourceTree = "<group>"; };
@@ -1127,9 +1126,6 @@
 		47B19B5507AA60E90064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text; name = ru; path = ru.lproj/License.txt; sourceTree = "<group>"; };
 		47B19B5607AA60E90064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47B19B5707AA60E90064740E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		47BA61C50A2507320034AB18 /* CDNavigationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDNavigationView.h; sourceTree = "<group>"; };
-		47BA61C60A2507320034AB18 /* CDNavigationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDNavigationView.m; sourceTree = "<group>"; };
-		47BA622C0A25127B0034AB18 /* navigation.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = navigation.tiff; sourceTree = "<group>"; };
 		47BEDB030B92960400141EB4 /* libURLSchemeHandlerConfiguration.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libURLSchemeHandlerConfiguration.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47BEDB0D0B92967600141EB4 /* URLSchemeHandlerConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLSchemeHandlerConfiguration.h; sourceTree = "<group>"; };
 		47BEDB0E0B92967600141EB4 /* URLSchemeHandlerConfiguration.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = URLSchemeHandlerConfiguration.java; sourceTree = "<group>"; };
@@ -1536,6 +1532,7 @@
 			isa = PBXGroup;
 			children = (
 				29B97316FDCFA39411CA2CEA /* main.m */,
+				47AC35690DA1025000CC1426 /* net */,
 				47457F8A09980270002C93C3 /* de */,
 				474152D806C4F08A00AC0BD2 /* ch */,
 				4741532B06C4F08A00AC0BD2 /* com */,
@@ -1682,8 +1679,6 @@
 				477B1B780AF383DC0023BA7F /* SNDisclosureArrowRight.tiff */,
 				47905BE10AE3D6FF00F9E193 /* unlocked.tiff */,
 				47905BE20AE3D6FF00F9E193 /* locked.tiff */,
-				4799CE100A29EEF700AA4E59 /* bottom.tiff */,
-				47BA622C0A25127B0034AB18 /* navigation.tiff */,
 				4754786A0A232C9A00CD6EAC /* cancel.tiff */,
 				4716C6430872C8BA00938886 /* idisk.tiff */,
 				47ED8CC908813F9200314985 /* bookmark16.tiff */,
@@ -1807,16 +1802,31 @@
 		4798434E072B0DAA00FA3CDB /* view */ = {
 			isa = PBXGroup;
 			children = (
-				4799CE240A29EF5600AA4E59 /* CDBottomView.h */,
-				4799CE250A29EF5600AA4E59 /* CDBottomView.m */,
 				47494C3C07EC6B4200B34D53 /* CDOutlineView.m */,
 				47494C3D07EC6B4200B34D53 /* CDOutlineView.h */,
 				47494C3E07EC6B4200B34D53 /* CDListView.m */,
 				47494C3F07EC6B4200B34D53 /* CDListView.h */,
-				47BA61C60A2507320034AB18 /* CDNavigationView.m */,
-				47BA61C50A2507320034AB18 /* CDNavigationView.h */,
 			);
 			name = view;
+			sourceTree = "<group>";
+		};
+		47AC35690DA1025000CC1426 /* net */ = {
+			isa = PBXGroup;
+			children = (
+				47AC356A0DA1025000CC1426 /* oofn */,
+			);
+			path = net;
+			sourceTree = "<group>";
+		};
+		47AC356A0DA1025000CC1426 /* oofn */ = {
+			isa = PBXGroup;
+			children = (
+				47AC356B0DA1025000CC1426 /* CTGradient.h */,
+				47AC356C0DA1025000CC1426 /* CTGradient.m */,
+				47AC356D0DA1025000CC1426 /* CTGradientView.h */,
+				47AC356E0DA1025000CC1426 /* CTGradientView.m */,
+			);
+			path = oofn;
 			sourceTree = "<group>";
 		};
 		47BEDB0C0B92967500141EB4 /* util */ = {
@@ -1868,12 +1878,12 @@
 				47494C4307EC6B4200B34D53 /* CDListView.h in Headers */,
 				47457F8E09980270002C93C3 /* UKCrashReporter.h in Headers */,
 				475E53F709AD1B48007CFC2B /* UKPrefsPanel.h in Headers */,
-				47BA61C70A2507320034AB18 /* CDNavigationView.h in Headers */,
-				4799CE260A29EF5600AA4E59 /* CDBottomView.h in Headers */,
 				477B1B800AF384350023BA7F /* SNDisclosableView.h in Headers */,
 				477B1B820AF384350023BA7F /* SNDisclosureButton.h in Headers */,
 				47152E1D0D9F2586003D8AE4 /* SKWSegmentedControl.h in Headers */,
 				47152E1F0D9F2586003D8AE4 /* SKWSegmentedControlWindowProxy.h in Headers */,
+				47AC356F0DA1025000CC1426 /* CTGradient.h in Headers */,
+				47AC35710DA1025000CC1426 /* CTGradientView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2398,8 +2408,6 @@
 				47FC190C099FB8AF0082431D /* Crash.strings in Resources */,
 				4759C93D0A1476E500C5980A /* Progress.nib in Resources */,
 				4754786B0A232C9A00CD6EAC /* cancel.tiff in Resources */,
-				47BA622D0A25127B0034AB18 /* navigation.tiff in Resources */,
-				4799CE110A29EEF700AA4E59 /* bottom.tiff in Resources */,
 				47905BE30AE3D6FF00F9E193 /* unlocked.tiff in Resources */,
 				47905BE40AE3D6FF00F9E193 /* locked.tiff in Resources */,
 				473779A50AE5365600F73905 /* stop16.tiff in Resources */,
@@ -2537,12 +2545,12 @@
 				47494C4207EC6B4200B34D53 /* CDListView.m in Sources */,
 				47457F8F09980270002C93C3 /* UKCrashReporter.m in Sources */,
 				475E53F809AD1B48007CFC2B /* UKPrefsPanel.m in Sources */,
-				47BA61C80A2507320034AB18 /* CDNavigationView.m in Sources */,
-				4799CE270A29EF5600AA4E59 /* CDBottomView.m in Sources */,
 				477B1B810AF384350023BA7F /* SNDisclosableView.m in Sources */,
 				477B1B830AF384350023BA7F /* SNDisclosureButton.m in Sources */,
 				47152E1E0D9F2586003D8AE4 /* SKWSegmentedControl.m in Sources */,
 				47152E200D9F2586003D8AE4 /* SKWSegmentedControlWindowProxy.m in Sources */,
+				47AC35700DA1025000CC1426 /* CTGradient.m in Sources */,
+				47AC35720DA1025000CC1426 /* CTGradientView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
