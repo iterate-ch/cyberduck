@@ -938,7 +938,7 @@ public class CDBrowserController extends CDWindowController
 
     public void setBookmarkButton(NSButton bookmarkButton) {
         this.bookmarkButton = bookmarkButton;
-        this.bookmarkButton.setImage(NSImage.imageNamed("bookmarks.tiff"));
+        this.bookmarkButton.setImage(NSImage.imageNamed("bookmark16.tiff"));
         this.setRecessedBezelStyle(this.bookmarkButton);
         this.bookmarkButton.setTarget(this);
         this.bookmarkButton.setAction(new NSSelector("bookmarkButtonClicked", new Class[]{Object.class}));
@@ -996,10 +996,19 @@ public class CDBrowserController extends CDWindowController
 
     private NSSegmentedControl bookmarkSwitchView;
 
+    private static final int SWITCH_BOOKMARK_VIEW = 0;
+
     public void setBookmarkSwitchView(NSSegmentedControl bookmarkSwitchView) {
         this.bookmarkSwitchView = bookmarkSwitchView;
+        this.bookmarkSwitchView.setSegmentCount(1);
+        this.bookmarkSwitchView.setImage(NSImage.imageNamed("bookmarks.tiff"), SWITCH_BOOKMARK_VIEW);
+        final NSSegmentedCell cell = (NSSegmentedCell)this.bookmarkSwitchView.cell();
+        cell.setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectOne);
+        cell.setControlSize(NSCell.RegularControlSize);
         this.bookmarkSwitchView.setTarget(this);
         this.bookmarkSwitchView.setAction(new NSSelector("bookmarkSwitchClicked", new Class[]{Object.class}));
+        this.bookmarkSwitchView.setSelected(Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen"),
+                SWITCH_BOOKMARK_VIEW);
     }
 
     public void bookmarkSwitchClicked(final NSSegmentedControl sender) {
@@ -1014,7 +1023,7 @@ public class CDBrowserController extends CDWindowController
      */
     public void toggleBookmarks(final boolean open) {
         log.debug("bookmarkSwitchClicked:" + open);
-        this.bookmarkSwitchView.setSelected(open, 0);
+        this.bookmarkSwitchView.setSelected(open, SWITCH_BOOKMARK_VIEW);
         if(open) {
             // Display bookmarks
             this.browserTabView.selectTabViewItemAtIndex(TAB_BOOKMARKS);
@@ -1038,8 +1047,9 @@ public class CDBrowserController extends CDWindowController
         this.browserSwitchView.setImage(NSImage.imageNamed("outline.tiff"), SWITCH_OUTLINE_VIEW);
         this.browserSwitchView.setTarget(this);
         this.browserSwitchView.setAction(new NSSelector("browserSwitchButtonClicked", new Class[]{Object.class}));
-        ((NSSegmentedCell) this.browserSwitchView.cell()).setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectOne);
-        this.browserSwitchView.cell().setControlSize(NSCell.RegularControlSize);
+        final NSSegmentedCell cell = (NSSegmentedCell)this.browserSwitchView.cell();
+        cell.setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectOne);
+        cell.setControlSize(NSCell.RegularControlSize);
         this.browserSwitchView.setSelected(Preferences.instance().getInteger("browser.view"));
     }
 
