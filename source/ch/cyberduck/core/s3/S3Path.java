@@ -690,17 +690,15 @@ public class S3Path extends Path {
                     session.S3.deleteObject(this.getBucketName(), this.getKey());
                 }
                 else if(attributes.isDirectory()) {
+                    for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
+                        if(!session.isConnected()) {
+                            break;
+                        }
+                        Path file = (Path) iter.next();
+                        file.delete();
+                    }
                     if(this.isBucket()) {
                         session.S3.deleteBucket(this.getBucketName());
-                    }
-                    else {
-                        for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
-                            if(!session.isConnected()) {
-                                break;
-                            }
-                            Path file = (Path) iter.next();
-                            file.delete();
-                        }
                     }
                 }
                 this.getParent().invalidate();
