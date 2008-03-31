@@ -23,6 +23,8 @@ import com.apple.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 
 import java.net.URL;
+import java.util.Enumeration;
+import java.util.Iterator;
 
 /**
  * @version $Id$
@@ -135,7 +137,7 @@ public class HostCollection extends Collection {
         if(Preferences.instance().getBoolean("favorites.save")) {
             try {
                 NSMutableArray list = new NSMutableArray();
-                java.util.Iterator i = this.iterator();
+                Iterator i = this.iterator();
                 while(i.hasNext()) {
                     Host bookmark = (Host) i.next();
                     list.addObject(bookmark.getAsDictionary());
@@ -182,7 +184,7 @@ public class HostCollection extends Collection {
                 }
                 if(propertyListFromXMLData instanceof NSArray) {
                     NSArray entries = (NSArray) propertyListFromXMLData;
-                    java.util.Enumeration i = entries.objectEnumerator();
+                    Enumeration i = entries.objectEnumerator();
                     while(i.hasMoreElements()) {
                         Object element = i.nextElement();
                         if(element instanceof NSDictionary) {
