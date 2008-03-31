@@ -30,10 +30,14 @@ Boolean GetMetadataForFile(void* thisInterface,
     NSDictionary *bookmark = [NSDictionary dictionaryWithContentsOfFile:(NSString *)file];
 	if(bookmark) 
 	{
-		[(NSMutableDictionary *)attributes setObject:[bookmark objectForKey:@"Hostname"]
-											  forKey:@"ch_sudo_cyberduck_hostname"];
-		[(NSMutableDictionary *)attributes setObject:[bookmark objectForKey:@"Nickname"]
-											  forKey:@"ch_sudo_cyberduck_nickname"];
+		if(nil != [bookmark objectForKey:@"Hostname"]) {
+			[(NSMutableDictionary *)attributes setObject:[bookmark objectForKey:@"Hostname"]
+												  forKey:@"ch_sudo_cyberduck_hostname"];
+		}
+		if(nil != [bookmark objectForKey:@"Nickname"]) {
+			[(NSMutableDictionary *)attributes setObject:[bookmark objectForKey:@"Nickname"]
+												  forKey:@"ch_sudo_cyberduck_nickname"];
+		}
 	}
 	[pool release];
 	
