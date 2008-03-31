@@ -1,24 +1,24 @@
 {
     IBClasses =     (
                 {
-            CLASS = CDBottomView;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSView;
-        },
-                {
             CLASS = CDListView;
             LANGUAGE = ObjC;
             SUPERCLASS = NSTableView;
         },
                 {
-            CLASS = CDNavigationView;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSView;
-        },
-                {
             CLASS = CDOutlineView;
             LANGUAGE = ObjC;
             SUPERCLASS = NSOutlineView;
+        },
+                {
+            ACTIONS =             {
+                changeAngle = id;
+                changeStyle = id;
+                changeType = id;
+            };
+            CLASS = CTGradientView;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSView;
         },
                 {
             ACTIONS =             {
