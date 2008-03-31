@@ -1,19 +1,19 @@
 {
     IBClasses =     (
                 {
-            CLASS = AIAutoScrollView;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSScrollView;
-        },
-                {
-            CLASS = CDBottomView;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSView;
-        },
-                {
             CLASS = CDListView;
             LANGUAGE = ObjC;
             SUPERCLASS = NSTableView;
+        },
+                {
+            ACTIONS =             {
+                changeAngle = id;
+                changeStyle = id;
+                changeType = id;
+            };
+            CLASS = CTGradientView;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSView;
         },
                 {
             ACTIONS =             {
