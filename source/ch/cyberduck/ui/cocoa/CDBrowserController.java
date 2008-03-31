@@ -1003,7 +1003,7 @@ public class CDBrowserController extends CDWindowController
         this.bookmarkSwitchView.setSegmentCount(1);
         this.bookmarkSwitchView.setImage(NSImage.imageNamed("bookmarks.tiff"), SWITCH_BOOKMARK_VIEW);
         final NSSegmentedCell cell = (NSSegmentedCell)this.bookmarkSwitchView.cell();
-        cell.setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectOne);
+        cell.setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectAny);
         cell.setControlSize(NSCell.RegularControlSize);
         this.bookmarkSwitchView.setTarget(this);
         this.bookmarkSwitchView.setAction(new NSSelector("bookmarkSwitchClicked", new Class[]{Object.class}));
