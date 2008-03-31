@@ -9,6 +9,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 - [Feature] WebDAV protocol support [#464]
 - [Feature] Search bookmarks [#916]
 - [Feature] Bookmark editor inside browser window instead of drawer
+- [Feature] Read trust settings for certificates from Keychain
 - [Feature] Different editors for different file types [#146]
 - [Feature] PRET (PRE Transfer) command support for distributed FTP (http://www.drftpd.org) [#684]
 - [Feature] Skip option not available in transfer prompt [#1159]

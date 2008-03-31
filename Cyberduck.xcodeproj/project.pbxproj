@@ -3987,7 +3987,7 @@
 				JAVA_COMPILER_TARGET_VM_VERSION = 1.4;
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				"MACOSX_DEPLOYMENT_TARGET[arch=i386]" = 10.4;
-				"MACOSX_DEPLOYMENT_TARGET[arch=ppc]" = 10.3;
+				"MACOSX_DEPLOYMENT_TARGET[arch=ppc]" = 10.4;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"-lz",
@@ -3998,8 +3998,9 @@
 				);
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = Cyberduck;
-				"SDKROOT[arch=i386]" = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
-				"SDKROOT[arch=ppc]" = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				"SDKROOT[arch=i386]" = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				"SDKROOT[arch=ppc]" = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				SECTORDER_FLAGS = "";
 				SRCROOT = "";
 				WARNING_CFLAGS = (
