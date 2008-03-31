@@ -3186,13 +3186,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void copyURLButtonClicked(final Object sender) {
-        String url = null;
-        if(this.getSelectionCount() > 0) {
-            url = this.getSelectedPath().toURL();
-        }
-        else {
-            url = this.workdir().toURL();
-        }
+        final String url = this.getSelectionCount() > 0 ? this.getSelectedPath().toURL() : this.workdir().toURL();
         if(null == url) {
             return;
         }
