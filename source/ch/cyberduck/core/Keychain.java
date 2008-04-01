@@ -115,15 +115,15 @@ public class Keychain {
      * @param certs
      * @return
      */
-    public synchronized boolean isTrusted(X509Certificate[] certs) {
-        return this.isTrusted(this.getEncoded(certs));
+    public synchronized boolean isTrusted(String hostname, X509Certificate[] certs) {
+        return this.isTrusted(hostname, this.getEncoded(certs));
     }
 
     /**
      * @param certificates An array containing byte[] certificates
      * @return
      */
-    private native boolean isTrusted(Object[] certificates);
+    private native boolean isTrusted(String hostname, Object[] certificates);
 
     /**
      * @param certificates

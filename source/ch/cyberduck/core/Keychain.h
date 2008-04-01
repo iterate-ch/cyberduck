@@ -54,7 +54,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addInternetPasswordToKeyc
  * Signature: ([B)Z
  */
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrusted
-  (JNIEnv * env, jobject this, jobjectArray jCertificateChain);
+  (JNIEnv * env, jobject this, jstring jHostname, jobjectArray jCertificateChain);
 
 NSArray* Java_ch_cyberduck_core_Keychain_createCertificatesFromData
   (JNIEnv * env, jobjectArray jCertificateChain);

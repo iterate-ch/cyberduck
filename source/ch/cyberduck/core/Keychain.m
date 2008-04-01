@@ -124,7 +124,7 @@ NSArray* Java_ch_cyberduck_core_Keychain_createCertificatesFromData(JNIEnv *env,
     return result;
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrusted (JNIEnv *env, jobject this, jobjectArray jCertificates)
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrusted (JNIEnv *env, jobject this, jstring jHostname, jobjectArray jCertificates)
 {
 	OSStatus err;
 	NSArray *certificates = Java_ch_cyberduck_core_Keychain_createCertificatesFromData(env, jCertificates);
@@ -164,6 +164,19 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrusted (JNIEnv *en
 	if(searchRef) {
 		CFRelease(searchRef);
 	}
+	NSString *hostname = convertToNSString(env, jHostname);
+	CSSM_APPLE_TP_SSL_OPTIONS ssloptions = {
+		.Version = CSSM_APPLE_TP_SSL_OPTS_VERSION,
+		.ServerNameLen = [hostname length]+1,
+		.ServerName = [hostname cString],
+		.Flags = 0
+	};
+
+	CSSM_DATA customCssmData = {
+		.Length = sizeof(ssloptions),
+		.Data = (uint8*)&ssloptions
+	};
+	err = SecPolicySetValue(policyRef, &customCssmData);
 	// Creates a trust management object based on certificates and policies.
 	SecTrustRef trustRef = NULL;
 	err = SecTrustCreateWithCertificates((CFArrayRef)certificates, policyRef, &trustRef);
@@ -205,7 +218,33 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrusted (JNIEnv *en
 		default:
 			break;
 	}
+	CFArrayRef certChain;
+	CSSM_TP_APPLE_EVIDENCE_INFO *statusChain;
+	err = SecTrustGetResult(trustRef, &trustResult, &certChain, &statusChain);
+//       CSSM_CERT_STATUS_EXPIRED            = 0x00000001,
+//       CSSM_CERT_STATUS_NOT_VALID_YET      = 0x00000002,
+//       CSSM_CERT_STATUS_IS_IN_INPUT_CERTS  = 0x00000004,
+//       CSSM_CERT_STATUS_IS_IN_ANCHORS      = 0x00000008,
+//       CSSM_CERT_STATUS_IS_ROOT            = 0x00000010,
+//       CSSM_CERT_STATUS_IS_FROM_NET        = 0x00000020,
 	SFCertificateTrustPanel *panel = [[SFCertificateTrustPanel alloc] init];
+	if(err == noErr) {
+		if ([panel respondsToSelector:@selector(setInformativeText:)]) {
+			if((statusChain->StatusBits & CSSM_CERT_STATUS_EXPIRED) == CSSM_CERT_STATUS_EXPIRED) {
+				[panel setInformativeText:[NSString stringWithFormat:NSLocalizedStringFromTable(@"The certificate for this server has expired. You might be connecting to a server that is pretending to be %@ which could put your confidential information at risk. Would you like to connect to the server anyway?", @"Keychain", @""), hostname]];
+			}
+			else if((statusChain->StatusBits & CSSM_CERT_STATUS_NOT_VALID_YET) == CSSM_CERT_STATUS_NOT_VALID_YET) {
+				[panel setInformativeText:[NSString stringWithFormat:NSLocalizedStringFromTable(@"The certificate for this server is not yet valid. You might be connecting to a server that is pretending to be %@ which could put your confidential information at risk. Would you like to connect to the server anyway?", @"Keychain", @""), hostname]];
+			}
+			else if((statusChain->StatusBits & CSSM_CERT_STATUS_IS_ROOT) == CSSM_CERT_STATUS_IS_ROOT
+			            && (statusChain->StatusBits & CSSM_CERT_STATUS_IS_IN_ANCHORS) != CSSM_CERT_STATUS_IS_IN_ANCHORS) {
+				[panel setInformativeText:[NSString stringWithFormat:NSLocalizedStringFromTable(@"The certificate for this server was signed by an unknown certifying authority. You might be connecting to a server that is pretending to be %@ which could put your confidential information at risk. Would you like to connect to the server anyway?", @"Keychain", @""), hostname]];
+			}
+			else if((statusChain->StatusBits & CSSM_CERT_STATUS_IS_IN_ANCHORS) != CSSM_CERT_STATUS_IS_IN_ANCHORS) {
+				[panel setInformativeText:[NSString stringWithFormat:NSLocalizedStringFromTable(@"The certificate for this server is invalid. You might be connecting to a server that is pretending to be %@ which could put your confidential information at risk. Would you like to connect to the server anyway?", @"Keychain", @""), hostname]];
+			}
+		}
+	}
 	if([panel respondsToSelector:@selector(setAlternateButtonTitle:)]) {
 		[panel setAlternateButtonTitle:NSLocalizedString(@"Disconnect", @"")];
 	}
