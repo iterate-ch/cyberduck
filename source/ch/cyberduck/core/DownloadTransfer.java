@@ -116,10 +116,14 @@ public class DownloadTransfer extends Transfer {
                 p.readSize();
             }
             if(p.attributes.getModificationDate() == -1) {
-                p.readTimestamp();
+                if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
+                    p.readTimestamp();
+                }
             }
             if(p.attributes.getPermission() == null) {
-                p.readPermission();
+                if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
+                    p.readPermission();
+                }
             }
             // Read file size
             if(p.attributes.isFile()) {

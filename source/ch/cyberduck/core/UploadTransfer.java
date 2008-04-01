@@ -189,10 +189,14 @@ public class UploadTransfer extends Transfer {
                             p.readSize();
                         }
                         if(p.attributes.getModificationDate() == -1) {
-                            p.readTimestamp();
+                            if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                                p.readTimestamp();
+                            }
                         }
                         if(p.attributes.getPermission() == null) {
-                            p.readPermission();
+                            if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                                p.readPermission();
+                            }
                         }
                     }
                     if(p.attributes.isFile()) {
