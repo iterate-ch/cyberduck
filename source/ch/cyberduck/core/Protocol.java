@@ -194,6 +194,10 @@ public abstract class Protocol {
         public String getScheme() {
             return "http";
         }
+
+        public String[] getSchemes() {
+            return new String[]{this.getScheme(), "dav"};
+        }
     };
 
     public static final Protocol WEBDAV_SSL = new Protocol() {
@@ -219,6 +223,10 @@ public abstract class Protocol {
 
         public boolean isSecure() {
             return true;
+        }
+
+        public String[] getSchemes() {
+            return new String[]{this.getScheme(), "davs"};
         }
     };
 
