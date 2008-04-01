@@ -107,6 +107,7 @@ public class DAVPath extends Path {
             }
             catch(IOException e) {
                 this.error("Connection failed", e);
+                session.interrupt();
             }
             finally {
                 session.fireActivityStoppedEvent();
@@ -234,6 +235,7 @@ public class DAVPath extends Path {
             }
             catch(IOException e) {
                 this.error("Connection failed", e);
+                session.interrupt();
             }
             finally {
                 session.fireActivityStoppedEvent();
@@ -369,6 +371,7 @@ public class DAVPath extends Path {
                 }
                 catch(IOException e) {
                     this.error("Connection failed", e);
+                    session.interrupt();
                 }
                 finally {
                     try {
@@ -445,6 +448,7 @@ public class DAVPath extends Path {
             }
             catch(IOException e) {
                 this.error("Connection failed", e);
+                session.interrupt();
             }
             finally {
                 session.fireActivityStoppedEvent();

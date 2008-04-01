@@ -184,6 +184,7 @@ public class S3Path extends Path {
             }
             catch(IOException e) {
                 this.error("Connection failed", e);
+                session.interrupt();
             }
             finally {
                 session.fireActivityStoppedEvent();
@@ -205,6 +206,7 @@ public class S3Path extends Path {
                 }
                 catch(IOException e) {
                     this.error("Connection failed", e);
+                    session.interrupt();
                 }
                 finally {
                     session.fireActivityStoppedEvent();
@@ -234,7 +236,7 @@ public class S3Path extends Path {
                 }
             }
             catch(S3ServiceException e) {
-                this.error("Cannot read file attributes", e);
+                log.warn("Cannot read file attributes", e);
             }
             catch(IOException e) {
                 this.error("Connection failed", e);
@@ -370,6 +372,7 @@ public class S3Path extends Path {
                 }
                 catch(IOException e) {
                     this.error("Connection failed", e);
+                    session.interrupt();
                 }
                 finally {
                     try {
@@ -457,6 +460,7 @@ public class S3Path extends Path {
             }
             catch(IOException e) {
                 this.error("Connection failed", e);
+                session.interrupt();
             }
             finally {
                 session.fireActivityStoppedEvent();
@@ -587,6 +591,7 @@ public class S3Path extends Path {
             }
             catch(IOException e) {
                 this.error("Connection failed", e);
+                session.interrupt();
             }
             finally {
                 session.fireActivityStoppedEvent();
@@ -614,6 +619,7 @@ public class S3Path extends Path {
             }
             catch(IOException e) {
                 this.error("Connection failed", e);
+                session.interrupt();
             }
             finally {
                 session.fireActivityStoppedEvent();
@@ -766,6 +772,7 @@ public class S3Path extends Path {
                 log.error(e.getMessage());
             }
             catch(IOException e) {
+                session.interrupt();
                 log.error(e.getMessage());
             }
         }
