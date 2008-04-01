@@ -308,16 +308,15 @@ public class Host extends NSObject implements Serializable {
         }
         int begin = 0;
         int cut;
+        if(input.indexOf("://", begin) == -1) {
+            throw new MalformedURLException("No protocol scheme");
+        }
         Protocol protocol = null;
         if(input.indexOf("://", begin) != -1) {
             cut = input.indexOf("://", begin);
             protocol = Protocol.forScheme(input.substring(begin, cut));
             if(null != protocol) {
-                begin += protocol.getScheme().length() + 3;
-            }
-            else {
-                protocol = Protocol.forName(input.substring(begin, cut));
-                begin += protocol.getIdentifier().length() + 3;
+                begin += cut-begin + 3;
             }
         }
         if(null == protocol) {
