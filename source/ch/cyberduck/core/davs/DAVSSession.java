@@ -53,7 +53,7 @@ public class DAVSSession extends DAVSession implements SSLSession {
             this.setTrustManager(new IgnoreX509TrustManager());
         }
         else {
-            this.setTrustManager(new KeychainX509TrustManager());
+            this.setTrustManager(new KeychainX509TrustManager(h.getHostname()));
         }
     }
 

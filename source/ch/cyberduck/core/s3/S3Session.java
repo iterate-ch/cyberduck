@@ -87,7 +87,7 @@ public class S3Session extends Session implements SSLSession {
             this.setTrustManager(new IgnoreX509TrustManager());
         }
         else {
-            this.setTrustManager(new KeychainX509TrustManager());
+            this.setTrustManager(new KeychainX509TrustManager(h.getHostname()));
         }
     }
 
@@ -186,7 +186,6 @@ public class S3Session extends Session implements SSLSession {
                             authscheme.getSchemeName());
                 }
             }, configuration, hostConfiguration);
-            this.S3.listAllBuckets();
         }
         catch(S3ServiceException e) {
             if(this.isLoginFailure(e)) {

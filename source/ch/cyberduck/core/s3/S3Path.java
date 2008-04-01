@@ -151,12 +151,21 @@ public class S3Path extends Path {
             if(!session.S3.isBucketAccessible(bucketname)) {
                 throw new S3ServiceException("Bucket not available: " + bucketname);
             }
-            final S3Bucket[] buckets = session.S3.listAllBuckets();
-            for(int i = 0; i < buckets.length; i++) {
-                if(buckets[i].getName().equals(bucketname)) {
-                    _bucket = buckets[i];
-                    break;
+            try {
+                final S3Bucket[] buckets = session.S3.listAllBuckets();
+                for(int i = 0; i < buckets.length; i++) {
+                    if(buckets[i].getName().equals(bucketname)) {
+                        _bucket = buckets[i];
+                        break;
+                    }
                 }
+            }
+            catch(S3ServiceException e) {
+                log.error("Listing buckets failed:" + e.getMessage());
+            }
+            if(null == _bucket) {
+                log.warn("Bucket not found with name:" + bucketname);
+                return new S3Bucket(bucketname);
             }
         }
         return _bucket;
@@ -540,7 +549,9 @@ public class S3Path extends Path {
 
                             paths[i].attributes.setSize(objects[i].getContentLength());
                             paths[i].attributes.setModificationDate(objects[i].getLastModifiedDate().getTime());
-                            paths[i].attributes.setOwner(bucket.getOwner().getDisplayName());
+                            if(null != bucket.getOwner()) {
+                                paths[i].attributes.setOwner(bucket.getOwner().getDisplayName());
+                            }
 
                             paths[i].getStatus().setSkipped(this.getStatus().isSkipped());
                         }
@@ -553,7 +564,9 @@ public class S3Path extends Path {
                             p.setParent(this);
                             p._bucket = bucket;
 
-                            p.attributes.setOwner(bucket.getOwner().getDisplayName());
+                            if(null != bucket.getOwner()) {
+                                p.attributes.setOwner(bucket.getOwner().getDisplayName());
+                            }
                             boolean[][] access = new boolean[3][3];
                             access[Permission.OWNER][Permission.READ] = true;
                             access[Permission.OWNER][Permission.EXECUTE] = true;
