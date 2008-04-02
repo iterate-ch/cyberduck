@@ -231,17 +231,17 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrusted (JNIEnv *en
 	if(err == noErr) {
 		if ([panel respondsToSelector:@selector(setInformativeText:)]) {
 			if((statusChain->StatusBits & CSSM_CERT_STATUS_EXPIRED) == CSSM_CERT_STATUS_EXPIRED) {
-				[panel setInformativeText:[NSString stringWithFormat:NSLocalizedStringFromTable(@"The certificate for this server has expired. You might be connecting to a server that is pretending to be %@ which could put your confidential information at risk. Would you like to connect to the server anyway?", @"Keychain", @""), hostname]];
+				[panel setInformativeText:[NSString stringWithFormat:NSLocalizedStringFromTable(@"The certificate for this server has expired. You might be connecting to a server that is pretending to be \u201c%@\u201d which could put your confidential information at risk. Would you like to connect to the server anyway?", @"Keychain", @""), hostname]];
 			}
 			else if((statusChain->StatusBits & CSSM_CERT_STATUS_NOT_VALID_YET) == CSSM_CERT_STATUS_NOT_VALID_YET) {
-				[panel setInformativeText:[NSString stringWithFormat:NSLocalizedStringFromTable(@"The certificate for this server is not yet valid. You might be connecting to a server that is pretending to be %@ which could put your confidential information at risk. Would you like to connect to the server anyway?", @"Keychain", @""), hostname]];
+				[panel setInformativeText:[NSString stringWithFormat:NSLocalizedStringFromTable(@"The certificate for this server is not yet valid. You might be connecting to a server that is pretending to be \u201c%@\u201d which could put your confidential information at risk. Would you like to connect to the server anyway?", @"Keychain", @""), hostname]];
 			}
 			else if((statusChain->StatusBits & CSSM_CERT_STATUS_IS_ROOT) == CSSM_CERT_STATUS_IS_ROOT
 			            && (statusChain->StatusBits & CSSM_CERT_STATUS_IS_IN_ANCHORS) != CSSM_CERT_STATUS_IS_IN_ANCHORS) {
-				[panel setInformativeText:[NSString stringWithFormat:NSLocalizedStringFromTable(@"The certificate for this server was signed by an unknown certifying authority. You might be connecting to a server that is pretending to be %@ which could put your confidential information at risk. Would you like to connect to the server anyway?", @"Keychain", @""), hostname]];
+				[panel setInformativeText:[NSString stringWithFormat:NSLocalizedStringFromTable(@"The certificate for this server was signed by an unknown certifying authority. You might be connecting to a server that is pretending to be \u201c%@\u201d which could put your confidential information at risk. Would you like to connect to the server anyway?", @"Keychain", @""), hostname]];
 			}
 			else if((statusChain->StatusBits & CSSM_CERT_STATUS_IS_IN_ANCHORS) != CSSM_CERT_STATUS_IS_IN_ANCHORS) {
-				[panel setInformativeText:[NSString stringWithFormat:NSLocalizedStringFromTable(@"The certificate for this server is invalid. You might be connecting to a server that is pretending to be %@ which could put your confidential information at risk. Would you like to connect to the server anyway?", @"Keychain", @""), hostname]];
+				[panel setInformativeText:[NSString stringWithFormat:NSLocalizedStringFromTable(@"The certificate for this server is invalid. You might be connecting to a server that is pretending to be \u201c%@\u201d which could put your confidential information at risk. Would you like to connect to the server anyway?", @"Keychain", @""), hostname]];
 			}
 		}
 	}

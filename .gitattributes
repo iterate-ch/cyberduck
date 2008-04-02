@@ -352,6 +352,7 @@ ca.lproj/IDisk.strings -text svneol=unset#text/utf-16
 ca.lproj/Info.nib/keyedobjects.nib -text
 ca.lproj/Info.strings -text svneol=unset#text/utf-16
 ca.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+ca.lproj/Keychain.strings -text
 ca.lproj/Localizable.strings -text svneol=unset#text/utf-16
 ca.lproj/Login.nib/keyedobjects.nib -text
 ca.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -404,6 +405,7 @@ cs.lproj/IDisk.strings -text svneol=unset#text/utf-16
 cs.lproj/Info.nib/keyedobjects.nib -text
 cs.lproj/Info.strings -text svneol=unset#text/utf-16
 cs.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+cs.lproj/Keychain.strings -text
 cs.lproj/Localizable.strings -text svneol=unset#text/utf-16
 cs.lproj/Login.nib/keyedobjects.nib -text
 cs.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -456,6 +458,7 @@ cy.lproj/IDisk.strings -text svneol=unset#text/utf-16
 cy.lproj/Info.nib/keyedobjects.nib -text
 cy.lproj/Info.strings -text svneol=unset#text/utf-16
 cy.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+cy.lproj/Keychain.strings -text
 cy.lproj/Localizable.strings -text svneol=unset#text/utf-16
 cy.lproj/Login.nib/keyedobjects.nib -text
 cy.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -512,6 +515,7 @@ da.lproj/IDisk.strings -text svneol=unset#text/utf-16
 da.lproj/Info.nib/keyedobjects.nib -text
 da.lproj/Info.strings -text svneol=unset#text/utf-16
 da.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+da.lproj/Keychain.strings -text
 da.lproj/Localizable.strings -text svneol=unset#text/utf-16
 da.lproj/Login.nib/keyedobjects.nib -text
 da.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -564,6 +568,7 @@ de.lproj/IDisk.strings -text svneol=unset#text/utf-16
 de.lproj/Info.nib/keyedobjects.nib -text
 de.lproj/Info.strings -text svneol=unset#text/utf-16
 de.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+de.lproj/Keychain.strings -text
 de.lproj/Localizable.strings -text svneol=unset#text/utf-16
 de.lproj/Login.nib/keyedobjects.nib -text
 de.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -616,6 +621,7 @@ en.lproj/IDisk.strings -text svneol=unset#text/utf-16
 en.lproj/Info.nib/keyedobjects.nib -text
 en.lproj/Info.strings -text svneol=unset#text/utf-16
 en.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+en.lproj/Keychain.strings -text
 en.lproj/Localizable.strings -text svneol=unset#text/utf-16
 en.lproj/Login.nib/keyedobjects.nib -text
 en.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -674,6 +680,7 @@ es.lproj/IDisk.strings -text svneol=unset#text/utf-16
 es.lproj/Info.nib/keyedobjects.nib -text
 es.lproj/Info.strings -text svneol=unset#text/utf-16
 es.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+es.lproj/Keychain.strings -text
 es.lproj/Localizable.strings -text svneol=unset#text/utf-16
 es.lproj/Login.nib/keyedobjects.nib -text
 es.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -726,6 +733,7 @@ fi.lproj/IDisk.strings -text svneol=unset#text/utf-16
 fi.lproj/Info.nib/keyedobjects.nib -text
 fi.lproj/Info.strings -text svneol=unset#text/utf-16
 fi.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+fi.lproj/Keychain.strings -text
 fi.lproj/Localizable.strings -text svneol=unset#text/utf-16
 fi.lproj/Login.nib/keyedobjects.nib -text
 fi.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -778,6 +786,7 @@ fr.lproj/IDisk.strings -text svneol=unset#text/utf-16
 fr.lproj/Info.nib/keyedobjects.nib -text
 fr.lproj/Info.strings -text svneol=unset#text/utf-16
 fr.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+fr.lproj/Keychain.strings -text
 fr.lproj/Localizable.strings -text svneol=unset#text/utf-16
 fr.lproj/Login.nib/keyedobjects.nib -text
 fr.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -854,6 +863,7 @@ he.lproj/Info.nib/info.nib -text
 he.lproj/Info.nib/keyedobjects.nib -text
 he.lproj/Info.strings -text svneol=unset#text/utf-16
 he.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+he.lproj/Keychain.strings -text
 he.lproj/Localizable.strings -text svneol=unset#text/utf-16
 he.lproj/Login.nib/classes.nib -text
 he.lproj/Login.nib/info.nib -text
@@ -914,6 +924,7 @@ hu.lproj/IDisk.strings -text svneol=unset#text/utf-16
 hu.lproj/Info.nib/keyedobjects.nib -text
 hu.lproj/Info.strings -text svneol=unset#text/utf-16
 hu.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+hu.lproj/Keychain.strings -text
 hu.lproj/Localizable.strings -text svneol=unset#text/utf-16
 hu.lproj/Login.nib/keyedobjects.nib -text
 hu.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -966,6 +977,7 @@ id.lproj/IDisk.strings -text svneol=unset#text/utf-16
 id.lproj/Info.nib/keyedobjects.nib -text
 id.lproj/Info.strings -text svneol=unset#text/utf-16
 id.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+id.lproj/Keychain.strings -text
 id.lproj/Localizable.strings -text svneol=unset#text/utf-16
 id.lproj/Login.nib/keyedobjects.nib -text
 id.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -1115,6 +1127,7 @@ it.lproj/IDisk.strings -text svneol=unset#text/utf-16
 it.lproj/Info.nib/keyedobjects.nib -text
 it.lproj/Info.strings -text svneol=unset#text/utf-16
 it.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+it.lproj/Keychain.strings -text
 it.lproj/Localizable.strings -text svneol=unset#text/utf-16
 it.lproj/Login.nib/keyedobjects.nib -text
 it.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -1167,6 +1180,7 @@ ja.lproj/IDisk.strings -text svneol=unset#text/utf-16
 ja.lproj/Info.nib/keyedobjects.nib -text
 ja.lproj/Info.strings -text svneol=unset#text/utf-16
 ja.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+ja.lproj/Keychain.strings -text
 ja.lproj/License.txt svneol=native#unset
 ja.lproj/Localizable.strings -text svneol=unset#text/utf-16
 ja.lproj/Login.nib/keyedobjects.nib -text
@@ -1220,6 +1234,7 @@ ko.lproj/IDisk.strings -text svneol=unset#text/utf-16
 ko.lproj/Info.nib/keyedobjects.nib -text
 ko.lproj/Info.strings -text svneol=unset#text/utf-16
 ko.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+ko.lproj/Keychain.strings -text
 ko.lproj/Localizable.strings -text svneol=unset#text/utf-16
 ko.lproj/Login.nib/keyedobjects.nib -text
 ko.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -1285,6 +1300,7 @@ nl.lproj/IDisk.strings -text svneol=unset#text/utf-16
 nl.lproj/Info.nib/keyedobjects.nib -text
 nl.lproj/Info.strings -text svneol=unset#text/utf-16
 nl.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+nl.lproj/Keychain.strings -text
 nl.lproj/Localizable.strings -text svneol=unset#text/utf-16
 nl.lproj/Login.nib/keyedobjects.nib -text
 nl.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -1337,6 +1353,7 @@ no.lproj/IDisk.strings -text svneol=unset#text/utf-16
 no.lproj/Info.nib/keyedobjects.nib -text
 no.lproj/Info.strings -text svneol=unset#text/utf-16
 no.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+no.lproj/Keychain.strings -text
 no.lproj/Localizable.strings -text svneol=unset#text/utf-16
 no.lproj/Login.nib/keyedobjects.nib -text
 no.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -1389,6 +1406,7 @@ pl.lproj/IDisk.strings -text svneol=unset#text/utf-16
 pl.lproj/Info.nib/keyedobjects.nib -text
 pl.lproj/Info.strings -text svneol=unset#text/utf-16
 pl.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+pl.lproj/Keychain.strings -text
 pl.lproj/License.txt svneol=native#unset
 pl.lproj/Localizable.strings -text svneol=unset#text/utf-16
 pl.lproj/Login.nib/keyedobjects.nib -text
@@ -1464,6 +1482,7 @@ pt_BR.lproj/Info.nib/info.nib -text
 pt_BR.lproj/Info.nib/keyedobjects.nib -text
 pt_BR.lproj/Info.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+pt_BR.lproj/Keychain.strings -text
 pt_BR.lproj/Localizable.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Login.nib/classes.nib -text
 pt_BR.lproj/Login.nib/info.nib -text
@@ -1527,6 +1546,7 @@ pt_PT.lproj/IDisk.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Info.nib/keyedobjects.nib -text
 pt_PT.lproj/Info.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+pt_PT.lproj/Keychain.strings -text
 pt_PT.lproj/Localizable.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Login.nib/keyedobjects.nib -text
 pt_PT.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -1579,6 +1599,7 @@ ru.lproj/IDisk.strings -text svneol=unset#text/utf-16
 ru.lproj/Info.nib/keyedobjects.nib -text
 ru.lproj/Info.strings -text svneol=unset#text/utf-16
 ru.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+ru.lproj/Keychain.strings -text
 ru.lproj/Localizable.strings -text svneol=unset#text/utf-16
 ru.lproj/Login.nib/keyedobjects.nib -text
 ru.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -1631,6 +1652,7 @@ sk.lproj/IDisk.strings -text svneol=unset#text/utf-16
 sk.lproj/Info.nib/keyedobjects.nib -text
 sk.lproj/Info.strings -text svneol=unset#text/utf-16
 sk.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+sk.lproj/Keychain.strings -text
 sk.lproj/Localizable.strings -text svneol=unset#text/utf-16
 sk.lproj/Login.nib/keyedobjects.nib -text
 sk.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -1738,6 +1760,7 @@ sv.lproj/IDisk.strings -text svneol=unset#text/utf-16
 sv.lproj/Info.nib/keyedobjects.nib -text
 sv.lproj/Info.strings -text svneol=unset#text/utf-16
 sv.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+sv.lproj/Keychain.strings -text
 sv.lproj/Localizable.strings -text svneol=unset#text/utf-16
 sv.lproj/Login.nib/keyedobjects.nib -text
 sv.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -1817,6 +1840,7 @@ th.lproj/Info.nib/info.nib -text
 th.lproj/Info.nib/keyedobjects.nib -text
 th.lproj/Info.strings -text svneol=unset#text/utf-16
 th.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+th.lproj/Keychain.strings -text
 th.lproj/Localizable.strings -text svneol=unset#text/utf-16
 th.lproj/Login.nib/classes.nib -text
 th.lproj/Login.nib/info.nib -text
@@ -1899,6 +1923,7 @@ tr.lproj/Info.nib/info.nib -text
 tr.lproj/Info.nib/keyedobjects.nib -text
 tr.lproj/Info.strings -text svneol=unset#text/utf-16
 tr.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+tr.lproj/Keychain.strings -text
 tr.lproj/Localizable.strings -text svneol=unset#text/utf-16
 tr.lproj/Login.nib/classes.nib -text
 tr.lproj/Login.nib/info.nib -text
@@ -2077,6 +2102,7 @@ zh_CN.lproj/IDisk.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Info.nib/keyedobjects.nib -text
 zh_CN.lproj/Info.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+zh_CN.lproj/Keychain.strings -text
 zh_CN.lproj/Localizable.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Login.nib/keyedobjects.nib -text
 zh_CN.lproj/Login.strings -text svneol=unset#text/utf-16
@@ -2129,6 +2155,7 @@ zh_TW.lproj/IDisk.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Info.nib/keyedobjects.nib -text
 zh_TW.lproj/Info.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+zh_TW.lproj/Keychain.strings -text
 zh_TW.lproj/Localizable.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Login.nib/keyedobjects.nib -text
 zh_TW.lproj/Login.strings -text svneol=unset#text/utf-16
