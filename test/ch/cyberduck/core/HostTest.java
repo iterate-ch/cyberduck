@@ -20,8 +20,6 @@ package ch.cyberduck.core;
 
 import junit.framework.TestCase;
 
-import java.net.MalformedURLException;
-
 /**
  * @version $Id$
  */
@@ -31,209 +29,184 @@ public class HostTest extends TestCase {
         super(name);
     }
 
+    public void testParseURLEmpty() {
+        Host h = Host.parse("");
+        assertTrue(h.getHostname().equals("localhost"));
+    }
+
     public void testParseURLFull() {
-        try {
-            {
-                String url = "sftp://user:pass@hostname/path/to/file";
-                Host h = Host.parse(url);
-                assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Protocol.SFTP));
-                assertNotNull(h.getCredentials().getUsername());
-                assertTrue(h.getCredentials().getUsername().equals("user"));
-                assertNotNull(h.getCredentials().getPassword());
-                assertTrue(h.getCredentials().getPassword().equals("pass"));
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
-            }
-            {
-                String url = "ftp://user:pass@hostname/path/to/file";
-                Host h = Host.parse(url);
-                assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Protocol.FTP));
-                assertNotNull(h.getCredentials().getUsername());
-                assertTrue(h.getCredentials().getUsername().equals("user"));
-                assertNotNull(h.getCredentials().getPassword());
-                assertTrue(h.getCredentials().getPassword().equals("pass"));
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
-            }
-            {
-                String url = "ftps://user:pass@hostname/path/to/file";
-                Host h = Host.parse(url);
-                assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Protocol.FTP_TLS));
-                assertNotNull(h.getCredentials().getUsername());
-                assertTrue(h.getCredentials().getUsername().equals("user"));
-                assertNotNull(h.getCredentials().getPassword());
-                assertTrue(h.getCredentials().getPassword().equals("pass"));
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
-            }
-            {
-                String url = "http://www.testrumpus.com/";
-                Host h = Host.parse(url);
-                assertTrue(h.getHostname().equals("www.testrumpus.com"));
-                assertTrue(h.getProtocol().equals(Protocol.WEBDAV));
-                assertNotNull(h.getCredentials().getUsername());
-                assertTrue(h.getDefaultPath().equals("/"));
-            }
+        {
+            String url = "sftp://user:pass@hostname/path/to/file";
+            Host h = Host.parse(url);
+            assertTrue(h.getHostname().equals("hostname"));
+            assertTrue(h.getProtocol().equals(Protocol.SFTP));
+            assertNotNull(h.getCredentials().getUsername());
+            assertTrue(h.getCredentials().getUsername().equals("user"));
+            assertNotNull(h.getCredentials().getPassword());
+            assertTrue(h.getCredentials().getPassword().equals("pass"));
+            assertTrue(h.getDefaultPath().equals("/path/to/file"));
         }
-        catch(MalformedURLException e) {
-            fail(e.getMessage());
+        {
+            String url = "ftp://user:pass@hostname/path/to/file";
+            Host h = Host.parse(url);
+            assertTrue(h.getHostname().equals("hostname"));
+            assertTrue(h.getProtocol().equals(Protocol.FTP));
+            assertNotNull(h.getCredentials().getUsername());
+            assertTrue(h.getCredentials().getUsername().equals("user"));
+            assertNotNull(h.getCredentials().getPassword());
+            assertTrue(h.getCredentials().getPassword().equals("pass"));
+            assertTrue(h.getDefaultPath().equals("/path/to/file"));
+        }
+        {
+            String url = "ftps://user:pass@hostname/path/to/file";
+            Host h = Host.parse(url);
+            assertTrue(h.getHostname().equals("hostname"));
+            assertTrue(h.getProtocol().equals(Protocol.FTP_TLS));
+            assertNotNull(h.getCredentials().getUsername());
+            assertTrue(h.getCredentials().getUsername().equals("user"));
+            assertNotNull(h.getCredentials().getPassword());
+            assertTrue(h.getCredentials().getPassword().equals("pass"));
+            assertTrue(h.getDefaultPath().equals("/path/to/file"));
+        }
+        {
+            String url = "http://www.testrumpus.com/";
+            Host h = Host.parse(url);
+            assertTrue(h.getHostname().equals("www.testrumpus.com"));
+            assertTrue(h.getProtocol().equals(Protocol.WEBDAV));
+            assertNotNull(h.getCredentials().getUsername());
+            assertTrue(h.getDefaultPath().equals("/"));
         }
     }
 
     public void testParseURLWithPortNumber() {
-        try {
-            {
-                String url = "sftp://user:pass@hostname:999/path/to/file";
-                Host h = Host.parse(url);
-                assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Protocol.SFTP));
-                assertTrue(h.getPort() == 999);
-                assertNotNull(h.getCredentials().getUsername());
-                assertTrue(h.getCredentials().getUsername().equals("user"));
-                assertNotNull(h.getCredentials().getPassword());
-                assertTrue(h.getCredentials().getPassword().equals("pass"));
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
-            }
-            {
-                String url = "ftp://user:pass@hostname:999/path/to/file";
-                Host h = Host.parse(url);
-                assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Protocol.FTP));
-                assertTrue(h.getPort() == 999);
-                assertNotNull(h.getCredentials().getUsername());
-                assertTrue(h.getCredentials().getUsername().equals("user"));
-                assertNotNull(h.getCredentials().getPassword());
-                assertTrue(h.getCredentials().getPassword().equals("pass"));
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
-            }
-            {
-                String url = "ftps://user:pass@hostname:999/path/to/file";
-                Host h = Host.parse(url);
-                assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Protocol.FTP_TLS));
-                assertTrue(h.getPort() == 999);
-                assertNotNull(h.getCredentials().getUsername());
-                assertTrue(h.getCredentials().getUsername().equals("user"));
-                assertNotNull(h.getCredentials().getPassword());
-                assertTrue(h.getCredentials().getPassword().equals("pass"));
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
-            }
+        {
+            String url = "sftp://user:pass@hostname:999/path/to/file";
+            Host h = Host.parse(url);
+            assertTrue(h.getHostname().equals("hostname"));
+            assertTrue(h.getProtocol().equals(Protocol.SFTP));
+            assertTrue(h.getPort() == 999);
+            assertNotNull(h.getCredentials().getUsername());
+            assertTrue(h.getCredentials().getUsername().equals("user"));
+            assertNotNull(h.getCredentials().getPassword());
+            assertTrue(h.getCredentials().getPassword().equals("pass"));
+            assertTrue(h.getDefaultPath().equals("/path/to/file"));
         }
-        catch(MalformedURLException e) {
-            fail(e.getMessage());
+        {
+            String url = "ftp://user:pass@hostname:999/path/to/file";
+            Host h = Host.parse(url);
+            assertTrue(h.getHostname().equals("hostname"));
+            assertTrue(h.getProtocol().equals(Protocol.FTP));
+            assertTrue(h.getPort() == 999);
+            assertNotNull(h.getCredentials().getUsername());
+            assertTrue(h.getCredentials().getUsername().equals("user"));
+            assertNotNull(h.getCredentials().getPassword());
+            assertTrue(h.getCredentials().getPassword().equals("pass"));
+            assertTrue(h.getDefaultPath().equals("/path/to/file"));
+        }
+        {
+            String url = "ftps://user:pass@hostname:999/path/to/file";
+            Host h = Host.parse(url);
+            assertTrue(h.getHostname().equals("hostname"));
+            assertTrue(h.getProtocol().equals(Protocol.FTP_TLS));
+            assertTrue(h.getPort() == 999);
+            assertNotNull(h.getCredentials().getUsername());
+            assertTrue(h.getCredentials().getUsername().equals("user"));
+            assertNotNull(h.getCredentials().getPassword());
+            assertTrue(h.getCredentials().getPassword().equals("pass"));
+            assertTrue(h.getDefaultPath().equals("/path/to/file"));
         }
     }
 
     public void testParseURLWithUsername() {
-        try {
-            {
-                String url = "sftp://user@hostname/path/to/file";
-                Host h = Host.parse(url);
-                assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Protocol.SFTP));
-                assertNotNull(h.getCredentials().getUsername());
-                assertTrue(h.getCredentials().getUsername().equals("user"));
-                assertNull(h.getCredentials().getPassword());
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
-            }
-            {
-                String url = "ftp://user@hostname/path/to/file";
-                Host h = Host.parse(url);
-                assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Protocol.FTP));
-                assertNotNull(h.getCredentials().getUsername());
-                assertTrue(h.getCredentials().getUsername().equals("user"));
-                assertNull(h.getCredentials().getPassword());
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
-            }
-            {
-                String url = "ftps://user@hostname/path/to/file";
-                Host h = Host.parse(url);
-                assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(Protocol.FTP_TLS));
-                assertNotNull(h.getCredentials().getUsername());
-                assertTrue(h.getCredentials().getUsername().equals("user"));
-                assertNull(h.getCredentials().getPassword());
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
-            }
+        {
+            String url = "sftp://user@hostname/path/to/file";
+            Host h = Host.parse(url);
+            assertTrue(h.getHostname().equals("hostname"));
+            assertTrue(h.getProtocol().equals(Protocol.SFTP));
+            assertNotNull(h.getCredentials().getUsername());
+            assertTrue(h.getCredentials().getUsername().equals("user"));
+            assertNull(h.getCredentials().getPassword());
+            assertTrue(h.getDefaultPath().equals("/path/to/file"));
         }
-        catch(MalformedURLException e) {
-            fail(e.getMessage());
+        {
+            String url = "ftp://user@hostname/path/to/file";
+            Host h = Host.parse(url);
+            assertTrue(h.getHostname().equals("hostname"));
+            assertTrue(h.getProtocol().equals(Protocol.FTP));
+            assertNotNull(h.getCredentials().getUsername());
+            assertTrue(h.getCredentials().getUsername().equals("user"));
+            assertNull(h.getCredentials().getPassword());
+            assertTrue(h.getDefaultPath().equals("/path/to/file"));
+        }
+        {
+            String url = "ftps://user@hostname/path/to/file";
+            Host h = Host.parse(url);
+            assertTrue(h.getHostname().equals("hostname"));
+            assertTrue(h.getProtocol().equals(Protocol.FTP_TLS));
+            assertNotNull(h.getCredentials().getUsername());
+            assertTrue(h.getCredentials().getUsername().equals("user"));
+            assertNull(h.getCredentials().getPassword());
+            assertTrue(h.getDefaultPath().equals("/path/to/file"));
         }
     }
 
     public void testParseURLWithoutProtocol() {
-        try {
-            {
-                String url = "user@hostname/path/to/file";
-                Host h = Host.parse(url);
-                assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(
-                        Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"))));
-                assertNotNull(h.getCredentials().getUsername());
-                assertTrue(h.getCredentials().getUsername().equals("user"));
-                assertNull(h.getCredentials().getPassword());
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
-            }
-            {
-                String url = "user@hostname";
-                Host h = Host.parse(url);
-                assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(
-                        Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"))));
-                assertNotNull(h.getCredentials().getUsername());
-                assertTrue(h.getCredentials().getUsername().equals("user"));
-                assertNull(h.getCredentials().getPassword());
-            }
+        {
+            String url = "user@hostname/path/to/file";
+            Host h = Host.parse(url);
+            assertTrue(h.getHostname().equals("hostname"));
+            assertTrue(h.getProtocol().equals(
+                    Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"))));
+            assertNotNull(h.getCredentials().getUsername());
+            assertTrue(h.getCredentials().getUsername().equals("user"));
+            assertNull(h.getCredentials().getPassword());
+            assertTrue(h.getDefaultPath().equals("/path/to/file"));
         }
-        catch(MalformedURLException e) {
-            fail(e.getMessage());
+        {
+            String url = "user@hostname";
+            Host h = Host.parse(url);
+            assertTrue(h.getHostname().equals("hostname"));
+            assertTrue(h.getProtocol().equals(
+                    Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"))));
+            assertNotNull(h.getCredentials().getUsername());
+            assertTrue(h.getCredentials().getUsername().equals("user"));
+            assertNull(h.getCredentials().getPassword());
         }
     }
 
     public void testParseWithTwoKlammeraffen() {
-        try {
-            {
-                String url = "user@name@hostname";
-                Host h = Host.parse(url);
-                assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(
-                        Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"))));
-                assertNotNull(h.getCredentials().getUsername());
-                assertTrue(h.getCredentials().getUsername().equals("user@name"));
-                assertNull(h.getCredentials().getPassword());
-            }
-            {
-                String url = "user@name:password@hostname";
-                Host h = Host.parse(url);
-                assertTrue(h.getHostname().equals("hostname"));
-                assertTrue(h.getProtocol().equals(
-                        Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"))));
-                assertNotNull(h.getCredentials().getUsername());
-                assertTrue(h.getCredentials().getUsername().equals("user@name"));
-                assertTrue(h.getCredentials().getPassword().equals("password"));
-            }
+        {
+            String url = "user@name@hostname";
+            Host h = Host.parse(url);
+            assertTrue(h.getHostname().equals("hostname"));
+            assertTrue(h.getProtocol().equals(
+                    Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"))));
+            assertNotNull(h.getCredentials().getUsername());
+            assertTrue(h.getCredentials().getUsername().equals("user@name"));
+            assertNull(h.getCredentials().getPassword());
         }
-        catch(MalformedURLException e) {
-            fail(e.getMessage());
+        {
+            String url = "user@name:password@hostname";
+            Host h = Host.parse(url);
+            assertTrue(h.getHostname().equals("hostname"));
+            assertTrue(h.getProtocol().equals(
+                    Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"))));
+            assertNotNull(h.getCredentials().getUsername());
+            assertTrue(h.getCredentials().getUsername().equals("user@name"));
+            assertTrue(h.getCredentials().getPassword().equals("password"));
         }
     }
 
     public void testParseURLWithDefaultPath() {
-        try {
-            {
-                String url = "user@hostname/path/to/file";
-                Host h = Host.parse(url);
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
-            }
-            {
-                String url = "user@hostname:999/path/to/file";
-                Host h = Host.parse(url);
-                assertTrue(h.getDefaultPath().equals("/path/to/file"));
-            }
+        {
+            String url = "user@hostname/path/to/file";
+            Host h = Host.parse(url);
+            assertTrue(h.getDefaultPath().equals("/path/to/file"));
         }
-        catch(MalformedURLException e) {
-            fail(e.getMessage());
+        {
+            String url = "user@hostname:999/path/to/file";
+            Host h = Host.parse(url);
+            assertTrue(h.getDefaultPath().equals("/path/to/file"));
         }
     }
 }
