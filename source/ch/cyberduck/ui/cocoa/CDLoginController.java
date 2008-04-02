@@ -23,6 +23,9 @@ import ch.cyberduck.core.LoginController;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSBundle;
+import com.apple.cocoa.foundation.NSNotificationCenter;
+import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSNotification;
 
 import org.apache.log4j.Logger;
 
@@ -64,6 +67,15 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                             NSBundle.localizedString("Access Key ID", "S3")
                     );
                 }
+                NSNotificationCenter.defaultCenter().addObserver(this,
+                        new NSSelector("userFieldTextDidChange", new Class[]{NSNotification.class}),
+                        NSControl.ControlTextDidChangeNotification,
+                        this.userField);
+            }
+
+            public void userFieldTextDidChange(NSNotification notification) {
+                credentials.setUsername(userField.stringValue());
+                this.anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.OnState : NSCell.OffState);
             }
 
             private NSTextField textField; // IBOutlet
@@ -83,29 +95,57 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                             NSBundle.localizedString("Secret Access Key", "S3")
                     );
                 }
+                NSNotificationCenter.defaultCenter().addObserver(this,
+                        new NSSelector("passFieldTextDidChange", new Class[]{NSNotification.class}),
+                        NSControl.ControlTextDidChangeNotification,
+                        this.passField);
+            }
+
+            public void passFieldTextDidChange(NSNotification notification) {
+                credentials.setPassword(passField.stringValue());
             }
 
             private NSButton keychainCheckbox;
 
             public void setKeychainCheckbox(NSButton keychainCheckbox) {
                 this.keychainCheckbox = keychainCheckbox;
-                if(Preferences.instance().getBoolean("connection.login.useKeychain")
-                        && Preferences.instance().getBoolean("connection.login.addKeychain")) {
-                    this.keychainCheckbox.setState(NSCell.OnState);
+                this.keychainCheckbox.setState(Preferences.instance().getBoolean("connection.login.useKeychain")
+                        && Preferences.instance().getBoolean("connection.login.addKeychain") ? NSCell.OnState : NSCell.OffState);
+                this.keychainCheckbox.setEnabled(credentials.isAnonymousLogin());
+                this.keychainCheckbox.setTarget(this);
+                this.keychainCheckbox.setAction(new NSSelector("keychainCheckboxClicked", new Class[]{NSButton.class}));
+            }
+
+            public void keychainCheckboxClicked(final NSButton sender) {
+                credentials.setUseKeychain(sender.state() == NSCell.OnState);
+            }
+
+            private NSButton anonymousCheckbox;
+
+            public void setAnonymousCheckbox(NSButton anonymousCheckbox) {
+                this.anonymousCheckbox = anonymousCheckbox;
+                this.anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.OnState : NSCell.OffState);
+                this.anonymousCheckbox.setTarget(this);
+                this.anonymousCheckbox.setAction(new NSSelector("anonymousCheckboxClicked", new Class[]{NSButton.class}));
+            }
+
+            public void anonymousCheckboxClicked(final NSButton sender) {
+                this.userField.setEnabled(sender.state() != NSCell.OnState);
+                this.passField.setEnabled(sender.state() != NSCell.OnState);
+                this.keychainCheckbox.setEnabled(sender.state() != NSCell.OnState);
+                if(sender.state() == NSCell.OnState) {
+                    credentials.setUsername(Preferences.instance().getProperty("connection.login.anon.name"));
+                    credentials.setPassword(Preferences.instance().getProperty("connection.login.anon.pass"));
                 }
-                else {
-                    this.keychainCheckbox.setState(NSCell.OffState);
+                if(sender.state() == NSCell.OffState) {
+                    credentials.setUsername(Preferences.instance().getProperty("connection.login.name"));
+                    credentials.setPassword(null);
                 }
+                this.updateField(this.userField, credentials.getUsername());
+                this.updateField(this.passField, credentials.getPassword());
             }
 
             public void callback(final int returncode) {
-                if (returncode == DEFAULT_OPTION) {
-                    log.info("Update login credentials...");
-                    this.window().endEditingForObject(null);
-                    credentials.setUsername((String) userField.objectValue());
-                    credentials.setPassword((String) passField.objectValue());
-                    credentials.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
-                }
                 if (returncode == CANCEL_OPTION) {
                     log.info("Cancel login...");
                     credentials.setUsername(null);
