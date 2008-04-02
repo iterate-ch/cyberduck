@@ -281,14 +281,10 @@ public abstract class CDWindowController extends CDBundleController {
 
 
     protected void updateField(final NSTextView f, final String value) {
-        if(StringUtils.hasText(value)) {
-            f.setString(value);
-        }
+        f.setString(StringUtils.hasText(value) ? value : "");
     }
 
     protected void updateField(final NSTextField f, final String value) {
-        if(StringUtils.hasText(value)) {
-            f.setStringValue(value);
-        }
+        f.setStringValue(StringUtils.hasText(value) ? value : "");
     }
 }
