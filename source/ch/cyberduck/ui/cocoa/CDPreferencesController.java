@@ -923,7 +923,7 @@ public class CDPreferencesController extends CDWindowController {
 
     public void setAnonymousField(NSTextField anonymousField) {
         this.anonymousField = anonymousField;
-        this.anonymousField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.pass"));
+        this.anonymousField.setStringValue(Preferences.instance().getProperty("connection.login.anon.pass"));
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("anonymousFieldDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
@@ -931,7 +931,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     public void anonymousFieldDidChange(NSNotification sender) {
-        Preferences.instance().setProperty("ftp.anonymous.pass", this.anonymousField.stringValue());
+        Preferences.instance().setProperty("connection.login.anon.pass", this.anonymousField.stringValue());
     }
 
     private NSTextField textFileTypeRegexField; //IBOutlet

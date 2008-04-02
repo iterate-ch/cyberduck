@@ -58,33 +58,17 @@ public class CDDownloadController extends CDSheetController {
 
     public void callback(final int returncode) {
         if (returncode == DEFAULT_OPTION) {
-            try {
-                Host host = Host.parse(urlField.stringValue());
-                final Transfer transfer = new DownloadTransfer(
-                        PathFactory.createPath(SessionFactory.createSession(host),
-                                host.getDefaultPath(), Path.FILE_TYPE)
-                );
-                CDTransferController.instance().startTransfer(transfer);
-            }
-            catch (MalformedURLException e) {
-                log.error(e.getMessage());
-            }
+            Host host = Host.parse(urlField.stringValue());
+            final Transfer transfer = new DownloadTransfer(
+                    PathFactory.createPath(SessionFactory.createSession(host),
+                            host.getDefaultPath(), Path.FILE_TYPE)
+            );
+            CDTransferController.instance().startTransfer(transfer);
         }
     }
 
     protected boolean validateInput() {
-        try {
-            Host host = Host.parse(urlField.stringValue());
-            return StringUtils.hasText(host.getDefaultPath());
-        }
-        catch (MalformedURLException e) {
-            this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Error", "Alert sheet title"),
-                    e.getMessage(), // message
-                    NSBundle.localizedString("OK", "Alert default button"), // defaultbutton
-                    null, //alternative button
-                    null //other button
-            ));
-            return false;
-        }
+        Host host = Host.parse(urlField.stringValue());
+        return StringUtils.hasText(host.getDefaultPath());
     }
 }

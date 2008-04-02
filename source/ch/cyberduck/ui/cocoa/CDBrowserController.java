@@ -1779,22 +1779,16 @@ public class CDBrowserController extends CDWindowController
             return;
         }
         input = input.trim();
-        try {
-            // First look for equivalent bookmarks
-            for(Iterator iter = HostCollection.defaultCollection().iterator(); iter.hasNext();) {
-                Host h = (Host) iter.next();
-                if(h.getNickname().equals(input)) {
-                    this.mount(h);
-                    return;
-                }
+        // First look for equivalent bookmarks
+        for(Iterator iter = HostCollection.defaultCollection().iterator(); iter.hasNext();) {
+            Host h = (Host) iter.next();
+            if(h.getNickname().equals(input)) {
+                this.mount(h);
+                return;
             }
-            // Try to parse the input as a URL and extract protocol, hostname, username and password if any.
-            this.mount(Host.parse(input));
         }
-        catch(java.net.MalformedURLException e) {
-            // No URL; assume a hostname has been entered
-            this.mount(new Host(input));
-        }
+        // Try to parse the input as a URL and extract protocol, hostname, username and password if any.
+        this.mount(Host.parse(input));
     }
 
 //    private NSComboBox navigationPopup; // IBOutlet
@@ -3571,6 +3565,9 @@ public class CDBrowserController extends CDWindowController
                         securityLabel.setEnabled(false);
                     }
                 });
+                if(!CDBrowserController.this.isMounted()) {
+                    CDBrowserController.this.unmount();
+                }
             }
 
             public void activityStarted() {
@@ -3662,6 +3659,12 @@ public class CDBrowserController extends CDWindowController
                 this.session.cache().clear();
                 this.session.getHost().getCredentials().setPassword(null);
                 this.session = null;
+                CDMainApplication.invoke(new WindowMainAction(this) {
+                    public void run() {
+                        window.setTitle((String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
+                    }
+                });
+
             }
         }
     }

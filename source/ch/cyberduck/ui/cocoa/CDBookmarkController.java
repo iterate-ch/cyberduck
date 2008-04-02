@@ -479,11 +479,10 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     public void hostFieldDidChange(final NSNotification sender) {
-        try {
-            final NSDictionary parsed = Host.parse(hostField.stringValue().trim()).getAsDictionary();
-            this.host.init(parsed);
+        if(StringUtils.isURL(hostField.stringValue())) {
+            this.host.init(Host.parse(hostField.stringValue()).getAsDictionary());
         }
-        catch(MalformedURLException e) {
+        else {
             this.host.setHostname(hostField.stringValue());
         }
         this.itemChanged();
@@ -546,6 +545,7 @@ public class CDBookmarkController extends CDWindowController {
     private void init() {
         this.window.setTitle(this.host.getNickname());
         this.updateField(this.hostField, this.host.getHostname());
+        this.hostField.setEnabled(!this.host.getProtocol().equals(Protocol.S3));
         this.updateField(this.nicknameField, this.host.getNickname());
         if(StringUtils.hasText(this.host.getDefaultPath())) {
             this.updateField(this.urlField, this.host.toURL() + Path.normalize(this.host.getDefaultPath()));

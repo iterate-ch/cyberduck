@@ -17,12 +17,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
-
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.foundation.NSScriptCommand;
 import com.apple.cocoa.foundation.NSScriptCommandDescription;
+
+import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
 
@@ -41,46 +41,41 @@ public class CDApplescriptabilityController extends NSScriptCommand {
     public Object performDefaultImplementation() {
         log.debug("performDefaultImplementation");
         String arg = (String) this.directParameter();
-        if (null == arg) {
+        if(null == arg) {
             return ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
         }
         log.debug("Received URL from Apple Event:" + arg);
-        try {
-            final Host h = Host.parse(arg);
-            if (StringUtils.hasText(h.getDefaultPath())) {
-				final Session s = SessionFactory.createSession(h);
-				try {
-					s.check();
-				}
-				catch(IOException e) {
-		            log.error(e.getMessage());
-					return null;
-				}
-                final Path p = PathFactory.createPath(s, h.getDefaultPath(), Path.DIRECTORY_TYPE);
-				try {
-					p.cwdir();
-		            CDBrowserController doc = ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
-		            doc.mount(h);
-				}
-                catch(IOException e) {
-                    p.attributes.setType(Path.FILE_TYPE);
-                    // We have to add this to the end of the main thread; there is some obscure
-                    // concurrency issue with the rendezvous initialization
-                    // running in CDMainController.applicationDidFinishLaunching, see ticket #????
-                    CDMainApplication.invoke(new DefaultMainAction() {
-                        public void run() {
-                            CDTransferController.instance().startTransfer(new DownloadTransfer(p));
-                        }
-                    });
-				}
+        final Host h = Host.parse(arg);
+        if(StringUtils.hasText(h.getDefaultPath())) {
+            final Session s = SessionFactory.createSession(h);
+            try {
+                s.check();
             }
-            else {
+            catch(IOException e) {
+                log.error(e.getMessage());
+                return null;
+            }
+            final Path p = PathFactory.createPath(s, h.getDefaultPath(), Path.DIRECTORY_TYPE);
+            try {
+                p.cwdir();
                 CDBrowserController doc = ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
                 doc.mount(h);
             }
+            catch(IOException e) {
+                p.attributes.setType(Path.FILE_TYPE);
+                // We have to add this to the end of the main thread; there is some obscure
+                // concurrency issue with the rendezvous initialization
+                // running in CDMainController.applicationDidFinishLaunching, see ticket #????
+                CDMainApplication.invoke(new DefaultMainAction() {
+                    public void run() {
+                        CDTransferController.instance().startTransfer(new DownloadTransfer(p));
+                    }
+                });
+            }
         }
-        catch (java.net.MalformedURLException e) {
-            log.error(e.getMessage());
+        else {
+            CDBrowserController doc = ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
+            doc.mount(h);
         }
         return null;
     }

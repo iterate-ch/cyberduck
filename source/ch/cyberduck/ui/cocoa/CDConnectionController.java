@@ -63,6 +63,7 @@ public class CDConnectionController extends CDSheetController {
         final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
         this.portField.setIntValue(protocol.getDefaultPort());
         if(protocol.equals(Protocol.S3)) {
+            this.hostField.setEnabled(false);
             this.hostField.setStringValue(Constants.S3_HOSTNAME);
             ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString(
                     NSBundle.localizedString("Access Key ID", "S3")
@@ -73,6 +74,7 @@ public class CDConnectionController extends CDSheetController {
             this.encodingPopup.selectItemWithTitle(DEFAULT);
         }
         else {
+            this.hostField.setEnabled(true);
             if(Constants.S3_HOSTNAME.equals(this.hostField.stringValue())) {
                 this.hostField.setStringValue("");
             }
@@ -81,7 +83,6 @@ public class CDConnectionController extends CDSheetController {
         }
         this.connectmodePopup.setEnabled(protocol.equals(Protocol.FTP)
                 || protocol.equals(Protocol.FTP_TLS));
-        this.encodingPopup.setEnabled(!protocol.equals(Protocol.S3));
         this.pkCheckbox.setEnabled(protocol.equals(Protocol.SFTP));
         this.updateURLLabel(null);
     }
@@ -117,16 +118,13 @@ public class CDConnectionController extends CDSheetController {
     }
 
     public void hostFieldTextDidChange(final NSNotification sender) {
-        try {
-            final Host h = Host.parse(hostField.stringValue().trim());
-            this.updateField(hostField, h.getHostname());
-            protocolPopup.selectItemWithTitle(h.getProtocol().getDescription());
-            this.updateField(portField, String.valueOf(h.getPort()));
-            this.updateField(usernameField, h.getCredentials().getUsername());
-            this.updateField(pathField, h.getDefaultPath());
-        }
-        catch(java.net.MalformedURLException e) {
-            // ignore; just a hostname has been entered
+        if(StringUtils.isURL(hostField.stringValue())) {
+            final Host parsed = Host.parse(hostField.stringValue());
+            this.updateField(hostField, parsed.getHostname());
+            protocolPopup.selectItemWithTitle(parsed.getProtocol().getDescription());
+            this.updateField(portField, String.valueOf(parsed.getPort()));
+            this.updateField(usernameField, parsed.getCredentials().getUsername());
+            this.updateField(pathField, parsed.getDefaultPath());
         }
         final String hostname = hostField.stringValue();
         this.background(new BackgroundActionImpl(this) {
@@ -152,12 +150,7 @@ public class CDConnectionController extends CDSheetController {
     }
 
     public void launchNetworkAssistant(final NSButton sender) {
-        try {
-            Host.parse(urlLabel.stringValue()).diagnose();
-        }
-        catch(MalformedURLException e) {
-            new Host(hostField.stringValue()).diagnose();
-        }
+        Host.parse(urlLabel.stringValue()).diagnose();
     }
 
     private NSTextField pathField;
@@ -238,8 +231,9 @@ public class CDConnectionController extends CDSheetController {
     public void anonymousCheckboxClicked(final NSButton sender) {
         if(sender.state() == NSCell.OnState) {
             this.usernameField.setEnabled(false);
-            this.usernameField.setStringValue(Preferences.instance().getProperty("ftp.anonymous.name"));
+            this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.anon.name"));
             this.passField.setEnabled(false);
+            this.passField.setStringValue("");
         }
         if(sender.state() == NSCell.OffState) {
             this.usernameField.setEnabled(true);
