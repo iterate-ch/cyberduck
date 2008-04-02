@@ -110,13 +110,14 @@ public class DAVSession extends Session {
         try {
             this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " "
                     + credentials.getUsername() + "...");
-            this.DAV.setCredentials(
-                    new UsernamePasswordCredentials(credentials.getUsername(),
-                            credentials.getPassword())
-            );
-            this.DAV.setUserInfo(credentials.getUsername(),
-                    credentials.getPassword());
-
+            if(!credentials.isAnonymousLogin()) {
+                this.DAV.setCredentials(
+                        new UsernamePasswordCredentials(credentials.getUsername(),
+                                credentials.getPassword())
+                );
+                this.DAV.setUserInfo(credentials.getUsername(),
+                        credentials.getPassword());
+            }
             this.configure();
 
             // Try to get basic properties fo this resource using these credentials

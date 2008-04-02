@@ -360,9 +360,6 @@ public class DAVPath extends Path {
                         throw new IOException("Unable opening data stream");
                     }
                     out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
-                    if(null == out) {
-                        throw new IOException("Unable to buffer data");
-                    }
 
                     this.download(in, out, throttle, listener);
                 }
