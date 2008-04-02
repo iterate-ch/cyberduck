@@ -70,4 +70,19 @@ public class StringUtils {
         }
         return false;
     }
+
+    public static boolean isURL(String str) {
+        if(hasText(str)) {
+            Protocol[] protocols = Protocol.getKnownProtocols();
+            for(int i = 0; i < protocols.length; i++) {
+                String[] schemes = protocols[i].getSchemes();
+                for(int k = 0; k < schemes.length; k++) {
+                    if(str.startsWith(schemes[k])) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }

@@ -358,12 +358,7 @@ public abstract class Preferences {
         defaults.put("queue.logDrawer.isOpen", String.valueOf(false));
         defaults.put("queue.logDrawer.size.height", String.valueOf(200));
 
-        //ftp properties
-        defaults.put("ftp.anonymous.name", "anonymous");
-        defaults.put("ftp.anonymous.pass", "cyberduck@example.net");
-
         defaults.put("ftp.transfermode", com.enterprisedt.net.ftp.FTPTransferType.BINARY.toString());
-
         /**
          * Line seperator to use for ASCII transfers
          */
@@ -421,6 +416,8 @@ public abstract class Preferences {
          * Default login name
          */
         defaults.put("connection.login.name", System.getProperty("user.name"));
+        defaults.put("connection.login.anon.name", "anonymous");
+        defaults.put("connection.login.anon.pass", "cyberduck@example.net");
         /**
          * Search for passphrases in Keychain
          */

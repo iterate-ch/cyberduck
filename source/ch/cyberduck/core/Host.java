@@ -300,17 +300,10 @@ public class Host extends NSObject implements Serializable {
      *
      * @param input
      * @return
-     * @throws MalformedURLException
      */
-    public static Host parse(String input) throws MalformedURLException {
-        if(!StringUtils.hasText(input)) {
-            throw new MalformedURLException("No hostname given");
-        }
+    public static Host parse(String input) {
         int begin = 0;
         int cut;
-        if(input.indexOf("://", begin) == -1) {
-            throw new MalformedURLException("No protocol scheme");
-        }
         Protocol protocol = null;
         if(input.indexOf("://", begin) != -1) {
             cut = input.indexOf("://", begin);
@@ -326,7 +319,7 @@ public class Host extends NSObject implements Serializable {
         String username = null;
         String password = null;
         if(protocol.equals(Protocol.FTP)) {
-            username = Preferences.instance().getProperty("ftp.anonymous.name");
+            username = Preferences.instance().getProperty("connection.login.anon.name");
         }
         else {
             username = Preferences.instance().getProperty("connection.login.name");
@@ -348,7 +341,10 @@ public class Host extends NSObject implements Serializable {
                 begin += username.length() + 1;
             }
         }
-        String hostname = input.substring(begin, input.length());
+        String hostname = Preferences.instance().getProperty("connection.hostname.default");
+        if(StringUtils.hasText(input)) {
+            hostname = input.substring(begin, input.length());
+        }
         String path = null;
         int port = protocol.getDefaultPort();
         if(input.indexOf(':', begin) != -1) {
@@ -373,7 +369,7 @@ public class Host extends NSObject implements Serializable {
                 port = Integer.parseInt(portString);
             }
             catch(NumberFormatException e) {
-                throw new MalformedURLException("Invalid port number given");
+                log.warn("Invalid port number given");
             }
         }
         else if(input.indexOf('/', begin) != -1) {
@@ -517,7 +513,7 @@ public class Host extends NSObject implements Serializable {
      */
     public void setHostname(String hostname) {
         log.debug("setHostname:" + hostname);
-        this.hostname = hostname;
+        this.hostname = hostname.trim();
         this.punycode = null;
     }
 

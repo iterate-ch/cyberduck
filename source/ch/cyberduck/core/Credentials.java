@@ -172,7 +172,7 @@ public class Credentials {
         this.user = username;
         this.pass = password;
         if(!StringUtils.hasLength(password)) {
-            this.pass = this.isAnonymousLogin() ? Preferences.instance().getProperty("ftp.anonymous.pass") : password;
+            this.pass = this.isAnonymousLogin() ? Preferences.instance().getProperty("connection.login.anon.pass") : password;
         }
     }
 
@@ -180,7 +180,7 @@ public class Credentials {
      * @return true if the username is anononymous
      */
     public boolean isAnonymousLogin() {
-        return Preferences.instance().getProperty("ftp.anonymous.name").equals(this.getUsername());
+        return Preferences.instance().getProperty("connection.login.anon.name").equals(this.getUsername());
     }
 
     /**
