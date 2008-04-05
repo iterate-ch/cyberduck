@@ -89,7 +89,6 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             = TransferAction.forName(Preferences.instance().getProperty("queue.prompt.action.default"));
 
     /**
-     *
      * @return
      */
     public TransferAction getAction() {
@@ -452,10 +451,11 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         final TransferAction defaultAction
                 = TransferAction.forName(Preferences.instance().getProperty("queue.prompt.action.default"));
 
-        final TransferAction[] actions = new TransferAction[]{TransferAction.ACTION_SKIP,
+        final TransferAction[] actions = new TransferAction[]{
                 transfer.isResumable() ? TransferAction.ACTION_RESUME : null,
                 TransferAction.ACTION_OVERWRITE,
-                TransferAction.ACTION_RENAME};
+                TransferAction.ACTION_RENAME,
+                TransferAction.ACTION_SKIP};
 
         for(int i = 0; i < actions.length; i++) {
             if(null == actions[i]) {
@@ -472,7 +472,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     }
 
     public void actionPopupClicked(NSPopUpButton sender) {
-        final TransferAction selected = (TransferAction)sender.selectedItem().representedObject();
+        final TransferAction selected = (TransferAction) sender.selectedItem().representedObject();
 
         if(this.action.equals(selected)) {
             return;
