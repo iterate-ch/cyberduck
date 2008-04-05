@@ -1,3 +1,5 @@
+"S3 (Amazon Simple Storage Service)" = "S3 (Amazon Simple Storage Service)";
+
 /* Use your Access Key ID as the value of the AWSAccessKeyId parameter in requests you send to Amazon Web Services (when required). Your Access Key ID identifies you as the party responsible for the request. */
 "Access Key ID" = "Access Key ID";
 
