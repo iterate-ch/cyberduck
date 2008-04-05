@@ -309,7 +309,7 @@ public class Host extends NSObject implements Serializable {
             cut = input.indexOf("://", begin);
             protocol = Protocol.forScheme(input.substring(begin, cut));
             if(null != protocol) {
-                begin += cut-begin + 3;
+                begin += cut - begin + 3;
             }
         }
         if(null == protocol) {
@@ -663,8 +663,8 @@ public class Host extends NSObject implements Serializable {
      * @return The URL of the remote host including user login hostname and port
      */
     public String toURL() {
-        return this.getProtocol().getScheme() + "://" + this.getCredentials().getUsername() + "@"
-                + this.getHostname(true) + ":" + this.getPort();
+        return this.getProtocol().getScheme() + "://" +
+                this.getHostname(true) + ":" + this.getPort();
     }
 
     public boolean equals(Object other) {

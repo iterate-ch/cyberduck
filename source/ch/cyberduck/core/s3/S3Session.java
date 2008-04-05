@@ -223,7 +223,7 @@ public class S3Session extends Session implements SSLSession {
         }
     }
 
-    protected Path workdir() throws IOException {
+    public Path workdir() throws IOException {
         synchronized(this) {
             if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
@@ -235,8 +235,8 @@ public class S3Session extends Session implements SSLSession {
         }
     }
 
-    protected void setWorkdir(Path workdir) throws IOException {
-        throw new UnsupportedOperationException();
+    public void setWorkdir(Path workdir) throws IOException {
+        ;
     }
 
     protected void noop() throws IOException {

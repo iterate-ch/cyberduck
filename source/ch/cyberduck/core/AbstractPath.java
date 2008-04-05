@@ -18,14 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.ibm.icu.text.Normalizer;
-
 import com.apple.cocoa.foundation.NSObject;
 
 import org.jets3t.service.utils.Mimetypes;
 
-import java.io.IOException;
 import java.util.Comparator;
+
+import com.ibm.icu.text.Normalizer;
 
 /**
  * @version $Id$
@@ -46,7 +45,7 @@ public abstract class AbstractPath extends NSObject {
      * Attributes denoting this path
      */
     public Attributes attributes;
-    
+
     public static final int FILE_TYPE = 1;
     public static final int DIRECTORY_TYPE = 2;
     public static final int SYMBOLIC_LINK_TYPE = 4;
@@ -64,6 +63,7 @@ public abstract class AbstractPath extends NSObject {
 
     /**
      * Clear cached listing
+     *
      * @throws NullPointerException if session is not initialized
      */
     public void invalidate() {
@@ -75,7 +75,6 @@ public abstract class AbstractPath extends NSObject {
     public abstract String toURL();
 
     /**
-     *
      * @return
      */
     public AttributedList list() {
@@ -84,12 +83,14 @@ public abstract class AbstractPath extends NSObject {
 
     /**
      * Fetch the directory listing
+     *
      * @return
      */
     public abstract AttributedList list(ListParseListener listener);
 
     /**
      * Get the cached directory listing if any or return #list instead
+     *
      * @return
      */
     public AttributedList childs() {
@@ -99,6 +100,7 @@ public abstract class AbstractPath extends NSObject {
     /**
      * Request a sorted and filtered file listing from the server. Has to be a directory.
      * A cached listing is returned if possible
+     *
      * @param comparator The comparator to sort the listing with
      * @param filter     The filter to exlude certain files
      * @return The children of this path or an empty list if it is not accessible for some reason
@@ -228,7 +230,7 @@ public abstract class AbstractPath extends NSObject {
     }
 
     public String getMimeType() {
-        return Mimetypes.getInstance().getMimetype(this.getName());    
+        return Mimetypes.getInstance().getMimetype(this.getName());
     }
 
     /**
@@ -294,11 +296,17 @@ public abstract class AbstractPath extends NSObject {
     public abstract void mkdir(boolean recursive);
 
     /**
+     * @param perm
      * @param recursive Include subdirectories and files
      */
     public abstract void writePermissions(Permission perm, boolean recursive);
 
-    public abstract void writeModificationDate(long millis);
+    /**
+     * @param millis
+     */
+    public void writeModificationDate(long millis) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Remove this file from the remote host. Does not affect any corresponding local file
@@ -325,9 +333,4 @@ public abstract class AbstractPath extends NSObject {
      * @param absolute Must be an absolute path
      */
     public abstract void rename(String absolute);
-
-    /**
-     * Changes the session's working directory to this path
-     */
-    public abstract void cwdir() throws IOException;
 }

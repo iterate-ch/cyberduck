@@ -28,7 +28,6 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
 import org.apache.webdav.lib.WebdavResource;
 import org.apache.webdav.lib.methods.DepthSupport;
-import org.apache.webdav.lib.properties.AclProperty;
 import org.apache.webdav.lib.properties.GetLastModifiedProperty;
 
 import java.io.IOException;
@@ -97,7 +96,7 @@ public class DAVPath extends Path {
                 session.check();
                 session.message(NSBundle.localizedString("Getting size of", "Status", "") + " " + this.getName());
 
-                this.cwdir();
+                session.setWorkdir(this);
 
                 session.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
                 attributes.setSize(session.DAV.getGetContentLength());
@@ -121,7 +120,7 @@ public class DAVPath extends Path {
                 session.check();
                 session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
 
-                this.cwdir();
+                session.setWorkdir(this);
 
                 session.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
                 attributes.setModificationDate(session.DAV.getGetLastModified());
@@ -141,26 +140,7 @@ public class DAVPath extends Path {
     }
 
     public void readPermission() {
-//        synchronized(session) {
-//            try {
-//                session.check();
-//                session.message(NSBundle.localizedString("Getting permission of", "Status", "") + " " + this.getName());
-//
-//                this.cwdir();
-//
-//                final AclProperty acl = session.DAV.aclfindMethod();
-//            }
-//            catch(HttpException e) {
-//                this.error("Cannot read file attributes", e);
-//            }
-//            catch(IOException e) {
-//                this.error("Connection failed", e);
-//                session.interrupt();
-//            }
-//            finally {
-//                session.fireActivityStoppedEvent();
-//            }
-//        }
+        ;
     }
 
     public void delete() {
@@ -190,12 +170,6 @@ public class DAVPath extends Path {
         }
     }
 
-    public void cwdir() throws IOException {
-        synchronized(session) {
-            session.setWorkdir(this);
-        }
-    }
-
     public AttributedList list(final ListParseListener listener) {
         synchronized(session) {
             AttributedList childs = new AttributedList() {
@@ -210,7 +184,7 @@ public class DAVPath extends Path {
                 session.message(NSBundle.localizedString("Listing directory", "Status", "") + " "
                         + this.getAbsolute());
 
-                this.cwdir();
+                session.setWorkdir(this);
 
                 WebdavResource[] resources = session.DAV.listWebdavResources();
 
@@ -288,26 +262,6 @@ public class DAVPath extends Path {
 //                session.fireActivityStoppedEvent();
 //            }
 //        }
-    }
-
-    public void writeModificationDate(long millis) {
-        synchronized(session) {
-            try {
-                session.check();
-                session.DAV.proppatchMethod(this.getAbsolute(), GetLastModifiedProperty.TAG_NAME,
-                        new SimpleDateFormat(GetLastModifiedProperty.DATE_FORMAT).format(new Date(millis)));
-            }
-            catch(HttpException e) {
-                this.error("Cannot change modification date", e);
-            }
-            catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
-            }
-        }
     }
 
     public void rename(String absolute) {
@@ -408,7 +362,10 @@ public class DAVPath extends Path {
                         }
 
                         if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                            this.writeModificationDate(this.getLocal().attributes.getModificationDate());
+                            session.DAV.proppatchMethod(this.getAbsolute(), GetLastModifiedProperty.TAG_NAME,
+                                    new SimpleDateFormat(GetLastModifiedProperty.DATE_FORMAT).format(new Date(
+                                            this.getLocal().attributes.getModificationDate()
+                                    )));
                         }
                     }
                     finally {

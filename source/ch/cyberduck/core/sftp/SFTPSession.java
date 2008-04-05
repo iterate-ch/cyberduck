@@ -338,7 +338,7 @@ public class SFTPSession extends Session {
         }
     }
 
-    protected Path workdir() throws IOException {
+    public Path workdir() throws IOException {
         synchronized(this) {
             if(!SFTP.isConnected()) {
                 throw new ConnectionCanceledException();
@@ -351,7 +351,7 @@ public class SFTPSession extends Session {
         }
     }
 
-    protected void setWorkdir(Path workdir) throws IOException {
+    public void setWorkdir(Path workdir) throws IOException {
         this.workdir = workdir;
     }
 

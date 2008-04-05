@@ -255,7 +255,7 @@ public class CDBrowserController extends CDWindowController
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"), Path.FILE_TYPE);
             try {
-                path.cwdir();
+                session.setWorkdir(path);
                 path.attributes.setType(Path.DIRECTORY_TYPE);
             }
             catch(IOException e) {
@@ -299,7 +299,7 @@ public class CDBrowserController extends CDWindowController
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"), Path.FILE_TYPE);
             try {
-                path.cwdir();
+                session.setWorkdir(path);
                 path.attributes.setType(Path.DIRECTORY_TYPE);
             }
             catch(IOException e) {

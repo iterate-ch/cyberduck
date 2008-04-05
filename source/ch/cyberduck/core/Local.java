@@ -461,10 +461,6 @@ public class Local extends AbstractPath {
         this.setPath(this.getParent().getAbsolute(), name);
     }
 
-    public void cwdir() throws IOException {
-        ;
-    }
-
     /**
      * Update the custom icon for the file in the Finder
      *

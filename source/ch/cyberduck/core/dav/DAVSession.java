@@ -176,7 +176,7 @@ public class DAVSession extends Session {
         }
     }
 
-    protected Path workdir() throws ConnectionCanceledException {
+    public Path workdir() throws ConnectionCanceledException {
         synchronized(this) {
             if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
@@ -188,7 +188,7 @@ public class DAVSession extends Session {
         }
     }
 
-    protected void setWorkdir(Path workdir) throws IOException {
+    public void setWorkdir(Path workdir) throws IOException {
         DAV.setPath(workdir.getAbsolute());
     }
 

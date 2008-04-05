@@ -242,9 +242,9 @@ public abstract class Session extends NSObject {
      * @return The current working directory (pwd) or null if it cannot be retrieved for whatever reason
      * @throws ConnectionCanceledException If the underlying connection has already been closed before
      */
-    protected abstract Path workdir() throws IOException;
+    public abstract Path workdir() throws IOException;
 
-    protected abstract void setWorkdir(Path workdir) throws IOException;
+    public abstract void setWorkdir(Path workdir) throws IOException;
 
     /**
      * Send a 'no operation' command

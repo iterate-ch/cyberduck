@@ -667,10 +667,6 @@ public class S3Path extends Path {
         }
     }
 
-    public void writeModificationDate(long millis) {
-        throw new UnsupportedOperationException();
-    }
-
     public void delete() {
         synchronized(session) {
             log.debug("delete:" + this.toString());
@@ -717,10 +713,6 @@ public class S3Path extends Path {
 
     public void rename(String absolute) {
         throw new UnsupportedOperationException();
-    }
-
-    public void cwdir() throws IOException {
-        // We don't need this as we always work with absolute paths
     }
 
     /**

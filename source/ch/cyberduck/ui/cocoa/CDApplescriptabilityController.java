@@ -57,7 +57,7 @@ public class CDApplescriptabilityController extends NSScriptCommand {
             }
             final Path p = PathFactory.createPath(s, h.getDefaultPath(), Path.DIRECTORY_TYPE);
             try {
-                p.cwdir();
+                s.setWorkdir(p);
                 CDBrowserController doc = ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
                 doc.mount(h);
             }

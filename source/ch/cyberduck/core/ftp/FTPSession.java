@@ -266,7 +266,7 @@ public class FTPSession extends Session {
         }
     }
 
-    protected Path workdir() throws IOException {
+    public Path workdir() throws IOException {
         synchronized(this) {
             if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
@@ -278,7 +278,7 @@ public class FTPSession extends Session {
         }
     }
 
-    protected void setWorkdir(Path workdir) throws IOException {
+    public void setWorkdir(Path workdir) throws IOException {
         if(workdir.equals(this.workdir)) {
             // Do not attempt to change the workdir if the same
             return;
@@ -287,14 +287,9 @@ public class FTPSession extends Session {
             if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
             }
-            try {
-                this.FTP.chdir(workdir.getAbsolute());
-                // Workdir change succeeded
-                this.workdir = workdir;
-            }
-            catch(IOException e) {
-                throw e;
-            }
+            this.FTP.chdir(workdir.getAbsolute());
+            // Workdir change succeeded
+            this.workdir = workdir;
         }
     }
 

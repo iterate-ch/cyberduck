@@ -173,10 +173,6 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void cwdir() throws IOException {
-        // We don't need this as we always work with absolute paths
-    }
-
     public void mkdir(boolean recursive) {
         synchronized(session) {
             log.debug("mkdir:" + this.getName());
@@ -482,10 +478,6 @@ public class SFTPPath extends Path {
                 session.fireActivityStoppedEvent();
             }
         }
-    }
-
-    public void writeModificationDate(long millis) {
-        ;
     }
 
     public void download(BandwidthThrottle throttle, StreamListener listener) {
