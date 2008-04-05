@@ -49,6 +49,10 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 return "Login";
             }
 
+            public void awakeFromNib() {
+                this.update();
+            }
+
             private NSTextField titleField; // IBOutlet
 
             public void setTitleField(NSTextField titleField) {
@@ -60,7 +64,6 @@ public class CDLoginController extends AbstractLoginController implements LoginC
 
             public void setUserField(NSTextField userField) {
                 this.userField = userField;
-                this.userField.setEnabled(!credentials.usesPublicKeyAuthentication());
                 this.updateField(this.userField, credentials.getUsername());
                 if(protocol.equals(Protocol.S3)) {
                     ((NSTextFieldCell) this.userField.cell()).setPlaceholderString(
@@ -75,7 +78,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
 
             public void userFieldTextDidChange(NSNotification notification) {
                 credentials.setUsername(userField.stringValue());
-                this.anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.OnState : NSCell.OffState);
+                this.update();
             }
 
             private NSTextField textField; // IBOutlet
@@ -111,7 +114,6 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 this.keychainCheckbox = keychainCheckbox;
                 this.keychainCheckbox.setState(Preferences.instance().getBoolean("connection.login.useKeychain")
                         && Preferences.instance().getBoolean("connection.login.addKeychain") ? NSCell.OnState : NSCell.OffState);
-                this.keychainCheckbox.setEnabled(credentials.isAnonymousLogin());
                 this.keychainCheckbox.setTarget(this);
                 this.keychainCheckbox.setAction(new NSSelector("keychainCheckboxClicked", new Class[]{NSButton.class}));
             }
@@ -124,15 +126,11 @@ public class CDLoginController extends AbstractLoginController implements LoginC
 
             public void setAnonymousCheckbox(NSButton anonymousCheckbox) {
                 this.anonymousCheckbox = anonymousCheckbox;
-                this.anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.OnState : NSCell.OffState);
                 this.anonymousCheckbox.setTarget(this);
                 this.anonymousCheckbox.setAction(new NSSelector("anonymousCheckboxClicked", new Class[]{NSButton.class}));
             }
 
             public void anonymousCheckboxClicked(final NSButton sender) {
-                this.userField.setEnabled(sender.state() != NSCell.OnState);
-                this.passField.setEnabled(sender.state() != NSCell.OnState);
-                this.keychainCheckbox.setEnabled(sender.state() != NSCell.OnState);
                 if(sender.state() == NSCell.OnState) {
                     credentials.setUsername(Preferences.instance().getProperty("connection.login.anon.name"));
                     credentials.setPassword(Preferences.instance().getProperty("connection.login.anon.pass"));
@@ -143,9 +141,30 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 }
                 this.updateField(this.userField, credentials.getUsername());
                 this.updateField(this.passField, credentials.getPassword());
+                this.update();
+            }
+
+            private void update() {
+                this.userField.setEnabled(!credentials.isAnonymousLogin()
+                        && !credentials.usesPublicKeyAuthentication()
+                );
+                this.passField.setEnabled(!credentials.isAnonymousLogin());
+                this.keychainCheckbox.setEnabled(!credentials.isAnonymousLogin());
+                this.anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.OnState : NSCell.OffState);
+            }
+
+            protected boolean validateInput() {
+                return StringUtils.hasLength(credentials.getUsername())
+                        && StringUtils.hasLength(credentials.getPassword());
             }
 
             public void callback(final int returncode) {
+                if (returncode == DEFAULT_OPTION) {
+                    log.info("Update login credentials...");
+                    this.window().endEditingForObject(null);
+                    credentials.setUsername((String) userField.objectValue());
+                    credentials.setPassword((String) passField.objectValue());
+                }
                 if (returncode == CANCEL_OPTION) {
                     log.info("Cancel login...");
                     credentials.setUsername(null);
