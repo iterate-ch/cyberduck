@@ -20,9 +20,9 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.*;
 
+import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.sftp.SFTPSession;
-import ch.cyberduck.core.ftp.FTPSession;
 
 import org.apache.log4j.Logger;
 
@@ -95,13 +95,13 @@ public abstract class Transfer extends NSObject implements Serializable {
     private boolean reset;
 
     public boolean isResumable() {
-        if(!this.isComplete() && !this.isVirgin() ) {
+        if(!this.isComplete() && !this.isVirgin()) {
             if(this.getSession() instanceof SFTPSession) {
                 return Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier());
             }
             if(this.getSession() instanceof FTPSession) {
-                return !Preferences.instance().getProperty("ftp.transfermode").equals(
-                        FTPTransferType.ASCII.toString());
+                return Preferences.instance().getProperty("ftp.transfermode").equals(
+                        FTPTransferType.BINARY.toString());
             }
             return true;
         }
@@ -714,7 +714,8 @@ public abstract class Transfer extends NSObject implements Serializable {
         if(this.isCanceled()) {
             // Called prevously; now force
             this.interrupt();
-        } else {
+        }
+        else {
             if(_current != null) {
                 _current.getStatus().setCanceled();
             }
@@ -763,8 +764,8 @@ public abstract class Transfer extends NSObject implements Serializable {
                 return false;
             }
         }
-        for(Iterator iter = this.roots.iterator(); iter.hasNext(); ) {
-            if(!((Path)iter.next()).getStatus().isComplete()) {
+        for(Iterator iter = this.roots.iterator(); iter.hasNext();) {
+            if(!((Path) iter.next()).getStatus().isComplete()) {
                 return false;
             }
         }
