@@ -141,26 +141,26 @@ public class DAVPath extends Path {
     }
 
     public void readPermission() {
-        synchronized(session) {
-            try {
-                session.check();
-                session.message(NSBundle.localizedString("Getting permission of", "Status", "") + " " + this.getName());
-
-                this.cwdir();
-
-                final AclProperty acl = session.DAV.aclfindMethod();
-            }
-            catch(HttpException e) {
-                this.error("Cannot read file attributes", e);
-            }
-            catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
-            }
-        }
+//        synchronized(session) {
+//            try {
+//                session.check();
+//                session.message(NSBundle.localizedString("Getting permission of", "Status", "") + " " + this.getName());
+//
+//                this.cwdir();
+//
+//                final AclProperty acl = session.DAV.aclfindMethod();
+//            }
+//            catch(HttpException e) {
+//                this.error("Cannot read file attributes", e);
+//            }
+//            catch(IOException e) {
+//                this.error("Connection failed", e);
+//                session.interrupt();
+//            }
+//            finally {
+//                session.fireActivityStoppedEvent();
+//            }
+//        }
     }
 
     public void delete() {
@@ -171,8 +171,6 @@ public class DAVPath extends Path {
                 session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
 
                 session.DAV.deleteMethod(this.getAbsolute());
-
-                this.getParent().invalidate();
             }
             catch(HttpException e) {
                 if(this.attributes.isFile()) {
@@ -257,9 +255,6 @@ public class DAVPath extends Path {
                 session.message(NSBundle.localizedString("Make directory", "Status", "") + " " + this.getName());
 
                 session.DAV.mkcolMethod(this.getAbsolute());
-
-                this.cache().put(this, new AttributedList());
-                this.getParent().invalidate();
             }
             catch(HttpException e) {
                 this.error("Cannot create folder", e);
@@ -275,30 +270,30 @@ public class DAVPath extends Path {
     }
 
     public void writePermissions(Permission perm, boolean recursive) {
-        synchronized(session) {
-            log.debug("changePermissions:" + perm);
-            try {
-                session.check();
-                session.message(NSBundle.localizedString("Changing permission to", "Status", "") + " " + perm.getOctalString() + " (" + this.getName() + ")");
-
+//        synchronized(session) {
+//            log.debug("changePermissions:" + perm);
+//            try {
+//                session.check();
+//                session.message(NSBundle.localizedString("Changing permission to", "Status", "") + " " + perm.getOctalString() + " (" + this.getName() + ")");
 //                session.DAV.aclMethod(this.getAbsolute(), new Ace[]{});
-            }
-            catch(HttpException e) {
-                this.error("Cannot change permissions", e);
-            }
-            catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
-            }
-        }
+//            }
+//            catch(HttpException e) {
+//                this.error("Cannot change permissions", e);
+//            }
+//            catch(IOException e) {
+//                this.error("Connection failed", e);
+//                session.interrupt();
+//            }
+//            finally {
+//                session.fireActivityStoppedEvent();
+//            }
+//        }
     }
 
     public void writeModificationDate(long millis) {
         synchronized(session) {
             try {
+                session.check();
                 session.DAV.proppatchMethod(this.getAbsolute(), GetLastModifiedProperty.TAG_NAME,
                         new SimpleDateFormat(GetLastModifiedProperty.DATE_FORMAT).format(new Date(millis)));
             }
@@ -315,18 +310,15 @@ public class DAVPath extends Path {
         }
     }
 
-    public void rename(String filename) {
+    public void rename(String absolute) {
         synchronized(session) {
-            log.debug("rename:" + filename);
+            log.debug("rename:" + absolute);
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Renaming to", "Status", "") + " " + filename + " (" + this.getName() + ")");
+                session.message(NSBundle.localizedString("Renaming to", "Status", "") + " " + absolute + " (" + this.getName() + ")");
 
-                session.DAV.moveMethod(this.getAbsolute(), filename);
-
-                this.getParent().invalidate();
-                this.setPath(filename);
-                this.getParent().invalidate();
+                session.DAV.moveMethod(this.getAbsolute(), absolute);
+                this.setPath(absolute);
             }
             catch(HttpException e) {
                 if(attributes.isFile()) {
@@ -352,7 +344,6 @@ public class DAVPath extends Path {
                 OutputStream out = null;
                 InputStream in = null;
                 try {
-                    session.check();
                     session.message(NSBundle.localizedString("Downloading", "Status", "") + " " + this.getName());
 
                     in = session.DAV.getMethodData(this.getAbsolute());
@@ -391,11 +382,10 @@ public class DAVPath extends Path {
         }
     }
 
-    public void upload(BandwidthThrottle throttle, StreamListener listener) {
+    public void upload(BandwidthThrottle throttle, StreamListener listener, final Permission p) {
         synchronized(session) {
             try {
                 if(attributes.isFile()) {
-                    session.check();
                     session.message(NSBundle.localizedString("Uploading", "Status", "") + " " + this.getName());
 
                     InputStream in = null;
@@ -438,7 +428,6 @@ public class DAVPath extends Path {
                 if(attributes.isDirectory()) {
                     this.mkdir();
                 }
-                this.getParent().invalidate();
             }
             catch(HttpException e) {
                 this.error("Upload failed", e);

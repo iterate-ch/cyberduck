@@ -336,6 +336,36 @@ public class DownloadTransfer extends Transfer {
                 transferred += bytes;
             }
         });
+        if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
+            log.info("Updating permissions");
+            Permission perm;
+            if(Preferences.instance().getBoolean("queue.download.permissions.useDefault")
+                    && p.attributes.isFile()) {
+                perm = new Permission(
+                        Preferences.instance().getInteger("queue.download.permissions.file.default")
+                );
+            }
+            else {
+                perm = p.attributes.getPermission();
+            }
+            if(null != perm) {
+                if(p.attributes.isDirectory()) {
+                    perm.getOwnerPermissions()[Permission.WRITE] = true;
+                    perm.getOwnerPermissions()[Permission.EXECUTE] = true;
+                }
+                p.getLocal().writePermissions(perm, false);
+            }
+        }
+        if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
+            log.info("Updating timestamp");
+            if(-1 == p.attributes.getModificationDate()) {
+                p.readTimestamp();
+            }
+            if(p.attributes.getModificationDate() != -1) {
+                long timestamp = p.attributes.getModificationDate();
+                p.getLocal().writeModificationDate(timestamp/*, this.getHost().getTimezone()*/);
+            }
+        }
     }
 
     protected void fireTransferDidEnd() {

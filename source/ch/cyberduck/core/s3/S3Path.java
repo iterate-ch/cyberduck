@@ -342,7 +342,6 @@ public class S3Path extends Path {
                 OutputStream out = null;
                 InputStream in = null;
                 try {
-                    session.check();
                     session.message(NSBundle.localizedString("Downloading", "Status", "") + " " + this.getName());
 
                     DownloadPackage download;
@@ -395,11 +394,10 @@ public class S3Path extends Path {
         }
     }
 
-    public void upload(BandwidthThrottle throttle, final StreamListener listener) {
+    public void upload(BandwidthThrottle throttle, final StreamListener listener, final Permission p) {
         synchronized(session) {
             try {
                 if(attributes.isFile()) {
-                    session.check();
                     session.message(NSBundle.localizedString("Uploading", "Status", "") + " " + this.getName());
 
                     final S3ServiceMulti multi = new S3ServiceMulti(session.S3,
@@ -411,33 +409,15 @@ public class S3Path extends Path {
                                 new File(this.getLocal().getAbsolute()),
                                 null, //no encryption
                                 false); //no gzip
-                        if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                            Permission p = attributes.getPermission();
-                            if(null == p) {
-                                if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                                    if(this.attributes.isFile()) {
-                                        p = new Permission(
-                                                Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-                                    }
-                                    if(this.attributes.isDirectory()) {
-                                        p = new Permission(
-                                                Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-                                    }
-                                }
-                                else {
-                                    p = this.getLocal().attributes.getPermission();
-                                }
+                        if(null != p) {
+                            AccessControlList acl = AccessControlList.REST_CANNED_PRIVATE;
+                            if(p.getOtherPermissions()[Permission.READ]) {
+                                acl = AccessControlList.REST_CANNED_PUBLIC_READ;
                             }
-                            if(null != p) {
-                                AccessControlList acl = AccessControlList.REST_CANNED_PRIVATE;
-                                if(p.getOtherPermissions()[Permission.READ]) {
-                                    acl = AccessControlList.REST_CANNED_PUBLIC_READ;
-                                }
-                                if(p.getOtherPermissions()[Permission.WRITE]) {
-                                    acl = AccessControlList.REST_CANNED_PUBLIC_READ_WRITE;
-                                }
-                                object.setAcl(acl);
+                            if(p.getOtherPermissions()[Permission.WRITE]) {
+                                acl = AccessControlList.REST_CANNED_PUBLIC_READ_WRITE;
                             }
+                            object.setAcl(acl);
                         }
                     }
                     catch(Exception e) {
@@ -453,14 +433,9 @@ public class S3Path extends Path {
                         this.mkdir();
                     }
                 }
-                this.getParent().invalidate();
             }
             catch(S3ServiceException e) {
                 this.error("Upload failed", e);
-            }
-            catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
             }
             finally {
                 session.fireActivityStoppedEvent();
@@ -611,8 +586,6 @@ public class S3Path extends Path {
                 session.message(NSBundle.localizedString("Make directory", "Status", "") + " " + this.getName());
 
                 session.S3.createBucket(this.getName(), Preferences.instance().getProperty("s3.location"));
-                this.cache().put(this, new AttributedList());
-                this.getParent().invalidate();
             }
             catch(S3ServiceException e) {
                 this.error("Cannot create folder", e);
@@ -680,7 +653,6 @@ public class S3Path extends Path {
                         }
                     }
                 }
-                this.getParent().invalidate();
             }
             catch(S3ServiceException e) {
                 this.error("Cannot change permissions", e);
@@ -720,7 +692,6 @@ public class S3Path extends Path {
                         session.S3.deleteBucket(this.getBucketName());
                     }
                 }
-                this.getParent().invalidate();
             }
             catch(S3ServiceException e) {
                 if(this.attributes.isFile()) {
@@ -740,8 +711,12 @@ public class S3Path extends Path {
         }
     }
 
-    public void rename(String name) {
-        log.fatal("Unsupported Operation");
+    public boolean isRenameSupported() {
+        return false;
+    }
+
+    public void rename(String absolute) {
+        throw new UnsupportedOperationException();
     }
 
     public void cwdir() throws IOException {

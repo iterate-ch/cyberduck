@@ -322,9 +322,9 @@ public abstract class AbstractPath extends NSObject {
     }
 
     /**
-     * @param name Must be an absolute path
+     * @param absolute Must be an absolute path
      */
-    public abstract void rename(String name);
+    public abstract void rename(String absolute);
 
     /**
      * Changes the session's working directory to this path

@@ -190,8 +190,6 @@ public class SFTPPath extends Path {
                 session.message(NSBundle.localizedString("Make directory", "Status", "") + " " + this.getName());
                 Permission perm = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
                 session.sftp().mkdir(this.getAbsolute(), new Integer(perm.getOctalNumber()).intValue());
-                this.cache().put(this, new AttributedList());
-                this.getParent().invalidate();
             }
             catch(SFTPException e) {
                 this.error("Cannot create folder", e);
@@ -206,15 +204,13 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void rename(String filename) {
+    public void rename(String absolute) {
         synchronized(session) {
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Renaming to", "Status", "") + " " + filename + " (" + this.getName() + ")");
-                session.sftp().mv(this.getAbsolute(), filename);
-                this.getParent().invalidate();
-                this.setPath(filename);
-                this.getParent().invalidate();
+                session.message(NSBundle.localizedString("Renaming to", "Status", "") + " " + absolute + " (" + this.getName() + ")");
+                session.sftp().mv(this.getAbsolute(), absolute);
+                this.setPath(absolute);
             }
             catch(SFTPException e) {
                 if(this.attributes.isFile()) {
@@ -253,7 +249,6 @@ public class SFTPPath extends Path {
                     session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
                     session.sftp().rmdir(this.getAbsolute());
                 }
-                this.getParent().invalidate();
             }
             catch(SFTPException e) {
                 if(this.attributes.isFile()) {
@@ -401,7 +396,6 @@ public class SFTPPath extends Path {
                         }
                     }
                 }
-                this.getParent().invalidate();
             }
             catch(NumberFormatException e) {
                 this.error("Cannot change owner", e);
@@ -439,7 +433,6 @@ public class SFTPPath extends Path {
                         }
                     }
                 }
-                this.getParent().invalidate();
             }
             catch(NumberFormatException e) {
                 this.error("Cannot change group", e);
@@ -477,7 +470,6 @@ public class SFTPPath extends Path {
                         }
                     }
                 }
-                this.getParent().invalidate();
             }
             catch(SFTPException e) {
                 this.error("Cannot change permissions", e);
@@ -502,13 +494,7 @@ public class SFTPPath extends Path {
             InputStream in = null;
             OutputStream out = null;
             try {
-                if(this.attributes.isDirectory()) {
-                    this.getLocal().mkdir(true);
-                }
                 if(this.attributes.isFile()) {
-                    session.check(
-                            Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())
-                    );
                     out = new Local.OutputStream(this.getLocal(), getStatus().isResume());
                     this.getLocal().touch();
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
@@ -530,35 +516,8 @@ public class SFTPPath extends Path {
                     }
                     this.download(in, out, throttle, listener);
                 }
-                if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
-                    log.info("Updating permissions");
-                    Permission perm = null;
-                    if(Preferences.instance().getBoolean("queue.download.permissions.useDefault")
-                            && this.attributes.isFile()) {
-                        perm = new Permission(
-                                Preferences.instance().getInteger("queue.download.permissions.file.default")
-                        );
-                    }
-                    else {
-                        perm = this.attributes.getPermission();
-                    }
-                    if(null != perm) {
-                        if(this.attributes.isDirectory()) {
-                            perm.getOwnerPermissions()[Permission.WRITE] = true;
-                            perm.getOwnerPermissions()[Permission.EXECUTE] = true;
-                        }
-                        this.getLocal().writePermissions(perm, false);
-                    }
-                }
-                if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
-                    log.info("Updating timestamp");
-                    if(-1 == this.attributes.getModificationDate()) {
-                        this.readTimestamp();
-                    }
-                    if(this.attributes.getModificationDate() != -1) {
-                        long timestamp = this.attributes.getModificationDate();
-                        this.getLocal().writeModificationDate(timestamp/*, this.getHost().getTimezone()*/);
-                    }
+                else if(attributes.isDirectory()) {
+                    this.getLocal().mkdir(true);
                 }
             }
             catch(SFTPException e) {
@@ -589,20 +548,17 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void upload(BandwidthThrottle throttle, StreamListener listener) {
+    public void upload(BandwidthThrottle throttle, StreamListener listener, final Permission p) {
         synchronized(session) {
             log.debug("upload:" + this.toString());
             InputStream in = null;
             OutputStream out = null;
             SFTPv3FileHandle handle = null;
             try {
-                if(this.attributes.isDirectory()) {
+                if(attributes.isDirectory()) {
                     this.mkdir();
                 }
                 if(attributes.isFile()) {
-                    session.check(
-                            Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())
-                    );
                     in = new Local.InputStream(this.getLocal());
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                         if(getStatus().isResume() && this.exists()) {
@@ -614,37 +570,19 @@ public class SFTPPath extends Path {
                     }
                     // We do set the permissions here as otherwise we might have an empty mask for
                     // interrupted file transfers
-                    Permission p = attributes.getPermission();
-                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        if(null == p) {
-                            if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                                if(this.attributes.isFile()) {
-                                    p = new Permission(
-                                            Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-                                }
-                                if(this.attributes.isDirectory()) {
-                                    p = new Permission(
-                                            Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-                                }
+                    if(null != p) {
+                        if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
+                            try {
+                                log.info("Updating permissions:" + p.getOctalString());
+                                SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
+                                attr.permissions = new Integer(p.getOctalNumber());
+                                session.sftp().fsetstat(handle, attr);
                             }
-                            else {
-                                p = this.getLocal().attributes.getPermission();
-                            }
-                        }
-                        if(null != p) {
-                            if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
-                                try {
-                                    log.info("Updating permissions:" + p.getOctalString());
-                                    SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-                                    attr.permissions = new Integer(p.getOctalNumber());
-                                    session.sftp().fsetstat(handle, attr);
-                                }
-                                catch(SFTPException e) {
-                                    // We might not be able to change the attributes if we are
-                                    // not the owner of the file; but then we still want to proceed as we
-                                    // might have group write privileges
-                                    log.warn(e.getMessage());
-                                }
+                            catch(SFTPException e) {
+                                // We might not be able to change the attributes if we are
+                                // not the owner of the file; but then we still want to proceed as we
+                                // might have group write privileges
+                                log.warn(e.getMessage());
                             }
                         }
                     }
@@ -675,7 +613,7 @@ public class SFTPPath extends Path {
                 }
                 if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                     if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                        if(this.attributes.isFile()) {
+                        if(attributes.isFile()) {
                             log.info("Updating timestamp");
                             SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
                             int t = (int) (this.getLocal().attributes.getModificationDate() / 1000);
@@ -685,10 +623,10 @@ public class SFTPPath extends Path {
                             attrs.mtime = new Integer(t);
                             try {
                                 if(null == handle) {
-                                    if(this.attributes.isFile()) {
+                                    if(attributes.isFile()) {
                                         handle = session.sftp().openFileRW(this.getAbsolute());
                                     }
-//                            if(this.attributes.isDirectory()) {
+//                            if(attributes.isDirectory()) {
 //                                handle = session.sftp().openDirectory(this.getAbsolute());
 //                            }
                                 }
@@ -703,7 +641,6 @@ public class SFTPPath extends Path {
                         }
                     }
                 }
-                this.getParent().invalidate();
             }
             catch(SFTPException e) {
                 this.error("Upload failed", e);

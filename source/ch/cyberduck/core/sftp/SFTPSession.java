@@ -364,7 +364,7 @@ public class SFTPSession extends Session {
     }
 
     public void sendCommand(String command) throws IOException {
-        ;
+        throw new UnsupportedOperationException();
     }
 
     public boolean isConnected() {

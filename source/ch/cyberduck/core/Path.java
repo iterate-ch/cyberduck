@@ -246,12 +246,12 @@ public abstract class Path extends AbstractPath implements Serializable {
         return this.getSession().getHost();
     }
 
+    /**
+     * Accessability for #getSession.cache()
+     * @return
+     */
     public Cache cache() {
         return this.getSession().cache();
-    }
-
-    public boolean isWriteOwnerSupported() {
-        return false;
     }
 
     public void writeOwner(String owner, boolean recursive) {
@@ -420,11 +420,35 @@ public abstract class Path extends AbstractPath implements Serializable {
         }, listener);
     }
 
+    public void upload(BandwidthThrottle throttle, StreamListener listener) {
+        Permission p = null;
+        if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+            p = attributes.getPermission();
+            if(null == p) {
+                if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                    if(this.attributes.isFile()) {
+                        p = new Permission(
+                                Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+                    }
+                    if(this.attributes.isDirectory()) {
+                        p = new Permission(
+                                Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+                    }
+                }
+                else {
+                    p = this.getLocal().attributes.getPermission();
+                }
+            }
+        }
+        this.upload(throttle, listener,  p);
+    }
+
     /**
      * @param throttle The bandwidth limit
      * @param listener The stream listener to notify about bytes received and sent
+     * @param p The permission to set after uploading or null
      */
-    public abstract void upload(BandwidthThrottle throttle, StreamListener listener);
+    public abstract void upload(BandwidthThrottle throttle, StreamListener listener, Permission p);
 
     /**
      * Will copy from in to out. Will attempt to skip Status#getCurrent

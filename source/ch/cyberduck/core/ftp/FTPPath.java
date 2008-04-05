@@ -216,8 +216,6 @@ public class FTPPath extends Path {
                 session.message(NSBundle.localizedString("Make directory", "Status", "") + " " + this.getName());
                 this.getParent().cwdir();
                 session.FTP.mkdir(this.getName());
-                this.cache().put(this, new AttributedList());
-                this.getParent().invalidate();
             }
             catch(FTPException e) {
                 this.error("Cannot create folder", e);
@@ -240,9 +238,7 @@ public class FTPPath extends Path {
                 session.message(NSBundle.localizedString("Renaming to", "Status", "") + " " + filename + " (" + this.getName() + ")");
                 this.getParent().cwdir();
                 session.FTP.rename(this.getName(), filename);
-                this.getParent().invalidate();
                 this.setPath(filename);
-                this.getParent().invalidate();
             }
             catch(FTPException e) {
                 if(attributes.isFile()) {
@@ -401,7 +397,6 @@ public class FTPPath extends Path {
                     session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
                     session.FTP.rmdir(this.getName());
                 }
-                this.getParent().invalidate();
             }
             catch(FTPException e) {
                 if(attributes.isFile()) {
@@ -442,7 +437,6 @@ public class FTPPath extends Path {
                         }
                     }
                 }
-                this.getParent().invalidate();
             }
             catch(FTPException e) {
                 this.error("Cannot change owner", e);
@@ -478,7 +472,6 @@ public class FTPPath extends Path {
                         }
                     }
                 }
-                this.getParent().invalidate();
             }
             catch(FTPException e) {
                 this.error("Cannot change group", e);
@@ -515,7 +508,6 @@ public class FTPPath extends Path {
                         }
                     }
                 }
-                this.getParent().invalidate();
             }
             catch(FTPException e) {
                 this.error("Cannot change permissions", e);
@@ -533,6 +525,7 @@ public class FTPPath extends Path {
     public void writeModificationDate(long millis) {
         synchronized(session) {
             try {
+                session.check();
                 session.FTP.utime(millis,
                         this.getLocal().attributes.getCreationDate(), this.getName(), this.getHost().getTimezone());
             }
@@ -554,7 +547,6 @@ public class FTPPath extends Path {
             log.debug("download:" + this.toString());
             try {
                 if(attributes.isFile()) {
-                    session.check();
                     this.getParent().cwdir();
                     this.getLocal().touch();
                     if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
@@ -577,37 +569,8 @@ public class FTPPath extends Path {
                         throw new FTPException("Transfer mode not set");
                     }
                 }
-                if(attributes.isDirectory()) {
+                else if(attributes.isDirectory()) {
                     this.getLocal().mkdir(true);
-                }
-                if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
-                    log.info("Updating permissions");
-                    Permission perm;
-                    if(Preferences.instance().getBoolean("queue.download.permissions.useDefault")
-                            && attributes.isFile()) {
-                        perm = new Permission(Preferences.instance().getInteger("queue.download.permissions.file.default"));
-                    }
-                    else {
-                        perm = attributes.getPermission();
-                    }
-                    if(null != perm) {
-                        if(attributes.isDirectory()) {
-                            perm.getOwnerPermissions()[Permission.WRITE] = true;
-                            perm.getOwnerPermissions()[Permission.EXECUTE] = true;
-                        }
-                        this.getLocal().writePermissions(perm, false);
-                    }
-                }
-                if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
-                    log.info("Updating timestamp");
-                    if(-1 == attributes.getModificationDate()) {
-                        // First try to read the timestamp using MDTM
-                        this.readTimestamp();
-                    }
-                    if(attributes.getModificationDate() != -1) {
-                        long timestamp = attributes.getModificationDate();
-                        this.getLocal().writeModificationDate(timestamp/*, this.getHost().getTimezone()*/);
-                    }
                 }
             }
             catch(FTPException e) {
@@ -629,14 +592,14 @@ public class FTPPath extends Path {
         try {
             session.FTP.setTransferType(FTPTransferType.BINARY);
             if(this.getStatus().isResume()) {
-                long transferred = (long) this.getLocal().attributes.getSize();
+                long transferred = this.getLocal().attributes.getSize();
                 this.getStatus().setCurrent(transferred);
             }
             out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
             if(null == out) {
                 throw new IOException("Unable to buffer data");
             }
-            in = session.FTP.get(this.getName(), this.getStatus().isResume() ? (long) this.getLocal().attributes.getSize() : 0);
+            in = session.FTP.get(this.getName(), this.getStatus().isResume() ? this.getLocal().attributes.getSize() : 0);
             if(null == in) {
                 throw new IOException("Unable opening data stream");
             }
@@ -743,12 +706,11 @@ public class FTPPath extends Path {
         }
     }
 
-    public void upload(final BandwidthThrottle throttle, final StreamListener listener) {
+    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final Permission p) {
         synchronized(session) {
             log.debug("upload:" + this.toString());
             try {
                 if(attributes.isFile()) {
-                    session.check();
                     this.getParent().cwdir();
                     if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                         if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
@@ -773,48 +735,27 @@ public class FTPPath extends Path {
                 if(attributes.isDirectory()) {
                     this.mkdir();
                 }
-                if(session.isConnected()) {
-                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        Permission p = attributes.getPermission();
-                        if(null == p) {
-                            if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                                if(attributes.isFile()) {
-                                    p = new Permission(
-                                            Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-                                }
-                                if(attributes.isDirectory()) {
-                                    p = new Permission(
-                                            Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-                                }
-                            }
-                            else {
-                                p = this.getLocal().attributes.getPermission();
-                            }
-                        }
-                        if(null != p) {
-                            try {
-                                log.info("Updating permissions:" + p.getOctalString());
-                                session.FTP.setPermissions(p.getOctalString(),
-                                        this.getName());
-                            }
-                            catch(FTPException ignore) {
-                                //CHMOD not supported; ignore
-                                log.warn(ignore.getMessage());
-                            }
-                        }
+                if(null != p) {
+                    try {
+                        log.info("Updating permissions:" + p.getOctalString());
+                        session.FTP.setPermissions(p.getOctalString(),
+                                this.getName());
                     }
-                    if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                        log.info("Updating timestamp");
-                        try {
-                            session.FTP.utime(this.getLocal().attributes.getModificationDate(),
-                                    this.getLocal().attributes.getCreationDate(), this.getName(), this.getHost().getTimezone());
-                        }
-                        catch(FTPException ignore) {
-                            log.warn(ignore.getMessage());
-                        }
+                    catch(FTPException ignore) {
+                        //CHMOD not supported; ignore
+                        log.warn(ignore.getMessage());
                     }
                 }
-                this.getParent().invalidate();
+                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                    log.info("Updating timestamp");
+                    try {
+                        session.FTP.utime(this.getLocal().attributes.getModificationDate(),
+                                this.getLocal().attributes.getCreationDate(), this.getName(), this.getHost().getTimezone());
+                    }
+                    catch(FTPException ignore) {
+                        log.warn(ignore.getMessage());
+                    }
+                }
             }
             catch(FTPException e) {
                 this.error("Upload failed", e);
