@@ -149,7 +149,7 @@
 "FTP (File Transfer Protocol)" = "FTP (File Transfer Protocol)";
 
 /* No comment provided by engineer. */
-"FTP-SSL (FTP over TLS/SSL)" = "FTP-SSL (FTP over TLS/SSL)";
+"FTPS (FTP/SSL)" = "FTPS (FTP/SSL)";
 
 /* Toolbar item */
 "Get Info" = "Ambil Info";
@@ -301,7 +301,7 @@
 "Server File" = "File Server";
 
 /* No comment provided by engineer. */
-"SFTP (SSH Secure File Transfer)" = "SFTP (SSH Secure File Transfer)";
+"SFTP (SSH File Transfer Protocol)" = "SFTP (SSH File Transfer Protocol)";
 
 /* No comment provided by engineer. */
 "SCP (Secure Copy)" = "SCP (Secure Copy)";
@@ -410,3 +410,9 @@
 
 /* Option in error dialog if a connection error occurs, opens the Network Diagnostics application */
 "Open Network Diagnostics" = "Open Network Diagnostics";
+
+/* No comment provided by engineer. */
+"WebDAV (Web-based Distributed Authoring and Versioning)" = "WebDAV (Web-based Distributed Authoring and Versioning)";
+
+/* No comment provided by engineer. */
+"WebDAV (HTTP/SSL)" = "WebDAV (HTTP/SSL)";

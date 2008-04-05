@@ -78,7 +78,7 @@ public abstract class Protocol {
 
     public static final Protocol SFTP = new Protocol() {
         public String getDescription() {
-            return NSBundle.localizedString("SFTP (SSH Secure File Transfer)", "");
+            return NSBundle.localizedString("SFTP (SSH File Transfer Protocol)", "");
         }
 
         public int getDefaultPort() {
@@ -132,7 +132,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return NSBundle.localizedString("FTP (TLS/SSL)", "");
+            return NSBundle.localizedString("FTPS (FTP/SSL)", "");
         }
 
         public int getDefaultPort() {
@@ -150,7 +150,7 @@ public abstract class Protocol {
 
     public static final Protocol S3 = new Protocol() {
         public String getDescription() {
-            return NSBundle.localizedString("S3 (Amazon Simple Storage Service)", "");
+            return NSBundle.localizedString("S3 (Amazon Simple Storage Service)", "S3", "");
         }
 
         public String getIdentifier() {
@@ -180,7 +180,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return NSBundle.localizedString("WebDAV (HTTP)", "");
+            return NSBundle.localizedString("WebDAV (Web-based Distributed Authoring and Versioning)", "");
         }
 
         public String getIdentifier() {
