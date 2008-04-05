@@ -459,11 +459,13 @@ public class CDInfoController extends CDWindowController {
         controller.background(new BackgroundAction() {
             public void run() {
                 for(Iterator i = files.iterator(); i.hasNext();) {
-                    ((AbstractPath) i.next()).writePermissions(permission,
+                    final AbstractPath next = (AbstractPath) i.next();
+                    next.writePermissions(permission,
                             recursiveCheckbox.state() == NSCell.OnState);
                     if(!controller.isConnected()) {
                         break;
                     }
+                    next.getParent().invalidate();
                 }
             }
 

@@ -20,10 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.NSImageView;
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import org.apache.log4j.Logger;
@@ -72,6 +69,8 @@ public class CDFolderController extends CDFileController {
                                 false);
                     }
                 }
+                folder.cache().put(folder, new AttributedList());
+                folder.getParent().invalidate();
             }
 
             public void cleanup() {

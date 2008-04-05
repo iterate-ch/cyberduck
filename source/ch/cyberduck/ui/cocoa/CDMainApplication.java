@@ -83,10 +83,11 @@ public class CDMainApplication extends NSApplication {
         NSEvent event = NSEvent.otherEvent(NSEvent.ApplicationDefined,
             new NSPoint(0, 0), 0, System.currentTimeMillis() / 1000.0, 0,
             null, key, -1, -1);
-        ((CDMainApplication) sharedApplication()).put(String.valueOf(key), runnable);
+        final CDMainApplication app = (CDMainApplication) sharedApplication();
+        app.put(String.valueOf(key), runnable);
         // This method can also be called in subthreads. Events posted
         // in subthreads bubble up in the main thread event queue.
-        sharedApplication().postEvent(event, false);
+        app.postEvent(event, false);
     }
 
     private static final String MAIN_THREAD_NAME = "main";

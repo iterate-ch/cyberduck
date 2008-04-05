@@ -514,20 +514,18 @@ public class CDBrowserController extends CDWindowController
                     this.bookmarkTable.scrollRowToVisible(row);
                 }
             }
-            this.statusText = this.bookmarkTable.numberOfRows() + " " + NSBundle.localizedString("Bookmarks", "");
+            this.updateStatusLabel(this.bookmarkTable.numberOfRows() + " " + NSBundle.localizedString("Bookmarks", ""));
             this.window().makeFirstResponder(bookmarkTable);
         }
         else {
             if(this.isMounted()) {
                 this.window().makeFirstResponder(this.getSelectedBrowserView());
-                this.statusText = getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("Files", "");
             }
             else {
                 this.window().makeFirstResponder(this.quickConnectPopup);
-                this.statusText = null;
             }
+            this.updateStatusLabel(null);
         }
-        this.updateStatusLabel();
     }
 
     /**
@@ -551,7 +549,7 @@ public class CDBrowserController extends CDWindowController
     protected void reloadData(final java.util.Collection selected) {
         log.debug("reloadData");
         if(this.isMounted()) {
-            if(!this.workdir().isCached() || this.workdir().childs().attributes().isDirty()) {
+            if(!this.workdir().isCached() || this.workdir().cache().get(this.workdir()).attributes().isDirty()) {
                 this.background(new BackgroundAction() {
                     public void run() {
                         workdir().childs();
@@ -570,6 +568,7 @@ public class CDBrowserController extends CDWindowController
         final NSTableView browser = this.getSelectedBrowserView();
         browser.reloadData();
         this.setSelectedPaths(selected);
+        this.updateStatusLabel(null);
     }
 
     /**
@@ -1002,7 +1001,7 @@ public class CDBrowserController extends CDWindowController
         this.bookmarkSwitchView = bookmarkSwitchView;
         this.bookmarkSwitchView.setSegmentCount(1);
         this.bookmarkSwitchView.setImage(NSImage.imageNamed("bookmarks.tiff"), SWITCH_BOOKMARK_VIEW);
-        final NSSegmentedCell cell = (NSSegmentedCell)this.bookmarkSwitchView.cell();
+        final NSSegmentedCell cell = (NSSegmentedCell) this.bookmarkSwitchView.cell();
         cell.setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectAny);
         cell.setControlSize(NSCell.RegularControlSize);
         this.bookmarkSwitchView.setTarget(this);
@@ -1047,7 +1046,7 @@ public class CDBrowserController extends CDWindowController
         this.browserSwitchView.setImage(NSImage.imageNamed("outline.tiff"), SWITCH_OUTLINE_VIEW);
         this.browserSwitchView.setTarget(this);
         this.browserSwitchView.setAction(new NSSelector("browserSwitchButtonClicked", new Class[]{Object.class}));
-        final NSSegmentedCell cell = (NSSegmentedCell)this.browserSwitchView.cell();
+        final NSSegmentedCell cell = (NSSegmentedCell) this.browserSwitchView.cell();
         cell.setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectOne);
         cell.setControlSize(NSCell.RegularControlSize);
         this.browserSwitchView.setSelected(Preferences.instance().getInteger("browser.view"));
@@ -1259,16 +1258,14 @@ public class CDBrowserController extends CDWindowController
              * @see NSOutlineView.Notifications
              */
             public void outlineViewItemDidExpand(NSNotification notification) {
-                statusText = getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", "");
-                updateStatusLabel();
+                updateStatusLabel(null);
             }
 
             /**
              * @see NSOutlineView.Notifications
              */
             public void outlineViewItemDidCollapse(NSNotification notification) {
-                statusText = getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", "");
-                updateStatusLabel();
+                updateStatusLabel(null);
             }
 
             /**
@@ -2201,15 +2198,14 @@ public class CDBrowserController extends CDWindowController
         this.statusLabel = statusLabel;
     }
 
-    public void updateStatusLabel() {
-        StringBuffer b = new StringBuffer(statusText != null ? statusText : "");
-        if(meterText != null) {
-            b.append(" \u2013 ");
-            b.append(meterText);
+    public void updateStatusLabel(String label) {
+        if(null == label) {
+            label = this.getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("Files", "");
         }
+        final String status = label;
         // Update the status label at the bottom of the browser window
         statusLabel.setAttributedStringValue(new NSAttributedString(
-                b.toString(),
+                status,
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
@@ -2377,6 +2373,7 @@ public class CDBrowserController extends CDWindowController
                     final Path original = (Path) originalIterator.next();
                     if(original.isRenameSupported()) {
                         original.rename(((AbstractPath) renamedIterator.next()).getAbsolute());
+                        original.getParent().invalidate();
                     }
                     if(!isConnected()) {
                         break;
@@ -2587,6 +2584,7 @@ public class CDBrowserController extends CDWindowController
                 for(Iterator iter = files.iterator(); iter.hasNext();) {
                     Path f = (Path) iter.next();
                     f.delete();
+                    f.getParent().invalidate();
                     if(!isConnected()) {
                         break;
                     }
@@ -2956,10 +2954,9 @@ public class CDBrowserController extends CDWindowController
                     progressTimer = new Timer();
                     progressTimer.scheduleAtFixedRate(new TimerTask() {
                         public void run() {
-                            meterText = meter.getProgress();
                             CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                                 public void run() {
-                                    CDBrowserController.this.updateStatusLabel();
+                                    CDBrowserController.this.updateStatusLabel(meter.getProgress());
                                 }
                             });
                         }
@@ -2968,7 +2965,6 @@ public class CDBrowserController extends CDWindowController
 
                 public void didTransferPath(Path path) {
                     progressTimer.cancel();
-                    meterText = null;
                     meter.reset();
                 }
 
@@ -2989,14 +2985,7 @@ public class CDBrowserController extends CDWindowController
                 }
 
                 public void cleanup() {
-                    // Delay for later invocation to make sure this is displayed as the last status message
-                    CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
-                        public void run() {
-                            statusLabel.setAttributedStringValue(new NSAttributedString(
-                                    getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", ""),
-                                    TRUNCATE_MIDDLE_ATTRIBUTES));
-                        }
-                    });
+                    updateStatusLabel(null);
                 }
             });
         }
@@ -3292,9 +3281,6 @@ public class CDBrowserController extends CDWindowController
             public void cleanup() {
                 spinner.stopAnimation(this);
                 runnable.cleanup();
-                statusLabel.setAttributedStringValue(new NSAttributedString(
-                        getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("files", ""),
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
 
             public Session session() {
@@ -3474,13 +3460,6 @@ public class CDBrowserController extends CDWindowController
      */
     private ConnectionListener listener = null;
 
-    private String statusText;
-
-    /**
-     * Transfer progress for browser session transfers
-     */
-    private String meterText;
-
     /**
      * Initializes a session for the passed host. Setting up the listeners and adding any callback
      * controllers needed for login, trust management and hostkey verification.
@@ -3503,10 +3482,9 @@ public class CDBrowserController extends CDWindowController
         this.setEncoding(this.session.getEncoding());
         this.session.addProgressListener(new ProgressListener() {
             public void message(final String message) {
-                statusText = message;
                 CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
-                        updateStatusLabel();
+                        updateStatusLabel(message);
                     }
                 });
             }
@@ -3565,9 +3543,9 @@ public class CDBrowserController extends CDWindowController
                         securityLabel.setEnabled(false);
                     }
                 });
-                if(!CDBrowserController.this.isMounted()) {
-                    CDBrowserController.this.unmount();
-                }
+//                if(!CDBrowserController.this.isMounted()) {
+//                    CDBrowserController.this.unmount();
+//                }
             }
 
             public void activityStarted() {
