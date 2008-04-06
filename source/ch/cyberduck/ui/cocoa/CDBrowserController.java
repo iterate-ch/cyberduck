@@ -937,24 +937,24 @@ public class CDBrowserController extends CDWindowController
 
     public void setBookmarkButton(NSButton bookmarkButton) {
         this.bookmarkButton = bookmarkButton;
-        this.bookmarkButton.setImage(NSImage.imageNamed("bookmark16.tiff"));
+        this.bookmarkButton.setImage(NSImage.imageNamed("bookmarks.tiff"));
         this.setRecessedBezelStyle(this.bookmarkButton);
         this.bookmarkButton.setTarget(this);
         this.bookmarkButton.setAction(new NSSelector("bookmarkButtonClicked", new Class[]{Object.class}));
         this.bookmarkButton.setState(NSCell.OnState); // Set as default selected bookmark source
-        this.bookmarkButton.setShowsBorderOnlyWhileMouseInside(false);
     }
 
     public void bookmarkButtonClicked(final NSButton sender) {
-        bonjourButton.setState(NSCell.OffState);
-        bonjourButton.setShowsBorderOnlyWhileMouseInside(true);
-        historyButton.setState(NSCell.OffState);
-        historyButton.setShowsBorderOnlyWhileMouseInside(true);
-        bookmarkButton.setState(NSCell.OffState);
-        bookmarkButton.setShowsBorderOnlyWhileMouseInside(true);
-
+        if(sender != bonjourButton) {
+            bonjourButton.setState(NSCell.OffState);
+        }
+        if(sender != historyButton) {
+            historyButton.setState(NSCell.OffState);
+        }
+        if(sender != bookmarkButton) {
+            bookmarkButton.setState(NSCell.OffState);
+        }
         sender.setState(NSCell.OnState);
-        sender.setShowsBorderOnlyWhileMouseInside(false);
 
         this.updateBookmarkSource();
     }
