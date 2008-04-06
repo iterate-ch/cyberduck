@@ -63,13 +63,6 @@ public class TransferCollection extends Collection {
     }
 
     public synchronized boolean add(Object o) {
-        assert o instanceof Transfer;
-        ((Transfer)o).addListener(new TransferAdapter() {
-            public void transferDidEnd() {
-                // Save the new state of the transfer collection
-                TransferCollection.instance().save();
-            }
-        });
         boolean r = super.add(o);
         this.save();
         return r;
@@ -82,13 +75,6 @@ public class TransferCollection extends Collection {
      * @see #save()
      */
     public synchronized void add(int row, Object o) {
-        assert o instanceof Transfer;
-        ((Transfer)o).addListener(new TransferAdapter() {
-            public void transferDidEnd() {
-                // Save the new state of the transfer collection
-                TransferCollection.instance().save();
-            }
-        });
         super.add(row, o);
         this.save();
     }
