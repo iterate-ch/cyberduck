@@ -35,19 +35,10 @@
 
 - (void)drawRect:(NSRect)rect
   {
-  CTGradient *aGradient = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:myGradient]];
-  
   if(isRadial)
-	[aGradient radialFillRect:rect];
+	[myGradient radialFillRect:rect];
   else
-	[aGradient fillRect:rect angle:angle];
-	//{
-	//rect = NSMakeRect(346,-300,50,600);
-	//NSAffineTransform *transform = [[NSAffineTransform alloc] init];
-	//[transform rotateByDegrees:45];
-	//NSBezierPath *path = [transform transformBezierPath:[NSBezierPath bezierPathWithOvalInRect:rect]];
-	//[aGradient fillBezierPath:path angle:angle];
-	//}
+	[myGradient fillRect:rect angle:angle];
   }
 
 - (IBAction)changeAngle:(id)sender
