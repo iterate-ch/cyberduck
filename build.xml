@@ -174,7 +174,7 @@
 			<param name="sparkle.feed" value="http://version.cyberduck.ch/changelog.rss"/>
 		</antcall>
 		<exec dir="${home}" executable="./buildDMG.pl" spawn="false">
-			<arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor}' -buildDir ${build} -compressionLevel 9 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.rtf AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
+			<arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor}' -buildDir ${build} -compressionLevel 9 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.rtf AppleScript\ Samples"/>
 		</exec>
 		<checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg" algorithm="md5" />
 	</target>
