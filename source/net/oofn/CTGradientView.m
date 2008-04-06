@@ -30,7 +30,7 @@
 
 - (bool)isOpaque
   {
-  return YES;
+  return NO;
   }
 
 - (void)drawRect:(NSRect)rect
