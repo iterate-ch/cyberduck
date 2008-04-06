@@ -54,7 +54,7 @@ public class CDProgressController extends CDBundleController {
             new Object[]{NSAttributedString.ParagraphStyleAttributeName});
 
     /**
-     * 
+     *
      */
     private Transfer transfer;
 
@@ -62,10 +62,11 @@ public class CDProgressController extends CDBundleController {
      * Keeping track of the current transfer rate
      */
     private Speedometer meter;
-    
+
     /**
      * The current connection status message
-     * @see ch.cyberduck.core.ProgressListener#message(String) 
+     *
+     * @see ch.cyberduck.core.ProgressListener#message(String)
      */
     private String progressText;
 
@@ -74,12 +75,21 @@ public class CDProgressController extends CDBundleController {
         this.meter = new Speedometer(transfer);
         TransferCollection.instance().addListener(new AbstractCollectionListener() {
             public void collectionItemRemoved(Object item) {
-                if(item.equals(CDProgressController.this)) {
+                if(item.equals(transfer)) {
                     CDProgressController.this.invalidate();
                 }
             }
         });
         this.init();
+    }
+
+    private ProgressListener pl;
+
+    private TransferListener tl;
+
+    protected void invalidate() {
+        this.transfer.getSession().removeProgressListener(pl);
+        this.transfer.removeListener(tl);
     }
 
     protected String getBundleName() {
@@ -88,7 +98,7 @@ public class CDProgressController extends CDBundleController {
 
     private void init() {
         this.loadBundle();
-        final ProgressListener pl = new ProgressListener() {
+        this.transfer.getSession().addProgressListener(this.pl = new ProgressListener() {
             public void message(final String message) {
                 progressText = message;
                 CDMainApplication.invoke(new DefaultMainAction() {
@@ -97,9 +107,8 @@ public class CDProgressController extends CDBundleController {
                     }
                 });
             }
-        };
-        this.transfer.getSession().addProgressListener(pl);
-        final TransferListener tl = new TransferListener() {
+        });
+        this.transfer.addListener(this.tl = new TransferListener() {
             /**
              * Timer to update the progress indicator
              */
@@ -194,8 +203,7 @@ public class CDProgressController extends CDBundleController {
             public void bandwidthChanged(BandwidthThrottle bandwidth) {
                 meter.reset();
             }
-        };
-        this.transfer.addListener(tl);
+        });
     }
 
     /**
