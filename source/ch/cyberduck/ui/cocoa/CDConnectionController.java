@@ -71,6 +71,7 @@ public class CDConnectionController extends CDSheetController {
             ((NSTextFieldCell) this.passField.cell()).setPlaceholderString(
                     NSBundle.localizedString("Secret Access Key", "S3")
             );
+            this.portField.setEnabled(false);
             this.encodingPopup.selectItemWithTitle(DEFAULT);
         }
         else {
@@ -78,6 +79,7 @@ public class CDConnectionController extends CDSheetController {
             if(Constants.S3_HOSTNAME.equals(this.hostField.stringValue())) {
                 this.hostField.setStringValue("");
             }
+            this.portField.setEnabled(true);
             ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString("");
             ((NSTextFieldCell) this.passField.cell()).setPlaceholderString("");
         }
