@@ -165,11 +165,6 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                     credentials.setUsername((String) userField.objectValue());
                     credentials.setPassword((String) passField.objectValue());
                 }
-                if (returncode == CANCEL_OPTION) {
-                    log.info("Cancel login...");
-                    credentials.setUsername(null);
-                    credentials.setPassword(null);
-                }
             }
         };
         c.beginSheet();
