@@ -117,10 +117,9 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_kind(JNIEnv *env, jobject
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_quicklook(JNIEnv *env, jobject this, jobjectArray paths)
 {
-//	NSMutableArray* URLs = [NSMutableArray arrayWithCapacity:(*env)->GetArrayLength(env, paths)];
 	NSMutableArray* URLs = nil;
 	if(nil == [[QLPreviewPanel sharedPreviewPanel] URLs]) {
-		URLs = [NSMutableArray array];
+		URLs = [NSMutableArray arrayWithCapacity:(*env)->GetArrayLength(env, paths)];
 	}
 	else {
 		URLs = [NSMutableArray arrayWithArray:[[QLPreviewPanel sharedPreviewPanel] URLs]];
@@ -130,6 +129,8 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_quicklook(JNIEnv *env, jobje
 		[URLs addObject:[NSURL fileURLWithPath:convertToNSString(env, (jstring)(*env)->GetObjectArrayElement(env, paths, i))]];
 	}
 	[[QLPreviewPanel sharedPreviewPanel] setURLs:URLs currentIndex:0 preservingDisplayState:YES];
-	// And then display the panel
-	[[QLPreviewPanel sharedPreviewPanel] makeKeyAndOrderFrontWithEffect:2];
+	if(![[QLPreviewPanel sharedPreviewPanel] isOpen]) {
+		// And then display the panel
+		[[QLPreviewPanel sharedPreviewPanel] makeKeyAndOrderFrontWithEffect:2];
+	}
 }

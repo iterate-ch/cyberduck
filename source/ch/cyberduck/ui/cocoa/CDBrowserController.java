@@ -1107,36 +1107,47 @@ public class CDBrowserController extends CDWindowController
         }
 
         public void selectionQuickLook(final Object sender) {
-            final Collection selected = getSelectedPaths();
-            background(new BackgroundAction() {
-                public void run() {
-                    for(Iterator iter = selected.iterator(); iter.hasNext();) {
-                        final Path preview = (Path) iter.next();
-                        final Local local = new Local(NSPathUtilities.temporaryDirectory(),
-                                preview.getAbsolute()
-                        );
-                        preview.setLocal(local);
+            if(getSelectionCount() > 0) {
+                final Collection previews = new Collection();
+                for(Iterator iter = getSelectedPaths().iterator(); iter.hasNext();) {
+                    final Path path = (Path) iter.next();
+                    if(path.attributes.isFile()) {
+                        final Local folder = new Local(new File(NSPathUtilities.temporaryDirectory(),
+                                path.getParent().getAbsolute()));
+                        folder.mkdir(true);
+                        path.setLocal(new Local(folder, path.getAbsolute()));
+                        previews.add(path);
                     }
-                    final Transfer download = new DownloadTransfer(selected);
-                    final TransferOptions options = new TransferOptions();
-                    options.closeSession = false;
-                    download.start(new TransferPrompt() {
-                        public TransferAction prompt() {
-                            return TransferAction.ACTION_SKIP;
+                }
+                background(new BackgroundAction() {
+                    public void run() {
+                        for(Iterator iter = previews.iterator(); iter.hasNext();) {
+                            final Path preview = (Path) iter.next();
+                            if(!preview.getLocal().exists()) {
+                                preview.download();
+                            }
                         }
-                    }, options);
-                }
-
-                public void cleanup() {
-                    for(Iterator iter = selected.iterator(); iter.hasNext();) {
-                        final Path preview = (Path) iter.next();
-                        preview.getLocal().quicklook();
-                        // Reset to default download path
-                        preview.setLocal(null);
+//                        final Transfer download = new DownloadTransfer(previews);
+//                        final TransferOptions options = new TransferOptions();
+//                        options.closeSession = false;
+//                        download.start(new TransferPrompt() {
+//                            public TransferAction prompt() {
+//                                return TransferAction.ACTION_SKIP;
+//                            }
+//                        }, options);
                     }
-                    updateStatusLabel(null);
-                }
-            });
+
+                    public void cleanup() {
+                        for(Iterator iter = previews.iterator(); iter.hasNext();) {
+                            final Path preview = (Path) iter.next();
+                            preview.getLocal().quicklook();
+                            // Reset to default download path
+                            preview.setLocal(null);
+                        }
+                        updateStatusLabel(null);
+                    }
+                });
+            }
         }
 
         public void enterKeyPressed(final Object sender) {
