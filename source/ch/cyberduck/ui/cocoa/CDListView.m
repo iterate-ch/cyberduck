@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2005 Whitney Young. All rights reserved.
+ *  Copyright (c) 2008 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -19,13 +19,17 @@
 #import "CDListView.h"
 
 @interface CDListView (Private)
-- (NSTableColumn *)_typeAheadSelectionColumn;
++ (NSTableColumn *)_typeAheadSelectionColumn;
++ (NSTableColumn *)_localSelectionColumn;
 - (void)selectRow;
 - (void)clearSelectString:(NSTimer *)sender;
 - (void)selectRowWithTimer:(NSTimer *)sender;
 @end
-
+ 
 @implementation CDListView
+
+static NSTableColumn *typeAheadSelectionColumn;
+static NSTableColumn *localSelectionColumn;
 
 - (void)awakeFromNib
 {
@@ -36,6 +40,12 @@
 	// browser typeahead selection
 	select_string = [[NSMutableString alloc] init];
 	select_timer = nil;
+
+	// First, load the private Quick Look framework if available (10.5+)
+	quickLookAvailable = [[NSBundle bundleWithPath:@"/System/Library/PrivateFrameworks/QuickLookUI.framework"] load];
+	if(quickLookAvailable) {
+		[[[QLPreviewPanel sharedPreviewPanel] windowController] setDelegate:self];
+	}
 }
 
 - (BOOL)acceptsFirstMouse:(NSEvent *)event
@@ -138,6 +148,28 @@
 	return [self menu];
 }
 
+// This is the Quick Look delegate method. It should return the frame for the item represented by the URL. If an 
+// empty frame is returned then the panel will fade in/out instead
+- (NSRect)previewPanel:(NSPanel*)panel frameForURL:(NSURL*)URL
+{
+	NSRect frame = NSMakeRect(0, 0, 0, 0);
+	NSRange visibleRows = [self rowsInRect:[self bounds]];
+	int row, endRow;
+	for(row = visibleRows.location, endRow = row + visibleRows.length; row <= endRow; ++row) {
+		NSString *path = [[self dataSource] tableView:self 
+								 objectValueForTableColumn:[CDListView _localSelectionColumn] 
+													   row:row];
+		if([path isEqualToString:[URL path]]) {
+			frame           = [self rectOfRow:row];
+			frame.origin    = [self convertPoint:frame.origin toView:nil];
+			frame.origin    = [[self window] convertBaseToScreen:frame.origin];
+			frame.origin.y -= frame.size.height;
+			break;
+		}
+	}
+	return frame;
+}
+
 - (void)keyDown:(NSEvent *)event
 {
 	NSString *str = [event characters];
@@ -155,6 +187,23 @@
         }
 		return;
     }
+	else if(key == ' ') {
+		if(quickLookAvailable) {
+			// If the user presses space when the preview panel is open then we close it
+			if([[QLPreviewPanel sharedPreviewPanel] isOpen]) {
+				[[QLPreviewPanel sharedPreviewPanel] closeWithEffect:2];
+			}
+			else if ([[self delegate] respondsToSelector:@selector(selectionQuickLook:)]) {
+				[[QLPreviewPanel sharedPreviewPanel] setURLs:nil];
+				// Space bar invokes Quick Look
+				[[self delegate] performSelector:@selector(selectionQuickLook:) withObject:event];
+				// Restore the focus to our window to demo the selection changing, scrolling 
+				// (left/right) and closing (space) functionality
+				[[self window] makeKeyWindow];
+			}
+			return;
+		}
+	}
 	if (([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] ||
 			[[NSCharacterSet punctuationCharacterSet] characterIsMember:key] ||
 			[[NSCharacterSet symbolCharacterSet] characterIsMember:key] ) && 
@@ -177,10 +226,9 @@
 														  userInfo:nil 
 														   repeats:NO];
 		}
+		return;
 	} 
-	else {
-		[super keyDown:event];
-	}
+	[super keyDown:event];
 }
 
 - (void)selectRow
@@ -193,7 +241,7 @@
 	NSString *compare = [select_string lowercaseString];
 	for (counter = 0; counter < [[self dataSource] numberOfRowsInTableView: self]; counter++) {
 		NSString *object = [[[self dataSource] tableView:self 
-							   objectValueForTableColumn:[self _typeAheadSelectionColumn] 
+							   objectValueForTableColumn:[CDListView _typeAheadSelectionColumn] 
 													 row:counter] lowercaseString];
 		if (to_index < [object length] && to_index < [compare length] + 1) {
 			if (object && [[object substringToIndex:to_index] isEqualToString:[compare substringToIndex:to_index]])	{
@@ -238,16 +286,27 @@
 	[select_string setString:@""];
 }
 
-- (NSTableColumn *)_typeAheadSelectionColumn
++ (NSTableColumn *)_typeAheadSelectionColumn
 {
-	return [[NSTableColumn alloc] initWithIdentifier:@"TYPEAHEAD"];
+	if(nil == typeAheadSelectionColumn) {
+		typeAheadSelectionColumn = [[NSTableColumn alloc] initWithIdentifier:@"TYPEAHEAD"];
+	}
+	return typeAheadSelectionColumn;
+}
+
++ (NSTableColumn *)_localSelectionColumn
+{
+	if(nil == localSelectionColumn) {
+		localSelectionColumn = [[NSTableColumn alloc] initWithIdentifier:@"LOCAL"];
+	}
+	return localSelectionColumn;
 }
 
 - (NSImage *)dragImageForRows:(NSArray *)dragRows 
 						event:(NSEvent *)dragEvent 
 			  dragImageOffset:(NSPointPointer)dragImageOffset 
 {
-	NSImage *img = [[NSImage alloc] initByReferencingFile: @"transparent.tiff"];
+	NSImage *img = [NSImage imageNamed: @"transparent.tiff"];
 	[img setCacheMode:NSImageCacheNever];
 	return img;
 }
@@ -257,7 +316,7 @@
 								   event:(NSEvent*)dragEvent 
 								  offset:(NSPointPointer)dragImageOffset 
 {
-	NSImage *img = [[NSImage alloc] initByReferencingFile: @"transparent.tiff"];
+	NSImage *img = [NSImage imageNamed: @"transparent.tiff"];
 	[img setCacheMode:NSImageCacheNever];
 	return img;
 }

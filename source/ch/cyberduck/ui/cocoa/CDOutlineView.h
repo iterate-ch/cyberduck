@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2005 Whitney Young. All rights reserved.
+ *  Copyright (c) 2008 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,8 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import "QuickLook.h"
+#define QLPreviewPanel NSClassFromString(@"QLPreviewPanel")
 
 @interface CDOutlineView : NSOutlineView {
 
@@ -28,6 +30,8 @@
 	NSMutableString *select_string;
 	NSTimer *select_timer;
 	NSTimer *autoexpand_timer;
+
+	BOOL quickLookAvailable;
 }
 
 - (void)handleBrowserClick:(id)sender;
