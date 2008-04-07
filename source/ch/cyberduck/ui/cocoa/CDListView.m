@@ -157,8 +157,11 @@ static NSTableColumn *localSelectionColumn;
 	int row, endRow;
 	for(row = visibleRows.location, endRow = row + visibleRows.length; row <= endRow; ++row) {
 		NSString *path = [[self dataSource] tableView:self 
-								 objectValueForTableColumn:[CDListView _localSelectionColumn] 
-													   row:row];
+							objectValueForTableColumn:[CDListView _localSelectionColumn] 
+											      row:row];
+		if(nil == path) {
+			continue;
+		}
 		if([path isEqualToString:[URL path]]) {
 			frame           = [self rectOfRow:row];
 			frame.origin    = [self convertPoint:frame.origin toView:nil];

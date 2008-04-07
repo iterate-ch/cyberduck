@@ -203,9 +203,16 @@ static NSTableColumn *localSelectionColumn;
 	NSRange visibleRows = [self rowsInRect:[self bounds]];
 	int row, endRow;
 	for(row = visibleRows.location, endRow = row + visibleRows.length; row <= endRow; ++row) {
+		id item = [self itemAtRow:row];
+		if(nil == item) {
+			continue;
+		}
 		NSString *path = [[self dataSource] outlineView:self 
-								 objectValueForTableColumn:[CDOutlineView _localSelectionColumn] 
-													byItem:[self itemAtRow:row]];
+							  objectValueForTableColumn:[CDOutlineView _localSelectionColumn] 
+												 byItem:item];
+		if(nil == path) {
+			continue;
+		}
 		if([path isEqualToString:[URL path]]) {
 			frame           = [self rectOfRow:row];
 			frame.origin    = [self convertPoint:frame.origin toView:nil];
