@@ -159,7 +159,7 @@ public class CDProgressController extends CDBundleController {
                 this.transferPaused();
                 CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
-                        Growl.instance().notify("Transfer queued", transfer.getHost().getHostname());
+                        Growl.instance().notify("Transfer queued", transfer.getSession().getHost().getHostname());
                     }
                 });
             }

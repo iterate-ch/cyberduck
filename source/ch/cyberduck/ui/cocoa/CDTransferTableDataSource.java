@@ -83,7 +83,7 @@ public class CDTransferTableDataSource extends CDController {
                 public boolean accept(Transfer transfer) {
                     // Match for pathnames and hostname
                     return transfer.getName().indexOf(searchString) != -1
-                            || transfer.getHost().getHostname().indexOf(searchString) != -1;
+                            || transfer.getSession().getHost().getHostname().indexOf(searchString) != -1;
                 }
             };
         }

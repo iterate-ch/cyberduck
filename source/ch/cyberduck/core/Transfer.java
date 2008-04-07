@@ -168,7 +168,7 @@ public abstract class Transfer extends NSObject implements Serializable {
 
     public NSMutableDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
-        dict.setObjectForKey(this.getHost().getAsDictionary(), "Host");
+        dict.setObjectForKey(this.getSession().getHost().getAsDictionary(), "Host");
         NSMutableArray r = new NSMutableArray();
         for(Iterator iter = this.roots.iterator(); iter.hasNext();) {
             final Path root = (Path) iter.next();
@@ -322,13 +322,6 @@ public abstract class Transfer extends NSObject implements Serializable {
 
     public Session getSession() {
         return this.session;
-    }
-
-    /**
-     * @see Session#getHost()
-     */
-    public Host getHost() {
-        return this.getSession().getHost();
     }
 
     /**
