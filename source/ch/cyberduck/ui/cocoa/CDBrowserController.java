@@ -480,7 +480,15 @@ public class CDBrowserController extends CDWindowController
             // Setting up a custom filter for the directory listing
             this.filenameFilter = new PathFilter() {
                 public boolean accept(AbstractPath file) {
-                    return file.getName().toLowerCase().indexOf(searchString.toLowerCase()) != -1;
+                    if(file.getName().toLowerCase().indexOf(searchString.toLowerCase()) != -1) {
+                        // Matching filename
+                        return true;
+                    }
+                    if(file.attributes.isDirectory() && getSelectedBrowserView() == browserOutlineView) {
+                        // #471. Expanded item childs may match search string
+                        return file.isCached();
+                    }
+                    return false;
                 }
             };
         }
