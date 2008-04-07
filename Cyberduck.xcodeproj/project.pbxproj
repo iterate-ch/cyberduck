@@ -159,6 +159,7 @@
 		47649E0908E563C500207DC9 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47983764072AD73700FA3CDB /* Security.framework */; };
 		47649E4508E563D000207DC9 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 476DEBE10629C6FB005EF4B1 /* CoreFoundation.framework */; };
 		47649EDD08E563D600207DC9 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479982AF05F54B1600F81519 /* Carbon.framework */; };
+		476691840DAA874100DAE443 /* QuickLook.h in Headers */ = {isa = PBXBuildFile; fileRef = 476691830DAA874100DAE443 /* QuickLook.h */; };
 		476774DE0B74CE750025093E /* trash.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476774DD0B74CE750025093E /* trash.tiff */; };
 		476847090D99502A0090077B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 476847080D99502A0090077B /* Security.framework */; };
 		476B03360D05CFA100CE8ADE /* UKFileWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 476B03340D05CFA100CE8ADE /* UKFileWatcher.m */; };
@@ -501,7 +502,6 @@
 		4739EFC10856991300405FD3 /* libLocal.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLocal.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EFFB08569A8100405FD3 /* Keychain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Keychain.framework; path = build/Keychain.framework; sourceTree = "<group>"; };
 		4739F03D08569B5E00405FD3 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Growl.framework; path = build/Growl.framework; sourceTree = "<group>"; };
-		474152E306C4F08A00AC0BD2 /* Host.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; name = Host.java; path = source/ch/cyberduck/core/Host.java; sourceTree = SOURCE_ROOT; };
 		474152F106C4F08A00AC0BD2 /* Proxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Proxy.h; sourceTree = "<group>"; };
 		474152F206C4F08A00AC0BD2 /* Proxy.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Proxy.java; sourceTree = "<group>"; };
 		474152F306C4F08A00AC0BD2 /* Proxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Proxy.m; sourceTree = "<group>"; };
@@ -889,9 +889,9 @@
 		4765652D098134B200633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4765652E098134B200633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/IDisk.strings; sourceTree = "<group>"; };
 		4765652F098134D300633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/Status.strings; sourceTree = "<group>"; };
+		476691830DAA874100DAE443 /* QuickLook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuickLook.h; sourceTree = "<group>"; };
 		476774DD0B74CE750025093E /* trash.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = trash.tiff; sourceTree = "<group>"; };
 		476847080D99502A0090077B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		47685DD80759706B00C744E1 /* Local.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; name = Local.java; path = source/ch/cyberduck/core/Local.java; sourceTree = SOURCE_ROOT; };
 		476B03340D05CFA100CE8ADE /* UKFileWatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKFileWatcher.m; sourceTree = "<group>"; };
 		476B03350D05CFA100CE8ADE /* UKFileWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKFileWatcher.h; sourceTree = "<group>"; };
 		476C7C1807F5A2A700CF6032 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/File.nib; sourceTree = "<group>"; };
@@ -914,7 +914,6 @@
 		476C7C2D07F5A31800CF6032 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		476C7C2E07F5A32200CF6032 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text; name = sv; path = sv.lproj/License.txt; sourceTree = "<group>"; };
 		476DEBE10629C6FB005EF4B1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
-		47729074080D5957007126E4 /* Keychain.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Keychain.java; sourceTree = "<group>"; };
 		47742E070BECF13600EC4DEA /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Transfer.nib; sourceTree = "<group>"; };
 		47742E1C0BECF36700EC4DEA /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/Transfer.nib; sourceTree = "<group>"; };
 		47742E1D0BECF36A00EC4DEA /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/Transfer.nib; sourceTree = "<group>"; };
@@ -1590,13 +1589,10 @@
 				4724043F0AFF4B5C008FAFBB /* io */,
 				470E56CF08BE3E1E00BDF3CD /* forker */,
 				47CD997C0738DEC700E9379E /* proxy */,
-				474152E306C4F08A00AC0BD2 /* Host.java */,
-				4762DB8309FC47380034C662 /* Host.m */,
 				4762DB8409FC47380034C662 /* Host.h */,
-				47685DD80759706B00C744E1 /* Local.java */,
+				4762DB8309FC47380034C662 /* Host.m */,
 				475D187C0805E24B00166B8A /* Local.h */,
 				475D187B0805E24B00166B8A /* Local.m */,
-				47729074080D5957007126E4 /* Keychain.java */,
 				47983749072AD67800FA3CDB /* Keychain.h */,
 				4798373F072AD66D00FA3CDB /* Keychain.m */,
 			);
@@ -1804,6 +1800,14 @@
 			path = zathras;
 			sourceTree = "<group>";
 		};
+		476691820DAA874100DAE443 /* quicklook */ = {
+			isa = PBXGroup;
+			children = (
+				476691830DAA874100DAE443 /* QuickLook.h */,
+			);
+			path = quicklook;
+			sourceTree = "<group>";
+		};
 		477B1B7B0AF384350023BA7F /* snoize */ = {
 			isa = PBXGroup;
 			children = (
@@ -1828,6 +1832,7 @@
 		4798434E072B0DAA00FA3CDB /* view */ = {
 			isa = PBXGroup;
 			children = (
+				476691820DAA874100DAE443 /* quicklook */,
 				47494C3C07EC6B4200B34D53 /* CDOutlineView.m */,
 				47494C3D07EC6B4200B34D53 /* CDOutlineView.h */,
 				47494C3E07EC6B4200B34D53 /* CDListView.m */,
@@ -1910,6 +1915,7 @@
 				47152E1F0D9F2586003D8AE4 /* SKWSegmentedControlWindowProxy.h in Headers */,
 				47AC356F0DA1025000CC1426 /* CTGradient.h in Headers */,
 				47AC35710DA1025000CC1426 /* CTGradientView.h in Headers */,
+				476691840DAA874100DAE443 /* QuickLook.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
