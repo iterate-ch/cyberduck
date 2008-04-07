@@ -123,7 +123,9 @@ public abstract class Path extends AbstractPath implements Serializable {
     public NSMutableDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
         dict.setObjectForKey(this.getAbsolute(), REMOTE);
-        dict.setObjectForKey(this.getLocal().toString(), LOCAL);
+        if(local != null) {
+            dict.setObjectForKey(local.toString(), LOCAL);
+        }
         if(StringUtils.hasText(this.getSymbolicLinkPath())) {
             dict.setObjectForKey(this.getSymbolicLinkPath(), SYMLINK);
         }
@@ -164,17 +166,17 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param parent The absolute path to the parent directory on the remote host
      * @param local  The associated local file
      */
-    protected Path(String parent, Local local) {
+    protected Path(String parent, final Local local) {
         this.setPath(parent, local);
         this.attributes.setType(
-                this.getLocal().attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                local.attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
     }
 
     /**
      * @param parent The parent directory
      * @param file   The local file corresponding with this remote path
      */
-    public void setPath(String parent, Local file) {
+    public void setPath(String parent, final Local file) {
         this.setPath(parent, file.getName());
         this.setLocal(file);
     }
@@ -345,9 +347,8 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return The local alias of this path
      */
     public Local getLocal() {
-        //default value if not set explicitly, i.e. with drag and drop
         if(null == this.local) {
-            this.local = new Local(this.getHost().getDownloadFolder(), this.getName());
+            return new Local(this.getHost().getDownloadFolder(), this.getName());
         }
         return this.local;
     }
