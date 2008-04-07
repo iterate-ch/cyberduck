@@ -47,6 +47,8 @@ public abstract class CDBrowserTableDataSource extends CDController {
     public static final String KIND_COLUMN = "KIND";
     // virtual column to implement keyboard selection
     protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
+    // virtual column to implement quick look
+    protected static final String LOCAL_COLUMN = "LOCAL";
 
     /**
      * Container for all paths currently being listed in the background
@@ -145,9 +147,6 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 return new NSAttributedString(item.getName(),
                         CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
             }
-            if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                return item.getName();
-            }
             if(identifier.equals(SIZE_COLUMN)) {
                 return new NSAttributedString(Status.getSizeAsString(item.attributes.getSize()),
                         CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
@@ -179,6 +178,12 @@ public abstract class CDBrowserTableDataSource extends CDController {
             if(identifier.equals(KIND_COLUMN)) {
                 return new NSAttributedString(item.kind(),
                         CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
+            }
+            if(identifier.equals(TYPEAHEAD_COLUMN)) {
+                return item.getName();
+            }
+            if(identifier.equals(LOCAL_COLUMN)) {
+                return item.getLocal().getAbsolute();
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }

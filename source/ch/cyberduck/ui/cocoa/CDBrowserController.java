@@ -1106,6 +1106,39 @@ public class CDBrowserController extends CDWindowController
             CDBrowserController.this.insideButtonClicked(sender);
         }
 
+        public void selectionQuickLook(final Object sender) {
+            final Collection selected = getSelectedPaths();
+            background(new BackgroundAction() {
+                public void run() {
+                    for(Iterator iter = selected.iterator(); iter.hasNext();) {
+                        final Path preview = (Path) iter.next();
+                        final Local local = new Local(NSPathUtilities.temporaryDirectory(),
+                                preview.getAbsolute()
+                        );
+                        preview.setLocal(local);
+                    }
+                    final Transfer download = new DownloadTransfer(selected);
+                    final TransferOptions options = new TransferOptions();
+                    options.closeSession = false;
+                    download.start(new TransferPrompt() {
+                        public TransferAction prompt() {
+                            return TransferAction.ACTION_SKIP;
+                        }
+                    }, options);
+                }
+
+                public void cleanup() {
+                    for(Iterator iter = selected.iterator(); iter.hasNext();) {
+                        final Path preview = (Path) iter.next();
+                        preview.getLocal().quicklook();
+                        // Reset to default download path
+                        preview.setLocal(null);
+                    }
+                    updateStatusLabel(null);
+                }
+            });
+        }
+
         public void enterKeyPressed(final Object sender) {
             ;
         }
