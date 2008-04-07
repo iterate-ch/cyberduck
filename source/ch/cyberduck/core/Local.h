@@ -57,8 +57,15 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_kind
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_applicationForExtension
-  (JNIEnv *env, jobject this, jstring extension);
+  (JNIEnv *, jobject, jstring);
 
+/*
+ * Class:     ch_cyberduck_core_Local
+ * Method:    quicklook
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_quicklook
+  (JNIEnv *, jobject, jobjectArray);
 
 #ifdef __cplusplus
 }

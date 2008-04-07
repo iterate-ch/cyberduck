@@ -24,6 +24,8 @@
 #import <CoreServices/CoreServices.h>
 #import <Cocoa/Cocoa.h>
 #import <IconFamily.h>
+#import "QuickLook.h"
+#define QLPreviewPanel NSClassFromString(@"QLPreviewPanel")
 
 // Simple utility to convert java strings to NSStrings
 NSString *convertToNSString(JNIEnv *env, jstring javaString)
@@ -111,4 +113,23 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_kind(JNIEnv *env, jobject
 		[kind release];
 	}
 	return result;
+}
+
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_quicklook(JNIEnv *env, jobject this, jobjectArray paths)
+{
+//	NSMutableArray* URLs = [NSMutableArray arrayWithCapacity:(*env)->GetArrayLength(env, paths)];
+	NSMutableArray* URLs = nil;
+	if(nil == [[QLPreviewPanel sharedPreviewPanel] URLs]) {
+		URLs = [NSMutableArray array];
+	}
+	else {
+		URLs = [NSMutableArray arrayWithArray:[[QLPreviewPanel sharedPreviewPanel] URLs]];
+	}
+	int i;
+    for(i = 0; i < (*env)->GetArrayLength(env, paths); i++) {
+		[URLs addObject:[NSURL fileURLWithPath:convertToNSString(env, (jstring)(*env)->GetObjectArrayElement(env, paths, i))]];
+	}
+	[[QLPreviewPanel sharedPreviewPanel] setURLs:URLs currentIndex:0 preservingDisplayState:YES];
+	// And then display the panel
+	[[QLPreviewPanel sharedPreviewPanel] makeKeyAndOrderFrontWithEffect:2];
 }

@@ -355,7 +355,7 @@ public class Local extends AbstractPath {
         return childs;
     }
 
-    
+
     /**
      * @return the file type for the extension of this file provided by launch services
      */
@@ -548,6 +548,7 @@ public class Local extends AbstractPath {
 
     /**
      * The default application for this file as set by the launch services
+     *
      * @return Full path to the application bundle. Null if unknown
      */
     public String getDefaultEditor() {
@@ -574,4 +575,26 @@ public class Local extends AbstractPath {
             super(local._impl);
         }
     }
+
+    public void quicklook() {
+        this.quicklook(new Local[]{this});
+    }
+
+    /**
+     * Add this files to the Quick Look Preview shared window
+     *
+     * @param files
+     */
+    public void quicklook(Local[] files) {
+        if(!Local.jni_load()) {
+            return;
+        }
+        final String[] paths = new String[files.length];
+        for(int i = 0; i < files.length; i++) {
+            paths[i] = files[i].getAbsolute();
+        }
+        this.quicklook(paths);
+    }
+
+    private native void quicklook(String[] path);
 }
