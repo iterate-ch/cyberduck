@@ -301,6 +301,13 @@
 			remoteGlobalIDString = 471D2C0B05A2505500675163;
 			remoteInfo = "app (International)";
 		};
+		4726A8D30DAD6E27001BC01D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 478ECD000DAD5743008A5B1F /* libQuickLook */;
+			remoteInfo = libQuickLook;
+		};
 		478D627C0B74849300096EC7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -2148,6 +2155,7 @@
 				471E21560A1734D7009E164E /* PBXTargetDependency */,
 				471E21580A1734D7009E164E /* PBXTargetDependency */,
 				47BEDCEF0B92A23B00141EB4 /* PBXTargetDependency */,
+				4726A8D40DAD6E27001BC01D /* PBXTargetDependency */,
 			);
 			name = "app (International)";
 			productInstallPath = "$(USER_APPS_DIR)";
@@ -2800,6 +2808,11 @@
 			isa = PBXTargetDependency;
 			target = 471D2C0B05A2505500675163 /* app (International) */;
 			targetProxy = 471E21630A1734E8009E164E /* PBXContainerItemProxy */;
+		};
+		4726A8D40DAD6E27001BC01D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 478ECD000DAD5743008A5B1F /* libQuickLook */;
+			targetProxy = 4726A8D30DAD6E27001BC01D /* PBXContainerItemProxy */;
 		};
 		478D627B0B74849300096EC7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
