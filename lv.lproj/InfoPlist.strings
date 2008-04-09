@@ -1,0 +1,5 @@
+﻿/* Localized versions of Info.plist keys */
+
+
+CFBundleGetInfoString = "_VERSION_ (_REVISION_), Autortiesības 2001-2008 Dāvids V. Kočers.";
+NSHumanReadableCopyright = "Autortiesības 2001-2008 Dāvids V. Kočers";

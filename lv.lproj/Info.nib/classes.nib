@@ -1,0 +1,41 @@
+{
+    IBClasses =     (
+                {
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = "ch.cyberduck.ui.cocoa.CDInfoController";
+            LANGUAGE = Java;
+            OUTLETS =             {
+                applyButton = NSButton;
+                filenameField = NSTextField;
+                groupField = NSTextField;
+                groupr = NSButton;
+                groupw = NSButton;
+                groupx = NSButton;
+                iconImageView = NSImageView;
+                kindField = NSTextField;
+                modifiedField = NSTextField;
+                otherr = NSButton;
+                otherw = NSButton;
+                otherx = NSButton;
+                ownerField = NSTextField;
+                ownerr = NSButton;
+                ownerw = NSButton;
+                ownerx = NSButton;
+                pathField = NSTextField;
+                permissionProgress = NSProgressIndicator;
+                permissionsBox = NSBox;
+                recursiveCheckbox = NSButton;
+                sizeButton = NSButton;
+                sizeField = NSTextField;
+                sizeProgress = NSProgressIndicator;
+                window = NSWindow;
+            };
+            SUPERCLASS = NSObject;
+        }
+    );
+    IBVersion = 1;
+}

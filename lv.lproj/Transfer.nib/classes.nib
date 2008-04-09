@@ -1,0 +1,54 @@
+{
+    IBClasses =     (
+                {
+            CLASS = CDListView;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSTableView;
+        },
+                {
+            ACTIONS =             {
+                changeAngle = id;
+                changeStyle = id;
+                changeType = id;
+            };
+            CLASS = CTGradientView;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSView;
+        },
+                {
+            ACTIONS =             {
+                "" = id;
+                reloadButtonClicked = id;
+                removeButtonClicked = id;
+                resumeButtonClicked = id;
+                revealButtonClicked = id;
+                stopButtonClicked = id;
+            };
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = NSDatePicker;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSControl;
+        },
+                {
+            CLASS = "ch.cyberduck.core.CDQueueController";
+            LANGUAGE = Java;
+            OUTLETS =             {
+                bandwidthPopup = NSPopUpButton;
+                filterField = NSSearchField;
+                iconView = NSImageView;
+                localField = NSTextField;
+                logDrawer = NSDrawer;
+                queueSizeStepper = NSStepper;
+                queueTable = NSTableView;
+                urlField = NSTextField;
+                window = NSWindow;
+            };
+            SUPERCLASS = NSObject;
+        }
+    );
+    IBVersion = 1;
+}
