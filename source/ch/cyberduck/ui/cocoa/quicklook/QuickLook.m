@@ -38,37 +38,49 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
     return converted;
 }
 
+// First, load the private Quick Look framework if available (10.5+)
+#define QUICK_LOOK_AVAILABLE [[NSBundle bundleWithPath:@"/System/Library/PrivateFrameworks/QuickLookUI.framework"] load]
+
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_QuickLook_select(JNIEnv *env, jobject this, jobjectArray paths)
 {
-	NSMutableArray* URLs = nil;
-	URLs = [NSMutableArray arrayWithCapacity:(*env)->GetArrayLength(env, paths)];
-	int i;
-    for(i = 0; i < (*env)->GetArrayLength(env, paths); i++) {
-		[URLs addObject:[NSURL fileURLWithPath:convertToNSString(env, (jstring)(*env)->GetObjectArrayElement(env, paths, i))]];
+	if(QUICK_LOOK_AVAILABLE) {
+		NSMutableArray* URLs = nil;
+		URLs = [NSMutableArray arrayWithCapacity:(*env)->GetArrayLength(env, paths)];
+		int i;
+		for(i = 0; i < (*env)->GetArrayLength(env, paths); i++) {
+			[URLs addObject:[NSURL fileURLWithPath:convertToNSString(env, (jstring)(*env)->GetObjectArrayElement(env, paths, i))]];
+		}
+		[[QLPreviewPanel sharedPreviewPanel] setURLs:URLs currentIndex:0 preservingDisplayState:YES];
 	}
-	[[QLPreviewPanel sharedPreviewPanel] setURLs:URLs currentIndex:0 preservingDisplayState:YES];
 }
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_QuickLook_isOpen
   (JNIEnv *env, jobject this)
 {
-    return [[QLPreviewPanel sharedPreviewPanel] isOpen];
+	if(QUICK_LOOK_AVAILABLE) {
+		return [[QLPreviewPanel sharedPreviewPanel] isOpen];
+	}
+	return NO;
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_QuickLook_open
   (JNIEnv *env, jobject this)
 {
-	if(![[QLPreviewPanel sharedPreviewPanel] isOpen]) {
-		// And then display the panel
-		[[QLPreviewPanel sharedPreviewPanel] makeKeyAndOrderFrontWithEffect:2];
+	if(QUICK_LOOK_AVAILABLE) {
+		if(![[QLPreviewPanel sharedPreviewPanel] isOpen]) {
+			// And then display the panel
+			[[QLPreviewPanel sharedPreviewPanel] makeKeyAndOrderFrontWithEffect:2];
+		}
 	}
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_QuickLook_close
   (JNIEnv *env, jobject this)
 {
-	if([[QLPreviewPanel sharedPreviewPanel] isOpen]) {
-		// If the user presses space when the preview panel is open then we close it
-		[[QLPreviewPanel sharedPreviewPanel] closeWithEffect:2];
+	if(QUICK_LOOK_AVAILABLE) {
+		if([[QLPreviewPanel sharedPreviewPanel] isOpen]) {
+			// If the user presses space when the preview panel is open then we close it
+			[[QLPreviewPanel sharedPreviewPanel] closeWithEffect:2];
+		}
 	}
 }
