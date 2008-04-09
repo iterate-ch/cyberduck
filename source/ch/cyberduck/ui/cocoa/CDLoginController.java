@@ -159,8 +159,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
             }
 
             public void callback(final int returncode) {
-                if (returncode == DEFAULT_OPTION) {
-                    log.info("Update login credentials...");
+                if (returncode == CDSheetCallback.DEFAULT_OPTION) {
                     this.window().endEditingForObject(null);
                     credentials.setUsername((String) userField.objectValue());
                     credentials.setPassword((String) passField.objectValue());
@@ -169,7 +168,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
         };
         c.beginSheet();
 
-        if(null == credentials.getUsername() && null == credentials.getPassword()) {
+        if (c.returnCode() == CDSheetCallback.CANCEL_OPTION) {
             throw new LoginCanceledException();
         }
     }
