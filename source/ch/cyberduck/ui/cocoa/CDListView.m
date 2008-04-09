@@ -43,9 +43,6 @@ static NSTableColumn *localSelectionColumn;
 
 	// First, load the private Quick Look framework if available (10.5+)
 	quickLookAvailable = [[NSBundle bundleWithPath:@"/System/Library/PrivateFrameworks/QuickLookUI.framework"] load];
-	if(quickLookAvailable) {
-		[[[QLPreviewPanel sharedPreviewPanel] windowController] setDelegate:self];
-	}
 }
 
 - (BOOL)acceptsFirstMouse:(NSEvent *)event
@@ -74,9 +71,6 @@ static NSTableColumn *localSelectionColumn;
 				NSValue *wrappedMouseLocation = [NSValue valueWithPoint:[NSEvent mouseLocation]];
 				[self performSelector:@selector(handleBrowserClickOffloaded:) withObject:wrappedMouseLocation afterDelay:0.5];
 			}
-		}
-		else {
-			NSLog(@"WARN: Tableview delegate does not respond to isColumnEditable:");
 		}
 	}
 }
@@ -192,17 +186,10 @@ static NSTableColumn *localSelectionColumn;
     }
 	else if(key == ' ') {
 		if(quickLookAvailable) {
-			// If the user presses space when the preview panel is open then we close it
-			if([[QLPreviewPanel sharedPreviewPanel] isOpen]) {
-				[[QLPreviewPanel sharedPreviewPanel] closeWithEffect:2];
-			}
-			else if ([[self delegate] respondsToSelector:@selector(selectionQuickLook:)]) {
-				[[QLPreviewPanel sharedPreviewPanel] setURLs:nil];
+			if ([[self delegate] respondsToSelector:@selector(spaceKeyPressed:)]) {
+				[[[QLPreviewPanel sharedPreviewPanel] windowController] setDelegate:self];
 				// Space bar invokes Quick Look
-				[[self delegate] performSelector:@selector(selectionQuickLook:) withObject:event];
-				// Restore the focus to our window to demo the selection changing, scrolling 
-				// (left/right) and closing (space) functionality
-				[[self window] makeKeyWindow];
+				[[self delegate] performSelector:@selector(spaceKeyPressed:) withObject:event];
 			}
 			return;
 		}

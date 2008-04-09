@@ -17,7 +17,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import "QuickLook.h"
+#import "QLPreviewPanel.h"
 #define QLPreviewPanel NSClassFromString(@"QLPreviewPanel")
 
 @interface CDOutlineView : NSOutlineView {
