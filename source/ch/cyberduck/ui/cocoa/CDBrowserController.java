@@ -30,6 +30,7 @@ import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
+import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
@@ -1106,45 +1107,56 @@ public class CDBrowserController extends CDWindowController
             CDBrowserController.this.insideButtonClicked(sender);
         }
 
-        public void selectionQuickLook(final Object sender) {
-            if(getSelectionCount() > 0) {
-                final Collection previews = new Collection();
-                for(Iterator iter = getSelectedPaths().iterator(); iter.hasNext();) {
-                    final Path path = (Path) iter.next();
-                    if(path.attributes.isFile()) {
-                        final Local folder = new Local(new File(NSPathUtilities.temporaryDirectory(),
-                                path.getParent().getAbsolute()));
-                        folder.mkdir(true);
-                        path.setLocal(new Local(folder, path.getAbsolute()));
-                        previews.add(path);
-                    }
+        public void spaceKeyPressed(final Object sender) {
+            if(QuickLook.isOpen()) {
+                QuickLook.close();
+            }
+            else {
+                this.updateQuickLookSelection(
+                        CDBrowserController.this.getSelectedPaths()
+                );
+            }
+        }
+
+        private void updateQuickLookSelection(final Collection selected) {
+                final Collection downloads = new Collection();
+            for(Iterator iter = selected.iterator(); iter.hasNext();) {
+                final Path path = (Path) iter.next();
+                if(!path.attributes.isFile()) {
+                    continue;
                 }
+                final Local folder = new Local(new File(NSPathUtilities.temporaryDirectory(),
+                        path.getParent().getAbsolute()));
+                folder.mkdir(true);
+                path.setLocal(new Local(folder, path.getAbsolute()));
+                downloads.add(path);
+            }
+            if(downloads.size() > 0) {
                 background(new BackgroundAction() {
                     public void run() {
-                        for(Iterator iter = previews.iterator(); iter.hasNext();) {
+                        for(Iterator iter = downloads.iterator(); iter.hasNext();) {
                             final Path preview = (Path) iter.next();
                             if(!preview.getLocal().exists()) {
                                 preview.download();
                             }
                         }
-//                        final Transfer download = new DownloadTransfer(previews);
-//                        final TransferOptions options = new TransferOptions();
-//                        options.closeSession = false;
-//                        download.start(new TransferPrompt() {
-//                            public TransferAction prompt() {
-//                                return TransferAction.ACTION_SKIP;
-//                            }
-//                        }, options);
                     }
 
                     public void cleanup() {
-                        for(Iterator iter = previews.iterator(); iter.hasNext();) {
-                            final Path preview = (Path) iter.next();
-                            preview.getLocal().quicklook();
-                            // Reset to default download path
-                            preview.setLocal(null);
+                        final List previews = new ArrayList();
+                        for(Iterator iter = downloads.iterator(); iter.hasNext();) {
+                            final Path download = (Path) iter.next();
+                            previews.add(download.getLocal());
                         }
-                        updateStatusLabel(null);
+                        // Change files in Quick Look
+                        QuickLook.select((Local[]) previews.toArray(new Local[previews.size()]));
+                        // Open Quick Look Preview Panel
+                        QuickLook.open();
+                        // Revert status label
+                        CDBrowserController.this.updateStatusLabel(null);
+                        // Restore the focus to our window to demo the selection changing, scrolling
+                        // (left/right) and closing (space) functionality
+                        CDBrowserController.this.window().makeKeyWindow();
                     }
                 });
             }
@@ -1178,33 +1190,36 @@ public class CDBrowserController extends CDWindowController
         }
 
         public void selectionDidChange(NSNotification notification) {
-            final Path p = getSelectedPath();
-            if(p != null) {
-                if(null != p && p.attributes.isFile()) {
+            if(CDBrowserController.this.getSelectionCount() > 0) {
+                final Path p = getSelectedPath();
+                if(p.attributes.isFile()) {
                     String editorBundleIdentifier = EditorFactory.editorBundleIdentifierForFile(
                             p.getLocal());
                     EditorFactory.setSelectedEditor(editorBundleIdentifier);
                 }
-            }
-            if(Preferences.instance().getBoolean("browser.info.isInspector")) {
-                if(inspector != null && inspector.window() != null && inspector.window().isVisible()) {
-                    final List selected = getSelectedPaths();
-                    if(selected.size() > 0) {
-                        background(new BackgroundAction() {
-                            public void run() {
-                                for(Iterator iter = selected.iterator(); iter.hasNext();) {
-                                    final Path selected = (Path) iter.next();
-                                    if(selected.attributes.getPermission() == null) {
-                                        selected.readPermission();
+                final Collection selected = getSelectedPaths();
+                if(Preferences.instance().getBoolean("browser.info.isInspector")) {
+                    if(inspector != null && inspector.window() != null && inspector.window().isVisible()) {
+                        if(selected.size() > 0) {
+                            background(new BackgroundAction() {
+                                public void run() {
+                                    for(Iterator iter = selected.iterator(); iter.hasNext();) {
+                                        final Path selected = (Path) iter.next();
+                                        if(selected.attributes.getPermission() == null) {
+                                            selected.readPermission();
+                                        }
                                     }
                                 }
-                            }
 
-                            public void cleanup() {
-                                inspector.setFiles(selected);
-                            }
-                        });
+                                public void cleanup() {
+                                    inspector.setFiles(selected);
+                                }
+                            });
+                        }
                     }
+                }
+                if(QuickLook.isOpen()) {
+                    this.updateQuickLookSelection(selected);
                 }
             }
         }
@@ -2369,7 +2384,6 @@ public class CDBrowserController extends CDWindowController
                         if(!isConnected()) {
                             break;
                         }
-                        source.setLocal(null);
                         destination.setLocal(local);
                         UploadTransfer upload = new UploadTransfer(destination);
                         upload.start(new TransferPrompt() {
@@ -2777,14 +2791,14 @@ public class CDBrowserController extends CDWindowController
     }
 
 
-    public void downloadToPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
+    public void downloadToPanelDidEnd(NSOpenPanel sheet, int returncode, final Object contextInfo) {
         sheet.close();
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
             final Session session = this.getTransferSession();
             final List roots = new Collection();
             for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
                 Path path = PathFactory.createPath(session, ((Path) i.next()).getAsDictionary());
-                path.getLocal().setPath(sheet.filename(), path.getLocal().getName());
+                path.setLocal(new Local(sheet.filename(), path.getLocal().getName()));
                 roots.add(path);
             }
             final Transfer q = new DownloadTransfer(roots);
@@ -2814,13 +2828,13 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
-    public void downloadAsPanelDidEnd(NSSavePanel sheet, int returncode, Object contextInfo) {
+    public void downloadAsPanelDidEnd(NSSavePanel sheet, int returncode, final Object contextInfo) {
         sheet.close();
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
             String filename;
             if((filename = sheet.filename()) != null) {
                 Path path = (Path) contextInfo;
-                path.getLocal().setPath(filename);
+                path.setLocal(new Local(filename));
                 final Transfer q = new DownloadTransfer(path);
                 this.transfer(q);
             }
@@ -2858,13 +2872,13 @@ public class CDBrowserController extends CDWindowController
         );
     }
 
-    public void syncPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
+    public void syncPanelDidEnd(NSOpenPanel sheet, int returncode, final Object contextInfo) {
         sheet.close();
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
             final Path selection = (Path) contextInfo;
             if(sheet.filenames().count() > 0) {
                 Path root = PathFactory.createPath(this.getTransferSession(), selection.getAsDictionary());
-                root.getLocal().setPath((String) sheet.filenames().lastObject());
+                root.setLocal(new Local(sheet.filenames().lastObject().toString()));
                 final Transfer q = new SyncTransfer(root);
                 this.transfer(q, selection);
             }
@@ -2877,6 +2891,7 @@ public class CDBrowserController extends CDWindowController
         final List roots = new Collection();
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
             Path path = PathFactory.createPath(session, ((Path) i.next()).getAsDictionary());
+            path.setLocal(null);
             roots.add(path);
         }
         final Transfer q = new DownloadTransfer(roots);
