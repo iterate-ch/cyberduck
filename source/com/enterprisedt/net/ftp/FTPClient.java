@@ -872,10 +872,15 @@ public class FTPClient {
         if(null == features) {
             FTPReply reply = control.sendCommand("FEAT");
             lastValidReply = control.validateReply(reply, new String[]{"211", "500", "502"});
-            if(lastValidReply.getReplyCode().equals("211"))
-                return features = lastValidReply.getReplyData();
-            else
+            if(lastValidReply.getReplyCode().equals("211")) {
+                features = lastValidReply.getReplyData();
+            }
+            else {
                 throw new FTPException(reply);
+            }
+        }
+        if(null == features) {
+            return new String[]{};
         }
         return features;
     }
