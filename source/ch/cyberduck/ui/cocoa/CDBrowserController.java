@@ -3253,6 +3253,8 @@ public class CDBrowserController extends CDWindowController
                 + "@"
                 + this.getSession().getHost().getHostname()
                 + " "
+                + "-p " + this.getSession().getHost().getPort()
+                + " "
                 + "\\\"cd " + workdir + " && exec \\\\$SHELL\\\"\""
                 + "\n"
                 + "end tell";
