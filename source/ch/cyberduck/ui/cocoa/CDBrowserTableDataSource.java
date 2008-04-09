@@ -423,7 +423,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
             if(null != dropDestination) {
                 final String d = java.net.URLDecoder.decode(dropDestination.getFile().replaceAll("\\+", "%2B"), "UTF-8");
                 for(int i = 0; i < this.promisedDragPaths.length; i++) {
-                    this.promisedDragPaths[i].getLocal().setPath(d, this.promisedDragPaths[i].getName());
+                    this.promisedDragPaths[i].setLocal(new Local(d, this.promisedDragPaths[i].getName()));
                     promisedDragNames.addObject(this.promisedDragPaths[i].getName());
                 }
                 if(d.indexOf(NSPathUtilities.stringByExpandingTildeInPath("~/.Trash")) != -1) {

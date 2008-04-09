@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
 import ch.cyberduck.core.Local;
@@ -53,7 +52,7 @@ public class CDCreateFileController extends CDFileController {
     }
 
     protected void createFile(final Path workdir, final String filename, final boolean edit) {
-        final CDBrowserController c = (CDBrowserController)parent;
+        final CDBrowserController c = (CDBrowserController) parent;
         c.background(new BackgroundAction() {
             final Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
                     new Local(NSPathUtilities.temporaryDirectory(), filename));
@@ -70,7 +69,7 @@ public class CDCreateFileController extends CDFileController {
                     else {
                         proposal = filename + "-" + no;
                     }
-                    file.getLocal().setPath(NSPathUtilities.temporaryDirectory(), proposal);
+                    file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
                 }
                 file.getLocal().touch();
                 file.upload();

@@ -76,7 +76,7 @@ public class DownloadTransfer extends Transfer {
                         } else {
                             proposal = filename + "-" + no;
                         }
-                        download.getLocal().setPath(parent, proposal);
+                        download.setLocal(new Local(parent, proposal));
                     }
                     while(download.getLocal().exists());
                     log.info("Changed local name to:" + download.getName());
@@ -181,12 +181,10 @@ public class DownloadTransfer extends Transfer {
             return new AttributedList(Collections.EMPTY_LIST);
         }
         final AttributedList childs = parent.childs(new NullComparator(), childFilter);
+        // Change download path relative to parent local folder
         for(Iterator iter = childs.iterator(); iter.hasNext(); ) {
-            final Local local = ((Path) iter.next()).getLocal();
-            local.setPath(
-                    parent.getLocal().getAbsolute(),
-                    local.getName()
-            );
+            final Path download = (Path) iter.next();
+            download.setLocal(new Local(parent.getLocal(), download.getName()));
         }
         return childs;
     }
@@ -258,7 +256,7 @@ public class DownloadTransfer extends Transfer {
                     } else {
                         proposal = filename + "-" + no;
                     }
-                    p.getLocal().setPath(parent, proposal);
+                    p.setLocal(new Local(parent, proposal));
                 }
                 log.info("Changed local name to:" + p.getName());
             }

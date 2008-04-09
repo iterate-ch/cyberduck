@@ -348,9 +348,13 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     public Local getLocal() {
         if(null == this.local) {
-            return new Local(this.getHost().getDownloadFolder(), this.getName());
+            return getDefaultLocal();
         }
         return this.local;
+    }
+    
+    private Local getDefaultLocal() {
+        return new Local(this.getHost().getDownloadFolder(), this.getName());
     }
 
     /**

@@ -82,7 +82,7 @@ public abstract class Editor extends CDController {
         int no = 0;
         int index = filename.lastIndexOf(".");
         do {
-            edited.getLocal().setPath(folder.getAbsolute(), proposal);
+            edited.setLocal(new Local(folder, proposal));
             no++;
             if(index != -1 && index != 0) {
                 proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
