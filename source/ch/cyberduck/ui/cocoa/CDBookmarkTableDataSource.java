@@ -139,10 +139,18 @@ public class CDBookmarkTableDataSource extends CDController {
         if(row < this.numberOfRowsInTableView(view)) {
             String identifier = (String) tableColumn.identifier();
             if(identifier.equals(ICON_COLUMN)) {
-                if(Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems")) {
-                    return DOCUMENT_ICON_SMALL;
+                if(source == HostCollection.defaultCollection()) {
+                    if(Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems")) {
+                        return DOCUMENT_ICON_SMALL;
+                    }
+                    return DOCUMENT_ICON;
                 }
-                return DOCUMENT_ICON;
+                if(source == HistoryCollection.defaultCollection()) {
+                    return NSImage.imageNamed("history.tiff");
+                }
+                if(source == RendezvousCollection.defaultCollection()) {
+                    return NSImage.imageNamed("rendezvous.icns");
+                }
             }
             final Object host = this.getSource().get(row);
             if(identifier.equals(BOOKMARK_COLUMN)) {

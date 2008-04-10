@@ -979,15 +979,7 @@ public class CDBrowserController extends CDWindowController
 
     private void updateBookmarkSource() {
         if(bonjourButton.state() == NSCell.OnState) {
-            bookmarkModel.setSource(new Collection() {
-                public Object get(int row) {
-                    return Rendezvous.instance().getService(row);
-                }
-
-                public int size() {
-                    return Rendezvous.instance().numberOfServices();
-                }
-            });
+            bookmarkModel.setSource(RendezvousCollection.defaultCollection());
         }
         else if(historyButton.state() == NSCell.OnState) {
             bookmarkModel.setSource(HistoryCollection.defaultCollection());
@@ -2300,6 +2292,18 @@ public class CDBrowserController extends CDWindowController
     // ----------------------------------------------------------
     // Selector methods for the toolbar items
     // ----------------------------------------------------------
+
+    public void quicklookButtonClicked(final Object sender) {
+        if(QuickLook.isOpen()) {
+            QuickLook.close();
+        }
+        else {
+            QuickLook.open();
+            final AbstractBrowserTableDelegate delegate
+                    = (AbstractBrowserTableDelegate)this.getSelectedBrowserView().delegate();
+            delegate.updateQuickLookSelection(this.getSelectedPaths());
+        }
+    }
 
     public void showTransferQueueClicked(final Object sender) {
         CDTransferController controller = CDTransferController.instance();
