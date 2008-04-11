@@ -2739,7 +2739,11 @@ public class CDBrowserController extends CDWindowController
 
     public void openBrowserButtonClicked(final Object sender) {
         try {
-            final String url = this.session.getHost().getWebURL();
+            String url = this.session.getHost().getWebURL();
+            final String protocol = "http://";
+            if(!url.startsWith(protocol)) {
+                url = protocol + url;
+            }
             String selected;
             final String parent = this.session.getHost().getDefaultPath();
             if(this.getSelectionCount() == 1) {
