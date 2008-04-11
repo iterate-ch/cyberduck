@@ -417,7 +417,7 @@ public class FTPClient {
      * @param append     true if appending, false otherwise
      */
     private void initPut(String remoteFile, boolean append) throws IOException, FTPException {
-        final String cmd = append ? "APPE " : "STOR "+remoteFile;
+        final String cmd = (append ? "APPE " : "STOR ") + remoteFile;
 
         this.pret(cmd);
 
