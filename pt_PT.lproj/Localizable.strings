@@ -242,6 +242,12 @@
 /* No comment provided by engineer. */
 "Open" = "Abrir";
 
+/* Open corresponding HTTP URL in default browser */
+"Open Web URL" = "Open Web URL";
+
+/* Open corresponding HTTP URL in default browser Tooltip*/
+"Open in Web Browser" = "Open in Web Browser";
+
 /* Toolbar item */
 "Outline" = "Estrutura";
 
