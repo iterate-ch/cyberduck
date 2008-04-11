@@ -191,6 +191,14 @@
 			<replacefilter token="_REVISION_" value="${svn.revision}" />
 			<replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
 		</replace>
+		<replace dir="${app.bundle}" summary="true" encoding="UTF-16">
+			<include name="**/InfoPlist.strings" />
+			<include name="**/Info.plist" />
+			<replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}" />
+			<replacefilter token="_TIMESTAMP_" value="${touch.time}" />
+			<replacefilter token="_REVISION_" value="${svn.revision}" />
+			<replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}" />
+		</replace>
 		<echo message="Code signing application bundle..." />
 		<exec dir="${home}" executable="/usr/bin/codesign" spawn="false">
 			<arg line="--force --sign 'Cyberduck Code Signing Certificate' ${app.bundle}"/>
