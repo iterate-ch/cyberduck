@@ -21,7 +21,7 @@
 		<key>1803</key>
 		<string>376 466 527 175 0 0 1280 778 </string>
 		<key>848</key>
-		<string>696 523 527 560 0 0 1920 1178 </string>
+		<string>696 477 527 560 0 0 1920 1178 </string>
 		<key>874</key>
 		<string>696 513 527 579 0 0 1920 1178 </string>
 		<key>906</key>
@@ -36,6 +36,6 @@
 	<key>IBOldestOS</key>
 	<integer>3</integer>
 	<key>IBSystem Version</key>
-	<string>9C31</string>
+	<string>9C7010</string>
 </dict>
 </plist>
