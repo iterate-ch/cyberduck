@@ -176,6 +176,19 @@ public class CDBookmarkController extends CDWindowController {
                 this.usernameField);
     }
 
+    private NSTextField webURLField;
+
+    public void setWebURLField(NSTextField webURLField) {
+        this.webURLField = webURLField;
+        ((NSTextFieldCell) this.webURLField.cell()).setPlaceholderString(
+                host.getDefaultWebURL()
+        );
+        NSNotificationCenter.defaultCenter().addObserver(this,
+                new NSSelector("webURLInputDidChange", new Class[]{NSNotification.class}),
+                NSControl.ControlTextDidChangeNotification,
+                this.webURLField);
+    }
+
     private NSTextView commentField; // IBOutlet
 
     public void setCommentField(NSTextView commentField) {
@@ -525,6 +538,11 @@ public class CDBookmarkController extends CDWindowController {
 
     public void usernameInputDidChange(final NSNotification sender) {
         this.host.getCredentials().setUsername(usernameField.stringValue());
+        this.itemChanged();
+    }
+
+    public void webURLInputDidChange(final NSNotification sender) {
+        this.host.setWebURL(webURLField.stringValue());
         this.itemChanged();
     }
 

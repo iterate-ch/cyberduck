@@ -98,6 +98,8 @@ public class Host extends NSObject implements Serializable {
      */
     private String comment;
 
+    private String webURL;
+
     private static final String HOSTNAME = "Hostname";
     private static final String NICKNAME = "Nickname";
     private static final String PORT = "Port";
@@ -111,6 +113,7 @@ public class Host extends NSObject implements Serializable {
     private static final String DOWNLOADFOLDER = "Download Folder";
     private static final String TIMEZONE = "Timezone";
     private static final String COMMENT = "Comment";
+    private static final String WEBURL = "Web URL";
 
     private Local file;
 
@@ -195,6 +198,10 @@ public class Host extends NSObject implements Serializable {
         if(commentObj != null) {
             this.setComment(commentObj.toString());
         }
+        Object urlObj = dict.objectForKey(Host.WEBURL);
+        if(urlObj != null) {
+            this.setWebURL(urlObj.toString());
+        }
     }
 
     /**
@@ -241,6 +248,9 @@ public class Host extends NSObject implements Serializable {
         }
         if(StringUtils.hasText(this.comment)) {
             dict.setObjectForKey(this.comment, Host.COMMENT);
+        }
+        if(StringUtils.hasText(this.webURL)) {
+            dict.setObjectForKey(this.webURL, Host.WEBURL);
         }
         return dict;
     }
@@ -638,6 +648,21 @@ public class Host extends NSObject implements Serializable {
      */
     public String getComment() {
         return this.comment;
+    }
+
+    public String getWebURL() {
+        if(null == webURL) {
+            return this.getDefaultWebURL();
+        }
+        return webURL;
+    }
+
+    public String getDefaultWebURL() {
+        return "http://" + this.getHostname();
+    }
+
+    public void setWebURL(String webURL) {
+        this.webURL = webURL;
     }
 
     /**

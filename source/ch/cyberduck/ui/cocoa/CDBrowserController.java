@@ -23,6 +23,7 @@ import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -41,6 +42,8 @@ import java.io.File;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 import com.enterprisedt.net.ftp.FTPConnectMode;
 
@@ -2734,6 +2737,29 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
+    public void openBrowserButtonClicked(final Object sender) {
+        try {
+            final String url = this.session.getHost().getWebURL();
+            String selected;
+            final String parent = this.session.getHost().getDefaultPath();
+            if(this.getSelectionCount() == 1) {
+                selected = this.getSelectedPath().getAbsolute();
+            }
+            else {
+                selected = this.workdir().getAbsolute();
+            }
+            if(selected.startsWith(parent)) {
+                selected = selected.substring(parent.length());
+            }
+            NSWorkspace.sharedWorkspace().openURL(
+                new URL(url + selected)
+            );
+        }
+        catch(MalformedURLException e) {
+            log.error("Cannot open in web browser:" + e.getMessage());
+        }
+    }
+
     private CDInfoController inspector = null;
 
     public void infoButtonClicked(final Object sender) {
@@ -4083,6 +4109,9 @@ public class CDBrowserController extends CDWindowController
             }
             return false;
         }
+        if(identifier.equals("openBrowserButtonClicked:")) {
+            return this.isMounted();
+        }
         if(identifier.equals("sendCustomCommandClicked:")) {
             return this.session instanceof ch.cyberduck.core.ftp.FTPSession && this.isConnected();
         }
@@ -4212,6 +4241,7 @@ public class CDBrowserController extends CDWindowController
     private static final String TOOLBAR_DELETE = "Delete";
     private static final String TOOLBAR_NEW_FOLDER = "New Folder";
     private static final String TOOLBAR_GET_INFO = "Get Info";
+    private static final String TOOLBAR_WEBVIEW = "Open Web URL";
     private static final String TOOLBAR_DISCONNECT = "Disconnect";
     private static final String TOOLBAR_INTERRUPT = "Stop";
     private static final String TOOLBAR_GO_TO_FOLDER = "Go to Folder";
@@ -4370,6 +4400,28 @@ public class CDBrowserController extends CDWindowController
             item.setAction(new NSSelector("infoButtonClicked", new Class[]{Object.class}));
             return item;
         }
+        if(itemIdentifier.equals(TOOLBAR_WEBVIEW)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_WEBVIEW, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_WEBVIEW, "Toolbar item"));
+            item.setToolTip(NSBundle.localizedString("Open in Web Browser", "Toolbar item tooltip"));
+            final String browser = URLSchemeHandlerConfiguration.instance().getDefaultHandlerForURLScheme("http");
+            if(null == browser) {
+                item.setEnabled(false);
+                item.setImage(NSImage.imageNamed("notfound.tiff"));
+            }
+            else {
+                String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(browser);
+                if(null == path) {
+                    item.setImage(NSImage.imageNamed("notfound.tiff"));
+                }
+                else {
+                    item.setImage(NSWorkspace.sharedWorkspace().iconForFile(path));
+                }
+            }
+            item.setTarget(this);
+            item.setAction(new NSSelector("openBrowserButtonClicked", new Class[]{Object.class}));
+            return item;
+        }
         if(itemIdentifier.equals(TOOLBAR_EDIT)) {
             item.setLabel(NSBundle.localizedString(TOOLBAR_EDIT, "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_EDIT, "Toolbar item"));
@@ -4478,6 +4530,7 @@ public class CDBrowserController extends CDWindowController
                 TOOLBAR_DELETE,
                 TOOLBAR_NEW_FOLDER,
                 TOOLBAR_GET_INFO,
+                TOOLBAR_WEBVIEW,
                 TOOLBAR_TERMINAL,
                 TOOLBAR_DISCONNECT,
 //                TOOLBAR_GO_TO_FOLDER,
