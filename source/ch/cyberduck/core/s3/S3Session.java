@@ -115,12 +115,8 @@ public class S3Session extends Session implements SSLSession {
                 configuration.setProperty("httpclient.proxy-port", String.valueOf(Proxy.getHTTPProxyPort()));
             }
         }
-        configuration.setProperty("httpclient.connection-timeout-ms",
-                String.valueOf(Preferences.instance().getInteger("connection.timeout.seconds") * 1000)
-        );
-        configuration.setProperty("httpclient.socket-timeout-ms",
-                String.valueOf(Preferences.instance().getInteger("connection.timeout.seconds") * 1000)
-        );
+        configuration.setProperty("httpclient.connection-timeout-ms", String.valueOf(this.timeout()));
+        configuration.setProperty("httpclient.socket-timeout-ms", String.valueOf(this.timeout()));
         configuration.setProperty("httpclient.useragent", ua);
 
 //        final String cipher = Preferences.instance().getProperty("s3.crypto.algorithm");
