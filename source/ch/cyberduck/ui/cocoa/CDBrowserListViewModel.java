@@ -68,10 +68,13 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
     public int tableViewValidateDrop(NSTableView view, NSDraggingInfo info, int row, int operation) {
         if (controller.isMounted()) {
             Path destination = controller.workdir();
-            if (row != -1 && row < view.numberOfRows()) {
-                Path p = ((Path) this.childs(this.controller.workdir()).get(row));
-                if(p.attributes.isDirectory()) {
-                    destination = p;
+            final int draggingColumn = view.columnAtPoint(info.draggingLocation());
+            if(0 == draggingColumn || 1 == draggingColumn) {
+                if (row != -1 && row < view.numberOfRows()) {
+                    Path p = ((Path) this.childs(this.controller.workdir()).get(row));
+                    if(p.attributes.isDirectory()) {
+                        destination = p;
+                    }
                 }
             }
             return super.validateDrop(view, destination, row, info);
