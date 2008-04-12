@@ -154,10 +154,6 @@ public class CDBookmarkController extends CDWindowController {
                 new NSSelector("pathInputDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.pathField);
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("pathInputDidEnd", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidEndEditingNotification,
-                this.pathField);
     }
 
     private NSTextField urlField; // IBOutlet
@@ -524,10 +520,6 @@ public class CDBookmarkController extends CDWindowController {
 
     public void pathInputDidChange(final NSNotification sender) {
         this.host.setDefaultPath(pathField.stringValue());
-        this.itemChanged();
-    }
-
-    public void pathInputDidEnd(final NSNotification sender) {
         this.itemChanged();
     }
 
