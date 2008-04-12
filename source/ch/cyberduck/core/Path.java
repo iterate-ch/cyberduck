@@ -305,9 +305,9 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(this.isRoot()) {
             return DELIMITER;
         }
-        String abs = this.getAbsolute();
-        int index = abs.lastIndexOf('/');
-        return (index > 0) ? abs.substring(index + 1) : abs.substring(1);
+        final String abs = this.getAbsolute();
+        int index = abs.lastIndexOf(DELIMITER);
+        return abs.substring(index + 1);
     }
 
     /**

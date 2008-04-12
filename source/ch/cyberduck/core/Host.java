@@ -407,7 +407,7 @@ public class Host extends NSObject implements Serializable {
      * @param defaultpath The path to change the working directory to upon connecting
      */
     public void setDefaultPath(String defaultpath) {
-        this.defaultpath = StringUtils.hasText(defaultpath) ? Path.normalize(defaultpath, false) : null;
+        this.defaultpath = StringUtils.hasText(defaultpath) ? defaultpath : null;
     }
 
     /**
