@@ -446,10 +446,13 @@ public class FTPPath extends Path {
         }
     }
 
-    public void download(final BandwidthThrottle throttle, final StreamListener listener) {
+    public void download(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         synchronized(session) {
             log.debug("download:" + this.toString());
             try {
+                if(check) {
+                    session.check();
+                }
                 if(attributes.isFile()) {
                     session.setWorkdir((Path)this.getParent());
                     this.getLocal().touch();
@@ -603,10 +606,13 @@ public class FTPPath extends Path {
         }
     }
 
-    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final Permission p) {
+    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final Permission p, final boolean check) {
         synchronized(session) {
             log.debug("upload:" + this.toString());
             try {
+                if(check) {
+                    session.check();
+                }
                 if(attributes.isFile()) {
                     session.setWorkdir((Path)this.getParent());
                     if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {

@@ -324,12 +324,15 @@ public class S3Path extends Path {
         }
     }
 
-    public void download(BandwidthThrottle throttle, final StreamListener listener) {
+    public void download(BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         synchronized(session) {
             if(attributes.isFile()) {
                 OutputStream out = null;
                 InputStream in = null;
                 try {
+                    if(check) {
+                        session.check();
+                    }
                     session.message(NSBundle.localizedString("Downloading", "Status", "") + " " + this.getName());
 
                     DownloadPackage download;
@@ -380,9 +383,12 @@ public class S3Path extends Path {
         }
     }
 
-    public void upload(BandwidthThrottle throttle, final StreamListener listener, final Permission p) {
+    public void upload(BandwidthThrottle throttle, final StreamListener listener, final Permission p, final boolean check) {
         synchronized(session) {
             try {
+                if(check) {
+                    session.check();
+                }
                 if(attributes.isFile()) {
                     session.message(NSBundle.localizedString("Uploading", "Status", "") + " " + this.getName());
 
@@ -422,6 +428,9 @@ public class S3Path extends Path {
             }
             catch(S3ServiceException e) {
                 this.error("Upload failed", e);
+            }
+            catch(IOException e) {
+                ;
             }
         }
     }

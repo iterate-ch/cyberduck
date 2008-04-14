@@ -425,12 +425,15 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void download(BandwidthThrottle throttle, StreamListener listener) {
+    public void download(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
         synchronized(session) {
             log.debug("download:" + this.toString());
             InputStream in = null;
             OutputStream out = null;
             try {
+                if(check) {
+                    session.check();
+                }
                 if(this.attributes.isFile()) {
                     out = new Local.OutputStream(this.getLocal(), getStatus().isResume());
                     this.getLocal().touch();
@@ -478,13 +481,16 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void upload(BandwidthThrottle throttle, StreamListener listener, final Permission p) {
+    public void upload(BandwidthThrottle throttle, StreamListener listener, final Permission p, final boolean check) {
         synchronized(session) {
             log.debug("upload:" + this.toString());
             InputStream in = null;
             OutputStream out = null;
             SFTPv3FileHandle handle = null;
             try {
+                if(check) {
+                    session.check();
+                }
                 if(attributes.isDirectory()) {
                     this.mkdir();
                 }

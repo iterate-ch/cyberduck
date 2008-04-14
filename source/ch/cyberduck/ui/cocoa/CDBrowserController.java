@@ -1132,7 +1132,7 @@ public class CDBrowserController extends CDWindowController
                         for(Iterator iter = downloads.iterator(); iter.hasNext();) {
                             final Path preview = (Path) iter.next();
                             if(!preview.getLocal().exists()) {
-                                preview.download();
+                                preview.download(true);
                             }
                         }
                     }
@@ -3006,9 +3006,11 @@ public class CDBrowserController extends CDWindowController
                     if(!transfer.isCanceled()) {
                         CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                             public void run() {
-                                if(isConnected()) {
-                                    reloadData(true);
-                                }
+                                reloadData(true);
+                            }
+
+                            public boolean isValid() {
+                                return super.isValid() && CDBrowserController.this.isConnected();
                             }
                         });
                     }
@@ -3649,22 +3651,6 @@ public class CDBrowserController extends CDWindowController
 //                if(!CDBrowserController.this.isMounted()) {
 //                    CDBrowserController.this.unmount();
 //                }
-            }
-
-            public void activityStarted() {
-                CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
-                    public void run() {
-                        window.toolbar().validateVisibleItems();
-                    }
-                });
-            }
-
-            public void activityStopped() {
-                CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
-                    public void run() {
-                        window.toolbar().validateVisibleItems();
-                    }
-                });
             }
         });
         transcript.clear();

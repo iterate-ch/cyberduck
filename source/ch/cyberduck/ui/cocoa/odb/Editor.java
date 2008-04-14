@@ -30,8 +30,8 @@ import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import org.apache.log4j.Logger;
 
-import java.util.Enumeration;
 import java.io.File;
+import java.util.Enumeration;
 
 /**
  * @version $Id$
@@ -67,7 +67,6 @@ public abstract class Editor extends CDController {
     }
 
     /**
-     * 
      * @param path
      */
     public void open(Path path) {
@@ -86,7 +85,8 @@ public abstract class Editor extends CDController {
             no++;
             if(index != -1 && index != 0) {
                 proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
-            } else {
+            }
+            else {
                 proposal = filename + "-" + no;
             }
         }
@@ -94,7 +94,7 @@ public abstract class Editor extends CDController {
 
         controller.background(new BackgroundAction() {
             public void run() {
-                edited.download();
+                edited.download(true);
             }
 
             public void cleanup() {
@@ -139,8 +139,7 @@ public abstract class Editor extends CDController {
     protected void delete() {
         log.debug("delete");
         edited.getLocal().delete();
-        for(AbstractPath parent = edited.getLocal().getParent(); !parent.equals(TEMPORARY_DIRECTORY); parent = parent.getParent())
-        {
+        for(AbstractPath parent = edited.getLocal().getParent(); !parent.equals(TEMPORARY_DIRECTORY); parent = parent.getParent()) {
             if(parent.isEmpty()) {
                 parent.delete();
             }

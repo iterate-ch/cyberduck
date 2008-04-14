@@ -391,21 +391,35 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
+     *
+     * @param check Check for open connection and open if needed before transfer
+     */
+    public void download(final boolean check) {
+        this.download(new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), check);
+    }
+
+    /**
      * @param listener The stream listener to notify about bytes received and sent
      */
     public void download(StreamListener listener) {
-        this.download(new BandwidthThrottle(0) {
-            public synchronized int request(int desired) {
-                return desired;
-            }
-        }, listener);
+        this.download(new BandwidthThrottle(BandwidthThrottle.UNLIMITED), listener);
     }
 
     /**
      * @param throttle The bandwidth limit
      * @param listener
      */
-    public abstract void download(BandwidthThrottle throttle, StreamListener listener);
+    public void download(BandwidthThrottle throttle, StreamListener listener) {
+        this.download(throttle, listener, false);
+    }
+
+    /**
+     *
+     * @param throttle
+     * @param listener
+     * @param check Check for open connection and open if needed before transfer
+     */
+    public abstract void download(BandwidthThrottle throttle, StreamListener listener, boolean check);
 
     /**
      *
@@ -445,7 +459,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                 }
             }
         }
-        this.upload(throttle, listener,  p);
+        this.upload(throttle, listener,  p, false);
     }
 
     /**
@@ -453,7 +467,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param listener The stream listener to notify about bytes received and sent
      * @param p The permission to set after uploading or null
      */
-    public abstract void upload(BandwidthThrottle throttle, StreamListener listener, Permission p);
+    public abstract void upload(BandwidthThrottle throttle, StreamListener listener, Permission p, boolean check);
 
     /**
      * Will copy from in to out. Will attempt to skip Status#getCurrent
