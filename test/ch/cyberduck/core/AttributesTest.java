@@ -40,7 +40,7 @@ public class AttributesTest extends TestCase {
     }
 
     public void testClone() throws Exception {
-        PathAttributes clone = (PathAttributes)attributes.clone();
+        PathAttributes clone = new PathAttributes(attributes.getAsDictionary());
         assertNotSame(clone, attributes);
 
         assertNotSame(clone.getPermission(), attributes.getPermission());

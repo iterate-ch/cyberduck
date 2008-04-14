@@ -32,6 +32,6 @@ public class PermissionTest extends TestCase {
 
     public void testClone() {
         Permission p = new Permission("rwxrwxrwx");
-        assertEquals(p, p.clone());
+        assertEquals(p, new Permission(p.getAsDictionary()));
     }
 }
