@@ -50,10 +50,6 @@ public class Permission {
         return dict;
     }
 
-    public Object clone() {
-        return new Permission(this.getAsDictionary());
-    }
-
     /**
      * Index of OWNER bit
      */

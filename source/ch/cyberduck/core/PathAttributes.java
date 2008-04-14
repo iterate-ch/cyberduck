@@ -55,16 +55,6 @@ public class PathAttributes extends Attributes {
         super();
     }
 
-    public Object clone() {
-        PathAttributes copy = new PathAttributes(this.getAsDictionary());
-        copy.size = this.getSize();
-        if(null != this.getPermission()) {
-            copy.permission = (Permission) this.getPermission().clone();
-        }
-        copy.modified = this.getModificationDate();
-        return copy;
-    }
-
     private static final String TYPE = "Type";
 
     public PathAttributes(NSDictionary dict) {
