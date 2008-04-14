@@ -599,7 +599,9 @@ public class CDBookmarkController extends CDWindowController {
             this.pkCheckbox.setState(NSCell.OffState);
             this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
         }
-        this.updateField(this.webURLField, this.host.getWebURL());
+        if(!this.host.getWebURL().equals(this.host.getDefaultWebURL())) {
+            this.updateField(this.webURLField, this.host.getWebURL());
+        }
         this.updateField(this.commentField, this.host.getComment());
     }
 }
