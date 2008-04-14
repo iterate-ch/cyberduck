@@ -25,6 +25,7 @@
                 insideButtonClicked = id;
                 interruptButtonClicked = id;
                 pasteFromFinder = id;
+                quicklookButtonClicked = id;
                 reloadButtonClicked = id;
                 renameFileButtonClicked = id;
                 sendCustomCommandClicked = id;
