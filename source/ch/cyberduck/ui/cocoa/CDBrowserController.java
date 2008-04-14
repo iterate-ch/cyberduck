@@ -2301,7 +2301,6 @@ public class CDBrowserController extends CDWindowController
             QuickLook.close();
         }
         else {
-            QuickLook.open();
             final AbstractBrowserTableDelegate delegate
                     = (AbstractBrowserTableDelegate)this.getSelectedBrowserView().delegate();
             delegate.updateQuickLookSelection(this.getSelectedPaths());
