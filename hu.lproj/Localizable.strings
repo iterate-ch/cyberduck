@@ -34,12 +34,6 @@
 /* No comment provided by engineer. */
 "Cannot continue without a valid host key." = "A folytatáshoz egy érvényes kiszolgáló kulcsra van szükség.";
 
-/* Certificate date mismatch  */
-"Certificate not yet valid" = "Certificate not yet valid";
-
-/* Certificate date mismatch  */
-"Certificate expired" = "Certificate expired";
-
 /* Toolbar item tooltip */
 "Character Encoding" = "Karakter készlet";
 
