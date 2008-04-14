@@ -57,7 +57,6 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_ODBEditor_edit(
 						  withEditorClass: (*env)->NewGlobalRef(env, (*env)->GetObjectClass(env, this)) 
 						 withEditorObject: (*env)->NewGlobalRef(env, this)];
 	[editor odbEdit:nil path:convertToNSString(env, path) withEditor:convertToNSString(env, bundleIdentifier)];
-	[editor release];
 }
 
 @implementation Editor
