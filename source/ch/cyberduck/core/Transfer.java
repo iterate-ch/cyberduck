@@ -525,8 +525,9 @@ public abstract class Transfer extends NSObject implements Serializable {
                 session.check();
             }
             catch(IOException e) {
-                session.error(null, NSBundle.localizedString("Connection failed", "Error"), e);
+                return;
             }
+
             if(!this.check()) {
                 return;
             }

@@ -214,7 +214,6 @@ public class S3Session extends Session implements SSLSession {
             finally {
                 S3 = null;
                 this.fireConnectionDidCloseEvent();
-                this.fireActivityStoppedEvent();
             }
         }
     }

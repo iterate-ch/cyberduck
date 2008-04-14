@@ -69,34 +69,41 @@ public abstract class Session extends NSObject {
     private Resolver resolver;
 
     /**
-     * Assert that the connection to the remote host is still alive. Open connection if needed.
+     * Assert that the connection to the remote host is still alive.
+     * Open connection if needed.
      *
      * @throws IOException The connection to the remote host failed.
      */
     public void check() throws IOException {
-        this.fireActivityStartedEvent();
-        if(!this.isConnected()) {
-            // If not connected anymore, reconnect the session
-            this.connect();
-        }
-        else {
-            // The session is still supposed to be connected
-            try {
-                // Send a 'no operation command' to make sure the session is alive
-                this.noop();
+        try {
+            if(!this.isConnected()) {
+                // If not connected anymore, reconnect the session
+                this.connect();
             }
-            catch(IOException e) {
+            else {
+                // The session is still supposed to be connected
                 try {
-                    // Close the underlying socket first
-                    this.interrupt();
-                    // Try to reconnect once more
-                    this.connect();
-                    // Do not throw exception as we succeeded on second attempt
+                    // Send a 'no operation command' to make sure the session is alive
+                    this.noop();
                 }
-                catch(IOException i) {
-                    throw i;
+                catch(IOException e) {
+                    try {
+                        // Close the underlying socket first
+                        this.interrupt();
+                        // Try to reconnect once more
+                        this.connect();
+                        // Do not throw exception as we succeeded on second attempt
+                    }
+                    catch(IOException i) {
+                        throw i;
+                    }
                 }
             }
+        }
+        catch(IOException e) {
+            this.interrupt();
+            this.error(null, "Connection failed", e);
+            throw e;
         }
     }
 
@@ -193,7 +200,6 @@ public abstract class Session extends NSObject {
                 return home;
             }
             catch(IOException e) {
-                this.error(null, "Connection failed", e);
                 this.interrupt();
             }
             return null;
@@ -372,34 +378,6 @@ public abstract class Session extends NSObject {
                 new ConnectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].connectionDidClose();
-        }
-    }
-
-    /**
-     * The caller must call #fireActivityStoppedEvent before
-     *
-     * @see ConnectionListener#activityStarted
-     */
-    public void fireActivityStartedEvent() {
-        log.debug("activityStarted");
-        ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
-                new ConnectionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].activityStarted();
-        }
-    }
-
-    /**
-     * The caller must call #fireActivityStartedEvent before
-     *
-     * @see ConnectionListener#activityStopped
-     */
-    public void fireActivityStoppedEvent() {
-        log.debug("activityStopped");
-        ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
-                new ConnectionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].activityStopped();
         }
     }
 

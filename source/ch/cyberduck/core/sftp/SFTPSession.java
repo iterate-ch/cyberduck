@@ -283,7 +283,6 @@ public class SFTPSession extends Session {
 
     public void close() {
         synchronized(this) {
-            this.fireActivityStartedEvent();
             try {
                 this.fireConnectionWillCloseEvent();
                 if(SFTP != null) {
@@ -295,7 +294,6 @@ public class SFTPSession extends Session {
             }
             finally {
                 this.fireConnectionDidCloseEvent();
-                this.fireActivityStoppedEvent();
             }
         }
     }
@@ -312,7 +310,6 @@ public class SFTPSession extends Session {
         finally {
             SFTP = null;
             SSH = null;
-            this.fireActivityStoppedEvent();
             this.fireConnectionDidCloseEvent();
         }
     }
@@ -352,7 +349,9 @@ public class SFTPSession extends Session {
     }
 
     public void setWorkdir(Path workdir) throws IOException {
-        this.workdir = workdir;
+        synchronized(this) {
+            this.workdir = workdir;
+        }
     }
 
     protected void noop() throws IOException {

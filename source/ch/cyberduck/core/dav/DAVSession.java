@@ -140,7 +140,6 @@ public class DAVSession extends Session {
 
     public void close() {
         synchronized(this) {
-            this.fireActivityStartedEvent();
             try {
                 if(this.isConnected()) {
                     this.fireConnectionWillCloseEvent();
@@ -153,7 +152,6 @@ public class DAVSession extends Session {
             finally {
                 DAV = null;
                 this.fireConnectionDidCloseEvent();
-                this.fireActivityStoppedEvent();
             }
         }
     }
@@ -171,7 +169,6 @@ public class DAVSession extends Session {
         }
         finally {
             DAV = null;
-            this.fireActivityStoppedEvent();
             this.fireConnectionDidCloseEvent();
         }
     }
@@ -189,7 +186,12 @@ public class DAVSession extends Session {
     }
 
     public void setWorkdir(Path workdir) throws IOException {
-        DAV.setPath(workdir.getAbsolute());
+        synchronized(this) {
+            if(!this.isConnected()) {
+                throw new ConnectionCanceledException();
+            }
+            DAV.setPath(workdir.getAbsolute());
+        }
     }
 
     protected void noop() throws IOException {

@@ -163,11 +163,7 @@ public class SFTPPath extends Path {
                 this.error("Listing directory failed", e);
             }
             catch(IOException e) {
-                this.error("Connection failed", e);
                 session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
             }
             return childs;
         }
@@ -191,11 +187,7 @@ public class SFTPPath extends Path {
                 this.error("Cannot create folder", e);
             }
             catch(IOException e) {
-                this.error("Connection failed", e);
                 session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -217,11 +209,7 @@ public class SFTPPath extends Path {
                 }
             }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+
             }
         }
     }
@@ -246,20 +234,13 @@ public class SFTPPath extends Path {
                     session.sftp().rmdir(this.getAbsolute());
                 }
             }
-            catch(SFTPException e) {
+            catch(IOException e) {
                 if(this.attributes.isFile()) {
                     this.error("Cannot delete file", e);
                 }
                 if(this.attributes.isDirectory()) {
                     this.error("Cannot delete folder", e);
                 }
-            }
-            catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -276,12 +257,8 @@ public class SFTPPath extends Path {
                     this.attributes.setSize(attr.size.longValue());
                     session.sftp().closeFile(handle);
                 }
-                catch(SFTPException e) {
-                    this.error("Cannot read file attributes", e);
-                }
                 catch(IOException e) {
-                    this.error("Connection failed", e);
-                    session.interrupt();
+                    this.error("Cannot read file attributes", e);
                 }
                 finally {
                     if(handle != null) {
@@ -292,7 +269,6 @@ public class SFTPPath extends Path {
                             ;
                         }
                     }
-                    session.fireActivityStoppedEvent();
                 }
             }
         }
@@ -310,12 +286,8 @@ public class SFTPPath extends Path {
                     this.attributes.setModificationDate(Long.parseLong(attr.mtime.toString()) * 1000L);
                     session.sftp().closeFile(handle);
                 }
-                catch(SFTPException e) {
-                    this.error("Cannot read file attributes", e);
-                }
                 catch(IOException e) {
-                    this.error("Connection failed", e);
-                    session.interrupt();
+                    this.error("Cannot read file attributes", e);
                 }
                 finally {
                     if(handle != null) {
@@ -326,7 +298,6 @@ public class SFTPPath extends Path {
                             ;
                         }
                     }
-                    session.fireActivityStoppedEvent();
                 }
             }
         }
@@ -350,12 +321,8 @@ public class SFTPPath extends Path {
                     }
                     session.sftp().closeFile(handle);
                 }
-                catch(SFTPException e) {
-                    this.error("Cannot read file attributes", e);
-                }
                 catch(IOException e) {
-                    this.error("Connection failed", e);
-                    session.interrupt();
+                    this.error("Cannot read file attributes", e);
                 }
                 finally {
                     if(handle != null) {
@@ -366,7 +333,6 @@ public class SFTPPath extends Path {
                             ;
                         }
                     }
-                    session.fireActivityStoppedEvent();
                 }
             }
         }
@@ -396,15 +362,8 @@ public class SFTPPath extends Path {
             catch(NumberFormatException e) {
                 this.error("Cannot change owner", e);
             }
-            catch(SFTPException e) {
-                this.error("Cannot change owner", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                this.error("Cannot change owner", e);
             }
         }
     }
@@ -433,15 +392,8 @@ public class SFTPPath extends Path {
             catch(NumberFormatException e) {
                 this.error("Cannot change group", e);
             }
-            catch(SFTPException e) {
-                this.error("Cannot change group", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                this.error("Cannot change group", e);
             }
         }
     }
@@ -467,15 +419,8 @@ public class SFTPPath extends Path {
                     }
                 }
             }
-            catch(SFTPException e) {
-                this.error("Cannot change permissions", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                this.error("Cannot change permissions", e);
             }
         }
     }
@@ -512,12 +457,8 @@ public class SFTPPath extends Path {
                     this.getLocal().mkdir(true);
                 }
             }
-            catch(SFTPException e) {
-                this.error("Download failed", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
+                this.error("Download failed", e);
             }
             finally {
                 try {
@@ -532,9 +473,6 @@ public class SFTPPath extends Path {
                 }
                 catch(IOException e) {
                     log.error(e.getMessage());
-                }
-                finally {
-                    session.fireActivityStoppedEvent();
                 }
             }
         }
@@ -634,12 +572,8 @@ public class SFTPPath extends Path {
                     }
                 }
             }
-            catch(SFTPException e) {
-                this.error("Upload failed", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
+                this.error("Upload failed", e);
             }
             finally {
                 try {
@@ -657,9 +591,6 @@ public class SFTPPath extends Path {
                 }
                 catch(IOException e) {
                     log.error(e.getMessage());
-                }
-                finally {
-                    session.fireActivityStoppedEvent();
                 }
             }
         }

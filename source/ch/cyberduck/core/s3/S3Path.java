@@ -183,11 +183,7 @@ public class S3Path extends Path {
                 log.warn("Cannot read size:" + e.getMessage());
             }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                ;
             }
         }
     }
@@ -205,11 +201,7 @@ public class S3Path extends Path {
                     log.warn("Cannot read timestamp:" + e.getMessage());
                 }
                 catch(IOException e) {
-                    this.error("Connection failed", e);
-                    session.interrupt();
-                }
-                finally {
-                    session.fireActivityStoppedEvent();
+                    ;
                 }
             }
         }
@@ -239,11 +231,7 @@ public class S3Path extends Path {
                 log.warn("Cannot read file attributes", e);
             }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                ;
             }
         }
     }
@@ -370,8 +358,7 @@ public class S3Path extends Path {
                     this.error("Download failed", e);
                 }
                 catch(IOException e) {
-                    this.error("Connection failed", e);
-                    session.interrupt();
+                    ;
                 }
                 finally {
                     try {
@@ -389,7 +376,6 @@ public class S3Path extends Path {
                 if(attributes.isDirectory()) {
                     this.getLocal().mkdir(true);
                 }
-                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -436,9 +422,6 @@ public class S3Path extends Path {
             }
             catch(S3ServiceException e) {
                 this.error("Upload failed", e);
-            }
-            finally {
-                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -565,11 +548,7 @@ public class S3Path extends Path {
                 this.error("Listing directory failed", e);
             }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                ;
             }
             return childs;
         }
@@ -591,11 +570,7 @@ public class S3Path extends Path {
                 this.error("Cannot create folder", e);
             }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                ;
             }
         }
     }
@@ -658,11 +633,7 @@ public class S3Path extends Path {
                 this.error("Cannot change permissions", e);
             }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                ;
             }
         }
     }
@@ -698,11 +669,7 @@ public class S3Path extends Path {
                 }
             }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                ;
             }
         }
     }

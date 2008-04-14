@@ -34,10 +34,4 @@ public class ConnectionAdapter implements ConnectionListener {
 
     public void connectionDidClose() {
     }
-
-    public void activityStarted() {
-    }
-
-    public void activityStopped() {
-    }
 }

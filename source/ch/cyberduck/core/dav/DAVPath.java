@@ -24,7 +24,6 @@ import com.apple.cocoa.foundation.NSDictionary;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.io.BandwidthThrottle;
 
-import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
 import org.apache.webdav.lib.WebdavResource;
 import org.apache.webdav.lib.methods.DepthSupport;
@@ -101,15 +100,8 @@ public class DAVPath extends Path {
                 session.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
                 attributes.setSize(session.DAV.getGetContentLength());
             }
-            catch(HttpException e) {
-                log.warn("Cannot read size:" + e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                log.warn("Cannot read size:" + e);
             }
         }
     }
@@ -125,15 +117,8 @@ public class DAVPath extends Path {
                 session.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
                 attributes.setModificationDate(session.DAV.getGetLastModified());
             }
-            catch(HttpException e) {
-                this.error("Cannot read file attributes", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                this.error("Cannot read file attributes", e);
             }
         }
 
@@ -152,20 +137,13 @@ public class DAVPath extends Path {
 
                 session.DAV.deleteMethod(this.getAbsolute());
             }
-            catch(HttpException e) {
+            catch(IOException e) {
                 if(this.attributes.isFile()) {
                     this.error("Cannot delete file", e);
                 }
                 if(this.attributes.isDirectory()) {
                     this.error("Cannot delete folder", e);
                 }
-            }
-            catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -201,16 +179,9 @@ public class DAVPath extends Path {
                     childs.add(p);
                 }
             }
-            catch(HttpException e) {
+            catch(IOException e) {
                 childs.attributes().setReadable(false);
                 this.error("Listing directory failed", e);
-            }
-            catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
             }
             return childs;
         }
@@ -230,15 +201,8 @@ public class DAVPath extends Path {
 
                 session.DAV.mkcolMethod(this.getAbsolute());
             }
-            catch(HttpException e) {
-                this.error("Cannot create folder", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                this.error("Cannot create folder", e);
             }
         }
     }
@@ -251,15 +215,8 @@ public class DAVPath extends Path {
 //                session.message(NSBundle.localizedString("Changing permission to", "Status", "") + " " + perm.getOctalString() + " (" + this.getName() + ")");
 //                session.DAV.aclMethod(this.getAbsolute(), new Ace[]{});
 //            }
-//            catch(HttpException e) {
-//                this.error("Cannot change permissions", e);
-//            }
 //            catch(IOException e) {
-//                this.error("Connection failed", e);
-//                session.interrupt();
-//            }
-//            finally {
-//                session.fireActivityStoppedEvent();
+//                this.error("Cannot change permissions", e);
 //            }
 //        }
     }
@@ -274,20 +231,13 @@ public class DAVPath extends Path {
                 session.DAV.moveMethod(this.getAbsolute(), absolute);
                 this.setPath(absolute);
             }
-            catch(HttpException e) {
+            catch(IOException e) {
                 if(attributes.isFile()) {
                     this.error("Cannot rename file", e);
                 }
                 if(attributes.isDirectory()) {
                     this.error("Cannot rename folder", e);
                 }
-            }
-            catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -308,12 +258,8 @@ public class DAVPath extends Path {
 
                     this.download(in, out, throttle, listener);
                 }
-                catch(HttpException e) {
-                    this.error("Download failed", e);
-                }
                 catch(IOException e) {
-                    this.error("Connection failed", e);
-                    session.interrupt();
+                    this.error("Download failed", e);
                 }
                 finally {
                     try {
@@ -328,7 +274,6 @@ public class DAVPath extends Path {
                         log.error(e.getMessage());
                     }
                 }
-                session.fireActivityStoppedEvent();
             }
             if(attributes.isDirectory()) {
                 this.getLocal().mkdir(true);
@@ -386,15 +331,8 @@ public class DAVPath extends Path {
                     this.mkdir();
                 }
             }
-            catch(HttpException e) {
-                this.error("Upload failed", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                this.error("Upload failed", e);
             }
         }
     }

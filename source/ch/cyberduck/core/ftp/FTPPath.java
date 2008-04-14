@@ -182,16 +182,9 @@ public class FTPPath extends Path {
                     session.setWorkdir(this);
                 }
             }
-            catch(FTPException e) {
+            catch(IOException e) {
                 childs.attributes().setReadable(false);
                 this.error("Listing directory failed", e);
-            }
-            catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
             }
             return childs;
         }
@@ -211,15 +204,8 @@ public class FTPPath extends Path {
                 session.setWorkdir((Path)this.getParent());
                 session.FTP.mkdir(this.getName());
             }
-            catch(FTPException e) {
-                this.error("Cannot create folder", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                this.error("Cannot create folder", e);
             }
         }
     }
@@ -234,20 +220,13 @@ public class FTPPath extends Path {
                 session.FTP.rename(this.getName(), filename);
                 this.setPath(filename);
             }
-            catch(FTPException e) {
+            catch(IOException e) {
                 if(attributes.isFile()) {
                     this.error("Cannot rename file", e);
                 }
                 if(attributes.isDirectory()) {
                     this.error("Cannot rename folder", e);
                 }
-            }
-            catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -292,15 +271,8 @@ public class FTPPath extends Path {
                     }
                 }
             }
-            catch(FTPException e) {
-                this.error("Cannot read file attributes", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                this.error("Cannot read file attributes", e);
             }
         }
     }
@@ -325,15 +297,8 @@ public class FTPPath extends Path {
                     }
                 }
             }
-            catch(FTPException e) {
-                this.error("Cannot read file attributes", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                this.error("Cannot read file attributes", e);
             }
         }
     }
@@ -349,15 +314,8 @@ public class FTPPath extends Path {
                     attributes.setPermission(((AbstractPath) l.get(l.indexOf(this))).attributes.getPermission());
                 }
             }
-            catch(FTPException e) {
-                this.error("Cannot read file attributes", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                this.error("Cannot read file attributes", e);
             }
         }
     }
@@ -392,20 +350,13 @@ public class FTPPath extends Path {
                     session.FTP.rmdir(this.getName());
                 }
             }
-            catch(FTPException e) {
+            catch(IOException e) {
                 if(attributes.isFile()) {
                     this.error("Cannot delete file", e);
                 }
                 if(attributes.isDirectory()) {
                     this.error("Cannot delete folder", e);
                 }
-            }
-            catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
             }
         }
     }
@@ -432,15 +383,8 @@ public class FTPPath extends Path {
                     }
                 }
             }
-            catch(FTPException e) {
-                this.error("Cannot change owner", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                this.error("Cannot change owner", e);
             }
         }
     }
@@ -467,15 +411,8 @@ public class FTPPath extends Path {
                     }
                 }
             }
-            catch(FTPException e) {
-                this.error("Cannot change group", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                this.error("Cannot change group", e);
             }
         }
     }
@@ -503,15 +440,8 @@ public class FTPPath extends Path {
                     }
                 }
             }
-            catch(FTPException e) {
-                this.error("Cannot change permissions", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                this.error("Cannot change permissions", e);
             }
         }
     }
@@ -547,15 +477,8 @@ public class FTPPath extends Path {
                     this.getLocal().mkdir(true);
                 }
             }
-            catch(FTPException e) {
-                this.error("Download failed", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                this.error("Download failed", e);
             }
         }
     }
@@ -731,15 +654,8 @@ public class FTPPath extends Path {
                     }
                 }
             }
-            catch(FTPException e) {
-                this.error("Upload failed", e);
-            }
             catch(IOException e) {
-                this.error("Connection failed", e);
-                session.interrupt();
-            }
-            finally {
-                session.fireActivityStoppedEvent();
+                this.error("Upload failed", e);
             }
         }
     }

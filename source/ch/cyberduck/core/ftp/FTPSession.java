@@ -133,7 +133,6 @@ public class FTPSession extends Session {
 
     public void close() {
         synchronized(this) {
-            this.fireActivityStartedEvent();
             try {
                 if(this.isConnected()) {
                     this.fireConnectionWillCloseEvent();
@@ -148,7 +147,6 @@ public class FTPSession extends Session {
             }
             finally {
                 this.fireConnectionDidCloseEvent();
-                this.fireActivityStoppedEvent();
             }
         }
     }
@@ -167,7 +165,6 @@ public class FTPSession extends Session {
         }
         finally {
             this.FTP = null;
-            this.fireActivityStoppedEvent();
             this.fireConnectionDidCloseEvent();
         }
     }
