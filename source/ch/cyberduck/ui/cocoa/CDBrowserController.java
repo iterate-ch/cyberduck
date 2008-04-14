@@ -4231,7 +4231,7 @@ public class CDBrowserController extends CDWindowController
     private static final String TOOLBAR_DELETE = "Delete";
     private static final String TOOLBAR_NEW_FOLDER = "New Folder";
     private static final String TOOLBAR_GET_INFO = "Get Info";
-    private static final String TOOLBAR_WEBVIEW = "Open Web URL";
+    private static final String TOOLBAR_WEBVIEW = "Open";
     private static final String TOOLBAR_DISCONNECT = "Disconnect";
     private static final String TOOLBAR_INTERRUPT = "Stop";
     private static final String TOOLBAR_GO_TO_FOLDER = "Go to Folder";
