@@ -1321,7 +1321,7 @@ lv.lproj/Info.nib/classes.nib -text
 lv.lproj/Info.nib/info.nib -text
 lv.lproj/Info.nib/keyedobjects.nib -text
 lv.lproj/Info.strings -text
-lv.lproj/InfoPlist.strings -text
+lv.lproj/InfoPlist.strings -text svneol=unset#unset
 lv.lproj/Keychain.strings -text
 lv.lproj/License.txt -text
 lv.lproj/Localizable.strings -text
