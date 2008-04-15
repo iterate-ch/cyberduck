@@ -304,7 +304,11 @@ public class DAVPath extends Path {
                             throw new IOException("Unable to buffer data");
                         }
 
+                        //Set the content-type to use for this resource, for PUTs
                         session.DAV.setContentType(this.getLocal().getMimeType());
+                        session.DAV.addRequestHeader("Content-Length",
+                                String.valueOf(this.getLocal().attributes.getSize())
+                        );
                         if(session.DAV.putMethod(this.getAbsolute(), in)) {
                             // Manually mark as complete
                             final long sent = this.getLocal().attributes.getSize();
