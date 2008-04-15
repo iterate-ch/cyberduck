@@ -441,7 +441,7 @@ public class SFTPPath extends Path {
                         SFTPv3FileHandle handle = session.sftp().openFileRO(this.getAbsolute());
                         in = new SFTPInputStream(handle);
                         if(getStatus().isResume()) {
-                            getStatus().setCurrent((long) this.getLocal().attributes.getSize());
+                            getStatus().setCurrent(this.getLocal().attributes.getSize());
                             long skipped = in.skip(getStatus().getCurrent());
                             log.info("Skipping " + skipped + " bytes");
                             if(skipped < this.getStatus().getCurrent()) {

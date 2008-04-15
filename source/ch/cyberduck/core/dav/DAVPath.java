@@ -297,13 +297,14 @@ public class DAVPath extends Path {
                     OutputStream out = null;
                     try {
                         if(this.getStatus().isResume()) {
-                            this.getStatus().setCurrent((long) attributes.getSize());
+                            this.getStatus().setCurrent(attributes.getSize());
                         }
                         in = new Local.InputStream(this.getLocal());
                         if(null == in) {
                             throw new IOException("Unable to buffer data");
                         }
 
+                        session.DAV.setContentType(this.getLocal().getMimeType());
                         if(session.DAV.putMethod(this.getAbsolute(), in)) {
                             // Manually mark as complete
                             final long sent = this.getLocal().attributes.getSize();
