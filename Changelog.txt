@@ -7,6 +7,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 3.0b2 [http://trac.cyberduck.ch/query?status=closed&milestone=3.0]
 - [Localize] Latvian Localization
 - [Feature] Quick Look files in browser [#1580]
+- [Feature] Set corresponding Web URL in bookmark. Open in browser toolbar button [#1098]
 - [Bugfix] APPE command broken (FTP) [#1915]
 
 3.0b1 [http://trac.cyberduck.ch/query?status=closed&milestone=3.0]
