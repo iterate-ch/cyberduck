@@ -1277,7 +1277,6 @@ lv.lproj/Browser.nib/classes.nib -text
 lv.lproj/Browser.nib/info.nib -text
 lv.lproj/Browser.nib/keyedobjects.nib -text
 lv.lproj/Browser.strings -text svneol=unset#text/utf-16
-lv.lproj/Certificate.strings -text svneol=unset#text/utf-16
 lv.lproj/Command.nib/classes.nib -text
 lv.lproj/Command.nib/info.nib -text
 lv.lproj/Command.nib/keyedobjects.nib -text
