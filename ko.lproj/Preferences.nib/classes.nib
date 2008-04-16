@@ -38,7 +38,6 @@
             CLASS = "ch.cyberduck.ui.cocoa.CDPreferencesController";
             LANGUAGE = Java;
             OUTLETS =             {
-                acceptAnyCertificateCheckbox = NSButton;
                 alternatingRowBackgroundCheckbox = NSButton;
                 anonymousField = NSTextField;
                 bookmarkSizePopup = NSPopUpButton;
@@ -92,7 +91,6 @@
                 panelAdvanced = NSView;
                 panelBandwidth = NSView;
                 panelFTP = NSView;
-                panelFTPTLS = NSView;
                 panelGeneral = NSView;
                 panelInterface = NSView;
                 panelS3 = NSView;
