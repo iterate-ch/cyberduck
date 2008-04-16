@@ -70,7 +70,6 @@ public class CDPreferencesController extends CDWindowController {
     private NSView panelInterface;
     private NSView panelTransfer;
     private NSView panelFTP;
-    private NSView panelFTPTLS;
     private NSView panelSFTP;
     private NSView panelS3;
     private NSView panelBandwidth;
@@ -91,10 +90,6 @@ public class CDPreferencesController extends CDWindowController {
 
     public void setPanelSFTP(NSView panelSFTP) {
         this.panelSFTP = panelSFTP;
-    }
-
-    public void setPanelFTPTLS(NSView panelFTPTLS) {
-        this.panelFTPTLS = panelFTPTLS;
     }
 
     public void setPanelFTP(NSView panelFTP) {
@@ -208,7 +203,6 @@ public class CDPreferencesController extends CDWindowController {
         tabView.tabViewItemAtIndex(++i).setView(panelInterface);
         tabView.tabViewItemAtIndex(++i).setView(panelTransfer);
         tabView.tabViewItemAtIndex(++i).setView(panelFTP);
-        tabView.tabViewItemAtIndex(++i).setView(panelFTPTLS);
         tabView.tabViewItemAtIndex(++i).setView(panelSFTP);
         tabView.tabViewItemAtIndex(++i).setView(panelS3);
         tabView.tabViewItemAtIndex(++i).setView(panelBandwidth);
@@ -1493,25 +1487,6 @@ public class CDPreferencesController extends CDWindowController {
     public void confirmDisconnectCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.OnState;
         Preferences.instance().setProperty("browser.confirmDisconnect", enabled);
-    }
-
-    private NSButton acceptAnyCertificateCheckbox; //IBOutlet
-
-    /**
-     * FTPS Certificate
-     * @param acceptAnyCertificateCheckbox
-     */
-    public void setAcceptAnyCertificateCheckbox(NSButton acceptAnyCertificateCheckbox) {
-        this.acceptAnyCertificateCheckbox = acceptAnyCertificateCheckbox;
-        this.acceptAnyCertificateCheckbox.setTarget(this);
-        this.acceptAnyCertificateCheckbox.setAction(new NSSelector("acceptAnyCertificateCheckboxClicked", new Class[]{NSButton.class}));
-        this.acceptAnyCertificateCheckbox.setState(
-                Preferences.instance().getBoolean("ftp.tls.acceptAnyCertificate") ? NSCell.OnState : NSCell.OffState);
-    }
-
-    public void acceptAnyCertificateCheckboxClicked(final NSButton sender) {
-        boolean enabled = sender.state() == NSCell.OnState;
-        Preferences.instance().setProperty("ftp.tls.acceptAnyCertificate", enabled);
     }
 
     private NSButton secureDataChannelCheckbox; //IBOutlet
