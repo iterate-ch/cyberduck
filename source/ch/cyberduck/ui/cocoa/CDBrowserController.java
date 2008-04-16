@@ -2444,6 +2444,7 @@ public class CDBrowserController extends CDWindowController
                 while(originalIterator.hasNext()) {
                     final Path original = (Path) originalIterator.next();
                     if(original.isRenameSupported()) {
+                        original.getParent().invalidate();
                         original.rename(((AbstractPath) renamedIterator.next()).getAbsolute());
                         original.getParent().invalidate();
                     }
