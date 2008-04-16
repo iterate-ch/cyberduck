@@ -24,6 +24,7 @@
                 infoButtonClicked = id;
                 insideButtonClicked = id;
                 interruptButtonClicked = id;
+                openBrowserButtonClicked = id;
                 pasteFromFinder = id;
                 quicklookButtonClicked = id;
                 reloadButtonClicked = id;
