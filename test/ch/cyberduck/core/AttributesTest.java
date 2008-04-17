@@ -43,7 +43,6 @@ public class AttributesTest extends TestCase {
         PathAttributes clone = new PathAttributes(attributes.getAsDictionary());
         assertNotSame(clone, attributes);
 
-        assertNotSame(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());
     }
