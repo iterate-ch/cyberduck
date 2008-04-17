@@ -116,7 +116,7 @@ public abstract class AbstractPath extends NSObject {
      * @return true if this paths points to '/'
      */
     public boolean isRoot() {
-        return this.getAbsolute().equals(DELIMITER) || this.getAbsolute().indexOf('/') == -1;
+        return this.getAbsolute().equals(DELIMITER);
     }
 
     public abstract String getAbsolute();
