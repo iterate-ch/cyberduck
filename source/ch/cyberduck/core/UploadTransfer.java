@@ -296,7 +296,6 @@ public class UploadTransfer extends Transfer {
                 transferred += bytes;
             }
         });
-        p.getParent().invalidate();
     }
 
     protected void fireTransferDidEnd() {

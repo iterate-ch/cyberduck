@@ -432,11 +432,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param listener The stream listener to notify about bytes received and sent
      */
     public void upload(StreamListener listener) {
-        this.upload(new BandwidthThrottle(0) {
-            public synchronized int request(int desired) {
-                return desired;
-            }
-        }, listener);
+        this.upload(new BandwidthThrottle(BandwidthThrottle.UNLIMITED), listener);
     }
 
     public void upload(BandwidthThrottle throttle, StreamListener listener) {
@@ -460,6 +456,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             }
         }
         this.upload(throttle, listener,  p, false);
+        this.getParent().invalidate();
     }
 
     /**
