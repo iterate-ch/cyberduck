@@ -302,31 +302,15 @@ public class Local extends AbstractPath {
 //    }
 
     /**
-     * @param recursively If true, descend into directories and delete recursively
-     * @return <code>true</code> if and only if the file or directory is
-     *         successfully deleted; <code>false</code> otherwise
+     * Moves the file to the Trash. NSWorkspace.RecycleOperation
      */
-    public boolean delete(boolean recursively) {
-        if(!recursively) {
-            return _impl.delete();
-        }
-        return this.deleteImpl(_impl);
-    }
-
-    /**
-     * Recursively deletes this file
-     *
-     * @return <code>true</code> if and only if the file or directory is
-     *         successfully deleted; <code>false</code> otherwise
-     */
-    private boolean deleteImpl(File f) {
-        if(f.isDirectory()) {
-            File[] files = f.listFiles();
-            for(int i = 0; i < files.length; i++) {
-                this.deleteImpl(files[i]);
+    public void delete() {
+        if(this.exists()) {
+            if(0 > NSWorkspace.sharedWorkspace().performFileOperation(NSWorkspace.RecycleOperation,
+                    this.getParent().getAbsolute(), "", new NSArray(this.getName()))) {
+                log.warn("Failed to move " + this.getAbsolute() + " to Trash");
             }
         }
-        return f.delete();
     }
 
     /**
@@ -445,15 +429,6 @@ public class Local extends AbstractPath {
                 }
             }
         });
-    }
-
-    public void delete() {
-        if(this.exists()) {
-            if(0 > NSWorkspace.sharedWorkspace().performFileOperation(NSWorkspace.RecycleOperation,
-                    this.getParent().getAbsolute(), "", new NSArray(this.getName()))) {
-                log.warn("Failed to move " + this.getAbsolute() + " to Trash");
-            }
-        }
     }
 
     public void rename(String name) {

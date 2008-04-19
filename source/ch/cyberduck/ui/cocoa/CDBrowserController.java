@@ -1085,6 +1085,22 @@ public class CDBrowserController extends CDWindowController
     }
 
     private class AbstractBrowserTableDelegate extends CDAbstractTableDelegate {
+
+        private Collection temporaryQuickLookFiles = new Collection() {
+            public void collectionItemRemoved(Object o) {
+                ((Local)o).delete();
+            }
+        };
+
+
+        public AbstractBrowserTableDelegate() {
+            CDBrowserController.this.addListener(new CDWindowListener() {
+                public void windowWillClose() {
+                    temporaryQuickLookFiles.clear();
+                }
+            });
+        }
+
         public boolean isColumnEditable(NSTableColumn column) {
             if(Preferences.instance().getBoolean("browser.editable")) {
                 if(column.identifier().equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
@@ -1114,7 +1130,7 @@ public class CDBrowserController extends CDWindowController
         }
 
         private void updateQuickLookSelection(final Collection selected) {
-                final Collection downloads = new Collection();
+            final Collection downloads = new Collection();
             for(Iterator iter = selected.iterator(); iter.hasNext();) {
                 final Path path = (Path) iter.next();
                 if(!path.attributes.isFile()) {
@@ -1131,18 +1147,20 @@ public class CDBrowserController extends CDWindowController
                     public void run() {
                         for(Iterator iter = downloads.iterator(); iter.hasNext();) {
                             final Path preview = (Path) iter.next();
-                            if(!preview.getLocal().exists()) {
+                            if(preview.getLocal().attributes.getSize() != preview.attributes.getSize()) {
                                 preview.download(true);
                             }
                         }
                     }
 
                     public void cleanup() {
-                        final List previews = new ArrayList();
+                        final Collection previews = new Collection();
                         for(Iterator iter = downloads.iterator(); iter.hasNext();) {
                             final Path download = (Path) iter.next();
                             previews.add(download.getLocal());
                         }
+                        // Keep references to delete later
+                        temporaryQuickLookFiles.addAll(previews);
                         // Change files in Quick Look
                         QuickLook.select((Local[]) previews.toArray(new Local[previews.size()]));
                         // Open Quick Look Preview Panel
@@ -2402,7 +2420,7 @@ public class CDBrowserController extends CDWindowController
                         }
                     }
                     finally {
-                        local.delete(true);
+                        local.delete();
                     }
                 }
             }

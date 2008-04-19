@@ -250,6 +250,7 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     /**
      * Accessability for #getSession.cache()
+     *
      * @return
      */
     public Cache cache() {
@@ -352,7 +353,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
         return this.local;
     }
-    
+
     private Local getDefaultLocal() {
         return new Local(this.getHost().getDownloadFolder(), this.getName());
     }
@@ -391,7 +392,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     *
      * @param check Check for open connection and open if needed before transfer
      */
     public void download(final boolean check) {
@@ -407,17 +407,16 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     /**
      * @param throttle The bandwidth limit
-     * @param listener
+     * @param listener The stream listener to notify about bytes received and sent
      */
     public void download(BandwidthThrottle throttle, StreamListener listener) {
         this.download(throttle, listener, false);
     }
 
     /**
-     *
-     * @param throttle
-     * @param listener
-     * @param check Check for open connection and open if needed before transfer
+     * @param throttle The bandwidth limit
+     * @param listener The stream listener to notify about bytes received and sent
+     * @param check    Check for open connection and open if needed before transfer
      */
     public abstract void download(BandwidthThrottle throttle, StreamListener listener, boolean check);
 
@@ -435,6 +434,10 @@ public abstract class Path extends AbstractPath implements Serializable {
         this.upload(new BandwidthThrottle(BandwidthThrottle.UNLIMITED), listener);
     }
 
+    /**
+     * @param throttle The bandwidth limit
+     * @param listener The stream listener to notify about bytes received and sent
+     */
     public void upload(BandwidthThrottle throttle, StreamListener listener) {
         Permission p = null;
         if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
@@ -455,14 +458,15 @@ public abstract class Path extends AbstractPath implements Serializable {
                 }
             }
         }
-        this.upload(throttle, listener,  p, false);
+        this.upload(throttle, listener, p, false);
         this.getParent().invalidate();
     }
 
     /**
      * @param throttle The bandwidth limit
      * @param listener The stream listener to notify about bytes received and sent
-     * @param p The permission to set after uploading or null
+     * @param p        The permission to set after uploading or null
+     * @param check    Check for open connection and open if needed before transfer
      */
     public abstract void upload(BandwidthThrottle throttle, StreamListener listener, Permission p, boolean check);
 

@@ -88,6 +88,13 @@ public class Collection extends ArrayList implements CollectionListener {
         return super.contains(o);
     }
 
+    public void clear() {
+        for(Iterator iter = this.iterator(); iter.hasNext(); ) {
+            this.collectionItemRemoved(iter.next());
+        }
+        super.clear();
+    }
+
     /**
      *
      * @param row
