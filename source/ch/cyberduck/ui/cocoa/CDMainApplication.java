@@ -79,6 +79,10 @@ public class CDMainApplication extends NSApplication {
      * @param runnable The <code>Runnable</code> to run
      */
     public static void invoke(final MainAction runnable) {
+        if(isMainThread()) {
+            runnable.run();
+            return;
+        }
         final short key = runnable.id();
         NSEvent event = NSEvent.otherEvent(NSEvent.ApplicationDefined,
             new NSPoint(0, 0), 0, System.currentTimeMillis() / 1000.0, 0,
