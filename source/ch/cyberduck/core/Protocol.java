@@ -267,8 +267,7 @@ public abstract class Protocol {
             }
         }
         log.fatal("Unknown protocol:" + protocol);
-        return Protocol.forName(
-                Preferences.instance().getProperty("connection.protocol.default"));
+        return Protocol.forScheme(protocol);
     }
 
     /**
