@@ -179,13 +179,19 @@ public abstract class BackgroundActionImpl extends CDController
         return canceled;
     }
 
+    private boolean running;
+
+    public boolean isRunning() {
+        return running;
+    }
+
     /**
      * Called just before #run. After this method is called, a delay
      * of #delay is added before continuing.
      * @see #run()
      */
     public void prepare() {
-        ;
+        running = true;
     }
 
     public abstract void run();
@@ -196,6 +202,7 @@ public abstract class BackgroundActionImpl extends CDController
      */
     public void finish() {
         count++;
+        running = false;
     }
 
     public abstract void cleanup();
