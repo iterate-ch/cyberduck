@@ -113,11 +113,12 @@ public abstract class CDSheetController extends CDWindowController implements CD
 
     public void beginSheet() {
         if(!CDMainApplication.isMainThread()) {
+            // Synchronize on parent controller. Only display one sheet at once.
             synchronized(parent) {
                 CDMainApplication.invoke(new WindowMainAction(parent) {
                     public void run() {
                         //Invoke again on main thread
-                        CDSheetController.this.beginSheet();
+                        beginSheetImpl();
                         synchronized(parent.window()) {
                             parent.window().notify();
                         }
@@ -147,9 +148,14 @@ public abstract class CDSheetController extends CDWindowController implements CD
                         }
                     }
                 }
-                return;
             }
         }
+        else {
+            this.beginSheetImpl();
+        }
+    }
+
+    private void beginSheetImpl() {
         this.loadBundle();
         final NSApplication app = NSApplication.sharedApplication();
         app.beginSheet(this.window(), //window
