@@ -41,4 +41,8 @@ public class RendezvousCollection extends Collection {
     public int size() {
         return Rendezvous.instance().numberOfServices();
     }
+
+    public Object remove(int row) {
+        return null;
+    }
 }
