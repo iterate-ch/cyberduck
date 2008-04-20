@@ -52,12 +52,7 @@ public class CDMainApplication extends NSApplication {
                 }
             }
             finally {
-                synchronized(events) {
-                    events.removeObjectForKey(String.valueOf(event.subtype()));
-                    if(log.isDebugEnabled()) {
-                        log.debug("Event Queue Size:"+events.count());
-                    }
-                }
+                this.remove(String.valueOf(event.subtype()));
             }
             return;
         }
@@ -70,6 +65,12 @@ public class CDMainApplication extends NSApplication {
     private void put(Object key, MainAction runnable) {
         synchronized(events) {
             events.setObjectForKey(runnable, String.valueOf(key));
+        }
+    }
+
+    private void remove(Object key) {
+        synchronized(events) {
+            events.removeObjectForKey(key);
         }
     }
 
