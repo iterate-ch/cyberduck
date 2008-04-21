@@ -209,6 +209,16 @@ public class CDMainController extends CDController {
         c.window().makeKeyAndOrderFront(null);
     }
 
+    public void showActivityWindowClicked(final Object sender) {
+        CDActivityController c = CDActivityController.instance();
+        if(c.window().isVisible()) {
+            c.window().close();
+        }
+        else {
+            c.window().orderFront(null);
+        }
+    }
+
     public void downloadBookmarksFromDotMacClicked(final Object sender) {
         CDDotMacController controller = new CDDotMacController();
         controller.downloadBookmarks();
