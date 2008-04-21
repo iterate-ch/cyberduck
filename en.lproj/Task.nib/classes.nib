@@ -1,0 +1,22 @@
+{
+    IBClasses =     (
+                {
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = "ch.sudo.cyberduck.ui.cocoa.CDTaskController";
+            LANGUAGE = Java;
+            OUTLETS =             {
+                name = NSTextField;
+                progress = NSProgressIndicator;
+                stopButton = NSButton;
+                text = NSTextField;
+                view = NSView;
+            };
+            SUPERCLASS = NSObject;
+        }
+    );
+    IBVersion = 1;
+}

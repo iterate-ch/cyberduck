@@ -1,0 +1,19 @@
+{
+    IBClasses =     (
+                {
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = "ch.sudo.cyberduck.ui.cocoa.CDActivityController";
+            LANGUAGE = Java;
+            OUTLETS =             {
+                table = NSTableView;
+                window = NSWindow;
+            };
+            SUPERCLASS = NSObject;
+        }
+    );
+    IBVersion = 1;
+}
