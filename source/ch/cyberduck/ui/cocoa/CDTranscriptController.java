@@ -18,12 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSTextView;
 import com.apple.cocoa.application.NSFont;
+import com.apple.cocoa.application.NSTextView;
 import com.apple.cocoa.application.NSView;
 import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSRange;
 import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSRange;
 
 /**
  * @version $Id:$
@@ -57,6 +57,10 @@ public class CDTranscriptController extends CDBundleController {
 
     public CDTranscriptController() {
         this.loadBundle();
+    }
+
+    protected void awakeFromNib() {
+        ;
     }
 
     public void write(final String transcript) {
