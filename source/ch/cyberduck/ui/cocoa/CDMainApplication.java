@@ -77,23 +77,13 @@ public class CDMainApplication extends NSApplication {
         }
     }
 
-    private static boolean applescript;
-
-    public static boolean isAppleScript() {
-        return applescript;
-    }
-
-    public static void setAppleScript(boolean enabled) {
-        applescript = enabled;
-    }
-
     /**
      * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
      *
      * @param runnable The <code>Runnable</code> to run
      */
     public static void invoke(final MainAction runnable) {
-        if(isMainThread() || isAppleScript()) {
+        if(isMainThread()) {
             runnable.run();
             return;
         }
