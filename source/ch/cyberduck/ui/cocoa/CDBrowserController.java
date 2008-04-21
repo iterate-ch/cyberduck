@@ -143,9 +143,8 @@ public class CDBrowserController extends CDWindowController
                     host.setFTPConnectMode(FTPConnectMode.PASV);
             }
         }
-        CDMainApplication.setAppleScript(true);
         this.setWorkdir(this.init(host).mount());
-        CDMainApplication.setAppleScript(false);
+        BackgroundActionRegistry.instance().block();
         return null;
     }
 
@@ -157,10 +156,9 @@ public class CDBrowserController extends CDWindowController
      */
     public Object handleCloseScriptCommand(NSScriptCommand command) {
         log.debug("handleCloseScriptCommand:" + command);
-        CDMainApplication.setAppleScript(true);
         this.unmount(true);
+        BackgroundActionRegistry.instance().block();
         this.window().close();
-        CDMainApplication.setAppleScript(false);
         return null;
     }
 
@@ -172,9 +170,8 @@ public class CDBrowserController extends CDWindowController
      */
     public Object handleDisconnectScriptCommand(NSScriptCommand command) {
         log.debug("handleDisconnectScriptCommand:" + command);
-        CDMainApplication.setAppleScript(true);
         this.unmount();
-        CDMainApplication.setAppleScript(false);
+        BackgroundActionRegistry.instance().block();
         return null;
     }
 
@@ -218,13 +215,12 @@ public class CDBrowserController extends CDWindowController
      */
     public Object handleGotoScriptCommand(NSScriptCommand command) {
         log.debug("handleGotoScriptCommand:" + command);
-        CDMainApplication.setAppleScript(true);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
             CDGotoController c = new CDGotoController(this);
             c.gotoFolder(this.workdir(), (String) args.objectForKey("Path"));
         }
-        CDMainApplication.setAppleScript(false);
+        BackgroundActionRegistry.instance().block();
         return null;
     }
 
@@ -235,7 +231,6 @@ public class CDBrowserController extends CDWindowController
      * @return
      */
     public Object handleRenameScriptCommand(NSScriptCommand command) {
-        CDMainApplication.setAppleScript(true);
         log.debug("handleRenameScriptCommand:" + command);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
@@ -250,7 +245,7 @@ public class CDBrowserController extends CDWindowController
             this.renamePath(PathFactory.createPath(session, from, Path.FILE_TYPE),
                     PathFactory.createPath(session, to, Path.FILE_TYPE));
         }
-        CDMainApplication.setAppleScript(false);
+        BackgroundActionRegistry.instance().block();
         return null;
     }
 
@@ -262,13 +257,12 @@ public class CDBrowserController extends CDWindowController
      */
     public Object handleCreateFolderScriptCommand(NSScriptCommand command) {
         log.debug("handleCreateFolderScriptCommand:" + command);
-        CDMainApplication.setAppleScript(true);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
             CDFolderController c = new CDFolderController(this);
             c.createFolder(this.workdir(), (String) args.objectForKey("Path"));
         }
-        CDMainApplication.setAppleScript(false);
+        BackgroundActionRegistry.instance().block();
         return null;
     }
 
@@ -298,13 +292,12 @@ public class CDBrowserController extends CDWindowController
      */
     public Object handleCreateFileScriptCommand(NSScriptCommand command) {
         log.debug("handleCreateFileScriptCommand:" + command);
-        CDMainApplication.setAppleScript(true);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
             CDCreateFileController c = new CDCreateFileController(this);
             c.createFile(this.workdir(), (String) args.objectForKey("Path"), false);
         }
-        CDMainApplication.setAppleScript(false);
+        BackgroundActionRegistry.instance().block();
         return null;
     }
 
@@ -316,7 +309,6 @@ public class CDBrowserController extends CDWindowController
      */
     public Object handleEditScriptCommand(NSScriptCommand command) {
         log.debug("handleEditScriptCommand:" + command);
-        CDMainApplication.setAppleScript(true);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
             Path path = PathFactory.createPath(this.session,
@@ -325,7 +317,7 @@ public class CDBrowserController extends CDWindowController
             Editor editor = EditorFactory.createEditor(this, path.getLocal());
             editor.open(path);
         }
-        CDMainApplication.setAppleScript(false);
+        BackgroundActionRegistry.instance().block();
         return null;
     }
 
@@ -337,7 +329,6 @@ public class CDBrowserController extends CDWindowController
      */
     public Object handleDeleteScriptCommand(NSScriptCommand command) {
         log.debug("handleDeleteScriptCommand:" + command);
-        CDMainApplication.setAppleScript(true);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
             Path path = PathFactory.createPath(this.session,
@@ -352,7 +343,7 @@ public class CDBrowserController extends CDWindowController
             }
             path.delete();
         }
-        CDMainApplication.setAppleScript(false);
+        BackgroundActionRegistry.instance().block();
         return null;
     }
 
@@ -364,11 +355,10 @@ public class CDBrowserController extends CDWindowController
      */
     public Object handleRefreshScriptCommand(NSScriptCommand command) {
         log.debug("handleRefreshScriptCommand:" + command);
-        CDMainApplication.setAppleScript(true);
         if(this.isMounted()) {
-            this.workdir().list();
+            this.reloadButtonClicked(null);
         }
-        CDMainApplication.setAppleScript(false);
+        BackgroundActionRegistry.instance().block();
         return null;
     }
 
@@ -380,7 +370,6 @@ public class CDBrowserController extends CDWindowController
      */
     public Object handleSyncScriptCommand(NSScriptCommand command) {
         log.debug("handleSyncScriptCommand:" + command);
-        CDMainApplication.setAppleScript(true);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
             final Path path = PathFactory.createPath(this.session,
@@ -392,7 +381,7 @@ public class CDBrowserController extends CDWindowController
             final Transfer q = new SyncTransfer(path);
             this.transfer(q, true);
         }
-        CDMainApplication.setAppleScript(false);
+        BackgroundActionRegistry.instance().block();
         return null;
     }
 
@@ -404,7 +393,6 @@ public class CDBrowserController extends CDWindowController
      */
     public Object handleDownloadScriptCommand(NSScriptCommand command) {
         log.debug("handleDownloadScriptCommand:" + command);
-        CDMainApplication.setAppleScript(true);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
             final Path path = PathFactory.createPath(this.session,
@@ -428,7 +416,7 @@ public class CDBrowserController extends CDWindowController
             final Transfer q = new DownloadTransfer(path);
             this.transfer(q, true);
         }
-        CDMainApplication.setAppleScript(false);
+        BackgroundActionRegistry.instance().block();
         return null;
     }
 
@@ -440,7 +428,6 @@ public class CDBrowserController extends CDWindowController
      */
     public Object handleUploadScriptCommand(NSScriptCommand command) {
         log.debug("handleUploadScriptCommand:" + command);
-        CDMainApplication.setAppleScript(true);
         if(this.isMounted()) {
             NSDictionary args = command.evaluatedArguments();
             final Path path = PathFactory.createPath(this.session,
@@ -457,7 +444,7 @@ public class CDBrowserController extends CDWindowController
             final Transfer q = new UploadTransfer(path);
             this.transfer(q, true);
         }
-        CDMainApplication.setAppleScript(false);
+        BackgroundActionRegistry.instance().block();
         return null;
     }
 
