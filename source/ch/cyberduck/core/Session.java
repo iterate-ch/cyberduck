@@ -27,9 +27,10 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Vector;
 
 /**
  * @version $Id$
@@ -288,7 +289,7 @@ public abstract class Session extends NSObject {
      */
     private Timer keepAliveTimer = null;
 
-    private Vector listeners = new Vector();
+    private Set listeners = new HashSet();
 
     public void addConnectionListener(ConnectionListener listener) {
         listeners.add(listener);
@@ -381,7 +382,7 @@ public abstract class Session extends NSObject {
         }
     }
 
-    private Vector transcriptListeners = new Vector();
+    private Set transcriptListeners = new HashSet();
 
     public void addTranscriptListener(TranscriptListener listener) {
         transcriptListeners.add(listener);
@@ -406,7 +407,7 @@ public abstract class Session extends NSObject {
         }
     }
 
-    private Vector progressListeners = new Vector();
+    private Set progressListeners = new HashSet();
 
     public void addProgressListener(ProgressListener listener) {
         progressListeners.add(listener);
@@ -431,7 +432,7 @@ public abstract class Session extends NSObject {
         }
     }
 
-    private Vector errorListeners = new Vector();
+    private Set errorListeners = new HashSet();
 
     public void addErrorListener(ErrorListener listener) {
         errorListeners.add(listener);

@@ -23,12 +23,9 @@ import com.apple.dnssd.*;
 
 import org.apache.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Vector;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -94,7 +91,7 @@ public class Rendezvous
         }
     }
 
-    private Vector listeners = new Vector();
+    private Set listeners = new HashSet();
 
     private RendezvousListener notifier = new RendezvousListener() {
 

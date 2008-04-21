@@ -19,8 +19,9 @@ package ch.cyberduck.core;
  */
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -51,7 +52,7 @@ public class Collection extends ArrayList implements CollectionListener {
         return -1;
     }
 
-    private Vector listeners = new Vector();
+    private Set listeners = new HashSet();
 
     public void addListener(CollectionListener listener) {
         listeners.add(listener);
