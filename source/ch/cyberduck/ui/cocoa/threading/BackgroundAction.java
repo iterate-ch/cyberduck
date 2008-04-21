@@ -33,4 +33,24 @@ public interface BackgroundAction extends Runnable {
      * has finished to allow calls to non-threadable view classes
      */
     abstract void cleanup();
+
+    abstract void cancel();
+
+    /**
+     * @return The name of the activity to display in the activity window
+     */
+    abstract String getActivity();
+
+    /**
+     * The synchronization object
+     *
+     * @return
+     */
+    abstract Object lock();
+
+    /**
+     * @param listener A listener to be notified
+     * @see ch.cyberduck.ui.cocoa.threading.BackgroundActionListener
+     */
+    abstract void addListener(BackgroundActionListener listener);
 }

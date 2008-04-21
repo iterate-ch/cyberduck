@@ -18,33 +18,30 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPNullReplyException;
-
-import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.*;
-import ch.cyberduck.ui.cocoa.growl.Growl;
-
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSSelector;
+
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.*;
+import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import org.apache.log4j.Logger;
 
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
+
+import com.enterprisedt.net.ftp.FTPNullReplyException;
 
 /**
  * @version $Id: BackgroundActionImpl.java 2524 2006-10-26 13:14:03Z dkocher $
  */
 public abstract class BackgroundActionImpl extends CDController
         implements BackgroundAction, ErrorListener, TranscriptListener {
-
 
     private static Logger log = Logger.getLogger(BackgroundActionImpl.class);
 
@@ -55,8 +52,8 @@ public abstract class BackgroundActionImpl extends CDController
     private List exceptions;
 
     /**
-     * @see ch.cyberduck.core.ErrorListener
      * @param exception
+     * @see ch.cyberduck.core.ErrorListener
      */
     public void error(final BackgroundException exception) {
         // Do not report an error when the action was canceled intentionally
@@ -69,12 +66,12 @@ public abstract class BackgroundActionImpl extends CDController
         if(cause instanceof SocketException) {
             if(cause.getMessage().equals("Software caused connection abort")) {
                 // Do not report as failed if socket opening interrupted
-                log.warn("Supressed socket exception:"+cause.getMessage());
+                log.warn("Supressed socket exception:" + cause.getMessage());
                 return;
             }
             if(cause.getMessage().equals("Socket closed")) {
                 // Do not report as failed if socket opening interrupted
-                log.warn("Supressed socket exception:"+cause.getMessage());
+                log.warn("Supressed socket exception:" + cause.getMessage());
                 return;
             }
         }
@@ -95,16 +92,16 @@ public abstract class BackgroundActionImpl extends CDController
     private StringBuffer transcript;
 
     /**
-     * @see ch.cyberduck.core.TranscriptListener
      * @param message
+     * @see ch.cyberduck.core.TranscriptListener
      */
     public void log(String message) {
         transcript.append(message).append("\n");
     }
-    
+
     public void clearTranscript() {
         if(transcript.length() > 0) {
-            transcript.delete(0, transcript.length()-1);
+            transcript.delete(0, transcript.length() - 1);
         }
     }
 
@@ -119,6 +116,10 @@ public abstract class BackgroundActionImpl extends CDController
         this.transcript = new StringBuffer();
     }
 
+    public Object lock() {
+        return controller;
+    }
+
     /**
      * Clear the transcript and exceptions
      */
@@ -129,6 +130,7 @@ public abstract class BackgroundActionImpl extends CDController
 
     /**
      * To be overriden in concrete subclass
+     *
      * @return The session if any
      */
     public Session session() {
@@ -143,20 +145,20 @@ public abstract class BackgroundActionImpl extends CDController
     /**
      * The number of times a new connection attempt should be made. Takes into
      * account the number of times already tried.
+     *
      * @return Greater than zero if a failed action should be repeated again
      */
     public int retry() {
         if(!this.isCanceled()) {
-            for(Iterator iter = exceptions.iterator(); iter.hasNext(); ) {
-                Throwable cause = ((Throwable)iter.next()).getCause();
+            for(Iterator iter = exceptions.iterator(); iter.hasNext();) {
+                Throwable cause = ((Throwable) iter.next()).getCause();
                 // Check for an exception we consider possibly temporary
                 if(cause instanceof SocketException
                         || cause instanceof SocketTimeoutException
                         || cause instanceof UnknownHostException
-                        || cause instanceof FTPNullReplyException)
-                {
+                        || cause instanceof FTPNullReplyException) {
                     // The initial connection attempt does not count
-                    return (int)Preferences.instance().getDouble("connection.retry") - (count -1);
+                    return (int) Preferences.instance().getDouble("connection.retry") - (count - 1);
                 }
             }
         }
@@ -166,13 +168,18 @@ public abstract class BackgroundActionImpl extends CDController
     private boolean canceled;
 
     public void cancel() {
-        log.debug("cancel");
         canceled = true;
+        BackgroundActionListener[] l = (BackgroundActionListener[]) listeners.toArray(
+                new BackgroundActionListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].stop(this);
+        }
     }
 
     /**
      * To be overriden by a concrete subclass. Returns false by default for actions
      * not connected to a graphical user interface
+     *
      * @return True if the user canceled this action
      */
     public boolean isCanceled() {
@@ -188,21 +195,34 @@ public abstract class BackgroundActionImpl extends CDController
     /**
      * Called just before #run. After this method is called, a delay
      * of #delay is added before continuing.
+     *
      * @see #run()
      */
     public void prepare() {
         running = true;
+        BackgroundActionListener[] l = (BackgroundActionListener[]) listeners.toArray(
+                new BackgroundActionListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].start(this);
+        }
     }
 
     public abstract void run();
 
     /**
      * Called after #run but still on the working thread
+     *
      * @see #run
      */
     public void finish() {
         count++;
         running = false;
+        BackgroundActionListener[] l = (BackgroundActionListener[]) listeners.toArray(
+                new BackgroundActionListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].stop(this);
+        }
+        listeners.clear();
     }
 
     public abstract void cleanup();
@@ -210,12 +230,13 @@ public abstract class BackgroundActionImpl extends CDController
     /**
      * @return True if an error was reported the last time this action was run
      */
-    public boolean hasFailed()  {
+    public boolean hasFailed() {
         return this.exceptions.size() > 0;
     }
 
     /**
      * Display an alert dialog with a summary of all failed tasks
+     *
      * @param lock The lock to use when the user chooses to re-run the action
      */
     public void alert(final Object lock) {
@@ -243,8 +264,8 @@ public abstract class BackgroundActionImpl extends CDController
                 this.diagnosticsButton.setTarget(this);
                 this.diagnosticsButton.setAction(new NSSelector("diagnosticsButtonClicked", new Class[]{NSButton.class}));
                 boolean hidden = true;
-                for(Iterator iter = exceptions.iterator(); iter.hasNext(); ) {
-                    Throwable cause = ((Throwable)iter.next()).getCause();
+                for(Iterator iter = exceptions.iterator(); iter.hasNext();) {
+                    Throwable cause = ((Throwable) iter.next()).getCause();
                     if(cause instanceof SocketException || cause instanceof UnknownHostException) {
                         hidden = false;
                         break;
@@ -254,7 +275,7 @@ public abstract class BackgroundActionImpl extends CDController
             }
 
             public void diagnosticsButtonClicked(final NSButton sender) {
-                ((BackgroundException)exceptions.get(exceptions.size()-1)).getSession().getHost().diagnose();
+                ((BackgroundException) exceptions.get(exceptions.size() - 1)).getSession().getHost().diagnose();
             }
 
             private NSButton transcriptButton;
@@ -289,8 +310,8 @@ public abstract class BackgroundActionImpl extends CDController
 
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) { //Try Again
-                    for(Iterator iter = exceptions.iterator(); iter.hasNext(); ) {
-                        BackgroundException e = (BackgroundException)iter.next();
+                    for(Iterator iter = exceptions.iterator(); iter.hasNext();) {
+                        BackgroundException e = (BackgroundException) iter.next();
                         Path workdir = e.getPath();
                         if(null == workdir) {
                             continue;
@@ -300,7 +321,7 @@ public abstract class BackgroundActionImpl extends CDController
                     // Revert any exceptions and transcript
                     init();
                     // Re-run the action with the previous lock used
-                    controller.background(BackgroundActionImpl.this, lock);
+                    controller.background(BackgroundActionImpl.this);
                 }
             }
 
@@ -330,7 +351,7 @@ public abstract class BackgroundActionImpl extends CDController
 
     /**
      * Idle this action for some time. Blocks the caller.
-     * @see Preferences#connection.retry.delay
+     *
      * @param lock
      */
     public void pause(final Object lock) {
@@ -339,7 +360,7 @@ public abstract class BackgroundActionImpl extends CDController
             /**
              * The delay to wait before execution of the action in seconds
              */
-            private int delay = (int)Preferences.instance().getDouble("connection.retry.delay");
+            private int delay = (int) Preferences.instance().getDouble("connection.retry.delay");
 
             public void run() {
                 if(0 == delay || 0 == retry()) { // Cancel if the delay is set to zero or if too many attempts
@@ -347,9 +368,9 @@ public abstract class BackgroundActionImpl extends CDController
                     return;
                 }
                 session().message(NSBundle.localizedString("Retry in", "Status", "")
-                        +" "+(delay)+" "+NSBundle.localizedString("seconds", "Status", "")
-                        +" ("+NSBundle.localizedString("Will try", "Status", "")+" "+retry()
-                        +" "+NSBundle.localizedString("more times", "Status", "")+")");
+                        + " " + (delay) + " " + NSBundle.localizedString("seconds", "Status", "")
+                        + " (" + NSBundle.localizedString("Will try", "Status", "") + " " + retry()
+                        + " " + NSBundle.localizedString("more times", "Status", "") + ")");
                 delay--;
             }
 
@@ -369,5 +390,11 @@ public abstract class BackgroundActionImpl extends CDController
         catch(InterruptedException e) {
             log.error(e.getMessage());
         }
+    }
+
+    private Set listeners = new HashSet();
+
+    public void addListener(BackgroundActionListener listener) {
+        listeners.add(listener);
     }
 }
