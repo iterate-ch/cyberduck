@@ -66,6 +66,9 @@ public class CDMainApplication extends NSApplication {
         synchronized(events) {
             events.setObjectForKey(runnable, String.valueOf(key));
         }
+        if(log.isDebugEnabled()) {
+            log.debug("Event Queue Size:"+events.count());
+        }
     }
 
     private void remove(Object key) {
@@ -74,13 +77,23 @@ public class CDMainApplication extends NSApplication {
         }
     }
 
+    private static boolean applescript;
+
+    public static boolean isAppleScript() {
+        return applescript;
+    }
+
+    public static void setAppleScript(boolean enabled) {
+        applescript = enabled;
+    }
+
     /**
      * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
      *
      * @param runnable The <code>Runnable</code> to run
      */
     public static void invoke(final MainAction runnable) {
-        if(isMainThread()) {
+        if(isMainThread() || isAppleScript()) {
             runnable.run();
             return;
         }

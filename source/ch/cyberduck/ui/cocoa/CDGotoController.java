@@ -23,7 +23,6 @@ import com.apple.cocoa.application.NSImageView;
 import com.apple.cocoa.foundation.NSObject;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 
 import org.apache.log4j.Logger;
 
@@ -103,24 +102,16 @@ public class CDGotoController extends CDSheetController {
 
     protected void gotoFolder(final Path workdir, final String filename) {
         final CDBrowserController c = (CDBrowserController) parent;
-        c.background(new BackgroundAction() {
-            final Path dir = PathFactory.createPath(workdir.getSession(), workdir.getAsDictionary());
-
-            public void run() {
-                if(filename.charAt(0) != '/') {
-                    dir.setPath(workdir.getAbsolute(), filename);
-                }
-                else {
-                    dir.setPath(filename);
-                }
-                c.setWorkdir(dir);
-            }
-
-            public void cleanup() {
-                if(workdir.getParent().equals(dir)) {
-                    c.setSelectedPath(workdir);
-                }
-            }
-        });
+        final Path dir = PathFactory.createPath(workdir.getSession(), workdir.getAsDictionary());
+        if(filename.charAt(0) != '/') {
+            dir.setPath(workdir.getAbsolute(), filename);
+        }
+        else {
+            dir.setPath(filename);
+        }
+        c.setWorkdir(dir);
+        if(workdir.getParent().equals(dir)) {
+            c.setSelectedPath(workdir);
+        }
     }
 }
