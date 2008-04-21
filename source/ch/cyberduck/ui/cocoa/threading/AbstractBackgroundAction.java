@@ -1,5 +1,7 @@
 package ch.cyberduck.ui.cocoa.threading;
 
+import com.apple.cocoa.foundation.NSBundle;
+
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -29,6 +31,10 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
 
     public void addListener(BackgroundActionListener listener) {
         ;
+    }
+
+    public String getActivity() {
+        return NSBundle.localizedString("Unknown", "");
     }
 
     private Object lock = new Object();
