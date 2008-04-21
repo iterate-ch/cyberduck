@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		470244D50DBC994D00B57C1E /* Activity.nib in Resources */ = {isa = PBXBuildFile; fileRef = 470244D30DBC994D00B57C1E /* Activity.nib */; };
+		470244D80DBC995400B57C1E /* Task.nib in Resources */ = {isa = PBXBuildFile; fileRef = 470244D60DBC995400B57C1E /* Task.nib */; };
 		47026428087DC91C008837FD /* IDisk.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47026426087DC91C008837FD /* IDisk.strings */; };
 		470912ED0C36FCE00049FBCE /* Prompt.nib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.nib */; };
 		470CB6B70D6B5A9D009C8D3B /* s3.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 470CB6B60D6B5A9D009C8D3B /* s3.tiff */; };
@@ -358,6 +360,8 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = SOURCE_ROOT; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		470244D40DBC994D00B57C1E /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Activity.nib; sourceTree = "<group>"; };
+		470244D70DBC995400B57C1E /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Task.nib; sourceTree = "<group>"; };
 		47026427087DC91C008837FD /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/IDisk.strings; sourceTree = "<group>"; };
 		4702642B087DC92C008837FD /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/IDisk.strings; sourceTree = "<group>"; };
 		4702642C087DC937008837FD /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/IDisk.strings; sourceTree = "<group>"; };
@@ -1698,11 +1702,13 @@
 		4741639206C4F58D00AC0BD2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				47B6072E0DA420880068282C /* Keychain.strings */,
-				47E9875E0D689A280077733F /* S3.strings */,
 				47911A170B84C4E8001A29AE /* Acknowledgments.rtf */,
+				470244D60DBC995400B57C1E /* Task.nib */,
+				470244D30DBC994D00B57C1E /* Activity.nib */,
 				47E2D70B0D3226050018AF56 /* Transcript.nib */,
 				4759C93B0A1476E500C5980A /* Progress.nib */,
+				47B6072E0DA420880068282C /* Keychain.strings */,
+				47E9875E0D689A280077733F /* S3.strings */,
 				4741653C06C4FC3F00AC0BD2 /* img */,
 				47FC190A099FB8AF0082431D /* Crash.strings */,
 				479C4229097AB2BB00DDE88A /* Credits.rtf */,
@@ -2556,6 +2562,8 @@
 				47E987600D689A280077733F /* S3.strings in Resources */,
 				470CB6B70D6B5A9D009C8D3B /* s3.tiff in Resources */,
 				47B6074A0DA420880068282C /* Keychain.strings in Resources */,
+				470244D50DBC994D00B57C1E /* Activity.nib in Resources */,
+				470244D80DBC995400B57C1E /* Task.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2837,6 +2845,22 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		470244D30DBC994D00B57C1E /* Activity.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				470244D40DBC994D00B57C1E /* en */,
+			);
+			name = Activity.nib;
+			sourceTree = "<group>";
+		};
+		470244D60DBC995400B57C1E /* Task.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				470244D70DBC995400B57C1E /* en */,
+			);
+			name = Task.nib;
+			sourceTree = "<group>";
+		};
 		47026426087DC91C008837FD /* IDisk.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
