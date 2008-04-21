@@ -22,10 +22,13 @@ import com.apple.cocoa.application.NSApplication;
 
 import ch.cyberduck.core.Collection;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id:$
  */
 public class BackgroundActionRegistry extends Collection {
+    private static Logger log = Logger.getLogger(BackgroundActionRegistry.class);
 
     private static BackgroundActionRegistry instance;
 
@@ -46,6 +49,9 @@ public class BackgroundActionRegistry extends Collection {
 
             public void stop(BackgroundAction action) {
                 remove(action);
+                synchronized(lock) {
+                    lock.notify();
+                }
             }
         });
         return super.add(action);
@@ -53,5 +59,25 @@ public class BackgroundActionRegistry extends Collection {
 
     private BackgroundActionRegistry() {
         ;
+    }
+
+    private final Object lock = new Object();
+
+    /**
+     * Blocks the calling thread until all background actions have completed
+     */
+    public void block() {
+        while(!this.isEmpty()) {
+            synchronized(lock) {
+                try {
+                    log.info("Waiting for all background actions to complete...");
+                    lock.wait();
+                }
+                catch(InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+            }
+        }
+        log.info("All background actions completed");
     }
 }
