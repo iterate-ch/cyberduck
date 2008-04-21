@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.NSApplication;
+import com.apple.cocoa.application.NSView;
 
 import org.apache.log4j.Logger;
 
@@ -44,6 +45,15 @@ public abstract class CDBundleController extends CDController {
                 log.fatal("Couldn't load " + bundleName + ".nib");
             }
         }
+    }
+
+    protected abstract void awakeFromNib();
+
+    /**
+     * @return The top level view object or null if unknown
+     */
+    protected NSView view() {
+        return null;
     }
 
     protected abstract String getBundleName();
