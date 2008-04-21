@@ -18,67 +18,173 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSTableView;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.NSNotification;
+import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSBundle;
 
-import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.BackgroundActionRegistry;
+import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
+
+import org.apache.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Iterator;
 
 /**
  * @version $Id:$
  */
 public class CDActivityController extends CDWindowController {
+    private static Logger log = Logger.getLogger(CDActivityController.class);
 
     private static CDActivityController instance;
 
     public static CDActivityController instance() {
         synchronized(NSApplication.sharedApplication()) {
-            if (null == instance) {
+            if(null == instance) {
                 instance = new CDActivityController();
             }
             return instance;
         }
     }
 
+    /**
+     *
+     */
+    private final Map tasks = new HashMap();
+
     private CDActivityController() {
         this.loadBundle();
+        synchronized(tasks) {
+            // Add already running background actions
+            for(Iterator iter = BackgroundActionRegistry.instance().iterator(); iter.hasNext(); ) {
+                final BackgroundAction action = (BackgroundAction) iter.next();
+                tasks.put(action, new CDTaskController(action));
+            }
+        }
+        BackgroundActionRegistry.instance().addListener(new AbstractCollectionListener() {
+            public void collectionItemAdded(Object action) {
+                synchronized(tasks) {
+                    tasks.put(action, new CDTaskController(((BackgroundAction) action)));
+                }
+                this.reload();
+            }
+
+            public void collectionItemRemoved(Object action) {
+                synchronized(tasks) {
+                    tasks.remove(action);
+                }
+                this.reload();
+            }
+
+            private void reload() {
+                CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
+                    public void run() {
+                        while(table.subviews().count() > 0) {
+                            ((NSView) table.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
+                        }
+                        table.reloadData();
+                    }
+                });
+            }
+        });
+    }
+
+    public void setWindow(NSWindow window) {
+        this.window = window;
+        this.window.setReleasedWhenClosed(false);
+        this.window.setDelegate(this);
+        this.window.setTitle(NSBundle.localizedString("Activity", ""));
+    }
+
+    /**
+     * @param notification
+     */
+    public void windowWillClose(NSNotification notification) {
+        // Do not call super as we are a singleton. super#windowWillClose would invalidate me
     }
     
-    public void awakeFromNib() {
+    private NSTableView table;
+    private CDAbstractTableDelegate delegate;
 
+    public void setTable(NSTableView table) {
+        this.table = table;
+        this.table.setDataSource(this);
+        this.table.setDelegate(this.delegate = new CDAbstractTableDelegate() {
+            public boolean tableViewShouldSelectRow(NSTableView view, int row) {
+                return false;
+            }
+
+            public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
+
+            }
+
+            public void tableRowDoubleClicked(Object sender) {
+
+            }
+
+            public void selectionDidChange(NSNotification notification) {
+
+            }
+
+            public void enterKeyPressed(Object sender) {
+
+            }
+
+            public void deleteKeyPressed(Object sender) {
+
+            }
+        });
+        NSSelector setResizableMaskSelector
+                = new NSSelector("setResizingMask", new Class[]{int.class});
+        {
+            NSTableColumn c = new NSTableColumn();
+            c.setMinWidth(80f);
+            c.setWidth(300f);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
+            c.setDataCell(new CDControllerCell());
+            this.table.addTableColumn(c);
+        }
+        this.table.sizeToFit();
+    }
+
+    public void awakeFromNib() {
+        ;
     }
 
     protected String getBundleName() {
         return "Activity";
     }
 
-    private Collection activities
-            = new Collection();
-
     /**
-     *
      * @param view
      */
     public int numberOfRowsInTableView(NSTableView view) {
-        return activities.size();
+        synchronized(tasks) {
+            return tasks.size();
+        }
     }
 
     /**
-     *
      * @param view
      * @param tableColumn
      * @param row
      */
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
+        synchronized(tasks) {
+            if(row < this.numberOfRowsInTableView(view)) {
+                return tasks.values().toArray()[row];
+            }
+            log.warn("tableViewObjectValueForLocation:" + row + " == null");
+        }
         return null;
-    }
-
-    public void add(BackgroundAction action) {
-        activities.add(action);
-    }
-
-    public void remove(BackgroundAction action) {
-        activities.remove(action);
     }
 }

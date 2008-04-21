@@ -1797,6 +1797,7 @@ source/ch/cyberduck/ui/cocoa/CDListDataSource.java -text
 source/ch/cyberduck/ui/cocoa/CDMainApplication.java -text
 source/ch/cyberduck/ui/cocoa/CDOutlineDataSource.java -text
 source/ch/cyberduck/ui/cocoa/CDPreferencesImpl.m -text
+source/ch/cyberduck/ui/cocoa/CDTaskController.java -text
 source/ch/cyberduck/ui/cocoa/CDTranscriptController.java -text
 source/ch/cyberduck/ui/cocoa/delegate/BackPathHistoryMenuDelegate.java -text
 source/ch/cyberduck/ui/cocoa/delegate/ForwardPathHistoryMenuDelegate.java -text
