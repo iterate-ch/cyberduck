@@ -698,11 +698,13 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
 
             public void log(final String message) {
-                CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
-                    public void run() {
-                        transcript.write(message);
-                    }
-                });
+                if(logDrawer.state() == NSDrawer.OpenState) {
+                    CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
+                        public void run() {
+                            transcript.write(message);
+                        }
+                    });
+                }
                 super.log(message);
             }
         });

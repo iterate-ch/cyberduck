@@ -3804,11 +3804,13 @@ public class CDBrowserController extends CDWindowController
         forwardHistory.clear();
         session.addTranscriptListener(new TranscriptListener() {
             public void log(final String message) {
-                CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
-                    public void run() {
-                        transcript.write(message);
-                    }
-                });
+                if(logDrawer.state() == NSDrawer.OpenState) {
+                    CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
+                        public void run() {
+                            transcript.write(message);
+                        }
+                    });
+                }
 
             }
         });
