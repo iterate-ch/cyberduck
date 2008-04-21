@@ -3290,13 +3290,21 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void copyURLButtonClicked(final Object sender) {
-        final String url = this.getSelectionCount() > 0 ? this.getSelectedPath().toURL() : this.workdir().toURL();
-        if(null == url) {
-            return;
+        final StringBuffer url = new StringBuffer();
+        if(this.getSelectionCount() > 0) {
+            for(Iterator iter = this.getSelectedPaths().iterator(); iter.hasNext(); ) {
+                url.append(((Path)iter.next()).toURL());
+                if(iter.hasNext()) {
+                    url.append("\n");
+                }
+            }
+        }
+        else {
+            url.append(this.workdir().toURL());
         }
         NSPasteboard pboard = NSPasteboard.generalPasteboard();
         pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
-        if(!pboard.setStringForType(url, NSPasteboard.StringPboardType)) {
+        if(!pboard.setStringForType(url.toString(), NSPasteboard.StringPboardType)) {
             log.error("Error writing URL to NSPasteboard.StringPboardType.");
         }
     }
