@@ -107,7 +107,7 @@ public abstract class AbstractPath extends NSObject {
      * @return The children of this path or an empty list if it is not accessible for some reason
      */
     public AttributedList childs(Comparator comparator, PathFilter filter) {
-        if(!this.isCached() || this.cache().get(this).attributes().isDirty()) {
+        if(!this.isCached()) {
             this.cache().put(this, this.list());
         }
         return this.cache().get(this, comparator, filter);
