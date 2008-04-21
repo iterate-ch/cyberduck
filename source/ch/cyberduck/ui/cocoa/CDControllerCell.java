@@ -24,16 +24,16 @@ import com.apple.cocoa.foundation.NSRect;
 /**
  * @version $Id$
  */
-public class CDProgressCell extends CDTableCell {
+public class CDControllerCell extends CDTableCell {
 
-    public CDProgressCell() {
+    public CDControllerCell() {
         super();
     }
 
-    private CDProgressController controller;
+    private CDBundleController controller;
 
     public void setObjectValue(Object c) {
-        this.controller = (CDProgressController) c;
+        this.controller = (CDBundleController) c;
     }
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
