@@ -30,6 +30,7 @@
                 reloadButtonClicked = id;
                 renameFileButtonClicked = id;
                 sendCustomCommandClicked = id;
+                showActivityWindowClicked = id;
                 showHiddenFilesClicked = id;
                 showTransferQueueClicked = id;
                 syncButtonClicked = id;
