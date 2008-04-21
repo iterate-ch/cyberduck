@@ -18,14 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
-
 import com.apple.cocoa.application.NSCell;
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSOutlineView;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSBundle;
+
+import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 
 import org.apache.log4j.Logger;
 
@@ -140,11 +141,6 @@ public abstract class CDTransferPromptModel extends CDController {
     private final List isLoadingListingInBackground = new Collection();
 
     /**
-     * A lock to make sure that actions are not run in parallel
-     */
-    private final Object backgroundLock = new Object();
-
-    /**
      * If no cached listing is available the loading is delayed until the listing is
      * fetched from a background thread
      * @param path
@@ -173,7 +169,12 @@ public abstract class CDTransferPromptModel extends CDController {
                                 }
                             }
                         }
-                    }, backgroundLock);
+
+                        public String getActivity() {
+                            return NSBundle.localizedString("Listing directory", "Status", "")
+                                    + " " + path.getName();
+                        }
+                    });
                 }
                 else {
                     return cache.get(path, new NullComparator(), filter());

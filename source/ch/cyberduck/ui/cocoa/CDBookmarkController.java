@@ -27,7 +27,6 @@ import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
 
-import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
@@ -505,7 +504,16 @@ public class CDBookmarkController extends CDWindowController {
             public void cleanup() {
                 alertIcon.setHidden(reachable);
             }
-        }, this);
+
+            public String getActivity() {
+                return NSBundle.localizedString("Resolving", "Status", "") + " " + host.getHostname();
+            }
+
+            public Object lock() {
+                // No synchronization with other tasks
+                return new Object();
+            }
+        });
     }
 
     public void portInputDidEndEditing(final NSNotification sender) {

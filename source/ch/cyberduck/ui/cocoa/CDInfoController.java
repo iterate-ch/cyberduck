@@ -22,7 +22,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import org.apache.log4j.Logger;
 
@@ -456,7 +456,7 @@ public class CDInfoController extends CDWindowController {
         this.permissionProgress.startAnimation(null);
         final Permission permission = this.getPermissionFromSelection();
         // send the changes to the remote host
-        controller.background(new BackgroundAction() {
+        controller.background(new AbstractBackgroundAction() {
             public void run() {
                 for(Iterator i = files.iterator(); i.hasNext();) {
                     final AbstractPath next = (AbstractPath) i.next();
@@ -482,7 +482,7 @@ public class CDInfoController extends CDWindowController {
         this.sizeButton.setEnabled(false);
         this.sizeProgress.startAnimation(null);
         // send the changes to the remote host
-        controller.background(new BackgroundAction() {
+        controller.background(new AbstractBackgroundAction() {
             public void run() {
                 for(Iterator i = files.iterator(); i.hasNext();) {
                     this.calculateSize((Path) i.next());

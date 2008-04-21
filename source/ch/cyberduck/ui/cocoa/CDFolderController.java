@@ -19,9 +19,10 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.NSImageView;
+import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import org.apache.log4j.Logger;
 
@@ -56,7 +57,7 @@ public class CDFolderController extends CDFileController {
 
     protected void createFolder(final Path workdir, final String filename) {
         final CDBrowserController c = (CDBrowserController) parent;
-        c.background(new BackgroundAction() {
+        c.background(new AbstractBackgroundAction() {
             final Path folder
                     = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
                     filename, Path.DIRECTORY_TYPE);
@@ -71,6 +72,11 @@ public class CDFolderController extends CDFileController {
                 }
                 folder.cache().put(folder, new AttributedList());
                 folder.getParent().invalidate();
+            }
+
+            public String getActivity() {
+                return NSBundle.localizedString("Make directory", "Status", "")
+                        + " " + folder.getName();
             }
 
             public void cleanup() {

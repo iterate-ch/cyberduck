@@ -401,7 +401,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             else {
                 c.setResizable(true);
             }
-            c.setDataCell(new CDProgressCell());
+            c.setDataCell(new CDControllerCell());
             this.transferTable.addTableColumn(c);
         }
         this.transferTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
@@ -569,6 +569,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
             final TransferPrompt prompt
                     = CDTransferPrompt.create(CDTransferController.this, transfer);
 
+            public String getActivity() {
+                return transfer.getName();
+            }
+
             public void prepare() {
                 transfer.getSession().addErrorListener(this);
                 transfer.getSession().addTranscriptListener(this);
@@ -701,7 +705,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 });
                 super.log(message);
             }
-        }, new Object());
+        });
     }
 
     private static final String TOOLBAR_RESUME = "Resume";
@@ -839,6 +843,15 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     public void cleanup() {
                         ;
                     }
+
+                    public String getActivity() {
+                        return NSBundle.localizedString("Disconnecting...", "Status", "");
+                    }
+
+                    public Object lock() {
+                        // No synchronization with other tasks
+                        return new Object();
+                    }
                 });
             }
         }
@@ -855,6 +868,15 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
                     public void cleanup() {
                         ;
+                    }
+
+                    public String getActivity() {
+                        return NSBundle.localizedString("Disconnecting...", "Status", "");
+                    }
+
+                    public Object lock() {
+                        // No synchronization with other tasks
+                        return new Object();
                     }
                 });
             }

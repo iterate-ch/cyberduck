@@ -27,7 +27,6 @@ import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
 
-import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -139,7 +138,16 @@ public class CDConnectionController extends CDSheetController {
             public void cleanup() {
                 alertIcon.setHidden(reachable);
             }
-        }, this);
+
+            public String getActivity() {
+                return NSBundle.localizedString("Resolving", "Status", "") + " " + new Host(hostname).getHostname();
+            }
+
+            public Object lock() {
+                // No synchronization with other tasks
+                return new Object();
+            }
+        });
     }
 
     private NSButton alertIcon; // IBOutlet

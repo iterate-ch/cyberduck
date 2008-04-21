@@ -23,7 +23,7 @@ import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Collection;
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import org.apache.log4j.Logger;
 
@@ -81,10 +81,14 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     // Reloading a workdir that is not cached yet would cause the interface to freeze;
                     // Delay until path is cached in the background
 
-                    controller.background(new BackgroundAction() {
+                    controller.background(new AbstractBackgroundAction() {
                         public void run() {
-                            log.debug("childs#run");
                             path.childs();
+                        }
+
+                        public String getActivity() {
+                            return NSBundle.localizedString("Listing directory", "Status", "")
+                                    + " " + path.getName();
                         }
 
                         public void cleanup() {

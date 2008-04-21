@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
 import ch.cyberduck.core.Local;
@@ -25,7 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import java.util.Collections;
 
@@ -53,7 +54,7 @@ public class CDCreateFileController extends CDFileController {
 
     protected void createFile(final Path workdir, final String filename, final boolean edit) {
         final CDBrowserController c = (CDBrowserController) parent;
-        c.background(new BackgroundAction() {
+        c.background(new AbstractBackgroundAction() {
             final Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
                     new Local(NSPathUtilities.temporaryDirectory(), filename));
 
@@ -80,6 +81,11 @@ public class CDCreateFileController extends CDFileController {
                         editor.open(file);
                     }
                 }
+            }
+
+            public String getActivity() {
+                return NSBundle.localizedString("Uploading", "Status", "")
+                        + " " + file.getName();
             }
 
             public void cleanup() {
