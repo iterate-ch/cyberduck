@@ -56,7 +56,8 @@ public abstract class AbstractPath extends NSObject {
      * @see ch.cyberduck.core.Cache
      */
     public boolean isCached() {
-        return this.cache().containsKey(this);
+        return this.cache().containsKey(this)
+                && !this.cache().get(this).attributes().isDirty();
     }
 
     public abstract Cache cache();
