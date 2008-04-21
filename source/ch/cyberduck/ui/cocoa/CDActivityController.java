@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Iterator;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CDActivityController extends CDWindowController {
     private static Logger log = Logger.getLogger(CDActivityController.class);
@@ -66,29 +66,32 @@ public class CDActivityController extends CDWindowController {
             }
         }
         BackgroundActionRegistry.instance().addListener(new AbstractCollectionListener() {
-            public void collectionItemAdded(Object action) {
+            public void collectionItemAdded(final Object action) {
                 synchronized(tasks) {
-                    tasks.put(action, new CDTaskController(((BackgroundAction) action)));
-                }
-                this.reload();
-            }
-
-            public void collectionItemRemoved(Object action) {
-                synchronized(tasks) {
-                    tasks.remove(action);
-                }
-                this.reload();
-            }
-
-            private void reload() {
-                CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
-                    public void run() {
-                        while(table.subviews().count() > 0) {
-                            ((NSView) table.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
+                    CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
+                        public void run() {
+                            tasks.put(action, new CDTaskController(((BackgroundAction) action)));
+                            while(table.subviews().count() > 0) {
+                                ((NSView) table.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
+                            }
+                            table.reloadData();
                         }
-                        table.reloadData();
-                    }
-                });
+                    });
+                }
+            }
+
+            public void collectionItemRemoved(final Object action) {
+                synchronized(tasks) {
+                    CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
+                        public void run() {
+                            tasks.remove(action);
+                            while(table.subviews().count() > 0) {
+                                ((NSView) table.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
+                            }
+                            table.reloadData();
+                        }
+                    });
+                }
             }
         });
     }
