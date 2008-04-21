@@ -18,16 +18,16 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Rendezvous;
-import ch.cyberduck.ui.cocoa.CDBrowserController;
-import ch.cyberduck.ui.cocoa.CDMainController;
-
 import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.application.NSMenu;
 import com.apple.cocoa.application.NSMenuItem;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSSelector;
+
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Rendezvous;
+import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.ui.cocoa.CDMainController;
 
 import org.apache.log4j.Logger;
 

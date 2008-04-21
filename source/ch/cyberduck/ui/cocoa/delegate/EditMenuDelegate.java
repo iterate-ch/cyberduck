@@ -23,7 +23,6 @@ import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSSelector;
 import com.apple.cocoa.foundation.NSSize;
 
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
 import org.apache.log4j.Logger;

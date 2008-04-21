@@ -18,7 +18,10 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
+import com.apple.cocoa.application.NSCell;
+import com.apple.cocoa.application.NSMenu;
+import com.apple.cocoa.application.NSMenuItem;
+import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSSelector;
 
 import ch.cyberduck.core.Local;
