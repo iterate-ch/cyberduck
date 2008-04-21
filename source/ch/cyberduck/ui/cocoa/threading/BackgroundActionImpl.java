@@ -96,6 +96,13 @@ public abstract class BackgroundActionImpl extends CDController
      * @see ch.cyberduck.core.TranscriptListener
      */
     public void log(String message) {
+        if(message.length() > transcript.capacity()) {
+            final int newline = transcript.indexOf("\n");
+            if(newline > 0) {
+                // Delete up to end - The ending index, exclusive.
+                transcript.delete(0, newline + 1);
+            }
+        }
         transcript.append(message).append("\n");
     }
 
@@ -113,7 +120,7 @@ public abstract class BackgroundActionImpl extends CDController
     public BackgroundActionImpl(CDWindowController controller) {
         this.controller = controller;
         this.exceptions = new Collection();
-        this.transcript = new StringBuffer();
+        this.transcript = new StringBuffer(100);
     }
 
     public Object lock() {
@@ -228,7 +235,7 @@ public abstract class BackgroundActionImpl extends CDController
     public abstract void cleanup();
 
     /**
-     * @return True if an error was reported the last time this action was run
+     * @return True ifl an error was reported the last time this action was run
      */
     public boolean hasFailed() {
         return this.exceptions.size() > 0;
