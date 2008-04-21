@@ -18,17 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
-import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
-import ch.cyberduck.core.StringUtils;
-
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
+import ch.cyberduck.core.StringUtils;
+import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
+import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
+
 import org.apache.log4j.Logger;
 
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -73,40 +72,36 @@ public abstract class CDWindowController extends CDBundleController {
     );
 
     /**
-     * Run the runnable in the background waiting for no lock to acquire
-     * @param runnable The runnable to execute in a secondary Thread
-     * @see java.lang.Thread
-     */
-    public void background(final BackgroundActionImpl runnable) {
-        this.background(runnable, new Object());
-    }
-
-    /**
      * Run the runnable in the background using a new thread. Will return
      * immediatly but not run the runnable before the lock is acquired.
      * If the <code>BackgroundAction</code> has failed, <code>BackgroundAction#alert</code>
-     * is called. 
+     * is called.
+     *
      * @param runnable The runnable to execute in a secondary Thread
-     * @param lock The synchronisation object to use
      * @see java.lang.Thread
+     * @see ch.cyberduck.ui.cocoa.threading.BackgroundAction#lock()
      */
-    public void background(final BackgroundActionImpl runnable, final Object lock) {
-        log.debug("background:"+runnable+","+lock);
+    public void background(final BackgroundActionImpl runnable) {
+        log.debug("background:" + runnable + "," + runnable.lock());
+        // Start background task
         new Thread("Background") {
             public void run() {
                 // Synchronize all background threads to this lock so actions run
                 // sequentially as they were initiated from the main interface thread
-                synchronized(lock) {
-                    log.debug("Acquired lock for background runnable:"+runnable);
+                synchronized(runnable.lock()) {
+                    log.debug("Acquired lock for background runnable:" + runnable);
                     // An autorelease pool is used to manage Foundation's autorelease
                     // mechanism for Objective-C objects. If you start off a thread
                     // that calls Cocoa, there won't be a top-level pool.
                     final int pool = NSAutoreleasePool.push();
                     try {
+                        if(runnable.isCanceled()) {
+                            return;
+                        }
                         runnable.prepare();
                         if(runnable.hasFailed()) {
                             // This is a automated retry. Wait some time first.
-                            runnable.pause(lock);
+                            runnable.pause(runnable.lock());
                             if(0 == runnable.retry()) {
                                 return;
                             }
@@ -137,13 +132,13 @@ public abstract class CDWindowController extends CDBundleController {
                                 // If there was any failure, display the summary now
                                 if(runnable.hasFailed()) {
                                     if(runnable.retry() > 0) {
-                                        log.info("Retry failed background action:"+runnable);
+                                        log.info("Retry failed background action:" + runnable);
                                         // Re-run the action with the previous lock used
-                                        CDWindowController.this.background(runnable, lock);
+                                        CDWindowController.this.background(runnable);
                                     }
                                     // Do not pop up an alert if the action was canceled intentionally
                                     else if(!runnable.isCanceled()) {
-                                        runnable.alert(lock);
+                                        runnable.alert(runnable.lock());
                                     }
                                 }
                             }
@@ -152,11 +147,11 @@ public abstract class CDWindowController extends CDBundleController {
                         // NSAutoreleasePool identified by pool.
                         NSAutoreleasePool.pop(pool);
                     }
-                    log.debug("Releasing lock for background runnable:"+runnable);
+                    log.debug("Releasing lock for background runnable:" + runnable);
                 }
             }
         }.start();
-        log.debug("Started background runnable for:"+runnable);
+        log.debug("Started background runnable for:" + runnable);
     }
 
     /**
@@ -202,10 +197,11 @@ public abstract class CDWindowController extends CDBundleController {
 
     /**
      * Override this method if the controller should not be invalidated after its window closes
+     *
      * @param notification
      */
     public void windowWillClose(NSNotification notification) {
-        log.debug("windowWillClose:"+notification);
+        log.debug("windowWillClose:" + notification);
         CDWindowListener[] l = (CDWindowListener[]) listeners.toArray(new CDWindowListener[]{});
         for(int i = 0; i < l.length; i++) {
             l[i].windowWillClose();
@@ -232,8 +228,8 @@ public abstract class CDWindowController extends CDBundleController {
     public void cascade() {
         NSArray windows = NSApplication.sharedApplication().windows();
         int count = windows.count();
-        if (count != 0) {
-            NSWindow window = (NSWindow) windows.objectAtIndex(count-1);
+        if(count != 0) {
+            NSWindow window = (NSWindow) windows.objectAtIndex(count - 1);
             NSPoint origin = window.frame().origin();
             origin = new NSPoint(origin.x(), origin.y() + window.frame().size().height());
             this.window.setFrameTopLeftPoint(this.window.cascadeTopLeftFromPoint(origin));
@@ -241,7 +237,6 @@ public abstract class CDWindowController extends CDBundleController {
     }
 
     /**
-     *
      * @return True if this window has a sheet attached
      */
     public boolean hasSheet() {
@@ -253,6 +248,7 @@ public abstract class CDWindowController extends CDBundleController {
 
     /**
      * Attach a sheet to this window
+     *
      * @param sheet The sheet to be attached to this window
      * @see ch.cyberduck.ui.cocoa.CDSheetController#beginSheet()
      */
@@ -266,7 +262,8 @@ public abstract class CDWindowController extends CDBundleController {
 
     /**
      * Attach a sheet to this window
-     * @param sheet The sheet to be attached to this window
+     *
+     * @param sheet    The sheet to be attached to this window
      * @param callback The callback to call after the sheet is dismissed
      * @see ch.cyberduck.ui.cocoa.CDSheetController#beginSheet()
      */
