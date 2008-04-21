@@ -1,9 +1,5 @@
 package ch.cyberduck.ui.cocoa.threading;
 
-import com.apple.cocoa.foundation.NSBundle;
-
-import java.util.Set;
-import java.util.HashSet;
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
  *  http://cyberduck.ch/

@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSBundle;
+
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-
-import com.apple.cocoa.foundation.NSBundle;
 
 /**
  * @version $Id$
