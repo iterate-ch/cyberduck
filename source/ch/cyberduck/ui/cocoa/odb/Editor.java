@@ -26,7 +26,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDController;
 import ch.cyberduck.ui.cocoa.growl.Growl;
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import org.apache.log4j.Logger;
 
@@ -92,11 +92,16 @@ public abstract class Editor extends CDController {
         }
         while(edited.getLocal().exists());
 
-        controller.background(new BackgroundAction() {
+        controller.background(new AbstractBackgroundAction() {
             public void run() {
                 edited.download(true);
             }
 
+            public String getActivity() {
+                return NSBundle.localizedString("Downloading", "Status", "")
+                        + " " + edited.getName();
+            }
+            
             public void cleanup() {
                 if(edited.getStatus().isComplete()) {
                     edited.getSession().message(NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
@@ -157,9 +162,14 @@ public abstract class Editor extends CDController {
      */
     protected void save() {
         log.debug("save");
-        controller.background(new BackgroundAction() {
+        controller.background(new AbstractBackgroundAction() {
             public void run() {
                 edited.upload();
+            }
+
+            public String getActivity() {
+                return NSBundle.localizedString("Uploading", "Status", "")
+                        + " " + edited.getName();
             }
 
             public void cleanup() {

@@ -20,8 +20,8 @@ package ch.cyberduck.ui.cocoa.odb;
 
 import com.apple.cocoa.application.NSWorkspace;
 
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 
 import org.apache.log4j.Logger;

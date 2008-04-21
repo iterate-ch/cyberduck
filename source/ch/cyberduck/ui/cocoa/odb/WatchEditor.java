@@ -21,8 +21,6 @@ package ch.cyberduck.ui.cocoa.odb;
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSDictionary;
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.io.AbstractFileWatcherListener;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 
 import org.apache.log4j.Logger;
