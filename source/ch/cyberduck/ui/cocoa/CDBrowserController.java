@@ -1228,63 +1228,69 @@ public class CDBrowserController extends CDWindowController
         }
 
         public void spaceKeyPressed(final Object sender) {
-            if(QuickLook.isOpen()) {
-                QuickLook.close();
-            }
-            else {
-                this.updateQuickLookSelection(
-                        CDBrowserController.this.getSelectedPaths()
-                );
+            if(QuickLook.isAvailable()) {
+                if(QuickLook.isOpen()) {
+                    QuickLook.close();
+                }
+                else {
+                    this.updateQuickLookSelection(
+                            CDBrowserController.this.getSelectedPaths()
+                    );
+                }
             }
         }
 
         private void updateQuickLookSelection(final Collection selected) {
-            final Collection downloads = new Collection();
-            for(Iterator iter = selected.iterator(); iter.hasNext();) {
-                final Path path = (Path) iter.next();
-                if(!path.attributes.isFile()) {
-                    continue;
+            if(QuickLook.isAvailable()) {
+                final Collection downloads = new Collection();
+                for(Iterator iter = selected.iterator(); iter.hasNext();) {
+                    final Path path = (Path) iter.next();
+                    if(!path.attributes.isFile()) {
+                        continue;
+                    }
+                    final Local folder = new Local(new File(NSPathUtilities.temporaryDirectory(),
+                            path.getParent().getAbsolute()));
+                    folder.mkdir(true);
+                    path.setLocal(new Local(folder, path.getAbsolute()));
+                    downloads.add(path);
                 }
-                final Local folder = new Local(new File(NSPathUtilities.temporaryDirectory(),
-                        path.getParent().getAbsolute()));
-                folder.mkdir(true);
-                path.setLocal(new Local(folder, path.getAbsolute()));
-                downloads.add(path);
-            }
-            if(downloads.size() > 0) {
-                background(new AbstractBackgroundAction() {
-                    public void run() {
-                        for(Iterator iter = downloads.iterator(); iter.hasNext();) {
-                            final Path preview = (Path) iter.next();
-                            if(preview.getLocal().attributes.getSize() != preview.attributes.getSize()) {
-                                preview.download(true);
+                if(downloads.size() > 0) {
+                    background(new AbstractBackgroundAction() {
+                        public void run() {
+                            for(Iterator iter = downloads.iterator(); iter.hasNext();) {
+                                final Path download = (Path) iter.next();
+                                if(download.getLocal().attributes.getSize() != download.attributes.getSize()) {
+                                    download.download(true);
+                                }
                             }
                         }
-                    }
 
-                    public void cleanup() {
-                        final Collection previews = new Collection();
-                        for(Iterator iter = downloads.iterator(); iter.hasNext();) {
-                            final Path download = (Path) iter.next();
-                            previews.add(download.getLocal());
+                        public void cleanup() {
+                            final Collection previews = new Collection();
+                            for(Iterator iter = downloads.iterator(); iter.hasNext();) {
+                                final Path download = (Path) iter.next();
+                                if(download.getStatus().isComplete()) {
+                                    previews.add(download.getLocal());
+                                }
+                            }
+                            // Keep references to delete later
+                            temporaryQuickLookFiles.addAll(previews);
+                            // Change files in Quick Look
+                            QuickLook.select((Local[]) previews.toArray(new Local[previews.size()]));
+                            // Open Quick Look Preview Panel
+                            QuickLook.open();
+                            // Revert status label
+                            CDBrowserController.this.updateStatusLabel(null);
+                            // Restore the focus to our window to demo the selection changing, scrolling
+                            // (left/right) and closing (space) functionality
+                            CDBrowserController.this.window().makeKeyWindow();
                         }
-                        // Keep references to delete later
-                        temporaryQuickLookFiles.addAll(previews);
-                        // Change files in Quick Look
-                        QuickLook.select((Local[]) previews.toArray(new Local[previews.size()]));
-                        // Open Quick Look Preview Panel
-                        QuickLook.open();
-                        // Revert status label
-                        CDBrowserController.this.updateStatusLabel(null);
-                        // Restore the focus to our window to demo the selection changing, scrolling
-                        // (left/right) and closing (space) functionality
-                        CDBrowserController.this.window().makeKeyWindow();
-                    }
 
-                    public String getActivity() {
-                        return NSBundle.localizedString("Quick Look", "Status", "");
-                    }
-                });
+                        public String getActivity() {
+                            return NSBundle.localizedString("Quick Look", "Status", "");
+                        }
+                    });
+                }
             }
         }
 

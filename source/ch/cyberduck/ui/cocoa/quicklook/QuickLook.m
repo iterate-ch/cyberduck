@@ -54,6 +54,12 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_QuickLook_select(JNI
 	}
 }
 
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_QuickLook_isAvailable
+  (JNIEnv *env, jobject this)
+{
+    return QUICK_LOOK_AVAILABLE;
+}
+
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_QuickLook_isOpen
   (JNIEnv *env, jobject this)
 {

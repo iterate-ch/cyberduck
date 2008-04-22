@@ -78,6 +78,8 @@ public class QuickLook {
         select(paths);
     }
 
+    public static native boolean isAvailable();
+
     public static native boolean isOpen();
 
     public static native void open();

@@ -9,12 +9,20 @@ extern "C" {
 #endif
 
 /*
- * Class:     ch_cyberduck_core_Local
- * Method:    quicklook
+ * Class:     ch_cyberduck_ui_cocoa_quicklook_QuickLook
+ * Method:    select
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_QuickLook_select
   (JNIEnv *, jobject, jobjectArray);
+
+/*
+ * Class:     ch_cyberduck_ui_cocoa_quicklook_QuickLook
+ * Method:    isAvailable
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_QuickLook_isAvailable
+  (JNIEnv *, jobject);
 
 /*
  * Class:     ch_cyberduck_ui_cocoa_quicklook_QuickLook
