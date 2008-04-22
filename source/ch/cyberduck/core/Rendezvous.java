@@ -46,9 +46,13 @@ public class Rendezvous
 
     private static Rendezvous instance;
 
+    private static final Object lock = new Object();
+
     public static Rendezvous instance() {
-        if(null == instance) {
-            instance = new Rendezvous();
+        synchronized(lock) {
+            if(null == instance) {
+                instance = new Rendezvous();
+            }
         }
         return instance;
     }
