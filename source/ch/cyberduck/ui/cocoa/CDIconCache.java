@@ -37,9 +37,13 @@ import java.util.HashMap;
 public class CDIconCache extends HashMap {
     private static CDIconCache instance;
 
+    private static final Object lock = new Object();
+
     public static CDIconCache instance() {
-        if(null == instance) {
-            instance = new CDIconCache();
+        synchronized(lock) {
+            if(null == instance) {
+                instance = new CDIconCache();
+            }
         }
         return instance;
     }

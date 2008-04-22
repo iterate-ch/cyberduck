@@ -31,28 +31,32 @@ public abstract class Growl {
         //
     }
 
+    private static final Object lock = new Object();
+
     public static Growl instance() {
-        if (null == instance) {
-            if (Preferences.instance().getBoolean("growl.enable")) {
-                instance = new GrowlNative();
-            }
-            else {
-                instance = new Growl() {
-                    public void register() {
-                        ;
-                    }
+        synchronized(lock) {
+            if (null == instance) {
+                if (Preferences.instance().getBoolean("growl.enable")) {
+                    instance = new GrowlNative();
+                }
+                else {
+                    instance = new Growl() {
+                        public void register() {
+                            ;
+                        }
 
-                    public void notify(String title, String description) {
-                        log.info(description);
-                    }
+                        public void notify(String title, String description) {
+                            log.info(description);
+                        }
 
-                    public void notifyWithImage(String title, String description, String image) {
-                        log.info(description);
-                    }
-                };
+                        public void notifyWithImage(String title, String description, String image) {
+                            log.info(description);
+                        }
+                    };
+                }
+                // Make sure we register to Growl first
+                instance.register();
             }
-            // Make sure we register to Growl first
-            instance.register();
         }
         return instance;
     }
