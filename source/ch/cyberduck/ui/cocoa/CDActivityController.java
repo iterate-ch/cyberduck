@@ -19,9 +19,9 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
@@ -30,9 +30,10 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -58,9 +59,14 @@ public class CDActivityController extends CDWindowController {
 
     private CDActivityController() {
         this.loadBundle();
+        // Initialize to listen for background tasks
+        this.init();
+    }
+
+    private void init() {
         synchronized(tasks) {
             // Add already running background actions
-            for(Iterator iter = BackgroundActionRegistry.instance().iterator(); iter.hasNext(); ) {
+            for(Iterator iter = BackgroundActionRegistry.instance().iterator(); iter.hasNext();) {
                 final BackgroundAction action = (BackgroundAction) iter.next();
                 tasks.put(action, new CDTaskController(action));
             }
@@ -70,11 +76,9 @@ public class CDActivityController extends CDWindowController {
                 synchronized(tasks) {
                     CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
                         public void run() {
+                            log.debug("collectionItemAdded" + action);
                             tasks.put(action, new CDTaskController(((BackgroundAction) action)));
-                            while(table.subviews().count() > 0) {
-                                ((NSView) table.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
-                            }
-                            table.reloadData();
+                            reload();
                         }
                     });
                 }
@@ -84,16 +88,21 @@ public class CDActivityController extends CDWindowController {
                 synchronized(tasks) {
                     CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
                         public void run() {
+                            log.debug("collectionItemRemoved" + action);
                             tasks.remove(action);
-                            while(table.subviews().count() > 0) {
-                                ((NSView) table.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
-                            }
-                            table.reloadData();
+                            reload();
                         }
                     });
                 }
             }
         });
+    }
+
+    private void reload() {
+        while(table.subviews().count() > 0) {
+            ((NSView) table.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
+        }
+        table.reloadData();
     }
 
     public void setWindow(NSWindow window) {
@@ -109,7 +118,7 @@ public class CDActivityController extends CDWindowController {
     public void windowWillClose(NSNotification notification) {
         // Do not call super as we are a singleton. super#windowWillClose would invalidate me
     }
-    
+
     private NSTableView table;
     private CDAbstractTableDelegate delegate;
 
@@ -184,7 +193,8 @@ public class CDActivityController extends CDWindowController {
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
         synchronized(tasks) {
             if(row < this.numberOfRowsInTableView(view)) {
-                return tasks.values().toArray()[row];
+                final Collection values = tasks.values();
+                return values.toArray(new CDTaskController[values.size()])[row];
             }
             log.warn("tableViewObjectValueForLocation:" + row + " == null");
         }
