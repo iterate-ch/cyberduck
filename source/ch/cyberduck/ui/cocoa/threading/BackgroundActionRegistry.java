@@ -32,8 +32,10 @@ public class BackgroundActionRegistry extends Collection {
 
     private static BackgroundActionRegistry instance;
 
+    private static final Object lock = new Object();
+
     public static BackgroundActionRegistry instance() {
-        synchronized(NSApplication.sharedApplication()) {
+        synchronized(lock) {
             if(null == instance) {
                 instance = new BackgroundActionRegistry();
             }
@@ -61,17 +63,17 @@ public class BackgroundActionRegistry extends Collection {
         ;
     }
 
-    private final Object lock = new Object();
+    private final Object block = new Object();
 
     /**
      * Blocks the calling thread until all background actions have completed
      */
     public void block() {
         while(!this.isEmpty()) {
-            synchronized(lock) {
+            synchronized(block) {
                 try {
                     log.info("Waiting for all background actions to complete...");
-                    lock.wait();
+                    block.wait();
                 }
                 catch(InterruptedException e) {
                     log.error(e.getMessage());
