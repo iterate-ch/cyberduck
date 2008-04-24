@@ -1809,7 +1809,6 @@ source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.h -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.java -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.m -text
 source/ch/cyberduck/ui/cocoa/threading/AbstractBackgroundAction.java -text
-source/ch/cyberduck/ui/cocoa/threading/BackgroundActionImpl.java -text
 source/ch/cyberduck/ui/cocoa/threading/BackgroundActionListener.java -text
 source/ch/cyberduck/ui/cocoa/threading/BackgroundActionRegistry.java -text
 source/ch/cyberduck/ui/cocoa/threading/DefaultMainAction.java -text
