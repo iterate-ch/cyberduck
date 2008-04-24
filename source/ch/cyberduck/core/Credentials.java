@@ -214,6 +214,6 @@ public class Credentials {
         if(this.usesPublicKeyAuthentication()) {
             return true;
         }
-        return StringUtils.hasLength(this.getUsername()) && this.getPassword() != null;
+        return StringUtils.hasLength(this.getUsername()) && StringUtils.hasLength(this.getPassword());
     }
 }
