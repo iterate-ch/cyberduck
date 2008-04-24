@@ -24,9 +24,31 @@ package ch.cyberduck.ui.cocoa.threading;
 public interface BackgroundAction extends Runnable {
 
     /**
+     * Called before synchronized with other pending actions
+     */
+    abstract void init();
+
+    /**
+     * Called just before #run.
+     *
+     * @see #run()
+     * @return True if proceed to runnning
+     */
+    abstract boolean prepare();
+
+    /**
      * Called form a worker thread not blocking the user interface
      */
     abstract void run();
+
+    /**
+     * Called after #run but still on the working thread
+     *
+     * @see #run
+     */
+    abstract void finish();
+
+    abstract boolean isRunning();
 
     /**
      * To be called from the main interface thread after the #run
@@ -34,7 +56,12 @@ public interface BackgroundAction extends Runnable {
      */
     abstract void cleanup();
 
+    /**
+     * Mark this action as canceled. Will not execute if scheduled.
+     */
     abstract void cancel();
+
+    abstract boolean isCanceled();
 
     /**
      * @return The name of the activity to display in the activity window
@@ -53,4 +80,6 @@ public interface BackgroundAction extends Runnable {
      * @see ch.cyberduck.ui.cocoa.threading.BackgroundActionListener
      */
     abstract void addListener(BackgroundActionListener listener);
+
+    abstract void removeListener(BackgroundActionListener listener);
 }

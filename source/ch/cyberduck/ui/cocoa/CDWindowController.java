@@ -22,12 +22,13 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.StringUtils;
-import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
+import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -72,24 +73,23 @@ public abstract class CDWindowController extends CDBundleController {
     );
 
     /**
-     * Run the runnable in the background using a new thread. Will return
-     * immediatly but not run the runnable before the lock is acquired.
-     * If the <code>BackgroundAction</code> has failed, <code>BackgroundAction#alert</code>
-     * is called.
+     * Will queue up the <code>BackgroundAction</code> to be run in a background thread. Will be executed
+     * as soon as no other previous <code>BackgroundAction</code> is pending.
      *
+     * @return Will return immediatly but not run the runnable before the lock of the runnable is acquired.
      * @param runnable The runnable to execute in a secondary Thread
      * @see java.lang.Thread
      * @see ch.cyberduck.ui.cocoa.threading.BackgroundAction#lock()
      */
-    public void background(final BackgroundActionImpl runnable) {
-        log.debug("background:" + runnable + "," + runnable.lock());
+    public void background(final BackgroundAction runnable) {
+        runnable.init();
         // Start background task
         new Thread("Background") {
             public void run() {
                 // Synchronize all background threads to this lock so actions run
                 // sequentially as they were initiated from the main interface thread
                 synchronized(runnable.lock()) {
-                    log.debug("Acquired lock for background runnable:" + runnable);
+                    log.info("Acquired lock for background runnable:" + runnable);
                     // An autorelease pool is used to manage Foundation's autorelease
                     // mechanism for Objective-C objects. If you start off a thread
                     // that calls Cocoa, there won't be a top-level pool.
@@ -98,28 +98,10 @@ public abstract class CDWindowController extends CDBundleController {
                         if(runnable.isCanceled()) {
                             return;
                         }
-                        runnable.prepare();
-                        if(runnable.hasFailed()) {
-                            // This is a automated retry. Wait some time first.
-                            runnable.pause(runnable.lock());
-                            if(0 == runnable.retry()) {
-                                return;
-                            }
+                        if(runnable.prepare()) {
+                            // Execute the action of the runnable
+                            runnable.run();
                         }
-                        // Clear previous failure status
-                        runnable.init();
-                        // Execute the action of the runnable
-                        runnable.run();
-                    }
-                    catch(NullPointerException e) {
-                        log.error(e.getClass().getName());
-                        StackTraceElement[] stacktrace = e.getStackTrace();
-                        for(int i = 0; i < stacktrace.length; i++) {
-                            log.error(stacktrace[i].toString());
-                        }
-                        // We might get a null pointer if the session has been interrupted
-                        // during the action in progress and closing the underlying socket
-                        // asynchronously. See Session#interrupt
                     }
                     finally {
                         // Increase the run counter
@@ -129,29 +111,19 @@ public abstract class CDWindowController extends CDBundleController {
                         CDMainApplication.invoke(new WindowMainAction(CDWindowController.this) {
                             public void run() {
                                 runnable.cleanup();
-                                // If there was any failure, display the summary now
-                                if(runnable.hasFailed()) {
-                                    if(runnable.retry() > 0) {
-                                        log.info("Retry failed background action:" + runnable);
-                                        // Re-run the action with the previous lock used
-                                        CDWindowController.this.background(runnable);
-                                    }
-                                    // Do not pop up an alert if the action was canceled intentionally
-                                    else if(!runnable.isCanceled()) {
-                                        runnable.alert(runnable.lock());
-                                    }
-                                }
                             }
                         });
+
                         // Indicates that you are finished using the
                         // NSAutoreleasePool identified by pool.
                         NSAutoreleasePool.pop(pool);
+
+                        log.info("Releasing lock for background runnable:" + runnable);
                     }
-                    log.debug("Releasing lock for background runnable:" + runnable);
                 }
             }
         }.start();
-        log.debug("Started background runnable for:" + runnable);
+        log.info("Started background runnable:" + runnable);
     }
 
     /**
@@ -159,7 +131,7 @@ public abstract class CDWindowController extends CDBundleController {
      */
     protected NSWindow window; // IBOutlet
 
-    private List listeners = new Vector();
+    private Set listeners = new HashSet();
 
     /**
      * @param listener

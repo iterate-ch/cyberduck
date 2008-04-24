@@ -22,7 +22,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
+import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
@@ -128,7 +128,7 @@ public class CDConnectionController extends CDSheetController {
             this.updateField(pathField, parsed.getDefaultPath());
         }
         final String hostname = hostField.stringValue();
-        this.background(new BackgroundActionImpl(this) {
+        this.background(new AbstractBackgroundAction() {
             boolean reachable = false;
 
             public void run() {
@@ -137,15 +137,6 @@ public class CDConnectionController extends CDSheetController {
 
             public void cleanup() {
                 alertIcon.setHidden(reachable);
-            }
-
-            public String getActivity() {
-                return NSBundle.localizedString("Resolving", "Status", "") + " " + new Host(hostname).getHostname();
-            }
-
-            public Object lock() {
-                // No synchronization with other tasks
-                return new Object();
             }
         });
     }

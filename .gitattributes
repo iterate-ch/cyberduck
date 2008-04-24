@@ -1791,6 +1791,7 @@ source/ch/cyberduck/core/s3/S3Session.java -text
 source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text
 source/ch/cyberduck/core/ssl/SSLSession.java -text
 source/ch/cyberduck/core/util/URLSchemeHandlerConfiguration.m -text
+source/ch/cyberduck/ui/cocoa/BrowserBackgroundAction.java -text
 source/ch/cyberduck/ui/cocoa/CDBundleController.java -text
 source/ch/cyberduck/ui/cocoa/CDListDataSource.java -text
 source/ch/cyberduck/ui/cocoa/CDMainApplication.java -text
@@ -1813,6 +1814,7 @@ source/ch/cyberduck/ui/cocoa/threading/BackgroundActionListener.java -text
 source/ch/cyberduck/ui/cocoa/threading/BackgroundActionRegistry.java -text
 source/ch/cyberduck/ui/cocoa/threading/DefaultMainAction.java -text
 source/ch/cyberduck/ui/cocoa/threading/MainAction.java -text
+source/ch/cyberduck/ui/cocoa/threading/RepeatableBackgroundAction.java -text
 source/ch/cyberduck/ui/cocoa/threading/WindowMainAction.java -text
 source/com/snoize/SNDisclosableView.m -text
 source/com/snoize/SNDisclosureButton.m -text

@@ -666,7 +666,7 @@ public class CDBrowserController extends CDWindowController
         log.debug("reloadData");
         if(this.isMounted()) {
             if(!this.workdir().isCached() || this.workdir().cache().get(this.workdir()).attributes().isDirty()) {
-                this.background(new AbstractBackgroundAction() {
+                this.background(new BrowserBackgroundAction(this) {
                     public void run() {
                         workdir().childs();
                     }
@@ -1255,7 +1255,7 @@ public class CDBrowserController extends CDWindowController
                     downloads.add(path);
                 }
                 if(downloads.size() > 0) {
-                    background(new AbstractBackgroundAction() {
+                    background(new BrowserBackgroundAction(CDBrowserController.this) {
                         public void run() {
                             for(Iterator iter = downloads.iterator(); iter.hasNext();) {
                                 final Path download = (Path) iter.next();
@@ -1333,7 +1333,7 @@ public class CDBrowserController extends CDWindowController
                 if(Preferences.instance().getBoolean("browser.info.isInspector")) {
                     if(inspector != null && inspector.window() != null && inspector.window().isVisible()) {
                         if(selected.size() > 0) {
-                            background(new AbstractBackgroundAction() {
+                            background(new BrowserBackgroundAction(CDBrowserController.this) {
                                 public void run() {
                                     for(Iterator iter = selected.iterator(); iter.hasNext();) {
                                         final Path p = (Path) iter.next();
@@ -2036,7 +2036,7 @@ public class CDBrowserController extends CDWindowController
 
 //    public void navigationPopupSelectionChanged(NSComboBox sender) {
 //        if(this.navigationPopup.stringValue().length() != 0) {
-//            this.background(new AbstractBackgroundAction() {
+//            this.background(new BrowserBackgroundAction() {
 //                final Path dir = (Path)workdir.clone();
 //                final String filename = navigationPopup.stringValue();
 //
@@ -2350,7 +2350,7 @@ public class CDBrowserController extends CDWindowController
             if(this.session.getEncoding().equals(encoding)) {
                 return;
             }
-            this.background(new AbstractBackgroundAction() {
+            this.background(new BrowserBackgroundAction(this) {
                 public void run() {
                     unmount(false);
                 }
@@ -2386,7 +2386,7 @@ public class CDBrowserController extends CDWindowController
     // Status
     // ----------------------------------------------------------
 
-    private NSProgressIndicator spinner; // IBOutlet
+    protected NSProgressIndicator spinner; // IBOutlet
 
     public void setSpinner(NSProgressIndicator spinner) {
         this.spinner = spinner;
@@ -2495,7 +2495,7 @@ public class CDBrowserController extends CDWindowController
      */
     protected void duplicatePaths(final Map selected, final boolean edit) {
         final Map normalized = this.checkHierarchy(selected);
-        this.checkOverwrite(normalized.values(), new AbstractBackgroundAction() {
+        this.checkOverwrite(normalized.values(), new BrowserBackgroundAction(this) {
             public void run() {
                 Iterator sourcesIter = normalized.keySet().iterator();
                 Iterator destinationsIter = normalized.values().iterator();
@@ -2568,7 +2568,7 @@ public class CDBrowserController extends CDWindowController
      */
     protected void renamePaths(final Map selected) {
         final Map normalized = this.checkHierarchy(selected);
-        this.checkMove(normalized.values(), new AbstractBackgroundAction() {
+        this.checkMove(normalized.values(), new BrowserBackgroundAction(this) {
             public void run() {
                 Iterator originalIterator = normalized.keySet().iterator();
                 Iterator renamedIterator = normalized.values().iterator();
@@ -2787,7 +2787,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     private void deletePathsImpl(final List files) {
-        this.background(new AbstractBackgroundAction() {
+        this.background(new BrowserBackgroundAction(this) {
             public void run() {
                 for(Iterator iter = files.iterator(); iter.hasNext();) {
                     Path f = (Path) iter.next();
@@ -2908,7 +2908,7 @@ public class CDBrowserController extends CDWindowController
     public void infoButtonClicked(final Object sender) {
         if(this.getSelectionCount() > 0) {
             final List selected = this.getSelectedPaths();
-            this.background(new AbstractBackgroundAction() {
+            this.background(new BrowserBackgroundAction(this) {
                 public void run() {
                     for(Iterator iter = selected.iterator(); iter.hasNext();) {
                         final Path selected = (Path) iter.next();
@@ -3223,11 +3223,16 @@ public class CDBrowserController extends CDWindowController
                     transfer.removeListener(l);
                 }
             });
-            this.background(new AbstractBackgroundAction() {
+            this.background(new BrowserBackgroundAction(this) {
                 public void run() {
                     TransferOptions options = new TransferOptions();
                     options.closeSession = false;
                     transfer.start(CDTransferPrompt.create(CDBrowserController.this, transfer), options);
+                }
+
+                public void cancel() {
+                    transfer.cancel();
+                    super.cancel();
                 }
 
                 public void cleanup() {
@@ -3272,6 +3277,12 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void interruptButtonClicked(final Object sender) {
+        // Remove all pending actions
+        BackgroundAction[] l = (BackgroundAction[]) BackgroundActionRegistry.instance().toArray(
+                new BackgroundAction[BackgroundActionRegistry.instance().size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].cancel();
+        }
         // Interrupt any pending operation by forcefully closing the socket
         this.interrupt();
     }
@@ -3471,86 +3482,10 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
-     * A task is in progress; e.g. a file listing is expected from the server
-     */
-    private boolean activityRunning;
-
-    /**
      * @return true if there is any network activity running in the background
      */
     public boolean isActivityRunning() {
-        return this.activityRunning;
-    }
-
-    private BackgroundActionImpl backgroundAction = null;
-
-    /**
-     * Will queue up the <code>BackgroundAction</code> to be run in a background thread. Will be executed
-     * as soon as no other previous <code>BackgroundAction</code> is pending.
-     * Before the <code>BackgroundAction</code> is run, the progress indicator of this browser
-     * is animated. While the <code>BackgroundAction</code> is executed, #isActivityRunning will return true
-     *
-     * @param runnable The action to execute
-     * @pre must always be invoked form the main interface thread
-     * @see ch.cyberduck.ui.cocoa.CDWindowController#background(ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl,Object)
-     * @see #isActivityRunning()
-     */
-    public void background(final BackgroundAction runnable) {
-        super.background(backgroundAction = new BackgroundActionImpl(this) {
-
-            {
-                BackgroundActionRegistry.instance().add(this);
-            }
-
-            public String toString() {
-                if(hasSession()) {
-                    return session.getHost().getHostname();
-                }
-                return super.toString();
-            }
-
-            public String getActivity() {
-                return runnable.getActivity();
-            }
-
-            public void prepare() {
-                activityRunning = true;
-                session.addErrorListener(this);
-                session.addTranscriptListener(this);
-                super.prepare();
-            }
-
-            public void run() {
-                CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
-                    public void run() {
-                        spinner.startAnimation(this);
-                    }
-                });
-                runnable.run();
-            }
-
-            public void finish() {
-                activityRunning = false;
-                if(hasSession()) {
-                    // It is important _not_ to do this in #cleanup as otherwise
-                    // the listeners are still registered when the next BackgroundAction
-                    // is already running
-                    session.removeTranscriptListener(this);
-                    session.removeErrorListener(this);
-                }
-                super.finish();
-            }
-
-            public void cleanup() {
-                spinner.stopAnimation(this);
-                updateStatusLabel(null);
-                runnable.cleanup();
-            }
-
-            public Session session() {
-                return session;
-            }
-        });
+        return BackgroundActionRegistry.instance().getCurrent() != null;
     }
 
     /**
@@ -3584,7 +3519,7 @@ public class CDBrowserController extends CDWindowController
             //Reset the readable attribute
             directory.childs().attributes().setReadable(true);
         }
-        this.background(new AbstractBackgroundAction() {
+        this.background(new BrowserBackgroundAction(this) {
             public String getActivity() {
                 return NSBundle.localizedString("Listing directory", "Status", "")
                         + " " + directory.getName();
@@ -3851,7 +3786,7 @@ public class CDBrowserController extends CDWindowController
                 // Initialize the browser with the new session attaching all listeners
                 final Session session = init(host);
 
-                background(new AbstractBackgroundAction() {
+                background(new BrowserBackgroundAction(CDBrowserController.this) {
                     private Path mount;
 
                     public void run() {
@@ -3919,7 +3854,7 @@ public class CDBrowserController extends CDWindowController
                     if(isActivityRunning()) {
                         interrupt();
                     }
-                    background(new AbstractBackgroundAction() {
+                    background(new BrowserBackgroundAction(CDBrowserController.this) {
                         public void run() {
                             unmount(true);
                         }
@@ -3934,8 +3869,6 @@ public class CDBrowserController extends CDWindowController
                     });
                 }
             }
-
-            ;
         }, disconnected);
     }
 
@@ -3956,7 +3889,7 @@ public class CDBrowserController extends CDWindowController
             if(this.isActivityRunning()) {
                 this.interrupt();
             }
-            this.background(new AbstractBackgroundAction() {
+            this.background(new BrowserBackgroundAction(this) {
                 public void run() {
                     unmount(true);
                 }
@@ -3983,12 +3916,15 @@ public class CDBrowserController extends CDWindowController
      */
     private void interrupt() {
         if(this.hasSession()) {
-            if(this.activityRunning) {
-                backgroundAction.cancel();
+            if(this.isActivityRunning()) {
+                final BackgroundAction current = BackgroundActionRegistry.instance().getCurrent();
+                if(null != current) {
+                    current.cancel();
+                }
             }
-            // Directly call super.background to circumvent the background concurrency lock
-            this.background(new BackgroundActionImpl(this) {
+            this.background(new BrowserBackgroundAction(this) {
                 public void run() {
+                    // Aggressively close the connection to interrupt the current task
                     session.interrupt();
                 }
 
@@ -4012,7 +3948,7 @@ public class CDBrowserController extends CDWindowController
      * Unmount this session
      */
     private void disconnect() {
-        this.background(new AbstractBackgroundAction() {
+        this.background(new BrowserBackgroundAction(this) {
             public void run() {
                 unmount(false);
             }
@@ -4059,19 +3995,6 @@ public class CDBrowserController extends CDWindowController
                 if(!controller.unmount(new CDSheetCallback() {
                     public void callback(final int returncode) {
                         if(returncode == DEFAULT_OPTION) { //Disconnect
-                            controller.background(new AbstractBackgroundAction() {
-                                public void run() {
-                                    controller.unmount(true);
-                                }
-
-                                public void cleanup() {
-                                    ;
-                                }
-
-                                public String getActivity() {
-                                    return NSBundle.localizedString("Disconnecting...", "Status", "");
-                                }
-                            });
                             window.close();
                             if(NSApplication.TerminateNow == CDBrowserController.applicationShouldTerminate(app)) {
                                 app.terminate(null);

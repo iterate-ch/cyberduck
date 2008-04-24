@@ -24,7 +24,8 @@ import com.apple.cocoa.foundation.*;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
-import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
+import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.RepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
@@ -560,7 +561,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
             this.window.makeKeyAndOrderFront(null);
         }
-        this.background(new BackgroundActionImpl(this) {
+        this.background(new RepeatableBackgroundAction(this) {
             private boolean resume = resumeRequested;
             private boolean reload = reloadRequested;
 
@@ -569,13 +570,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             final TransferPrompt prompt
                     = CDTransferPrompt.create(CDTransferController.this, transfer);
 
-            public String getActivity() {
-                return transfer.getName();
-            }
-
-            public void prepare() {
-                transfer.getSession().addErrorListener(this);
-                transfer.getSession().addTranscriptListener(this);
+            public boolean prepare() {
                 transfer.addListener(tl = new TransferAdapter() {
                     public void transferQueued() {
                         CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
@@ -626,19 +621,14 @@ public class CDTransferController extends CDWindowController implements NSToolba
                             }
                         });
                     }
-
-                    public void didTransferPath(final Path path) {
-                        if(!hasFailed()) {
-                            clearTranscript();
-                        }
-                    }
                 });
                 if(transfer.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
                     ((ch.cyberduck.core.sftp.SFTPSession) transfer.getSession()).setHostKeyVerificationController(
                             new CDHostKeyController(CDTransferController.this));
                 }
                 transfer.getSession().setLoginController(new CDLoginController(CDTransferController.this));
-                super.prepare();
+
+                return super.prepare();
             }
 
             public void run() {
@@ -655,18 +645,14 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 transfer.getSession().setLoginController(null);
 
                 transfer.removeListener(tl);
-                transfer.getSession().removeErrorListener(this);
-                transfer.getSession().removeTranscriptListener(this);
-                
+
                 super.finish();
             }
 
             public void cleanup() {
-                if(transfer.isComplete() && !transfer.isCanceled() && !this.hasFailed()) {
-                    if(!hasFailed()) {
-                        if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
-                            removeTransfer(transfer);
-                        }
+                if(transfer.isComplete() && !transfer.isCanceled()) {
+                    if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
+                        removeTransfer(transfer);
                     }
                     if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
                         if(!(TransferCollection.instance().numberOfRunningTransfers() > 0)) {
@@ -687,13 +673,13 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 return super.isCanceled();
             }
 
-            public Session session() {
+            public Session getSession() {
                 return transfer.getSession();
             }
 
-            public void pause(final Object lock) {
+            public void pause() {
                 transfer.fireTransferPaused();
-                super.pause(lock);
+                super.pause();
                 transfer.fireTransferResumed();
             }
 
@@ -837,22 +823,13 @@ public class CDTransferController extends CDWindowController implements NSToolba
             int i = ((Number) iterator.nextElement()).intValue();
             final Transfer transfer = (Transfer) TransferCollection.instance().get(i);
             if(transfer.isRunning() || transfer.isQueued()) {
-                this.background(new BackgroundActionImpl(this) {
+                this.background(new AbstractBackgroundAction() {
                     public void run() {
                         transfer.cancel();
                     }
 
                     public void cleanup() {
                         ;
-                    }
-
-                    public String getActivity() {
-                        return NSBundle.localizedString("Disconnecting...", "Status", "");
-                    }
-
-                    public Object lock() {
-                        // No synchronization with other tasks
-                        return new Object();
                     }
                 });
             }
@@ -863,22 +840,13 @@ public class CDTransferController extends CDWindowController implements NSToolba
         for(int i = 0; i < TransferCollection.instance().size(); i++) {
             final Transfer transfer = (Transfer) TransferCollection.instance().get(i);
             if(transfer.isRunning() || transfer.isQueued()) {
-                this.background(new BackgroundActionImpl(this) {
+                this.background(new AbstractBackgroundAction() {
                     public void run() {
                         transfer.cancel();
                     }
 
                     public void cleanup() {
                         ;
-                    }
-
-                    public String getActivity() {
-                        return NSBundle.localizedString("Disconnecting...", "Status", "");
-                    }
-
-                    public Object lock() {
-                        // No synchronization with other tasks
-                        return new Object();
                     }
                 });
             }

@@ -23,10 +23,9 @@ import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSOutlineView;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.threading.BackgroundActionImpl;
+import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import org.apache.log4j.Logger;
 
@@ -152,7 +151,7 @@ public abstract class CDTransferPromptModel extends CDController {
             if(!isLoadingListingInBackground.contains(path)) {
                 if(!transfer.isCached(path)) {
                     isLoadingListingInBackground.add(path);
-                    controller.background(new BackgroundActionImpl(controller) {
+                    controller.background(new AbstractBackgroundAction() {
                         public void run() {
                             log.debug("childs#run");
                             cache.put(path, transfer.childs(path));
@@ -168,11 +167,6 @@ public abstract class CDTransferPromptModel extends CDController {
                                     ((CDTransferPrompt)controller).reloadData();
                                 }
                             }
-                        }
-
-                        public String getActivity() {
-                            return NSBundle.localizedString("Listing directory", "Status", "")
-                                    + " " + path.getName();
                         }
                     });
                 }

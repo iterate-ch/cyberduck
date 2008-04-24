@@ -81,7 +81,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     // Reloading a workdir that is not cached yet would cause the interface to freeze;
                     // Delay until path is cached in the background
 
-                    controller.background(new AbstractBackgroundAction() {
+                    controller.background(new BrowserBackgroundAction(controller) {
                         public void run() {
                             path.childs();
                         }
@@ -92,7 +92,6 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         }
 
                         public void cleanup() {
-                            log.debug("childs#cleanup");
                             synchronized(isLoadingListingInBackground) {
                                 isLoadingListingInBackground.remove(path);
                                 if(path.isCached() && isLoadingListingInBackground.isEmpty()) {

@@ -31,7 +31,7 @@ import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CDTaskController extends CDBundleController {
     private static Logger log = Logger.getLogger(CDTaskController.class);
@@ -93,12 +93,21 @@ public class CDTaskController extends CDBundleController {
                 });
             }
 
+            public void cancel(BackgroundAction action) {
+                CDMainApplication.invoke(new DefaultMainAction() {
+                    public void run() {
+                        progress.stopAnimation(null);
+                    }
+                });
+            }
+
             public void stop(BackgroundAction action) {
                 CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
                         progress.stopAnimation(null);
                     }
                 });
+                action.removeListener(this);
             }
         });
         this.loadBundle();

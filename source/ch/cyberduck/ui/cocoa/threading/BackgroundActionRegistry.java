@@ -43,13 +43,28 @@ public class BackgroundActionRegistry extends Collection {
         }
     }
 
+    private BackgroundAction current;
+
+    public BackgroundAction getCurrent() {
+        return current;
+    }
+
     public boolean add(final Object action) {
         ((BackgroundAction)action).addListener(new BackgroundActionListener() {
             public void start(BackgroundAction action) {
-                ;
+                current = action;
+                if(!contains(action)) {
+                    add(action);
+                }
+            }
+
+            public void cancel(BackgroundAction action) {
+                remove(action);
             }
 
             public void stop(BackgroundAction action) {
+                current = null;
+                action.removeListener(this);
                 remove(action);
                 synchronized(lock) {
                     lock.notify();
@@ -62,7 +77,7 @@ public class BackgroundActionRegistry extends Collection {
     private BackgroundActionRegistry() {
         ;
     }
-
+    
     private final Object block = new Object();
 
     /**

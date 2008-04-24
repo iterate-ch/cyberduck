@@ -23,5 +23,7 @@ package ch.cyberduck.ui.cocoa.threading;
 public interface BackgroundActionListener {
     abstract void start(BackgroundAction action);
 
+    abstract void cancel(BackgroundAction action);
+
     abstract void stop(BackgroundAction action);
 }
