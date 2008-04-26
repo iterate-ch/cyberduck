@@ -55,19 +55,19 @@ public class FTPPath extends Path {
 
     private static class Factory extends PathFactory {
         protected Path create(Session session, String path, int type) {
-            return new FTPPath((FTPSession) session, path, type);
+            return new FTPPath((FTPSession)session, path, type);
         }
 
         protected Path create(Session session, String parent, String name, int type) {
-            return new FTPPath((FTPSession) session, parent, name, type);
+            return new FTPPath((FTPSession)session, parent, name, type);
         }
 
         protected Path create(Session session, String path, Local file) {
-            return new FTPPath((FTPSession) session, path, file);
+            return new FTPPath((FTPSession)session, path, file);
         }
 
         protected Path create(Session session, NSDictionary dict) {
-            return new FTPPath((FTPSession) session, dict);
+            return new FTPPath((FTPSession)session, dict);
         }
     }
 
@@ -166,7 +166,7 @@ public class FTPPath extends Path {
                 session.FTP.finishDir();
                 boolean dirChanged = false;
                 for(Iterator iter = childs.iterator(); iter.hasNext();) {
-                    Path p = (Path) iter.next();
+                    Path p = (Path)iter.next();
                     if(p.attributes.getType() == Path.SYMBOLIC_LINK_TYPE) {
                         try {
                             session.setWorkdir(p);
@@ -267,7 +267,7 @@ public class FTPPath extends Path {
                     // Read the timestamp from the directory listing
                     List l = this.getParent().childs();
                     if(l.contains(this)) {
-                        attributes.setSize(((AbstractPath) l.get(l.indexOf(this))).attributes.getSize());
+                        attributes.setSize(((AbstractPath)l.get(l.indexOf(this))).attributes.getSize());
                     }
                 }
             }
@@ -282,23 +282,25 @@ public class FTPPath extends Path {
             try {
                 session.check();
                 session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
-                try {
-                    attributes.setModificationDate(session.FTP.modtime(this.getAbsolute(),
-                            this.getHost().getTimezone()));
-                }
-                catch(FTPException e) {
-                    log.warn("Cannot read timestamp:" + e.getMessage());
-                }
-                if(-1 == attributes.getModificationDate()) {
-                    // Read the timestamp from the directory listing
-                    List l = this.getParent().childs();
-                    if(l.contains(this)) {
-                        attributes.setModificationDate(((AbstractPath) l.get(l.indexOf(this))).attributes.getModificationDate());
+                if(attributes.isFile()) {
+                    try {
+                        attributes.setModificationDate(session.FTP.modtime(this.getAbsolute(),
+                                this.getHost().getTimezone()));
+                        return;
                     }
+                    catch(FTPException e) {
+                        log.warn("Cannot read timestamp:" + e.getMessage());
+                    }
+                }
+                // Read the timestamp from the directory listing
+                List l = this.getParent().childs();
+                if(l.contains(this)) {
+                    attributes.setModificationDate(((AbstractPath)l.get(l.indexOf(this))).attributes.getModificationDate());
                 }
             }
             catch(IOException e) {
                 this.error("Cannot read file attributes", e);
+
             }
         }
     }
@@ -311,7 +313,7 @@ public class FTPPath extends Path {
                 // Read the permission from the directory listing
                 List l = this.getParent().childs();
                 if(l.contains(this)) {
-                    attributes.setPermission(((AbstractPath) l.get(l.indexOf(this))).attributes.getPermission());
+                    attributes.setPermission(((AbstractPath)l.get(l.indexOf(this))).attributes.getPermission());
                 }
             }
             catch(IOException e) {
@@ -336,7 +338,7 @@ public class FTPPath extends Path {
                         if(!session.isConnected()) {
                             break;
                         }
-                        Path file = (Path) iter.next();
+                        Path file = (Path)iter.next();
                         if(file.attributes.isFile() || file.attributes.isSymbolicLink()) {
                             session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + file.getName());
                             session.FTP.delete(file.getName());
@@ -378,7 +380,7 @@ public class FTPPath extends Path {
                             if(!session.isConnected()) {
                                 break;
                             }
-                            ((Path) iter.next()).writeOwner(owner, recursive);
+                            ((Path)iter.next()).writeOwner(owner, recursive);
                         }
                     }
                 }
@@ -406,7 +408,7 @@ public class FTPPath extends Path {
                             if(!session.isConnected()) {
                                 break;
                             }
-                            ((Path) iter.next()).writeGroup(group, recursive);
+                            ((Path)iter.next()).writeGroup(group, recursive);
                         }
                     }
                 }
@@ -435,7 +437,7 @@ public class FTPPath extends Path {
                             if(!session.isConnected()) {
                                 break;
                             }
-                            ((AbstractPath) iter.next()).writePermissions(perm, recursive);
+                            ((AbstractPath)iter.next()).writePermissions(perm, recursive);
                         }
                     }
                 }
