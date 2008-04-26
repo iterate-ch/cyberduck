@@ -666,13 +666,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 TransferCollection.instance().save();
             }
 
-            public boolean isCanceled() {
-                if(transfer.isCanceled()) {
-                    return true;
-                }
-                return super.isCanceled();
-            }
-
             public Session getSession() {
                 return transfer.getSession();
             }
