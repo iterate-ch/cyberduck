@@ -1770,6 +1770,7 @@ source/ch/cyberduck/core/Serializable.java -text
 source/ch/cyberduck/core/Speedometer.java -text
 source/ch/cyberduck/core/StringUtils.java -text
 source/ch/cyberduck/core/dav/DAVPath.java -text
+source/ch/cyberduck/core/dav/DAVResource.java -text
 source/ch/cyberduck/core/dav/DAVSession.java -text
 source/ch/cyberduck/core/davs/DAVSPath.java -text
 source/ch/cyberduck/core/davs/DAVSSession.java -text

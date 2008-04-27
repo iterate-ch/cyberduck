@@ -50,7 +50,7 @@ public class DAVSession extends Session {
         }
     }
 
-    protected WebdavResource DAV;
+    protected DAVResource DAV;
 
     protected DAVSession(Host h) {
         super(h);
@@ -82,7 +82,7 @@ public class DAVSession extends Session {
 
             WebdavResource.setDefaultAction(WebdavResource.NOACTION);
 
-            this.DAV = new WebdavResource(host.toURL());
+            this.DAV = new DAVResource(host.toURL());
             if(StringUtils.hasText(host.getDefaultPath())) {
                 this.DAV.setPath(host.getDefaultPath());
             }
