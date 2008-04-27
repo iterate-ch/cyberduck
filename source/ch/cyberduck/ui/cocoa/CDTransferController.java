@@ -686,6 +686,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 }
                 super.log(message);
             }
+
+            public Object lock() {
+                return new Object();
+            }
         });
     }
 
