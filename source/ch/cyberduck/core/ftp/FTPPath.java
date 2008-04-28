@@ -494,8 +494,8 @@ public class FTPPath extends Path {
         try {
             session.FTP.setTransferType(FTPTransferType.BINARY);
             if(this.getStatus().isResume()) {
-                long transferred = this.getLocal().attributes.getSize();
-                this.getStatus().setCurrent(transferred);
+                long skipped = this.getLocal().attributes.getSize();
+                this.getStatus().setCurrent(skipped);
             }
             out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
             if(null == out) {

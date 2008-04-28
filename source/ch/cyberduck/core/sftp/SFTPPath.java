@@ -441,10 +441,10 @@ public class SFTPPath extends Path {
                         SFTPv3FileHandle handle = session.sftp().openFileRO(this.getAbsolute());
                         in = new SFTPInputStream(handle);
                         if(getStatus().isResume()) {
-                            getStatus().setCurrent(this.getLocal().attributes.getSize());
-                            long skipped = in.skip(getStatus().getCurrent());
+                            long skipped = this.getLocal().attributes.getSize();
+                            getStatus().setCurrent(skipped);
                             log.info("Skipping " + skipped + " bytes");
-                            if(skipped < this.getStatus().getCurrent()) {
+                            if(in.skip(skipped) < skipped) {
                                 throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.getStatus().getCurrent());
                             }
                         }
