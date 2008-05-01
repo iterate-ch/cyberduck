@@ -20,6 +20,7 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.webdav.lib.WebdavResource;
 
@@ -37,7 +38,7 @@ import java.util.zip.GZIPInputStream;
 public class DAVResource extends WebdavResource {
 
     public DAVResource(String url) throws IOException {
-        super(url, true);
+        super(url);
     }
 
     /**
@@ -50,6 +51,18 @@ public class DAVResource extends WebdavResource {
             String header = (String)iterator.next();
             method.setRequestHeader(header, (String)headers.get(header));
         }
+    }
+
+    private boolean resume;
+
+    public boolean isResume() {
+        return resume;
+    }
+
+    private boolean zipped;
+
+    public boolean isZipped() {
+        return zipped;
     }
 
     /**
@@ -69,15 +82,16 @@ public class DAVResource extends WebdavResource {
         generateTransactionHeader(method);
         generateAdditionalHeaders(method);
         client.executeMethod(method);
+        Header contentRange = method.getResponseHeader("Content-Range");
+        resume = contentRange != null;
 
         int statusCode = method.getStatusLine().getStatusCode();
         setStatusCode(statusCode);
 
         if(isHttpSuccess(statusCode)) {
             Header contentEncoding = method.getResponseHeader("Content-Encoding");
-            boolean isGZipped = contentEncoding != null && "gzip".equalsIgnoreCase(contentEncoding.getValue());
-
-            if(isGZipped) {
+            zipped = contentEncoding != null && "gzip".equalsIgnoreCase(contentEncoding.getValue());
+            if(zipped) {
                 return new GZIPInputStream(method.getResponseBodyAsStream());
             }
             return method.getResponseBodyAsStream();
@@ -85,6 +99,33 @@ public class DAVResource extends WebdavResource {
         else {
             throw new IOException("Couldn't get file");
         }
+    }
+
+    /**
+     * Execute the PUT method for the given path.
+     *
+     * @param path        the server relative path to put the data
+     * @param inputStream The input stream.
+     * @return true if the method is succeeded.
+     * @throws IOException
+     */
+    public boolean putMethod(String path, InputStream inputStream, long contentLength)
+            throws IOException {
+
+        setClient();
+        PutMethod method = new PutMethod(URIUtil.encodePathQuery(path));
+        generateIfHeader(method);
+        if(getGetContentType() != null && !getGetContentType().equals("")) {
+            method.setRequestHeader("Content-Type", getGetContentType());
+        }
+        method.setRequestContentLength(contentLength);
+        method.setRequestBody(inputStream);
+        generateTransactionHeader(method);
+        generateAdditionalHeaders(method);
+        int statusCode = client.executeMethod(method);
+
+        setStatusCode(statusCode);
+        return isHttpSuccess(statusCode);
     }
 
     /**
