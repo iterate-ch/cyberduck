@@ -53,7 +53,7 @@ public class CDCreateFileController extends CDFileController {
     }
 
     protected void createFile(final Path workdir, final String filename, final boolean edit) {
-        final CDBrowserController c = (CDBrowserController) parent;
+        final CDBrowserController c = (CDBrowserController)parent;
         c.background(new AbstractBackgroundAction() {
             final Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
                     new Local(NSPathUtilities.temporaryDirectory(), filename));
@@ -89,12 +89,10 @@ public class CDCreateFileController extends CDFileController {
             }
 
             public void cleanup() {
-                if(file.exists()) {
-                    if(filename.charAt(0) == '.') {
-                        c.setShowHiddenFiles(true);
-                    }
-                    c.reloadData(Collections.singletonList(file));
+                if(filename.charAt(0) == '.') {
+                    c.setShowHiddenFiles(true);
                 }
+                c.reloadData(Collections.singletonList(file));
             }
         });
     }
