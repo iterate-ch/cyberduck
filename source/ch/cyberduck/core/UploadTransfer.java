@@ -125,6 +125,7 @@ public class UploadTransfer extends Transfer {
                 Path child = PathFactory.createPath(parent.getSession(),
                         parent.getAbsolute(),
                         new Local(((AbstractPath) iter.next()).getAbsolute()));
+                child.getStatus().setSkipped(parent.getStatus().isSkipped());
                 childs.add(child);
             }
             _cache.put(parent, childs);
@@ -201,7 +202,12 @@ public class UploadTransfer extends Transfer {
                     }
                     if(p.attributes.isFile()) {
                         // Append to file if size is not zero
-                        p.getStatus().setResume(UploadTransfer.this.exists(p) && p.attributes.getSize() > 0);
+                        final boolean resume = UploadTransfer.this.exists(p)
+                                && p.attributes.getSize() > 0;
+                        p.getStatus().setResume(resume);
+                        if(p.getStatus().isResume()) {
+                            p.getStatus().setCurrent(p.attributes.getSize());
+                        }
                     }
                     super.prepare(p);
                 }

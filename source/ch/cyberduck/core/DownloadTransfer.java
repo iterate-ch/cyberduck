@@ -185,6 +185,7 @@ public class DownloadTransfer extends Transfer {
         for(Iterator iter = childs.iterator(); iter.hasNext(); ) {
             final Path download = (Path) iter.next();
             download.setLocal(new Local(parent.getLocal(), download.getName()));
+            download.getStatus().setSkipped(parent.getStatus().isSkipped());
         }
         return childs;
     }
@@ -227,7 +228,11 @@ public class DownloadTransfer extends Transfer {
 
         public void prepare(final Path p) {
             if(p.attributes.isFile()) {
-                p.getStatus().setResume(DownloadTransfer.this.exists(p.getLocal()) && p.getLocal().attributes.getSize() > 0);
+                final boolean resume = DownloadTransfer.this.exists(p.getLocal())
+                        && p.getLocal().attributes.getSize() > 0;
+                p.getStatus().setResume(resume);
+                long skipped = p.getLocal().attributes.getSize();
+                p.getStatus().setCurrent(skipped);
             }
             super.prepare(p);
         }
