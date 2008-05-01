@@ -31,7 +31,6 @@ import org.apache.webdav.lib.WebdavResource;
 import org.apache.webdav.lib.methods.DepthSupport;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.text.MessageFormat;
 
 /**
@@ -190,7 +189,7 @@ public class DAVSession extends Session {
             if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
             }
-            DAV.setPath(workdir.getAbsolute());
+            DAV.setPath(workdir.getAbsolute() + Path.DELIMITER);
         }
     }
 
@@ -213,7 +212,7 @@ public class DAVSession extends Session {
     public void error(Path path, String message, Throwable e) {
         if(e instanceof HttpException) {
             super.error(path, message, new HttpException(
-                    HttpStatus.getStatusText(((HttpException) e).getReasonCode())));
+                    HttpStatus.getStatusText(((HttpException)e).getReasonCode())));
         }
         super.error(path, message, e);
     }
