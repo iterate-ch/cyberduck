@@ -18,20 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFilter;
-import ch.cyberduck.core.Status;
-import ch.cyberduck.core.SyncTransfer;
-import ch.cyberduck.core.Transfer;
-
 import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSOutlineView;
-import com.apple.cocoa.application.NSCell;
 import com.apple.cocoa.foundation.NSAttributedString;
 
-import java.util.Iterator;
-import java.util.List;
+import ch.cyberduck.core.*;
 
 /**
  * @version $Id$
@@ -66,20 +56,6 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
         super.clear();
     }
 
-    public int outlineViewNumberOfChildrenOfItem(final NSOutlineView view, Path item) {
-        if(null == item) {
-            return this.build().size();
-        }
-        return super.outlineViewNumberOfChildrenOfItem(view, item);
-    }
-
-    public Path outlineViewChildOfItem(final NSOutlineView outlineView, int index, Path item) {
-        if(null == item) {
-            return (Path) this.build().get(index);
-        }
-        return super.outlineViewChildOfItem(outlineView, index, item);
-    }
-
     /**
      * A column indicating if the file will be uploaded or downloaded
      */
@@ -94,39 +70,44 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
     private static final NSImage PLUS_ICON = NSImage.imageNamed("plus.tiff");
 
     protected Object objectValueForItem(final Path item, final String identifier) {
-        if(identifier.equals(SIZE_COLUMN)) {
-            SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
-            return new NSAttributedString(Status.getSizeAsString(
-                    compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER) ? item.attributes.getSize() : item.getLocal().attributes.getSize()),
-                    CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
-        }
-        if(identifier.equals(SYNC_COLUMN)) {
-            SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
-            if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
-                return ARROW_DOWN_ICON;
+        if(null != item) {
+            if(identifier.equals(SIZE_COLUMN)) {
+                SyncTransfer.Comparison compare = ((SyncTransfer)transfer).compare(item);
+                return new NSAttributedString(Status.getSizeAsString(
+                        compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER) ? item.attributes.getSize() : item.getLocal().attributes.getSize()),
+                        CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
             }
-            if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
-                return ARROW_UP_ICON;
-            }
-            return null;
-        }
-        if(identifier.equals(WARNING_COLUMN)) {
-            if(item.attributes.isFile()) {
-                if(transfer.exists(item))
-                    if(item.attributes.getSize() == 0)
-                        return ALERT_ICON;
-                if(transfer.exists(item.getLocal())) {
-                    if(item.getLocal().attributes.getSize() == 0)
-                        return ALERT_ICON;
+            if(identifier.equals(SYNC_COLUMN)) {
+                SyncTransfer.Comparison compare = ((SyncTransfer)transfer).compare(item);
+                if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
+                    return ARROW_DOWN_ICON;
                 }
+                if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
+                    return ARROW_UP_ICON;
+                }
+                return null;
             }
-            return null;
-        }
-        if(identifier.equals(CREATE_COLUMN)) {
-            if(!(transfer.exists(item) && transfer.exists(item.getLocal()))) {
-                return PLUS_ICON;
+            if(identifier.equals(WARNING_COLUMN)) {
+                if(item.attributes.isFile()) {
+                    if(transfer.exists(item)) {
+                        if(item.attributes.getSize() == 0) {
+                            return ALERT_ICON;
+                        }
+                    }
+                    if(transfer.exists(item.getLocal())) {
+                        if(item.getLocal().attributes.getSize() == 0) {
+                            return ALERT_ICON;
+                        }
+                    }
+                }
+                return null;
             }
-            return null;
+            if(identifier.equals(CREATE_COLUMN)) {
+                if(!(transfer.exists(item) && transfer.exists(item.getLocal()))) {
+                    return PLUS_ICON;
+                }
+                return null;
+            }
         }
         return super.objectValueForItem(item, identifier);
     }

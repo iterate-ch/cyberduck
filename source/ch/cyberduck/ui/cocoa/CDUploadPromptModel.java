@@ -18,13 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFilter;
-import ch.cyberduck.core.Status;
-import ch.cyberduck.core.Transfer;
-
 import com.apple.cocoa.foundation.NSAttributedString;
+
+import ch.cyberduck.core.*;
 
 /**
  * @version $Id$
@@ -57,20 +53,22 @@ public class CDUploadPromptModel extends CDTransferPromptModel {
     }
 
     protected Object objectValueForItem(final Path item, final String identifier) {
-        if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {
-            if(item.attributes.isFile()) {
-                if(item.getLocal().attributes.getSize() == 0) {
-                    return ALERT_ICON;
+        if(null != item) {
+            if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {
+                if(item.attributes.isFile()) {
+                    if(item.getLocal().attributes.getSize() == 0) {
+                        return ALERT_ICON;
+                    }
+                    if(item.attributes.getSize() > item.getLocal().attributes.getSize()) {
+                        return ALERT_ICON;
+                    }
                 }
-                if(item.attributes.getSize() > item.getLocal().attributes.getSize()) {
-                    return ALERT_ICON;
-                }
+                return null;
             }
-            return null;
-        }
-        if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
-            return new NSAttributedString(Status.getSizeAsString(item.attributes.getSize()),
-                    CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
+            if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
+                return new NSAttributedString(Status.getSizeAsString(item.attributes.getSize()),
+                        CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
+            }
         }
         return super.objectValueForItem(item, identifier);
     }

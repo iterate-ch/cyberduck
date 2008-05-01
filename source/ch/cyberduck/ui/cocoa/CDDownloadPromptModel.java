@@ -18,13 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFilter;
-import ch.cyberduck.core.Status;
-import ch.cyberduck.core.Transfer;
-
 import com.apple.cocoa.foundation.NSAttributedString;
+
+import ch.cyberduck.core.*;
 
 /**
  * @version $Id$
@@ -46,9 +42,9 @@ public class CDDownloadPromptModel extends CDTransferPromptModel {
             filter = new PromptFilter() {
                 public boolean accept(AbstractPath child) {
                     log.debug("accept:" + child);
-                    if(transfer.exists(((Path) child).getLocal())) {
-                        if(((Path) child).attributes.isFile()) {
-                            if(((Path) child).getLocal().attributes.getSize() == 0) {
+                    if(transfer.exists(((Path)child).getLocal())) {
+                        if(((Path)child).attributes.isFile()) {
+                            if(((Path)child).getLocal().attributes.getSize() == 0) {
                                 // Do not prompt for zero sized files
                                 return false;
                             }
@@ -63,20 +59,22 @@ public class CDDownloadPromptModel extends CDTransferPromptModel {
     }
 
     protected Object objectValueForItem(final Path item, final String identifier) {
-        if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
-            return new NSAttributedString(Status.getSizeAsString(item.getLocal().attributes.getSize()),
-                    CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
-        }
-        if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {
-            if(item.attributes.isFile()) {
-                if(item.attributes.getSize() == 0) {
-                    return ALERT_ICON;
-                }
-                if(item.getLocal().attributes.getSize() > item.attributes.getSize()) {
-                    return ALERT_ICON;
-                }
+        if(null != item) {
+            if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
+                return new NSAttributedString(Status.getSizeAsString(item.getLocal().attributes.getSize()),
+                        CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
             }
-            return null;
+            if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {
+                if(item.attributes.isFile()) {
+                    if(item.attributes.getSize() == 0) {
+                        return ALERT_ICON;
+                    }
+                    if(item.getLocal().attributes.getSize() > item.attributes.getSize()) {
+                        return ALERT_ICON;
+                    }
+                }
+                return null;
+            }
         }
         return super.objectValueForItem(item, identifier);
     }
