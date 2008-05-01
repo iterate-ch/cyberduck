@@ -115,14 +115,9 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         statusIndicator.startAnimation(null);
         browserView.reloadData();
         statusIndicator.stopAnimation(null);
-        // Delay for later invocation to make sure this is displayed as the last status message
-        CDMainApplication.invoke(new WindowMainAction(this) {
-            public void run() {
-                statusLabel.setAttributedStringValue(new NSAttributedString(
-                        browserView.numberOfRows() + " " + NSBundle.localizedString("files", ""),
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
-            }
-        });
+        statusLabel.setAttributedStringValue(new NSAttributedString(
+                browserView.numberOfRows() + " " + NSBundle.localizedString("files", ""),
+                TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     public TransferAction prompt() {
@@ -216,7 +211,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                     remoteURLField.setHidden(false);
 
-                    if(transfer.exists(p)) {
+                    if(p.getParent().isCached() && transfer.exists(p)) {
                         if(p.attributes.getSize() == -1) {
                             remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
                         }
@@ -432,7 +427,6 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
     public void setStatusIndicator(final NSProgressIndicator f) {
         this.statusIndicator = f;
-        this.statusIndicator.setUsesThreadedAnimation(true);
         this.statusIndicator.setDisplayedWhenStopped(false);
     }
 
