@@ -46,11 +46,11 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * The absolute remote path
      */
-    private String path = null;
+    private String path;
     /**
      * The local path to be used if file is copied
      */
-    private Local local = null;
+    private Local local;
 
     private Status status;
 
@@ -116,7 +116,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
         Object attributesObj = dict.objectForKey(ATTRIBUTES);
         if(attributesObj != null) {
-            this.attributes = new PathAttributes((NSDictionary) attributesObj);
+            this.attributes = new PathAttributes((NSDictionary)attributesObj);
         }
     }
 
@@ -129,7 +129,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(StringUtils.hasText(this.getSymbolicLinkPath())) {
             dict.setObjectForKey(this.getSymbolicLinkPath(), SYMLINK);
         }
-        dict.setObjectForKey(((PathAttributes) this.attributes).getAsDictionary(), ATTRIBUTES);
+        dict.setObjectForKey(((PathAttributes)this.attributes).getAsDictionary(), ATTRIBUTES);
         return dict;
     }
 
@@ -216,8 +216,9 @@ public abstract class Path extends AbstractPath implements Serializable {
                 }
                 int index = this.getAbsolute().length() - 1;
                 if(this.getAbsolute().charAt(index) == '/') {
-                    if(index > 0)
+                    if(index > 0) {
                         index--;
+                    }
                 }
                 int cut = this.getAbsolute().lastIndexOf('/', index);
                 if(cut > 0) {
@@ -533,7 +534,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                 else {
                     l.bytesReceived(bytes);
                     if(updateIcon) {
-                        int fraction = (int) (getStatus().getCurrent() / attributes.getSize() * 10);
+                        int fraction = (int)(getStatus().getCurrent() / attributes.getSize() * 10);
                         // An integer between 0 and 9
                         if(fraction > step) {
                             // Another 10 percent of the file has been transferred
@@ -600,7 +601,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
         if(other instanceof Path) {
             //BUG: returns the wrong result on case-insensitive systems, e.g. NT!
-            return this.getAbsolute().equals(((AbstractPath) other).getAbsolute());
+            return this.getAbsolute().equals(((AbstractPath)other).getAbsolute());
         }
         return false;
     }
