@@ -306,7 +306,6 @@ public class CDProgressController extends CDBundleController {
         this.progressBar.setControlTint(NSProgressIndicator.BlueControlTint);
         this.progressBar.setControlSize(NSProgressIndicator.SmallControlSize);
         this.progressBar.setStyle(NSProgressIndicator.ProgressIndicatorBarStyle);
-        this.progressBar.setUsesThreadedAnimation(true);
     }
 
     private NSImageView statusIconView; //IBOutlet

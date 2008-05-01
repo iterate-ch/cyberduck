@@ -130,7 +130,6 @@ public class CDInfoController extends CDWindowController {
         this.sizeProgress = sizeProgress;
         this.sizeProgress.setDisplayedWhenStopped(false);
         this.sizeProgress.setStyle(NSProgressIndicator.ProgressIndicatorSpinningStyle);
-        this.sizeProgress.setUsesThreadedAnimation(true);
     }
 
     private NSProgressIndicator permissionProgress; // IBOutlet
@@ -139,7 +138,6 @@ public class CDInfoController extends CDWindowController {
         this.permissionProgress = permissionProgress;
         this.permissionProgress.setDisplayedWhenStopped(false);
         this.permissionProgress.setStyle(NSProgressIndicator.ProgressIndicatorSpinningStyle);
-        this.permissionProgress.setUsesThreadedAnimation(true);
     }
 
     public NSButton ownerr; //IBOutlet
