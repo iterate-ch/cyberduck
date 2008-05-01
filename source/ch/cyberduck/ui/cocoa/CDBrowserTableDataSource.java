@@ -123,7 +123,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
     public void setObjectValueForItem(final Path item, final Object value, final String identifier) {
         log.debug("setObjectValueForItem:" + item);
         if(identifier.equals(FILENAME_COLUMN)) {
-            if(!item.getName().equals(value) && !value.equals("")) {
+            if(!item.getName().equals(value) && StringUtils.hasText(value.toString())) {
                 if(item.isRenameSupported()) {
                     final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
                             item.getParent().getAbsolute(), value.toString(), item.attributes.getType());
