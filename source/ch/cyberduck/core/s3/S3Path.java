@@ -523,8 +523,6 @@ public class S3Path extends Path {
                             if(null != bucket.getOwner()) {
                                 paths[i].attributes.setOwner(bucket.getOwner().getDisplayName());
                             }
-
-                            paths[i].getStatus().setSkipped(this.getStatus().isSkipped());
                         }
                         childs.addAll(Arrays.asList(paths));
 

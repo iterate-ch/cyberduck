@@ -27,13 +27,10 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import org.apache.log4j.Logger;
 import org.apache.webdav.lib.WebdavResource;
 import org.apache.webdav.lib.methods.DepthSupport;
-import org.apache.webdav.lib.properties.GetLastModifiedProperty;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * @version $Id: $
@@ -95,7 +92,8 @@ public class DAVPath extends Path {
                 session.check();
                 session.message(NSBundle.localizedString("Getting size of", "Status", "") + " " + this.getName());
 
-                session.setWorkdir(this);
+                session.DAV.setPath(this.attributes.isDirectory() ?
+                        this.getAbsolute() + Path.DELIMITER : this.getAbsolute());
 
                 session.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
                 attributes.setSize(session.DAV.getGetContentLength());
@@ -112,7 +110,8 @@ public class DAVPath extends Path {
                 session.check();
                 session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
 
-                session.setWorkdir(this);
+                session.DAV.setPath(this.attributes.isDirectory() ?
+                        this.getAbsolute() + Path.DELIMITER : this.getAbsolute());
 
                 session.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
                 attributes.setModificationDate(session.DAV.getGetLastModified());
@@ -163,7 +162,7 @@ public class DAVPath extends Path {
                         + this.getAbsolute());
 
                 session.setWorkdir(this);
-
+                session.DAV.setContentType("text/xml");
                 WebdavResource[] resources = session.DAV.listWebdavResources();
 
                 for(int i = 0; i < resources.length; i++) {
@@ -199,6 +198,7 @@ public class DAVPath extends Path {
                 session.check();
                 session.message(NSBundle.localizedString("Make directory", "Status", "") + " " + this.getName());
 
+                session.DAV.setContentType("text/xml");
                 session.DAV.mkcolMethod(this.getAbsolute());
             }
             catch(IOException e) {
@@ -252,10 +252,16 @@ public class DAVPath extends Path {
                         session.check();
                     }
                     session.message(NSBundle.localizedString("Downloading", "Status", "") + " " + this.getName());
-
+                    if(this.getStatus().isResume()) {
+                        session.DAV.addRequestHeader("Range", "bytes=" + this.getStatus().getCurrent() + "-");
+                    }
+                    session.DAV.addRequestHeader("Accept-Encoding", "gzip");
                     in = session.DAV.getMethodData(this.getAbsolute());
                     if(null == in) {
                         throw new IOException("Unable opening data stream");
+                    }
+                    if(!session.DAV.isResume()) {
+                        getStatus().setCurrent(0);
                     }
                     out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
 
@@ -284,7 +290,7 @@ public class DAVPath extends Path {
         }
     }
 
-    public void upload(BandwidthThrottle throttle, StreamListener listener, final Permission p, final boolean check) {
+    public void upload(BandwidthThrottle throttle, final StreamListener listener, final Permission p, final boolean check) {
         synchronized(session) {
             try {
                 if(check) {
@@ -293,44 +299,54 @@ public class DAVPath extends Path {
                 if(attributes.isFile()) {
                     session.message(NSBundle.localizedString("Uploading", "Status", "") + " " + this.getName());
 
-                    InputStream in = null;
-                    OutputStream out = null;
+                    final InputStream in = new Local.InputStream(this.getLocal());
                     try {
-                        if(this.getStatus().isResume()) {
-                            this.getStatus().setCurrent(attributes.getSize());
-                        }
-                        in = new Local.InputStream(this.getLocal());
-                        if(null == in) {
-                            throw new IOException("Unable to buffer data");
-                        }
-
                         //Set the content-type to use for this resource, for PUTs
                         session.DAV.setContentType(this.getLocal().getMimeType());
-                        session.DAV.addRequestHeader("Content-Length",
-                                String.valueOf(this.getLocal().attributes.getSize())
-                        );
-                        if(session.DAV.putMethod(this.getAbsolute(), in)) {
-                            // Manually mark as complete
-                            final long sent = this.getLocal().attributes.getSize();
-                            this.getStatus().setCurrent(sent);
-                            this.getStatus().setComplete(true);
-                            listener.bytesSent(sent);
+                        if(this.getStatus().isResume()) {
+                            session.DAV.addRequestHeader("Content-Range", "bytes "
+                                    + this.getStatus().getCurrent()
+                                    + "-" + (this.getLocal().attributes.getSize() - 1)
+                                    + "/" + this.getLocal().attributes.getSize()
+                            );
+                            long skipped = in.skip(getStatus().getCurrent());
+                            log.info("Skipping " + skipped + " bytes");
+                            if(skipped < getStatus().getCurrent()) {
+                                throw new IOResumeException("Skipped " + skipped + " bytes instead of " + getStatus().getCurrent());
+                            }
                         }
+                        if(session.DAV.putMethod(this.getAbsolute(), new InputStream() {
+                            long bytesTransferred = getStatus().getCurrent();
 
-                        if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                            session.DAV.proppatchMethod(this.getAbsolute(), GetLastModifiedProperty.TAG_NAME,
-                                    new SimpleDateFormat(GetLastModifiedProperty.DATE_FORMAT).format(new Date(
-                                            this.getLocal().attributes.getModificationDate()
-                                    )));
+                            public int read() throws IOException {
+                                return read(new byte[1]);
+                            }
+
+                            public int read(byte buffer[], int offset, int length)
+                                    throws IOException {
+                                if(getStatus().isCanceled()) {
+                                    return -1;
+                                }
+                                int read = in.read(buffer, offset, length);
+                                if(-1 == read) {
+                                    // End of file
+                                    getStatus().setComplete(true);
+                                }
+                                if(read > 0) {
+                                    listener.bytesSent(read);
+                                    bytesTransferred += read;
+                                    getStatus().setCurrent(bytesTransferred);
+                                }
+                                return read;
+                            }
+                        }, this.getLocal().attributes.getSize() - this.getStatus().getCurrent())) {
+                            // Upload successful
                         }
                     }
                     finally {
                         try {
                             if(in != null) {
                                 in.close();
-                            }
-                            if(out != null) {
-                                out.close();
                             }
                         }
                         catch(IOException e) {

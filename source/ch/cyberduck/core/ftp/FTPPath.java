@@ -160,7 +160,6 @@ public class FTPPath extends Path {
                     if(timestamp != null) {
                         p.attributes.setModificationDate(timestamp.getTimeInMillis());
                     }
-                    p.getStatus().setSkipped(this.getStatus().isSkipped());
                     childs.add(p);
                 }
                 session.FTP.finishDir();
@@ -493,10 +492,6 @@ public class FTPPath extends Path {
         OutputStream out = null;
         try {
             session.FTP.setTransferType(FTPTransferType.BINARY);
-            if(this.getStatus().isResume()) {
-                long skipped = this.getLocal().attributes.getSize();
-                this.getStatus().setCurrent(skipped);
-            }
             out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
             if(null == out) {
                 throw new IOException("Unable to buffer data");
@@ -673,9 +668,6 @@ public class FTPPath extends Path {
         OutputStream out = null;
         try {
             session.FTP.setTransferType(FTPTransferType.BINARY);
-            if(this.getStatus().isResume()) {
-                this.getStatus().setCurrent(attributes.getSize());
-            }
             in = new Local.InputStream(this.getLocal());
             if(null == in) {
                 throw new IOException("Unable to buffer data");
@@ -728,16 +720,6 @@ public class FTPPath extends Path {
         OutputStream out = null;
         try {
             session.FTP.setTransferType(FTPTransferType.ASCII);
-            if(this.getStatus().isResume()) {
-                try {
-                    this.getStatus().setCurrent(this.session.FTP.size(this.getName()));
-                }
-                catch(FTPException e) {
-                    log.error(e.getMessage());
-                    //ignore; SIZE command not recognized
-                    this.getStatus().setCurrent(0);
-                }
-            }
             in = new ToNetASCIIInputStream(new Local.InputStream(this.getLocal()));
             if(null == in) {
                 throw new IOException("Unable to buffer data");

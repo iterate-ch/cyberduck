@@ -153,7 +153,6 @@ public class SFTPPath extends Path {
                         if(null != perm) {
                             p.attributes.setPermission(new Permission(Integer.parseInt(perm.substring(perm.length() - 3))));
                         }
-                        p.getStatus().setSkipped(this.getStatus().isSkipped());
                         childs.add(p);
                     }
                 }
@@ -441,10 +440,9 @@ public class SFTPPath extends Path {
                         SFTPv3FileHandle handle = session.sftp().openFileRO(this.getAbsolute());
                         in = new SFTPInputStream(handle);
                         if(getStatus().isResume()) {
-                            long skipped = this.getLocal().attributes.getSize();
-                            getStatus().setCurrent(skipped);
-                            log.info("Skipping " + skipped + " bytes");
-                            if(in.skip(skipped) < skipped) {
+                            log.info("Skipping " + getStatus().getCurrent() + " bytes");
+                            final long skipped = in.skip(getStatus().getCurrent());
+                            if(skipped < getStatus().getCurrent()) {
                                 throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.getStatus().getCurrent());
                             }
                         }
@@ -520,12 +518,6 @@ public class SFTPPath extends Path {
                                 // might have group write privileges
                                 log.warn(e.getMessage());
                             }
-                        }
-                    }
-                    if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
-                        if(getStatus().isResume()) {
-                            getStatus().setCurrent(
-                                    session.sftp().stat(this.getAbsolute()).size.intValue());
                         }
                     }
                     if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
