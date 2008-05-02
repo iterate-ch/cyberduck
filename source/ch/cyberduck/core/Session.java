@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -316,7 +317,9 @@ public abstract class Session extends NSObject {
         // Configuring proxy if any
         Proxy.configure(this.host.getHostname());
         this.resolver = new Resolver(this.host.getHostname(true));
-        this.message(NSBundle.localizedString("Resolving", "Status", "") + " " + host.getHostname());
+        this.message(MessageFormat.format(NSBundle.localizedString("Resolving {0}", "Status", ""),
+                new Object[]{host.getHostname()}));
+
         // Try to resolve the hostname first
         this.resolver.resolve();
         // The IP address could successfully be determined

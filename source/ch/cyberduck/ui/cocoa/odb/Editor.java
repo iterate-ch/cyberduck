@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.util.Enumeration;
+import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -98,8 +99,8 @@ public abstract class Editor extends CDController {
             }
 
             public String getActivity() {
-                return NSBundle.localizedString("Downloading", "Status", "")
-                        + " " + edited.getName();
+                return MessageFormat.format(NSBundle.localizedString("Downloading {0}", "Status", ""),
+                        new Object[]{edited.getName()});
             }
             
             public void cleanup() {
@@ -168,8 +169,8 @@ public abstract class Editor extends CDController {
             }
 
             public String getActivity() {
-                return NSBundle.localizedString("Uploading", "Status", "")
-                        + " " + edited.getName();
+                return MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
+                        new Object[]{edited.getName()});
             }
 
             public void cleanup() {
