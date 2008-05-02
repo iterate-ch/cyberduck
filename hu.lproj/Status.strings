@@ -2,19 +2,19 @@
 "Authenticating as" = "Bejelentkezés mint";
 
 /* No comment provided by engineer. */
-"Checking connection..." = "Checking connection…";
+"Checking connection" = "Checking connection";
 
 /* No comment provided by engineer. */
 "Closing SSH Session Channel" = "SSH csatorna bezárása";
 
 /* No comment provided by engineer. */
-"Deleting" = "Törlés";
+"Deleting {0}" = "Törlés {0}";
 
 /* No comment provided by engineer. */
 "Disconnected" = "Kapcsolat bontva";
 
 /* No comment provided by engineer. */
-"Disconnecting..." = "kapcsolat bontása…";
+"Disconnecting" = "kapcsolat bontása";
 
 /* No comment provided by engineer. */
 "Downloading" = "Letöltés";
@@ -23,25 +23,25 @@
 "{0} connection opened" = "{0} kapcsolat nyitva";
 
 /* No comment provided by engineer. */
-"Getting size of" = "Méret olvasása";
+"Getting size of {0}" = "Méret olvasása {0}";
 
 /* No comment provided by engineer. */
-"Getting timestamp of" = "Utolsó módosítás olvasása";
+"Getting timestamp of {0}" = "Utolsó módosítás olvasása {0}";
 
 /* Reading permission of file. */
-"Getting permission of" = "Getting permission of";
+"Getting permission of {0}" = "Getting permission of {0}";
 
 /* No activity */
 "Idle" = "Pihen";
 
 /* No comment provided by engineer. */
-"Listing directory" = "Mappák listázása";
+"Listing directory {0}" = "Mappák listázása {0}";
 
 /* No comment provided by engineer. */
-"Make directory" = "Új mappa létrehozása";
+"Make directory {0}" = "Új mappa létrehozása {0}";
 
 /* No comment provided by engineer. */
-"Maximum allowed connections exceeded. Waiting..." = "A kapcsolatok száma elérte a maximális kapcsolatok számát . Várakozik…";
+"Maximum allowed connections exceeded. Waiting" = "A kapcsolatok száma elérte a maximális kapcsolatok számát . Várakozik";
 
 /* No comment provided by engineer. */
 "Mounting" = "Mount-olás";
@@ -50,7 +50,7 @@
 "No trusted certificate found" = "Nincs megbízható tanúsítvány";
 
 /* No comment provided by engineer. */
-"Opening {0} connection to {1}..." = "{0} kapcsolódás {1}…";
+"Opening {0} connection to {1}" = "{0} kapcsolódás {1}";
 
 /* No comment provided by engineer. */
 "SFTP subsystem ready" = "SFTP filerendszer kész";
@@ -59,10 +59,10 @@
 "SCP subsystem ready" = "SCP subsystem ready";
 
 /* No comment provided by engineer. */
-"Starting SFTP subsystem..." = "SFTP filerendszer indítása…";
+"Starting SFTP subsystem" = "SFTP filerendszer indítása";
 
 /* No comment provided by engineer. */
-"Starting SCP subsystem..." = "Starting SCP subsystem…";
+"Starting SCP subsystem" = "Starting SCP subsystem";
 
 /* No comment provided by engineer. */
 "Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences." = "Túl sok egyidejü kapcsolat. Állítsa át a konkurens kapcsolatok számát.";
@@ -71,7 +71,7 @@
 "Uploading" = "Feltöltés";
 
 /* Renaming file status message; Renaming to <new filename>. */
-"Renaming to" = "Renaming to";
+"Renaming {0} to {1}" = "Renaming {0} to {1}";
 
 /* Changing the owner of a file */
 "Changing owner to" = "Changing owner to";
@@ -91,7 +91,7 @@
 /* Indicates remaining time needed for files to transfer */
 "hours remaining" = "hours remaining";
 
-/* When trying to determine the IP address of a server hostname; e.g. Resolving example.net... */
+/* When trying to determine the IP address of a server hostname; e.g. Resolving example.net */
 "Resolving" = "Resolving";
 
 /* Retry in 10 seconds - Used to indicate the time left until another connection attempt is made */
