@@ -1,5 +1,5 @@
 /* No comment provided by engineer. */
-"Authenticating as" = "Bejelentkezés mint";
+"Authenticating as {0}" = "Bejelentkezés mint {0}";
 
 /* No comment provided by engineer. */
 "Checking connection" = "Checking connection";
@@ -74,22 +74,22 @@
 "Renaming {0} to {1}" = "Renaming {0} to {1}";
 
 /* Changing the owner of a file */
-"Changing owner to" = "Changing owner to";
+"Changing owner of {0} to {1}" = "Changing owner of {0} to {1}";
 
 /* Changing the group owner of a file */
-"Changing group to" = "Changing group to";
+"Changing group of {0} to {1}" = "Changing group of {0} to {1}";
 
 /* Changing UNIX file permissions */
-"Changing permission to" = "Changing permission to";
+"Changing permission of {0} to {1}" = "Changing permission of {0} to {1}";
 
 /* Indicates remaining time needed for files to transfer */
-"seconds remaining" = "seconds remaining";
+"{0} seconds remaining" = "{0} seconds remaining";
 
 /* Indicates remaining time needed for files to transfer */
-"minutes remaining" = "minutes remaining";
+"{0} minutes remaining" = "{0} minutes remaining";
 
 /* Indicates remaining time needed for files to transfer */
-"hours remaining" = "hours remaining";
+"{0} hours remaining" = "{0} hours remaining";
 
 /* When trying to determine the IP address of a server hostname; e.g. Resolving example.net */
 "Resolving" = "Resolving";
