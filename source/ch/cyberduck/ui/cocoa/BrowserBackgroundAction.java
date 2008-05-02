@@ -49,6 +49,13 @@ public abstract class BrowserBackgroundAction extends RepeatableBackgroundAction
         return super.prepare();
     }
 
+    public void cancel() {
+        if(this.isRunning()) {
+            this.getSession().interrupt();
+        }
+        super.cancel();
+    }
+
     public void finish() {
         super.finish();
         CDMainApplication.invoke(new WindowMainAction(controller) {

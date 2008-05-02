@@ -140,13 +140,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      */
     protected abstract Session getSession();
 
-    public void cancel() {
-//        if(this.isRunning()) {
-//            this.getSession().interrupt();
-//        }
-        super.cancel();
-    }
-
     /**
      * The number of times a new connection attempt should be made. Takes into
      * account the number of times already tried.
