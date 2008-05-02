@@ -41,6 +41,7 @@ import org.jets3t.service.utils.ObjectUtils;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.*;
+import java.text.MessageFormat;
 
 /**
  * @version $Id:$
@@ -188,7 +189,8 @@ public class S3Path extends Path {
         synchronized(session) {
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Getting size of", "Status", "") + " " + this.getName());
+                session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
+                        new Object[]{this.getName()}));
 
                 attributes.setSize(this.getDetails().getContentLength());
             }
@@ -206,7 +208,8 @@ public class S3Path extends Path {
             if(attributes.isFile()) {
                 try {
                     session.check();
-                    session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
+                    session.message(MessageFormat.format(NSBundle.localizedString("Getting timestamp of {0}", "Status", ""),
+                            new Object[]{this.getName()}));
 
                     attributes.setModificationDate(this.getDetails().getLastModifiedDate().getTime());
                 }
@@ -224,7 +227,8 @@ public class S3Path extends Path {
         synchronized(session) {
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Getting permission of", "Status", "") + " " + this.getName());
+                session.message(MessageFormat.format(NSBundle.localizedString("Getting permission of {0}", "Status", ""),
+                        new Object[]{this.getName()}));
 
                 AccessControlList acl = null;
                 if(this.isBucket()) {
@@ -585,7 +589,8 @@ public class S3Path extends Path {
                     throw new S3ServiceException("Bucket can only be created at top level");
                 }
                 session.check();
-                session.message(NSBundle.localizedString("Make directory", "Status", "") + " " + this.getName());
+                session.message(MessageFormat.format(NSBundle.localizedString("Make directory {0}", "Status", ""),
+                        new Object[]{this.getName()}));
 
                 session.S3.createBucket(this.getName(), Preferences.instance().getProperty("s3.location"));
             }
@@ -607,7 +612,9 @@ public class S3Path extends Path {
             log.debug("changePermissions:" + perm);
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Changing permission to", "Status", "") + " " + perm.getOctalString() + " (" + this.getName() + ")");
+                session.message(MessageFormat.format(NSBundle.localizedString("Changing permission of {0} to {1}", "Status", ""),
+                        new Object[]{this.getName(), perm.getOctalString()}));
+
 
                 AccessControlList acl = null;
                 if(this.isBucket()) {
@@ -667,7 +674,9 @@ public class S3Path extends Path {
             try {
                 session.check();
                 if(attributes.isFile()) {
-                    session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
+                    session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
+                            new Object[]{this.getName()}));
+
                     session.S3.deleteObject(this.getBucketName(), this.getKey());
                 }
                 else if(attributes.isDirectory()) {

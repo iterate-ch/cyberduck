@@ -35,6 +35,7 @@ import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+import java.text.MessageFormat;
 
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
@@ -108,7 +109,9 @@ public class FTPPath extends Path {
             };
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
+                session.message(MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
+                        new Object[]{this.getName()}));
+
                 final FTPFileEntryParser parser = session.getFileParser();
                 session.FTP.setTransferType(FTPTransferType.ASCII);
                 session.setWorkdir(this);
@@ -199,7 +202,9 @@ public class FTPPath extends Path {
                     }
                 }
                 session.check();
-                session.message(NSBundle.localizedString("Make directory", "Status", "") + " " + this.getName());
+                session.message(MessageFormat.format(NSBundle.localizedString("Make directory {0}", "Status", ""),
+                        new Object[]{this.getName()}));
+
                 session.setWorkdir((Path)this.getParent());
                 session.FTP.mkdir(this.getName());
             }
@@ -214,7 +219,9 @@ public class FTPPath extends Path {
             log.debug("rename:" + filename);
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Renaming to", "Status", "") + " " + filename + " (" + this.getName() + ")");
+                session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
+                        new Object[]{this.getName(), filename}));
+
                 session.setWorkdir((Path)this.getParent());
                 session.FTP.rename(this.getName(), filename);
                 this.setPath(filename);
@@ -234,7 +241,9 @@ public class FTPPath extends Path {
         synchronized(session) {
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Getting size of", "Status", "") + " " + this.getName());
+                session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
+                        new Object[]{this.getName()}));
+
                 if(attributes.isFile()) {
                     if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                         if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
@@ -280,7 +289,9 @@ public class FTPPath extends Path {
         synchronized(session) {
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
+                session.message(MessageFormat.format(NSBundle.localizedString("Getting timestamp of {0}", "Status", ""),
+                        new Object[]{this.getName()}));
+
                 if(attributes.isFile()) {
                     try {
                         attributes.setModificationDate(session.FTP.modtime(this.getAbsolute(),
@@ -308,7 +319,9 @@ public class FTPPath extends Path {
         synchronized(session) {
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Getting permission of", "Status", "") + " " + this.getName());
+                session.message(MessageFormat.format(NSBundle.localizedString("Getting permission of {0}", "Status", ""),
+                        new Object[]{this.getName()}));
+
                 // Read the permission from the directory listing
                 List l = this.getParent().childs();
                 if(l.contains(this)) {
@@ -328,7 +341,9 @@ public class FTPPath extends Path {
                 session.check();
                 if(attributes.isFile() || attributes.isSymbolicLink()) {
                     session.setWorkdir((Path)this.getParent());
-                    session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
+                    session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
+                            new Object[]{this.getName()}));
+
                     session.FTP.delete(this.getName());
                 }
                 else if(attributes.isDirectory()) {
@@ -339,7 +354,9 @@ public class FTPPath extends Path {
                         }
                         Path file = (Path)iter.next();
                         if(file.attributes.isFile() || file.attributes.isSymbolicLink()) {
-                            session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + file.getName());
+                            session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
+                                    new Object[]{file.getName()}));
+
                             session.FTP.delete(file.getName());
                         }
                         else if(file.attributes.isDirectory()) {
@@ -347,7 +364,9 @@ public class FTPPath extends Path {
                         }
                     }
                     session.setWorkdir((Path)this.getParent());
-                    session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
+                    session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
+                            new Object[]{this.getName()}));
+
                     session.FTP.rmdir(this.getName());
                 }
             }
@@ -367,7 +386,9 @@ public class FTPPath extends Path {
             String command = "chown";
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Changing owner to", "Status", "") + " " + attributes.getOwner() + " (" + this.getName() + ")");
+                session.message(MessageFormat.format(NSBundle.localizedString("Changing owner of {0} to {1}", "Status", ""),
+                        new Object[]{this.getName(), owner}));
+
                 session.setWorkdir((Path)this.getParent());
                 if(attributes.isFile() && !attributes.isSymbolicLink()) {
                     session.FTP.site(command + " " + owner + " " + this.getName());
@@ -395,7 +416,9 @@ public class FTPPath extends Path {
             String command = "chgrp";
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Changing group to", "Status", "") + " " + attributes.getGroup() + " (" + this.getName() + ")");
+                session.message(MessageFormat.format(NSBundle.localizedString("Changing group of {0} to {1}", "Status", ""),
+                        new Object[]{this.getName(), group}));
+
                 session.setWorkdir((Path)this.getParent());
                 if(attributes.isFile() && !attributes.isSymbolicLink()) {
                     session.FTP.site(command + " " + group + " " + this.getName());
@@ -424,7 +447,9 @@ public class FTPPath extends Path {
             final String command = "CHMOD";
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Changing permission to", "Status", "") + " " + perm.getOctalString() + " (" + this.getName() + ")");
+                session.message(MessageFormat.format(NSBundle.localizedString("Changing permission of {0} to {1}", "Status", ""),
+                        new Object[]{this.getName(), perm.getOctalString()}));
+
                 session.setWorkdir((Path)this.getParent());
                 if(attributes.isFile() && !attributes.isSymbolicLink()) {
                     session.FTP.site(command + " " + perm.getOctalString() + " " + this.getName());

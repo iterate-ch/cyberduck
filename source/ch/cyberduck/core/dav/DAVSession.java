@@ -76,7 +76,7 @@ public class DAVSession extends Session {
             }
             this.fireConnectionWillOpenEvent();
 
-            this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}...", "Status", ""),
+            this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
                     new Object[]{host.getProtocol().getName(), host.getHostname()}));
 
             WebdavResource.setDefaultAction(WebdavResource.NOACTION);
@@ -107,8 +107,9 @@ public class DAVSession extends Session {
         login.check(credentials, host.getProtocol(), host.getHostname());
 
         try {
-            this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " "
-                    + credentials.getUsername() + "...");
+            this.message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
+                    new Object[]{credentials.getUsername()}));
+
             if(!credentials.isAnonymousLogin()) {
                 this.DAV.setCredentials(
                         new UsernamePasswordCredentials(credentials.getUsername(),

@@ -108,7 +108,7 @@ public class SFTPSession extends Session {
             if(!SSH.isAuthenticationComplete()) {
                 throw new LoginCanceledException();
             }
-            this.message(NSBundle.localizedString("Starting SFTP subsystem...", "Status", ""));
+            this.message(NSBundle.localizedString("Starting SFTP subsystem", "Status", ""));
             SFTP = new SFTPv3Client(SSH);
             this.message(NSBundle.localizedString("SFTP subsystem ready", "Status", ""));
             SFTP.setCharset(this.getEncoding());
@@ -128,7 +128,7 @@ public class SFTPSession extends Session {
         if(!SSH.isAuthenticationComplete()) {
             throw new LoginCanceledException();
         }
-//        this.message(NSBundle.localizedString("Starting SCP subsystem...", "Status", ""));
+//        this.message(NSBundle.localizedString("Starting SCP subsystem", "Status", ""));
         final SCPClient client = new SCPClient(SSH);
 //        this.message(NSBundle.localizedString("SCP subsystem ready", "Status", ""));
         client.setCharset(this.getEncoding());
@@ -142,7 +142,7 @@ public class SFTPSession extends Session {
             }
             this.fireConnectionWillOpenEvent();
 
-            this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}...", "Status", ""),
+            this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
                     new Object[]{host.getProtocol().getName(), host.getHostname()}));
 
             SSH = new Connection(this.host.getHostname(true), this.host.getPort());
@@ -166,8 +166,9 @@ public class SFTPSession extends Session {
         final Credentials credentials = host.getCredentials();
         login.check(credentials, host.getProtocol(), host.getHostname());
 
-        this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " '"
-                + credentials.getUsername() + "'");
+        this.message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
+                new Object[]{credentials.getUsername()}));
+
 
         if(credentials.usesPublicKeyAuthentication()) {
             if(this.loginUsingPublicKeyAuthentication(credentials)) {

@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
+import java.text.MessageFormat;
 
 import ch.ethz.ssh2.SCPClient;
 import ch.ethz.ssh2.io.SFTPInputStream;
@@ -105,7 +106,9 @@ public class SFTPPath extends Path {
             };
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Listing directory", "Status", "") + " " + this.getAbsolute());
+                session.message(MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
+                        new Object[]{this.getName()}));
+
                 List children = session.sftp().ls(this.getAbsolute());
                 Iterator i = children.iterator();
                 while(i.hasNext()) {
@@ -178,7 +181,9 @@ public class SFTPPath extends Path {
                     }
                 }
                 session.check();
-                session.message(NSBundle.localizedString("Make directory", "Status", "") + " " + this.getName());
+                session.message(MessageFormat.format(NSBundle.localizedString("Make directory {0}", "Status", ""),
+                        new Object[]{this.getName()}));
+
                 Permission perm = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
                 session.sftp().mkdir(this.getAbsolute(), new Integer(perm.getOctalNumber()).intValue());
             }
@@ -195,7 +200,9 @@ public class SFTPPath extends Path {
         synchronized(session) {
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Renaming to", "Status", "") + " " + absolute + " (" + this.getName() + ")");
+                session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
+                        new Object[]{this.getName(), absolute}));
+
                 session.sftp().mv(this.getAbsolute(), absolute);
                 this.setPath(absolute);
             }
@@ -219,7 +226,9 @@ public class SFTPPath extends Path {
             try {
                 session.check();
                 if(this.attributes.isFile() || this.attributes.isSymbolicLink()) {
-                    session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
+                    session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
+                            new Object[]{this.getName()}));
+
                     session.sftp().rm(this.getAbsolute());
                 }
                 else if(this.attributes.isDirectory()) {
@@ -229,7 +238,9 @@ public class SFTPPath extends Path {
                         }
                         ((AbstractPath) iter.next()).delete();
                     }
-                    session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
+                    session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
+                            new Object[]{this.getName()}));
+
                     session.sftp().rmdir(this.getAbsolute());
                 }
             }
@@ -252,7 +263,9 @@ public class SFTPPath extends Path {
                     session.check();
                     handle = session.sftp().openFileRO(this.getAbsolute());
                     SFTPv3FileAttributes attr = session.sftp().fstat(handle);
-                    session.message(NSBundle.localizedString("Getting size of", "Status", "") + " " + this.getName());
+                    session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
+                            new Object[]{this.getName()}));
+
                     this.attributes.setSize(attr.size.longValue());
                     session.sftp().closeFile(handle);
                 }
@@ -279,7 +292,9 @@ public class SFTPPath extends Path {
                 SFTPv3FileHandle handle = null;
                 try {
                     session.check();
-                    session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
+                    session.message(MessageFormat.format(NSBundle.localizedString("Getting timestamp of {0}", "Status", ""),
+                            new Object[]{this.getName()}));
+
                     handle = session.sftp().openFileRO(this.getAbsolute());
                     SFTPv3FileAttributes attr = session.sftp().fstat(handle);
                     this.attributes.setModificationDate(Long.parseLong(attr.mtime.toString()) * 1000L);
@@ -308,7 +323,9 @@ public class SFTPPath extends Path {
                 SFTPv3FileHandle handle = null;
                 try {
                     session.check();
-                    session.message(NSBundle.localizedString("Getting permission of", "Status", "") + " " + this.getName());
+                    session.message(MessageFormat.format(NSBundle.localizedString("Getting permission of {0}", "Status", ""),
+                            new Object[]{this.getName()}));
+
                     handle = session.sftp().openFileRO(this.getAbsolute());
                     SFTPv3FileAttributes attr = session.sftp().fstat(handle);
                     String perm = attr.getOctalPermissions();
@@ -342,8 +359,10 @@ public class SFTPPath extends Path {
             log.debug("changeOwner");
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Changing owner to", "Status", "")
-                        + " " + owner + " (" + this.getName() + ")");
+                session.message(MessageFormat.format(NSBundle.localizedString("Changing owner of {0} to {1}", "Status", ""),
+                        new Object[]{this.getName(), owner}));
+
+
                 SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
                 attr.uid = new Integer(owner);
                 session.sftp().setstat(this.getAbsolute(), attr);
@@ -372,8 +391,9 @@ public class SFTPPath extends Path {
             log.debug("changeGroup");
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Changing group to", "Status", "")
-                        + " " + group + " (" + this.getName() + ")");
+                session.message(MessageFormat.format(NSBundle.localizedString("Changing group of {0} to {1}", "Status", ""),
+                        new Object[]{this.getName(), group}));
+
                 SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
                 attr.gid = new Integer(group);
                 session.sftp().setstat(this.getAbsolute(), attr);
@@ -402,8 +422,9 @@ public class SFTPPath extends Path {
             log.debug("changePermissions");
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Changing permission to", "Status", "")
-                        + " " + perm.getOctalString() + " (" + this.getName() + ")");
+                session.message(MessageFormat.format(NSBundle.localizedString("Changing permission of {0} to {1}", "Status", ""),
+                        new Object[]{this.getName(), perm.getOctalString()}));
+
                 SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
                 attr.permissions = new Integer(perm.getOctalNumber());
                 session.sftp().setstat(this.getAbsolute(), attr);

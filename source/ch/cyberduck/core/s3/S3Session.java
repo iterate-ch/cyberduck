@@ -138,7 +138,7 @@ public class S3Session extends Session implements SSLSession {
             }
             this.fireConnectionWillOpenEvent();
 
-            this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}...", "Status", ""),
+            this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
                     new Object[]{host.getProtocol().getName(), host.getHostname()}));
 
             // Configure connection options
@@ -160,8 +160,9 @@ public class S3Session extends Session implements SSLSession {
         login.check(credentials, host.getProtocol(), host.getHostname());
 
         try {
-            this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " '"
-                    + credentials.getUsername() + "'");
+            this.message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
+                    new Object[]{credentials.getUsername()}));
+
 
             final HostConfiguration hostConfiguration = new StickyHostConfiguration();
             hostConfiguration.setHost(host.getHostname(), host.getPort(),

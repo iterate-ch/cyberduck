@@ -31,6 +31,7 @@ import org.apache.webdav.lib.methods.DepthSupport;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.MessageFormat;
 
 /**
  * @version $Id: $
@@ -90,7 +91,8 @@ public class DAVPath extends Path {
         synchronized(session) {
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Getting size of", "Status", "") + " " + this.getName());
+                session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
+                        new Object[]{this.getName()}));
 
                 session.DAV.setPath(this.attributes.isDirectory() ?
                         this.getAbsolute() + Path.DELIMITER : this.getAbsolute());
@@ -108,7 +110,8 @@ public class DAVPath extends Path {
         synchronized(session) {
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Getting timestamp of", "Status", "") + " " + this.getName());
+                session.message(MessageFormat.format(NSBundle.localizedString("Getting timestamp of {0}", "Status", ""),
+                        new Object[]{this.getName()}));
 
                 session.DAV.setPath(this.attributes.isDirectory() ?
                         this.getAbsolute() + Path.DELIMITER : this.getAbsolute());
@@ -132,7 +135,8 @@ public class DAVPath extends Path {
             log.debug("delete:" + this.toString());
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Deleting", "Status", "") + " " + this.getName());
+                session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
+                        new Object[]{this.getName()}));
 
                 session.DAV.deleteMethod(this.getAbsolute());
             }
@@ -158,8 +162,8 @@ public class DAVPath extends Path {
             };
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Listing directory", "Status", "") + " "
-                        + this.getAbsolute());
+                session.message(MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
+                        new Object[]{this.getName()}));
 
                 session.setWorkdir(this);
                 session.DAV.setContentType("text/xml");
@@ -196,7 +200,8 @@ public class DAVPath extends Path {
                     }
                 }
                 session.check();
-                session.message(NSBundle.localizedString("Make directory", "Status", "") + " " + this.getName());
+                session.message(MessageFormat.format(NSBundle.localizedString("Make directory {0}", "Status", ""),
+                        new Object[]{this.getName()}));
 
                 session.DAV.setContentType("text/xml");
                 session.DAV.mkcolMethod(this.getAbsolute());
@@ -212,7 +217,7 @@ public class DAVPath extends Path {
 //            log.debug("changePermissions:" + perm);
 //            try {
 //                session.check();
-//                session.message(NSBundle.localizedString("Changing permission to", "Status", "") + " " + perm.getOctalString() + " (" + this.getName() + ")");
+//                session.message(NSBundle.localizedString("Changing permission of {0} to {1}", "Status", "") + " " + perm.getOctalString() + " (" + this.getName() + ")");
 //                session.DAV.aclMethod(this.getAbsolute(), new Ace[]{});
 //            }
 //            catch(IOException e) {
@@ -226,7 +231,8 @@ public class DAVPath extends Path {
             log.debug("rename:" + absolute);
             try {
                 session.check();
-                session.message(NSBundle.localizedString("Renaming to", "Status", "") + " " + absolute + " (" + this.getName() + ")");
+                session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
+                        new Object[]{this.getName(), absolute}));
 
                 session.DAV.moveMethod(this.getAbsolute(), absolute);
                 this.setPath(absolute);

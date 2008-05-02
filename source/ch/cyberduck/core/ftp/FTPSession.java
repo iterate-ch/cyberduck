@@ -204,7 +204,7 @@ public class FTPSession extends Session {
             }
             this.fireConnectionWillOpenEvent();
 
-            this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}...", "Status", ""),
+            this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
                     new Object[]{host.getProtocol().getName(), host.getHostname()}));
 
             this.FTP = this.getClient();
@@ -245,8 +245,9 @@ public class FTPSession extends Session {
 
         String failure = null;
         try {
-            this.message(NSBundle.localizedString("Authenticating as", "Status", "") + " "
-                    + credentials.getUsername() + "...");
+            this.message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
+                    new Object[]{credentials.getUsername()}));
+
             this.FTP.login(credentials.getUsername(), credentials.getPassword());
             this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
         }
