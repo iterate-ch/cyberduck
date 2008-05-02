@@ -64,13 +64,6 @@ public class CDActivityController extends CDWindowController {
     }
 
     private void init() {
-        synchronized(tasks) {
-            // Add already running background actions
-            for(Iterator iter = BackgroundActionRegistry.instance().iterator(); iter.hasNext();) {
-                final BackgroundAction action = (BackgroundAction) iter.next();
-                tasks.put(action, new CDTaskController(action));
-            }
-        }
         BackgroundActionRegistry.instance().addListener(new AbstractCollectionListener() {
             public void collectionItemAdded(final Object action) {
                 synchronized(tasks) {
@@ -96,6 +89,13 @@ public class CDActivityController extends CDWindowController {
                 }
             }
         });
+        synchronized(tasks) {
+            // Add already running background actions
+            for(Iterator iter = BackgroundActionRegistry.instance().iterator(); iter.hasNext();) {
+                final BackgroundAction action = (BackgroundAction) iter.next();
+                tasks.put(action, new CDTaskController(action));
+            }
+        }
     }
 
     private void reload() {
