@@ -114,6 +114,19 @@ public class S3Path extends Path {
         return status;
     }
 
+    public boolean exists() {
+        if(this.isRoot()) {
+            return true;
+        }
+        try {
+            this.getDetails();
+        }
+        catch(S3ServiceException e) {
+            return false;
+        }
+        return true;
+    }
+
     private S3Object _details;
 
     /**
@@ -340,7 +353,7 @@ public class S3Path extends Path {
                         download = ObjectUtils.createPackageForDownload(
                                 new S3Object(this.getBucket(), this.getKey()),
                                 new File(this.getLocal().getAbsolute()), true, false, null);
-                        out = download.getOutputStream();
+                        out = download.getOutputStream(status.isResume());
                         if(null == out) {
                             throw new IOException("Unable to buffer data");
                         }
@@ -415,6 +428,9 @@ public class S3Path extends Path {
                     catch(Exception e) {
                         throw new S3ServiceException(e.getMessage(), e);
                     }
+
+                    // No Content-Range support
+                    getStatus().setCurrent(0);
 
                     // Transfer
                     multi.putObjects(this.getBucket(), new S3Object[]{object});
