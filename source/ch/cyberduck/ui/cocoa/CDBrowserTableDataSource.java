@@ -23,12 +23,12 @@ import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Collection;
-import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import org.apache.log4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -87,8 +87,8 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         }
 
                         public String getActivity() {
-                            return NSBundle.localizedString("Listing directory", "Status", "")
-                                    + " " + path.getName();
+                            return MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
+                                    new Object[]{path.getName()});
                         }
 
                         public void cleanup() {

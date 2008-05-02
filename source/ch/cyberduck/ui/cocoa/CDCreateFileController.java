@@ -29,6 +29,7 @@ import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import java.util.Collections;
+import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -84,8 +85,8 @@ public class CDCreateFileController extends CDFileController {
             }
 
             public String getActivity() {
-                return NSBundle.localizedString("Uploading", "Status", "")
-                        + " " + file.getName();
+                return MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
+                        new Object[]{file.getName()});
             }
 
             public void cleanup() {
