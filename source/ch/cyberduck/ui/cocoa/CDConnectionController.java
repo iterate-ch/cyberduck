@@ -29,6 +29,7 @@ import org.jets3t.service.Constants;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
 
 import com.enterprisedt.net.ftp.FTPConnectMode;
 
@@ -94,16 +95,16 @@ public class CDConnectionController extends CDSheetController {
     public void setHostPopup(NSComboBox hostPopup) {
         this.hostField = hostPopup;
         this.hostField.setTarget(this);
-        this.hostField.setAction(new NSSelector("updateURLLabel", new Class[]{Object.class}));
+        this.hostField.setAction(new NSSelector("hostPopupSelectionDidChange", new Class[]{Object.class}));
         this.hostField.setUsesDataSource(true);
-        this.hostField.setDataSource(this.hostPopupDataSource = new NSObject() {
+        this.hostField.setDataSource(this.hostPopupDataSource = new NSObject/*NSComboBox.DataSource*/() {
             public int numberOfItemsInComboBox(final NSComboBox sender) {
                 return HostCollection.defaultCollection().size();
             }
 
             public Object comboBoxObjectValueForItemAtIndex(final NSComboBox sender, final int row) {
                 if(row < this.numberOfItemsInComboBox(sender)) {
-                    return ((Host) HostCollection.defaultCollection().get(row)).getHostname();
+                    return ((Host) HostCollection.defaultCollection().get(row)).getNickname();
                 }
                 return null;
             }
@@ -118,15 +119,44 @@ public class CDConnectionController extends CDSheetController {
                 this.hostField);
     }
 
+    public void hostPopupSelectionDidChange(final NSControl sender) {
+        String input = sender.stringValue();
+        if(!StringUtils.hasText(input)) {
+            return;
+        }
+        input = input.trim();
+        // First look for equivalent bookmarks
+        for(Iterator iter = HostCollection.defaultCollection().iterator(); iter.hasNext();) {
+            Host h = (Host) iter.next();
+            if(h.getNickname().equals(input)) {
+                this.hostChanged(h);
+                break;
+            }
+        }
+        this.reachable();
+    }
+
     public void hostFieldTextDidChange(final NSNotification sender) {
         if(StringUtils.isURL(hostField.stringValue())) {
             final Host parsed = Host.parse(hostField.stringValue());
-            this.updateField(hostField, parsed.getHostname());
-            protocolPopup.selectItemWithTitle(parsed.getProtocol().getDescription());
-            this.updateField(portField, String.valueOf(parsed.getPort()));
-            this.updateField(usernameField, parsed.getCredentials().getUsername());
-            this.updateField(pathField, parsed.getDefaultPath());
+            this.hostChanged(parsed);
         }
+        this.reachable();
+    }
+
+    private void hostChanged(Host h) {
+        this.updateField(hostField, h.getHostname());
+        protocolPopup.selectItemWithTitle(h.getProtocol().getDescription());
+        this.updateField(portField, String.valueOf(h.getPort()));
+        this.updateField(usernameField, h.getCredentials().getUsername());
+        this.updateField(pathField, h.getDefaultPath());
+        this.updateURLLabel(null);
+    }
+
+    /**
+     * Run the connection reachability test in the background
+     */
+    private void reachable() {
         final String hostname = hostField.stringValue();
         this.background(new AbstractBackgroundAction() {
             boolean reachable = false;
