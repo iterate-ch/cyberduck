@@ -44,6 +44,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.text.MessageFormat;
 
 import com.enterprisedt.net.ftp.FTPConnectMode;
 
@@ -680,8 +681,8 @@ public class CDBrowserController extends CDWindowController
                     }
 
                     public String getActivity() {
-                        return NSBundle.localizedString("Listing directory", "Status", "")
-                                + " " + workdir().getName();
+                        return MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
+                                new Object[]{workdir.getName()});
                     }
                 });
                 return;
@@ -1262,6 +1263,9 @@ public class CDBrowserController extends CDWindowController
                     background(new BrowserBackgroundAction(CDBrowserController.this) {
                         public void run() {
                             for(Iterator iter = downloads.iterator(); iter.hasNext();) {
+                                if(this.isCanceled()) {
+                                    break;
+                                }
                                 final Path download = (Path) iter.next();
                                 if(download.getLocal().attributes.getSize() != download.attributes.getSize()) {
                                     download.download(true);
@@ -1342,6 +1346,9 @@ public class CDBrowserController extends CDWindowController
                         background(new BrowserBackgroundAction(CDBrowserController.this) {
                             public void run() {
                                 for(Iterator iter = selected.iterator(); iter.hasNext();) {
+                                    if(this.isCanceled()) {
+                                        break;
+                                    }
                                     final Path p = (Path) iter.next();
                                     if(p.attributes.getPermission() == null) {
                                         p.readPermission();
@@ -1354,8 +1361,8 @@ public class CDBrowserController extends CDWindowController
                             }
 
                             public String getActivity() {
-                                return NSBundle.localizedString("Getting permission of", "Status", "")
-                                        + " " + p.getName();
+                                return MessageFormat.format(NSBundle.localizedString("Getting permission of {0}", "Status", ""),
+                                        new Object[]{p.getName()});
                             }
                         });
                     }
@@ -2368,7 +2375,7 @@ public class CDBrowserController extends CDWindowController
                 }
 
                 public String getActivity() {
-                    return NSBundle.localizedString("Disconnecting...", "Status", "");
+                    return NSBundle.localizedString("Disconnecting", "Status", "");
                 }
             });
         }
@@ -2505,7 +2512,10 @@ public class CDBrowserController extends CDWindowController
             public void run() {
                 Iterator sourcesIter = normalized.keySet().iterator();
                 Iterator destinationsIter = normalized.values().iterator();
-                for(; sourcesIter.hasNext();) {
+                while(sourcesIter.hasNext()) {
+                    if(this.isCanceled()) {
+                        break;
+                    }
                     final Path source = (Path) sourcesIter.next();
                     final Path destination = (Path) destinationsIter.next();
                     final Local local = new Local(NSPathUtilities.temporaryDirectory(),
@@ -2553,10 +2563,6 @@ public class CDBrowserController extends CDWindowController
                 }
                 reloadData(normalized.values());
             }
-
-            public String getActivity() {
-                return NSBundle.localizedString("Duplicating...", "Status", "");
-            }
         });
     }
 
@@ -2579,6 +2585,9 @@ public class CDBrowserController extends CDWindowController
                 Iterator originalIterator = normalized.keySet().iterator();
                 Iterator renamedIterator = normalized.values().iterator();
                 while(originalIterator.hasNext()) {
+                    if(this.isCanceled()) {
+                        break;
+                    }
                     final Path original = (Path) originalIterator.next();
                     if(original.isRenameSupported()) {
                         original.getParent().invalidate();
@@ -2592,7 +2601,8 @@ public class CDBrowserController extends CDWindowController
             }
 
             public String getActivity() {
-                return NSBundle.localizedString("Renaming...", "Status", "");
+                return MessageFormat.format(NSBundle.localizedString("Renaming {0}", "Status", ""),
+                        new Object[]{"É"});
             }
 
             public void cleanup() {
@@ -2796,6 +2806,9 @@ public class CDBrowserController extends CDWindowController
         this.background(new BrowserBackgroundAction(this) {
             public void run() {
                 for(Iterator iter = files.iterator(); iter.hasNext();) {
+                    if(this.isCanceled()) {
+                        break;
+                    }
                     Path f = (Path) iter.next();
                     f.delete();
                     f.getParent().invalidate();
@@ -2806,7 +2819,8 @@ public class CDBrowserController extends CDWindowController
             }
 
             public String getActivity() {
-                return NSBundle.localizedString("Deleting...", "Status", "");
+                return MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
+                        new Object[]{"É"});
             }
 
             public void cleanup() {
@@ -2913,15 +2927,14 @@ public class CDBrowserController extends CDWindowController
             this.background(new BrowserBackgroundAction(this) {
                 public void run() {
                     for(Iterator iter = selected.iterator(); iter.hasNext();) {
+                        if(this.isCanceled()) {
+                            break;
+                        }
                         final Path selected = (Path) iter.next();
                         if(selected.attributes.getPermission() == null) {
                             selected.readPermission();
                         }
                     }
-                }
-
-                public String getActivity() {
-                    return NSBundle.localizedString("Getting permissions...", "Status", "");
                 }
 
                 public void cleanup() {
@@ -3038,7 +3051,7 @@ public class CDBrowserController extends CDWindowController
         syncPanel.setAllowsMultipleSelection(false);
         syncPanel.setMessage(NSBundle.localizedString("Synchronize", "")
                 + " " + selection.getName() + " "
-                + NSBundle.localizedString("with", "Synchronize <file> with <file>") + "...");
+                + NSBundle.localizedString("with", "Synchronize <file> with <file>"));
         syncPanel.setPrompt(NSBundle.localizedString("Choose", ""));
         syncPanel.setTitle(NSBundle.localizedString("Synchronize", ""));
         syncPanel.beginSheetForDirectory(null,
@@ -3519,8 +3532,8 @@ public class CDBrowserController extends CDWindowController
         }
         this.background(new BrowserBackgroundAction(this) {
             public String getActivity() {
-                return NSBundle.localizedString("Listing directory", "Status", "")
-                        + " " + directory.getName();
+                return MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
+                        new Object[]{directory.getName()});
             }
 
             public void run() {
@@ -3798,8 +3811,8 @@ public class CDBrowserController extends CDWindowController
                     }
 
                     public String getActivity() {
-                        return NSBundle.localizedString("Mounting", "Status", "")
-                                + " " + host.getHostname();
+                        return MessageFormat.format(NSBundle.localizedString("Mounting {0}", "Status", ""),
+                                new Object[]{host.getHostname()});
                     }
                 });
             }
@@ -3862,7 +3875,7 @@ public class CDBrowserController extends CDWindowController
                         }
 
                         public String getActivity() {
-                            return NSBundle.localizedString("Disconnecting...", "Status", "");
+                            return NSBundle.localizedString("Disconnecting", "Status", "");
                         }
                     });
                 }
@@ -3897,7 +3910,7 @@ public class CDBrowserController extends CDWindowController
                 }
 
                 public String getActivity() {
-                    return NSBundle.localizedString("Disconnecting...", "Status", "");
+                    return NSBundle.localizedString("Disconnecting", "Status", "");
                 }
             });
             // Unmount in progress
@@ -3931,7 +3944,7 @@ public class CDBrowserController extends CDWindowController
                 }
 
                 public String getActivity() {
-                    return NSBundle.localizedString("Disconnecting...", "Status", "");
+                    return NSBundle.localizedString("Disconnecting", "Status", "");
                 }
 
                 public Object lock() {
@@ -3956,7 +3969,7 @@ public class CDBrowserController extends CDWindowController
             }
 
             public String getActivity() {
-                return NSBundle.localizedString("Disconnecting...", "Status", "");
+                return NSBundle.localizedString("Disconnecting", "Status", "");
             }
         });
     }
