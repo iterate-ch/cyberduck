@@ -664,7 +664,7 @@ public abstract class Transfer extends NSObject implements Serializable {
                         if(!this.queued) {
                             // Notify if not queued already before
                             this.fireTransferQueued();
-                            this.getSession().message(NSBundle.localizedString("Maximum allowed connections exceeded. Waiting...", "Status", ""));
+                            this.getSession().message(NSBundle.localizedString("Maximum allowed connections exceeded. Waiting", "Status", ""));
                         }
                         synchronized(queueLock) {
                             // Wait for transfer slot

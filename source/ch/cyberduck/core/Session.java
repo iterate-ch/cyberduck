@@ -168,7 +168,7 @@ public abstract class Session extends NSObject {
      */
     public Path mount(String workdir) {
         synchronized(this) {
-            this.message(NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname() + "...");
+            this.message(NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname());
             try {
                 this.check();
                 if(!this.isConnected()) {
@@ -316,7 +316,7 @@ public abstract class Session extends NSObject {
         // Configuring proxy if any
         Proxy.configure(this.host.getHostname());
         this.resolver = new Resolver(this.host.getHostname(true));
-        this.message(NSBundle.localizedString("Resolving", "Status", "") + " " + host.getHostname() + "...");
+        this.message(NSBundle.localizedString("Resolving", "Status", "") + " " + host.getHostname());
         // Try to resolve the hostname first
         this.resolver.resolve();
         // The IP address could successfully be determined
@@ -355,7 +355,7 @@ public abstract class Session extends NSObject {
      */
     protected void fireConnectionWillCloseEvent() {
         log.debug("connectionWillClose");
-        this.message(NSBundle.localizedString("Disconnecting...", "Status", ""));
+        this.message(NSBundle.localizedString("Disconnecting", "Status", ""));
         ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
                 new ConnectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
@@ -466,7 +466,7 @@ public abstract class Session extends NSObject {
         public void run() {
             try {
                 log.info("Sending NOOP to keep connection alive");
-                Session.this.message(NSBundle.localizedString("Checking connection...", "Status", ""));
+                Session.this.message(NSBundle.localizedString("Checking connection", "Status", ""));
                 Session.this.noop();
             }
             catch(IOException e) {

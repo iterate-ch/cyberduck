@@ -23,6 +23,7 @@ import com.apple.cocoa.foundation.NSBundle;
 import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 
 /**
  * The Status class is the model of a download's status.
@@ -61,21 +62,22 @@ public class Status {
     /**
      * Rounding mode to round towards "nearest neighbor" unless both
      * neighbors are equidistant, in which case round up.
+     *
      * @return The size of the file using BigDecimal.ROUND_HALF_UP rounding
      */
     public static String getSizeAsString(double size) {
-        if (-1 == size) {
+        if(-1 == size) {
             return NSBundle.localizedString("Unknown size", "");
         }
-        if (size < KILO) {
+        if(size < KILO) {
             return (int) size + " B";
         }
-        if (size < MEGA) {
+        if(size < MEGA) {
             return new BigDecimal(size).divide(new BigDecimal(KILO),
                     1,
                     BigDecimal.ROUND_DOWN).toString() + " KB";
         }
-        if (size < GIGA) {
+        if(size < GIGA) {
             return new BigDecimal(size).divide(new BigDecimal(MEGA),
                     1,
                     BigDecimal.ROUND_DOWN).toString() + " MB";
@@ -85,35 +87,26 @@ public class Status {
                 BigDecimal.ROUND_DOWN).toString() + " GB";
     }
 
-
-    private static final String SEC_REMAINING = NSBundle.localizedString("seconds remaining", "Status", "");
-    private static final String MIN_REMAINING = NSBundle.localizedString("minutes remaining", "Status", "");
-    private static final String HOURS_REMAINING = NSBundle.localizedString("hours remaining", "Status", "");
-
     /**
-     *
      * @param remaining
      * @return
      */
     public static String getRemainingAsString(double remaining) {
         StringBuffer b = new StringBuffer();
         if(remaining > 7200) { // More than two hours
-            b.append(new BigDecimal(remaining).divide(new BigDecimal(3600),
-                    1,
-                    BigDecimal.ROUND_DOWN).toString());
-            b.append(" ");
-            b.append(HOURS_REMAINING);
+            b.append(MessageFormat.format(NSBundle.localizedString("{0} hours remaining", "Status", ""),
+                    new Object[]{new BigDecimal(remaining).divide(new BigDecimal(3600), 1, BigDecimal.ROUND_DOWN).toString()})
+            );
         }
         else if(remaining > 120) { // More than two minutes
-            b.append((int) (remaining / 60));
-            b.append(" ");
-            b.append(MIN_REMAINING);
+            b.append(MessageFormat.format(NSBundle.localizedString("{0} minutes remaining", "Status", ""),
+                    new Object[]{String.valueOf(remaining / 60)})
+            );
         }
         else {
-            b.append((int )remaining);
-            b.append(" ");
-            b.append(SEC_REMAINING);
-
+            b.append(MessageFormat.format(NSBundle.localizedString("{0} seconds remaining", "Status", ""),
+                    new Object[]{String.valueOf(remaining)})
+            );
         }
         return b.toString();
     }
@@ -167,7 +160,6 @@ public class Status {
     }
 
     /**
-     *
      * @param resume
      */
     public void setResume(boolean resume) {
