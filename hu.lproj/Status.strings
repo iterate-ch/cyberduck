@@ -17,7 +17,7 @@
 "Disconnecting" = "kapcsolat bontása";
 
 /* No comment provided by engineer. */
-"Downloading" = "Letöltés";
+"Downloading {0}" = "Letöltés {0}";
 
 /* No comment provided by engineer. */
 "{0} connection opened" = "{0} kapcsolat nyitva";
@@ -44,7 +44,7 @@
 "Maximum allowed connections exceeded. Waiting" = "A kapcsolatok száma elérte a maximális kapcsolatok számát . Várakozik";
 
 /* No comment provided by engineer. */
-"Mounting" = "Mount-olás";
+"Mounting {0}" = "Mount-olás {0}";
 
 /* The user did not accept the certificate or is not valid */
 "No trusted certificate found" = "Nincs megbízható tanúsítvány";
@@ -68,7 +68,7 @@
 "Too many simultaneous connections. You may want to adjust the number of allowed concurrent connections in the Preferences." = "Túl sok egyidejü kapcsolat. Állítsa át a konkurens kapcsolatok számát.";
 
 /* No comment provided by engineer. */
-"Uploading" = "Feltöltés";
+"Uploading {0}" = "Feltöltés {0}";
 
 /* Renaming file status message; Renaming to <new filename>. */
 "Renaming {0} to {1}" = "Renaming {0} to {1}";
@@ -92,7 +92,7 @@
 "{0} hours remaining" = "{0} hours remaining";
 
 /* When trying to determine the IP address of a server hostname; e.g. Resolving example.net */
-"Resolving" = "Resolving";
+"Resolving {0}" = "Resolving {0}";
 
 /* Retry in 10 seconds - Used to indicate the time left until another connection attempt is made */
 "Retry in" = "Retry in";
