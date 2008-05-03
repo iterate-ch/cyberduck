@@ -2602,7 +2602,7 @@ public class CDBrowserController extends CDWindowController
 
             public String getActivity() {
                 return MessageFormat.format(NSBundle.localizedString("Renaming {0}", "Status", ""),
-                        new Object[]{"É"});
+                        new Object[]{""});
             }
 
             public void cleanup() {
@@ -2820,7 +2820,7 @@ public class CDBrowserController extends CDWindowController
 
             public String getActivity() {
                 return MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
-                        new Object[]{"É"});
+                        new Object[]{""});
             }
 
             public void cleanup() {
