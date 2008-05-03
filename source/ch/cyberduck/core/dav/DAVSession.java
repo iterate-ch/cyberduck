@@ -105,7 +105,9 @@ public class DAVSession extends Session {
     protected void login() throws IOException, LoginCanceledException {
         final Credentials credentials = host.getCredentials();
         login.check(credentials, host.getProtocol(), host.getHostname());
-
+        if(!this.isConnected()) {
+            throw new ConnectionCanceledException();
+        }
         try {
             this.message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
                     new Object[]{credentials.getUsername()}));
