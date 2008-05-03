@@ -40,8 +40,8 @@ import org.jets3t.service.utils.ObjectUtils;
 
 import java.io.*;
 import java.net.URLEncoder;
-import java.util.*;
 import java.text.MessageFormat;
+import java.util.*;
 
 /**
  * @version $Id:$
@@ -165,17 +165,12 @@ public class S3Path extends Path {
             if(!session.S3.isBucketAccessible(bucketname)) {
                 throw new S3ServiceException("Bucket not available: " + bucketname);
             }
-            try {
-                final S3Bucket[] buckets = session.S3.listAllBuckets();
-                for(int i = 0; i < buckets.length; i++) {
-                    if(buckets[i].getName().equals(bucketname)) {
-                        _bucket = buckets[i];
-                        break;
-                    }
+            final S3Bucket[] buckets = session.buckets;
+            for(int i = 0; i < buckets.length; i++) {
+                if(buckets[i].getName().equals(bucketname)) {
+                    _bucket = buckets[i];
+                    break;
                 }
-            }
-            catch(S3ServiceException e) {
-                log.error("Listing buckets failed:" + e.getMessage());
             }
             if(null == _bucket) {
                 log.warn("Bucket not found with name:" + bucketname);
@@ -490,7 +485,7 @@ public class S3Path extends Path {
 
                 if(this.isRoot()) {
                     // List all buckets
-                    final S3Bucket[] buckets = session.S3.listAllBuckets();
+                    final S3Bucket[] buckets = session.buckets;
                     for(int i = 0; i < buckets.length; i++) {
                         S3Path p = new S3Path(session, this.getAbsolute(), buckets[i].getName(),
                                 Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);

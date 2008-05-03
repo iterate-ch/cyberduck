@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3Service;
 import org.jets3t.service.S3ServiceException;
+import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.security.AWSCredentials;
 
@@ -131,6 +132,11 @@ public class S3Session extends Session implements SSLSession {
                 Preferences.instance().getProperty("queue.download.preserveDate"));
     }
 
+    /**
+     * Caching the uses's buckets
+     */
+    protected S3Bucket[] buckets = new S3Bucket[]{};
+
     protected void connect() throws IOException, ConnectionCanceledException, LoginCanceledException {
         synchronized(this) {
             if(this.isConnected()) {
@@ -183,6 +189,7 @@ public class S3Session extends Session implements SSLSession {
                             authscheme.getSchemeName());
                 }
             }, configuration, hostConfiguration);
+            buckets = this.S3.listAllBuckets();
         }
         catch(S3ServiceException e) {
             if(this.isLoginFailure(e)) {
