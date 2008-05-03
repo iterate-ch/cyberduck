@@ -143,8 +143,7 @@ public abstract class Preferences {
          */
         defaults.put("logging", "ERROR");
 
-        BasicConfigurator.configure();
-        Logger.getRootLogger().setLevel(Level.toLevel(
+        Logger.getLogger("ch.cyberduck").setLevel(Level.toLevel(
                 this.getProperty("logging")));
 
         defaults.put("version", 

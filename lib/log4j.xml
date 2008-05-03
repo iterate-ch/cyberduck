@@ -7,25 +7,7 @@
         </layout>
     </appender>
     <root>
-        <level value="DEBUG"/>
+        <level value="ERROR"/>
         <appender-ref ref="STDOUT"/>
     </root>
-    <logger name="ch.cyberduck">
-        <level value="DEBUG"/>
-    </logger>
-    <logger name="org.apache.commons.httpclient">
-        <level value="INFO"/>
-    </logger>
-    <logger name="httpclient.wire.content">
-        <level value="ERROR"/>
-    </logger>
-    <logger name="httpclient.wire.header">
-        <level value="DEBUG"/>
-    </logger>
-    <logger name="org.jets3t">
-        <level value="INFO"/>
-    </logger>
-    <logger name="org.jets3t.service.utils">
-        <level value="WARN"/>
-    </logger>
 </log4j:configuration>

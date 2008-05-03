@@ -1268,6 +1268,7 @@ lib/jdom-1.1.jar -text
 lib/jets3t-0.6.1.jar -text
 lib/log4j-1.2.15.jar -text
 lib/log4j.xml -text
+lib/log4j.xml.debug -text
 lib/mime.types -text
 lv.lproj/Alert.nib/classes.nib -text
 lv.lproj/Alert.nib/data.dependency -text
