@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration debug="false" xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>
+        </layout>
+    </appender>
+    <root>
+        <level value="DEBUG"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+    <logger name="ch.cyberduck">
+        <level value="DEBUG"/>
+    </logger>
+    <logger name="org.apache.commons.httpclient">
+        <level value="INFO"/>
+    </logger>
+    <logger name="httpclient.wire.content">
+        <level value="ERROR"/>
+    </logger>
+    <logger name="httpclient.wire.header">
+        <level value="DEBUG"/>
+    </logger>
+    <logger name="org.jets3t">
+        <level value="INFO"/>
+    </logger>
+    <logger name="org.jets3t.service.utils">
+        <level value="WARN"/>
+    </logger>
+</log4j:configuration>
