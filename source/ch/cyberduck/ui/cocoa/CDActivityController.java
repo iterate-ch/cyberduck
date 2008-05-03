@@ -31,8 +31,8 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import org.apache.log4j.Logger;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -55,7 +55,7 @@ public class CDActivityController extends CDWindowController {
     /**
      *
      */
-    private final Map tasks = new HashMap();
+    private final Map tasks = new LinkedHashMap();
 
     private CDActivityController() {
         this.loadBundle();
