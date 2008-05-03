@@ -357,7 +357,8 @@ public class S3Path extends Path {
                         download = ObjectUtils.createPackageForDownload(
                                 new S3Object(this.getBucket(), this.getKey()),
                                 new File(this.getLocal().getAbsolute()), true, false, null);
-                        out = download.getOutputStream(status.isResume());
+                        download.setAppendToFile(true);
+                        out = download.getOutputStream();
                         if(null == out) {
                             throw new IOException("Unable to buffer data");
                         }
