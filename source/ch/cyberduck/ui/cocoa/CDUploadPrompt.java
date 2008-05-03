@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.TransferAction;
 
 import org.apache.log4j.Logger;
 
@@ -32,8 +33,8 @@ public class CDUploadPrompt extends CDTransferPrompt {
         super(parent, transfer);
     }
 
-    public void awakeFromNib() {
-        this.browserView.setDataSource(this.browserModel = new CDUploadPromptModel(this, transfer));
-        super.awakeFromNib();
+    public TransferAction prompt() {
+        this.browserModel = new CDUploadPromptModel(this, transfer);
+        return super.prompt();
     }
 }

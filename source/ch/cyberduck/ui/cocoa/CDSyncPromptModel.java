@@ -50,12 +50,6 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
         return filter;
     }
 
-    public void clear() {
-        //Hack to make CDTransferPromptModel#childs filter from scratch
-        filter = null;
-        super.clear();
-    }
-
     /**
      * A column indicating if the file will be uploaded or downloaded
      */

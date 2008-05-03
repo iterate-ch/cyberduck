@@ -62,11 +62,8 @@ public abstract class CDTransferPromptModel extends CDController {
         this.transfer = transfer;
     }
 
-    /**
-     * Clear the root model. Will be rebuilt if queried next time
-     */
-    public void clear() {
-        _roots.clear();
+    public void add(Path p) {
+        _roots.add(p);
     }
 
     protected abstract class PromptFilter implements PathFilter {
@@ -201,7 +198,7 @@ public abstract class CDTransferPromptModel extends CDController {
      */
     public int outlineViewNumberOfChildrenOfItem(final NSOutlineView view, Path item) {
         if(null == item) {
-            return transfer.getRoots().size();
+            return _roots.size();
         }
         return this.childs(item).size();
     }
@@ -214,7 +211,7 @@ public abstract class CDTransferPromptModel extends CDController {
      */
     public Path outlineViewChildOfItem(final NSOutlineView view, int index, Path item) {
         if(null == item) {
-            return (Path)transfer.getRoots().get(index);
+            return (Path)_roots.get(index);//todo
         }
         List childs = this.childs(item);
         if(childs.isEmpty()) {

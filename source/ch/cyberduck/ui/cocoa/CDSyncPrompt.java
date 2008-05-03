@@ -38,9 +38,9 @@ public class CDSyncPrompt extends CDTransferPrompt {
         super(parent, transfer);
     }
 
-    public void awakeFromNib() {
-        this.browserView.setDataSource(this.browserModel = new CDSyncPromptModel(this, transfer));
-        super.awakeFromNib();
+    public TransferAction prompt() {
+        this.browserModel = new CDSyncPromptModel(this, transfer);
+        return super.prompt();
     }
 
     public void setBrowserView(NSOutlineView view) {

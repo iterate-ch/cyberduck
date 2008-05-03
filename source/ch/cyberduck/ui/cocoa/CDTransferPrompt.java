@@ -26,6 +26,8 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
 
+import java.util.Iterator;
+
 /**
  * @version $Id$
  */
@@ -122,6 +124,12 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
     public TransferAction prompt() {
         log.debug("prompt:" + transfer);
+        for(Iterator iter = transfer.getRoots().iterator(); iter.hasNext(); ) {
+            Path next = (Path) iter.next();
+            if(browserModel.filter().accept(next)) {
+                browserModel.add(next);
+            }
+        }
         this.transfer.fireTransferPaused();
         this.beginSheet();
         this.transfer.fireTransferResumed();
@@ -146,6 +154,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     public void setBrowserView(final NSOutlineView view) {
         this.browserView = view;
         this.browserView.setHeaderView(null);
+        this.browserView.setDataSource(this.browserModel);
         this.browserView.setDelegate(this.browserViewDelegate = new CDAbstractTableDelegate() {
 
             /**
@@ -211,7 +220,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                     remoteURLField.setHidden(false);
 
-                    if(p.getParent().isCached() && transfer.exists(p)) {
+                    if(transfer.exists(p)) {
                         if(p.attributes.getSize() == -1) {
                             remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
                         }

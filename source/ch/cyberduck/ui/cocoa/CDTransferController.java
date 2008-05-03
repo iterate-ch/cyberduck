@@ -567,9 +567,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
             private TransferListener tl;
 
-            final TransferPrompt prompt
-                    = CDTransferPrompt.create(CDTransferController.this, transfer);
-
             public boolean prepare() {
                 transfer.addListener(tl = new TransferAdapter() {
                     public void transferQueued() {
@@ -635,7 +632,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 TransferOptions options = new TransferOptions();
                 options.reloadRequested = reload;
                 options.resumeRequested = resume;
-                transfer.start(prompt, options ,true);
+                transfer.start(CDTransferPrompt.create(CDTransferController.this, transfer), options ,true);
             }
 
             public void finish() {
