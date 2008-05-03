@@ -384,7 +384,11 @@ public class CDBrowserController extends CDWindowController
                 path.getLocal().setPath((String) localObj);
             }
             final Transfer q = new SyncTransfer(path);
-            this.transfer(q, true);
+            this.transfer(q, true, new TransferPrompt() {
+                public TransferAction prompt() {
+                    return TransferAction.ACTION_OVERWRITE;
+                }
+            });
         }
         BackgroundActionRegistry.instance().block();
         return null;
@@ -419,7 +423,11 @@ public class CDBrowserController extends CDWindowController
                 path.getLocal().setPath(path.getLocal().getParent().getAbsolute(), (String) nameObj);
             }
             final Transfer q = new DownloadTransfer(path);
-            this.transfer(q, true);
+            this.transfer(q, true, new TransferPrompt() {
+                public TransferAction prompt() {
+                    return TransferAction.ACTION_OVERWRITE;
+                }
+            });
         }
         BackgroundActionRegistry.instance().block();
         return null;
@@ -447,7 +455,11 @@ public class CDBrowserController extends CDWindowController
                 path.setPath(this.workdir().getAbsolute(), (String) nameObj);
             }
             final Transfer q = new UploadTransfer(path);
-            this.transfer(q, true);
+            this.transfer(q, true, new TransferPrompt() {
+                public TransferAction prompt() {
+                    return TransferAction.ACTION_OVERWRITE;
+                }
+            });
         }
         BackgroundActionRegistry.instance().block();
         return null;
@@ -3199,6 +3211,10 @@ public class CDBrowserController extends CDWindowController
      * @param useBrowserConnection
      */
     protected void transfer(final Transfer transfer, final boolean useBrowserConnection) {
+        this.transfer(transfer, useBrowserConnection, CDTransferPrompt.create(this, transfer));
+    }
+
+    protected void transfer(final Transfer transfer, final boolean useBrowserConnection, final TransferPrompt prompt) {
         if(useBrowserConnection) {
             final Speedometer meter = new Speedometer(transfer);
             final TransferListener l;
@@ -3242,7 +3258,7 @@ public class CDBrowserController extends CDWindowController
                 public void run() {
                     TransferOptions options = new TransferOptions();
                     options.closeSession = false;
-                    transfer.start(CDTransferPrompt.create(CDBrowserController.this, transfer), options);
+                    transfer.start(prompt, options);
                 }
 
                 public void cancel() {
@@ -3526,10 +3542,6 @@ public class CDBrowserController extends CDWindowController
 
             return;
         }
-        if(directory.isCached()) {
-            //Reset the readable attribute
-            directory.childs().attributes().setReadable(true);
-        }
         this.background(new BrowserBackgroundAction(this) {
             public String getActivity() {
                 return MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
@@ -3537,6 +3549,10 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void run() {
+                if(directory.isCached()) {
+                    //Reset the readable attribute
+                    directory.childs().attributes().setReadable(true);
+                }
                 // Get the directory listing in the background
                 directory.childs();
                 if(directory.childs().attributes().isReadable()) {
