@@ -292,7 +292,7 @@ public class DownloadTransfer extends Transfer {
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Iterator iter = this.getRoots().iterator(); iter.hasNext();) {
                 Path root = (Path) iter.next();
-                if(DownloadTransfer.this.exists(root.getLocal())) {
+                if(this.exists(root.getLocal())) {
                     if(root.getLocal().attributes.isDirectory()) {
                         if(0 == root.getLocal().childs().size()) {
                             // Do not prompt for existing empty directories

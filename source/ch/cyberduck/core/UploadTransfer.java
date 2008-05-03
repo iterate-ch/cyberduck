@@ -262,7 +262,13 @@ public class UploadTransfer extends Transfer {
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Iterator iter = this.getRoots().iterator(); iter.hasNext(); ) {
                 Path root = (Path)iter.next();
-                if(UploadTransfer.this.exists(root)) {
+                if(this.exists(root)) {
+                    if(root.getLocal().attributes.isDirectory()) {
+                        if(0 == root.childs().size()) {
+                            // Do not prompt for existing empty directories
+                            continue;
+                        }
+                    }
                     // Prompt user to choose a filter
                     TransferAction result = prompt.prompt();
                     return this.filter(result); //break out of loop
