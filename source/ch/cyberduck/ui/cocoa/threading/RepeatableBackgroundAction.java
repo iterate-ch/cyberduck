@@ -377,6 +377,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         if(session != null) {
             return session.getHost().getHostname();
         }
-        return super.toString();
+        return NSBundle.localizedString("Unknown", "");
     }
 }
