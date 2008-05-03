@@ -31,6 +31,10 @@ public abstract class BrowserBackgroundAction extends RepeatableBackgroundAction
         this.controller = controller;
     }
 
+    public CDBrowserController getController() {
+        return controller;
+    }
+
     public void init() {
         // Add to the registry so it will be displayed in the activity window.
         BackgroundActionRegistry.instance().add(this);

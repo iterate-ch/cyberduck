@@ -3512,7 +3512,14 @@ public class CDBrowserController extends CDWindowController
      * @return true if there is any network activity running in the background
      */
     public boolean isActivityRunning() {
-        return BackgroundActionRegistry.instance().getCurrent() != null;
+        final BackgroundAction current = BackgroundActionRegistry.instance().getCurrent();
+        if(null == current) {
+            return false;
+        }
+        if(current instanceof BrowserBackgroundAction) {
+            return ((BrowserBackgroundAction)current).getController() == this;
+        }
+        return false;
     }
 
     /**
