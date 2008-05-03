@@ -66,8 +66,8 @@ public class BackgroundActionRegistry extends Collection {
                 current = null;
                 action.removeListener(this);
                 remove(action);
-                synchronized(lock) {
-                    lock.notify();
+                synchronized(block) {
+                    block.notify();
                 }
             }
         });
