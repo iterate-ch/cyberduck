@@ -363,6 +363,7 @@
 			</fileset>
 			<fileset dir="${lib}">
                 <include name="mime.types"/>
+                <include name="log4j.xml"/>
             </fileset>
 		</jar>
 		<jar jarfile="${build}/ganymed.jar"
