@@ -1202,7 +1202,7 @@ public class CDBrowserController extends CDWindowController
 
         private Collection temporaryQuickLookFiles = new Collection() {
             public void collectionItemRemoved(Object o) {
-                ((Local) o).delete();
+                ((Local) o).delete(false);
             }
         };
 

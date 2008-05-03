@@ -301,14 +301,23 @@ public class Local extends AbstractPath {
 //        return super.setLastModified(time + offset);
 //    }
 
-    /**
-     * Moves the file to the Trash. NSWorkspace.RecycleOperation
-     */
     public void delete() {
+        this.delete(true);
+    }
+
+    /**
+     * @param trash Moves the file to the Trash. NSWorkspace.RecycleOperation
+     */
+    public void delete(final boolean trash) {
         if(this.exists()) {
-            if(0 > NSWorkspace.sharedWorkspace().performFileOperation(NSWorkspace.RecycleOperation,
-                    this.getParent().getAbsolute(), "", new NSArray(this.getName()))) {
-                log.warn("Failed to move " + this.getAbsolute() + " to Trash");
+            if(trash) {
+                if(0 > NSWorkspace.sharedWorkspace().performFileOperation(NSWorkspace.RecycleOperation,
+                        this.getParent().getAbsolute(), "", new NSArray(this.getName()))) {
+                    log.warn("Failed to move " + this.getAbsolute() + " to Trash");
+                }
+            }
+            else {
+                _impl.delete();
             }
         }
     }
@@ -395,8 +404,12 @@ public class Local extends AbstractPath {
     }
 
     public void mkdir(boolean recursive) {
-        if(recursive) _impl.mkdirs();
-        else _impl.mkdir();
+        if(recursive) {
+            _impl.mkdirs();
+        }
+        else {
+            _impl.mkdir();
+        }
     }
 
     public void writePermissions(final Permission perm, final boolean recursive) {

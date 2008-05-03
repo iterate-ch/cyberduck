@@ -77,7 +77,7 @@ public class HistoryCollection extends HostCollection {
      */
     public synchronized Object remove(int row) {
         final Host bookmark = (Host) this.get(row);
-        bookmark.getFile().delete();
+        bookmark.getFile().delete(false);
         return super.remove(row);
     }
 

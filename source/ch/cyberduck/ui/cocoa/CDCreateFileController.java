@@ -75,7 +75,7 @@ public class CDCreateFileController extends CDFileController {
                 }
                 file.getLocal().touch();
                 file.upload();
-                file.getLocal().delete();
+                file.getLocal().delete(false);
                 if(file.exists()) {
                     if(edit) {
                         Editor editor = EditorFactory.createEditor(c, file.getLocal());
