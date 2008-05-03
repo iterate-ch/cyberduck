@@ -100,12 +100,12 @@ public class Status {
         }
         else if(remaining > 120) { // More than two minutes
             b.append(MessageFormat.format(NSBundle.localizedString("{0} minutes remaining", "Status", ""),
-                    new Object[]{String.valueOf(remaining / 60)})
+                    new Object[]{String.valueOf((int) (remaining / 60))})
             );
         }
         else {
             b.append(MessageFormat.format(NSBundle.localizedString("{0} seconds remaining", "Status", ""),
-                    new Object[]{String.valueOf(remaining)})
+                    new Object[]{String.valueOf((int) remaining)})
             );
         }
         return b.toString();
