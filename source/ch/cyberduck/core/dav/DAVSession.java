@@ -192,7 +192,7 @@ public class DAVSession extends Session {
             if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
             }
-            DAV.setPath(workdir.getAbsolute() + Path.DELIMITER);
+            DAV.setPath(workdir.isRoot() ? Path.DELIMITER : workdir.getAbsolute() + Path.DELIMITER);
         }
     }
 
