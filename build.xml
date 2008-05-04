@@ -336,8 +336,8 @@
 			encoding="utf-8"
 			deprecation="off"
 			srcdir="${source}"
-			source="1.4"
-			target="1.4"
+			source="1.5"
+			target="1.5"
 			destdir="${build.classes}">
 			<bootclasspath refid="build.bootclasspath"/>
 			<classpath refid="build.classpath"/>
