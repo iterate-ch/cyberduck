@@ -17,7 +17,7 @@ public class SFTPInputStream extends InputStream
     /**
      * Offset (in bytes) in the file to read
      */
-    private int readOffset = 0;
+    private long readOffset = 0;
 
     public SFTPInputStream(SFTPv3FileHandle handle)
     {
