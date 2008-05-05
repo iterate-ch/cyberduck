@@ -13,6 +13,11 @@
             SUPERCLASS = NSObject;
         },
                 {
+            CLASS = NSLevelIndicator;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSControl;
+        },
+                {
             CLASS = "ch.cyberduck.ui.cocoa.CDProgressController";
             LANGUAGE = Java;
             OUTLETS =             {

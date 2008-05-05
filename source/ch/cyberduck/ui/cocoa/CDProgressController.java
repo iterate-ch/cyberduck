@@ -120,10 +120,8 @@ public class CDProgressController extends CDBundleController {
             public void transferWillStart() {
                 CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
-                        progressBar.setHidden(false);
                         progressBar.setIndeterminate(true);
                         progressBar.startAnimation(null);
-                        progressBar.setNeedsDisplay(true);
                         statusIconView.setImage(YELLOW_ICON);
                         setMessageText();
                         setProgressText();
@@ -140,9 +138,7 @@ public class CDProgressController extends CDBundleController {
                         setMessageText();
                         setProgressText();
                         setStatusText();
-                        progressBar.setIndeterminate(true);
                         progressBar.stopAnimation(null);
-                        progressBar.setHidden(true);
                         statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
                         filesPopup.itemAtIndex(0).setEnabled(transfer.getRoot().getLocal().exists());
                     }
@@ -185,7 +181,6 @@ public class CDProgressController extends CDBundleController {
                                 setProgressText();
                                 if(!transfer.isVirgin()) {
                                     progressBar.setIndeterminate(false);
-                                    progressBar.setMinValue(0);
                                     progressBar.setMaxValue(transfer.getSize());
                                     progressBar.setDoubleValue(transfer.getTransferred());
                                 }
@@ -219,14 +214,13 @@ public class CDProgressController extends CDBundleController {
     }
 
     private void setMessageText() {
+        StringBuffer b = new StringBuffer();
         if(messageText != null) {
-            messageField.setAttributedStringValue(new NSAttributedString(
-                    messageText,
-                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+            b.append(messageText);
         }
-        else {
-            messageField.setStringValue("");
-        }
+        messageField.setAttributedStringValue(new NSAttributedString(
+                b.toString(),
+                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
     }
 
     private void setProgressText() {
@@ -326,6 +320,7 @@ public class CDProgressController extends CDBundleController {
         this.progressBar.setControlTint(NSProgressIndicator.BlueControlTint);
         this.progressBar.setControlSize(NSProgressIndicator.SmallControlSize);
         this.progressBar.setStyle(NSProgressIndicator.ProgressIndicatorBarStyle);
+        this.progressBar.setMinValue(0);
     }
 
     private NSImageView statusIconView; //IBOutlet
