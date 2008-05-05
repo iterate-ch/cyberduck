@@ -339,7 +339,8 @@ public class S3Path extends Path {
                 if(check) {
                     session.check();
                 }
-                session.message(NSBundle.localizedString("Downloading", "Status", "") + " " + this.getName());
+                this.getSession().message(MessageFormat.format(NSBundle.localizedString("Downloading {0}", "Status", ""),
+                        new Object[]{this.getName()}));
 
                 DownloadPackage download;
                 try {
@@ -395,7 +396,8 @@ public class S3Path extends Path {
                 session.check();
             }
             if(attributes.isFile()) {
-                session.message(NSBundle.localizedString("Uploading", "Status", "") + " " + this.getName());
+                this.getSession().message(MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
+                        new Object[]{this.getName()}));
 
                 final S3ServiceMulti multi = new S3ServiceMulti(session.S3,
                         new S3ServiceTransferEventAdaptor(listener)

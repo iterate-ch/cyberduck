@@ -245,7 +245,6 @@ public class DAVPath extends Path {
                 if(check) {
                     session.check();
                 }
-                session.message(NSBundle.localizedString("Downloading", "Status", "") + " " + this.getName());
                 if(this.getStatus().isResume()) {
                     session.DAV.addRequestHeader("Range", "bytes=" + this.getStatus().getCurrent() + "-");
                 }
@@ -290,7 +289,8 @@ public class DAVPath extends Path {
                 session.check();
             }
             if(attributes.isFile()) {
-                session.message(NSBundle.localizedString("Uploading", "Status", "") + " " + this.getName());
+                this.getSession().message(MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
+                        new Object[]{this.getName()}));
 
                 final InputStream in = new Local.InputStream(this.getLocal());
                 try {

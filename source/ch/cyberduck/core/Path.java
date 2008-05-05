@@ -37,6 +37,7 @@ import java.net.URLEncoder;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -489,7 +490,9 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug("upload(" + out.toString() + ", " + in.toString());
         }
-        this.getSession().message(NSBundle.localizedString("Uploading", "Status", "") + " " + this.getName());
+        this.getSession().message(MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
+                new Object[]{this.getName()}));
+
         if(getStatus().isResume()) {
             long skipped = in.skip(getStatus().getCurrent());
             log.info("Skipping " + skipped + " bytes");
@@ -513,7 +516,9 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug("download(" + in.toString() + ", " + out.toString());
         }
-        this.getSession().message(NSBundle.localizedString("Downloading", "Status", "") + " " + this.getName());
+        this.getSession().message(MessageFormat.format(NSBundle.localizedString("Downloading {0}", "Status", ""),
+                new Object[]{this.getName()}));
+
         // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
         // overhead when transferring a large amount of files
         final boolean updateIcon = attributes.getSize() > Status.MEGA * 5;
